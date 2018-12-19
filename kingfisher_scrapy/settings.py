@@ -68,7 +68,6 @@ ROBOTSTXT_OBEY = True
 #    'kingfisher_scrapy.pipelines.SomePipeline': 300,
 #}
 ITEM_PIPELINES = {
-    # 'scrapy.pipelines.files.FilesPipeline': 1,
     'kingfisher_scrapy.pipelines.KingfisherFilesPipeline': 1,
 }
 
