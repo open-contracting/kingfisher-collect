@@ -16,4 +16,7 @@ Currently implemented:
  scrapy crawl canada_buyandsell -a sample=true
  scrapy crawl canada_buyandsell
 ```
- 
+
+## Output
+
+Currently scraped JSON is stored on disc, as it was found. Files are stored in `{project_root}/data/{scraper_name}/{datetime}`. The `/data/` part can be configured in `settings.py` with `FILES_STORE`.
