@@ -19,4 +19,4 @@ Currently implemented:
 
 ## Output
 
-Currently scraped JSON is stored on disc, as it was found. Files are stored in `{project_root}/data/{scraper_name}/`. The `/data/` part can be configured in `settings.py` with `FILES_STORE`.
+Currently scraped JSON is stored on disc, as it was found. Files are stored in `{project_root}/data/{scraper_name}/{datetime}`. The `/data/` part can be configured in `settings.py` with `FILES_STORE`.
