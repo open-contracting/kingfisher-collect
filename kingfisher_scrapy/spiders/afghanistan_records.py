@@ -6,6 +6,7 @@ import scrapy
 class AfghanistanRecords(scrapy.Spider):
     name = 'afghanistan_records'
     start_urls = ['https://ocds.ageops.net/api/ocds/records']
+    download_delay = 1
 
     def parse(self, response):
         files_urls = json.loads(response.body)
