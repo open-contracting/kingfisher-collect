@@ -21,6 +21,8 @@ class KingfisherFilesPipeline(FilesPipeline):
         
         url = request.url
         media_guid = hashlib.sha1(to_bytes(url)).hexdigest()
-        media_ext = os.path.splitext(url)[1] 
+        media_ext = os.path.splitext(url)[1]
+        if not media_ext:
+            media_ext = '.json'
         # Put files in a directory named after the scraper they came from, and the scraper starttime
         return '%s/%s/%s%s' % (info.spider.name, start_time_str, media_guid, media_ext)
