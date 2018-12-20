@@ -15,8 +15,12 @@ from scrapy.pipelines.files import FilesPipeline
 class KingfisherFilesPipeline(FilesPipeline):
 
     def file_path(self, request, response=None, info=None):
+        stats = info.spider.crawler.stats.get_stats()
+        start_time = stats.get("start_time")
+        start_time_str = start_time.strftime("%Y%m%d_%H%M%S")
+        
         url = request.url
         media_guid = hashlib.sha1(to_bytes(url)).hexdigest()
         media_ext = os.path.splitext(url)[1] 
-        # Put files in a directory named after the scraper they came from
-        return '%s/%s%s' % (info.spider.name, media_guid, media_ext)
+        # Put files in a directory named after the scraper they came from, and the scraper starttime
+        return '%s/%s/%s%s' % (info.spider.name, start_time_str, media_guid, media_ext)
