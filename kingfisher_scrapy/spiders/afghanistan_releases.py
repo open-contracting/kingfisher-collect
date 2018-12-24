@@ -1,6 +1,5 @@
 import json
 
-import requests
 import scrapy
 
 
@@ -11,8 +10,10 @@ class AfghanistanReleases(scrapy.Spider):
 
     def parse(self, response):
         for url in json.loads(response.body):
+            yield scrapy.Request(url, callback=self.parse_release_urls)
 
-            yield {
-                "file_urls": json.loads(requests.get(str(url)).text),
-                "data_type": "release"
-            }
+    def parse_release_urls(self, response):
+        yield {
+            "file_urls": json.loads(response.body),
+            "data_type": "release"
+        }
