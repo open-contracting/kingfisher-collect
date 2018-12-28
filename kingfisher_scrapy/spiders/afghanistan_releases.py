@@ -13,7 +13,10 @@ class AfghanistanReleases(scrapy.Spider):
             yield scrapy.Request(url, callback=self.parse_release_urls)
 
     def parse_release_urls(self, response):
+        release_urls = json.loads(response.body)
+        if self.sample:
+            release_urls = release_urls[0]
         yield {
-            "file_urls": json.loads(response.body),
+            "file_urls": release_urls,
             "data_type": "release"
         }
