@@ -9,14 +9,19 @@ class AfghanistanReleases(scrapy.Spider):
     download_delay = 1
 
     def parse(self, response):
-        for url in json.loads(response.body):
+        urls = json.loads(response.body)
+        print(urls)
+
+        if self.sample:
+            urls = [urls[0]]
+
+        for url in urls:
             yield scrapy.Request(url, callback=self.parse_release_urls)
 
     def parse_release_urls(self, response):
         release_urls = json.loads(response.body)
-        if self.sample:
-            release_urls = release_urls[0]
-        yield {
-            "file_urls": release_urls,
-            "data_type": "release"
-        }
+        if(len(release_urls) > 0):
+            yield {
+                "file_urls": release_urls,
+                "data_type": "release"
+            }
