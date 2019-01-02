@@ -10,7 +10,6 @@ class AfghanistanReleases(scrapy.Spider):
 
     def parse(self, response):
         urls = json.loads(response.body)
-        print(urls)
 
         if self.sample:
             urls = [urls[0]]
