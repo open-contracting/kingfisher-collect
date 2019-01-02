@@ -19,7 +19,7 @@ class AfghanistanReleases(scrapy.Spider):
 
     def parse_release_urls(self, response):
         release_urls = json.loads(response.body)
-        if(len(release_urls) > 0):
+        if len(release_urls) > 0:
             yield {
                 "file_urls": release_urls,
                 "data_type": "release"
