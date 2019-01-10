@@ -8,6 +8,7 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+import os
 
 BOT_NAME = 'kingfisher_scrapy'
 
@@ -19,7 +20,7 @@ NEWSPIDER_MODULE = 'kingfisher_scrapy.spiders'
 #USER_AGENT = 'kingfisher_scrapy (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -69,9 +70,14 @@ ROBOTSTXT_OBEY = True
 #}
 ITEM_PIPELINES = {
     'kingfisher_scrapy.pipelines.KingfisherFilesPipeline': 1,
+    'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 2,
 }
 
 FILES_STORE = 'data'
+
+KINGFISHER_API_FILE_URI = os.environ.get('KINGFISHER_API_FILE_URI')
+KINGFISHER_API_ITEM_URI = os.environ.get('KINGFISHER_API_ITEM_URI')
+KINGFISHER_API_KEY = os.environ.get('KINGFISHER_API_KEY')
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
