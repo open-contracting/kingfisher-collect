@@ -11,8 +11,6 @@ class AfghanistanReleases(scrapy.Spider):
     def parse(self, response):
         urls = json.loads(response.body)
 
-        print(urls)
-
         if hasattr(self, 'sample') and self.sample == 'true':
             # Only get one date
             urls = [urls[0]]
