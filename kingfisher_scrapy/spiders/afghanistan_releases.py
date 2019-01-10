@@ -11,7 +11,8 @@ class AfghanistanReleases(scrapy.Spider):
     def parse(self, response):
         urls = json.loads(response.body)
 
-        if self.sample:
+        if hasattr(self, 'sample') and self.sample == 'true':
+            # Only get one date
             urls = [urls[0]]
 
         for url in urls:
@@ -19,8 +20,14 @@ class AfghanistanReleases(scrapy.Spider):
 
     def parse_release_urls(self, response):
         release_urls = json.loads(response.body)
-        if len(release_urls) > 0:
-            yield {
-                "file_urls": release_urls,
-                "data_type": "release"
-            }
+            
+        if len(release_urls) > 0: # Some dates have no releases
+            if hasattr(self, 'sample') and self.sample == 'true':
+                # Only get one release
+                release_urls = [release_urls[0]]
+
+            for release_url in release_urls:
+                yield {
+                    "file_urls": [release_url],
+                    "data_type": "release"
+                }
