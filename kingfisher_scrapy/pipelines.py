@@ -8,7 +8,6 @@
 import os
 import json
 import hashlib
-import requests
 
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes
