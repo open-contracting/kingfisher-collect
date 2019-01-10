@@ -13,7 +13,8 @@ class AfghanistanRecords(scrapy.Spider):
         if hasattr(self, 'sample') and self.sample == 'true':
             files_urls = [files_urls[0]]
 
-        yield {
-            'file_urls': files_urls,
-            'data_type': 'record'
-        }
+        for file_url in files_urls:
+            yield {
+                'file_urls': [file_url],
+                'data_type': 'record'
+            }
