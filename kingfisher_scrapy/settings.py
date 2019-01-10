@@ -69,9 +69,14 @@ ROBOTSTXT_OBEY = True
 #}
 ITEM_PIPELINES = {
     'kingfisher_scrapy.pipelines.KingfisherFilesPipeline': 1,
+    'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 2,
 }
 
 FILES_STORE = 'data'
+
+KINGFISHER_API_FILE_URI = os.environ.get('KINGFISHER_API_FILE_URI')
+KINGFISHER_API_ITEM_URI = os.environ.get('KINGFISHER_API_ITEM_URI')
+KINGFISHER_API_KEY = os.environ.get('KINGFISHER_API_KEY')
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
