@@ -8,11 +8,11 @@
 import os
 import json
 import hashlib
+import requests
 
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes
 from scrapy.exceptions import DropItem, NotConfigured
-from scrapy.http import Request
 
 
 class KingfisherFilesPipeline(FilesPipeline):
@@ -105,18 +105,9 @@ class KingfisherPostPipeline(object):
         for completed in item:
 
             headers['Content-Type'] = 'application/json'
-
-            post_request = Request(
-                url=url,
-                method='POST',
-                body=json.dumps(completed),
-                headers=headers,
-                callback=self.finish
-            )
-            self.crawler.engine.crawl(post_request, spider)
-
-        raise DropItem("Response from [{}] posted to API.".format(completed.get('url')))
-
-    def finish(self, response):
-        # This stops Scrapy from automatically passing the response from the API to the Files pipeline
-        pass
+            
+            response = requests.post(url, json=completed, headers=headers)
+            if response.ok:
+                raise DropItem("Response from [{}] posted to API.".format(completed.get('url')))
+            else:
+                spider.logger.warning("Failed to post [{}]. API status code: {}".format(completed.get('url'), response.status_code))
