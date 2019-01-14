@@ -71,9 +71,13 @@ ROBOTSTXT_OBEY = False
 ITEM_PIPELINES = {
     'kingfisher_scrapy.pipelines.KingfisherFilesPipeline': 1,
     'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 2,
+    'kingfisher_scrapy.pipelines.GCSFilePipeline': 1,
 }
 
-FILES_STORE = 'data'
+# FILES_STORE = 'data'
+FILES_STORE = 'gs://kingfisher-scrape-jan-2019/'
+
+GCS_PROJECT_ID = os.environ.get('GCS_PROJECT_ID')
 
 KINGFISHER_API_FILE_URI = os.environ.get('KINGFISHER_API_FILE_URI')
 KINGFISHER_API_ITEM_URI = os.environ.get('KINGFISHER_API_ITEM_URI')
