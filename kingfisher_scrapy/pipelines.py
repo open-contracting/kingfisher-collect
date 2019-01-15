@@ -116,8 +116,13 @@ class KingfisherPostPipeline(object):
 class GCSFilePipeline(FilesPipeline):
 
     def __init__(self, store_uri, download_func=None, settings=None):
-        scrapyhub_settings = json.loads(os.environ.get("JOB_SETTINGS"))
-        project_settings = scrapyhub_settings.get("project_settings")
+        scrapyhub_settings = os.environ.get("JOB_SETTINGS")
+
+        if scrapyhub_settings is None:
+            raise NotConfigured('GCS not configured')
+
+        scrapyhub_settings_json = json.loads(scrapyhub_settings)
+        project_settings = scrapyhub_settings_json.get("project_settings")
         gcs_credentials = project_settings.get("GOOGLE_APPLICATION_CREDENTIALS")
 
         with open("credentials.json", "w") as text_file:

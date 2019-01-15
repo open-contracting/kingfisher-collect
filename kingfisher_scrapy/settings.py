@@ -75,6 +75,7 @@ ITEM_PIPELINES = {
 }
 
 FILES_STORE = 'gs://kingfisher-scrape-jan-2019/'
+FILES_STORE = 'data'
 
 GCS_PROJECT_ID = os.environ.get('GCS_PROJECT_ID')
 
