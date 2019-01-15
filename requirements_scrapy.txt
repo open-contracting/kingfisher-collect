@@ -1,3 +1,4 @@
+pyasn1==0.4.1
 google-cloud-storage==1.13.2
 google-api-python-client==1.7.7
 google-auth-httplib2==0.0.3
