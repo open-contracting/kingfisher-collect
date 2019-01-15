@@ -2,3 +2,6 @@ project: 368028
 
 requirements:
   file: requirements_scrapy.txt
+
+stacks:
+  default: scrapy:1.5-py3

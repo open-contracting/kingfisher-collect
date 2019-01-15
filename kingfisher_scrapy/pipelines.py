@@ -10,8 +10,7 @@ import json
 import hashlib
 import requests
 
-from scrapy.pipelines.files import FilesPipeline\
-    # , GCSFilesStore
+from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes
 from scrapy.exceptions import DropItem, NotConfigured
 
@@ -114,55 +113,16 @@ class KingfisherPostPipeline(object):
                 spider.logger.warning("Failed to post [{}]. API status code: {}".format(completed.get('url'), response.status_code))
 
 
-# class GCSFilesStoreJSON(GCSFilesStore):
-#     CREDENTIALS = {
-#         "type": "service_account",
-#         "project_id": os.environ.get("GCS_PROJECT_ID"),
-#         "private_key_id": os.environ.get("GCS_PRIVATE_KEY_ID"),
-#         "private_key": os.environ.get("GCS_PRIVATE_KEY"),
-#         "client_email": os.environ.get("GCS_CLIENT_EMAIL"),
-#         "client_id": os.environ.get("GCS_CLIENT_ID"),
-#         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-#         "token_uri": "https://accounts.google.com/o/oauth2/token",
-#         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-#         "client_x509_cert_url": os.environ.get("GCS_CLIENT_X509_CERT_URL")
-#     }
-#
-#     def __init__(self, uri):
-#         from google.cloud import storage
-#         from google.oauth2 import service_account
-#         credentials = service_account.Credentials.from_service_account_info(self.CREDENTIALS)
-#         client = storage.Client(credentials=credentials)
-#         bucket, prefix = uri[5:].split('/', 1)
-#         self.bucket = client.bucket(bucket)
-#         self.prefix = prefix
-#
-#
-# class GCSFilePipeline(FilesPipeline):
-#     def __init__(self, store_uri, download_func=None, settings=None):
-#         super(GCSFilePipeline, self).__init__(store_uri, download_func, settings)
-
 class GCSFilePipeline(FilesPipeline):
-    CREDENTIALS = {
-        "type": "service_account",
-        "project_id": os.environ.get("GCS_PROJECT_ID"),
-        "private_key_id": os.environ.get("GCS_PRIVATE_KEY_ID"),
-        "private_key": os.environ.get("GCS_PRIVATE_KEY"),
-        "client_email": os.environ.get("GCS_CLIENT_EMAIL"),
-        "client_id": os.environ.get("GCS_CLIENT_ID"),
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://accounts.google.com/o/oauth2/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": os.environ.get("GCS_CLIENT_X509_CERT_URL")
-    }
 
     def __init__(self, store_uri, download_func=None, settings=None):
-        from google.cloud import storage
-        from google.oauth2 import service_account
+        scrapyhub_settings = json.loads(os.environ.get("JOB_SETTINGS"))
+        project_settings = scrapyhub_settings.get("project_settings")
+        gcs_credentials = project_settings.get("GOOGLE_APPLICATION_CREDENTIALS")
 
-        credentials = service_account.Credentials.from_service_account_info(self.CREDENTIALS)
-        storage_client = storage.Client(credentials=credentials)
-        buckets = list(storage_client.list_buckets())
-        print(buckets)
+        with open("credentials.json", "w") as text_file:
+            text_file.write(gcs_credentials)
+
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "{}/credentials.json".format(os.getcwd())
 
         super(GCSFilePipeline, self).__init__(store_uri, download_func, settings)
