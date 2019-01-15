@@ -1,4 +1,4 @@
 project: 368028
 
 requirements:
-  file: requirements.txt
+  file: requirements_scrapy.txt
