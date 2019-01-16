@@ -113,7 +113,7 @@ class KingfisherPostPipeline(object):
                 spider.logger.warning("Failed to post [{}]. API status code: {}".format(completed.get('url'), response.status_code))
 
 
-class GCSFilePipeline(FilesPipeline):
+class GCSFilePipeline(KingfisherFilesPipeline):
 
     def __init__(self, store_uri, download_func=None, settings=None):
         scrapyhub_settings = os.environ.get("JOB_SETTINGS")
