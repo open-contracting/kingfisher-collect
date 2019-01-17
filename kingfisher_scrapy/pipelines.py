@@ -111,3 +111,23 @@ class KingfisherPostPipeline(object):
                 raise DropItem("Response from [{}] posted to API.".format(completed.get('url')))
             else:
                 spider.logger.warning("Failed to post [{}]. API status code: {}".format(completed.get('url'), response.status_code))
+
+
+class GCSFilePipeline(KingfisherFilesPipeline):
+
+    def __init__(self, store_uri, download_func=None, settings=None):
+        scrapyhub_settings = os.environ.get("JOB_SETTINGS")
+
+        if scrapyhub_settings is None:
+            raise NotConfigured('GCS not configured')
+
+        scrapyhub_settings_json = json.loads(scrapyhub_settings)
+        project_settings = scrapyhub_settings_json.get("project_settings")
+        gcs_credentials = project_settings.get("GOOGLE_APPLICATION_CREDENTIALS")
+
+        with open("credentials.json", "w") as text_file:
+            text_file.write(gcs_credentials)
+
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "{}/credentials.json".format(os.getcwd())
+
+        super(GCSFilePipeline, self).__init__(store_uri, download_func, settings)
