@@ -3,7 +3,7 @@ import json
 import scrapy
 
 
-class Armenia(scrapy.Spider):
+class AustraliaNSW(scrapy.Spider):
     name = 'australia_nsw'
 
     def start_requests(self):
