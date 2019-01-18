@@ -11,13 +11,13 @@ import hashlib
 import requests
 
 from scrapy.pipelines.files import FilesPipeline
-from scrapy.utils.python import to_bytes
+from scrapy.utils.python import to_bytes, to_native_str
 from scrapy.exceptions import DropItem, NotConfigured
 
 
 class KingfisherFilesPipeline(FilesPipeline):
-
-    def _get_start_time(self, spider):
+    @staticmethod
+    def _get_start_time(spider):
         stats = spider.crawler.stats.get_stats()
         start_time = stats.get("start_time")
         return start_time
@@ -25,12 +25,16 @@ class KingfisherFilesPipeline(FilesPipeline):
     def file_path(self, request, response=None, info=None):
         start_time = self._get_start_time(info.spider)
         start_time_str = start_time.strftime("%Y%m%d_%H%M%S")
-
+        content_type = ''
+        if response:
+            # This is to cover the case when the url has . after the last /
+            # and the text after the . is not a file extension but the response is a json
+            content_type = to_native_str(response.headers['Content-Type'])
         url = request.url
         media_guid = hashlib.sha1(to_bytes(url)).hexdigest()
         media_ext = os.path.splitext(url)[1]
 
-        if not media_ext:
+        if not media_ext or ('json' in content_type and media_ext != '.json'):
             media_ext = '.json'
         # Put files in a directory named after the scraper they came from, and the scraper starttime
         return '%s/%s/%s%s' % (info.spider.name, start_time_str, media_guid, media_ext)
@@ -41,7 +45,7 @@ class KingfisherFilesPipeline(FilesPipeline):
         This is triggered when a JSON file has finished downloading.
         """
 
-        if hasattr(info.spider, 'sample')  and info.spider.sample == 'true':
+        if hasattr(info.spider, 'sample') and info.spider.sample == 'true':
             is_sample = True
         else:
             is_sample = False
@@ -78,7 +82,6 @@ class KingfisherFilesPipeline(FilesPipeline):
 
 
 class KingfisherPostPipeline(object):
-
     def __init__(self, crawler):
         self.crawler = crawler
         self.api_url = self._build_api_url(crawler)
@@ -87,7 +90,8 @@ class KingfisherPostPipeline(object):
     def from_crawler(cls, crawler):
         return cls(crawler)
 
-    def _build_api_url(self, crawler):
+    @staticmethod
+    def _build_api_url(crawler):
         api_uri = crawler.settings['KINGFISHER_API_FILE_URI']
         api_item_uri = crawler.settings['KINGFISHER_API_ITEM_URI']
         api_key = crawler.settings['KINGFISHER_API_KEY']
@@ -105,16 +109,16 @@ class KingfisherPostPipeline(object):
         for completed in item:
 
             headers['Content-Type'] = 'application/json'
-            
+
             response = requests.post(url, json=completed, headers=headers)
             if response.ok:
                 raise DropItem("Response from [{}] posted to API.".format(completed.get('url')))
             else:
-                spider.logger.warning("Failed to post [{}]. API status code: {}".format(completed.get('url'), response.status_code))
+                spider.logger.warning(
+                    "Failed to post [{}]. API status code: {}".format(completed.get('url'), response.status_code))
 
 
 class GCSFilePipeline(KingfisherFilesPipeline):
-
     def __init__(self, store_uri, download_func=None, settings=None):
         scrapyhub_settings = os.environ.get("JOB_SETTINGS")
 
