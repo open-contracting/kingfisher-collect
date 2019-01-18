@@ -11,13 +11,12 @@ import hashlib
 import requests
 
 from scrapy.pipelines.files import FilesPipeline
-from scrapy.utils.python import to_bytes, to_native_str
+from scrapy.utils.python import to_bytes
 from scrapy.exceptions import DropItem, NotConfigured
 
 
 class KingfisherFilesPipeline(FilesPipeline):
-    @staticmethod
-    def _get_start_time(spider):
+    def _get_start_time(self, spider):
         stats = spider.crawler.stats.get_stats()
         start_time = stats.get("start_time")
         return start_time
@@ -25,16 +24,12 @@ class KingfisherFilesPipeline(FilesPipeline):
     def file_path(self, request, response=None, info=None):
         start_time = self._get_start_time(info.spider)
         start_time_str = start_time.strftime("%Y%m%d_%H%M%S")
-        content_type = ''
-        if response:
-            # This is to cover the case when the url has . after the last /
-            # and the text after the . is not a file extension but the response is a json
-            content_type = to_native_str(response.headers['Content-Type'])
+
         url = request.url
         media_guid = hashlib.sha1(to_bytes(url)).hexdigest()
         media_ext = os.path.splitext(url)[1]
 
-        if not media_ext or ('json' in content_type and media_ext != '.json'):
+        if not media_ext:
             media_ext = '.json'
         # Put files in a directory named after the scraper they came from, and the scraper starttime
         return '%s/%s/%s%s' % (info.spider.name, start_time_str, media_guid, media_ext)
@@ -90,8 +85,7 @@ class KingfisherPostPipeline(object):
     def from_crawler(cls, crawler):
         return cls(crawler)
 
-    @staticmethod
-    def _build_api_url(crawler):
+    def _build_api_url(self, crawler):
         api_uri = crawler.settings['KINGFISHER_API_FILE_URI']
         api_item_uri = crawler.settings['KINGFISHER_API_ITEM_URI']
         api_key = crawler.settings['KINGFISHER_API_KEY']
