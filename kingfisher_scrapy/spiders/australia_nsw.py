@@ -39,6 +39,9 @@ class Armenia(scrapy.Spider):
                             uuid = award['CNUUID']
                             stage_urls.append('https://tenders.nsw.gov.au/?event=public.api.contract.view&CNUUID=%s'
                                               % uuid)
+            if sample:
+                stage_urls = [stage_urls[0]]
+
             for url in stage_urls:
                 yield scrapy.Request(url, meta={'data_type': 'release_package', 'release_type': release_type})
         else:
