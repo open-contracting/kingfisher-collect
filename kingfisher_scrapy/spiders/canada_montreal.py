@@ -8,12 +8,11 @@ class CanadaMontreal(scrapy.Spider):
     start_urls = ['https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=1']
 
     def parse(self, response):
-        sample = hasattr(self, 'sample') and self.sample == 'true'
         data = json.loads(response.body_as_unicode())
         total = data['meta']['count']
         offset = 0
         limit = 10000
-        if sample:
+        if hasattr(self, 'sample') and self.sample == 'true':
             total = 1
             limit = 50
         while offset < total:
