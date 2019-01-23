@@ -8,6 +8,8 @@
 import os
 import hashlib
 import requests
+import tarfile
+from zipfile import ZipFile
 
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes, to_native_str
@@ -15,8 +17,21 @@ from scrapy.exceptions import DropItem, NotConfigured
 
 
 class KingfisherFilesPipeline(FilesPipeline):
+    
+    def _get_file_contents(self, path, ext = '.zip'):
+        # TODO scan the zip file for more than one file?
+        if ext == '.zip':
+            with ZipFile(path) as zipfile:
+                with zipfile.open(zipfile.namelist()[0]) as plainfile:
+                    return json.loads(plainfile.read())
+        elif ext == '.tar.gz':
+            with tarfile.open(path,'r:gz') as tarfile:
+                f = tarfile.extractfile(tarfile.getmembers()[0])
+                return json.loads(f.read())
+        raise RuntimeError('Undefined file extension: ' + ext)
+
     @staticmethod
-    def _get_start_time(spider):
+    def _get_start_time(self, spider):
         stats = spider.crawler.stats.get_stats()
         start_time = stats.get("start_time")
         return start_time
@@ -33,7 +48,9 @@ class KingfisherFilesPipeline(FilesPipeline):
         media_guid = hashlib.sha1(to_bytes(url)).hexdigest()
         media_ext = os.path.splitext(url)[1]
 
-        if not media_ext or ('json' in content_type and media_ext != '.json'):
+        if hasattr(info.spider,'ext'):
+            media_ext = info.spider.ext
+        elif not media_ext or ('json' in content_type and media_ext != '.json'):
             media_ext = '.json'
         # Put files in a directory named after the scraper they came from, and the scraper starttime
         return '%s/%s/%s%s' % (info.spider.name, start_time_str, media_guid, media_ext)
@@ -60,6 +77,12 @@ class KingfisherFilesPipeline(FilesPipeline):
                 start_time = self._get_start_time(info.spider)
                 start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S")
                 data_type = item.get("data_type")
+
+                if hasattr(info.spider,'ext'):
+                    json_from_file = self._get_file_contents(local_path, info.spider.ext)
+                else:
+                    with open(local_path) as json_file:
+                        json_from_file = json.load(json_file)
 
                 item_data = {
                     "collection_source": info.spider.name,
