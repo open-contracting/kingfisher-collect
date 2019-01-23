@@ -5,10 +5,17 @@ This repo contains scrapers for OCDS data from various publishers, using the `Sc
 
 Initially sources are based on those in `OCDS Kingfisher <https://github.com/open-contracting/kingfisher>`_.
 
-It does not process, validate, check or transform downloaded data - for that, see the `Process <https://kingfisher-process.readthedocs.io/en/latest/>`_ part of Kingfisher.
+The scrapers can save the downloaded files to disk for you to use your own analysis tools on.
+
+The scrapers can also post their results to an instance of `kingfisher-process <https://github.com/open-contracting/kingfisher-process>`_,
+where things like checks, transforms, and storage in a database can take place.
+See `kingfisher-process <https://github.com/open-contracting/kingfisher-process>`_ for specifics, as well as how to install your own ``kingfisher-process`` instance.
+
 
 .. toctree::
 
    setup.rst
-   use.rst
+   use-standalone.rst
+   use-scrapyd.rst
+   use-scrapinghub.rst
    writing-scrapers.rst

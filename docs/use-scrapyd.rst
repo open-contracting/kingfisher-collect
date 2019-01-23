@@ -1,0 +1,94 @@
+Use - Scrapyd
+=============
+
+You can use a Scrapyd instance to run your scrapers.
+
+
+Configure Scrapyd
+-----------------
+
+Make sure you have Scrapyd running somewhere.
+
+It needs to run in an evironment that also has the other packages we need:
+
+  *  requests
+
+If you want to post to Kingfisher Process, you will also need some environmental variables - see the output section.
+
+Configure Local Scripts
+-----------------------
+
+Install the ``scrapyd-client`` package.
+
+.. code-block:: bash
+
+  pip3 install scrapyd-client
+
+Setup the details to access scrapyd in scrapy.cfg:
+
+.. code-block:: ini
+
+    [deploy:scrapyd]
+    url = http://localhost:6800/
+    project = kingfisher_scrapyd
+
+Deploying Scrapers
+------------------
+
+The code must be packaged up and deployed to the server
+
+.. code-block:: bash
+
+    scrapyd-deploy scrapyd
+
+Scheduling a run
+----------------
+
+.. code-block:: bash
+
+    $ curl http://localhost:6800/schedule.json -d project=kingfisher_scrapyd -d spider=canada_buyandsell
+    {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
+
+Find out more in the `Scrapyd docs <https://scrapyd.readthedocs.io/en/latest/overview.html#scheduling-a-spider-run>`_.
+
+Output - Disk
+-------------
+
+In settings.py, make sure ``ITEM_PIPELINES`` includes ``KingfisherFilesPipeline`` and that ``FILES_STORE`` is set. For example:
+
+.. code-block:: python
+
+    ITEM_PIPELINES = {
+        'kingfisher_scrapy.pipelines.KingfisherFilesPipeline': 2,
+    }
+
+    FILES_STORE = '/scrapyd/data'
+
+FILES_STORE should be a local folder that data will appear in. It should be a full path, and the scrapyd process should have permissions to write there.
+
+Files are stored in ``{FILES_STORE}/{scraper_name}/{scraper_start_date_time}``.
+
+Output - Kingfisher Process
+---------------------------
+
+In order to use this, you must also set up the Disk output.
+
+In settings.py, make sure ``ITEM_PIPELINES`` includes ``KingfisherPostPipeline`` and that the 3 API variables are set to load from the environment. For example:
+
+.. code-block:: python
+
+    ITEM_PIPELINES = {
+        'kingfisher_scrapy.pipelines.KingfisherFilesPipeline': 2,
+        'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 3,
+    }
+
+    KINGFISHER_API_FILE_URI = os.environ.get('KINGFISHER_API_FILE_URI')
+    KINGFISHER_API_ITEM_URI = os.environ.get('KINGFISHER_API_ITEM_URI')
+    KINGFISHER_API_KEY = os.environ.get('KINGFISHER_API_KEY')
+
+
+The ``kingfisher-process`` API endpoint variables are currently accessed from the scrapyd environment. To configure:
+
+1. Copy ``env.sh.tmpl`` to ``env.sh``
+2. Set the ``KINGFISHER_*`` variables in ``env.sh`` to match your instance (local or server).
+3. Run ``source env.sh`` to export them to the scrapyd environment.
