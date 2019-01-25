@@ -28,9 +28,9 @@ Setup the details to access scrapyd in scrapy.cfg:
 
 .. code-block:: ini
 
-    [deploy:scrapyd]
+    [deploy]
     url = http://localhost:6800/
-    project = kingfisher_scrapyd
+    project = kingfisher
 
 Deploying Scrapers
 ------------------
@@ -39,21 +39,21 @@ The code must be packaged up and deployed to the server
 
 .. code-block:: bash
 
-    scrapyd-deploy scrapyd
+    scrapyd-deploy 
 
 Scheduling a run
 ----------------
 
 .. code-block:: bash
 
-    $ curl http://localhost:6800/schedule.json -d project=kingfisher_scrapyd -d spider=canada_buyandsell
+    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=canada_buyandsell
     {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
 
 To run a sample run:
 
 .. code-block:: bash
 
-    $ curl http://localhost:6800/schedule.json -d project=kingfisher_scrapyd -d spider=canada_buyandsell -d sample=true
+    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=canada_buyandsell -d sample=true
     {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
 
 Find out more in the `Scrapyd docs <https://scrapyd.readthedocs.io/en/latest/overview.html#scheduling-a-spider-run>`_.
