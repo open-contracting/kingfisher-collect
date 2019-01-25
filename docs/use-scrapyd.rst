@@ -49,6 +49,13 @@ Scheduling a run
     $ curl http://localhost:6800/schedule.json -d project=kingfisher_scrapyd -d spider=canada_buyandsell
     {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
 
+To run a sample run:
+
+.. code-block:: bash
+
+    $ curl http://localhost:6800/schedule.json -d project=kingfisher_scrapyd -d spider=canada_buyandsell -d sample=true
+    {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
+
 Find out more in the `Scrapyd docs <https://scrapyd.readthedocs.io/en/latest/overview.html#scheduling-a-spider-run>`_.
 
 Output - Disk
