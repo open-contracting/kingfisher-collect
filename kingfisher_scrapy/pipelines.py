@@ -62,9 +62,6 @@ class KingfisherFilesPipeline(FilesPipeline):
                 start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S")
                 data_type = item.get("data_type")
 
-                with open(local_path) as json_file:
-                    json_from_file = json.load(json_file)
-
                 item_data = {
                     "collection_source": info.spider.name,
                     "collection_data_version": start_time_str,
@@ -73,7 +70,6 @@ class KingfisherFilesPipeline(FilesPipeline):
                     "url": file_url,
                     "data_type": data_type,
                     "local_path": local_path,
-                    "data": json_from_file
                 }
 
                 completed_files.append(item_data)
@@ -91,6 +87,12 @@ class KingfisherPostPipeline(object):
         return cls(crawler)
 
     @staticmethod
+    def _get_start_time(spider):
+        stats = spider.crawler.stats.get_stats()
+        start_time = stats.get("start_time")
+        return start_time
+
+    @staticmethod
     def _build_api_url(crawler):
         api_uri = crawler.settings['KINGFISHER_API_FILE_URI']
         api_item_uri = crawler.settings['KINGFISHER_API_ITEM_URI']
@@ -106,11 +108,28 @@ class KingfisherPostPipeline(object):
 
     def process_item(self, item, spider):
         url, headers = self.api_url
+        if hasattr(spider, 'sample') and spider.sample == 'true':
+            is_sample = True
+        else:
+            is_sample = False
+        data_version = self._get_start_time(spider).strftime("%Y-%m-%d %H:%M:%S")
         for completed in item:
 
-            headers['Content-Type'] = 'application/json'
+            data = {
+                "collection_source": spider.name,
+                "collection_data_version": data_version,
+                "collection_sample": is_sample,
+                "file_name": completed['file_name'],
+                "url": completed['url'],
+                "data_type": completed['data_type'],
+                # TODO add encoding
+            }
 
-            response = requests.post(url, json=completed, headers=headers)
+            files = {
+                'file': (completed['file_name'], open(completed['local_path'], 'rb'), 'application/json')
+            }
+
+            response = requests.post(url, data=data, files=files, headers=headers)
             if response.ok:
                 raise DropItem("Response from [{}] posted to API.".format(completed.get('url')))
             else:
