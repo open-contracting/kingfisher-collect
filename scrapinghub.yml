@@ -1,7 +1,0 @@
-project: 368028
-
-requirements:
-  file: requirements_scrapycloud.txt
-
-stacks:
-  default: scrapy:1.5-py3
