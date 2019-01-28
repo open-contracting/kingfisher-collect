@@ -8,6 +8,7 @@
 import os
 import hashlib
 import requests
+from zipfile import ZipFile
 
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes, to_native_str
@@ -15,6 +16,7 @@ from scrapy.exceptions import DropItem, NotConfigured
 
 
 class KingfisherFilesPipeline(FilesPipeline):
+
     @staticmethod
     def _get_start_time(spider):
         stats = spider.crawler.stats.get_stats()
@@ -33,7 +35,9 @@ class KingfisherFilesPipeline(FilesPipeline):
         media_guid = hashlib.sha1(to_bytes(url)).hexdigest()
         media_ext = os.path.splitext(url)[1]
 
-        if not media_ext or ('json' in content_type and media_ext != '.json'):
+        if hasattr(info.spider,'ext'):
+            media_ext = info.spider.ext
+        elif not media_ext or ('json' in content_type and media_ext != '.json'):
             media_ext = '.json'
         # Put files in a directory named after the scraper they came from, and the scraper starttime
         return '%s/%s/%s%s' % (info.spider.name, start_time_str, media_guid, media_ext)
@@ -123,10 +127,18 @@ class KingfisherPostPipeline(object):
                 "data_type": completed['data_type'],
                 # TODO add encoding
             }
-
-            files = {
-                'file': (completed['file_name'], open(completed['local_path'], 'rb'), 'application/json')
-            }
+           
+            zipfile = None
+            if hasattr(spider, 'ext') and spider.ext == '.zip':
+                zipfile = ZipFile(completed['local_path']) 
+                
+                files = {
+                    'file': (completed['file_name'], zipfile.open(zipfile.namelist()[0]), 'application/json')
+                }   
+            else:
+                files = {
+                    'file': (completed['file_name'], open(completed['local_path'], 'rb'), 'application/json')
+                }
 
             response = requests.post(url, data=data, files=files, headers=headers)
             if response.ok:
@@ -134,3 +146,5 @@ class KingfisherPostPipeline(object):
             else:
                 spider.logger.warning(
                     "Failed to post [{}]. API status code: {}".format(completed.get('url'), response.status_code))
+            if zipfile is not None:
+                zipfile.close()
