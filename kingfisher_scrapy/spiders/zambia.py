@@ -1,6 +1,7 @@
 import json
 import scrapy
 
+
 class Zambia(scrapy.Spider):
     ext = '.zip'
     name = 'zambia'
@@ -9,7 +10,7 @@ class Zambia(scrapy.Spider):
     def parse(self, response):
         files_urls = json.loads(response.body)['packagesPerMonth']
 
-        if hasattr(self,'sample') and self.sample == 'true':
+        if hasattr(self, 'sample') and self.sample == 'true':
             files_urls = [files_urls[0]]
 
         for file_url in files_urls:
