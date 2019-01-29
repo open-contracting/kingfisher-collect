@@ -15,6 +15,7 @@ from scrapy.exceptions import DropItem, NotConfigured
 
 
 class KingfisherFilesPipeline(FilesPipeline):
+
     @staticmethod
     def _get_start_time(spider):
         stats = spider.crawler.stats.get_stats()
@@ -113,7 +114,7 @@ class KingfisherPostPipeline(object):
             is_sample = False
         data_version = self._get_start_time(spider).strftime("%Y-%m-%d %H:%M:%S")
         for completed in item:
-
+          
             data = {
                 "collection_source": spider.name,
                 "collection_data_version": data_version,
@@ -129,6 +130,7 @@ class KingfisherPostPipeline(object):
             }
 
             response = requests.post(url, data=data, files=files, headers=headers)
+
             if response.ok:
                 raise DropItem("Response from [{}] posted to API.".format(completed.get('url')))
             else:
