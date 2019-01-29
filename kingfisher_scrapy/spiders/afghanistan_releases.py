@@ -20,8 +20,8 @@ class AfghanistanReleases(scrapy.Spider):
 
     def parse_release_urls(self, response):
         release_urls = json.loads(response.body)
-            
-        if len(release_urls) > 0: # Some dates have no releases
+
+        if len(release_urls) > 0:  # Some dates have no releases
             if hasattr(self, 'sample') and self.sample == 'true':
                 # Only get one release
                 release_urls = [release_urls[0]]

@@ -35,7 +35,7 @@ class KingfisherFilesPipeline(FilesPipeline):
         media_guid = hashlib.sha1(to_bytes(url)).hexdigest()
         media_ext = os.path.splitext(url)[1]
 
-        if hasattr(info.spider,'ext'):
+        if hasattr(info.spider, 'ext'):
             media_ext = info.spider.ext
         elif not media_ext or ('json' in content_type and media_ext != '.json'):
             media_ext = '.json'
@@ -117,7 +117,7 @@ class KingfisherPostPipeline(object):
             is_sample = False
         data_version = self._get_start_time(spider).strftime("%Y-%m-%d %H:%M:%S")
         for completed in item:
-          
+
             data = {
                 "collection_source": spider.name,
                 "collection_data_version": data_version,
@@ -127,14 +127,14 @@ class KingfisherPostPipeline(object):
                 "data_type": completed['data_type'],
                 # TODO add encoding
             }
-           
+
             zipfile = None
             if hasattr(spider, 'ext') and spider.ext == '.zip':
-                zipfile = ZipFile(completed['local_path']) 
-                
+                zipfile = ZipFile(completed['local_path'])
+
                 files = {
                     'file': (completed['file_name'], zipfile.open(zipfile.namelist()[0]), 'application/json')
-                }   
+                }
             else:
                 files = {
                     'file': (completed['file_name'], open(completed['local_path'], 'rb'), 'application/json')
