@@ -75,9 +75,12 @@ ITEM_PIPELINES = {
 
 FILES_STORE = 'data'
 
-KINGFISHER_API_FILE_URI = os.environ.get('KINGFISHER_API_FILE_URI')
-KINGFISHER_API_ITEM_URI = os.environ.get('KINGFISHER_API_ITEM_URI')
+KINGFISHER_API_URI = os.environ.get('KINGFISHER_API_URI')
 KINGFISHER_API_KEY = os.environ.get('KINGFISHER_API_KEY')
+
+# This is used for some legacy environment variables - not needed for new installs
+if not KINGFISHER_API_URI and os.environ.get('KINGFISHER_API_FILE_URI'):
+    KINGFISHER_API_URI = os.environ.get('KINGFISHER_API_FILE_URI')[:-len('/api/v1/submit/file/')]
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html

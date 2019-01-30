@@ -52,7 +52,7 @@ Output - Kingfisher Process
 
 In order to use this, you must also set up the Disk output.
 
-In settings.py, make sure ``ITEM_PIPELINES`` includes ``KingfisherPostPipeline`` and that the 3 API variables are set to load from the environment. For example:
+In settings.py, make sure ``ITEM_PIPELINES`` includes ``KingfisherPostPipeline`` and that the 2 API variables are set to load from the environment. For example:
 
 .. code-block:: python
 
@@ -61,8 +61,7 @@ In settings.py, make sure ``ITEM_PIPELINES`` includes ``KingfisherPostPipeline``
         'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 3,
     }
 
-    KINGFISHER_API_FILE_URI = os.environ.get('KINGFISHER_API_FILE_URI')
-    KINGFISHER_API_ITEM_URI = os.environ.get('KINGFISHER_API_ITEM_URI')
+    KINGFISHER_API_URI = os.environ.get('KINGFISHER_API_URI')
     KINGFISHER_API_KEY = os.environ.get('KINGFISHER_API_KEY')
 
 
