@@ -1,7 +1,7 @@
-# OCDS Kingfisher Scrapers
+# kingfisher-scrape for OCDS
 
-This repo contains scrapers for OCDS data from various publishers, using the [Scrapy](https://scrapy.org/) crawler framework. 
+kingfisher-scrape is part of the [OCDS Kingfisher](https://github.com/open-contracting/kingfisher) suite of tools for downloading, storing and analysing data that uses the OCDS standard. 
 
-Initially sources are based on those in [OCDS Kingfisher](https://github.com/open-contracting/kingfisher).
+kingfisher-scrape allows users to download OCDS data from various publishers, using the [Scrapy](https://scrapy.org/) crawler framework. 
 
-[Documentation at ReadTheDocs](https://kingfisher-scrape.readthedocs.io/en/latest/)
+Full documentation can be found on [ReadTheDocs](https://kingfisher-scrape.readthedocs.io/en/latest/)
