@@ -58,14 +58,15 @@ class KingfisherFilesPipeline(FilesPipeline):
         completed_files = []
 
         for ok, file_data in results:
+            start_time = self._get_start_time(info.spider)
+            start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S")
             if ok:
                 file_url = file_data.get("url")
                 local_path = os.path.join(files_store, file_data.get("path"))
-                start_time = self._get_start_time(info.spider)
-                start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S")
                 data_type = item.get("data_type")
 
                 item_data = {
+                    "success": True,
                     "collection_source": info.spider.name,
                     "collection_data_version": start_time_str,
                     "collection_sample": is_sample,
@@ -73,6 +74,20 @@ class KingfisherFilesPipeline(FilesPipeline):
                     "url": file_url,
                     "data_type": data_type,
                     "local_path": local_path,
+                }
+
+                completed_files.append(item_data)
+            else:
+
+                item_data = {
+                    "success": False,
+                    "collection_source": info.spider.name,
+                    "collection_data_version": start_time_str,
+                    "collection_sample": is_sample,
+                    "file_name": None,
+                    # Currently, we only ever return 1 URL per item so we can assume zero here.
+                    "url": item.get('file_urls')[0],
+                    "error_message": str(file_data)
                 }
 
                 completed_files.append(item_data)
@@ -118,34 +133,41 @@ class KingfisherPostPipeline(object):
         data_version = self._get_start_time(spider).strftime("%Y-%m-%d %H:%M:%S")
         for completed in item:
 
-            data = {
-                "collection_source": spider.name,
-                "collection_data_version": data_version,
-                "collection_sample": is_sample,
-                "file_name": completed['file_name'],
-                "url": completed['url'],
-                "data_type": completed['data_type'],
-                # TODO add encoding
-            }
+            if completed['success']:
 
-            zipfile = None
-            if hasattr(spider, 'ext') and spider.ext == '.zip':
-                zipfile = ZipFile(completed['local_path'])
-
-                files = {
-                    'file': (completed['file_name'], zipfile.open(zipfile.namelist()[0]), 'application/json')
-                }
-            else:
-                files = {
-                    'file': (completed['file_name'], open(completed['local_path'], 'rb'), 'application/json')
+                data = {
+                    "collection_source": spider.name,
+                    "collection_data_version": data_version,
+                    "collection_sample": is_sample,
+                    "file_name": completed['file_name'],
+                    "url": completed['url'],
+                    "data_type": completed['data_type'],
+                    # TODO add encoding
                 }
 
-            response = requests.post(url, data=data, files=files, headers=headers)
+                zipfile = None
+                if hasattr(spider, 'ext') and spider.ext == '.zip':
+                    zipfile = ZipFile(completed['local_path'])
 
-            if response.ok:
-                raise DropItem("Response from [{}] posted to API.".format(completed.get('url')))
+                    files = {
+                        'file': (completed['file_name'], zipfile.open(zipfile.namelist()[0]), 'application/json')
+                    }
+                else:
+                    files = {
+                        'file': (completed['file_name'], open(completed['local_path'], 'rb'), 'application/json')
+                    }
+
+                response = requests.post(url, data=data, files=files, headers=headers)
+
+                if response.ok:
+                    raise DropItem("Response from [{}] posted to API.".format(completed.get('url')))
+                else:
+                    spider.logger.warning(
+                        "Failed to post [{}]. API status code: {}".format(completed.get('url'), response.status_code))
+                if zipfile is not None:
+                    zipfile.close()
+
             else:
-                spider.logger.warning(
-                    "Failed to post [{}]. API status code: {}".format(completed.get('url'), response.status_code))
-            if zipfile is not None:
-                zipfile.close()
+
+                pass
+                # TODO post to a new API endpoint to record the failure (The API end point doesn't exist at time of writing this comment)
