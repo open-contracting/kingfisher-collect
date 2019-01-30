@@ -27,18 +27,18 @@ class AustraliaNSW(scrapy.Spider):
                 stage_urls.append(json_data['links']['next'])
 
             for release in json_data['releases']:
-                    if release_type == 'planning':
-                        uuid = release['tender']['plannedProcurementUUID']
-                        stage_urls.append('https://tenders.nsw.gov.au/?event=public.api.planning.view'
-                                          '&PlannedProcurementUUID=%s' % uuid)
-                    if release_type == 'tender':
-                        uuid = release['tender']['RFTUUID']
-                        stage_urls.append('https://tenders.nsw.gov.au/?event=public.api.tender.view&RFTUUID=%s' % uuid)
-                    if release_type == 'contract':
-                        for award in release['awards']:
-                            uuid = award['CNUUID']
-                            stage_urls.append('https://tenders.nsw.gov.au/?event=public.api.contract.view&CNUUID=%s'
-                                              % uuid)
+                if release_type == 'planning':
+                    uuid = release['tender']['plannedProcurementUUID']
+                    stage_urls.append('https://tenders.nsw.gov.au/?event=public.api.planning.view'
+                                      '&PlannedProcurementUUID=%s' % uuid)
+                if release_type == 'tender':
+                    uuid = release['tender']['RFTUUID']
+                    stage_urls.append('https://tenders.nsw.gov.au/?event=public.api.tender.view&RFTUUID=%s' % uuid)
+                if release_type == 'contract':
+                    for award in release['awards']:
+                        uuid = award['CNUUID']
+                        stage_urls.append('https://tenders.nsw.gov.au/?event=public.api.contract.view&CNUUID=%s'
+                                          % uuid)
             if sample:
                 stage_urls = [stage_urls[0]]
 
