@@ -17,5 +17,6 @@ See `kingfisher-process <https://github.com/open-contracting/kingfisher-process>
    setup.rst
    use-standalone.rst
    use-scrapyd.rst
+   use-hosted.rst
    use-scrapycloud.rst
    writing-scrapers.rst
