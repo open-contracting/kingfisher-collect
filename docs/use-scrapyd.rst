@@ -80,7 +80,7 @@ Output - Kingfisher Process
 
 In order to use this, you must also set up the Disk output.
 
-In settings.py, make sure ``ITEM_PIPELINES`` includes ``KingfisherPostPipeline`` and that the 2 API variables are set to load from the environment. For example:
+In settings.py, make sure ``ITEM_PIPELINES`` includes ``KingfisherPostPipeline`` and that the 3 API variables are set to load from the environment. For example:
 
 .. code-block:: python
 
@@ -91,6 +91,7 @@ In settings.py, make sure ``ITEM_PIPELINES`` includes ``KingfisherPostPipeline``
 
     KINGFISHER_API_URI = os.environ.get('KINGFISHER_API_URI')
     KINGFISHER_API_KEY = os.environ.get('KINGFISHER_API_KEY')
+    KINGFISHER_API_LOCAL_DIRECTORY = os.environ.get('KINGFISHER_API_LOCAL_DIRECTORY')
 
 
 The ``kingfisher-process`` API endpoint variables are currently accessed from the scrapyd environment. To configure:
