@@ -13,6 +13,7 @@ from zipfile import ZipFile
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes, to_native_str
 from scrapy.exceptions import DropItem, NotConfigured
+import json
 
 
 class KingfisherFilesPipeline(FilesPipeline):
@@ -80,14 +81,16 @@ class KingfisherFilesPipeline(FilesPipeline):
                 completed_files.append(item_data)
             else:
 
+                # Currently, we only ever return 1 URL per item so we can assume zero here.
+                url = item.get('file_urls')[0]
+
                 item_data = {
                     "success": False,
                     "collection_source": info.spider.name,
                     "collection_data_version": start_time_str,
                     "collection_sample": is_sample,
-                    "file_name": None,
-                    # Currently, we only ever return 1 URL per item so we can assume zero here.
-                    "url": item.get('file_urls')[0],
+                    "file_name": hashlib.sha1(to_bytes(url)).hexdigest()+'.json',
+                    "url": url,
                     "error_message": str(file_data)
                 }
 
@@ -184,5 +187,20 @@ class KingfisherPostPipeline(object):
 
             else:
 
-                pass
-                # TODO post to a new API endpoint to record the failure (The API end point doesn't exist at time of writing this comment)
+                data = {
+                    "collection_source": spider.name,
+                    "collection_data_version": data_version,
+                    "collection_sample": is_sample,
+                    "file_name": completed['file_name'],
+                    "url": completed['url'],
+                    "errors": json.dumps([completed['error_message']]),
+                }
+
+                response = requests.post(self.api_url + '/api/v1/submit/file_errors/',
+                                         data=data,
+                                         headers=self.api_headers)
+                if response.ok:
+                    raise DropItem("Response from [{}] posted to File Errors API.".format(completed.get('url')))
+                else:
+                    spider.logger.warning(
+                        "Failed to post [{}]. File Errors API status code: {}".format(completed.get('url'), response.status_code))
