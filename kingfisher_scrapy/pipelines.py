@@ -73,6 +73,7 @@ class KingfisherFilesPipeline(FilesPipeline):
                     "file_name": local_path,
                     "url": file_url,
                     "data_type": data_type,
+                    "local_path_inside_files_store": file_data.get("path"),
                     "local_path": local_path,
                 }
 
@@ -98,7 +99,7 @@ class KingfisherFilesPipeline(FilesPipeline):
 class KingfisherPostPipeline(object):
     def __init__(self, crawler):
         self.crawler = crawler
-        self.api_url = self._build_api_url(crawler)
+        self.api_url, self.api_headers, self.api_local_directory = self._build_api_info(crawler)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -111,9 +112,10 @@ class KingfisherPostPipeline(object):
         return start_time
 
     @staticmethod
-    def _build_api_url(crawler):
+    def _build_api_info(crawler):
         api_uri = crawler.settings['KINGFISHER_API_URI']
         api_key = crawler.settings['KINGFISHER_API_KEY']
+        api_local_directory = crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY']
 
         if api_uri is None or api_key is None:
             raise NotConfigured('Kingfisher API not configured.')
@@ -121,10 +123,9 @@ class KingfisherPostPipeline(object):
         # TODO: figure out which api endpoint based on the data_type OR probably metadata passed from the spider
 
         headers = {"Authorization": "ApiKey " + api_key}
-        return api_uri, headers
+        return api_uri, headers, api_local_directory
 
     def process_item(self, item, spider):
-        url, headers = self.api_url
         if hasattr(spider, 'sample') and spider.sample == 'true':
             is_sample = True
         else:
@@ -144,6 +145,8 @@ class KingfisherPostPipeline(object):
                     # TODO add encoding
                 }
 
+                files = {}
+
                 zipfile = None
                 if hasattr(spider, 'ext') and spider.ext == '.zip':
                     zipfile = ZipFile(completed['local_path'])
@@ -152,11 +155,24 @@ class KingfisherPostPipeline(object):
                         'file': (completed['file_name'], zipfile.open(zipfile.namelist()[0]), 'application/json')
                     }
                 else:
-                    files = {
-                        'file': (completed['file_name'], open(completed['local_path'], 'rb'), 'application/json')
-                    }
+                    if self.api_local_directory:
 
-                response = requests.post(url+'/api/v1/submit/file/', data=data, files=files, headers=headers)
+                        full_local_filename = os.path.join(self.api_local_directory,
+                                                           completed['local_path_inside_files_store'])
+                        # At this point, we could test if the file path exists locally.
+                        # But we aren't going to: it's possible the file path is different on the machine running scrape
+                        # and the machine running process. (eg a network share mounted in different dirs)
+                        data['local_file_name'] = full_local_filename
+
+                    else:
+                        files = {
+                            'file': (completed['file_name'], open(completed['local_path'], 'rb'), 'application/json')
+                        }
+
+                response = requests.post(self.api_url + '/api/v1/submit/file/',
+                                         data=data,
+                                         files=files,
+                                         headers=self.api_headers)
 
                 if response.ok:
                     raise DropItem("Response from [{}] posted to API.".format(completed.get('url')))
