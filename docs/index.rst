@@ -1,15 +1,13 @@
-OCDS Kingfisher Scrapers
-========================
+kingfisher-scrape for OCDS
+==========================
 
-This repo contains scrapers for OCDS data from various publishers, using the `Scrapy <https://scrapy.org/>`_ crawler framework. 
+kingfisher-scrape is a tool to download OCDS data from various sources, and to store it on disk and/or send it to an instance of `kingfisher-process <https://github.com/open-contracting/kingfisher-process>`_. 
 
-Initially sources are based on those in `OCDS Kingfisher <https://github.com/open-contracting/kingfisher>`_.
+It is built using the `Scrapy <https://scrapy.org/>`_ crawler framework.
 
-The scrapers can save the downloaded files to disk for you to use your own analysis tools on.
+It can be used standalone, for development or testing of scrapers. For production use, we recommend using scrapyd. It is possible to use kingfisher-scrape on the hosted scrapycloud service, however the restrictions of this service mean that it's not suitable for all scrapers. 
 
-The scrapers can also post their results to an instance of `kingfisher-process <https://github.com/open-contracting/kingfisher-process>`_,
-where things like checks, transforms, and storage in a database can take place.
-See `kingfisher-process <https://github.com/open-contracting/kingfisher-process>`_ for specifics, as well as how to install your own ``kingfisher-process`` instance.
+OCP operate a hosted instance of kingfisher-scrape, which is available to OCP staff and the OCDS Team. For information about how to access this, see the `hosted kingfisher documentation <https://ocdskingfisher.readthedocs.io/en/latest/#hosted-kingfisher>`_
 
 
 .. toctree::
