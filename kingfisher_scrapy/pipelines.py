@@ -112,11 +112,10 @@ class KingfisherPostPipeline(object):
 
     @staticmethod
     def _build_api_url(crawler):
-        api_uri = crawler.settings['KINGFISHER_API_FILE_URI']
-        api_item_uri = crawler.settings['KINGFISHER_API_ITEM_URI']
+        api_uri = crawler.settings['KINGFISHER_API_URI']
         api_key = crawler.settings['KINGFISHER_API_KEY']
 
-        if api_uri is None or api_item_uri is None or api_key is None:
+        if api_uri is None or api_key is None:
             raise NotConfigured('Kingfisher API not configured.')
 
         # TODO: figure out which api endpoint based on the data_type OR probably metadata passed from the spider
@@ -157,7 +156,7 @@ class KingfisherPostPipeline(object):
                         'file': (completed['file_name'], open(completed['local_path'], 'rb'), 'application/json')
                     }
 
-                response = requests.post(url, data=data, files=files, headers=headers)
+                response = requests.post(url+'/api/v1/submit/file/', data=data, files=files, headers=headers)
 
                 if response.ok:
                     raise DropItem("Response from [{}] posted to API.".format(completed.get('url')))
