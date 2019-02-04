@@ -1,9 +1,10 @@
 import json
-
 import scrapy
 
+from kingfisher_scrapy.base_spider import BaseSpider
 
-class Armenia(scrapy.Spider):
+
+class Armenia(BaseSpider):
     name = 'armenia'
     start_urls = ['https://armeps.am/ocds/release']
 

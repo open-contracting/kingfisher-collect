@@ -1,7 +1,7 @@
-import scrapy
+from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class CanadaBuyAndSell(scrapy.Spider):
+class CanadaBuyAndSell(BaseSpider):
     name = "canada_buyandsell"
     start_urls = ['https://buyandsell.gc.ca']
 

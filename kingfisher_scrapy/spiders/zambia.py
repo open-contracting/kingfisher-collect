@@ -1,8 +1,8 @@
 import json
-import scrapy
+from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class Zambia(scrapy.Spider):
+class Zambia(BaseSpider):
     ext = '.zip'
     name = 'zambia'
     start_urls = ['https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackagelist']

@@ -1,9 +1,9 @@
 import json
 
-import scrapy
+from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class AfghanistanRecords(scrapy.Spider):
+class AfghanistanRecords(BaseSpider):
     name = 'afghanistan_records'
     start_urls = ['https://ocds.ageops.net/api/ocds/records']
     download_delay = 1
