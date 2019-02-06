@@ -1,9 +1,9 @@
 import json
 
-import scrapy
+from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class CanadaMontreal(scrapy.Spider):
+class CanadaMontreal(BaseSpider):
     name = 'canada_montreal'
     start_urls = ['https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=1']
 

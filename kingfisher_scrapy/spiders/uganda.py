@@ -1,9 +1,10 @@
 import re
 import json
 import scrapy
+from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class Uganda(scrapy.Spider):
+class Uganda(BaseSpider):
     name = 'uganda'
     base_url = 'http://gpp.ppda.go.ug/api/v1/releases?tag={tag}&page={page}'
     tags = ['planning', 'tender', 'award', 'contract']

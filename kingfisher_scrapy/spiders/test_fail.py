@@ -1,7 +1,7 @@
-import scrapy
+from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class TestFail(scrapy.Spider):
+class TestFail(BaseSpider):
     name = "test_fail"
     start_urls = ['https://www.open-contracting.org']
 

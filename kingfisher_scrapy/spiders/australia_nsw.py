@@ -1,9 +1,10 @@
 import json
-
 import scrapy
 
+from kingfisher_scrapy.base_spider import BaseSpider
 
-class AustraliaNSW(scrapy.Spider):
+
+class AustraliaNSW(BaseSpider):
     name = 'australia_nsw'
 
     def start_requests(self):
