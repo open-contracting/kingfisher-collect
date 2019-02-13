@@ -1,11 +1,11 @@
 import re
-import scrapy
-
 from datetime import date
 from datetime import timedelta
 
+from kingfisher_scrapy.base_spider import BaseXMLFeedSpider
 
-class Uruguay(scrapy.spiders.XMLFeedSpider):
+
+class Uruguay(BaseXMLFeedSpider):
     name = 'uruguay'
     intertag = 'item'
     base_url = 'http://comprasestatales.gub.uy/ocds/rss/{year:d}/{month:02d}'
