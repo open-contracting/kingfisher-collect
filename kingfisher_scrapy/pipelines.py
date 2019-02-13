@@ -41,7 +41,10 @@ class KingfisherFilesPipeline(FilesPipeline):
         elif not media_ext or ('json' in content_type and media_ext != '.json'):
             media_ext = '.json'
         # Put files in a directory named after the scraper they came from, and the scraper starttime
-        return '%s/%s/%s%s' % (info.spider.name, start_time_str, media_guid, media_ext)
+        if hasattr(info.spider, 'sample') and info.spider.sample == 'true':
+            return '%s_sample/%s/%s%s' % (info.spider.name, start_time_str, media_guid, media_ext)
+        else:
+            return '%s/%s/%s%s' % (info.spider.name, start_time_str, media_guid, media_ext)
 
     def item_completed(self, results, item, info):
 
