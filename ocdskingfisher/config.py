@@ -14,18 +14,19 @@ class Config:
         # This sets the default base dir in the code folder. There is an issue to change this later.
         # https://github.com/open-contracting/kingfisher/issues/223
         self.data_dir = os.path.join(this_dir, "..", "data")
+        self.server_url = None
+        self.server_api_key = None
 
     def load_user_config(self):
 
-        if os.environ.get('KINGFISHER_DATA_DIR'):
-            self.data_dir = os.environ.get('KINGFISHER_DATA_DIR')
-            return
-
         config = configparser.ConfigParser()
 
-        if os.path.isfile(os.path.expanduser('~/.config/ocdskingfisher/config.ini')):
-            config.read(os.path.expanduser('~/.config/ocdskingfisher/config.ini'))
+        if os.path.isfile(os.path.expanduser('~/.config/ocdskingfisher/old-config.ini')):
+            config.read(os.path.expanduser('~/.config/ocdskingfisher/old-config.ini'))
         else:
             return
 
         self.data_dir = config.get('DATA', 'DIR', fallback=self.data_dir)
+
+        self.server_url = config.get('SERVER', 'URL')
+        self.server_api_key = config.get('SERVER', 'API_KEY')

@@ -4,6 +4,7 @@ import json
 import datetime
 import traceback
 import logging
+import requests
 
 from ocdskingfisher.util import save_content
 from ocdskingfisher.metadata_db import MetadataDB
@@ -63,10 +64,11 @@ class Source:
     """
     argument_definitions = []
 
-    def __init__(self, base_dir, remove_dir=False, publisher_name=None, url=None, sample=False, data_version=None, new_version=False):
+    def __init__(self, base_dir, remove_dir=False, publisher_name=None, url=None, sample=False, data_version=None, new_version=False, config=None):
 
         self.base_dir = base_dir
         self.sample = sample
+        self.config = config
 
         self.publisher_name = publisher_name or self.publisher_name
         if not self.publisher_name:
@@ -198,13 +200,131 @@ class Source:
                         else:
                             self.metadata_db.add_filestatus(info)
                 self.metadata_db.update_filestatus_fetch_end(data['filename'], response.errors, response.warnings)
+                self._send_file_to_server(data, response.errors, response.warnings)
 
             except Exception as e:
                 self.metadata_db.update_filestatus_fetch_end(data['filename'], [repr(e)])
+                self._send_file_to_server(data, [repr(e)])
 
             data = self.metadata_db.get_next_filestatus_to_fetch()
 
         self.metadata_db.update_session_fetch_end()
+        self._send_fetch_end_to_server()
+
+    def _send_file_to_server(self, data, errors, warnings=None):
+
+        if not self.config.server_api_key or not self.config.server_url:
+            print("SERVER NOT CONFIGURED")
+            return
+
+        if data['data_type'].startswith('meta'):
+            return
+
+        if errors:
+            self._send_file_errors_to_server(data, errors, warnings)
+
+        elif data['data_type'] == 'release_package_json_lines' or data['data_type'] == 'record_package_json_lines':
+            self._send_json_lines_file_success_to_server(data, warnings)
+
+        else:
+            self._send_file_success_to_server(data, warnings)
+
+    def _send_file_errors_to_server(self, data, errors, warnings):
+
+        print("PUSHING ERRORS TO SERVER NOW " + data[
+            'filename'] + " TO " + self.config.server_url)
+
+        post_data = {
+            'collection_source': self.source_id,
+            'collection_data_version': self.data_version,
+            'collection_sample': self.sample,
+            'file_name': data['filename'],
+            'url': data['url'],
+            'errors': json.dumps(errors),
+        }
+
+        response = requests.post(self.config.server_url + '/api/v1/submit/file_errors/',
+                                 data=post_data,
+                                 headers={'Authorization': 'ApiKey ' + self.config.server_api_key})
+
+        if not response.ok:
+            raise Exception("COULD NOT SEND ERRORS TO SERVER! HTTP CODE: " + str(response.status_code))
+
+    def _send_json_lines_file_success_to_server(self, data, warnings):
+
+        with open(os.path.join(self.full_directory, data['filename']), encoding=data['encoding']) as f:
+            number = 0
+            raw_data = f.readline()
+            while raw_data:
+                print("PUSHING TO SERVER NOW NUMBER " + str(number) + " FILE  " + data[
+                    'filename'] + " TO " + self.config.server_url)
+
+                post_data = {
+                    'collection_source': self.source_id,
+                    'collection_data_version': self.data_version,
+                    'collection_sample': self.sample,
+                    'file_name': data['filename'],
+                    'url': data['url'],
+                    'data_type': data['data_type'],
+                    'number': number,
+                    'data': raw_data
+                }
+
+                response = requests.post(self.config.server_url + '/api/v1/submit/item/',
+                                         data=post_data,
+                                         headers={'Authorization': 'ApiKey ' + self.config.server_api_key})
+
+                if not response.ok:
+                    raise Exception("COULD NOT SEND TO SERVER! HTTP CODE: " + str(response.status_code))
+
+                raw_data = f.readline()
+                number += 1
+
+
+    def _send_file_success_to_server(self, data, warnings):
+
+        print("PUSHING TO SERVER NOW " + data[
+            'filename'] + " TO " + self.config.server_url)
+
+        post_data = {
+            'collection_source': self.source_id,
+            'collection_data_version': self.data_version,
+            'collection_sample': self.sample,
+            'file_name': data['filename'],
+            'url': data['url'],
+            'data_type': data['data_type'],
+            'encoding': data['encoding'],
+        }
+
+        files = {
+            'file': ( data['filename'], open(os.path.join(self.full_directory, data['filename']), "rb"), 'application/json')
+        }
+
+        response = requests.post(self.config.server_url + '/api/v1/submit/file/',
+                                 data=post_data,
+                                 files=files,
+                                 headers={'Authorization': 'ApiKey ' + self.config.server_api_key})
+
+        if not response.ok:
+            raise Exception("COULD NOT SEND TO SERVER! HTTP CODE: " + str(response.status_code))
+
+    def _send_fetch_end_to_server(self):
+
+        print("PUSHING COLLECTION END TO SERVER NOW TO " + self.config.server_url)
+
+        post_data = {
+            'collection_source': self.source_id,
+            'collection_data_version': self.data_version,
+            'collection_sample': self.sample,
+        }
+
+        response = requests.post(self.config.server_url + '/api/v1/submit/end_collection_store/',
+                                 data=post_data,
+                                 headers={'Authorization': 'ApiKey ' + self.config.server_api_key})
+
+        if not response.ok:
+            raise Exception("COULD NOT SEND END TO SERVER! HTTP CODE: " + str(response.status_code))
+
 
     def is_fetch_finished(self):
         metadata = self.metadata_db.get_session()

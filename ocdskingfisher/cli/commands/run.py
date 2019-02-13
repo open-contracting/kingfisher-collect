@@ -68,7 +68,8 @@ class RunCLICommand(ocdskingfisher.cli.commands.base.CLICommand):
                                                    remove_dir=remove_dir,
                                                    sample=sample_mode,
                                                    data_version=data_version,
-                                                   new_version=new_version
+                                                   new_version=new_version,
+                                                   config=self.config,
                                                    )
             instance.set_arguments(args)
 
