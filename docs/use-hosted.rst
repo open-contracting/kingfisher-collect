@@ -51,3 +51,20 @@ Finally, you'll need to update scrapyd with the latest code. SSH into the server
 *  Change into the folder: `cd ocdskingfisherscrape/`
 *  Activate the virtual environment: `source .ve/bin/activate`
 *  Deploy: `scrapyd-deploy`
+
+Are any spiders currently running?
+----------------------------------
+
+You may want to know this before doing server maintenance, stopping or starting Scrapyd, etc.
+
+Check the `Scrapyd web interface <http://scrape.ocdskingfisher.opendataservices.coop>`_ - click on `Jobs` and look in the `Running` section.
+
+Stopping and starting Scrapyd
+-----------------------------
+
+Log in to the server as the root user and run
+
+.. code-block:: bash
+
+    supervisorctl stop scrapyd
+    supervisorctl start scrapyd
