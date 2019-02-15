@@ -19,3 +19,4 @@ The developers have tested kingfisher-scrape on `Scrapy Cloud <https://scrapingh
    use-hosted.rst
    use-scrapycloud.rst
    writing-scrapers.rst
+   old.rst

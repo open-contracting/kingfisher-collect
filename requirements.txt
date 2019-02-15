@@ -1,12 +1,17 @@
 Scrapy==1.6.0
 requests==2.21.0
 scrapyd-client==1.1.0
+# These ones are used by the old system only!
+ratelimit==2.2.1
+feedparser==5.2.1
+SQLAlchemy==1.2.17
+alembic==1.0.7
 ## The following requirements were added by pip freeze:
 asn1crypto==0.24.0
 attrs==18.2.0
 Automat==0.7.0
 certifi==2018.11.29
-cffi==1.11.5
+cffi==1.12.0
 chardet==3.0.4
 constantly==15.1.0
 cryptography==2.5
@@ -14,7 +19,9 @@ cssselect==1.0.3
 hyperlink==18.0.0
 idna==2.8
 incremental==17.5.0
-lxml==4.3.0
+lxml==4.3.1
+Mako==1.0.7
+MarkupSafe==1.1.0
 parsel==1.5.1
 pyasn1==0.4.5
 pyasn1-modules==0.2.4
@@ -22,6 +29,8 @@ pycparser==2.19
 PyDispatcher==2.0.5
 PyHamcrest==1.9.0
 pyOpenSSL==19.0.0
+python-dateutil==2.8.0
+python-editor==1.0.4
 queuelib==1.5.0
 service-identity==18.1.0
 six==1.12.0
