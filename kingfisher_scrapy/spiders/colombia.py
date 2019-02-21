@@ -27,16 +27,16 @@ class Colombia(BaseSpider):
 
             if response.status == 503:
                 wait_and_retry(response.url)
+            else:
+                json_data = json.loads(response.body_as_unicode())
+                if not self.is_sample():
+                    if 'links' in json_data and 'next' in json_data['links']:
+                        yield scrapy.Request(json_data['links']['next'])
 
-            json_data = json.loads(response.body_as_unicode())
-            if not self.is_sample():
-                if 'links' in json_data and 'next' in json_data['links']:
-                    yield scrapy.Request(json_data['links']['next'])
-
-            yield {
-                'file_urls': [response.url],
-                'data_type': 'release_package'
-            }
+                yield {
+                    'file_urls': [response.url],
+                    'data_type': 'release_package'
+                }
 
         except JSONDecodeError:
             wait_and_retry(response.url)
