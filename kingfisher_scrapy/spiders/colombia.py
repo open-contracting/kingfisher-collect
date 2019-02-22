@@ -7,15 +7,18 @@ import time
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-def wait_and_retry(url):
-    time.sleep(120 * 60)
-    yield scrapy.Request(url)
-
-
 class Colombia(BaseSpider):
     name = 'colombia'
     start_urls = ['https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases?page=1']
     handle_httpstatus_list = [503]
+    sleep = 120 * 60
+
+    def start_requests(self):
+        base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases?page=%d'
+        start_page = 1
+        if hasattr(self, 'page'):
+            start_page = int(self.page)
+        yield scrapy.Request(url=base_url % start_page, callback=self.parse)
 
     def parse(self, response):
         # In Colombia, every day at certain hour they run a process in their system that drops the database and make
@@ -26,7 +29,8 @@ class Colombia(BaseSpider):
         try:
 
             if response.status == 503:
-                wait_and_retry(response.url)
+                time.sleep(self.sleep)
+                yield scrapy.Request(response.url)
             else:
                 json_data = json.loads(response.body_as_unicode())
                 if not self.is_sample():
@@ -39,4 +43,5 @@ class Colombia(BaseSpider):
                 }
 
         except JSONDecodeError:
-            wait_and_retry(response.url)
+            time.sleep(self.sleep)
+            yield scrapy.Request(response.url)
