@@ -62,15 +62,19 @@ Deploying Latest Spiders
 
 If you've developed a new spider (or made updates to an existing one), then you should ensure that they have been merged to the master branch of the kingfisher-scrape repo. 
 
-Then, use salt to get the latest version of the code onto the server. If you're not set up for this (or have no idea what this means!), speak to the Open Data Services development team. 
 
-Finally, you'll need to update scrapyd with the latest code. SSH into the server, as above, then:
+SSH into the server, as above, then:
 
 *  Change into the folder: `cd ocdskingfisherscrape/`
+*  Make sure the code is the latest version of the master branch: `git pull`
 *  Activate the virtual environment: `source .ve/bin/activate`
+*  Update the virtual environment: `pip3 install -r requirements.txt`
 *  Deploy: `scrapyd-deploy`
 
-Nothing special needs to be done to update the old spiders. Simply use salt to get the latest version of the code onto the server.
+Nothing special needs to be done to update the old spiders. Simply use git to get the latest version of the code onto the server.
+
+(Sometimes, it may be necessary to use salt to get the latest version of the code onto the server and update the server to the correct configuration. Most of the time this isn't needed thought, and you can just use git as described here. If you're not set up for this (or have no idea what this means!), speak to the Open Data Services development team.)
+
 
 Are any spiders currently running?
 ----------------------------------
