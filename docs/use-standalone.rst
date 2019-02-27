@@ -32,13 +32,9 @@ eg.
 Output - Disk
 -------------
 
-In settings.py, make sure ``ITEM_PIPELINES`` includes ``KingfisherFilesPipeline`` and that ``FILES_STORE`` is set. For example:
+You must configure FILES_STORE.
 
 .. code-block:: python
-
-    ITEM_PIPELINES = {
-        'kingfisher_scrapy.pipelines.KingfisherFilesPipeline': 2,
-    }
 
     FILES_STORE = 'data'
 
@@ -50,16 +46,9 @@ Files are stored in ``{FILES_STORE}/{scraper_name}/{scraper_start_date_time}``.
 Output - Kingfisher Process
 ---------------------------
 
-In order to use this, you must also set up the Disk output.
-
-In settings.py, make sure ``ITEM_PIPELINES`` includes ``KingfisherPostPipeline`` and that the 3 API variables are set to load from the environment. For example:
+In settings.py, make sure the 3 API variables are set to load from the environment. For example:
 
 .. code-block:: python
-
-    ITEM_PIPELINES = {
-        'kingfisher_scrapy.pipelines.KingfisherFilesPipeline': 2,
-        'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 3,
-    }
 
     KINGFISHER_API_URI = os.environ.get('KINGFISHER_API_URI')
     KINGFISHER_API_KEY = os.environ.get('KINGFISHER_API_KEY')

@@ -31,10 +31,17 @@ Our spiders need to:
 
 This tends to involve prior knowledge of the API you're writing a spider for (you have to go look at its responses yourself to see what they are), and maybe some JSON parsing of the responses.
 
-For Kingfisher, we have defined additional custom 'pipeline' components which are used by all spiders automatically, in the sequence defined in ``settings.py``. (For writing spiders you shouldn't need to worry about these.)
+Using the pipeline - old and new system
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Using the pipeline
-------------------
+Currently, we have 2 different pipelines.
+
+In the long run, our goal is to move all spiders to the new system. Please write all new spiders in the new system, and if you are doing lots of work on an old spider, consider updating it to the new system as you go.
+
+For now, each spider has custom_settings with the ITEM_PIPELINES set, so it uses the correct pipeline.
+
+Using the pipeline - old system
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The custom OCDS Kingfisher scraper pipeline looks like this:
 
@@ -50,6 +57,71 @@ Then, for *each* URL:
 5. The path of the downloaded file, and relevant metadata, is passed automatically to the ``KingfisherPostPipeline`` which fires it all off to the Kingfisher Process API.
 
 The only parts you should have to touch when writing a spider are **1** and **3**.
+
+
+Using the pipeline - new system
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Each spider first finds its starting point(s). Either:
+    * ``start_urls`` list or
+    * requests yielded from the ``start_requests`` method.
+
+Then, for *each* URL:
+
+2. GET requests are passes it to the crawler engine to be executed. The response is passed back to the ``parse`` method in the spider.
+3. The ``parse`` method must check the return status code! If it is not 200, this must be reported by fielding a block of information.
+4. If the ``parse`` method has got a file it wants to save, it must call ``save_response_to_disk`` to do so! It should then yield a block of information.
+5. The ``parse`` method can then yield further requests for processing.
+6. The blocks of information are passed to the pipeline which fires it all off to the Kingfisher Process API.
+
+The only parts you should have to touch when writing a spider are **1** and **3** to **5**.
+
+Here is a sample:
+
+
+.. code-block:: python
+
+    class VerySimple(BaseSpider):
+        name = "very_simple"
+        # We need to define that this spider uses the new system
+        custom_settings = {
+            'ITEM_PIPELINES': {
+                'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
+            },
+            'HTTPERROR_ALLOW_ALL': True,
+        }
+
+        def start_requests(self):
+            # This API only has one URL to get. Make a request for that, and set a filename
+            yield scrapy.Request(
+                url='https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-13-14.json',
+                meta={'kf_filename': '13-14.json'}
+            )
+
+        def parse(self, response):
+            # We must check the response code
+            if response.status == 200:
+                # It was a success!
+                # We must call to save to the disk
+                self.save_response_to_disk(response, response.request.meta['kf_filename'])
+                # We must send some information about this success
+                yield {
+                    'success': True,
+                    'file_name': response.request.meta['kf_filename'],
+                    "data_type": "release_package",
+                    "url": response.request.url,
+                }
+            else:
+                # It was a failure :-(
+                # We must send some information about this failure
+                yield {
+                    'success': False,
+                    'file_name': response.request.meta['kf_filename'],
+                    "url": response.request.url,
+                    "errors": {"http_code": response.status}
+                }
+
+
 
 Spider properties
 ~~~~~~~~~~~~~~~~~
@@ -104,8 +176,8 @@ This does the same thing as:
 
 Only with ``start_requests`` if we want to add a year we just up the range, or if the API endpoint changes we only need to modify one string.
 
-Parse
-~~~~~
+Parse - old system
+~~~~~~~~~~~~~~~~~~
 
 This is where you find the URLs of API endpoints which give you one or more items of OCDS data and hand them one by one to the files downloader.
 

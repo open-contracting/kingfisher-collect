@@ -7,11 +7,19 @@ import time
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
+# This Spider uses the old system of pipelines! DO NOT USE IT AS AN EXAMPLE OF WHAT TO DO IN FUTURE SPIDERS!
+# Thank you.
 class Colombia(BaseSpider):
     name = 'colombia'
     start_urls = ['https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases?page=1']
     handle_httpstatus_list = [503]
     sleep = 120 * 60
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'kingfisher_scrapy.pipelines.OldKingfisherFilesPipeline': 400,
+            'kingfisher_scrapy.pipelines.OldKingfisherPostPipeline': 800,
+        }
+    }
 
     def start_requests(self):
         base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases?page=%d'

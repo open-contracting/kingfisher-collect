@@ -16,7 +16,7 @@ from scrapy.exceptions import DropItem, NotConfigured
 import json
 
 
-class KingfisherFilesPipeline(FilesPipeline):
+class OldKingfisherFilesPipeline(FilesPipeline):
 
     @staticmethod
     def _get_start_time(spider):
@@ -102,7 +102,7 @@ class KingfisherFilesPipeline(FilesPipeline):
         return completed_files
 
 
-class KingfisherPostPipeline(object):
+class OldKingfisherPostPipeline(object):
     def __init__(self, crawler):
         self.crawler = crawler
         self.api_url, self.api_headers, self.api_local_directory = self._build_api_info(crawler)
@@ -207,3 +207,91 @@ class KingfisherPostPipeline(object):
                 else:
                     spider.logger.warning(
                         "Failed to post [{}]. File Errors API status code: {}".format(completed.get('url'), response.status_code))
+
+
+class KingfisherPostPipeline(object):
+    def __init__(self, crawler):
+        self.crawler = crawler
+        self._build_api_info(crawler)
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
+    @staticmethod
+    def _get_start_time(spider):
+        stats = spider.crawler.stats.get_stats()
+        start_time = stats.get("start_time")
+        return start_time
+
+    def _build_api_info(self, crawler):
+        self.api_url = crawler.settings['KINGFISHER_API_URI']
+        api_key = crawler.settings['KINGFISHER_API_KEY']
+        self.api_local_directory = crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY']
+
+        if self.api_url is None or api_key is None:
+            raise NotConfigured('Kingfisher API not configured.')
+
+        self.api_headers = {"Authorization": "ApiKey " + api_key}
+
+    def process_item(self, item, spider):
+
+        if item['success']:
+
+            data = {
+                "collection_source": spider.name,
+                "collection_data_version": self._get_start_time(spider).strftime("%Y-%m-%d %H:%M:%S"),
+                "collection_sample": spider.is_sample(),
+                "file_name": item['file_name'],
+                "url": item['url'],
+                "data_type": item['data_type'],
+                # TODO add encoding
+            }
+
+            files = {}
+
+            if self.api_local_directory:
+
+                full_local_filename = os.path.join(self.api_local_directory,
+                                                   spider.get_local_file_path_excluding_filestore(item['file_name']))
+                # At this point, we could test if the file path exists locally.
+                # But we aren't going to: it's possible the file path is different on the machine running scrape
+                # and the machine running process. (eg a network share mounted in different dirs)
+                data['local_file_name'] = full_local_filename
+
+            else:
+                files = {
+                    'file': (item['file_name'], open(spider.get_local_file_path_including_filestore(item['file_name']), 'rb'), 'application/json')
+                }
+
+            response = requests.post(self.api_url + '/api/v1/submit/file/',
+                                     data=data,
+                                     files=files,
+                                     headers=self.api_headers)
+
+            if response.ok:
+                raise DropItem("Response from [{}] posted to API.".format(item['url']))
+            else:
+                spider.logger.warning(
+                    "Failed to post [{}]. API status code: {}".format(item['url'], response.status_code))
+
+        else:
+
+            data = {
+                "collection_source": spider.name,
+                "collection_data_version": self._get_start_time(spider).strftime("%Y-%m-%d %H:%M:%S"),
+                "collection_sample": spider.is_sample(),
+                "file_name": item['file_name'],
+                "url": item['url'],
+                "errors": json.dumps(item['errors']),
+            }
+
+            response = requests.post(self.api_url + '/api/v1/submit/file_errors/',
+                                     data=data,
+                                     headers=self.api_headers)
+            if response.ok:
+                raise DropItem("Response from [{}] posted to File Errors API.".format(item['url']))
+            else:
+                spider.logger.warning(
+                    "Failed to post [{}]. File Errors API status code: {}".format(item['url'],
+                                                                                  response.status_code))

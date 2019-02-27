@@ -4,10 +4,18 @@ import scrapy
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
+# This Spider uses the old system of pipelines! DO NOT USE IT AS AN EXAMPLE OF WHAT TO DO IN FUTURE SPIDERS!
+# Thank you.
 class Uganda(BaseSpider):
     name = 'uganda'
     base_url = 'http://gpp.ppda.go.ug/api/v1/releases?tag={tag}&page={page}'
     tags = ['planning', 'tender', 'award', 'contract']
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'kingfisher_scrapy.pipelines.OldKingfisherFilesPipeline': 400,
+            'kingfisher_scrapy.pipelines.OldKingfisherPostPipeline': 800,
+        }
+    }
 
     def start_requests(self):
         tags = Uganda.tags

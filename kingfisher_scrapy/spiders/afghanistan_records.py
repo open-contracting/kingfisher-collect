@@ -1,5 +1,7 @@
 import json
 
+import scrapy
+
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
@@ -7,14 +9,55 @@ class AfghanistanRecords(BaseSpider):
     name = 'afghanistan_records'
     start_urls = ['https://ocds.ageops.net/api/ocds/records']
     download_delay = 1
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
+        },
+        'HTTPERROR_ALLOW_ALL': True,
+    }
 
-    def parse(self, response):
-        files_urls = json.loads(response.body)
-        if hasattr(self, 'sample') and self.sample == 'true':
-            files_urls = [files_urls[0]]
+    def start_requests(self):
+        yield scrapy.Request(
+            url='https://ocds.ageops.net/api/ocds/records',
+            meta={'kf_filename': 'list.json'},
+            callback=self.parse_list
+        )
 
-        for file_url in files_urls:
+    def parse_list(self, response):
+        if response.status == 200:
+
+            files_urls = json.loads(response.body)
+            if hasattr(self, 'sample') and self.sample == 'true':
+                files_urls = [files_urls[0]]
+
+            for file_url in files_urls:
+                yield scrapy.Request(
+                    url=file_url,
+                    meta={'kf_filename': file_url.split('/')[-1]+'.json'},
+                    callback=self.parse_record
+                )
+        else:
             yield {
-                'file_urls': [file_url],
-                'data_type': 'record'
+                'success': False,
+                'file_name': 'list.json',
+                "url": response.request.url,
+                "errors": {"http_code": response.status}
+            }
+
+    def parse_record(self, response):
+        if response.status == 200:
+
+            self.save_response_to_disk(response, response.request.meta['kf_filename'])
+            yield {
+                'success': True,
+                'file_name': response.request.meta['kf_filename'],
+                "data_type": "record",
+                "url": response.request.url,
+            }
+        else:
+            yield {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                "url": response.request.url,
+                "errors": {"http_code": response.status}
             }

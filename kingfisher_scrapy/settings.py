@@ -64,14 +64,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 # }
 
 # Configure item pipelines
-# See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    'kingfisher_scrapy.pipelines.SomePipeline': 300,
-# }
-ITEM_PIPELINES = {
-    'kingfisher_scrapy.pipelines.KingfisherFilesPipeline': 2,
-    'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 3,
-}
+# These are not set here! They are currently set in each scraper.
 
 FILES_STORE = 'data'
 
@@ -82,6 +75,7 @@ KINGFISHER_API_LOCAL_DIRECTORY = os.environ.get('KINGFISHER_API_LOCAL_DIRECTORY'
 # This is used for some legacy environment variables - not needed for new installs
 if not KINGFISHER_API_URI and os.environ.get('KINGFISHER_API_FILE_URI'):
     KINGFISHER_API_URI = os.environ.get('KINGFISHER_API_FILE_URI')[:-len('/api/v1/submit/file/')]
+
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
