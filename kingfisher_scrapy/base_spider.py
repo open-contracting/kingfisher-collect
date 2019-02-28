@@ -1,5 +1,8 @@
-import scrapy
+import os
+
 import requests
+import scrapy
+
 
 # This file contain base spiders all our spiders extend from, so we can add some custom functionality
 #
@@ -38,6 +41,40 @@ def _generic_spider_closed(called_on_class, spider, reason):
             spider.logger.warning(
                 "Failed to post End Collection Store. API status code: {}".format(response.status_code))
 
+
+def _generic_get_local_file_path_excluding_filestore(called_on_class, filename):
+    source_name_with_sample = called_on_class.name + ('_sample' if called_on_class.is_sample() else '')
+    return os.path.join(
+        source_name_with_sample,
+        called_on_class._get_start_time().strftime("%Y%m%d_%H%M%S"),
+        filename
+    )
+
+
+def _generic_get_local_file_path_including_filestore(called_on_class, filename):
+    source_name_with_sample = called_on_class.name + ('_sample' if called_on_class.is_sample() else '')
+    return os.path.join(
+        called_on_class.crawler.settings['FILES_STORE'],
+        source_name_with_sample,
+        called_on_class._get_start_time().strftime("%Y%m%d_%H%M%S"),
+        filename
+    )
+
+
+def _generic_scrapy_save_response_to_disk(called_on_class, response, filename):
+
+    source_name_with_sample = called_on_class.name + ('_sample' if called_on_class.is_sample() else '')
+    directory = os.path.join(
+        called_on_class.crawler.settings['FILES_STORE'],
+        source_name_with_sample,
+        called_on_class._get_start_time().strftime("%Y%m%d_%H%M%S"),
+    )
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    with open(os.path.join(directory, filename), 'wb') as f:
+        f.write(response.body)
+
+
 # Now we have our own base spiders (that use our generic functions)
 
 
@@ -58,6 +95,15 @@ class BaseSpider(scrapy.Spider):
     def spider_closed(self, spider, reason):
         return _generic_spider_closed(self, spider, reason)
 
+    def get_local_file_path_including_filestore(self, filename):
+        return _generic_get_local_file_path_including_filestore(self, filename)
+
+    def get_local_file_path_excluding_filestore(self, filename):
+        return _generic_get_local_file_path_excluding_filestore(self, filename)
+
+    def save_response_to_disk(self, response, filename):
+        return _generic_scrapy_save_response_to_disk(self, response, filename)
+
 
 class BaseXMLFeedSpider(scrapy.spiders.XMLFeedSpider):
 
@@ -75,3 +121,12 @@ class BaseXMLFeedSpider(scrapy.spiders.XMLFeedSpider):
 
     def spider_closed(self, spider, reason):
         return _generic_spider_closed(self, spider, reason)
+
+    def get_local_file_path_including_filestore(self, filename):
+        return _generic_get_local_file_path_including_filestore(self, filename)
+
+    def get_local_file_path_excluding_filestore(self, filename):
+        return _generic_get_local_file_path_excluding_filestore(self, filename)
+
+    def save_response_to_disk(self, response, filename):
+        return _generic_scrapy_save_response_to_disk(self, response, filename)
