@@ -64,11 +64,12 @@ class Source:
     """
     argument_definitions = []
 
-    def __init__(self, base_dir, remove_dir=False, publisher_name=None, url=None, sample=False, data_version=None, new_version=False, config=None):
+    def __init__(self, base_dir, remove_dir=False, publisher_name=None, url=None, sample=False, data_version=None, new_version=False, config=None, note=None):
 
         self.base_dir = base_dir
         self.sample = sample
         self.config = config
+        self.note = note
 
         self.publisher_name = publisher_name or self.publisher_name
         if not self.publisher_name:
@@ -267,7 +268,8 @@ class Source:
                     'url': data['url'],
                     'data_type': data['data_type'],
                     'number': number,
-                    'data': raw_data
+                    'data': raw_data,
+                    'collection_note': self.note,
                 }
 
                 response = requests.post(self.config.server_url + '/api/v1/submit/item/',
@@ -294,6 +296,7 @@ class Source:
             'url': data['url'],
             'data_type': data['data_type'],
             'encoding': data['encoding'],
+            'collection_note': self.note,
         }
 
         files = {

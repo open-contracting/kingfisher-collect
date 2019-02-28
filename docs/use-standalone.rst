@@ -26,8 +26,10 @@ eg.
 
 .. code-block:: bash
 
-    scrapy crawl canada_buyandsell -a sample=true
-    scrapy crawl canada_buyandsell
+    scrapy crawl canada_buyandsell -a note="Started by Fred." -a sample=true
+    scrapy crawl canada_buyandsell -a note="Started by Fred."
+
+Update the note with your name, and anything else of interest.
 
 Output - Disk
 -------------

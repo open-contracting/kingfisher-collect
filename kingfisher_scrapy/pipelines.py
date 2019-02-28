@@ -151,6 +151,9 @@ class OldKingfisherPostPipeline(object):
                     # TODO add encoding
                 }
 
+                if hasattr(spider, 'note') and spider.note:
+                    data['collection_note'] = spider.note
+
                 files = {}
 
                 zipfile = None
@@ -247,6 +250,9 @@ class KingfisherPostPipeline(object):
                 "data_type": item['data_type'],
                 # TODO add encoding
             }
+
+            if hasattr(spider, 'note') and spider.note:
+                data['collection_note'] = spider.note
 
             files = {}
 

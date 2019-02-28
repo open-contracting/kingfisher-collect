@@ -29,14 +29,16 @@ Run it by passing the name of a source to run:
 
 .. code-block:: shell-session
 
-    python ocdskingfisher-old-cli run taiwan
-    python ocdskingfisher-old-cli run digiwhist_armenia
+    python ocdskingfisher-old-cli run --note="Started by Fred." taiwan
+    python ocdskingfisher-old-cli run --note="Started by Fred." digiwhist_armenia
 
 There is a sample mode. This only fetches a small amount of data for each source.
 
 .. code-block:: shell-session
 
-    python ocdskingfisher-old-cli run --sample taiwan
+    python ocdskingfisher-old-cli run --note="Started by Fred." --sample taiwan
+
+Update the note with your name, and anything else of interest.
 
 It will look for existing collections with the same source and sample flag as you specify, and by default resume the latest one.
 
