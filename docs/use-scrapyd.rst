@@ -46,15 +46,17 @@ Scheduling a run
 
 .. code-block:: bash
 
-    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=canada_buyandsell
+    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=canada_buyandsell -d note="Started by Fred."
     {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
 
 To run a sample run:
 
 .. code-block:: bash
 
-    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=canada_buyandsell -d sample=true
+    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=canada_buyandsell -d note="Started by Fred." -d sample=true
     {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
+
+Update the note with your name, and anything else of interest.
 
 Find out more in the `Scrapyd docs <https://scrapyd.readthedocs.io/en/latest/overview.html#scheduling-a-spider-run>`_.
 

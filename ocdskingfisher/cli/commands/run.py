@@ -18,6 +18,7 @@ class RunCLICommand(ocdskingfisher.cli.commands.base.CLICommand):
                                help="Forces the creation of a new data version (If you don't specify this or " +
                                     "--dataversion, the latest version will be used. If there are no versions, a new one will be created.)",
                                action="store_true")
+        subparser.add_argument("--note", help="Specify a note to save")
 
         for source_id, source_class in self.sources.items():
             for argument_definition in source_class.argument_definitions:
@@ -70,6 +71,7 @@ class RunCLICommand(ocdskingfisher.cli.commands.base.CLICommand):
                                                    data_version=data_version,
                                                    new_version=new_version,
                                                    config=self.config,
+                                                   note=args.note,
                                                    )
             instance.set_arguments(args)
 
