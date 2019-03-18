@@ -43,13 +43,13 @@ class ChileCompraReleases(BaseSpider):
                 )
             elif 'ListadoOCDS' in data:
                 for data_item in data['ListadoOCDS']:
-                        for stage in list(data_item.keys()):
-                            if 'URL' in stage:
-                                name = stage.replace('URL', '')
-                                yield scrapy.Request(
-                                    url=data_item[stage],
-                                    meta={'kf_filename': 'data-%s-%s.json' % (data_item['Codigo'], name)}
-                                )
+                    for stage in list(data_item.keys()):
+                        if 'URL' in stage:
+                            name = stage.replace('URL', '')
+                            yield scrapy.Request(
+                                url=data_item[stage],
+                                meta={'kf_filename': 'data-%s-%s.json' % (data_item['Codigo'], name)}
+                            )
             else:
                 self.save_response_to_disk(response, response.request.meta['kf_filename'])
                 yield {
