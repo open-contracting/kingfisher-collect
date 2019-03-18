@@ -6,6 +6,7 @@ These sources are available as Scrapy spiders:
   *  afghanistan_records
   *  afghanistan_releases
   *  armenia
+  *  australia
   *  australia_nsw
   *  canada_buyandsell
   *  canada_montreal
