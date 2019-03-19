@@ -12,6 +12,7 @@ These sources are available as Scrapy spiders:
   *  colombia - you can pass the additional `page` parameter to this scraper, to indicate what page to start on.
   *  moldova
   *  uganda
+  *  uk_contracts_finder
   *  uruguay
   *  zambia
 
@@ -64,7 +65,6 @@ These sources are available as sources in the old system:
   *  paraguay_hacienda
   *  scotland
   *  taiwan
-  *  uk_contracts_finder
   *  ukraine
 
 
