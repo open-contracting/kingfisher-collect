@@ -16,6 +16,7 @@ These sources are available as Scrapy spiders:
   *  honduras_cost
   *  moldova
   *  uganda
+  *  uk_contracts_finder
   *  uruguay
   *  zambia
 
@@ -66,7 +67,6 @@ These sources are available as sources in the old system:
   *  paraguay_hacienda
   *  scotland
   *  taiwan
-  *  uk_contracts_finder
   *  ukraine
 
 
