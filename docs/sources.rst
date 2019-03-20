@@ -6,20 +6,25 @@ These sources are available as Scrapy spiders:
   *  afghanistan_records
   *  afghanistan_releases
   *  armenia
+  *  australia
   *  australia_nsw
   *  canada_buyandsell
   *  canada_montreal
+  *  chile_compra_releases
+  *  chile_compra_records
   *  colombia - you can pass the additional `page` parameter to this scraper, to indicate what page to start on.
   *  indonesia_bandung
+  *  honduras_cost
+  *  mexico_grupo_aeroporto
   *  moldova
   *  uganda
+  *  uk_contracts_finder
   *  uruguay
   *  zambia
 
 
 These sources are available as sources in the old system:
 
-  *  chile_compra
   *  digiwhist_armenia
   *  digiwhist_austria
   *  digiwhist_belgium
@@ -54,17 +59,14 @@ These sources are available as sources in the old system:
   *  digiwhist_sweden
   *  digiwhist_switzerland
   *  digiwhist_united_kingdom
-  *  honduras_cost
   *  mexico_administracion_publica_federal
   *  mexico_cdmx
-  *  mexico_grupo_aeroporto
   *  mexico_inai
   *  mexico_jalisco
   *  paraguay_dncp
   *  paraguay_hacienda
   *  scotland
   *  taiwan
-  *  uk_contracts_finder
   *  ukraine
 
 
