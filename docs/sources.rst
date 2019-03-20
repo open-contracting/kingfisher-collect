@@ -13,8 +13,8 @@ These sources are available as Scrapy spiders:
   *  chile_compra_releases
   *  chile_compra_records
   *  colombia - you can pass the additional `page` parameter to this scraper, to indicate what page to start on.
-  *  indonesia_bandung
   *  honduras_cost
+  *  indonesia_bandung
   *  mexico_grupo_aeroporto
   *  moldova
   *  uganda
