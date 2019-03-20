@@ -11,6 +11,7 @@ These sources are available as Scrapy spiders:
   *  canada_buyandsell
   *  canada_montreal
   *  colombia - you can pass the additional `page` parameter to this scraper, to indicate what page to start on.
+  *  honduras_cost
   *  moldova
   *  uganda
   *  uruguay
@@ -54,7 +55,6 @@ These sources are available as sources in the old system:
   *  digiwhist_sweden
   *  digiwhist_switzerland
   *  digiwhist_united_kingdom
-  *  honduras_cost
   *  indonesia_bandung
   *  mexico_administracion_publica_federal
   *  mexico_cdmx
