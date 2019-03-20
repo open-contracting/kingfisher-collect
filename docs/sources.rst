@@ -14,6 +14,7 @@ These sources are available as Scrapy spiders:
   *  chile_compra_records
   *  colombia - you can pass the additional `page` parameter to this scraper, to indicate what page to start on.
   *  honduras_cost
+  *  mexico_grupo_aeroporto
   *  moldova
   *  uganda
   *  uk_contracts_finder
@@ -60,7 +61,6 @@ These sources are available as sources in the old system:
   *  indonesia_bandung
   *  mexico_administracion_publica_federal
   *  mexico_cdmx
-  *  mexico_grupo_aeroporto
   *  mexico_inai
   *  mexico_jalisco
   *  paraguay_dncp
