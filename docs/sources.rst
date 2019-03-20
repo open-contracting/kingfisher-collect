@@ -10,6 +10,8 @@ These sources are available as Scrapy spiders:
   *  australia_nsw
   *  canada_buyandsell
   *  canada_montreal
+  *  chile_compra_releases
+  *  chile_compra_records
   *  colombia - you can pass the additional `page` parameter to this scraper, to indicate what page to start on.
   *  honduras_cost
   *  moldova
@@ -20,7 +22,6 @@ These sources are available as Scrapy spiders:
 
 These sources are available as sources in the old system:
 
-  *  chile_compra
   *  digiwhist_armenia
   *  digiwhist_austria
   *  digiwhist_belgium
