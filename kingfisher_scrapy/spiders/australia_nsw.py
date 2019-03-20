@@ -56,6 +56,6 @@ class AustraliaNSW(BaseSpider):
         else:
             yield {
                 'file_urls': [response.url],
-                'data_type': 'release-package',
+                'data_type': 'release_package',
                 'release_type': release_type
             }
