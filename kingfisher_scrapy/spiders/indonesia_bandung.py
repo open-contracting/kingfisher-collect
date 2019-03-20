@@ -1,6 +1,5 @@
 import json
 
-import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
@@ -14,18 +13,23 @@ class IndonesiaBandung(BaseSpider):
         },
         'HTTPERROR_ALLOW_ALL': True,
     }
-    base_url = 'https://birms.bandung.go.id/api/packages/year/{}?page={}'
+
+    base_url = 'https://webhooks.mongodb-stitch.com/api/client/v2.0/app/birms-cvrbm/service/query-birms' \
+               '/incoming_webhook/find-releases?secret=6WkBFKh6SS4ibE2O0Fm5UHGEQWv8hQbj&limit=50'
+    next_url = base_url + '&fromId={}'
 
     def start_requests(self):
         yield scrapy.Request(
-            url=self.base_url.format(2013, 1),
+            url=self.base_url,
             meta={'kf_filename': 'page1.json'}
         )
 
     def parse(self, response):
 
         if response.status == 200:
-
+            json_data = json.loads(response.body_as_unicode())
+            if len(json_data) == 0:
+                return
             self.save_response_to_disk(response, response.request.meta['kf_filename'])
             yield {
                 'success': True,
@@ -33,17 +37,13 @@ class IndonesiaBandung(BaseSpider):
                 "data_type": "release_package",
                 "url": response.request.url,
             }
+            if not self.is_sample():
+                last_id = json_data[len(json_data)-1]['_id']
+                yield scrapy.Request(
+                    url=self.next_url.format(last_id),
+                    meta={'kf_filename': 'page{}.json'.format(last_id)}
+                )
 
-            if not self.is_sample() and response.request.meta['kf_filename'] == 'page1.json':
-                json_data = json.loads(response.body_as_unicode())
-                current_year = datetime.datetime.now().year + 1
-                for year in range(2013, current_year):
-                    last_page = json_data['last_page']
-                    for page in range(1, last_page + 1):
-                        yield scrapy.Request(
-                            url=self.base_url.format(year, page),
-                            meta={'kf_filename': 'year{}page{}.json'.format(year, page)}
-                        )
         else:
             yield {
                 'success': False,
