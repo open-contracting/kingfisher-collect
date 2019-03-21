@@ -34,7 +34,7 @@ class IndonesiaBandung(BaseSpider):
             yield {
                 'success': True,
                 'file_name': response.request.meta['kf_filename'],
-                "data_type": "release_package",
+                "data_type": "release_list",
                 "url": response.request.url,
             }
             if not self.is_sample():
