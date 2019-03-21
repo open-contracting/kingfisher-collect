@@ -48,7 +48,7 @@ class ParaguayDNCPRecords(BaseSpider):
                     'data_type': 'record_package',
                     'url': response.request.url,
                 }
-        elif response.status == 403:
+        elif response.status == 401 or response.status == 429:
             self.access_token = self.get_access_token()
             yield scrapy.Request(
                 url=response.request.url,
