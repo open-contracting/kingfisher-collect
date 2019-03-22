@@ -19,6 +19,7 @@ These sources are available as Scrapy spiders:
   *  moldova_records
   *  paraguay_dncp_releases
   *  paraguay_dncp_records
+  *  paraguay_hacienda
   *  uganda
   *  uk_contracts_finder
   *  uruguay
@@ -66,7 +67,6 @@ These sources are available as sources in the old system:
   *  mexico_cdmx
   *  mexico_inai
   *  mexico_jalisco
-  *  paraguay_hacienda
   *  scotland
   *  taiwan
   *  ukraine
