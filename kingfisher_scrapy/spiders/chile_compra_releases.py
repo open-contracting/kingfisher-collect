@@ -14,6 +14,7 @@ class ChileCompraReleases(BaseSpider):
         },
         'HTTPERROR_ALLOW_ALL': True,
     }
+    # the data list service takes too long to be downloaded, so we increase the download timeout
     download_timeout = 300
 
     def start_requests(self):
