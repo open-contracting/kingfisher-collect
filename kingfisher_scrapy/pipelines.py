@@ -5,15 +5,15 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
-import os
 import hashlib
-import requests
+import json
+import os
 from zipfile import ZipFile
 
+import requests
+from scrapy.exceptions import DropItem, NotConfigured
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes, to_native_str
-from scrapy.exceptions import DropItem, NotConfigured
-import json
 
 
 class OldKingfisherFilesPipeline(FilesPipeline):
@@ -21,12 +21,12 @@ class OldKingfisherFilesPipeline(FilesPipeline):
     @staticmethod
     def _get_start_time(spider):
         stats = spider.crawler.stats.get_stats()
-        start_time = stats.get("start_time")
+        start_time = stats.get('start_time')
         return start_time
 
     def file_path(self, request, response=None, info=None):
         start_time = self._get_start_time(info.spider)
-        start_time_str = start_time.strftime("%Y%m%d_%H%M%S")
+        start_time_str = start_time.strftime('%Y%m%d_%H%M%S')
         content_type = ''
         if response:
             # This is to cover the case when the url has . after the last /
@@ -57,28 +57,28 @@ class OldKingfisherFilesPipeline(FilesPipeline):
         else:
             is_sample = False
 
-        files_store = info.spider.crawler.settings.get("FILES_STORE")
+        files_store = info.spider.crawler.settings.get('FILES_STORE')
 
         completed_files = []
 
         for ok, file_data in results:
             start_time = self._get_start_time(info.spider)
-            start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S")
+            start_time_str = start_time.strftime('%Y-%m-%d %H:%M:%S')
             if ok:
-                file_url = file_data.get("url")
-                local_path = os.path.join(files_store, file_data.get("path"))
-                data_type = item.get("data_type")
+                file_url = file_data.get('url')
+                local_path = os.path.join(files_store, file_data.get('path'))
+                data_type = item.get('data_type')
 
                 item_data = {
-                    "success": True,
-                    "collection_source": info.spider.name,
-                    "collection_data_version": start_time_str,
-                    "collection_sample": is_sample,
-                    "file_name": local_path,
-                    "url": file_url,
-                    "data_type": data_type,
-                    "local_path_inside_files_store": file_data.get("path"),
-                    "local_path": local_path,
+                    'success': True,
+                    'collection_source': info.spider.name,
+                    'collection_data_version': start_time_str,
+                    'collection_sample': is_sample,
+                    'file_name': local_path,
+                    'url': file_url,
+                    'data_type': data_type,
+                    'local_path_inside_files_store': file_data.get('path'),
+                    'local_path': local_path,
                 }
 
                 completed_files.append(item_data)
@@ -88,13 +88,13 @@ class OldKingfisherFilesPipeline(FilesPipeline):
                 url = item.get('file_urls')[0]
 
                 item_data = {
-                    "success": False,
-                    "collection_source": info.spider.name,
-                    "collection_data_version": start_time_str,
-                    "collection_sample": is_sample,
-                    "file_name": hashlib.sha1(to_bytes(url)).hexdigest()+'.json',
-                    "url": url,
-                    "error_message": str(file_data)
+                    'success': False,
+                    'collection_source': info.spider.name,
+                    'collection_data_version': start_time_str,
+                    'collection_sample': is_sample,
+                    'file_name': hashlib.sha1(to_bytes(url)).hexdigest()+'.json',
+                    'url': url,
+                    'error_message': str(file_data)
                 }
 
                 completed_files.append(item_data)
@@ -114,7 +114,7 @@ class OldKingfisherPostPipeline(object):
     @staticmethod
     def _get_start_time(spider):
         stats = spider.crawler.stats.get_stats()
-        start_time = stats.get("start_time")
+        start_time = stats.get('start_time')
         return start_time
 
     @staticmethod
@@ -128,7 +128,7 @@ class OldKingfisherPostPipeline(object):
 
         # TODO: figure out which api endpoint based on the data_type OR probably metadata passed from the spider
 
-        headers = {"Authorization": "ApiKey " + api_key}
+        headers = {'Authorization': 'ApiKey ' + api_key}
         return api_uri, headers, api_local_directory
 
     def process_item(self, item, spider):
@@ -136,19 +136,19 @@ class OldKingfisherPostPipeline(object):
             is_sample = True
         else:
             is_sample = False
-        data_version = self._get_start_time(spider).strftime("%Y-%m-%d %H:%M:%S")
+        data_version = self._get_start_time(spider).strftime('%Y-%m-%d %H:%M:%S')
         for completed in item:
 
             if completed['success']:
 
                 data = {
-                    "collection_source": spider.name,
-                    "collection_data_version": data_version,
-                    "collection_sample": is_sample,
-                    "file_name": completed['file_name'],
-                    "url": completed['url'],
-                    "data_type": completed['data_type'],
-                    # TODO add encoding
+                    'collection_source': spider.name,
+                    'collection_data_version': data_version,
+                    'collection_sample': is_sample,
+                    'file_name': completed['file_name'],
+                    'url': completed['url'],
+                    'data_type': completed['data_type'],
+                    'encoding': item['encoding']
                 }
 
                 if hasattr(spider, 'note') and spider.note:
@@ -184,32 +184,32 @@ class OldKingfisherPostPipeline(object):
                                          headers=self.api_headers)
 
                 if response.ok:
-                    raise DropItem("Response from [{}] posted to API.".format(completed.get('url')))
+                    raise DropItem('Response from [{}] posted to API.'.format(completed.get('url')))
                 else:
                     spider.logger.warning(
-                        "Failed to post [{}]. API status code: {}".format(completed.get('url'), response.status_code))
+                        'Failed to post [{}]. API status code: {}'.format(completed.get('url'), response.status_code))
                 if zipfile is not None:
                     zipfile.close()
 
             else:
 
                 data = {
-                    "collection_source": spider.name,
-                    "collection_data_version": data_version,
-                    "collection_sample": is_sample,
-                    "file_name": completed['file_name'],
-                    "url": completed['url'],
-                    "errors": json.dumps([completed['error_message']]),
+                    'collection_source': spider.name,
+                    'collection_data_version': data_version,
+                    'collection_sample': is_sample,
+                    'file_name': completed['file_name'],
+                    'url': completed['url'],
+                    'errors': json.dumps([completed['error_message']]),
                 }
 
                 response = requests.post(self.api_url + '/api/v1/submit/file_errors/',
                                          data=data,
                                          headers=self.api_headers)
                 if response.ok:
-                    raise DropItem("Response from [{}] posted to File Errors API.".format(completed.get('url')))
+                    raise DropItem('Response from [{}] posted to File Errors API.'.format(completed.get('url')))
                 else:
                     spider.logger.warning(
-                        "Failed to post [{}]. File Errors API status code: {}".format(completed.get('url'), response.status_code))
+                        'Failed to post [{}]. File Errors API status code: {}'.format(completed.get('url'), response.status_code))
 
 
 class KingfisherPostPipeline(object):
@@ -224,7 +224,7 @@ class KingfisherPostPipeline(object):
     @staticmethod
     def _get_start_time(spider):
         stats = spider.crawler.stats.get_stats()
-        start_time = stats.get("start_time")
+        start_time = stats.get('start_time')
         return start_time
 
     def _build_api_info(self, crawler):
@@ -235,19 +235,19 @@ class KingfisherPostPipeline(object):
         if self.api_url is None or api_key is None:
             raise NotConfigured('Kingfisher API not configured.')
 
-        self.api_headers = {"Authorization": "ApiKey " + api_key}
+        self.api_headers = {'Authorization': 'ApiKey ' + api_key}
 
     def process_item(self, item, spider):
 
         if item['success']:
 
             data = {
-                "collection_source": spider.name,
-                "collection_data_version": self._get_start_time(spider).strftime("%Y-%m-%d %H:%M:%S"),
-                "collection_sample": spider.is_sample(),
-                "file_name": item['file_name'],
-                "url": item['url'],
-                "data_type": item['data_type'],
+                'collection_source': spider.name,
+                'collection_data_version': self._get_start_time(spider).strftime('%Y-%m-%d %H:%M:%S'),
+                'collection_sample': spider.is_sample(),
+                'file_name': item['file_name'],
+                'url': item['url'],
+                'data_type': item['data_type'],
                 # TODO add encoding
             }
 
@@ -276,28 +276,28 @@ class KingfisherPostPipeline(object):
                                      headers=self.api_headers)
 
             if response.ok:
-                raise DropItem("Response from [{}] posted to API.".format(item['url']))
+                raise DropItem('Response from [{}] posted to API.'.format(item['url']))
             else:
                 spider.logger.warning(
-                    "Failed to post [{}]. API status code: {}".format(item['url'], response.status_code))
+                    'Failed to post [{}]. API status code: {}'.format(item['url'], response.status_code))
 
         else:
 
             data = {
-                "collection_source": spider.name,
-                "collection_data_version": self._get_start_time(spider).strftime("%Y-%m-%d %H:%M:%S"),
-                "collection_sample": spider.is_sample(),
-                "file_name": item['file_name'],
-                "url": item['url'],
-                "errors": json.dumps(item['errors']),
+                'collection_source': spider.name,
+                'collection_data_version': self._get_start_time(spider).strftime('%Y-%m-%d %H:%M:%S'),
+                'collection_sample': spider.is_sample(),
+                'file_name': item['file_name'],
+                'url': item['url'],
+                'errors': json.dumps(item['errors']),
             }
 
             response = requests.post(self.api_url + '/api/v1/submit/file_errors/',
                                      data=data,
                                      headers=self.api_headers)
             if response.ok:
-                raise DropItem("Response from [{}] posted to File Errors API.".format(item['url']))
+                raise DropItem('Response from [{}] posted to File Errors API.'.format(item['url']))
             else:
                 spider.logger.warning(
-                    "Failed to post [{}]. File Errors API status code: {}".format(item['url'],
+                    'Failed to post [{}]. File Errors API status code: {}'.format(item['url'],
                                                                                   response.status_code))
