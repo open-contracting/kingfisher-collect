@@ -14,9 +14,11 @@ class ChileCompraRecords(BaseSpider):
         },
         'HTTPERROR_ALLOW_ALL': True,
     }
+    # the data list service takes too long to be downloaded, so we increase the download timeout
+    download_timeout = 300
 
     def start_requests(self):
-        if self.is_sample:
+        if self.is_sample():
             yield scrapy.Request(
                 url='https://apis.mercadopublico.cl/OCDS/data/listaA%C3%B1oMes/2017/10',
                 meta={'kf_filename': 'sample.json'}
