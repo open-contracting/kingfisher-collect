@@ -76,6 +76,9 @@ KINGFISHER_API_LOCAL_DIRECTORY = os.environ.get('KINGFISHER_API_LOCAL_DIRECTORY'
 if not KINGFISHER_API_URI and os.environ.get('KINGFISHER_API_FILE_URI'):
     KINGFISHER_API_URI = os.environ.get('KINGFISHER_API_FILE_URI')[:-len('/api/v1/submit/file/')]
 
+KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN = os.environ.get('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
+KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET = os.environ.get('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
+KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN = os.environ.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
