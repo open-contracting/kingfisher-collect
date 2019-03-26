@@ -3,6 +3,7 @@ from datetime import datetime
 import requests
 from scrapy import Request
 from scrapy.http import Headers
+from scrapy.utils import spider
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
@@ -13,15 +14,14 @@ access_token = None
 
 
 class ParaguayBase(BaseSpider):
-    request_token = 'Basic ' \
-                    'ODhjYmYwOGEtMDcyMC00OGY1LWFhYWUtMWVkNzVkZmFiYzZiOjNjNjQxZGQ5LWNjN2UtNDI5ZC05NWRiLWI5ODNiNmYy' \
-                    'MDY3NA== '
+
     custom_settings = {
         'ITEM_PIPELINES': {
             'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
         },
         'HTTPERROR_ALLOW_ALL': True,
     }
+    request_token = None
     # The time when the last valid access token request was made
     request_time = None
     # The maximum number of request allowed by the service
@@ -57,6 +57,7 @@ class ParaguayBase(BaseSpider):
 
     # Generate a new access token
     def generate_access_token(self):
+        spider.logger.debug('Generating Paraguay Access Token')
         correct = False
         data_json = ''
         while not correct:

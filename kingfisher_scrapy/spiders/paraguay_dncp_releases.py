@@ -15,6 +15,9 @@ class ParaguayDNCPReleases(ParaguayBase):
               'contratos': 'contract', 'modificacion_contrato': 'amendmment'}
 
     def start_requests(self):
+        self.request_token = self.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
+        if self.request_token is None:
+            raise RuntimeError('No request token available')
         self.get_access_token(first=True)
         base_url = 'https://www.contrataciones.gov.py/images/opendata/{}/{:d}.csv'
         max_year = 2011 if self.is_sample() else date.today().year + 1

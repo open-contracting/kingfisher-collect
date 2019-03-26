@@ -6,8 +6,7 @@ from kingfisher_scrapy.spiders.paraguay_base import ParaguayBase, AuthTokenReque
 
 
 class ParaguayHacienda(ParaguayBase):
-    request_token = '06034873-f3e1-47b8-8bfb-45b11b3fc83d'
-    client_secret = 'e606642e20667a6b7b46b9644ce40a85d11a84da173d4d26f65cd5826121ec01'
+
     name = 'paraguay_hacienda'
 
     base_list_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/pagos/cdp?page={}'
@@ -16,8 +15,13 @@ class ParaguayHacienda(ParaguayBase):
     request_limit = 10000
     request_time_limit = 14.0
     request_limit_header = 'x-rate-limit-remaining'
+    client_secret = None
 
     def start_requests(self):
+        self.request_token = self.settings.get('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
+        self.client_secret = self.settings.get('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
+        if self.request_token is None or self.client_secret is None:
+            raise RuntimeError('No request token or client secret available')
         self.get_access_token(first=True)
         # Paraguay Hacienda has a service that return all the ids that we need to get the releases packages
         # so we first iterate over this list that is paginated
