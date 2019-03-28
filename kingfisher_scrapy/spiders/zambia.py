@@ -16,7 +16,7 @@ class Zambia(BaseSpider):
     }
 
     def parse(self, response):
-        files_urls = json.loads(response.body)['packagesPerMonth']
+        files_urls = json.loads(response.body_as_unicode())['packagesPerMonth']
 
         if hasattr(self, 'sample') and self.sample == 'true':
             files_urls = [files_urls[0]]
