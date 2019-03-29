@@ -14,6 +14,7 @@ These sources are available as Scrapy spiders:
   *  chile_compra_records
   *  colombia - you can pass the additional `page` parameter to this scraper, to indicate what page to start on.
   *  honduras_cost
+  *  indonesia_bandung
   *  mexico_grupo_aeroporto
   *  moldova_releases
   *  moldova_records
@@ -62,7 +63,6 @@ These sources are available as sources in the old system:
   *  digiwhist_sweden
   *  digiwhist_switzerland
   *  digiwhist_united_kingdom
-  *  indonesia_bandung
   *  mexico_administracion_publica_federal
   *  mexico_cdmx
   *  mexico_inai
