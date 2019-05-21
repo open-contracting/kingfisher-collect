@@ -61,7 +61,7 @@ def _generic_get_local_file_path_including_filestore(called_on_class, filename):
     )
 
 
-def _generic_scrapy_save_response_to_disk(called_on_class, response, filename):
+def _generic_scrapy_save_response_to_disk(called_on_class, response, filename, is_response=True):
 
     source_name_with_sample = called_on_class.name + ('_sample' if called_on_class.is_sample() else '')
     directory = os.path.join(
@@ -72,8 +72,10 @@ def _generic_scrapy_save_response_to_disk(called_on_class, response, filename):
     if not os.path.exists(directory):
         os.makedirs(directory)
     with open(os.path.join(directory, filename), 'wb') as f:
-        f.write(response.body)
-
+        if is_response:
+            f.write(response.body)
+        else:
+            f.write(response)
 
 # Now we have our own base spiders (that use our generic functions)
 
@@ -101,8 +103,8 @@ class BaseSpider(scrapy.Spider):
     def get_local_file_path_excluding_filestore(self, filename):
         return _generic_get_local_file_path_excluding_filestore(self, filename)
 
-    def save_response_to_disk(self, response, filename):
-        return _generic_scrapy_save_response_to_disk(self, response, filename)
+    def save_response_to_disk(self, response, filename, is_response=True):
+        return _generic_scrapy_save_response_to_disk(self, response, filename, is_response)
 
 
 class BaseXMLFeedSpider(scrapy.spiders.XMLFeedSpider):
