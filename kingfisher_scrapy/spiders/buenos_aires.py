@@ -27,7 +27,6 @@ class BuenosAires(BaseSpider):
 
     def parse(self, response):
         if response.status == 200:
-            print(response.request.meta)
             if response.request.meta['type'] == 'meta':
                 data = json.loads(response.body_as_unicode())
                 for resource in data['result']['resources']:
