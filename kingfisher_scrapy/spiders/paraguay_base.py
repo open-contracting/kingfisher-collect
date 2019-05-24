@@ -1,84 +1,72 @@
-from datetime import datetime
-
+import scrapy
 import requests
-from scrapy import Request
-from scrapy.http import Headers
-from scrapy.utils import spider
+import logging
 
 from kingfisher_scrapy.base_spider import BaseSpider
-
-access_token = None
-
-# All the Paraguay services has a auth system that is based on access token that expires after a certain amount of
-# request or a certain amount of time, with this class we manage the generation and regeneration of that access token
+from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
 
-class ParaguayBase(BaseSpider):
+class ParaguayDNCPBaseSpider(BaseSpider):
+    """ This base class contains methods used for Paraguay DNCP's
+    authentication protocol.
+    """
+
+    # request limits: since we can't control when Scrapy decides to send a
+    # request, values here are slighly less than real limits.
+    request_time_limit = 13  # in minutes
+    request_limit = 4500
 
     custom_settings = {
         'ITEM_PIPELINES': {
             'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
         },
+        'DOWNLOADER_MIDDLEWARES': {
+            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543
+        },
         'HTTPERROR_ALLOW_ALL': True,
+        'CONCURRENT_REQUESTS': 1
     }
-    request_token = None
-    # The time when the last valid access token request was made
-    request_time = None
-    # The maximum number of request allowed by the service
-    request_limit = 5000
-    # The maximum time that a access token is valid
-    request_time_limit = 14.0
-    # The response header with the information about how many request left for the five access token
-    request_limit_header = 'X-Ratelimit-Remaining'
-    # Number of remaining request given the access token
-    remaining_limit = None
 
-    @staticmethod
-    def get_difference_minutes(datetime_end, datetime_start):
-        return (datetime_end - datetime_start).total_seconds() / 60.0
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(ParaguayDNCPBaseSpider, cls).from_crawler(crawler, *args, **kwargs)
 
-    # Generate a new access token or return the existing one if it is still valid
-    def get_access_token(self, response=None, first=False):
-        global access_token
-        if first:
-            self.remaining_limit = self.request_limit
-            self.request_time = datetime.now()
+        spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
+        if spider.request_token is None:
+            logging.error('No request token available')
+            raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
 
-        if response:
-            self.remaining_limit = int(response.headers[self.request_limit_header])
+        return spider
 
-        if self.remaining_limit > 5 and not first \
-                and self.get_difference_minutes(datetime.now(), self.request_time) < self.request_time_limit:
-            return access_token
-        access_token = self.generate_access_token()
-        self.request_time = datetime.now()
-        self.remaining_limit = self.request_limit
-        return access_token
-
-    # Generate a new access token
-    def generate_access_token(self):
-        spider.logger.debug('Generating Paraguay Access Token')
-        correct = False
-        data_json = ''
-        while not correct:
-            r = requests.post('https://www.contrataciones.gov.py:443/datos/api/oauth/token',
+    def request_access_token(self):
+        """ Requests a new access token (required by ParaguayAuthMiddleware) """
+        token = None
+        attempt = 0
+        max_attempts = 5
+        while attempt < max_attempts and token is None:
+            self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, max_attempts))
+            r = requests.post('https://www.contrataciones.gov.py:443/datos/api/v2/oauth/token',
                               headers={'Authorization': self.request_token})
-            try:
-                data_json = r.json()['access_token']
-                correct = True
-            except requests.exceptions.RequestException:
-                correct = False
-        return 'Bearer ' + data_json
+            if r.status_code == 200:
+                try:
+                    token = r.json()['access_token']
+                except requests.exceptions.RequestException:
+                    self.logger.error(r)
+            else:
+                self.logger.error('Authentication failed. Status code: {}. {}'.format(r.status_code, r.text))
+            attempt = attempt + 1
+        if token is None:
+            self.logger.error('Max attempts to get an access token reached.')
+            raise AuthenticationFailureException()
+        self.logger.info('New access token: {}'.format(token))
 
+        return 'Bearer ' + token
 
-# A custom request class to use as header the most updated access token, with this, we can have concurrent request
-# and we can recover a 401 status
-class AuthTokenRequest(Request):
-    @property
-    def headers(self):
-        global access_token
-        return Headers({'Authorization': access_token})
-
-    @headers.setter
-    def headers(self, value):
-        pass
+    def expires_soon(self, count, timediff):
+        """ Tells if the access token will expire soon (required by
+        ParaguayAuthMiddleware)
+        """
+        if timediff.total_seconds() < ParaguayDNCPBaseSpider.request_time_limit * 60 and count < ParaguayDNCPBaseSpider.request_limit:
+            return False
+        self.logger.info('Count: {}, Timediff: {}'.format(count, timediff.total_seconds()))
+        return True
