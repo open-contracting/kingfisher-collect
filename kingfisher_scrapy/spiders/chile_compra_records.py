@@ -26,7 +26,11 @@ class ChileCompraRecords(BaseSpider):
             return
         current_year = datetime.datetime.now().year + 1
         current_month = datetime.datetime.now().month
-        for year in range(2008, current_year):
+        start_year = 2008
+        if hasattr(self, 'year'):
+            start_year = int(self.year)
+            current_year = start_year + 1
+        for year in range(start_year, current_year):
             for month in range(1, 13):
                 if current_year == year and month > current_month:
                     break
