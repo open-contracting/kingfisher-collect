@@ -24,15 +24,17 @@ class ChileCompraRecords(BaseSpider):
                 meta={'kf_filename': 'sample.json'}
             )
             return
-        current_year = datetime.datetime.now().year + 1
-        current_month = datetime.datetime.now().month
+        until_year = datetime.datetime.now().year + 1
+        until_month = datetime.datetime.now().month
         start_year = 2008
         if hasattr(self, 'year'):
             start_year = int(self.year)
-            current_year = start_year + 1
-        for year in range(start_year, current_year):
+            until_year = start_year + 1
+            until_month = 12
+        for year in range(start_year, until_year):
             for month in range(1, 13):
-                if current_year == year and month > current_month:
+                # just scrape until the current month when the until year = current year
+                if (until_year-1) == year and month > until_month:
                     break
                 yield scrapy.Request(
                     url='https://apis.mercadopublico.cl/OCDS/data/listaA%C3%B1oMes/{}/{:02d}'.format(year, month),
