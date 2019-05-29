@@ -8,7 +8,7 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class AfghanistanReleases(BaseSpider):
     name = 'afghanistan_releases'
     start_urls = ['https://ocds.ageops.net/api/ocds/releases/dates']
-    download_delay = 1
+    download_delay = 1.5
     custom_settings = {
         'ITEM_PIPELINES': {
             'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
@@ -56,7 +56,18 @@ class AfghanistanReleases(BaseSpider):
                     meta={'kf_filename': file_url.split('/')[-1] + '.json'},
                     callback=self.parse_release
                 )
-
+        elif response.status == 429:
+            self.crawler.engine.pause()
+            time.sleep(600)  # 10 minutes
+            self.crawler.engine.unpause()
+            url = response.request.url
+            # This is dangerous as we might get stuck in a loop here if we always get a 429 response. Try this for now.
+            yield scrapy.Request(
+                url=url,
+                meta={'kf_filename': url.split('/')[-1] + '.json'},
+                callback=self.parse_release_list,
+                dont_filter=True,
+            )
         else:
             yield {
                 'success': False,
@@ -84,7 +95,7 @@ class AfghanistanReleases(BaseSpider):
             yield scrapy.Request(
                 url=url,
                 meta={'kf_filename': url.split('/')[-1] + '.json'},
-                callback=self.parse_record,
+                callback=self.parse_release,
                 dont_filter=True,
             )
         else:
