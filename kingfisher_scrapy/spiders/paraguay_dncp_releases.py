@@ -1,12 +1,11 @@
 import csv
-from datetime import date
-
 import scrapy
 
-from kingfisher_scrapy.spiders.paraguay_base import ParaguayBase, AuthTokenRequest
+from datetime import date
+from kingfisher_scrapy.spiders.paraguay_base import ParaguayDNCPBaseSpider
 
 
-class ParaguayDNCPReleases(ParaguayBase):
+class ParaguayDNCPReleases(ParaguayDNCPBaseSpider):
 
     name = 'paraguay_dncp_releases'
 
@@ -15,15 +14,11 @@ class ParaguayDNCPReleases(ParaguayBase):
               'contratos': 'contract', 'modificacion_contrato': 'amendmment'}
 
     def start_requests(self):
-        self.request_token = self.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
-        if self.request_token is None:
-            raise RuntimeError('No request token available')
-        self.get_access_token(first=True)
         base_url = 'https://www.contrataciones.gov.py/images/opendata/{}/{:d}.csv'
         max_year = 2011 if self.is_sample() else date.today().year + 1
         for year in range(2010, max_year):
             for stage in list(self.stages.keys()):
-                yield scrapy.Request(base_url.format(stage, year), meta={'meta': True, 'stage': stage})
+                yield scrapy.Request(base_url.format(stage, year), meta={'meta': True, 'stage': stage, 'auth': False})
 
     def parse(self, response):
         if response.status == 200:
@@ -43,15 +38,13 @@ class ParaguayDNCPReleases(ParaguayBase):
                         else [row[2] for row in reader][1:10]
 
                 for release_id in releases_ids:
-                    yield AuthTokenRequest(
+                    yield scrapy.Request(
                         url=base_url.format(stage, release_id),
                         meta={'kf_filename': 'release{}-{}.json'.format(stage, release_id),
                               'meta': False},
                         dont_filter=True
                     )
             else:
-                # We update the number of remaining request calling the get access token method
-                self.get_access_token(response)
                 self.save_response_to_disk(response, response.request.meta['kf_filename'])
                 yield {
                     'success': True,
@@ -59,13 +52,6 @@ class ParaguayDNCPReleases(ParaguayBase):
                     'data_type': 'release_package',
                     'url': response.request.url,
                 }
-
-        elif response.status == 401 or response.status == 429:
-            yield AuthTokenRequest(
-                url=response.request.url,
-                meta=response.request.meta
-            )
-
         else:
             yield {
                 'success': False,

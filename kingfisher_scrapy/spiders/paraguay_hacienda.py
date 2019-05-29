@@ -2,6 +2,7 @@ import json
 import requests
 import scrapy
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
 
 class ParaguayHacienda(BaseSpider):
@@ -31,7 +32,8 @@ class ParaguayHacienda(BaseSpider):
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
         spider.client_secret = crawler.settings.get('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
         if spider.request_token is None or spider.client_secret is None:
-            raise RuntimeError('No request token or client secret available')
+            spider.logger.error('No request token or client secret available')
+            raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
 
         return spider
 
@@ -90,11 +92,12 @@ class ParaguayHacienda(BaseSpider):
             }
 
     def request_access_token(self):
+        """ Requests an access token (required by ParaguayAuthMiddleware). """
         token = None
         attempt = 0
         max_attempts = 5
         while attempt < max_attempts and token is None:
-            self.logger.info('Requesting access token, attempt {} of {}'.format(attempt, max_attempts))
+            self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, max_attempts))
             r = requests.post("https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
                               headers={"Authorization": self.request_token},
                               json={"clientSecret": "%s" % self.client_secret})
@@ -107,11 +110,15 @@ class ParaguayHacienda(BaseSpider):
                 self.logger.error('Authentication failed. Status code: {}. {}'.format(r.status_code, r.text))
             attempt = attempt + 1
         if token is None:
-            raise RuntimeError('Max attempts to get an access token reached.')
+            self.logger.error('Max attempts to get an access token reached.')
+            raise AuthenticationFailureException()
         self.logger.info('New access token: {}'.format(token))
         return token
 
     def expires_soon(self, count, timediff):
+        """ Tells if current access token will expire soon (required by
+        ParaguayAuthMiddleware)
+        """
         if timediff.total_seconds() < ParaguayHacienda.request_time_limit * 60 and count < ParaguayHacienda.request_limit:
             return False
         self.logger.info('Count: {}, Timediff: {}'.format(count, timediff.total_seconds()))
