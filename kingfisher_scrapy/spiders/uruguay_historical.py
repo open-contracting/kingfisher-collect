@@ -8,6 +8,8 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class UruguayHistorical(BaseSpider):
     name = 'uruguay_historical'
+    # the files takes too long to be downloaded, so we increase the download timeout
+    download_timeout = 1000
     custom_settings = {
         'ITEM_PIPELINES': {
             'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
