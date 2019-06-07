@@ -28,6 +28,7 @@ These sources are available as Scrapy spiders:
   *  uganda
   *  uk_contracts_finder
   *  uruguay
+  *  uruguay_historical
   *  zambia
 
 
