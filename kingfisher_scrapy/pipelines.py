@@ -148,7 +148,7 @@ class OldKingfisherPostPipeline(object):
                     'file_name': completed['file_name'],
                     'url': completed['url'],
                     'data_type': completed['data_type'],
-                    'encoding': item['encoding']
+                    'encoding': completed.get('encoding', 'utf-8')
                 }
 
                 if hasattr(spider, 'note') and spider.note:
