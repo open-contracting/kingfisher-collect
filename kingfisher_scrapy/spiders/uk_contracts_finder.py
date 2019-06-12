@@ -25,14 +25,12 @@ class UKContractsFinder(BaseSpider):
 
         if response.status == 200:
 
-            self.save_response_to_disk(response, response.request.meta['kf_filename'])
-            yield {
-                'success': True,
-                'file_name': response.request.meta['kf_filename'],
-                'data_type': 'release_package_list_in_results',
-                'url': response.request.url,
-                'encoding': 'ISO-8859-1',
-            }
+            yield self.save_response_to_disk(
+                response,
+                response.request.meta['kf_filename'],
+                data_type='release_package_list_in_results',
+                encoding='ISO-8859-1'
+            )
 
             if not self.is_sample() and response.request.meta['kf_filename'] == 'page1.json':
                 json_data = json.loads(response.body_as_unicode())

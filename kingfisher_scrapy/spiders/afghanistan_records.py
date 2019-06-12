@@ -48,13 +48,8 @@ class AfghanistanRecords(BaseSpider):
     def parse_record(self, response):
         if response.status == 200:
 
-            self.save_response_to_disk(response, response.request.meta['kf_filename'])
-            yield {
-                'success': True,
-                'file_name': response.request.meta['kf_filename'],
-                "data_type": "record",
-                "url": response.request.url,
-            }
+            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="record")
+
         elif response.status == 429:
             self.crawler.engine.pause()
             time.sleep(600)  # 10 minutes

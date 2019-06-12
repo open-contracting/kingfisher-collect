@@ -76,13 +76,8 @@ class ParaguayHacienda(BaseSpider):
                             dont_filter=True
                         )
             else:
-                self.save_response_to_disk(response, response.request.meta['kf_filename'])
-                yield {
-                    'success': True,
-                    'file_name': response.request.meta['kf_filename'],
-                    'data_type': 'release_package',
-                    'url': response.request.url,
-                }
+                yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type='release_package')
+
         else:
             yield {
                 'success': False,

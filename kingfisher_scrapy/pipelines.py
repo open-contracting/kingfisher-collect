@@ -248,7 +248,7 @@ class KingfisherPostPipeline(object):
                 'file_name': item['file_name'],
                 'url': item['url'],
                 'data_type': item['data_type'],
-                # TODO add encoding
+                'encoding': item.get('encoding', 'utf-8'),
             }
 
             if hasattr(spider, 'note') and spider.note:

@@ -94,7 +94,7 @@ def _generic_get_local_file_path_including_filestore(called_on_class, filename):
     )
 
 
-def _generic_scrapy_save_response_to_disk(called_on_class, response, filename, is_response=True):
+def _generic_scrapy_save_response_to_disk(called_on_class, response, filename, is_response=True, data_type=None, encoding='utf8'):
 
     source_name_with_sample = called_on_class.name + ('_sample' if called_on_class.is_sample() else '')
     directory = os.path.join(
@@ -109,6 +109,21 @@ def _generic_scrapy_save_response_to_disk(called_on_class, response, filename, i
             f.write(response.body)
         else:
             f.write(response)
+
+    with open(os.path.join(directory, filename + '.fileinfo'), 'w') as f:
+        f.write(json.dumps({
+            'url': response.request.url,
+            'data_type': data_type,
+            'encoding': encoding,
+        }))
+
+    return {
+        'success': True,
+        'file_name': filename,
+        "data_type": data_type,
+        "url": response.request.url,
+        'encoding': encoding,
+    }
 
 # Now we have our own base spiders (that use our generic functions)
 
@@ -140,8 +155,8 @@ class BaseSpider(scrapy.Spider):
     def get_local_file_path_excluding_filestore(self, filename):
         return _generic_get_local_file_path_excluding_filestore(self, filename)
 
-    def save_response_to_disk(self, response, filename, is_response=True):
-        return _generic_scrapy_save_response_to_disk(self, response, filename, is_response)
+    def save_response_to_disk(self, response, filename, is_response=True, data_type=None, encoding='utf-8'):
+        return _generic_scrapy_save_response_to_disk(self, response, filename, is_response=is_response, data_type=data_type, encoding=encoding)
 
 
 class BaseXMLFeedSpider(scrapy.spiders.XMLFeedSpider):
@@ -171,5 +186,5 @@ class BaseXMLFeedSpider(scrapy.spiders.XMLFeedSpider):
     def get_local_file_path_excluding_filestore(self, filename):
         return _generic_get_local_file_path_excluding_filestore(self, filename)
 
-    def save_response_to_disk(self, response, filename):
-        return _generic_scrapy_save_response_to_disk(self, response, filename)
+    def save_response_to_disk(self, response, filename, is_response=True, data_type=None, encoding='utf-8'):
+        return _generic_scrapy_save_response_to_disk(self, response, filename, is_response=is_response, data_type=data_type, encoding=encoding)
