@@ -19,7 +19,7 @@ class AustraliaNSW(BaseSpider):
         sample = hasattr(self, 'sample') and self.sample == 'true'
         release_types = ['planning', 'tender', 'contract']
         url = 'https://tenders.nsw.gov.au'
-        url += '/?event=public.api.%s.search&ResultsPerPage=10'
+        url += '/?event=public.api.%s.search&ResultsPerPage=1000'
         if sample:
             release_types = ['planning']
         for r in release_types:
