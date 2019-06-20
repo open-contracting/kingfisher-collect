@@ -79,13 +79,8 @@ class AfghanistanReleases(BaseSpider):
     def parse_release(self, response):
         if response.status == 200:
 
-            self.save_response_to_disk(response, response.request.meta['kf_filename'])
-            yield {
-                'success': True,
-                'file_name': response.request.meta['kf_filename'],
-                "data_type": "release",
-                "url": response.request.url,
-            }
+            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="release")
+
         elif response.status == 429:
             self.crawler.engine.pause()
             time.sleep(600)  # 10 minutes

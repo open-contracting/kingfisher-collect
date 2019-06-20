@@ -37,13 +37,8 @@ class UruguayHistorical(BaseSpider):
             zip_files = ZipFile(BytesIO(response.body))
             for finfo in zip_files.infolist():
                 data = zip_files.open(finfo.filename).read()
-                self.save_response_to_disk(data, finfo.filename, is_response=False)
-                yield {
-                    'success': True,
-                    'file_name': finfo.filename,
-                    'data_type': 'release_package',
-                    'url': response.request.url,
-                }
+                yield self.save_response_to_disk(data, finfo.filename, is_response=False, data_type='release_package')
+
         else:
             yield {
                 'success': False,

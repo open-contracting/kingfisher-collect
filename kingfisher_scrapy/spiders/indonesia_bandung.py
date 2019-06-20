@@ -30,13 +30,8 @@ class IndonesiaBandung(BaseSpider):
             json_data = json.loads(response.body_as_unicode())
             if len(json_data) == 0:
                 return
-            self.save_response_to_disk(response, response.request.meta['kf_filename'])
-            yield {
-                'success': True,
-                'file_name': response.request.meta['kf_filename'],
-                "data_type": "release_list",
-                "url": response.request.url,
-            }
+            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="release_list")
+
             if not self.is_sample():
                 last_id = json_data[len(json_data)-1]['_id']
                 yield scrapy.Request(

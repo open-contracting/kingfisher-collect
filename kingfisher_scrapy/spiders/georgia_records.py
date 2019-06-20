@@ -24,13 +24,7 @@ class GeorgiaRecords(BaseSpider):
     def parse(self, response):
         if response.status == 200:
 
-            self.save_response_to_disk(response, response.request.meta['kf_filename'])
-            yield {
-                'success': True,
-                'file_name': response.request.meta['kf_filename'],
-                "data_type": "record_package",
-                "url": response.request.url,
-            }
+            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="record_package")
 
             json_data = json.loads(response.body_as_unicode())
             if not (hasattr(self, 'sample') and self.sample == 'true'):
