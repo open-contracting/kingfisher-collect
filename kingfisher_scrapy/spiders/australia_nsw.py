@@ -32,7 +32,8 @@ class AustraliaNSW(BaseSpider):
             json_data = json.loads(response.body_as_unicode())
 
             # More Pages?
-            if 'links' in json_data and 'next' in json_data['links'] and not self.is_sample():
+            if 'links' in json_data and isinstance(json_data['links'], dict) and 'next' in json_data['links'] \
+                    and not self.is_sample():
                 yield scrapy.Request(
                     json_data['links']['next'],
                     meta={'release_type': response.request.meta['release_type']},
