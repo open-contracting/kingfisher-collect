@@ -38,7 +38,7 @@ class BuenosAires(BaseSpider):
             else:
                 zip_file = ZipFile(BytesIO(response.body))
                 data = zip_file.open('bsas_release.json').read()
-                yield self.save_response_to_disk(data, response.request.meta['kf_filename'], is_response=False, data_type='release_package')
+                yield self.save_data_to_disk(data, response.request.meta['kf_filename'], data_type='release_package', url=response.request.url)
         else:
             yield {
                 'success': False,
