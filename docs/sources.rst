@@ -8,6 +8,7 @@ These sources are available as Scrapy spiders:
   *  armenia
   *  australia
   *  australia_nsw
+  *  buenos_aires
   *  canada_buyandsell
   *  canada_montreal
   *  chile_compra_releases

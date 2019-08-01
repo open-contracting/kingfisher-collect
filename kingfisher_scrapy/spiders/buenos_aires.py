@@ -33,12 +33,13 @@ class BuenosAires(BaseSpider):
                     if resource['format'].upper() == 'JSON':
                         yield scrapy.Request(
                             url=resource['url'],
-                            meta={'kf_filename': 'bsas_release.json', 'type': 'data'}
+                            meta={'type': 'data'}
                         )
             else:
                 zip_file = ZipFile(BytesIO(response.body))
-                data = zip_file.open('bsas_release.json').read()
-                yield self.save_data_to_disk(data, response.request.meta['kf_filename'], data_type='release_package', url=response.request.url)
+                for finfo in zip_file.infolist():
+                    data = zip_file.open(finfo.filename).read()
+                    yield self.save_data_to_disk(data, finfo.filename, data_type='release_package', url=response.request.url)
         else:
             yield {
                 'success': False,
