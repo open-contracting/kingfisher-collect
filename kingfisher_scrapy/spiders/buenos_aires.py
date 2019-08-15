@@ -1,6 +1,7 @@
 import json
 from io import BytesIO
 from zipfile import ZipFile
+import hashlib
 
 import scrapy
 
@@ -43,7 +44,7 @@ class BuenosAires(BaseSpider):
         else:
             yield {
                 'success': False,
-                'file_name': response.request.meta['kf_filename'],
+                'file_name': hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json',
                 'url': response.request.url,
                 'errors': {'http_code': response.status}
             }
