@@ -21,6 +21,7 @@ These sources are available as Scrapy spiders:
   *  honduras_oncae
   *  indonesia_bandung
   *  mexico_grupo_aeroporto
+  *  moldova_old
   *  moldova_releases
   *  moldova_records
   *  paraguay_dncp_releases
