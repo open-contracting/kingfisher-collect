@@ -20,6 +20,7 @@ These sources are available as Scrapy spiders:
   *  honduras_cost
   *  honduras_oncae
   *  indonesia_bandung
+  *  mexico_cdmx
   *  mexico_grupo_aeroporto
   *  moldova_releases
   *  moldova_records
@@ -70,7 +71,6 @@ These sources are available as sources in the old system:
   *  digiwhist_switzerland
   *  digiwhist_united_kingdom
   *  mexico_administracion_publica_federal
-  *  mexico_cdmx
   *  mexico_inai
   *  mexico_jalisco
   *  scotland
