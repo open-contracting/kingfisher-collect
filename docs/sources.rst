@@ -23,6 +23,7 @@ These sources are available as Scrapy spiders:
   *  mexico_cdmx
   *  mexico_grupo_aeroporto
   *  moldova_old
+  *  mexico_jalisco
   *  moldova_releases
   *  moldova_records
   *  paraguay_dncp_releases
@@ -74,9 +75,9 @@ These sources are available as sources in the old system:
   *  digiwhist_united_kingdom
   *  mexico_administracion_publica_federal
   *  mexico_inai
-  *  mexico_jalisco
   *  taiwan
   *  ukraine
 
 
 Also in both Scrapy and the old system, there is a special `test_fail` spider that deliberately generates HTTP errors. You can use this to make sure errors are recorded properly.
+
