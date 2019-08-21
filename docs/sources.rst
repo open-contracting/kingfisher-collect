@@ -22,6 +22,7 @@ These sources are available as Scrapy spiders:
   *  indonesia_bandung
   *  mexico_cdmx
   *  mexico_grupo_aeroporto
+  *  moldova_old
   *  moldova_releases
   *  moldova_records
   *  paraguay_dncp_releases
