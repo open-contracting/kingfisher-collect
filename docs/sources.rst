@@ -54,6 +54,7 @@ These sources are available as Scrapy spiders:
   *  honduras_cost
   *  honduras_oncae
   *  indonesia_bandung
+  *  mexico_administracion_publica_federal
   *  mexico_cdmx
   *  mexico_grupo_aeroporto
   *  moldova_old
@@ -74,7 +75,6 @@ These sources are available as Scrapy spiders:
 These sources are available as sources in the old system:
 
 
-  *  mexico_administracion_publica_federal
   *  mexico_inai
   *  taiwan
   *  ukraine
