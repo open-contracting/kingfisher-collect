@@ -15,30 +15,6 @@ These sources are available as Scrapy spiders:
   *  chile_compra_records - you can pass the additional `year` parameter to this scraper, to indicate what year download.
   *  colombia - you can pass the additional `page` parameter to this scraper, to indicate what page to start on.
   *  dhangadhi
-  *  georgia_records
-  *  georgia_releases
-  *  honduras_cost
-  *  honduras_oncae
-  *  indonesia_bandung
-  *  mexico_cdmx
-  *  mexico_grupo_aeroporto
-  *  moldova_old
-  *  mexico_jalisco
-  *  moldova_releases
-  *  moldova_records
-  *  paraguay_dncp_releases
-  *  paraguay_dncp_records
-  *  paraguay_hacienda
-  *  scotland
-  *  uganda
-  *  uk_contracts_finder
-  *  uruguay
-  *  uruguay_historical
-  *  zambia
-
-
-These sources are available as sources in the old system:
-
   *  digiwhist_armenia
   *  digiwhist_austria
   *  digiwhist_belgium
@@ -73,6 +49,31 @@ These sources are available as sources in the old system:
   *  digiwhist_sweden
   *  digiwhist_switzerland
   *  digiwhist_united_kingdom
+  *  georgia_records
+  *  georgia_releases
+  *  honduras_cost
+  *  honduras_oncae
+  *  indonesia_bandung
+  *  mexico_cdmx
+  *  mexico_grupo_aeroporto
+  *  moldova_old
+  *  mexico_jalisco
+  *  moldova_releases
+  *  moldova_records
+  *  paraguay_dncp_releases
+  *  paraguay_dncp_records
+  *  paraguay_hacienda
+  *  scotland
+  *  uganda
+  *  uk_contracts_finder
+  *  uruguay
+  *  uruguay_historical
+  *  zambia
+
+
+These sources are available as sources in the old system:
+
+
   *  mexico_administracion_publica_federal
   *  mexico_inai
   *  taiwan
