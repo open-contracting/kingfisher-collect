@@ -58,6 +58,7 @@ These sources are available as Scrapy spiders:
   *  mexico_administracion_publica_federal
   *  mexico_cdmx
   *  mexico_grupo_aeroporto
+  *  mexico_inai
   *  moldova_old
   *  mexico_jalisco
   *  moldova_releases
@@ -76,7 +77,6 @@ These sources are available as Scrapy spiders:
 These sources are available as sources in the old system:
 
 
-  *  mexico_inai
   *  taiwan
   *  ukraine
 
