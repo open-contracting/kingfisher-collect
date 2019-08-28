@@ -49,6 +49,7 @@ These sources are available as Scrapy spiders:
   *  digiwhist_sweden
   *  digiwhist_switzerland
   *  digiwhist_united_kingdom
+  *  georgia_opendata
   *  georgia_records
   *  georgia_releases
   *  honduras_cost
