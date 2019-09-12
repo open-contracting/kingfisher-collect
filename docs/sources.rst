@@ -59,10 +59,11 @@ These sources are available as Scrapy spiders:
   *  mexico_cdmx
   *  mexico_grupo_aeroporto
   *  mexico_inai
-  *  moldova_old
   *  mexico_jalisco
-  *  moldova_releases
+  *  moldova
+  *  moldova_old
   *  moldova_records
+  *  moldova_releases
   *  paraguay_dncp_releases
   *  paraguay_dncp_records
   *  paraguay_hacienda
