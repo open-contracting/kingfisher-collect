@@ -47,11 +47,12 @@ First, SSH into the server.
 *  Activate the virtual environment: `source .ve/bin/activate`
 *  Run the run command you want - see :doc:`old`.
 
-Run Status
-----------
+Run Status & Logs
+-----------------
 
 You can see the run status on the `Scrapyd web interface <http://scrape.ocdskingfisher.opendataservices.coop>`_. The username and password can be supplied by Open Data Services Co-op on request.  
 
+If Scrapyd has been restarted, the logs will be cleared from the web interface. But they are still available on the server - SSH in and see `/home/ocdskfs/scrapyd/logs/kingfisher`.
 
 Run Status of an old spider
 ---------------------------
