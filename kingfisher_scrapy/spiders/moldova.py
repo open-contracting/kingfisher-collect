@@ -15,6 +15,10 @@ class Moldova(BaseSpider):
     }
 
     endpoints = {"budgets": "https://public.mtender.gov.md/budgets/",
+                 # From https://github.com/open-contracting/kingfisher-scrape/issues/192#issuecomment-529928683
+                 # The /tenders/plans endpoint appeared to return exactly the same data as the /tenders endpoint except
+                 # that when given an OCID parameter it returned an error message. It may be that /tenders/plans just
+                 # lists a subset of /tenders but this isn't clear.
                  # "plans": "https://public.mtender.gov.md/tenders/plan/",
                  "tenders": "https://public.mtender.gov.md/tenders/"}
 
