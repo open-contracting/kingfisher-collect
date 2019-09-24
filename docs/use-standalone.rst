@@ -28,6 +28,8 @@ eg.
 
     scrapy crawl canada_buyandsell -a note="Started by Fred." -a sample=true
     scrapy crawl canada_buyandsell -a note="Started by Fred."
+    ## Optional to use a proxy
+    KINGFISHER_PROXY_URL=http://my.proxy.com scrapy crawl canada_buyandsell -a proxy=true
 
 Update the note with your name, and anything else of interest.
 

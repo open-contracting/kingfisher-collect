@@ -58,6 +58,15 @@ To run a sample run:
 
 Update the note with your name, and anything else of interest.
 
+To run with a proxy run:
+
+.. code-block:: bash
+
+    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=canada_buyandsell -d note="Started by Fred." -d proxy=true
+    {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
+
+Make sure the enviroment KINGFISHER_PROXY_URL is set for this to work.
+
 Find out more in the `Scrapyd docs <https://scrapyd.readthedocs.io/en/latest/overview.html#scheduling-a-spider-run>`_.
 
 Output - Disk

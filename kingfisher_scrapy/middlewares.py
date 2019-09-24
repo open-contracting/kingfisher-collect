@@ -1,4 +1,5 @@
 import scrapy
+from scrapy.downloadermiddlewares.httpproxy import HttpProxyMiddleware
 import logging
 from datetime import datetime
 from kingfisher_scrapy.exceptions import AuthenticationFailureException
@@ -85,3 +86,15 @@ class AuthManager(object):
             cls.access_token = spider.request_access_token()
         except AuthenticationFailureException:
             cls.auth_failed = True
+
+
+class KFProxyMiddleware(HttpProxyMiddleware):
+
+    def process_request(self, request, spider):
+
+        proxy_requested = getattr(spider, 'proxy', False)
+        proxy_url = spider.crawler.settings.get('KINGFISHER_PROXY_URL')
+
+        if proxy_requested and proxy_url:
+            request.meta['proxy'] = proxy_url
+        super().process_request(request, spider)

@@ -37,6 +37,13 @@ To start a run using 'sample mode', to obtain a small amount of data quickly:
 
 Update the note with your name, and anything else of interest.
 
+If downloading the data is a problem from the hosted server you can use a proxy server:
+
+.. code-block:: bash
+
+    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=canada_buyandsell -d proxy=true
+    {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
+
 Scheduling a Run of an old spider
 ---------------------------------
 
