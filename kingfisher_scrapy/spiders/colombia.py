@@ -20,6 +20,9 @@ class Colombia(BaseSpider):
 
     def start_requests(self):
         base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases?page=%d'
+        if hasattr(self, 'year'):
+            year = int(self.year)
+            base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases/page/{}?page=%d'.format(year)
         start_page = 1
         if hasattr(self, 'page'):
             start_page = int(self.page)
