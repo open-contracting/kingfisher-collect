@@ -1,12 +1,9 @@
 from setuptools import setup
 
+# Note this project is not intended to be released or used as a library!
+# But because of how we deploy these scrapers into scrapyd, we need a setup.py file.
+
 setup(
-    name='ocdskingfisher-scrape',
-    version='0.0.1',
-    author='Open Contracting Partnership, Open Data Services, Iniciativa Latinoamericana para los Datos Abiertos',
-    author_email='data@open-contracting.org',
-    url='https://open-contracting.org',
-    license='BSD',
     packages=[
         'kingfisher_scrapy',
         'kingfisher_scrapy.spiders',
