@@ -71,6 +71,7 @@ These sources are available as Scrapy spiders:
   *  scotland
   *  uganda
   *  uk_contracts_finder
+  *  uk_fts
   *  uruguay
   *  uruguay_historical
   *  zambia
