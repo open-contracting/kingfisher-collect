@@ -5,4 +5,5 @@ python:
 install:
     - "pip install -r requirements_dev.txt"
 script:
-    - "flake8 setup.py kingfisher_scrapy/"
+    - "flake8 setup.py kingfisher_scrapy/ tests/"
+    - "python -m pytest tests/"
