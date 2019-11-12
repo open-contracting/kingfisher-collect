@@ -1,32 +1,54 @@
 import json
+import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-# This Spider uses the old system of pipelines! DO NOT USE IT AS AN EXAMPLE OF WHAT TO DO IN FUTURE SPIDERS!
-# Thank you.
 class CanadaMontreal(BaseSpider):
     name = 'canada_montreal'
-    start_urls = ['https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=1']
+    start_urls = ['https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json']
     custom_settings = {
         'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.OldKingfisherFilesPipeline': 400,
-            'kingfisher_scrapy.pipelines.OldKingfisherPostPipeline': 800,
-        }
+            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
+        },
+        'HTTPERROR_ALLOW_ALL': True,
     }
+    page_limit = 10000
+
+    def start_requests(self):
+        yield scrapy.Request(
+            url='https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=%d' % self.page_limit,
+            meta={'kf_filename': 'page0.json'}
+        )
 
     def parse(self, response):
-        data = json.loads(response.body_as_unicode())
-        total = data['meta']['count']
-        offset = 0
-        limit = 10000
-        if hasattr(self, 'sample') and self.sample == 'true':
-            total = 1
-            limit = 50
-        while offset < total:
+        if response.status == 200:
+
+            # Actual data
+            yield self.save_response_to_disk(
+                response,
+                response.request.meta['kf_filename'],
+                data_type="release_package"
+            )
+
+            # Load more pages?
+            if not self.is_sample() and response.request.meta['kf_filename'] == 'page0.json':
+                data = json.loads(response.body_as_unicode())
+                total = data['meta']['count']
+                offset = self.page_limit
+                while offset < total:
+                    url = 'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=%d&offset=%d' % \
+                          (self.page_limit, offset)
+                    yield scrapy.Request(
+                        url=url,
+                        meta={'kf_filename': 'page' + str(offset) + '.json'}
+                    )
+                    offset += self.page_limit
+
+        else:
             yield {
-                'file_urls': ['https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=%d&offset=%d' %
-                              (limit, offset)],
-                'data_type': 'release_package',
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                "url": response.request.url,
+                "errors": {"http_code": response.status}
             }
-            offset += limit
