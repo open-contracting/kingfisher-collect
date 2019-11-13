@@ -7,7 +7,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class Zambia(BaseSpider):
     name = 'zambia'
-    start_urls = ['https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackagelist']
     custom_settings = {
         'ITEM_PIPELINES': {
             'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
