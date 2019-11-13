@@ -1,28 +1,59 @@
 import json
+import scrapy
+from io import BytesIO
+from zipfile import ZipFile
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-# This Spider uses the old system of pipelines! DO NOT USE IT AS AN EXAMPLE OF WHAT TO DO IN FUTURE SPIDERS!
-# Thank you.
 class Zambia(BaseSpider):
-    ext = '.zip'
     name = 'zambia'
-    start_urls = ['https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackagelist']
     custom_settings = {
         'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.OldKingfisherFilesPipeline': 400,
-            'kingfisher_scrapy.pipelines.OldKingfisherPostPipeline': 800,
-        }
+            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
+        },
+        'HTTPERROR_ALLOW_ALL': True,
     }
 
-    def parse(self, response):
-        files_urls = json.loads(response.body_as_unicode())['packagesPerMonth']
+    def start_requests(self):
+        yield scrapy.Request(
+            'https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackagelist',
+            callback=self.parse_list
+        )
 
-        if hasattr(self, 'sample') and self.sample == 'true':
-            files_urls = [files_urls[0]]
+    def parse_list(self, response):
+        if response.status == 200:
 
-        for file_url in files_urls:
+            json_data = json.loads(response.body_as_unicode())
+            files_urls = json_data['packagesPerMonth']
+
+            if self.is_sample():
+                files_urls = [files_urls[0]]
+
+            for file_url in files_urls:
+                yield scrapy.Request(
+                    file_url,
+                    meta={'kf_filename': '%s.json' % file_url[-16:].replace('/', '-')},
+                )
+
+        else:
             yield {
-                'file_urls': [file_url],
-                'data_type': 'record_package'
+                'success': False,
+                'file_name': 'list.json',
+                "url": response.request.url,
+                "errors": {"http_code": response.status}
+            }
+
+    def parse(self, response):
+        if response.status == 200:
+            zip_files = ZipFile(BytesIO(response.body))
+            for finfo in zip_files.infolist():
+                data = zip_files.open(finfo.filename).read()
+                yield self.save_data_to_disk(data, finfo.filename, data_type='record_package', url=response.request.url)
+
+        else:
+            yield {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                'url': response.request.url,
+                'errors': {'http_code': response.status}
             }
