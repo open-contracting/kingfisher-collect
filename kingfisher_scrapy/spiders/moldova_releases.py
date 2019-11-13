@@ -7,7 +7,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class MoldovaReleases(BaseSpider):
     name = 'moldova_releases'
-    start_urls = ['http://ocds.mepps.openprocurement.io/api/releases.json']
     custom_settings = {
         'ITEM_PIPELINES': {
             'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
