@@ -6,7 +6,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class CanadaMontreal(BaseSpider):
     name = 'canada_montreal'
-    start_urls = ['https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json']
     custom_settings = {
         'ITEM_PIPELINES': {
             'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
