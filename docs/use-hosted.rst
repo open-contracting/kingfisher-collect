@@ -52,7 +52,18 @@ Run Status & Logs
 
 You can see the run status on the `Scrapyd web interface <http://scrape.ocdskingfisher.opendataservices.coop>`_. The username and password can be supplied by Open Data Services Co-op on request.  
 
-If Scrapyd has been restarted, the logs will be cleared from the web interface. But they are still available on the server - SSH in and see `/home/ocdskfs/scrapyd/logs/kingfisher`.
+If Scrapyd has been restarted, the jobs will be cleared from the web interface. But the logs are still available on the server - SSH in and see `/home/ocdskfs/scrapyd/logs/kingfisher`. You can also browse `the Scrapyd logs interface <http://scrape.ocdskingfisher.opendataservices.coop/logs/>`_.
+
+There is also a summary report generated for each run. These are generated a short while after the run has finished, so you may have to wait for these.
+
+To find them, navigate `the Scrapyd logs interface <http://scrape.ocdskingfisher.opendataservices.coop/logs/>`_ and look for file names with `_report` in.
+
+If you are on the `the Scrapyd jobs interface <http://scrape.ocdskingfisher.opendataservices.coop/jobs>`_ and want to see the report for a run that has finished:
+
+* Right click on the link to the log.
+* Select Copy Link Location, or similar.
+* Paste the link into the address bar.
+* Change `.log` at the end to `_report.log` and press enter to load the new URL.
 
 Run Status of an old spider
 ---------------------------
