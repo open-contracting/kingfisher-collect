@@ -91,6 +91,3 @@ class ChileCompraBaseSpider(BaseSpider):
         else:
             return [self.save_response_to_disk(response, response.request.meta['kf_filename'],
                                                data_type='%s_package' % package_type)]
-
-
-
