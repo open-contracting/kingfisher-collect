@@ -11,7 +11,7 @@ These sources are available as Scrapy spiders:
   *  buenos_aires
   *  canada_buyandsell
   *  canada_montreal
-  *  chile_compra_releases
+  *  chile_compra_releases - you can pass the additional `year` parameter to this scraper, to indicate what year download.
   *  chile_compra_records - you can pass the additional `year` parameter to this scraper, to indicate what year download.
   *  colombia - you can pass the additional `page` parameter to this scraper, to indicate what page to start on, and also you can pass the additional `year` parameter to this scraper, to indicate what year download.
   *  dhangadhi
