@@ -33,7 +33,7 @@ class ChileCompraBaseSpider(BaseSpider):
     def get_sample_request(self):
         return scrapy.Request(
                 url=self.base_list_url.format(2017, 10, 0, 10),
-                meta={'kf_filename': 'sample.json'}
+                meta={'kf_filename': 'sample.json', 'year': 2017, 'month': 10}
             )
 
     def start_requests(self):
@@ -47,7 +47,7 @@ class ChileCompraBaseSpider(BaseSpider):
                 if (until_year - 1) == year and month > until_month:
                     break
                 yield scrapy.Request(
-                    url=self.base_list_url.format(year, month, self.limit),
+                    url=self.base_list_url.format(year, month, 0, self.limit),
                     meta={'kf_filename': self.base_file_name.format(year, month, 0, self.limit),
                           'year': year, 'month': month}
                 )
