@@ -18,6 +18,7 @@ The developers have tested kingfisher-scrape on `Scrapy Cloud <https://scrapingh
    use-standalone.rst
    use-scrapyd.rst
    use-hosted.rst
+   run-report-guide.rst
    use-scrapycloud.rst
    cli/index.rst
    writing-scrapers.rst
