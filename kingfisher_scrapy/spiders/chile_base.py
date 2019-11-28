@@ -18,7 +18,6 @@ class ChileCompraBaseSpider(BaseSpider):
     limit = 100
     base_list_url = 'https://apis.mercadopublico.cl/OCDS/data/listaA%C3%B1oMes/{}/{:02d}/{}/{}'
     record_url = 'https://apis.mercadopublico.cl/OCDS/data/record/%s'
-    base_file_name = 'year-{}-month-{:02d}-offset-{}-limit-{}.json'
     start_year = 2008
 
     def get_year_month_until(self):
@@ -33,7 +32,7 @@ class ChileCompraBaseSpider(BaseSpider):
     def get_sample_request(self):
         return scrapy.Request(
                 url=self.base_list_url.format(2017, 10, 0, 10),
-                meta={'kf_filename': 'sample.json', 'year': 2017, 'month': 10}
+                meta={'year': 2017, 'month': 10}
             )
 
     def start_requests(self):
@@ -48,8 +47,7 @@ class ChileCompraBaseSpider(BaseSpider):
                     break
                 yield scrapy.Request(
                     url=self.base_list_url.format(year, month, 0, self.limit),
-                    meta={'kf_filename': self.base_file_name.format(year, month, 0, self.limit),
-                          'year': year, 'month': month}
+                    meta={'year': year, 'month': month}
                 )
 
     def base_parse(self, response, package_type):
@@ -84,10 +82,16 @@ class ChileCompraBaseSpider(BaseSpider):
                 offset = data['pagination']['offset']
                 yield_list.append(scrapy.Request(
                     url=self.base_list_url.format(year, month, self.limit + offset, self.limit),
-                    meta={'year': year, 'month': month,
-                          'kf_filename': self.base_file_name.format(year, month, offset, self.limit)}
+                    meta={'year': year, 'month': month}
                 ))
             return yield_list
+        elif 'status' in data and data['status'] != 200:
+            return {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                'url': response.request.url,
+                'errors': {'http_code': data['status']}
+            }
         else:
             return [self.save_response_to_disk(response, response.request.meta['kf_filename'],
                                                data_type='%s_package' % package_type)]
