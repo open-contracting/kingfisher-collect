@@ -86,12 +86,12 @@ class ChileCompraBaseSpider(BaseSpider):
                 ))
             return yield_list
         elif 'status' in data and data['status'] != 200:
-            return {
+            return [{
                 'success': False,
-                'file_name': response.request.meta['kf_filename'],
+                'file_name': response.request.meta['kf_filename'] if 'kf_filename' in response.request.meta else None,
                 'url': response.request.url,
                 'errors': {'http_code': data['status']}
-            }
+            }]
         else:
             return [self.save_response_to_disk(response, response.request.meta['kf_filename'],
                                                data_type='%s_package' % package_type)]
