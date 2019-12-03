@@ -22,7 +22,12 @@ class HondurasPortalRecords(BaseSpider):
         if response.status == 200:
 
             json_data = json.loads(response.body_as_unicode())
-            yield self.save_data_to_disk(json.dumps(json_data['results']).encode(), response.request.meta['kf_filename'], data_type='record_list', url=response.request.url)
+            yield self.save_data_to_disk(
+                json.dumps(json_data['results']).encode(),
+                response.request.meta['kf_filename'],
+                data_type='record_list',
+                url=response.request.url
+            )
 
             url = json_data['next']
             yield scrapy.Request(
