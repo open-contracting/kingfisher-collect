@@ -11,19 +11,17 @@ class ParaguayAuthMiddleware(object):
     Both DNCP (procurement authority) and Hacienda (finance ministry) use an
     authentication protocol based on OAuth 2.0.
 
-    This middleware is an attempt to manage the protocol, which in short
+    This middleware helps us to manage the protocol, which
     consists on acquiring an access token every x minutes (usually 15) and
     sending the token on each request. The acquisition method of the token is
     delegated to the spider, since each publisher has their own credentials and
     requirements.
 
     Apparently, a Downloader Middleware is the best place to set HTTP Request
-    Headers (see https://docs.scrapy.org/en/latest/topics/architecture.html).
-    Sadly, it may not be the best place for all purposes intended here. Scrapy
-    relies on threads to execute spiders, and we have not been able to find a
-    place (Scrapy component) where to perform the token acquisition requests
-    that is not invoked within a thread (which provokes multiple unnecesary
-    token requests). For now, the issue is avoided by setting the number of
+    Headers (see https://docs.scrapy.org/en/latest/topics/architecture.html), but it's not enough for this case :(.
+    Tokens should be generated and assigned just before sending a request,
+    but Scrapy does not provide any way to do this, which in turn means that sometimes we accidently send expired tokens.
+    For now, the issue seems to be avoided by setting the number of
     concurrent requests to 1, at cost of download speed.
 
     """
@@ -51,7 +49,7 @@ class ParaguayAuthMiddleware(object):
 
     def process_response(self, request, response, spider):
         if response.status == 401 or response.status == 429:
-            spider.logger.info('Count: {}, Time transcurred: {}'.format(AuthManager.request_count, (datetime.now() - AuthManager.start_time).total_seconds()))
+            spider.logger.info('Time transcurred: {}'.format((datetime.now() - AuthManager.start_time).total_seconds()))
             logging.info('{} returned for request to {}'.format(response.status, request.url))
             if not AuthManager.access_token == request.headers['Authorization'] and self._expires_soon(spider):
                 AuthManager.reset_access_token(spider)
@@ -60,7 +58,7 @@ class ParaguayAuthMiddleware(object):
         return response
 
     def _expires_soon(self, spider):
-        return spider.expires_soon(AuthManager.request_count, datetime.now() - AuthManager.start_time)
+        return spider.expires_soon(datetime.now() - AuthManager.start_time)
 
 
 class AuthManager(object):
@@ -68,18 +66,15 @@ class AuthManager(object):
 
     access_token = None
     start_time = None
-    request_count = 0
     auth_failed = False
 
     @classmethod
     def get_access_token(cls):
-        cls.request_count = cls.request_count + 1
         return cls.access_token
 
     @classmethod
     def reset_access_token(cls, spider):
         cls.start_time = datetime.now()
-        cls.request_count = 0
         try:
             # spider MUST implement the request_access_token method
             cls.access_token = spider.request_access_token()
