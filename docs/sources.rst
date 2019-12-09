@@ -75,13 +75,4 @@ These sources are available as Scrapy spiders:
   *  uruguay_historical
   *  zambia
 
-
-These sources are available as sources in the old system:
-
-
-  *  taiwan
-  *  ukraine
-
-
-Also in both Scrapy and the old system, there is a special `test_fail` spider that deliberately generates HTTP errors. You can use this to make sure errors are recorded properly.
-
+There is a special ``test_fail`` spider that deliberately generates HTTP errors. You can use this to make sure errors are recorded properly.

@@ -21,4 +21,3 @@ The developers have tested kingfisher-scrape on `Scrapy Cloud <https://scrapingh
    use-scrapycloud.rst
    cli/index.rst
    writing-scrapers.rst
-   old.rst
