@@ -5,6 +5,8 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class HondurasPortalReleases(BaseSpider):
     name = 'honduras_portal_releases'
+    download_delay = 1.5
+    final = '107996'
     custom_settings = {
         'ITEM_PIPELINES': {
             'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
@@ -13,6 +15,9 @@ class HondurasPortalReleases(BaseSpider):
     }
 
     def start_requests(self):
+        if self.is_sample():
+            self.final = '11'
+
         yield scrapy.Request(
             url='http://200.13.162.86/api/v1/release/?format=json',
             meta={'kf_filename': 'page1.json'}
@@ -30,10 +35,13 @@ class HondurasPortalReleases(BaseSpider):
             )
 
             url = json_data['next']
-            yield scrapy.Request(
-                url,
-                meta={'kf_filename': 'page%s.json' % url[54:]}
-            )
+            if not url or url[54:] == self.final:
+                return
+            else:
+                yield scrapy.Request(
+                    url,
+                    meta={'kf_filename': 'page%s.json' % url[54:]}
+                )
 
         else:
             yield {
