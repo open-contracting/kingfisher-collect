@@ -1,6 +1,5 @@
 import hashlib
 import json
-import re
 from datetime import date
 from datetime import timedelta
 
@@ -35,19 +34,12 @@ class Uruguay(BaseSpider):
             yield scrapy.Request(
                 url,
                 meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'},
-                callback = self.parse_list
+                callback=self.parse_list
             )
 
     def parse_list(self, response):
         if response.status == 200:
-
-            if self.is_sample():
-                parts = re.split('\<item\>', response.text)
-                next_response = response.replace(body=parts[0] + '<item>' + parts[-1])
-            else:
-                next_response = response
-
-            root = next_response.xpath('//item/link/text()').getall()
+            root = response.xpath('//item/link/text()').getall()
 
             if self.is_sample():
                 root = [root[0]]
