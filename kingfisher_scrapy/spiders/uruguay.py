@@ -47,7 +47,7 @@ class Uruguay(BaseSpider):
             else:
                 next_response = response
 
-            root = response.xpath('//item/link/text()').getall()
+            root = next_response.xpath('//item/link/text()').getall()
 
             if self.is_sample():
                 root = [root[0]]
