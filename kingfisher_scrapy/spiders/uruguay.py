@@ -1,29 +1,27 @@
-import re
+import hashlib
+import json
 from datetime import date
 from datetime import timedelta
 
-from kingfisher_scrapy.base_spider import BaseXMLFeedSpider
+import scrapy
+
+from kingfisher_scrapy.base_spider import BaseSpider
 
 
-# This Spider uses the old system of pipelines! DO NOT USE IT AS AN EXAMPLE OF WHAT TO DO IN FUTURE SPIDERS!
-# Thank you.
-class Uruguay(BaseXMLFeedSpider):
+class Uruguay(BaseSpider):
     name = 'uruguay'
-    intertag = 'item'
     base_url = 'http://comprasestatales.gub.uy/ocds/rss/{year:d}/{month:02d}'
     download_delay = 0.9
-    randomize_download_delay = False
     custom_settings = {
         'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.OldKingfisherFilesPipeline': 400,
-            'kingfisher_scrapy.pipelines.OldKingfisherPostPipeline': 800,
-        }
+            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
+        },
+        'HTTPERROR_ALLOW_ALL': True,
     }
 
     def start_requests(self):
-        current_date = date(2017, 11, 1)  # feed starts in 2017/12
-
-        if hasattr(self, 'sample') and self.sample == 'true':
+        current_date = date(2017, 11, 1)
+        if self.is_sample():
             end_date = date(2017, 12, 1)
         else:
             end_date = date.today().replace(day=1)
@@ -32,18 +30,48 @@ class Uruguay(BaseXMLFeedSpider):
             current_date += timedelta(days=32)
             current_date.replace(day=1)
 
-            url = Uruguay.base_url.format(year=current_date.year, month=current_date.month)
-            yield self.make_requests_from_url(url)
+            url = self.base_url.format(year=current_date.year, month=current_date.month)
+            yield scrapy.Request(
+                url,
+                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'},
+                callback=self.parse_list
+            )
 
-    def adapt_response(self, response):
-        if hasattr(self, 'sample') and self.sample == 'true':
-            parts = re.split('\<item\>', response.text) # noqa
-            new_response = response.replace(body=parts[0] + '<item>' + parts[-1])
-            return new_response
-        return response
+    def parse_list(self, response):
+        if response.status == 200:
+            root = response.xpath('//item/link/text()').getall()
 
-    def parse_node(self, response, node):
-        yield {
-            'file_urls': node.xpath('link/text()').extract(),
-            'data_type': 'release_package'
-        }
+            if self.is_sample():
+                root = [root[0]]
+
+            for url in root:
+                yield scrapy.Request(
+                    url,
+                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+                )
+
+        else:
+            yield {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                'url': response.request.url,
+                'errors': {'http_code': response.status}
+            }
+
+    def parse(self, response):
+        if response.status == 200:
+            json_data = json.loads(response.body_as_unicode())
+            yield self.save_data_to_disk(
+                json.dumps(json_data).encode(),
+                response.request.meta['kf_filename'],
+                data_type='release_package',
+                url=response.request.url
+            )
+
+        else:
+            yield {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                'url': response.request.url,
+                'errors': {'http_code': response.status}
+            }
