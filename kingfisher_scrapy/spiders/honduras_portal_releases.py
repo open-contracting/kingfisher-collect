@@ -15,7 +15,7 @@ class HondurasPortalReleases(BaseSpider):
     }
 
     def start_requests(self):
-        url = 'http://200.13.162.86/api/v1/release/?format=json',
+        url = 'http://200.13.162.86/api/v1/release/?format=json'
         yield scrapy.Request(
             url,
             meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
