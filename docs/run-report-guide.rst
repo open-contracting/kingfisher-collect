@@ -24,3 +24,13 @@ For example, some of the Paraguay scrapers need an authentication token. The ser
 
 This means the presence of a non-200 line is not always a error, but it should always be checked.
 
+Asking for help to interpret problems
+-------------------------------------
+
+Unfortunately, it's hard to give clear guides on how to interpret problems as the advice can differ a lot for different scrapers.
+
+For hosted Kingfisher, please ask a developer for help with any issues.
+
+If you are running Kingfisher yourself, please open an issue in `GitHub <https://github.com/open-contracting/kingfisher-scrape>`_.
+
+In both cases, we will try and build up this documentation as common patterns are uncovered.
