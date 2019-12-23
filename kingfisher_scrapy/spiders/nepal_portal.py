@@ -17,10 +17,11 @@ class NepalPortal(BaseSpider):
     }
 
     def start_requests(self):
-        current_year = 2013
         if self.is_sample():
-            end_year = 2013
+            current_year = 2018
+            end_year = 2018
         else:
+            current_year = 2013
             now = datetime.datetime.now()
             end_year = now.year
 
