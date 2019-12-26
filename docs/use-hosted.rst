@@ -37,16 +37,6 @@ To start a run using 'sample mode', to obtain a small amount of data quickly:
 
 Update the note with your name, and anything else of interest.
 
-Scheduling a Run of an old spider
----------------------------------
-
-First, SSH into the server.
-
-*  Create a new TMUX session. Use the name of the spider as the name of the session.
-*  Change into the folder: `cd ocdskingfisherscrape/`
-*  Activate the virtual environment: `source .ve/bin/activate`
-*  Run the run command you want - see :doc:`old`.
-
 Run Status & Logs
 -----------------
 
@@ -65,19 +55,10 @@ If you are on the `the Scrapyd jobs interface <http://scrape.kingfisher.open-con
 * Paste the link into the address bar.
 * Change `.log` at the end to `_report.log` and press enter to load the new URL.
 
-Run Status of an old spider
----------------------------
-
-First, SSH into the server.
-
-Look for the TMUX session with the same name of the spider. Open that to see it's progress.
-
-
 Deploying Latest Spiders
 ------------------------
 
 If you've developed a new spider (or made updates to an existing one), then you should ensure that they have been merged to the master branch of the kingfisher-scrape repo. 
-
 
 SSH into the server, as above, then:
 
@@ -87,10 +68,7 @@ SSH into the server, as above, then:
 *  Update the virtual environment: `pip3 install -r requirements.txt`
 *  Deploy: `scrapyd-deploy`
 
-Nothing special needs to be done to update the old spiders. Simply use git to get the latest version of the code onto the server.
-
-(Sometimes, it may be necessary to use salt to get the latest version of the code onto the server and update the server to the correct configuration. Most of the time this isn't needed thought, and you can just use git as described here. If you're not set up for this (or have no idea what this means!), speak to the Open Data Services development team.)
-
+(Sometimes, it may be necessary to use salt to get the latest version of the code onto the server and update the server to the correct configuration. Most of the time this isn't needed though, and you can just use git as described here. If you're not set up for this (or have no idea what this means!), speak to the Open Data Services development team.)
 
 Are any spiders currently running?
 ----------------------------------
@@ -98,13 +76,6 @@ Are any spiders currently running?
 You may want to know this before doing server maintenance, stopping or starting Scrapyd, etc.
 
 For new spiders in Scrapy, check the `Scrapyd web interface <http://scrape.kingfisher.open-contracting.org>`_ - click on `Jobs` and look in the `Running` section.
-
-For old spiders in the old system, look for any processes by running:
-
-.. code-block:: bash
-
-    ps aux | grep ocdskingfisher-old-cli
-
 
 Stopping and starting Scrapyd
 -----------------------------

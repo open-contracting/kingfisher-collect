@@ -7,13 +7,6 @@ setup(
     packages=[
         'kingfisher_scrapy',
         'kingfisher_scrapy.spiders',
-        'ocdskingfisher',
-        'ocdskingfisher.sources',
-        'ocdskingfisher.metadatabase',
-        'ocdskingfisher.metadatabase.migrations',
-        'ocdskingfisher.metadatabase.migrations.versions',
-        'ocdskingfisher.cli',
-        'ocdskingfisher.cli.commands'
     ],
     entry_points={'scrapy': ['settings = kingfisher_scrapy.settings']},
 )
