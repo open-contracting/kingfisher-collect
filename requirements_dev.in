@@ -1,3 +1,4 @@
--r requirements.in
+-r requirements.txt
+pip-tools
 flake8
 pytest
