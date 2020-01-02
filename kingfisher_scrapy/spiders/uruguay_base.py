@@ -8,8 +8,7 @@ import scrapy
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class Uruguay(BaseSpider):
-    name = 'uruguay'
+class UruguayBase(BaseSpider):
     base_url = 'http://comprasestatales.gub.uy/ocds/rss/{year:d}/{month:02d}'
     download_delay = 0.9
     custom_settings = {
@@ -37,34 +36,13 @@ class Uruguay(BaseSpider):
                 callback=self.parse_list
             )
 
-    def parse_list(self, response):
-        if response.status == 200:
-            root = response.xpath('//item/link/text()').getall()
-
-            if self.is_sample():
-                root = [root[0]]
-
-            for url in root:
-                yield scrapy.Request(
-                    url,
-                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
-                )
-
-        else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
-
     def parse(self, response):
         if response.status == 200:
             json_data = json.loads(response.body_as_unicode())
             yield self.save_data_to_disk(
                 json.dumps(json_data).encode(),
                 response.request.meta['kf_filename'],
-                data_type='release_package',
+                data_type=response.request.meta['data_type'],
                 url=response.request.url
             )
 
