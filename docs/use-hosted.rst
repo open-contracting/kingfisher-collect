@@ -37,6 +37,18 @@ To start a run using 'sample mode', to obtain a small amount of data quickly:
 
 Update the note with your name, and anything else of interest.
 
+Scheduling a Run using a proxy
+------------------------------
+
+Some spiders can be run with the use of a proxy. To do this, use the commands above but add the the https_proxy and http_proxy options.
+
+.. code-block:: bash
+
+    $ ... -d https_proxy=URL -d http_proxy=URL
+
+Note only some spiders will make use of a proxy. Other spiders will silently ignore these options.
+
+
 Run Status & Logs
 -----------------
 
