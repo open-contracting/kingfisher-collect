@@ -23,6 +23,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
             'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
         },
         'DOWNLOADER_MIDDLEWARES': {
+            'kingfisher_scrapy.middlewares.HttpProxyWithSpiderArgsMiddleware': 350,
             'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543
         },
         'HTTPERROR_ALLOW_ALL': True,
@@ -35,9 +36,14 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         spider = super(ParaguayDNCPBaseSpider, cls).from_crawler(crawler, *args, **kwargs)
 
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
+
         if spider.request_token is None:
             logging.error('No request token available')
             raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
+
+        spider.proxies = None
+        if hasattr(spider, 'https_proxy'):
+            spider.proxies = {'https': spider.https_proxy}
 
         return spider
 
@@ -91,7 +97,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         while attempt < max_attempts and token is None:
             self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, max_attempts))
             r = requests.post('https://www.contrataciones.gov.py:443/datos/api/v2/oauth/token',
-                              headers={'Authorization': self.request_token})
+                              headers={'Authorization': self.request_token}, proxies=self.proxies)
             if r.status_code == 200:
                 try:
                     token = r.json()['access_token']

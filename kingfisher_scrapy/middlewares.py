@@ -4,6 +4,24 @@ from datetime import datetime
 from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
 
+class HttpProxyWithSpiderArgsMiddleware(object):
+
+    def __init__(self, spider):
+        logging.info('Using HttpProxyWithSpiderArgsMiddleware.')
+        if not hasattr(spider, 'http_proxy') and not hasattr(spider, 'https_proxy'):
+            logging.warning('No proxy arguments have been set!')
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.spider)
+
+    def process_request(self, request, spider):
+        if request.url.startswith('https:') and hasattr(spider, 'https_proxy'):
+            request.meta['proxy'] = spider.https_proxy
+        elif request.url.startswith('http:') and hasattr(spider, 'http_proxy'):
+            request.meta['proxy'] = spider.http_proxy
+
+
 class ParaguayAuthMiddleware(object):
     """Downloader middleware that manages API authentication for Paraguay
     scrapers.
