@@ -14,13 +14,13 @@ Scheduling a Run
 
 First, SSH into the server. For access details, see the `hosted kingfisher documentation <https://ocdskingfisher.readthedocs.io/en/latest/#hosted-kingfisher>`_
 
-Then, for example:
+Then, for example, replacing ``spider_name`` with a spider's name like ``canada_buyandsell`` and ``NAME`` with your name:
 
 .. code-block:: bash
 
-    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=canada_buyandsell -d note="Started by Fred."
+    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d note="Started by NAME."
 
-Update the note with your name, and anything else of interest.
+Update the note with anything else of interest.
 
 If successful, you should see output that looks like:
 
@@ -28,14 +28,12 @@ If successful, you should see output that looks like:
 
    {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
     
-To start a run using 'sample mode', to obtain a small amount of data quickly:
+To start a run using 'sample mode', to obtain a small amount of data quickly, add ``-d sample-true``, for example:
 
 .. code-block:: bash
 
-    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=canada_buyandsell -d sample=true -d note="Started by Fred."
+    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d note="Started by NAME." -d sample=true
     {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
-
-Update the note with your name, and anything else of interest.
 
 Scheduling a Run using a proxy
 ------------------------------

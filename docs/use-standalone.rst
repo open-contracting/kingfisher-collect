@@ -20,14 +20,14 @@ To run one:
 
 .. code-block:: bash
 
-    scrapy crawl <spider_name> -a key=value
+    scrapy crawl spider_name -a key=value
 
-eg.
+For example, replacing ``spider_name`` with a spider's name like ``canada_buyandsell`` and ``NAME`` with your name:
 
 .. code-block:: bash
 
-    scrapy crawl canada_buyandsell -a note="Started by Fred." -a sample=true
-    scrapy crawl canada_buyandsell -a note="Started by Fred."
+    scrapy crawl spider_name -a note="Started by NAME." -a sample=true
+    scrapy crawl spider_name -a note="Started by NAME."
 
 Update the note with your name, and anything else of interest.
 

@@ -44,16 +44,18 @@ The code must be packaged up and deployed to the server
 Scheduling a run
 ----------------
 
+Replacing ``spider_name`` with a spider's name like ``canada_buyandsell`` and ``NAME`` with your name:
+
 .. code-block:: bash
 
-    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=canada_buyandsell -d note="Started by Fred."
+    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d note="Started by NAME."
     {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
 
-To run a sample run:
+To run a sample run, add ``-d sample-true``, for example:
 
 .. code-block:: bash
 
-    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=canada_buyandsell -d note="Started by Fred." -d sample=true
+    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d note="Started by NAME." -d sample=true
     {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
 
 Update the note with your name, and anything else of interest.
