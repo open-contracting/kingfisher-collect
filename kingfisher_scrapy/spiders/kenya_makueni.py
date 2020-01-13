@@ -1,12 +1,13 @@
 import hashlib
 import json
+import requests
 import scrapy
+
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class KenyaMakueni(BaseSpider):
     name = 'kenya_makueni'
-    download_delay = 0.9
     custom_settings = {
         'ITEM_PIPELINES': {
             'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
@@ -16,27 +17,33 @@ class KenyaMakueni(BaseSpider):
 
     def start_requests(self):
         if self.is_sample():
-            url = 'https://opencontracting.makueni.go.ke/api/ocds/package/ocid/ocds-muq5cl-18757'
+            page_size = 10
         else:
-            url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all'
+            count = requests.get('https://opencontracting.makueni.go.ke/api/ocds/release/count')
+            page_size = int(count.text)
 
-        yield scrapy.Request(
-            url,
-            meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
-        )
+        if page_size > 300:
+            url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageNumber={}'
+            for page in range(page_size):
+                yield scrapy.Request(
+                    url.format(page),
+                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+                )
+
+        else:
+            url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={}'
+            yield scrapy.Request(
+                url.format(page_size),
+                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+            )
 
     def parse(self, response):
         if response.status == 200:
-            if self.is_sample():
-                data_type = 'release_package',
-            else:
-                data_type = 'release_package_list',
-
             json_data = json.loads(response.body_as_unicode())
             yield self.save_data_to_disk(
                 json.dumps(json_data).encode(),
                 response.request.meta['kf_filename'],
-                data_type=data_type,
+                data_type='release_package_list',
                 url=response.request.url
             )
 
