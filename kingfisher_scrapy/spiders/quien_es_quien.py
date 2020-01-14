@@ -1,15 +1,15 @@
 import hashlib
 import json
-import math
 import requests
-
 import scrapy
+from math import ceil
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class QuienEsQuienWiki(BaseSpider):
-    name = 'quien_es_quien_wiki'
+class QuienEsQuien(BaseSpider):
+    name = 'quien_es_quien'
+    download_delay = 0.9
     custom_settings = {
         'ITEM_PIPELINES': {
             'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
@@ -19,20 +19,22 @@ class QuienEsQuienWiki(BaseSpider):
 
     def start_requests(self):
         if self.is_sample():
-            url = 'https://api.quienesquien.wiki/v2/contracts?limit=10'
+            limit = 10
+            url = 'https://api.quienesquien.wiki/v2/contracts?limit={}'
             yield scrapy.Request(
-                url,
-                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+                url.format(limit),
+                meta={'kf_filename': 'sample.json'}
             )
         else:
-            url = 'https://api.quienesquien.wiki/v2/contracts?limit=1000&offset={}'
+            limit = 1000
+            url = 'https://api.quienesquien.wiki/v2/contracts?limit={}&offset={}'
             count = requests.get('https://api.quienesquien.wiki/v2/sources')
             dict = count.json()['data'][0]['collections']['contracts']['count']
 
-            for offset in range(math.ceil(dict/1000)):
+            for offset in range(ceil(dict/limit)):
                 yield scrapy.Request(
-                    url.format(offset * 1000),
-                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + str(offset) + '.json'}
+                    url.format(limit, (offset * limit)),
+                    meta={'kf_filename': hashlib.md5((url + str(offset)).encode('utf-8')).hexdigest() + '.json'}
                 )
 
     def parse(self, response):
