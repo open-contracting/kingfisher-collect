@@ -1,0 +1,57 @@
+import hashlib
+import json
+import requests
+import scrapy
+from math import ceil
+
+from kingfisher_scrapy.base_spider import BaseSpider
+
+
+class QuienEsQuien(BaseSpider):
+    name = 'quien_es_quien'
+    download_delay = 0.9
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
+        },
+        'HTTPERROR_ALLOW_ALL': True,
+    }
+
+    def start_requests(self):
+        if self.is_sample():
+            limit = 10
+            url = 'https://api.quienesquien.wiki/v2/contracts?limit={}'
+            yield scrapy.Request(
+                url.format(limit),
+                meta={'kf_filename': 'sample.json'}
+            )
+        else:
+            limit = 1000
+            url = 'https://api.quienesquien.wiki/v2/contracts?limit={}&offset={}'
+            count = requests.get('https://api.quienesquien.wiki/v2/sources')
+            dict = count.json()['data'][0]['collections']['contracts']['count']
+
+            for offset in range(ceil(dict/limit)):
+                yield scrapy.Request(
+                    url.format(limit, (offset * limit)),
+                    meta={'kf_filename': hashlib.md5((url + str(offset)).encode('utf-8')).hexdigest() + '.json'}
+                )
+
+    def parse(self, response):
+        if response.status == 200:
+
+            json_data = json.loads(response.body_as_unicode())
+            yield self.save_data_to_disk(
+                json.dumps(json_data.get('data')).encode(),
+                response.request.meta['kf_filename'],
+                data_type='record_package_list',
+                url=response.request.url
+            )
+
+        else:
+            yield {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                'url': response.request.url,
+                'errors': {'http_code': response.status}
+            }
