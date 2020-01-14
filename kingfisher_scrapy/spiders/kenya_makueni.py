@@ -2,6 +2,7 @@ import hashlib
 import json
 import requests
 import scrapy
+from math import ceil
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
@@ -17,24 +18,17 @@ class KenyaMakueni(BaseSpider):
 
     def start_requests(self):
         if self.is_sample():
-            page_size = 10
+            total = 10
         else:
             count = requests.get('https://opencontracting.makueni.go.ke/api/ocds/release/count')
-            page_size = int(count.text)
+            total = int(count.text)
 
-        if page_size > 300:
-            url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageNumber={}'
-            for page in range(page_size):
-                yield scrapy.Request(
-                    url.format(page),
-                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
-                )
-
-        else:
-            url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={}'
+        url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={}&pageNumber={}'
+        page_size = 10
+        for page_number in range((ceil(total/page_size))):
             yield scrapy.Request(
-                url.format(page_size),
-                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+                url.format(page_size, page_number),
+                meta={'kf_filename': hashlib.md5((url + str(page_number)).encode('utf-8')).hexdigest() + '.json'}
             )
 
     def parse(self, response):
