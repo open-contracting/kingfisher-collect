@@ -19,12 +19,13 @@ class KenyaMakueni(BaseSpider):
     def start_requests(self):
         if self.is_sample():
             total = 10
+            page_size = 10
         else:
             count = requests.get('https://opencontracting.makueni.go.ke/api/ocds/release/count')
             total = int(count.text)
+            page_size = 300
 
         url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={}&pageNumber={}'
-        page_size = 10
         for page_number in range((ceil(total/page_size))):
             yield scrapy.Request(
                 url.format(page_size, page_number),
