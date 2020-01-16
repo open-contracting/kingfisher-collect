@@ -2,7 +2,6 @@ import hashlib
 import json
 import requests
 import scrapy
-from math import ceil
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
