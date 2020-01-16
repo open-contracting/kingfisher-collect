@@ -1,4 +1,6 @@
-from datetime import datetime
+from io import BytesIO
+from urllib.parse import urlparse
+from zipfile import ZipFile
 
 import scrapy
 
@@ -13,32 +15,33 @@ class HondurasONCAE(BaseSpider):
         },
         'HTTPERROR_ALLOW_ALL': True,
     }
+    start_urls = ['http://oncae.gob.hn/datosabiertos']
 
     # the files take too long to be downloaded, so we increase the download timeout
     download_timeout = 900
 
-    def start_requests(self):
-
-        urls = [{'url': 'http://181.210.15.175/datosabiertos/HC1/HC1_datos_{}.json',
-                 'start_year': 2005, 'name': 'HC1_datos_{}.json'},
-                {'url': 'http://181.210.15.175/datosabiertos/DDC/DDC_datos_{}.json',
-                 'start_year': 2010, 'name': 'DDC_datos_{}.json'},
-                {'url': 'http://181.210.15.175/datosabiertos/CE/CE_datos_{}.json',
-                 'start_year': 2014, 'name': 'CE_datos_{}.json'}
-                ]
-
-        current_year = datetime.now().year + 1
-        for url in urls:
-            for year in range(url['start_year'], current_year):
-                yield scrapy.Request(
-                    url=url['url'].format(year),
-                    meta={'kf_filename': url['name'].format(year)}
-                )
-
     def parse(self, response):
         if response.status == 200:
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type='release_package')
+            urls = response.css(".article-content ul")\
+                .xpath(".//a[contains(., '[json]')]/@href")\
+                .getall()
+            if self.is_sample():
+                urls = [urls[0]]
+            for url in urls:
+                filename = urlparse(url).path.split('/')[-1]
+                yield scrapy.Request(url, meta={'kf_filename': filename}, callback=self.parse_items)
+        else:
+            self.logger.info(
+                'Request to main site {} has failed with code {}'.format(response.url, response.status))
+            raise scrapy.exceptions.CloseSpider()
 
+    def parse_items(self, response):
+        if response.status == 200:
+            zip_file = ZipFile(BytesIO(response.body))
+            for finfo in zip_file.infolist():
+                data = zip_file.open(finfo.filename).read()
+                yield \
+                    self.save_data_to_disk(data, finfo.filename, data_type='release_package', url=response.request.url)
         else:
             yield {
                 'success': False,
