@@ -17,8 +17,9 @@ class Uganda(BaseSpider):
     }
 
     def start_requests(self):
-        url = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v1/releases/planning?fy={}&pde={}'
+        url = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v1/releases/{}?fy={}&pde={}'
         url_pdes = 'https://gpp.ppda.go.ug/adminapi/public/api/pdes?page={}'
+        tags = ['planning', 'tender', 'award', 'contract']
         pdes_fdy_checks = []
 
         if self.is_sample():
@@ -27,23 +28,29 @@ class Uganda(BaseSpider):
             pages = requests.get('https://gpp.ppda.go.ug/adminapi/public/api/pdes')
             total_pages = pages.json()['data']['last_page']
 
-        for page_number in range(1, total_pages + 1):
-            data_pdes = requests.get(url_pdes.format(page_number))
+        for page_number in range(total_pages):
+            data_pdes = requests.get(url_pdes.format(page_number+1))
             list_pdes = data_pdes.json()['data']['data']
-            for i in range(0, len(list_pdes)):
-                pde_plans = list_pdes[i]['procurement_plans']
-                for j in range(0, len(pde_plans)):
-                    financial_year = pde_plans[j]['financial_year']
-                    procurement_entity_id = pde_plans[j]['pde_id']
+
+            for pdes in list_pdes:
+                pde_plans = pdes['procurement_plans']
+
+                for plans in pde_plans:
+                    financial_year = plans['financial_year']
+                    procurement_entity_id = plans['pde_id']
                     pdes_fdy = financial_year + '&' + procurement_entity_id
 
                     if pdes_fdy not in pdes_fdy_checks:
                         pdes_fdy_checks.append(pdes_fdy)
-                        yield scrapy.Request(
-                            url.format(financial_year, procurement_entity_id),
-                            meta={'kf_filename': hashlib.md5(
-                                (url + str(pdes_fdy)).encode('utf-8')).hexdigest() + '.json'}
-                        )
+
+                        for tag in tags:
+                            yield scrapy.Request(
+                                url.format(tag, financial_year, procurement_entity_id),
+                                meta={'kf_filename': hashlib.md5(
+                                    (url + str(pdes_fdy + tag)).encode('utf-8')).hexdigest() + '.json'}
+                            )
+                            if self.is_sample():
+                                break
                         if self.is_sample():
                             break
 
