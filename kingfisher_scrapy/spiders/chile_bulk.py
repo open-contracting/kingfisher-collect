@@ -37,7 +37,6 @@ class ChileBulk(BaseSpider):
 
     def parse(self, response):
         if response.status == 200:
-            print('hola1')
             zip_file = ZipFile(BytesIO(response.body))
             for finfo in zip_file.infolist():
                 data = zip_file.open(finfo.filename).read()
