@@ -20,12 +20,12 @@ class HondurasCoST(BaseSpider):
                 if 'download-all' and 'url:' in btn:
                     array_url = btn.split()
                     for url in array_url:
-                        if 'url:' in url and not '?' in url:
-                            url = url.replace('"','').replace(',','').lstrip('url:')
+                        if 'url:' in url and '?' not in url:
+                            url = url.replace('"', '').replace(',', '').lstrip('url:')
                             yield scrapy.Request(
                                 url,
                                 meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'},
-                                callback = self.parse_btn
+                                callback=self.parse_btn
                             )
         else:
             yield {
