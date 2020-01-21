@@ -7,8 +7,8 @@ import scrapy
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class ChileBulk(BaseSpider):
-    name = 'chile_bulk'
+class ChileCompraBulk(BaseSpider):
+    name = 'chile_compra_bulk'
     download_warnsize = 0
     download_timeout = 99999
     custom_settings = {
@@ -25,8 +25,8 @@ class ChileBulk(BaseSpider):
             years = ['2017']
             months = ['02']
         else:
-            years = ['2017', '2018', '2019']
-            months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+            years = range(2017, 2020)
+            months = ['0{}'.format(m) if m < 10 else str(m) for m in range(1, 13)]
 
         for year in years:
             for month in months:
