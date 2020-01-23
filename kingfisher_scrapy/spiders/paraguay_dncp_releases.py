@@ -1,6 +1,7 @@
 from kingfisher_scrapy.spiders.paraguay_base import ParaguayDNCPBaseSpider
 from urllib.parse import urlparse
 
+
 class ParaguayDNCPReleases(ParaguayDNCPBaseSpider):
     name = 'paraguay_dncp_releases'
     data_type = 'release_package'
