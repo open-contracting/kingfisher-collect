@@ -12,9 +12,6 @@ class UruguayBase(BaseSpider):
     base_url = 'http://comprasestatales.gub.uy/ocds/rss/{year:d}/{month:02d}'
     download_delay = 0.9
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'HTTPERROR_ALLOW_ALL': True,
     }
 

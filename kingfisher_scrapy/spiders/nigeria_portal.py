@@ -11,9 +11,6 @@ class NigeriaPortal(BaseSpider):
     download_delay = 0.9
     user_agent = ['Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36']
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'HTTPERROR_ALLOW_ALL': True,
     }
 

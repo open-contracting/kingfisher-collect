@@ -19,9 +19,6 @@ class ParaguayDNCPBaseSpider(BaseSpider):
     base_page_url = 'http://beta.dncp.gov.py/datos/api/v3/doc/search/processes?fecha_desde=2010-01-01'
 
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'DOWNLOADER_MIDDLEWARES': {
             'kingfisher_scrapy.middlewares.HttpProxyWithSpiderArgsMiddleware': 350,
             'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543

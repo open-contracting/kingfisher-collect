@@ -10,9 +10,6 @@ class Uganda(BaseSpider):
     name = 'uganda_releases'
     download_delay = 0.9
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'HTTPERROR_ALLOW_ALL': True,
     }
 

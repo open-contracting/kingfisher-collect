@@ -100,3 +100,7 @@ KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN = os.environ.get('KINGFISHER_PARAGUAY_DNC
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+ITEM_PIPELINES = {
+    'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
+}

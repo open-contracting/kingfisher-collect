@@ -9,9 +9,6 @@ class AustraliaNSW(BaseSpider):
     name = 'australia_nsw'
     start_urls = ['https://tenders.nsw.gov.au']
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'HTTPERROR_ALLOW_ALL': True,
     }
 

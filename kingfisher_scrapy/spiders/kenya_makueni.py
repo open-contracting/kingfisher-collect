@@ -10,9 +10,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class KenyaMakueni(BaseSpider):
     name = 'kenya_makueni'
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'HTTPERROR_ALLOW_ALL': True,
     }
 

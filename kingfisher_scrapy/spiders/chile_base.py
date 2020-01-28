@@ -8,9 +8,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class ChileCompraBaseSpider(BaseSpider):
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
         'HTTPERROR_ALLOW_ALL': True,
     }

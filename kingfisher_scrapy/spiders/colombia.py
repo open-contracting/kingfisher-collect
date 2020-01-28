@@ -12,9 +12,6 @@ class Colombia(BaseSpider):
     name = 'colombia'
     sleep = 120 * 60
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'HTTPERROR_ALLOW_ALL': True,
     }
 

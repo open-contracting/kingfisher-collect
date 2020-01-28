@@ -10,9 +10,6 @@ class AfghanistanReleases(BaseSpider):
     start_urls = ['https://ocds.ageops.net/api/ocds/releases/dates']
     download_delay = 1.5
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'HTTPERROR_ALLOW_ALL': True,
     }
 

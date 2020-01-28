@@ -7,9 +7,6 @@ class TestFail(BaseSpider):
     name = "test_fail"
     start_urls = ['https://www.open-contracting.org']
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'HTTPERROR_ALLOW_ALL': True,
     }
 
