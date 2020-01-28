@@ -9,9 +9,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class NepalPortal(BaseSpider):
     name = 'nepal_portal'
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         if self.is_sample():

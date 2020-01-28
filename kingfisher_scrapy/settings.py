@@ -101,6 +101,10 @@ KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN = os.environ.get('KINGFISHER_PARAGUAY_DNC
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
+# https://docs.scrapy.org/en/latest/topics/item-pipeline.html#activating-an-item-pipeline-component
 ITEM_PIPELINES = {
-    'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
+    'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400,
 }
+
+# https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
+HTTPERROR_ALLOW_ALL = True

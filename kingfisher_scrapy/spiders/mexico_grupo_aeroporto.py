@@ -5,9 +5,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class MexicoGrupoAeroporto(BaseSpider):
     name = 'mexico_grupo_aeroporto'
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(

@@ -6,9 +6,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class TestFail(BaseSpider):
     name = "test_fail"
     start_urls = ['https://www.open-contracting.org']
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         # Fine

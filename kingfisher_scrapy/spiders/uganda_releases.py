@@ -9,9 +9,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class Uganda(BaseSpider):
     name = 'uganda_releases'
     download_delay = 0.9
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         url = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v1/releases/{}?fy={}&pde={}'

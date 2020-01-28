@@ -11,9 +11,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class BuenosAires(BaseSpider):
     name = 'buenos_aires'
     start_urls = ['https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras']
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
     # the data list service takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000
 

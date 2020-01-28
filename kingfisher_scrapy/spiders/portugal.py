@@ -12,9 +12,6 @@ class Portugal(BaseSpider):
     name = 'portugal'
     download_warnsize = 0
     download_timeout = 9999
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         url = 'https://dados.gov.pt/api/1/datasets/?q=ocds&organization={}&page_size={}'

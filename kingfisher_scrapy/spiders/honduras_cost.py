@@ -6,9 +6,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class HondurasCoST(BaseSpider):
     name = 'honduras_cost'
     start_urls = ['http://app.sisocs.org/protected/ocdsShow/']
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def parse(self, response):
         if response.status == 200:

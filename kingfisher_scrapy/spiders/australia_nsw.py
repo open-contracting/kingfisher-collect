@@ -8,9 +8,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class AustraliaNSW(BaseSpider):
     name = 'australia_nsw'
     start_urls = ['https://tenders.nsw.gov.au']
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         release_types = ['planning', 'tender', 'contract']

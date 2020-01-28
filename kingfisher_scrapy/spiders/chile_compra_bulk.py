@@ -13,7 +13,6 @@ class ChileCompraBulk(BaseSpider):
     download_timeout = 99999
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
-        'HTTPERROR_ALLOW_ALL': True,
     }
 
     def start_requests(self):

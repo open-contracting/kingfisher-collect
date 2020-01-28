@@ -7,9 +7,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class HondurasPortalRecords(BaseSpider):
     name = 'honduras_portal_records'
     download_delay = 0.9
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         url = 'http://200.13.162.86/api/v1/record/?format=json'

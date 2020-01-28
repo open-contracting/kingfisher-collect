@@ -6,9 +6,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class Scotland(BaseSpider):
     name = 'scotland'
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     notice_types = [
         1,  # OJEU - F1 - Prior Information Notice

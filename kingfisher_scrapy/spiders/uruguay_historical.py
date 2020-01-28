@@ -15,7 +15,6 @@ class UruguayHistorical(BaseSpider):
         # see https://github.com/scrapy/scrapy/issues/3103
         'USER_AGENT': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                       'Chrome/37.0.2049.0 Safari/537.36',
-        'HTTPERROR_ALLOW_ALL': True,
     }
 
     def start_requests(self):

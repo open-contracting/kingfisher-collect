@@ -9,7 +9,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class ChileCompraBaseSpider(BaseSpider):
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
-        'HTTPERROR_ALLOW_ALL': True,
     }
     download_timeout = 300
     limit = 100

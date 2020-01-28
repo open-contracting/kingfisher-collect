@@ -9,9 +9,6 @@ class AfghanistanReleases(BaseSpider):
     name = 'afghanistan_releases'
     start_urls = ['https://ocds.ageops.net/api/ocds/releases/dates']
     download_delay = 1.5
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(

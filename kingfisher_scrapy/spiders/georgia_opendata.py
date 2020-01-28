@@ -7,7 +7,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class GeorgiaOpenData(BaseSpider):
     name = 'georgia_opendata'
     custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
         # This has to download a 400MB file so .....
         'DOWNLOAD_TIMEOUT': 60*20,
     }

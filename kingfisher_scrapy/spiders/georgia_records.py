@@ -8,9 +8,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class GeorgiaRecords(BaseSpider):
     name = 'georgia_records'
     start_urls = ['https://odapi.spa.ge/api/records.json']
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(

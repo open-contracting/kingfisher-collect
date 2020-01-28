@@ -9,9 +9,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class HondurasONCAE(BaseSpider):
     name = 'honduras_oncae'
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
     start_urls = ['http://oncae.gob.hn/datosabiertos']
 
     # the files take too long to be downloaded, so we increase the download timeout

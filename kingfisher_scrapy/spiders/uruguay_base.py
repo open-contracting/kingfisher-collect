@@ -11,9 +11,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class UruguayBase(BaseSpider):
     base_url = 'http://comprasestatales.gub.uy/ocds/rss/{year:d}/{month:02d}'
     download_delay = 0.9
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         current_date = date(2017, 11, 1)

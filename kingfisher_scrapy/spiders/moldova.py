@@ -7,9 +7,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class Moldova(BaseSpider):
     name = 'moldova'
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     endpoints = {"budgets": "https://public.mtender.gov.md/budgets/",
                  # From https://github.com/open-contracting/kingfisher-scrape/issues/192#issuecomment-529928683

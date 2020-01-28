@@ -7,9 +7,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class IndonesiaBandung(BaseSpider):
     name = 'indonesia_bandung'
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     base_url = 'https://webhooks.mongodb-stitch.com/api/client/v2.0/app/birms-cvrbm/service/query-birms' \
                '/incoming_webhook/find-releases?secret=6WkBFKh6SS4ibE2O0Fm5UHGEQWv8hQbj&limit=50'

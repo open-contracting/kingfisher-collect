@@ -5,9 +5,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class DigiwhistBase(BaseSpider):
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def parse(self, response):
         if response.status == 200:

@@ -6,9 +6,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class CanadaMontreal(BaseSpider):
     name = 'canada_montreal'
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
     page_limit = 10000
 
     def start_requests(self):

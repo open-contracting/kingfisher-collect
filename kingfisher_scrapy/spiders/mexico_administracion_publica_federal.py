@@ -9,9 +9,6 @@ class MexicoAdministracionPublicaFederal(BaseSpider):
     Bulk downloads: https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
     """
     name = 'mexico_administracion_publica_federal'
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(

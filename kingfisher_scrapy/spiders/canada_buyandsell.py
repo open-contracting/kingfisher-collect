@@ -6,9 +6,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class CanadaBuyAndSell(BaseSpider):
     name = "canada_buyandsell"
     start_urls = ['https://buyandsell.gc.ca']
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(

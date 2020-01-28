@@ -21,11 +21,10 @@ class ParaguayDNCPBaseSpider(BaseSpider):
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
             'kingfisher_scrapy.middlewares.HttpProxyWithSpiderArgsMiddleware': 350,
-            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543
+            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
         },
-        'HTTPERROR_ALLOW_ALL': True,
         'CONCURRENT_REQUESTS': 1,
-        'DUPEFILTER_DEBUG': True
+        'DUPEFILTER_DEBUG': True,
     }
 
     @classmethod

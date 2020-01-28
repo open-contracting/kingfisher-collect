@@ -11,9 +11,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class Colombia(BaseSpider):
     name = 'colombia'
     sleep = 120 * 60
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases?page=%d'

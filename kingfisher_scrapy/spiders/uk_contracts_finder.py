@@ -7,9 +7,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class UKContractsFinder(BaseSpider):
     name = 'uk_contracts_finder'
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
     base_url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=asc&page=%d'
 
     def start_requests(self):

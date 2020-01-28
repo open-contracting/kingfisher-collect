@@ -7,9 +7,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class MoldovaRecords(BaseSpider):
     name = 'moldova_records'
-    custom_settings = {
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(
