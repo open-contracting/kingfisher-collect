@@ -1,5 +1,6 @@
 import hashlib
 import json
+import logging
 import time
 from json import JSONDecodeError
 
@@ -38,14 +39,15 @@ class Colombia(BaseSpider):
         # so eventually the spider will always face the service problems. For that, when the problem occurs, (503
         # status or invalid json) we wait 120 minutes and then continue
         try:
-
-            if response.status == 503:
+            if response.status == 503 or response.status == 404:
+                logging.info('Sleeping due error {} in url {}'.format(response.status, response.url))
                 time.sleep(self.sleep)
-                yield scrapy.Request(response.url)
+                yield scrapy.Request(response.request.url)
 
             elif response.status == 200:
 
-                yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="release_package")
+                yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
+                                                 data_type="release_package")
 
                 json_data = json.loads(response.body_as_unicode())
                 if not self.is_sample():
@@ -66,5 +68,6 @@ class Colombia(BaseSpider):
                 }
 
         except JSONDecodeError:
+            logging.info('Sleeping due json decode error in url {}'.format(response.url))
             time.sleep(self.sleep)
-            yield scrapy.Request(response.url)
+            yield scrapy.Request(response.request.url)
