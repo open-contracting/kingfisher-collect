@@ -5,7 +5,7 @@ kingfisher-scrape is a tool to download OCDS data from various sources, and to s
 
 It is built using the `Scrapy <https://scrapy.org/>`_ crawler framework.
 
-It can be used standalone, for development or testing of scrapers. For production use, we recommend using scrapyd.
+It can be used standalone, for development or testing of spiders. For production use, we recommend using scrapyd.
 
 OCP operate a hosted instance of kingfisher-scrape, which is available to OCP staff and the OCDS Team. For information about how to access this, see the `hosted kingfisher documentation <https://ocdskingfisher.readthedocs.io/en/latest/#hosted-kingfisher>`_
 
@@ -18,7 +18,7 @@ The developers have tested kingfisher-scrape on `Scrapy Cloud <https://scrapingh
    use-standalone.rst
    use-scrapyd.rst
    use-hosted.rst
-   run-report-guide.rst
+   crawl-report-guide.rst
    use-scrapycloud.rst
    cli/index.rst
    writing-scrapers.rst
