@@ -1,7 +1,9 @@
 import json
-import scrapy
 from io import BytesIO
 from zipfile import ZipFile
+
+import scrapy
+
 from kingfisher_scrapy.base_spider import BaseSpider
 
 

@@ -5,9 +5,11 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-import scrapy
 import logging
 from datetime import datetime
+
+import scrapy
+
 from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
 

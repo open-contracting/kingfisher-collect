@@ -1,7 +1,6 @@
 import hashlib
 import json
-from datetime import date
-from datetime import timedelta
+from datetime import date, timedelta
 
 import scrapy
 

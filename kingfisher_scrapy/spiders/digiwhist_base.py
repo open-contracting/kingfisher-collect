@@ -1,5 +1,5 @@
-import tarfile
 import json
+import tarfile
 
 from kingfisher_scrapy.base_spider import BaseSpider
 

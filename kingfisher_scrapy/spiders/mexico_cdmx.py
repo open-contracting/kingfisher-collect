@@ -1,5 +1,6 @@
-import scrapy
 import json
+
+import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 

@@ -1,6 +1,8 @@
 import json
+
 import requests
 import scrapy
+
 from kingfisher_scrapy.base_spider import BaseSpider
 from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
