@@ -2,8 +2,9 @@ import datetime
 import json
 import os
 
-import requests
 import scrapy
+
+from kingfisher_scrapy.kingfisher_process import Client
 
 
 class KingfisherSpiderMixin:
@@ -19,7 +20,8 @@ class KingfisherSpiderMixin:
 
     def spider_opened(self, spider):
         """
-        Writes a ``kingfisher.collectioninfo`` metadata file in the crawl's directory.
+        Writes a ``kingfisher.collectioninfo`` metadata file in the crawl's directory, and initializes a Kingfisher
+        Process API client.
         """
         data = {
             'source': self.name,
@@ -31,12 +33,12 @@ class KingfisherSpiderMixin:
 
         self._write_file('kingfisher.collectioninfo', data)
 
+        self.client = Client(self.crawler.settings['KINGFISHER_API_URI'], self.crawler.settings['KINGFISHER_API_KEY'])
+
     def spider_closed(self, spider, reason):
         """
-        Writes a ``kingfisher-finished.collectioninfo`` metadata file in the crawl's directory.
-
-        If the ``KINGFISHER_API_URI`` and ``KINGFISHER_API_KEY`` settings are set, sends a request to the Kingfisher
-        Process service, to indicate that the collection is ended.
+        Writes a ``kingfisher-finished.collectioninfo`` metadata file in the crawl's directory. If the Kingfisher
+        Process API client is configured, sends an API request to end the collection's store step.
         """
         if reason != 'finished':
             return
@@ -45,19 +47,12 @@ class KingfisherSpiderMixin:
             'at': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         })
 
-        settings = self.crawler.settings
-        if settings['KINGFISHER_API_URI'] and settings['KINGFISHER_API_KEY']:
-            response = requests.post(
-                settings['KINGFISHER_API_URI'] + '/api/v1/submit/end_collection_store/',
-                headers={
-                    'Authorization': 'ApiKey ' + settings['KINGFISHER_API_KEY'],
-                },
-                data={
-                    'collection_source': self.name,
-                    'collection_data_version': self.get_start_time('%Y-%m-%d %H:%M:%S'),
-                    'collection_sample': self.is_sample(),
-                },
-            )
+        if self.client.configured:
+            response = self.client.end_collection_store({
+                'collection_source': self.name,
+                'collection_data_version': self.get_start_time('%Y-%m-%d %H:%M:%S'),
+                'collection_sample': self.is_sample(),
+            })
 
             if not response.ok:
                 spider.logger.warning(

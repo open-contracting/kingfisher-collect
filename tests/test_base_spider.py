@@ -111,6 +111,7 @@ def test_spider_closed_with_api(sample, is_sample, ok, path, caplog):
             response.status_code = 500
             mocked.return_value = response
 
+            spider.spider_opened(spider)
             spider.spider_closed(spider, 'finished')
 
             now = datetime.now().strftime('%Y-%m-%d %H:')
@@ -120,13 +121,13 @@ def test_spider_closed_with_api(sample, is_sample, ok, path, caplog):
                 assert re.match(now + r'\d\d:\d\d\Z', data['at'])
             mocked.assert_called_once_with(
                 'http://httpbin.org/anything/api/v1/submit/end_collection_store/',
+                headers={
+                    'Authorization': 'ApiKey xxx',
+                },
                 data={
                     'collection_source': 'test',
                     'collection_data_version': '2001-02-03 04:05:06',
                     'collection_sample': is_sample,
-                },
-                headers={
-                    'Authorization': 'ApiKey xxx',
                 },
             )
             if not ok:
@@ -147,6 +148,7 @@ def test_spider_closed_without_api(sample, path):
         files_store = os.path.join(tmpdirname, 'data')
         spider.crawler.settings['FILES_STORE'] = files_store
 
+        spider.spider_opened(spider)
         spider.spider_closed(spider, 'finished')
 
         now = datetime.now().strftime('%Y-%m-%d %H:')
