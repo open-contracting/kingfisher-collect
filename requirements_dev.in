@@ -1,4 +1,6 @@
 -r requirements.txt
-pip-tools
+coveralls
 flake8
+pip-tools
 pytest
+pytest-cov
