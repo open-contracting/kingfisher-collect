@@ -6,12 +6,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class CanadaMontreal(BaseSpider):
     name = 'canada_montreal'
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
     page_limit = 10000
 
     def start_requests(self):

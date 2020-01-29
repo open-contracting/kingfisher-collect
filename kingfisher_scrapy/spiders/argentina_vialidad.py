@@ -5,11 +5,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class ArgentinaVialidad(BaseSpider):
     name = 'argentina_vialidad'
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        }
-    }
 
     def start_requests(self):
         yield scrapy.Request(

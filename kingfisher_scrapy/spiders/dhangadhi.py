@@ -6,12 +6,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class Dhangadhi(BaseSpider):
     name = "dhangadhi"
     start_urls = ['https://ims.susasan.org/dhangadhi#downloads']
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(

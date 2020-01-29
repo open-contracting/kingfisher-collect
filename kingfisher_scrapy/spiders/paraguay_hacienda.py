@@ -15,14 +15,10 @@ class ParaguayHacienda(BaseSpider):
     request_time_limit = 14.0
 
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'DOWNLOADER_MIDDLEWARES': {
-           'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543
+           'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
         },
-        'HTTPERROR_ALLOW_ALL': True,
-        'CONCURRENT_REQUESTS': 1
+        'CONCURRENT_REQUESTS': 1,
     }
 
     @classmethod

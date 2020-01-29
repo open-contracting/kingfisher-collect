@@ -5,12 +5,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class MoldovaOld(BaseSpider):
     name = 'moldova_old'
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         if self.is_sample():

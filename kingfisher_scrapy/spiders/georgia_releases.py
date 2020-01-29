@@ -8,12 +8,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class GeorgiaReleases(BaseSpider):
     name = 'georgia_releases'
     start_urls = ['https://odapi.spa.ge/api/releases.json']
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(
