@@ -11,7 +11,7 @@ from datetime import datetime
 from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
 
-class HttpProxyWithSpiderArgsMiddleware(object):
+class HttpProxyWithSpiderArgsMiddleware:
 
     def __init__(self, spider):
         logging.info('Using HttpProxyWithSpiderArgsMiddleware.')
@@ -29,7 +29,7 @@ class HttpProxyWithSpiderArgsMiddleware(object):
             request.meta['proxy'] = spider.http_proxy
 
 
-class ParaguayAuthMiddleware(object):
+class ParaguayAuthMiddleware:
     """Downloader middleware that manages API authentication for Paraguay
     scrapers.
 
@@ -86,7 +86,7 @@ class ParaguayAuthMiddleware(object):
         return spider.expires_soon(datetime.now() - AuthManager.start_time)
 
 
-class AuthManager(object):
+class AuthManager:
     """ Helper class for ParaguayAuthMiddleware """
 
     access_token = None
