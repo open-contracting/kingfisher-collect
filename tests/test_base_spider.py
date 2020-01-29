@@ -92,9 +92,20 @@ def test_spider_opened(sample, is_sample, note, path):
         }
         if note:
             expected['note'] = note
-
         with open(os.path.join(files_store, path)) as f:
             assert json.load(f) == expected
+
+
+def test_spider_opened_with_existing_directory():
+    spider = spider_with_crawler(False)
+    mock_start_time(spider)
+
+    with TemporaryDirectory() as tmpdirname:
+        files_store = os.path.join(tmpdirname, 'data')
+        spider.crawler.settings['FILES_STORE'] = files_store
+        os.makedirs(os.path.join(files_store, 'test/20010203_040506'))
+
+        spider.spider_opened(spider)  # no FileExistsError exception
 
 
 @pytest.mark.parametrize('sample,is_sample,ok,path', [
@@ -247,3 +258,15 @@ def test_save_data_to_disk(sample, path):
             "url": 'https://example.com/remote.json',
             'encoding': 'iso-8859-1',
         }
+
+
+def test_save_data_to_disk_with_existing_directory():
+    spider = spider_with_crawler(False)
+    mock_start_time(spider)
+
+    with TemporaryDirectory() as tmpdirname:
+        files_store = os.path.join(tmpdirname, 'data')
+        spider.crawler.settings['FILES_STORE'] = files_store
+        os.makedirs(os.path.join(files_store, 'test/20010203_040506'))
+
+        spider.save_data_to_disk(b'{"key": "value"}', 'file.json')  # no FileExistsError exception
