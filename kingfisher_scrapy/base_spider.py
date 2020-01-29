@@ -23,7 +23,7 @@ class KingfisherSpiderMixin:
         """
         data = {
             'source': self.name,
-            'data_version': self._get_start_time(),
+            'data_version': self.get_start_time('%Y%m%d_%H%M%S'),
             'sample': self.is_sample(),
         }
         if hasattr(spider, 'note') and spider.note:
@@ -54,7 +54,7 @@ class KingfisherSpiderMixin:
                 },
                 data={
                     'collection_source': self.name,
-                    'collection_data_version': self._get_start_time('%Y-%m-%d %H:%M:%S'),
+                    'collection_data_version': self.get_start_time('%Y-%m-%d %H:%M:%S'),
                     'collection_sample': self.is_sample(),
                 },
             )
@@ -91,6 +91,12 @@ class KingfisherSpiderMixin:
         """
         return self._save_response_to_disk(data, filename, url, data_type, encoding)
 
+    def get_start_time(self, format):
+        """
+        Returns the formatted start time of the crawl.
+        """
+        return self.crawler.stats.get_value('start_time').strftime(format)
+
     def _save_response_to_disk(self, data, filename, url, data_type, encoding):
         self._write_file(filename, data)
 
@@ -126,10 +132,7 @@ class KingfisherSpiderMixin:
         name = self.name
         if self.is_sample():
             name += '_sample'
-        return os.path.join(name, self._get_start_time())
-
-    def _get_start_time(self, format='%Y%m%d_%H%M%S'):
-        return self.crawler.stats.get_value('start_time').strftime(format)
+        return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
 
 
 class BaseSpider(scrapy.Spider, KingfisherSpiderMixin):
