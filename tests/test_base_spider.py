@@ -6,7 +6,6 @@ from tempfile import TemporaryDirectory
 from unittest.mock import Mock, patch
 
 import pytest
-import requests
 from scrapy.crawler import Crawler
 
 from kingfisher_scrapy.base_spider import BaseSpider

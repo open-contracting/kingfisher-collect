@@ -5,6 +5,7 @@ import requests
 import scrapy
 import json
 
+
 class KingfisherSpiderMixin:
     def is_sample(self):
         """
