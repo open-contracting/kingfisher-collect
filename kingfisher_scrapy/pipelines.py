@@ -10,6 +10,8 @@ import os
 
 from scrapy.exceptions import DropItem, NotConfigured
 
+from kingfisher_scrapy.exceptions import MissingFilename
+
 
 class KingfisherPostPipeline:
     def __init__(self, url=None, key=None, directory=None):
@@ -37,6 +39,9 @@ class KingfisherPostPipeline:
             'file_name': item['file_name'],
             'url': item['url'],
         }
+
+        if not item['file_name']:
+            raise MissingFilename('Missing filename for {!r}'.format(item))
 
         if item['success']:
             data['data_type'] = item['data_type']

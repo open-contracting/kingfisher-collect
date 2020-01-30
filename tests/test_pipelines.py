@@ -3,6 +3,7 @@ from unittest.mock import Mock, patch
 import pytest
 from scrapy.exceptions import DropItem, NotConfigured
 
+from kingfisher_scrapy.exceptions import MissingFilename
 from kingfisher_scrapy.pipelines import KingfisherPostPipeline
 from tests import spider_with_crawler
 
@@ -45,6 +46,25 @@ def test_from_crawler_missing_arguments(api_url, api_key):
     assert str(excinfo.value) == 'Kingfisher API not configured.'
 
 
+@pytest.mark.parametrize('file_name', [None, ''])
+def test_process_item_missing_filename(file_name, tmpdir):
+    spider = spider_after_open(tmpdir)
+
+    pipeline = KingfisherPostPipeline.from_crawler(spider.crawler)
+
+    data = {
+        'file_name': file_name,
+        'url': 'https://example.com/remote.json',
+    }
+
+    with pytest.raises(MissingFilename) as excinfo:
+        pipeline.process_item(data, spider)
+
+    message = "Missing filename for {{'file_name': {!r}, 'url': 'https://example.com/remote.json'}}".format(file_name)
+
+    assert str(excinfo.value) == message
+
+
 @pytest.mark.parametrize('sample,is_sample,path', [
     (None, False, 'test/20010203_040506/file.json'),
     ('true', True, 'test_sample/20010203_040506/file.json'),
@@ -53,7 +73,7 @@ def test_from_crawler_missing_arguments(api_url, api_key):
 @pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
 @pytest.mark.parametrize('directory', [False, True])
 @pytest.mark.parametrize('ok', [True, False])
-def test_process_file_success(sample, is_sample, path, note, encoding, encoding2, directory, ok, tmpdir, caplog):
+def test_process_item_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, tmpdir, caplog):
     spider = spider_after_open(tmpdir, sample)
     spider.note = note
 
@@ -130,7 +150,7 @@ def test_process_file_success(sample, is_sample, path, note, encoding, encoding2
 @pytest.mark.parametrize('note', ['', 'Started by NAME.'])
 @pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
 @pytest.mark.parametrize('ok', [True, False])
-def test_process_item_success(sample, is_sample, note, encoding, encoding2, ok, tmpdir, caplog):
+def test_process_item_file_item(sample, is_sample, note, encoding, encoding2, ok, tmpdir, caplog):
     spider = spider_after_open(tmpdir, sample)
     spider.note = note
 
@@ -195,7 +215,7 @@ def test_process_item_success(sample, is_sample, note, encoding, encoding2, ok, 
 
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
-def test_process_failure(sample, is_sample, ok, tmpdir, caplog):
+def test_process_item_file_error(sample, is_sample, ok, tmpdir, caplog):
     spider = spider_after_open(tmpdir, sample)
 
     pipeline = KingfisherPostPipeline.from_crawler(spider.crawler)
