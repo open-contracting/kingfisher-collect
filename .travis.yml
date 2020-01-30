@@ -8,6 +8,6 @@ install:
 script:
   - flake8
   - isort
-  - python -m pytest --cov kingfisher_scrapy
+  - python -m pytest --cov kingfisher_scrapy tests
 after_success:
   - coveralls

@@ -6,22 +6,9 @@ from tempfile import TemporaryDirectory
 from unittest.mock import Mock, patch
 
 import pytest
-from scrapy.crawler import Crawler
 
 from kingfisher_scrapy.base_spider import BaseSpider
-
-
-def spider_with_crawler(sample):
-    crawler = Crawler(spidercls=BaseSpider)
-    spider = crawler.spidercls.from_crawler(crawler, 'test')
-    spider.crawler.settings.frozen = False  # otherwise, changes to settings with error
-    spider.sample = sample
-    return spider
-
-
-def mock_start_time(spider):
-    start_time = datetime(2001, 2, 3, 4, 5, 6)
-    spider.crawler.stats.set_value('start_time', start_time)
+from tests import spider_with_crawler
 
 
 @pytest.mark.parametrize('sample,expected', [
@@ -50,7 +37,6 @@ def test_is_sample_no_hasattr():
 ])
 def test_get_local_file_path_including_filestore(sample, expected):
     spider = spider_with_crawler(sample)
-    mock_start_time(spider)
     spider.crawler.settings['FILES_STORE'] = 'data'
 
     assert spider.get_local_file_path_including_filestore('file.json') == expected
@@ -62,20 +48,17 @@ def test_get_local_file_path_including_filestore(sample, expected):
 ])
 def test_get_local_file_path_excluding_filestore(sample, expected):
     spider = spider_with_crawler(sample)
-    mock_start_time(spider)
 
     assert spider.get_local_file_path_excluding_filestore('file.json') == expected
 
 
-@pytest.mark.parametrize('sample,is_sample,note,path', [
-    (None, False, '', 'test/20010203_040506/kingfisher.collectioninfo'),
-    (None, False, 'Started by NAME.', 'test/20010203_040506/kingfisher.collectioninfo'),
-    ('true', True, '', 'test_sample/20010203_040506/kingfisher.collectioninfo'),
-    ('true', True, 'Started by NAME.', 'test_sample/20010203_040506/kingfisher.collectioninfo'),
+@pytest.mark.parametrize('sample,is_sample,path', [
+    (None, False, 'test/20010203_040506/kingfisher.collectioninfo'),
+    ('true', True, 'test_sample/20010203_040506/kingfisher.collectioninfo'),
 ])
-def test_spider_opened(sample, is_sample, note, path):
+@pytest.mark.parametrize('note', ['', 'Started by NAME.'])
+def test_spider_opened(sample, is_sample, path, note):
     spider = spider_with_crawler(sample)
-    mock_start_time(spider)
     spider.note = note
 
     with TemporaryDirectory() as tmpdirname:
@@ -91,13 +74,13 @@ def test_spider_opened(sample, is_sample, note, path):
         }
         if note:
             expected['note'] = note
+
         with open(os.path.join(files_store, path)) as f:
             assert json.load(f) == expected
 
 
 def test_spider_opened_with_existing_directory():
-    spider = spider_with_crawler(False)
-    mock_start_time(spider)
+    spider = spider_with_crawler()
 
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
@@ -107,15 +90,13 @@ def test_spider_opened_with_existing_directory():
         spider.spider_opened(spider)  # no FileExistsError exception
 
 
-@pytest.mark.parametrize('sample,is_sample,ok,path', [
-    (None, False, False, 'test/20010203_040506/kingfisher-finished.collectioninfo'),
-    (None, False, True, 'test/20010203_040506/kingfisher-finished.collectioninfo'),
-    ('true', True, False, 'test_sample/20010203_040506/kingfisher-finished.collectioninfo'),
-    ('true', True, True, 'test_sample/20010203_040506/kingfisher-finished.collectioninfo'),
+@pytest.mark.parametrize('sample,is_sample,path', [
+    (None, False, 'test/20010203_040506/kingfisher-finished.collectioninfo'),
+    ('true', True, 'test_sample/20010203_040506/kingfisher-finished.collectioninfo'),
 ])
+@pytest.mark.parametrize('ok', [True, False])
 def test_spider_closed_with_api(sample, is_sample, ok, path, caplog):
     spider = spider_with_crawler(sample)
-    mock_start_time(spider)
 
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
@@ -129,24 +110,28 @@ def test_spider_closed_with_api(sample, is_sample, ok, path, caplog):
             response.status_code = 500
             mocked.return_value = response
 
+            spider.spider_opened(spider)
             spider.spider_closed(spider, 'finished')
 
             now = datetime.now().strftime('%Y-%m-%d %H:')
             with open(os.path.join(files_store, path)) as f:
                 data = json.load(f)
+
                 assert len(data) == 1
                 assert re.match(now + r'\d\d:\d\d\Z', data['at'])
+
             mocked.assert_called_once_with(
                 'http://httpbin.org/anything/api/v1/submit/end_collection_store/',
+                headers={
+                    'Authorization': 'ApiKey xxx',
+                },
                 data={
                     'collection_source': 'test',
                     'collection_data_version': '2001-02-03 04:05:06',
                     'collection_sample': is_sample,
                 },
-                headers={
-                    'Authorization': 'ApiKey xxx',
-                },
             )
+
             if not ok:
                 assert len(caplog.records) == 1
                 assert caplog.records[0].name == 'test'
@@ -160,23 +145,24 @@ def test_spider_closed_with_api(sample, is_sample, ok, path, caplog):
 ])
 def test_spider_closed_without_api(sample, path):
     spider = spider_with_crawler(sample)
-    mock_start_time(spider)
 
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
         spider.crawler.settings['FILES_STORE'] = files_store
 
+        spider.spider_opened(spider)
         spider.spider_closed(spider, 'finished')
 
         now = datetime.now().strftime('%Y-%m-%d %H:')
         with open(os.path.join(files_store, path)) as f:
             data = json.load(f)
+
             assert len(data) == 1
             assert re.match(now + r'\d\d:\d\d\Z', data['at'])
 
 
 def test_spider_closed_other_reason():
-    spider = spider_with_crawler(False)
+    spider = spider_with_crawler()
 
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
@@ -193,7 +179,6 @@ def test_spider_closed_other_reason():
 ])
 def test_save_response_to_disk(sample, path):
     spider = spider_with_crawler(sample)
-    mock_start_time(spider)
 
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
@@ -209,12 +194,14 @@ def test_save_response_to_disk(sample, path):
 
         with open(os.path.join(files_store, path)) as f:
             assert f.read() == '{"key": "value"}'
+
         with open(os.path.join(files_store, path + '.fileinfo')) as f:
             assert json.load(f) == {
                 'url': 'https://example.com/remote.json',
                 'data_type': 'release_package',
                 'encoding': 'iso-8859-1',
             }
+
         assert actual == {
             'success': True,
             'file_name': 'file.json',
@@ -230,7 +217,6 @@ def test_save_response_to_disk(sample, path):
 ])
 def test_save_data_to_disk(sample, path):
     spider = spider_with_crawler(sample)
-    mock_start_time(spider)
 
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
@@ -244,12 +230,14 @@ def test_save_data_to_disk(sample, path):
 
         with open(os.path.join(files_store, path)) as f:
             assert f.read() == '{"key": "value"}'
+
         with open(os.path.join(files_store, path + '.fileinfo')) as f:
             assert json.load(f) == {
                 'url': 'https://example.com/remote.json',
                 'data_type': 'release_package',
                 'encoding': 'iso-8859-1',
             }
+
         assert actual == {
             'success': True,
             'file_name': 'file.json',
@@ -260,8 +248,7 @@ def test_save_data_to_disk(sample, path):
 
 
 def test_save_data_to_disk_with_existing_directory():
-    spider = spider_with_crawler(False)
-    mock_start_time(spider)
+    spider = spider_with_crawler()
 
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
