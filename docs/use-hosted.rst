@@ -38,7 +38,7 @@ To start a crawl using 'sample mode', to obtain a small amount of data quickly, 
 Scheduling a Crawl using a proxy
 --------------------------------
 
-Some spiders can be crawled with the use of a proxy. To do this, use the commands above but add the the https_proxy and http_proxy options.
+Some spiders can use a proxy. To do this, use the commands above but add the the https_proxy and http_proxy options.
 
 .. code-block:: bash
 
