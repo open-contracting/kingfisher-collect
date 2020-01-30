@@ -1,4 +1,3 @@
-from glob import glob
 from unittest.mock import Mock, patch
 
 import pytest
@@ -59,7 +58,7 @@ def test_process_file_success(sample, is_sample, path, note, encoding, encoding2
     spider.note = note
 
     if directory:
-        spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir)
+        spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
 
     pipeline = KingfisherPostPipeline.from_crawler(spider.crawler)
     spider.save_data_to_disk(b'{"key": "value"}', 'file.json', url='https://example.com/remote.json')
@@ -95,7 +94,6 @@ def test_process_file_success(sample, is_sample, path, note, encoding, encoding2
             assert caplog.records[0].levelname == 'WARNING'
             assert caplog.records[0].message == message
 
-
         expected = {
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
@@ -109,7 +107,7 @@ def test_process_file_success(sample, is_sample, path, note, encoding, encoding2
         if note:
             expected['collection_note'] = note
         if directory:
-            expected['local_file_name'] = tmpdir.join(path)
+            expected['local_file_name'] = tmpdir.join('xxx', path)
 
         with open(tmpdir.join(path), 'rb') as f:
             assert mocked.call_count == 1
@@ -124,7 +122,7 @@ def test_process_file_success(sample, is_sample, path, note, encoding, encoding2
                 assert len(mocked.call_args[1]['files']) == 1
                 assert len(mocked.call_args[1]['files']['file']) == 3
                 assert mocked.call_args[1]['files']['file'][0] == 'file.json'
-                assert mocked.call_args[1]['files']['file'][1].read() == b'{"key": "value"}'
+                assert mocked.call_args[1]['files']['file'][1].read() == f.read()
                 assert mocked.call_args[1]['files']['file'][2] == 'application/json'
 
 
@@ -170,7 +168,6 @@ def test_process_item_success(sample, is_sample, note, encoding, encoding2, ok, 
             assert caplog.records[0].name == 'test'
             assert caplog.records[0].levelname == 'WARNING'
             assert caplog.records[0].message == message
-
 
         expected = {
             'collection_source': 'test',
