@@ -72,8 +72,9 @@ class KingfisherPostPipeline:
 
     def _post(self, item, spider, method, *args, name='API'):
         response = getattr(spider.client, method)(*args)
-        if response.ok:
-            raise DropItem('Response from [{}] posted to {}.'.format(item['url'], name))
-        else:
+
+        if not response.ok:
             spider.logger.warning(
                 'Failed to post [{}]. {} status code: {}'.format(item['url'], name, response.status_code))
+
+        raise DropItem('Response from [{}] posted to {}.'.format(item['url'], name))

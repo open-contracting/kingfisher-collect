@@ -79,14 +79,12 @@ def test_process_file_success(sample, is_sample, path, note, encoding, encoding2
         if encoding:
             data['encoding'] = encoding
 
-        if ok:
-            with pytest.raises(DropItem) as excinfo:
-                pipeline.process_item(data, spider)
-
-            assert str(excinfo.value) == 'Response from [https://example.com/remote.json] posted to API.'
-        else:
+        with pytest.raises(DropItem) as excinfo:
             pipeline.process_item(data, spider)
 
+        assert str(excinfo.value) == 'Response from [https://example.com/remote.json] posted to API.'
+
+        if not ok:
             message = 'Failed to post [https://example.com/remote.json]. API status code: 400'
 
             assert len(caplog.records) == 1
@@ -154,14 +152,12 @@ def test_process_item_success(sample, is_sample, note, encoding, encoding2, ok, 
         if encoding:
             data['encoding'] = encoding
 
-        if ok:
-            with pytest.raises(DropItem) as excinfo:
-                pipeline.process_item(data, spider)
-
-            assert str(excinfo.value) == 'Response from [https://example.com/remote.json] posted to API.'
-        else:
+        with pytest.raises(DropItem) as excinfo:
             pipeline.process_item(data, spider)
 
+        assert str(excinfo.value) == 'Response from [https://example.com/remote.json] posted to API.'
+
+        if not ok:
             message = 'Failed to post [https://example.com/remote.json]. API status code: 400'
 
             assert len(caplog.records) == 1
@@ -214,14 +210,12 @@ def test_process_failure(sample, is_sample, ok, tmpdir, caplog):
             'errors': {'http_code': 500},
         }
 
-        if ok:
-            with pytest.raises(DropItem) as excinfo:
-                pipeline.process_item(data, spider)
-
-            assert str(excinfo.value) == 'Response from [https://example.com/remote.json] posted to File Errors API.'
-        else:
+        with pytest.raises(DropItem) as excinfo:
             pipeline.process_item(data, spider)
 
+        assert str(excinfo.value) == 'Response from [https://example.com/remote.json] posted to File Errors API.'
+
+        if not ok:
             message = 'Failed to post [https://example.com/remote.json]. File Errors API status code: 400'
 
             assert len(caplog.records) == 1
