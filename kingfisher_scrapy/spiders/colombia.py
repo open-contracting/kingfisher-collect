@@ -36,7 +36,7 @@ class Colombia(BaseSpider):
             if response.status == 503 or response.status == 404:
                 logging.info('Sleeping due error {} in url {}'.format(response.status, response.url))
                 time.sleep(self.sleep)
-                yield scrapy.Request(response.request.url)
+                yield scrapy.Request(response.request.url, dont_filter=True)
 
             elif response.status == 200:
 
@@ -64,4 +64,4 @@ class Colombia(BaseSpider):
         except JSONDecodeError:
             logging.info('Sleeping due json decode error in url {}'.format(response.url))
             time.sleep(self.sleep)
-            yield scrapy.Request(response.request.url)
+            yield scrapy.Request(response.request.url, dont_filter=True)
