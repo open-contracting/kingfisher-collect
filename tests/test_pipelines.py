@@ -27,7 +27,7 @@ def test_from_crawler():
 
     pipeline = KingfisherPostPipeline.from_crawler(spider.crawler)
 
-    assert pipeline.api_local_directory == 'data'
+    assert pipeline.directory == 'data'
 
 
 @pytest.mark.parametrize('api_url,api_key', [
