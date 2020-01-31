@@ -2,7 +2,7 @@ log-dir-scrape-report
 =====================
 
 
-This command takes in the path to a directory of log files produced by a Scrapy run under Scrapyd.
+This command takes in the path to a directory of log files produced by a Scrapy crawl under Scrapyd.
 
 .. code-block:: shell-session
 
