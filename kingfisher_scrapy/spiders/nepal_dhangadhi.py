@@ -3,8 +3,8 @@ import scrapy
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class Dhangadhi(BaseSpider):
-    name = "dhangadhi"
+class NepalDhangadhi(BaseSpider):
+    name = "nepal_dhangadhi"
     start_urls = ['https://ims.susasan.org/dhangadhi#downloads']
 
     def start_requests(self):
