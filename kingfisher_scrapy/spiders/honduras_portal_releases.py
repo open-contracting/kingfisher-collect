@@ -29,7 +29,7 @@ class HondurasPortalReleases(BaseSpider):
             )
 
             url = json_data.get('next')
-            if not url or self.is_sample():
+            if not url or self.sample:
                 return
             else:
                 yield scrapy.Request(

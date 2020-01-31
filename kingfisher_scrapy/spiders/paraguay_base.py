@@ -39,7 +39,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
             raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
 
         spider.proxies = None
-        if hasattr(spider, 'https_proxy'):
+        if spider.https_proxy:
             spider.proxies = {'https': spider.https_proxy}
 
         return spider
@@ -53,7 +53,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
             for url, file_name in self.get_files_to_download(content):
                 yield scrapy.Request(url, meta={'kf_filename': file_name})
             pagination = content['pagination']
-            if pagination['current_page'] < pagination['total_pages'] and not self.is_sample():
+            if pagination['current_page'] < pagination['total_pages'] and not self.sample:
                 yield scrapy.Request((self.base_page_url + '&page={}').format(pagination['current_page'] + 1),
                                      callback=self.parse_pages)
         else:

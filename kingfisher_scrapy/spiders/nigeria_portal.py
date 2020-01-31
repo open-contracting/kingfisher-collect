@@ -25,7 +25,7 @@ class NigeriaPortal(BaseSpider):
             for item in checks:
                 if 'dnn$ctr' in item and 'chbIsDoing' in item:
                     formdata.update({item: 'on'})
-                    if self.is_sample():
+                    if self.sample:
                         break
 
             yield scrapy.FormRequest.from_response(

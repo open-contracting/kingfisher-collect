@@ -44,7 +44,7 @@ class Colombia(BaseSpider):
                                                  data_type="release_package")
 
                 json_data = json.loads(response.body_as_unicode())
-                if not self.is_sample():
+                if not self.sample:
                     if 'links' in json_data and 'next' in json_data['links']:
                         url = json_data['links']['next']
                         yield scrapy.Request(

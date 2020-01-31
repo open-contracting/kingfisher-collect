@@ -22,7 +22,7 @@ class Zambia(BaseSpider):
             json_data = json.loads(response.body_as_unicode())
             files_urls = json_data['packagesPerMonth']
 
-            if self.is_sample():
+            if self.sample:
                 files_urls = [files_urls[0]]
 
             for file_url in files_urls:

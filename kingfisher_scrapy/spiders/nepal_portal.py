@@ -11,7 +11,7 @@ class NepalPortal(BaseSpider):
     name = 'nepal_portal'
 
     def start_requests(self):
-        if self.is_sample():
+        if self.sample:
             current_year = 2018
             end_year = 2018
         else:
