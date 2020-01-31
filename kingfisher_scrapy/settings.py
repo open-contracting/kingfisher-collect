@@ -62,12 +62,15 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
+EXTENSIONS = {
+   'kingfisher_scrapy.extensions.KingfisherAPI': 0,
+}
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400,
-}
+#ITEM_PIPELINES = {
+#    'kingfisher_scrapy.pipelines.KingfisherScrapyPipeline': 300,
+#}
 
 KINGFISHER_API_URI = os.environ.get('KINGFISHER_API_URI')
 KINGFISHER_API_KEY = os.environ.get('KINGFISHER_API_KEY')

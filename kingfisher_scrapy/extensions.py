@@ -1,0 +1,100 @@
+import json
+import os
+
+from scrapy import signals
+from scrapy.exceptions import NotConfigured
+
+from kingfisher_scrapy.kingfisher_process import Client
+
+
+# https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
+class KingfisherAPI:
+    def __init__(self, url, key, directory=None):
+        """
+        Initializes a Kingfisher Process API client.
+        """
+        self.client = Client(url, key)
+        self.directory = directory
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        url = crawler.settings['KINGFISHER_API_URI']
+        key = crawler.settings['KINGFISHER_API_KEY']
+        directory = crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY']
+
+        if not url or not key:
+            raise NotConfigured('KINGFISHER_API_URI and/or KINGFISHER_API_KEY is not set.')
+
+        extension = cls(url, key, directory=directory)
+        crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+        crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
+
+        return extension
+
+    def spider_closed(self, spider, reason):
+        """
+        Sends an API request to end the collection's store step.
+        """
+        if reason != 'finished':
+            return
+
+        response = self.client.end_collection_store({
+            'collection_source': spider.name,
+            'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
+            'collection_sample': spider.sample,
+        })
+
+        if not response.ok:
+            spider.logger.warning(
+                'Failed to post End Collection Store. API status code: {}'.format(response.status_code))
+
+    def item_scraped(self, item, spider):
+        """
+        If the Scrapy item indicates success, sends a Kingfisher Process API request to create either a Kingfisher
+        Process file or file item. Otherwise, sends an API request to create a file error.
+        """
+        data = {
+            'collection_source': spider.name,
+            'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
+            'collection_sample': spider.sample,
+            'file_name': item['file_name'],
+            'url': item['url'],
+        }
+
+        if item['success']:
+            data['data_type'] = item['data_type']
+            data['encoding'] = item.get('encoding', 'utf-8')
+            if spider.note:
+                data['collection_note'] = spider.note
+
+            # File Item
+            if item.get('number'):
+                data['number'] = item['number']
+                data['data'] = item['data']
+
+                self._request(item, spider, 'create_file_item', data)
+
+            # File
+            else:
+                if self.directory:
+                    path = spider.get_local_file_path_excluding_filestore(item['file_name'])
+                    data['local_file_name'] = os.path.join(self.directory, path)
+                    files = {}
+                else:
+                    path = spider.get_local_file_path_including_filestore(item['file_name'])
+                    f = open(path, 'rb')
+                    files = {'file': (item['file_name'], f, 'application/json')}
+
+                self._request(item, spider, 'create_file', data, files)
+
+        # File Error
+        else:
+            data['errors'] = json.dumps(item['errors'])
+
+            self._request(item, spider, 'create_file_error', data, name='File Errors API')
+
+    def _request(self, item, spider, method, *args, name='API'):
+        response = getattr(self.client, method)(*args)
+        if not response.ok:
+            spider.logger.warning(
+                'Failed to post [{}]. {} status code: {}'.format(item['url'], name, response.status_code))
