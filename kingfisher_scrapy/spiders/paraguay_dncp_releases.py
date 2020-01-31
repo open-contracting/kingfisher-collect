@@ -1,5 +1,6 @@
-from kingfisher_scrapy.spiders.paraguay_base import ParaguayDNCPBaseSpider
 from urllib.parse import urlparse
+
+from kingfisher_scrapy.spiders.paraguay_base import ParaguayDNCPBaseSpider
 
 
 class ParaguayDNCPReleases(ParaguayDNCPBaseSpider):
