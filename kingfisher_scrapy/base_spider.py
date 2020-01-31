@@ -8,16 +8,6 @@ from kingfisher_scrapy.kingfisher_process import Client
 
 
 class KingfisherSpiderMixin:
-    def is_sample(self):
-        """
-        Returns whether the ``sample`` spider argument was set to 'true'.
-
-        .. code:: bash
-
-           scrapy crawl spider_name -a sample=true
-        """
-        return hasattr(self, 'sample') and self.sample == 'true'
-
     def spider_opened(self, spider):
         """
         Writes a ``kingfisher.collectioninfo`` metadata file in the crawl's directory, and initializes a Kingfisher
@@ -26,9 +16,9 @@ class KingfisherSpiderMixin:
         data = {
             'source': self.name,
             'data_version': self.get_start_time('%Y%m%d_%H%M%S'),
-            'sample': self.is_sample(),
+            'sample': self.sample,
         }
-        if hasattr(spider, 'note') and spider.note:
+        if spider.note:
             data['note'] = spider.note
 
         self._write_file('kingfisher.collectioninfo', data)
@@ -51,7 +41,7 @@ class KingfisherSpiderMixin:
             response = self.client.end_collection_store({
                 'collection_source': self.name,
                 'collection_data_version': self.get_start_time('%Y-%m-%d %H:%M:%S'),
-                'collection_sample': self.is_sample(),
+                'collection_sample': self.sample,
             })
 
             if not response.ok:
@@ -125,12 +115,41 @@ class KingfisherSpiderMixin:
 
     def _get_crawl_path(self):
         name = self.name
-        if self.is_sample():
+        if self.sample:
             name += '_sample'
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
 
 
+# https://docs.scrapy.org/en/latest/topics/signals.html
+
 class BaseSpider(scrapy.Spider, KingfisherSpiderMixin):
+    """
+    Download a sample:
+
+    .. code:: bash
+
+        scrapy crawl spider_name -a sample=true
+
+    Add a note to the collection:
+
+    .. code:: bash
+
+        scrapy crawl spider_name -a note='Started by NAME.'
+
+    Use a proxy:
+
+    .. code:: bash
+
+       scrapy crawl spider_name -a http_proxy=URL -a https_proxy=URL
+    """
+    def __init__(self, sample=None, note=None, http_proxy=None, https_proxy=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.sample = sample == 'true'
+        self.note = note
+        self.http_proxy = http_proxy
+        self.https_proxy = https_proxy
+
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
@@ -140,6 +159,14 @@ class BaseSpider(scrapy.Spider, KingfisherSpiderMixin):
 
 
 class BaseXMLFeedSpider(scrapy.spiders.XMLFeedSpider, KingfisherSpiderMixin):
+    def __init__(self, sample=None, note=None, http_proxy=None, https_proxy=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.sample = sample == 'true'
+        self.note = note
+        self.http_proxy = http_proxy
+        self.https_proxy = https_proxy
+
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(BaseXMLFeedSpider, cls).from_crawler(crawler, *args, **kwargs)

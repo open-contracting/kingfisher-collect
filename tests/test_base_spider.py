@@ -18,17 +18,16 @@ from tests import spider_with_crawler
     (False, False),
     (None, False),
 ])
-def test_is_sample(sample, expected):
-    spider = BaseSpider('test')
-    spider.sample = sample
+def test_sample(sample, expected):
+    spider = BaseSpider(name='test', sample=sample)
 
-    assert spider.is_sample() == expected
+    assert spider.sample == expected
 
 
-def test_is_sample_no_hasattr():
-    spider = BaseSpider('test')
+def test_sample_no_kwarg():
+    spider = BaseSpider(name='test')
 
-    assert spider.is_sample() is False
+    assert spider.sample is False
 
 
 @pytest.mark.parametrize('sample,expected', [

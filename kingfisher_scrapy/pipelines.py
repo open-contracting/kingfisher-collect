@@ -33,7 +33,7 @@ class KingfisherPostPipeline:
         data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': spider.is_sample(),
+            'collection_sample': spider.sample,
             'file_name': item['file_name'],
             'url': item['url'],
         }
@@ -41,7 +41,7 @@ class KingfisherPostPipeline:
         if item['success']:
             data['data_type'] = item['data_type']
             data['encoding'] = item.get('encoding', 'utf-8')
-            if hasattr(spider, 'note') and spider.note:
+            if spider.note:
                 data['collection_note'] = spider.note
 
             # File Item

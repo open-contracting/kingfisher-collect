@@ -11,7 +11,6 @@ def spider_with_crawler(sample=False):
     start_time = datetime(2001, 2, 3, 4, 5, 6)
     crawler.stats.set_value('start_time', start_time)
 
-    spider = crawler.spidercls.from_crawler(crawler, 'test')
-    spider.sample = sample
+    spider = crawler.spidercls.from_crawler(crawler, name='test', sample=sample)
 
     return spider
