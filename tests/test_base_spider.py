@@ -35,7 +35,7 @@ def test_sample_no_kwarg():
     ('true', 'data/test_sample/20010203_040506/file.json'),
 ])
 def test_get_local_file_path_including_filestore(sample, expected):
-    spider = spider_with_crawler(sample)
+    spider = spider_with_crawler(sample=sample)
     spider.crawler.settings['FILES_STORE'] = 'data'
 
     assert spider.get_local_file_path_including_filestore('file.json') == expected
@@ -46,7 +46,7 @@ def test_get_local_file_path_including_filestore(sample, expected):
     ('true', 'test_sample/20010203_040506/file.json'),
 ])
 def test_get_local_file_path_excluding_filestore(sample, expected):
-    spider = spider_with_crawler(sample)
+    spider = spider_with_crawler(sample=sample)
 
     assert spider.get_local_file_path_excluding_filestore('file.json') == expected
 
@@ -57,8 +57,7 @@ def test_get_local_file_path_excluding_filestore(sample, expected):
 ])
 @pytest.mark.parametrize('note', ['', 'Started by NAME.'])
 def test_spider_opened(sample, is_sample, path, note):
-    spider = spider_with_crawler(sample)
-    spider.note = note
+    spider = spider_with_crawler(sample=sample, note=note)
 
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
@@ -95,7 +94,7 @@ def test_spider_opened_with_existing_directory():
 ])
 @pytest.mark.parametrize('ok', [True, False])
 def test_spider_closed_with_api(sample, is_sample, ok, path, caplog):
-    spider = spider_with_crawler(sample)
+    spider = spider_with_crawler(sample=sample)
 
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
@@ -143,7 +142,7 @@ def test_spider_closed_with_api(sample, is_sample, ok, path, caplog):
     ('true', 'test_sample/20010203_040506/kingfisher-finished.collectioninfo'),
 ])
 def test_spider_closed_without_api(sample, path):
-    spider = spider_with_crawler(sample)
+    spider = spider_with_crawler(sample=sample)
 
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
@@ -177,7 +176,7 @@ def test_spider_closed_other_reason():
     ('true', 'test_sample/20010203_040506/file.json'),
 ])
 def test_save_response_to_disk(sample, path):
-    spider = spider_with_crawler(sample)
+    spider = spider_with_crawler(sample=sample)
 
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
@@ -215,7 +214,7 @@ def test_save_response_to_disk(sample, path):
     ('true', 'test_sample/20010203_040506/file.json'),
 ])
 def test_save_data_to_disk(sample, path):
-    spider = spider_with_crawler(sample)
+    spider = spider_with_crawler(sample=sample)
 
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')

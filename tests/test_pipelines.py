@@ -7,8 +7,8 @@ from kingfisher_scrapy.pipelines import KingfisherPostPipeline
 from tests import spider_with_crawler
 
 
-def spider_after_open(tmpdir, sample=False):
-    spider = spider_with_crawler(sample)
+def spider_after_open(tmpdir, **kwargs):
+    spider = spider_with_crawler(**kwargs)
     spider.crawler.settings['FILES_STORE'] = tmpdir
     spider.crawler.settings['KINGFISHER_API_URI'] = 'http://httpbin.org/anything'
     spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
@@ -54,8 +54,7 @@ def test_from_crawler_missing_arguments(api_url, api_key):
 @pytest.mark.parametrize('directory', [False, True])
 @pytest.mark.parametrize('ok', [True, False])
 def test_process_file_success(sample, is_sample, path, note, encoding, encoding2, directory, ok, tmpdir, caplog):
-    spider = spider_after_open(tmpdir, sample)
-    spider.note = note
+    spider = spider_after_open(tmpdir, sample=sample, note=note)
 
     if directory:
         spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
@@ -131,8 +130,7 @@ def test_process_file_success(sample, is_sample, path, note, encoding, encoding2
 @pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
 @pytest.mark.parametrize('ok', [True, False])
 def test_process_item_success(sample, is_sample, note, encoding, encoding2, ok, tmpdir, caplog):
-    spider = spider_after_open(tmpdir, sample)
-    spider.note = note
+    spider = spider_after_open(tmpdir, sample=sample, note=note)
 
     pipeline = KingfisherPostPipeline.from_crawler(spider.crawler)
 
@@ -196,7 +194,7 @@ def test_process_item_success(sample, is_sample, note, encoding, encoding2, ok, 
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
 def test_process_failure(sample, is_sample, ok, tmpdir, caplog):
-    spider = spider_after_open(tmpdir, sample)
+    spider = spider_after_open(tmpdir, sample=sample)
 
     pipeline = KingfisherPostPipeline.from_crawler(spider.crawler)
 
