@@ -10,10 +10,9 @@ class ParaguayDNCPReleases(ParaguayDNCPBaseSpider):
         for record in content['records']:
             for release in record['releases']:
                 parsed = urlparse(release['url'])
-                path = parsed.path.lstrip("/datos/api/v3/doc/")
-                id = path.lstrip("releases")
-                if id:
-                    url = 'http://beta.dncp.gov.py/datos/api/v3/doc/ocds/releases/id{}'.format(id)
+                id_path = parsed.path.replace("/datos/api/v3/doc/releases/", "")
+                if id_path:
+                    url = 'http://beta.dncp.gov.py/datos/api/v3/doc/ocds/releases/id/{}'.format(id_path)
                     yield url
                 else:
                     raise Exception('Release ID not found')
