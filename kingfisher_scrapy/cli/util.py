@@ -1,7 +1,7 @@
-import os
 import glob
-import inspect
 import importlib
+import inspect
+import os
 
 from kingfisher_scrapy.cli.commands.base import CLICommand
 

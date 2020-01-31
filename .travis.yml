@@ -1,9 +1,13 @@
+sudo: false
 language: python
+cache: pip
 python:
-    - "3.6"
-
+  - "3.6"
 install:
-    - "pip install -r requirements_dev.txt"
+  - pip install -r requirements_dev.txt
 script:
-    - "flake8 setup.py kingfisher_scrapy/ tests/"
-    - "python -m pytest tests/"
+  - flake8
+  - isort
+  - python -m pytest --cov kingfisher_scrapy tests
+after_success:
+  - coveralls

@@ -31,36 +31,8 @@ Our spiders need to:
 
 This tends to involve prior knowledge of the API you're writing a spider for (you have to go look at its responses yourself to see what they are), and maybe some JSON parsing of the responses.
 
-Using the pipeline - old and new system
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Currently, we have 2 different pipelines.
-
-In the long run, our goal is to move all spiders to the new system. Please write all new spiders in the new system, and if you are doing lots of work on an old spider, consider updating it to the new system as you go.
-
-For now, each spider has custom_settings with the ITEM_PIPELINES set, so it uses the correct pipeline.
-
-Using the pipeline - old system
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The custom OCDS Kingfisher scraper pipeline looks like this:
-
-1. Each spider first finds its starting point(s). Either:
-    * ``start_urls`` list or
-    * requests yielded from the ``start_requests`` method.
-
-Then, for *each* URL:
-
-2. GET requests are passes it to the crawler engine to be executed. The response is passed back to the ``parse`` method in the spider.
-3. Carries out ``parse`` on the response, which will be different for each crawler. ``parse`` must yield a dict containing the URL of a JSON file from the API being scraped, and the type of OCDS data therein.
-4. The output of ``parse`` is automatically passed to the ``KingfisherFilesPipeline``, which schedules downloading of the JSON files to disc.
-5. The path of the downloaded file, and relevant metadata, is passed automatically to the ``KingfisherPostPipeline`` which fires it all off to the Kingfisher Process API.
-
-The only parts you should have to touch when writing a spider are **1** and **3**.
-
-
-Using the pipeline - new system
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using the pipeline
+~~~~~~~~~~~~~~~~~~
 
 1. Each spider first finds its starting point(s). Either:
     * ``start_urls`` list or
@@ -83,13 +55,6 @@ Here is a sample:
 
     class VerySimple(BaseSpider):
         name = "very_simple"
-        # We need to define that this spider uses the new system
-        custom_settings = {
-            'ITEM_PIPELINES': {
-                'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-            },
-            'HTTPERROR_ALLOW_ALL': True,
-        }
 
         def start_requests(self):
             # This API only has one URL to get. Make a request for that, and set a filename
@@ -175,26 +140,6 @@ This does the same thing as:
 
 
 Only with ``start_requests`` if we want to add a year we just up the range, or if the API endpoint changes we only need to modify one string.
-
-Parse - old system
-~~~~~~~~~~~~~~~~~~
-
-This is where you find the URLs of API endpoints which give you one or more items of OCDS data and hand them one by one to the files downloader.
-
-The files downloader expects a dict containing the ``files_urls`` key, which should have a list as its value. Almost certainly there will only ever be one item in your list. If you find yourself with an API response that is already a list of URLs, loop through and send them one by one - because of how Scrapy handles file downloads, it's faster.
-
-You also need to include the ``data_type`` which corresponds to the contents of the API response.
-
-Here's a very simple ``parse`` which just regurgitates the original request URL. Most likely you'll need to do a little JSON parsing here to get the values.
-
-.. code-block:: python
-
-    def parse(self, response):
-        yield {
-            "file_urls": [response.url], 
-            "data_type": "release_package"
-        }
-
 
 Sample mode
 ~~~~~~~~~~~

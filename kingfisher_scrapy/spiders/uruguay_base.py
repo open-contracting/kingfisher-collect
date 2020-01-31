@@ -1,7 +1,6 @@
 import hashlib
 import json
-from datetime import date
-from datetime import timedelta
+from datetime import date, timedelta
 
 import scrapy
 
@@ -11,12 +10,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class UruguayBase(BaseSpider):
     base_url = 'http://comprasestatales.gub.uy/ocds/rss/{year:d}/{month:02d}'
     download_delay = 0.9
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         current_date = date(2017, 11, 1)

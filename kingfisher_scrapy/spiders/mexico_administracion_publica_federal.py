@@ -1,5 +1,6 @@
-import scrapy
 import json
+
+import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
@@ -9,12 +10,6 @@ class MexicoAdministracionPublicaFederal(BaseSpider):
     Bulk downloads: https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
     """
     name = 'mexico_administracion_publica_federal'
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(

@@ -1,8 +1,9 @@
 import hashlib
 import json
+from math import ceil
+
 import requests
 import scrapy
-from math import ceil
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
@@ -10,12 +11,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class QuienEsQuien(BaseSpider):
     name = 'quien_es_quien'
     download_delay = 0.9
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         if self.is_sample():

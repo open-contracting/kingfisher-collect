@@ -1,18 +1,14 @@
 import json
-import scrapy
 from io import BytesIO
 from zipfile import ZipFile
+
+import scrapy
+
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class Zambia(BaseSpider):
     name = 'zambia'
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(

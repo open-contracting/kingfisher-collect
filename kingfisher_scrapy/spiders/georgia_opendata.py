@@ -1,5 +1,6 @@
-import scrapy
 from zipfile import ZipFile
+
+import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
@@ -7,10 +8,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class GeorgiaOpenData(BaseSpider):
     name = 'georgia_opendata'
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
         # This has to download a 400MB file so .....
         'DOWNLOAD_TIMEOUT': 60*20,
     }

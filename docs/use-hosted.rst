@@ -6,11 +6,11 @@ A hosted version of kingfisher-scrape is maintained by OCP for internal use. If 
 Downloading Data
 ----------------
 
-Kingfisher uses the Scrapy framework to download data from published sources. Hosted Kingfisher uses the scrapyd server in order to manage work from multiple users at once. Instead of running a single command to start a download, users issue a command to the scrapyd server to put a download in the queue. This is called 'scheduling a run'. Once a run has been scheduled, users can check on its status via a web UI. 
+Kingfisher uses the Scrapy framework to download data from published sources. Hosted Kingfisher uses the scrapyd server in order to manage work from multiple users at once. Instead of running a single command to start a download, users issue a command to the scrapyd server to put a crawl job in the queue. This is called 'scheduling a crawl'. Once a crawl has been scheduled, users can check on its status via a web UI.
 
 
-Scheduling a Run
-----------------
+Scheduling a Crawl
+------------------
 
 First, SSH into the server. For access details, see the `hosted kingfisher documentation <https://ocdskingfisher.readthedocs.io/en/latest/#hosted-kingfisher>`_
 
@@ -28,17 +28,17 @@ If successful, you should see output that looks like:
 
    {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
     
-To start a run using 'sample mode', to obtain a small amount of data quickly, add ``-d sample-true``, for example:
+To start a crawl using 'sample mode', to obtain a small amount of data quickly, add ``-d sample-true``, for example:
 
 .. code-block:: bash
 
     $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d note="Started by NAME." -d sample=true
     {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
 
-Scheduling a Run using a proxy
-------------------------------
+Scheduling a Crawl using a proxy
+--------------------------------
 
-Some spiders can be run with the use of a proxy. To do this, use the commands above but add the the https_proxy and http_proxy options.
+Some spiders can use a proxy. To do this, use the commands above but add the the https_proxy and http_proxy options.
 
 .. code-block:: bash
 
@@ -47,14 +47,14 @@ Some spiders can be run with the use of a proxy. To do this, use the commands ab
 Note only some spiders will make use of a proxy. Other spiders will silently ignore these options.
 
 
-Run Status & Logs
------------------
+Crawl Status & Logs
+-------------------
 
-You can see the run status on the `Scrapyd web interface <http://scrape.kingfisher.open-contracting.org>`_. The username and password can be supplied by Open Data Services Co-op on request.  
+You can see the crawl status on the `Scrapyd web interface <http://scrape.kingfisher.open-contracting.org>`_. The username and password can be supplied by Open Data Services Co-op on request.
 
 If Scrapyd has been restarted, the jobs will be cleared from the web interface. But the logs are still available on the server - SSH in and see `/home/ocdskfs/scrapyd/logs/kingfisher`. You can also browse `the Scrapyd logs interface <http://scrape.kingfisher.open-contracting.org/logs/>`_.
 
-There is also a summary report generated for each run. These are generated a short while after the run has finished, so you may have to wait for these.
+There is also a summary report generated for each crawl. These are generated a short while after the crawl has finished, so you may have to wait for these.
 
 To find them, navigate `the Scrapyd logs interface <http://scrape.kingfisher.open-contracting.org/logs/>`_ and look for file names with `_report` in.
 
@@ -85,7 +85,7 @@ Are any spiders currently running?
 
 You may want to know this before doing server maintenance, stopping or starting Scrapyd, etc.
 
-For new spiders in Scrapy, check the `Scrapyd web interface <http://scrape.kingfisher.open-contracting.org>`_ - click on `Jobs` and look in the `Running` section.
+For spiders in Scrapy, check the `Scrapyd web interface <http://scrape.kingfisher.open-contracting.org>`_ - click on `Jobs` and look in the `Running` section.
 
 Stopping and starting Scrapyd
 -----------------------------

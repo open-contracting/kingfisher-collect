@@ -32,8 +32,8 @@ Setup the details to access scrapyd in scrapy.cfg:
     url = http://localhost:6800/
     project = kingfisher
 
-Deploying Scrapers
-------------------
+Deploying Spiders
+-----------------
 
 The code must be packaged up and deployed to the server
 

@@ -5,3 +5,5 @@ __pycache__
 venv/
 /data/
 env.sh
+/.coverage
+/htmlcov
