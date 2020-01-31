@@ -8,6 +8,42 @@ from kingfisher_scrapy.kingfisher_process import Client
 
 
 class KingfisherSpiderMixin:
+    """
+    Download a sample:
+
+    .. code:: bash
+
+        scrapy crawl spider_name -a sample=true
+
+    Add a note to the collection:
+
+    .. code:: bash
+
+        scrapy crawl spider_name -a note='Started by NAME.'
+
+    Use a proxy:
+
+    .. code:: bash
+
+       scrapy crawl spider_name -a http_proxy=URL -a https_proxy=URL
+    """
+    def __init__(self, sample=None, note=None, http_proxy=None, https_proxy=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
+        self.sample = sample == 'true'
+        self.note = note
+        self.http_proxy = http_proxy
+        self.https_proxy = https_proxy
+
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        # https://docs.scrapy.org/en/latest/topics/signals.html
+        spider = super().from_crawler(crawler, *args, **kwargs)
+        crawler.signals.connect(spider.spider_opened, signal=scrapy.signals.spider_opened)
+        crawler.signals.connect(spider.spider_closed, signal=scrapy.signals.spider_closed)
+        return spider
+
     def spider_opened(self, spider):
         """
         Writes a ``kingfisher.collectioninfo`` metadata file in the crawl's directory, and initializes a Kingfisher
@@ -120,56 +156,15 @@ class KingfisherSpiderMixin:
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
 
 
-# https://docs.scrapy.org/en/latest/topics/signals.html
-
-class BaseSpider(scrapy.Spider, KingfisherSpiderMixin):
-    """
-    Download a sample:
-
-    .. code:: bash
-
-        scrapy crawl spider_name -a sample=true
-
-    Add a note to the collection:
-
-    .. code:: bash
-
-        scrapy crawl spider_name -a note='Started by NAME.'
-
-    Use a proxy:
-
-    .. code:: bash
-
-       scrapy crawl spider_name -a http_proxy=URL -a https_proxy=URL
-    """
-    def __init__(self, sample=None, note=None, http_proxy=None, https_proxy=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.sample = sample == 'true'
-        self.note = note
-        self.http_proxy = http_proxy
-        self.https_proxy = https_proxy
-
-    @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
-        crawler.signals.connect(spider.spider_opened, signal=scrapy.signals.spider_opened)
-        crawler.signals.connect(spider.spider_closed, signal=scrapy.signals.spider_closed)
-        return spider
+# `scrapy.Spider` is not set up for cooperative multiple inheritance (it doesn't call `super()`), so the mixin must be
+# the first declared parent class, in order for its `__init__()` and `from_crawler()` methods to be run.
+#
+# https://github.com/scrapy/scrapy/blob/1.8.0/scrapy/spiders/__init__.py#L25-L32
+# https://docs.python.org/3.8/library/functions.html#super
+# https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
+class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
+    pass
 
 
-class BaseXMLFeedSpider(scrapy.spiders.XMLFeedSpider, KingfisherSpiderMixin):
-    def __init__(self, sample=None, note=None, http_proxy=None, https_proxy=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.sample = sample == 'true'
-        self.note = note
-        self.http_proxy = http_proxy
-        self.https_proxy = https_proxy
-
-    @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(BaseXMLFeedSpider, cls).from_crawler(crawler, *args, **kwargs)
-        crawler.signals.connect(spider.spider_opened, signal=scrapy.signals.spider_opened)
-        crawler.signals.connect(spider.spider_closed, signal=scrapy.signals.spider_closed)
-        return spider
+class BaseXMLFeedSpider(KingfisherSpiderMixin, scrapy.spiders.XMLFeedSpider):
+    pass
