@@ -33,7 +33,7 @@ class ColombiaBulk(BaseSpider):
         if response.status == 200:
             with ZipFile(BytesIO(response.body)) as zfile:
                 for name in zfile.namelist():
-                    with zfile.open(name, 'rU') as read_file:
+                    with zfile.open(name, 'r') as read_file:
                         for line in codecs.iterdecode(read_file, 'iso-8859-1'):
                             release_data = json.loads(line)['Release']
                             yield self.save_data_to_disk(release_data, '{}-{}'.format(release_data['ocid'], name),
