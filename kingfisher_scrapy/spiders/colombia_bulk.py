@@ -22,6 +22,12 @@ class ColombiaBulk(BaseSpider):
             for url in urls:
                 filename = urlparse(url).path.split('/')[-1]
                 yield scrapy.Request(url, meta={'kf_filename': filename}, callback=self.parse_items)
+        else:
+            yield {
+                'success': False,
+                'url': response.request.url,
+                'errors': {'http_code': response.status}
+            }
 
     def parse_items(self, response):
         if response.status == 200:
