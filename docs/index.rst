@@ -17,5 +17,5 @@ You can also consider using Kingfisher Scrape with `Scrapy Cloud <https://scrapi
    sources.rst
    use-cases/index.rst
    crawl-report-guide.rst
-   cli/index.rst
+   cli.rst
    writing-scrapers.rst
