@@ -3,28 +3,17 @@ Use - Scrapyd
 
 You can use a Scrapyd instance to run your scrapers.
 
-
 Configure Scrapyd
 -----------------
 
-Make sure you have Scrapyd running somewhere.
-
-It needs to run in an evironment that also has the other packages we need:
-
-  *  requests
+Make sure you have Scrapyd running somewhere. It needs to run in an environment that also has the ``requests`` package.
 
 If you want to post to Kingfisher Process, you will also need some environmental variables - see the output section.
 
 Configure Local Scripts
 -----------------------
 
-Install the ``scrapyd-client`` package.
-
-.. code-block:: bash
-
-  pip3 install scrapyd-client
-
-Setup the details to access scrapyd in scrapy.cfg:
+Setup the details to access scrapyd in scrapy.cfg. By default, in this repository, this is:
 
 .. code-block:: ini
 
@@ -35,7 +24,7 @@ Setup the details to access scrapyd in scrapy.cfg:
 Deploying Spiders
 -----------------
 
-The code must be packaged up and deployed to the server
+The code must be packaged up and deployed to the server:
 
 .. code-block:: bash
 
