@@ -1,24 +1,21 @@
-kingfisher-scrape for OCDS
-==========================
+OCDS Kingfisher Scrape
+======================
 
-kingfisher-scrape is a tool to download OCDS data from various sources, and to store it on disk and/or send it to an instance of `kingfisher-process <https://github.com/open-contracting/kingfisher-process>`_. 
+Kingfisher Scrape is a tool for downloading OCDS data and storing it on disk and/or sending it to an instance of `Kingfisher Process <https://kingfisher-process.readthedocs.io/>`_ for processing. It's built on the `Scrapy <https://scrapy.org/>`_ crawler framework.
 
-It is built using the `Scrapy <https://scrapy.org/>`_ crawler framework.
+You can:
 
-It can be used standalone, for development or testing of spiders. For production use, we recommend using scrapyd.
+-  :doc:`Download data to your computer, by installing Kingfisher Scrape<use-cases/local>`
+-  :doc:`Download data to a remote server, by using Scrapyd<use-cases/scrapyd>`
+-  :doc:`If you work with OCP, download data to its Kingfisher servers<use-cases/private>`
 
-OCP operate a hosted instance of kingfisher-scrape, which is available to OCP staff and the OCDS Team. For information about how to access this, see the `hosted kingfisher documentation <https://ocdskingfisher.readthedocs.io/en/latest/#hosted-kingfisher>`_
-
-The developers have tested kingfisher-scrape on `Scrapy Cloud <https://scrapinghub.com/scrapy-cloud>`_ and it works, but the limitations of the service (specifically, not being able to write to a readable file storage and send to the Process API at the same time) mean that it's not suitable for OCP use. Community users may, however, find this a helpful service.
+You can also consider using Kingfisher Scrape with `Scrapy Cloud <https://scrapinghub.com/scrapy-cloud>`_.
 
 .. toctree::
+   :maxdepth: 2
 
-   setup.rst
    sources.rst
-   use-standalone.rst
-   use-scrapyd.rst
-   use-hosted.rst
+   use-cases/index.rst
    crawl-report-guide.rst
-   use-scrapycloud.rst
    cli/index.rst
    writing-scrapers.rst
