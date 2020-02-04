@@ -1,7 +1,7 @@
 OCDS Kingfisher Scrape
 ======================
 
-Kingfisher Scrape is a tool for downloading OCDS data and storing it on disk and/or sending it to an instance of `Kingfisher Process <https://kingfisher-process.readthedocs.io/>`_ for processing. It's built on the `Scrapy <https://scrapy.org/>`_ crawler framework.
+Kingfisher Scrape is a tool for downloading OCDS data and storing it on disk and/or sending it to an instance of `Kingfisher Process <https://kingfisher-process.readthedocs.io/>`_ for processing.
 
 You can:
 

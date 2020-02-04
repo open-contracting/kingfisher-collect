@@ -1,5 +1,5 @@
-Use - Hosted Kingfisher
-=======================
+Download data to OCP's servers
+==============================
 
 A hosted version of kingfisher-scrape is maintained by OCP for internal use. If you require access but don't have it, contact Open Data Services Co-Op.
 

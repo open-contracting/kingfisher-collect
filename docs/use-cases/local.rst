@@ -1,64 +1,89 @@
-Use - Standalone
-================
+Download data to your computer
+==============================
 
-You can use Scrapy in standalone mode, where you run the process directly.
+This page will guide you through installing Kingfisher Scrape and using it to collect data from data sources.
 
-Doing this does not let you take full advantage of scrapy but it can be useful for testing or places where it is hard to install or use other software.
+How it works
+------------
 
-Running
+Kingfisher Scrape is built on the `Scrapy <https://scrapy.org/>`_ framework. Using this framework, we have authored "spiders" that you can run in order to "crawl" data sources and extract OCDS data.
+
+When collecting data from a data source, each of its OCDS files will be written to a separate file on your computer. (Depending on the data source, an OCDS file might be a `record package <https://standard.open-contracting.org/latest/en/schema/record_package/>`__, `release package <https://standard.open-contracting.org/latest/en/schema/release_package/>`__, individual `record <https://standard.open-contracting.org/latest/en/schema/records_reference/>`__ or individual `release <https://standard.open-contracting.org/latest/en/schema/reference/>`__.)
+
+By default, these files are written to a ``data`` directory (you can :ref:`change this<configure>`) within your ``kingfisher-scrape`` directory (which you create :ref:`during installation<install>`). Each spider creates its own directory within the ``data`` directory, and each crawl of a given spider creates its own directory within its spider's directory. For example, if you run the ``zambia`` spider (:ref:`see below<collect-data>`), then the directory hierarchy will look like:
+
+.. code-block:: none
+
+   kingfisher-scrape/
+   └── data
+       └── zambia
+           └── 20200102_030405
+               ├── <...>.json
+               ├── <...>.fileinfo
+               └── <...>
+
+As you can see, the ``data`` directory contains a ``zambia`` spider directory (matching the spider's name), which in turn contains a ``20200102_030405`` crawl directory (matching the time at which you started the crawl – in this case, 2020-01-02 03:04:05).
+
+The crawl's directory has ``.json`` and ``.fileinfo`` files. The JSON files are the OCDS data. Each ``.fileinfo`` file contains metadata about a corresponding JSON file: the URL at which the JSON file was retrieved, along with other details.
+
+.. _install:
+
+Install
 -------
 
-Scrapy provides a commandline interface for spiders.
+To use Kingfisher Scrape, you need access to a `Unix-like shell <https://en.wikipedia.org/wiki/Shell_(computing)>`__ (some are available for Windows). `Git <https://git-scm.com>`__ and `Python <https://www.python.org>`__ (version 3.6 or greater) must be installed.
 
-To see available spiders:
+When ready, open a shell, and run:
+
+.. code-block:: bash
+
+   git clone https://github.com/open-contracting/kingfisher-scrape.git
+   cd kingfisher-scrape
+   pip install -r requirements.txt
+
+The next steps assume that you have changed to the ``kingfisher-scrape`` directory (the ``cd`` command above).
+
+.. _configure:
+
+Configure
+---------
+
+To use a different directory than the ``data`` directory to store files, change the ``FILES_STORE`` variable in ``kingfisher_scrapy/settings.py``. It can be a relative directory (like ``data``) or an absolute directory (like ``/home/user/path``).
+
+.. code-block:: python
+
+   FILES_STORE = '/home/user/path'
+
+.. _collect-data:
+
+Collect data
+------------
+
+You're now ready to collect data!
+
+To list the spiders you can run:
 
 .. code-block:: bash
 
     scrapy list
 
-To run one:
+The spiders are given short names, which might be ambiguous. If you're unsure which spider to run, you can compare their names to the list of `OCDS publishers <https://www.open-contracting.org/worldwide/#/table>`__, or contact the OCDS Helpdesk at data@open-contracting.org.
+
+To run a spider (that is, start a "crawl"), replace ``spider_name`` below with the name of a spider from ``scrapy list`` above:
 
 .. code-block:: bash
 
-    scrapy crawl spider_name -a key=value
+    scrapy crawl spider_name
 
-For example, replacing ``spider_name`` with a spider's name like ``canada_buyandsell`` and ``NAME`` with your name:
+To download only a sample of the available data, add the ``sample=true`` spider argument:
 
 .. code-block:: bash
 
-    scrapy crawl spider_name -a note="Started by NAME." -a sample=true
-    scrapy crawl spider_name -a note="Started by NAME."
+    scrapy crawl spider_name -a sample=true
 
-Update the note with your name, and anything else of interest.
+Scrapy will then output a log of its activity.
 
-Output - Disk
--------------
+Using data
+----------
 
-You must configure FILES_STORE.
-
-.. code-block:: python
-
-    FILES_STORE = 'data'
-
-FILES_STORE should be a local folder that data will appear in.
-
-Files are stored in ``{FILES_STORE}/{scraper_name}/{scraper_start_date_time}``.
-
-
-Output - Kingfisher Process
----------------------------
-
-In settings.py, make sure the 3 API variables are set to load from the environment. For example:
-
-.. code-block:: python
-
-    KINGFISHER_API_URI = os.environ.get('KINGFISHER_API_URI')
-    KINGFISHER_API_KEY = os.environ.get('KINGFISHER_API_KEY')
-    KINGFISHER_API_LOCAL_DIRECTORY = os.environ.get('KINGFISHER_API_LOCAL_DIRECTORY')
-
-
-The ``kingfisher-process`` API endpoint variables are currently accessed from the scraper's environment. To configure:
-
-1. Copy ``env.sh.tmpl`` to ``env.sh``
-2. Set the ``KINGFISHER_*`` variables in ``env.sh`` to match your instance (local or server).
-3. Run ``source env.sh`` to export them to the scraper environment.
+You should now have a crawl directory within the ``data`` directory containing OCDS files. For help using data, read about `using open contracting data <https://www.open-contracting.org/data/data-use/>`__.
