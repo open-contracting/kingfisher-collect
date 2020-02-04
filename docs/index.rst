@@ -14,7 +14,6 @@ You can also consider using Kingfisher Scrape with `Scrapy Cloud <https://scrapi
 .. toctree::
    :maxdepth: 2
 
-   sources.rst
    use-cases/index.rst
    crawl-report-guide.rst
    cli.rst
