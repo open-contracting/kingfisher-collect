@@ -35,6 +35,7 @@ class KingfisherAPI:
         """
         Sends an API request to end the collection's store step.
         """
+        # https://docs.scrapy.org/en/latest/topics/signals.html#spider-closed
         if reason != 'finished':
             return
 
