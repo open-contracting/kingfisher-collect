@@ -1,4 +1,5 @@
 import datetime
+import hashlib
 import json
 import os
 
@@ -128,6 +129,23 @@ class KingfisherSpiderMixin:
         if self.is_sample():
             name += '_sample'
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
+
+
+class LinksSpider:
+    @staticmethod
+    def next_link(response):
+        """
+        Handling API response with a links field
+
+        Access to ``links/next`` for the new url, and returns a Request
+        """
+        json_data = json.loads(response.body_as_unicode())
+        if 'links' in json_data and 'next' in json_data['links']:
+            url = json_data['links']['next']
+            return scrapy.Request(
+                url=url,
+                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+            )
 
 
 class BaseSpider(scrapy.Spider, KingfisherSpiderMixin):
