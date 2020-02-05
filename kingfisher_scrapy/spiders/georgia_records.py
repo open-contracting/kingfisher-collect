@@ -3,10 +3,10 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider
 
 
-class GeorgiaRecords(BaseSpider):
+class GeorgiaRecords(BaseSpider, LinksSpider):
     name = 'georgia_records'
     start_urls = ['https://odapi.spa.ge/api/records.json']
 
@@ -21,14 +21,8 @@ class GeorgiaRecords(BaseSpider):
 
             yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="record_package")
 
-            json_data = json.loads(response.body_as_unicode())
-            if not (hasattr(self, 'sample') and self.sample == 'true'):
-                if 'links' in json_data and 'next' in json_data['links']:
-                    url = json_data['links']['next']
-                    yield scrapy.Request(
-                        url=url,
-                        meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest()+'.json'}
-                    )
+            if not self.is_sample():
+                yield self.next_link(response)
         else:
             yield {
                 'success': False,
