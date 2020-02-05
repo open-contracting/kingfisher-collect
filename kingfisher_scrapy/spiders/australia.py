@@ -4,10 +4,10 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider
 
 
-class Australia(BaseSpider):
+class Australia(BaseSpider, LinksSpider):
 
     name = 'australia'
 
@@ -34,14 +34,8 @@ class Australia(BaseSpider):
 
             yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type='release_package')
 
-            json_data = json.loads(response.body_as_unicode())
             if not self.is_sample():
-                if 'links' in json_data and 'next' in json_data['links'] and json_data['links']['next']:
-                    yield scrapy.Request(
-                        url=json_data['links']['next'],
-                        meta={'kf_filename': 'page-%s.json' % hashlib.md5(
-                            json_data['links']['next'].encode('utf-8')).hexdigest()}
-                    )
+                yield self.next_link(response)
         else:
             yield {
                 'success': False,
