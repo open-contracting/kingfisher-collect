@@ -43,14 +43,14 @@ class ColombiaBulk(BaseSpider):
                                 yield self.save_data_to_disk(release_list, '{}-{}'.format(page,
                                                                                           name),
                                                              encoding='iso-8859-1',
-                                                             data_type='release', url=response.request.url)
+                                                             data_type='release_list', url=response.request.url)
                                 release_list = []
                                 page = page + 1
                         if release_list:
                             yield self.save_data_to_disk(release_list, '{}-{}'.format(page,
                                                                                       name),
                                                          encoding='iso-8859-1',
-                                                         data_type='release', url=response.request.url)
+                                                         data_type='release_list', url=response.request.url)
                     if self.is_sample():
                         break
         else:
