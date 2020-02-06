@@ -62,6 +62,23 @@ To download only a sample of the available data, add the ``sample=true`` spider 
 
 Scrapy will then output a log of its activity.
 
+.. _proxy:
+
+Using an HTTP proxy
+~~~~~~~~~~~~~~~~~~~
+
+.. note::
+
+   This is an advanced topic. In most cases, you will not need to use this feature.
+
+If the data source is blocking Scrapy's requests, you might need to use a proxy.
+
+To use an HTTP and/or HTTPS proxy, add the ``http_proxy`` and/or ``https_proxy`` spider arguments:
+
+.. code-block:: bash
+
+    scrapy crawl spider_name -a http_proxy=YOUR-PROXY-URL -a https_proxy=YOUR-PROXY-URL
+
 Using data
 ----------
 

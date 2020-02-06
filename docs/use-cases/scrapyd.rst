@@ -68,7 +68,7 @@ If successful, you'll see something like:
 
     {"status": "ok", "jobid": "6487ec79947edab326d6db28a2d86511e8247444"}
 
-To download only a sample of the available data, add the ``sample=true`` spider argument, :ref:`as before<collect-data>`:
+Like when :ref:`downloading data to your computer<collect-data>`, you can download only a sample of the available data or :ref:`use a proxy<proxy>` – just remember to use ``-d`` instead of ``-a`` before each spider argument. For example:
 
 .. code-block:: bash
 

@@ -35,18 +35,6 @@ To start a crawl using 'sample mode', to obtain a small amount of data quickly, 
     $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d note="Started by NAME." -d sample=true
     {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
 
-Scheduling a Crawl using a proxy
---------------------------------
-
-Some spiders can use a proxy. To do this, use the commands above but add the the https_proxy and http_proxy options.
-
-.. code-block:: bash
-
-    $ ... -d https_proxy=URL -d http_proxy=URL
-
-Note only some spiders will make use of a proxy. Other spiders will silently ignore these options.
-
-
 Crawl Status & Logs
 -------------------
 
