@@ -1,28 +1,32 @@
-Command-line tool
-=================
-
-You can use a provided CLI Script. There are various sub-commands.
-
-log-dir-scrape-report
----------------------
-
-This command takes in the path to a directory of log files produced by a Scrapy crawl under Scrapyd.
-
-.. code-block:: shell-session
-
-    python ocdskingfisher-scrape-cli log-dir-scrape-report logs/
-
-For every log file in that directory (ends in ``.log``) it will produce a file with the same name (but ending in ``_report.log``).
-
-It will not produce a report if a report file already exists.
+Command-line tools
+==================
 
 scrape-report
 -------------
 
-This command takes in the path to a log file produced by a Scrapy crawl.
+Extracts the Scrapy statistics from a crawl's log file.
 
-.. code-block:: shell-session
+.. code-block:: bash
 
-    python ocdskingfisher-scrape-cli scrape-report logs/canada_buyandsell/canada_buyandsell.log
+    python ocdskingfisher-scrape-cli scrape-report scrapyd/logs/kingfisher/spider_name/6487ec79947edab326d6db28a2d86511.log
 
-It outputs a report on the activity of the crawl to the standard output.
+This is essentially the same as:
+
+.. code-block:: bash
+
+    tac ../scrapyd/logs/kingfisher/spider_name/6487ec79947edab326d6db28a2d86511.log | grep -B99 statscollectors | tac
+
+log-dir-scrape-report
+---------------------
+
+Extracts the Scrapy statistics from each crawl's log file, and writes them to a new ``*_report.log`` file.
+
+.. code-block:: bash
+
+    python ocdskingfisher-scrape-cli log-dir-scrape-report scrapyd/logs/
+
+This is essentially the same as:
+
+.. code-block:: bash
+
+    find ../scrapyd/logs/ -type f -name "*.log" -not -name "*_report.log" -exec sh -c 'if [ ! -f {}.stats ]; then result=$(tac {} | head -n99 | grep -m1 -B99 statscollectors | tac); if [ ! -z "$result" ]; then echo "$result" > {}.stats; fi; fi' \;
