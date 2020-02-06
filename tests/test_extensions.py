@@ -13,8 +13,6 @@ def spider_after_open(tmpdir, **kwargs):
     spider.crawler.settings['KINGFISHER_API_URI'] = 'http://httpbin.org/anything'
     spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
 
-    spider.spider_opened(spider)
-
     return spider
 
 

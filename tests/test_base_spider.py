@@ -1,7 +1,5 @@
 import json
 import os.path
-import re
-from datetime import datetime
 from tempfile import TemporaryDirectory
 from unittest.mock import Mock
 
@@ -49,77 +47,6 @@ def test_get_local_file_path_excluding_filestore(sample, expected):
     spider = spider_with_crawler(sample=sample)
 
     assert spider.get_local_file_path_excluding_filestore('file.json') == expected
-
-
-@pytest.mark.parametrize('sample,is_sample,path', [
-    (None, False, 'test/20010203_040506/kingfisher.collectioninfo'),
-    ('true', True, 'test_sample/20010203_040506/kingfisher.collectioninfo'),
-])
-@pytest.mark.parametrize('note', ['', 'Started by NAME.'])
-def test_spider_opened(sample, is_sample, path, note):
-    spider = spider_with_crawler(sample=sample, note=note)
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-
-        spider.spider_opened(spider)
-
-        expected = {
-            'source': 'test',
-            'data_version': '20010203_040506',
-            'sample': is_sample,
-        }
-        if note:
-            expected['note'] = note
-
-        with open(os.path.join(files_store, path)) as f:
-            assert json.load(f) == expected
-
-
-def test_spider_opened_with_existing_directory():
-    spider = spider_with_crawler()
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-        os.makedirs(os.path.join(files_store, 'test/20010203_040506'))
-
-        spider.spider_opened(spider)  # no FileExistsError exception
-
-
-@pytest.mark.parametrize('sample,path', [
-    (None, 'test/20010203_040506/kingfisher-finished.collectioninfo'),
-    ('true', 'test_sample/20010203_040506/kingfisher-finished.collectioninfo'),
-])
-def test_spider_closed(sample, path):
-    spider = spider_with_crawler(sample=sample)
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-
-        spider.spider_opened(spider)
-        spider.spider_closed(spider, 'finished')
-
-        now = datetime.now().strftime('%Y-%m-%d %H:')
-        with open(os.path.join(files_store, path)) as f:
-            data = json.load(f)
-
-            assert len(data) == 1
-            assert re.match(now + r'\d\d:\d\d\Z', data['at'])
-
-
-def test_spider_closed_other_reason():
-    spider = spider_with_crawler()
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-
-        spider.spider_closed(spider, 'xxx')
-
-        assert not os.path.exists(os.path.join(files_store))
 
 
 @pytest.mark.parametrize('sample,path', [
