@@ -7,14 +7,36 @@ You can:
 
 -  :doc:`Download data to your computer, by installing Kingfisher Scrape<use-cases/local>`
 -  :doc:`Download data to a remote server, by using Scrapyd<use-cases/scrapyd>`
--  :doc:`If you work with OCP, download data to its Kingfisher servers<use-cases/private>`
 
-You can also consider using Kingfisher Scrape with `Scrapy Cloud <https://scrapinghub.com/scrapy-cloud>`_.
+You can also try using Kingfisher Scrape with `Scrapy Cloud <https://scrapinghub.com/scrapy-cloud>`_.
+
+How it works
+------------
+
+Kingfisher Scrape is built on the `Scrapy <https://scrapy.org/>`_ framework. Using this framework, we have authored "spiders" that you can run in order to "crawl" data sources and extract OCDS data.
+
+When collecting data from a data source, each of its OCDS files will be written to a separate file on your computer. (Depending on the data source, an OCDS file might be a `record package <https://standard.open-contracting.org/latest/en/schema/record_package/>`__, `release package <https://standard.open-contracting.org/latest/en/schema/release_package/>`__, individual `record <https://standard.open-contracting.org/latest/en/schema/records_reference/>`__ or individual `release <https://standard.open-contracting.org/latest/en/schema/reference/>`__.)
+
+By default, these files are written to a ``data`` directory (you can :ref:`change this<configure>`) within your ``kingfisher-scrape`` directory (which you will create :ref:`during installation<install>`). Each spider creates its own directory within the ``data`` directory, and each crawl of a given spider creates its own directory within its spider's directory. For example, if you run the ``zambia`` spider (:ref:`learn how<collect-data>`), then the directory hierarchy will look like:
+
+.. code-block:: none
+
+   kingfisher-scrape/
+   └── data
+       └── zambia
+           └── 20200102_030405
+               ├── <...>.json
+               ├── <...>.fileinfo
+               └── <...>
+
+As you can see, the ``data`` directory contains a ``zambia`` spider directory (matching the spider's name), which in turn contains a ``20200102_030405`` crawl directory (matching the time at which you started the crawl – in this case, 2020-01-02 03:04:05).
+
+The crawl's directory will contain ``.json`` and ``.fileinfo`` files. The JSON files are the OCDS data. Each ``.fileinfo`` file contains metadata about a corresponding JSON file: the URL at which the JSON file was retrieved, along with other details.
 
 .. toctree::
    :maxdepth: 2
 
    use-cases/index.rst
    crawl-report-guide.rst
-   cli.rst
    writing-scrapers.rst
+   cli.rst
