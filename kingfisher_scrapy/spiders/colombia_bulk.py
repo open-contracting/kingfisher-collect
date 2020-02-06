@@ -14,6 +14,9 @@ class ColombiaBulk(BaseSpider):
     start_urls = ['https://www.colombiacompra.gov.co/transparencia/datos-json']
     download_warnsize = 0
     download_timeout = 99999
+    custom_settings = {
+        'DOWNLOAD_FAIL_ON_DATALOSS': False,
+    }
 
     def parse(self, response):
         if response.status == 200:
