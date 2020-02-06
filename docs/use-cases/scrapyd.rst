@@ -1,19 +1,38 @@
 Download data to a remote server
 ================================
 
-You can use a Scrapyd instance to run your scrapers.
+.. note::
 
-Configure Scrapyd
------------------
+   This is an advanced guide, that assumes knowledge of web hosting.
 
-Make sure you have Scrapyd running somewhere. It needs to run in an environment that also has the ``requests`` package.
+Some spiders take a long time to run (days or weeks), and some data sources have a lot of OCDS data (GBs). In such cases, you might not want to :doc:`local`, and instead use a separate machine. You have two options:
 
-If you want to post to Kingfisher Process, you will also need some environmental variables - see the output section.
+#. Follow the same instructions as :doc:`before<local>`, and start crawls on the other machine
+#. Install `Scrapyd <https://scrapyd.readthedocs.io/>`__ on a remote server (this guide)
 
-Configure Local Scripts
------------------------
+Install Kingfisher Scrape
+-------------------------
 
-Setup the details to access scrapyd in scrapy.cfg. By default, in this repository, this is:
+On your local machine, :ref:`install Kingfisher Scrape<install>`.
+
+Install Scrapyd
+---------------
+
+On the remote server, follow Scrapyd's `installation instructions <https://scrapyd.readthedocs.io/en/stable/install.html>`__, then install the ``requests`` package in the same environment as Scrapyd:
+
+.. code-block:: bash
+
+   pip install requests
+
+Start Scrapyd
+-------------
+
+On the remote server, follow Scrapy's `starting instructions <https://scrapyd.readthedocs.io/en/latest/overview.html#starting-scrapyd>`__. Scrapyd should be accessible at ``http://your-remote-server:6800/``. If not, refer to `Scrapyd's documentation <http://scrapyd.readthedocs.org/>`__.
+
+Configure Kingfisher Scrape
+---------------------------
+
+Update the ``url`` variable in the ``scrapy.cfg`` file in your ``kingfisher-scrape`` directory, to point to the remote server. By default, the ``scrapy.cfg`` file contains:
 
 .. code-block:: ini
 
@@ -21,63 +40,36 @@ Setup the details to access scrapyd in scrapy.cfg. By default, in this repositor
     url = http://localhost:6800/
     project = kingfisher
 
-Deploying Spiders
------------------
+You need to at least replace ``localhost``. If you changed the ``http_port`` variable in Scrapyd's `configuration file <https://scrapyd.readthedocs.io/en/stable/config.html>`__, you need to replace ``6800``.
 
-The code must be packaged up and deployed to the server:
+If you changed the ``FILES_STORE`` variable when :ref:`installing Kingfisher Scrape<configure>`, that same directory needs to exist on the remote server, and the ``scrapyd`` process needs permission to write to it. If you are using the default value, then files will be stored in a ``data`` directory under your Scrapyd directory.
+
+Deploy spiders
+--------------
+
+On your local machine, deploy the spiders in Kingfisher Scrape to Scrapyd, using the `scrapyd-deploy <https://github.com/scrapy/scrapyd-client/blob/v1.1.0/README.rst>`__ command, which was installed with Kingfisher Scrape:
 
 .. code-block:: bash
 
     scrapyd-deploy 
 
-Scheduling a run
-----------------
+Collect data
+------------
 
-Replacing ``spider_name`` with a spider's name like ``canada_buyandsell`` and ``NAME`` with your name:
-
-.. code-block:: bash
-
-    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d note="Started by NAME."
-    {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
-
-To run a sample run, add ``-d sample-true``, for example:
+Schedule a crawl, using `Scrapyd's schedule.json API endpoint <https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__. For example, replace ``localhost`` with your remote server and ``spider_name`` with a spider's name:
 
 .. code-block:: bash
 
-    $ curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d note="Started by NAME." -d sample=true
-    {"status": "ok", "jobid": "26d1b1a6d6f111e0be5c001e648c57f8"}
+    curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name
 
-Update the note with your name, and anything else of interest.
+If successful, you'll see something like:
 
-Find out more in the `Scrapyd docs <https://scrapyd.readthedocs.io/en/latest/overview.html#scheduling-a-spider-run>`_.
+.. code-block:: json
 
-Output - Disk
--------------
+    {"status": "ok", "jobid": "6487ec79947edab326d6db28a2d86511e8247444"}
 
-You must configure FILES_STORE.
+To download only a sample of the available data, add the ``sample=true`` spider argument, :ref:`as before<collect-data>`:
 
-.. code-block:: python
+.. code-block:: bash
 
-    FILES_STORE = '/scrapyd/data'
-
-FILES_STORE should be a local folder that data will appear in. It should be a full path, and the scrapyd process should have permissions to write there.
-
-Files are stored in ``{FILES_STORE}/{scraper_name}/{scraper_start_date_time}``.
-
-Output - Kingfisher Process
----------------------------
-
-In settings.py, make sure the 3 API variables are set to load from the environment. For example:
-
-.. code-block:: python
-
-    KINGFISHER_API_URI = os.environ.get('KINGFISHER_API_URI')
-    KINGFISHER_API_KEY = os.environ.get('KINGFISHER_API_KEY')
-    KINGFISHER_API_LOCAL_DIRECTORY = os.environ.get('KINGFISHER_API_LOCAL_DIRECTORY')
-
-
-The ``kingfisher-process`` API endpoint variables are currently accessed from the scrapyd environment. To configure:
-
-1. Copy ``env.sh.tmpl`` to ``env.sh``
-2. Set the ``KINGFISHER_*`` variables in ``env.sh`` to match your instance (local or server).
-3. Run ``source env.sh`` to export them to the scrapyd environment.
+    curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d sample=true
