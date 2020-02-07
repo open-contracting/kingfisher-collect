@@ -30,7 +30,9 @@ class QuienEsQuien(BaseSpider):
     def parse_count(self, response):
         if response.status == 200:
             limit = 1000
-            count = response.json()['data'][0]['collections']['contracts']['count']
+            json_data = json.loads(response.text)
+            count_list = json_data.get('data')
+            count = int(count_list[0].get('collections').get('contracts').get('count'))
 
             for offset in range(ceil(count / limit)):
                 yield scrapy.Request(
