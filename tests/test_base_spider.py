@@ -2,11 +2,11 @@ import json
 import os.path
 import re
 from datetime import datetime
-from scrapy.http.response import text
 from tempfile import TemporaryDirectory
 from unittest.mock import Mock, patch
 
 import pytest
+from scrapy.http.response import text
 
 from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider
 from tests import spider_with_crawler
