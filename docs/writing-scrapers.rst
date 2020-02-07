@@ -1,5 +1,5 @@
-Writing spiders with Scrapy
-===========================
+Write spiders with Scrapy
+=========================
 
 About Scrapy
 ------------

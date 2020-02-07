@@ -12,11 +12,6 @@ Some spiders take a long time to run (days or weeks), and some data sources have
 
 Scrapyd also makes it possible for many users to schedule crawls on the same machine.
 
-Install Kingfisher Scrape
--------------------------
-
-On your local machine, :ref:`install Kingfisher Scrape<install>`.
-
 Install Scrapyd
 ---------------
 
@@ -40,6 +35,11 @@ Using the Scrapyd web interface
 .. note::
 
    If Scrapyd restarts or the server reboots, all scheduled crawls are cancelled, all running crawls are interrupted, and all finished crawls are delisted from the web interface. However, you can still browse the crawls' logs files.
+
+Install Kingfisher Scrape
+-------------------------
+
+On your local machine, :ref:`install Kingfisher Scrape<install>`.
 
 Configure Kingfisher Scrape
 ---------------------------

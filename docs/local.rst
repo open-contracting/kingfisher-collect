@@ -5,8 +5,8 @@ This page will guide you through installing Kingfisher Scrape and using it to co
 
 .. _install:
 
-Install
--------
+Install Kingfisher Scrape
+-------------------------
 
 To use Kingfisher Scrape, you need access to a `Unix-like shell <https://en.wikipedia.org/wiki/Shell_(computing)>`__ (some are available for Windows). `Git <https://git-scm.com>`__ and `Python <https://www.python.org>`__ (version 3.6 or greater) must be installed.
 
@@ -22,8 +22,8 @@ The next steps assume that you have changed to the ``kingfisher-scrape`` directo
 
 .. _configure:
 
-Configure
----------
+Configure Kingfisher Scrape
+---------------------------
 
 To use a different directory than the ``data`` directory to store files, change the ``FILES_STORE`` variable in the ``kingfisher_scrapy/settings.py`` file. It can be a relative path (like ``data``) or an absolute path (like ``/home/user/path``).
 
@@ -79,7 +79,7 @@ To use an HTTP and/or HTTPS proxy, add the ``http_proxy`` and/or ``https_proxy``
 
     scrapy crawl spider_name -a http_proxy=YOUR-PROXY-URL -a https_proxy=YOUR-PROXY-URL
 
-Using data
-----------
+Use data
+--------
 
 You should now have a crawl directory within the ``data`` directory containing OCDS files. For help using data, read about `using open contracting data <https://www.open-contracting.org/data/data-use/>`__.
