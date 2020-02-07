@@ -20,7 +20,7 @@ class MexicoAdministracionPublicaFederal(BaseSpider):
     def parse(self, response):
         if response.status == 200:
 
-            data = json.loads(response.body_as_unicode())
+            data = json.loads(response.text)
 
             # Actual data
             yield self.save_response_to_disk(

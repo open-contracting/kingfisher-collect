@@ -18,7 +18,7 @@ class MexicoJalisco(BaseSpider):
 
     def parse_list(self, response):
         if response.status == 200:
-            datas = json.loads(response.body_as_unicode())
+            datas = json.loads(response.text)
             if self.is_sample():
                 datas = [datas[0]]
             for data in datas:
@@ -37,7 +37,7 @@ class MexicoJalisco(BaseSpider):
 
     def parse_record_package(self, response):
         if response.status == 200:
-            json_data = json.loads(response.body_as_unicode())
+            json_data = json.loads(response.text)
             if 'packages' in json_data:
                 for url in json_data['packages']:
                     yield scrapy.Request(

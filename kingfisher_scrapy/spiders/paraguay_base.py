@@ -49,7 +49,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
 
     def parse_pages(self, response):
         if response.status == 200:
-            content = json.loads(response.body_as_unicode())
+            content = json.loads(response.text)
             for url, file_name in self.get_files_to_download(content):
                 yield scrapy.Request(url, meta={'kf_filename': file_name})
             pagination = content['pagination']

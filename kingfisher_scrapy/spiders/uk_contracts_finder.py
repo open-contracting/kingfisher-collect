@@ -27,7 +27,7 @@ class UKContractsFinder(BaseSpider):
             )
 
             if not self.is_sample() and response.request.meta['kf_filename'] == 'page1.json':
-                json_data = json.loads(response.body_as_unicode())
+                json_data = json.loads(response.text)
                 last_page = json_data['maxPage']
                 for page in range(1, last_page + 1):
                     yield scrapy.Request(

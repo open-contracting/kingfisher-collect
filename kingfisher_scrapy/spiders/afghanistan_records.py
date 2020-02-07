@@ -21,7 +21,7 @@ class AfghanistanRecords(BaseSpider):
     def parse_list(self, response):
         if response.status == 200:
 
-            files_urls = json.loads(response.body_as_unicode())
+            files_urls = json.loads(response.text)
             if hasattr(self, 'sample') and self.sample == 'true':
                 files_urls = [files_urls[0]]
 

@@ -44,7 +44,7 @@ class ParaguayHacienda(BaseSpider):
         if response.status == 200:
 
             # When we have a 200 response, we update the number of remaining request calling the get access token method
-            data = json.loads(response.body_as_unicode())
+            data = json.loads(response.text)
             base_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/ocds/release-package/{}'
 
             # If is the first URL, we need to iterate over all the pages to get all the process ids to query

@@ -21,7 +21,7 @@ class MoldovaRecords(BaseSpider):
             yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="record_package")
 
             if not (hasattr(self, 'sample') and self.sample == 'true'):
-                json_data = json.loads(response.body_as_unicode())
+                json_data = json.loads(response.text)
                 if 'links' in json_data and 'next' in json_data['links']:
                     url = json_data['links']['next']
                     yield scrapy.Request(
