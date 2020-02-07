@@ -34,6 +34,7 @@ As you can see, the ``data`` directory contains a ``zambia`` spider directory (m
 The crawl's directory will contain ``.json`` and ``.fileinfo`` files. The JSON files are the OCDS data. Each ``.fileinfo`` file contains metadata about a corresponding JSON file: the URL at which the JSON file was retrieved, along with other details.
 
 .. toctree::
+   :caption: Contents
    :maxdepth: 2
 
    local.rst
