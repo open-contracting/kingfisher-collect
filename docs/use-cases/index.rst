@@ -5,4 +5,3 @@ Use cases
 
    local.rst
    scrapyd.rst
-   private.rst

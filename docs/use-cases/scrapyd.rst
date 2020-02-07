@@ -5,10 +5,12 @@ Download data to a remote server
 
    This is an advanced guide, that assumes knowledge of web hosting.
 
-Some spiders take a long time to run (days or weeks), and some data sources have a lot of OCDS data (GBs). In such cases, you might not want to :doc:`local`, and instead use a separate machine. You have two options:
+Some spiders take a long time to run (days or weeks), and some data sources have a lot of OCDS data (GBs). In such cases, you might not want to :doc:`download data to your computer<local>`, and instead use a separate machine. You have two options:
 
 #. Follow the same instructions as :doc:`before<local>`, and start crawls on the other machine
 #. Install `Scrapyd <https://scrapyd.readthedocs.io/>`__ on a remote server (this guide)
+
+Scrapyd also makes it possible for many users to schedule crawls on the same machine.
 
 Install Kingfisher Scrape
 -------------------------
@@ -27,7 +29,17 @@ On the remote server, follow Scrapyd's `installation instructions <https://scrap
 Start Scrapyd
 -------------
 
-On the remote server, follow Scrapy's `starting instructions <https://scrapyd.readthedocs.io/en/latest/overview.html#starting-scrapyd>`__. Scrapyd should be accessible at ``http://your-remote-server:6800/``. If not, refer to `Scrapyd's documentation <http://scrapyd.readthedocs.org/>`__.
+On the remote server, follow Scrapy's `starting instructions <https://scrapyd.readthedocs.io/en/latest/overview.html#starting-scrapyd>`__. Scrapyd should be accessible at ``http://your-remote-server:6800/``. If not, refer to `Scrapyd's documentation <http://scrapyd.readthedocs.org/>`__ or its `GitHub issues <https://github.com/scrapy/scrapyd/issues>`__ to troubleshoot.
+
+Using the Scrapyd web interface
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  To see the scheduled, running and finished crawls, click "Jobs"
+-  To browse the crawls' log files, click "Logs"
+
+.. note::
+
+   If Scrapyd restarts or the server reboots, all scheduled crawls are cancelled, all running crawls are interrupted, and all finished crawls are delisted from the web interface. However, you can still browse the crawls' logs files.
 
 Configure Kingfisher Scrape
 ---------------------------
@@ -52,6 +64,8 @@ On your local machine, deploy the spiders in Kingfisher Scrape to Scrapyd, using
 .. code-block:: bash
 
     scrapyd-deploy 
+
+Remember to run this command every time you add or update a spider.
 
 Collect data
 ------------
