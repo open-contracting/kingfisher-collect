@@ -1,7 +1,6 @@
 import hashlib
 import json
 
-import requests
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
@@ -12,20 +11,44 @@ class Uganda(BaseSpider):
     download_delay = 0.9
 
     def start_requests(self):
-        url = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v1/releases/{}?fy={}&pde={}'
-        url_pdes = 'https://gpp.ppda.go.ug/adminapi/public/api/pdes?page={}'
-        tags = ['planning', 'tender', 'award', 'contract']
-        pdes_fdy_checks = []
+        yield scrapy.Request(
+            'https://gpp.ppda.go.ug/adminapi/public/api/pdes',
+            meta={'kf_filename': 'start_requests'},
+            callback=self.parse_pages
+        )
 
-        if self.is_sample():
-            total_pages = 1
+    def parse_pages(self, response):
+        if response.status == 200:
+            url_pdes = 'https://gpp.ppda.go.ug/adminapi/public/api/pdes?page={}'
+
+            if self.is_sample():
+                total_pages = 1
+            else:
+                json_data = json.loads(response.text)
+                total_pages = json_data.get('data').get('last_page')
+
+            for page_number in range(total_pages):
+                yield scrapy.Request(
+                    url_pdes.format(page_number + 1),
+                    meta={'kf_filename': 'pages_requests'},
+                    callback=self.parse_data
+                )
         else:
-            pages = requests.get('https://gpp.ppda.go.ug/adminapi/public/api/pdes')
-            total_pages = pages.json()['data']['last_page']
+            yield {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                'url': response.request.url,
+                'errors': {'http_code': response.status}
+            }
 
-        for page_number in range(total_pages):
-            data_pdes = requests.get(url_pdes.format(page_number+1))
-            list_pdes = data_pdes.json()['data']['data']
+    def parse_data(self, response):
+        if response.status == 200:
+            url = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v1/releases/{}?fy={}&pde={}'
+            tags = ['planning', 'tender', 'award', 'contract']
+            pdes_fdy_checks = []
+
+            json_data = json.loads(response.text)
+            list_pdes = json_data.get('data').get('data')
 
             for pdes in list_pdes:
                 pde_plans = pdes['procurement_plans']
@@ -48,6 +71,13 @@ class Uganda(BaseSpider):
                                 break
                         if self.is_sample():
                             break
+        else:
+            yield {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                'url': response.request.url,
+                'errors': {'http_code': response.status}
+            }
 
     def parse(self, response):
         if response.status == 200:
