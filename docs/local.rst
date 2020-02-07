@@ -25,7 +25,11 @@ The next steps assume that you have changed to the ``kingfisher-scrape`` directo
 Configure Kingfisher Scrape
 ---------------------------
 
-To use a different directory than the ``data`` directory to store files, change the ``FILES_STORE`` variable in the ``kingfisher_scrapy/settings.py`` file. It can be a relative path (like ``data``) or an absolute path (like ``/home/user/path``).
+.. note::
+
+   This step is optional.
+
+To use a different directory than the default ``data`` directory to store files, change the ``FILES_STORE`` variable in the ``kingfisher_scrapy/settings.py`` file. It can be a relative path (like ``data``) or an absolute path (like ``/home/user/path``).
 
 .. code-block:: python
 
