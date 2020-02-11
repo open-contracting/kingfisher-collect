@@ -37,7 +37,7 @@ class GeorgiaOpenData(BaseSpider):
                         data_type='release_package',
                         url=response.request.url
                     )
-                    if self.is_sample():
+                    if self.sample:
                         return
 
         else:

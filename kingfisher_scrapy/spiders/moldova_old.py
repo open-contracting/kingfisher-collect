@@ -7,7 +7,7 @@ class MoldovaOld(BaseSpider):
     name = 'moldova_old'
 
     def start_requests(self):
-        if self.is_sample():
+        if self.sample:
             yield scrapy.Request(
                 url='http://opencontracting.date.gov.md/ocds-api/year/2017',
                 meta={'kf_filename': 'sample.json'}

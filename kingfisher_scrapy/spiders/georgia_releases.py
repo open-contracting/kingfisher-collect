@@ -22,7 +22,7 @@ class GeorgiaReleases(BaseSpider):
             yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="release_package")
 
             json_data = json.loads(response.body_as_unicode())
-            if not (hasattr(self, 'sample') and self.sample == 'true'):
+            if not (self.sample):
                 if 'links' in json_data and 'next' in json_data['links']:
                     url = json_data['links']['next']
                     yield scrapy.Request(

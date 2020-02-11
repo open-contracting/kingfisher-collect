@@ -22,7 +22,7 @@ class AfghanistanRecords(BaseSpider):
         if response.status == 200:
 
             files_urls = json.loads(response.body_as_unicode())
-            if hasattr(self, 'sample') and self.sample == 'true':
+            if self.sample:
                 files_urls = [files_urls[0]]
 
             for file_url in files_urls:

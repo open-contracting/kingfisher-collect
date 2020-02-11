@@ -32,7 +32,7 @@ class ChileCompraBaseSpider(BaseSpider):
             )
 
     def start_requests(self):
-        if self.is_sample():
+        if self.sample:
             yield self.get_sample_request()
             return
         until_year, until_month = self.get_year_month_until()
