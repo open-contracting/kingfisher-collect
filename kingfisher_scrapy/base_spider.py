@@ -139,7 +139,7 @@ class LinksSpider:
 
         Access to ``links/next`` for the new url, and returns a Request
         """
-        json_data = json.loads(response.body_as_unicode())
+        json_data = json.loads(response.text)
         if 'links' in json_data and 'next' in json_data['links']:
             url = json_data['links']['next']
             return scrapy.Request(
