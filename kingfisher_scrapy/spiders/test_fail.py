@@ -1,3 +1,6 @@
+"""
+This spider deliberately generates HTTP errors. You can use this to test whether errors are recorded properly.
+"""
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider

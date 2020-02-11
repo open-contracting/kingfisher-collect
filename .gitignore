@@ -6,4 +6,5 @@ venv/
 /data/
 env.sh
 /.coverage
+/docs/_build
 /htmlcov

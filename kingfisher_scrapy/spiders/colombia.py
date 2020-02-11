@@ -34,14 +34,18 @@ class Colombia(BaseSpider):
         # status or invalid json) we wait 120 minutes and then continue
         try:
             if response.status == 503 or response.status == 404:
-                logging.info('Sleeping due error {} in url {}'.format(response.status, response.url))
+                url = response.request.url
+                logging.info('Sleeping due error {} in url {}'.format(response.status, url))
                 time.sleep(self.sleep)
-                yield scrapy.Request(response.request.url, dont_filter=True)
+                yield scrapy.Request(url,
+                                     dont_filter=True,
+                                     meta={'kf_filename': hashlib.md5(
+                                         url.encode('utf-8')).hexdigest() + '.json'})
 
             elif response.status == 200:
 
                 yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
-                                                 data_type="release_package")
+                                                 data_type='release_package')
 
                 json_data = json.loads(response.body_as_unicode())
                 if not self.sample:
@@ -57,11 +61,13 @@ class Colombia(BaseSpider):
                 yield {
                     'success': False,
                     'file_name': response.request.meta['kf_filename'],
-                    "url": response.request.url,
-                    "errors": {"http_code": response.status}
+                    'url': response.request.url,
+                    'errors': {'http_code': response.status}
                 }
 
         except JSONDecodeError:
-            logging.info('Sleeping due json decode error in url {}'.format(response.url))
+            url = response.request.url
+            logging.info('Sleeping due json decode error in url {}'.format(url))
             time.sleep(self.sleep)
-            yield scrapy.Request(response.request.url, dont_filter=True)
+            yield scrapy.Request(url, dont_filter=True,
+                                 meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'})
