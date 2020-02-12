@@ -1,8 +1,8 @@
-Writing OCDS Kingfisher scrapers with Scrapy
---------------------------------------------
+Write spiders with Scrapy
+=========================
 
 About Scrapy
-~~~~~~~~~~~~
+------------
 
 Scrapy calls scrapers 'spiders' so we're going to call them 'spiders' hereon. 
 
@@ -15,7 +15,7 @@ Scrapy schedules HTTP requests with its own crawler engine, and they are not gua
 `Scrapy documentation <https://docs.scrapy.org/en/latest/>`_.
 
 About OCDS Kingfisher
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 The OCDS data sources are for the most part JSON APIs which output valid OCDS data, either as ``release_package``, ``record_package``, ``release``, ``record`` and a few other types, using various different structures or endpoints of the publishers' own design.
 
@@ -32,7 +32,7 @@ Our spiders need to:
 This tends to involve prior knowledge of the API you're writing a spider for (you have to go look at its responses yourself to see what they are), and maybe some JSON parsing of the responses.
 
 Using the pipeline
-~~~~~~~~~~~~~~~~~~
+------------------
 
 1. Each spider first finds its starting point(s). Either:
     * ``start_urls`` list or
@@ -49,7 +49,6 @@ Then, for *each* URL:
 The only parts you should have to touch when writing a spider are **1** and **3** to **5**.
 
 Here is a sample:
-
 
 .. code-block:: python
 
@@ -86,10 +85,8 @@ Here is a sample:
                     "errors": {"http_code": response.status}
                 }
 
-
-
 Spider properties
-~~~~~~~~~~~~~~~~~
+-----------------
 
 * ``name``: a slug for the spider. This is what you pass to ``scrapy crawl`` to run it. Underscore separated, all lowercase. Required.
 * ``start_urls``: list of URLs to do the initial GET on. Don't need it if you define ``start_requests`` instead.
@@ -103,9 +100,8 @@ Spider properties
         name = "canada_buyandsell"
         ...
 
-
 Start Requests
-~~~~~~~~~~~~~~
+--------------
 
 Implement the ``start_requests`` method *instead of* using a ``start_urls`` property on the spider if you need to do something more complicated than just a list to get the URLs the spider starts with.
 
@@ -142,7 +138,7 @@ This does the same thing as:
 Only with ``start_requests`` if we want to add a year we just up the range, or if the API endpoint changes we only need to modify one string.
 
 Sample mode
-~~~~~~~~~~~
+-----------
 
 Sample mode is a way to get a subset of the results, then stop the spider. It's triggered when you pass ``-a sample=true`` to ``scrapy crawl <spider_name>``. 
 

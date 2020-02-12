@@ -1,7 +1,7 @@
-Run Report Guide
-================
+Crawl Report Guide
+==================
 
-A Scrapyd run is turned into a report. This page has tips on how to interpret this.
+A Scrapy crawl is turned into a report. This page has tips on how to interpret this.
 
 HTTP Response Codes
 -------------------
@@ -18,16 +18,16 @@ Make sure there are no lines for HTTP codes that were not a 200 status. For exam
 
      'downloader/response_status_count/404': 1,
 
-Note there are times that scrapers are able to recover from non-200 errors themselves.
+Note there are times that spiders are able to recover from non-200 errors themselves.
 
-For example, some of the Paraguay scrapers need an authentication token. The server may send a 401 or 429 code if there are problems, and the spider can detect that and retry.
+For example, some of the Paraguay spiders need an authentication token. The server may send a 401 or 429 code if there are problems, and the spider can detect that and retry.
 
 This means the presence of a non-200 line is not always a error, but it should always be checked.
 
 Asking for help to interpret problems
 -------------------------------------
 
-Unfortunately, it's hard to give clear guides on how to interpret problems as the advice can differ a lot for different scrapers.
+Unfortunately, it's hard to give clear guides on how to interpret problems as the advice can differ a lot for different spiders.
 
 For hosted Kingfisher, please ask a developer for help with any issues.
 
