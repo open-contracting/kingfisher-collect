@@ -4,8 +4,6 @@ import os
 
 import scrapy
 
-from kingfisher_scrapy.kingfisher_process import Client
-
 
 class KingfisherSpiderMixin:
     """
@@ -46,8 +44,7 @@ class KingfisherSpiderMixin:
 
     def spider_opened(self, spider):
         """
-        Writes a ``kingfisher.collectioninfo`` metadata file in the crawl's directory, and initializes a Kingfisher
-        Process API client.
+        Writes a ``kingfisher.collectioninfo`` metadata file in the crawl's directory.
         """
         data = {
             'source': self.name,
@@ -59,12 +56,9 @@ class KingfisherSpiderMixin:
 
         self._write_file('kingfisher.collectioninfo', data)
 
-        self.client = Client(self.crawler.settings['KINGFISHER_API_URI'], self.crawler.settings['KINGFISHER_API_KEY'])
-
     def spider_closed(self, spider, reason):
         """
-        Writes a ``kingfisher-finished.collectioninfo`` metadata file in the crawl's directory. If the Kingfisher
-        Process API client is configured, sends an API request to end the collection's store step.
+        Writes a ``kingfisher-finished.collectioninfo`` metadata file in the crawl's directory.
         """
         if reason != 'finished':
             return
@@ -72,17 +66,6 @@ class KingfisherSpiderMixin:
         self._write_file('kingfisher-finished.collectioninfo', {
             'at': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         })
-
-        if self.client.configured:
-            response = self.client.end_collection_store({
-                'collection_source': self.name,
-                'collection_data_version': self.get_start_time('%Y-%m-%d %H:%M:%S'),
-                'collection_sample': self.sample,
-            })
-
-            if not response.ok:
-                spider.logger.warning(
-                    'Failed to post End Collection Store. API status code: {}'.format(response.status_code))
 
     def get_local_file_path_including_filestore(self, filename):
         """
