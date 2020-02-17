@@ -18,7 +18,8 @@ class Dhangadhi(BaseSpider):
     def parse_item(self, response):
         if response.status == 200:
             url = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
-            fiscal_years = json.loads(response.body_as_unicode()).get('data').get('fiscal_years')
+            json_data = json.loads(response.text)
+            fiscal_years = json_data.get('data').get('fiscal_years')
             for item in fiscal_years:
                 fy = item.get('name')
                 yield scrapy.Request(
