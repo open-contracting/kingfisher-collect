@@ -36,7 +36,7 @@ For help understanding the log files, read :doc:`crawl-report-guide`.
 
 .. note::
 
-   If Scrapyd restarts or the server reboots, all scheduled crawls are cancelled, all running crawls are interrupted, and all finished crawls are delisted from the web interface. However, you can still browse the crawls' logs files.
+   If Scrapyd restarts or the server reboots, all scheduled crawls are cancelled, all running crawls are interrupted, and all finished crawls are delisted from the web interface. However, you can still browse the crawls' logs files to review the finished crawls.
 
 Install Kingfisher Scrape
 -------------------------
