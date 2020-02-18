@@ -1,7 +1,6 @@
 import hashlib
 import json
 import logging
-import re
 
 import requests
 import scrapy
