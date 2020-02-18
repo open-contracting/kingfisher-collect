@@ -139,6 +139,7 @@ class KingfisherSpiderMixin:
             name += '_sample'
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
 
+
 class LinksSpider:
     @staticmethod
     def next_link(response):
@@ -154,6 +155,7 @@ class LinksSpider:
                 url=url,
                 meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
             )
+
 
 # `scrapy.Spider` is not set up for cooperative multiple inheritance (it doesn't call `super()`), so the mixin must be
 # the first declared parent class, in order for its `__init__()` and `from_crawler()` methods to be run.
