@@ -1,4 +1,3 @@
-import datetime
 import hashlib
 import json
 import os
@@ -34,39 +33,6 @@ class KingfisherSpiderMixin:
         self.note = note
         self.http_proxy = http_proxy
         self.https_proxy = https_proxy
-
-    @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        # https://docs.scrapy.org/en/latest/topics/signals.html
-        spider = super().from_crawler(crawler, *args, **kwargs)
-        crawler.signals.connect(spider.spider_opened, signal=scrapy.signals.spider_opened)
-        crawler.signals.connect(spider.spider_closed, signal=scrapy.signals.spider_closed)
-        return spider
-
-    def spider_opened(self, spider):
-        """
-        Writes a ``kingfisher.collectioninfo`` metadata file in the crawl's directory.
-        """
-        data = {
-            'source': self.name,
-            'data_version': self.get_start_time('%Y%m%d_%H%M%S'),
-            'sample': self.sample,
-        }
-        if spider.note:
-            data['note'] = spider.note
-
-        self._write_file('kingfisher.collectioninfo', data)
-
-    def spider_closed(self, spider, reason):
-        """
-        Writes a ``kingfisher-finished.collectioninfo`` metadata file in the crawl's directory.
-        """
-        if reason != 'finished':
-            return
-
-        self._write_file('kingfisher-finished.collectioninfo', {
-            'at': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        })
 
     def get_local_file_path_including_filestore(self, filename):
         """
