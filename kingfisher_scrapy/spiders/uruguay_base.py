@@ -13,7 +13,7 @@ class UruguayBase(BaseSpider):
 
     def start_requests(self):
         current_date = date(2017, 11, 1)
-        if self.is_sample():
+        if self.sample:
             end_date = date(2017, 12, 1)
         else:
             end_date = date.today().replace(day=1)

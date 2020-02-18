@@ -21,7 +21,7 @@ class AfghanistanReleases(BaseSpider):
         if response.status == 200:
 
             files_urls = json.loads(response.text)
-            if hasattr(self, 'sample') and self.sample == 'true':
+            if self.sample:
                 files_urls = [files_urls[0]]
 
             for file_url in files_urls:
@@ -42,7 +42,7 @@ class AfghanistanReleases(BaseSpider):
         if response.status == 200:
 
             files_urls = json.loads(response.text)
-            if hasattr(self, 'sample') and self.sample == 'true':
+            if self.sample:
                 files_urls = [files_urls[0]]
 
             for file_url in files_urls:

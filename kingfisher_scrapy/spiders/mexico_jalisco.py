@@ -19,7 +19,7 @@ class MexicoJalisco(BaseSpider):
     def parse_list(self, response):
         if response.status == 200:
             datas = json.loads(response.text)
-            if self.is_sample():
+            if self.sample:
                 datas = [datas[0]]
             for data in datas:
                 yield scrapy.Request(

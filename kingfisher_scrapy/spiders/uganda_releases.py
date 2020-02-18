@@ -17,7 +17,7 @@ class Uganda(BaseSpider):
         tags = ['planning', 'tender', 'award', 'contract']
         pdes_fdy_checks = []
 
-        if self.is_sample():
+        if self.sample:
             total_pages = 1
         else:
             pages = requests.get('https://gpp.ppda.go.ug/adminapi/public/api/pdes')
@@ -44,9 +44,9 @@ class Uganda(BaseSpider):
                                 meta={'kf_filename': hashlib.md5(
                                     (url + str(pdes_fdy + tag)).encode('utf-8')).hexdigest() + '.json'}
                             )
-                            if self.is_sample():
+                            if self.sample:
                                 break
-                        if self.is_sample():
+                        if self.sample:
                             break
 
     def parse(self, response):

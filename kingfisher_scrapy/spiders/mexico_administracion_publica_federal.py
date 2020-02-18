@@ -30,7 +30,7 @@ class MexicoAdministracionPublicaFederal(BaseSpider):
             )
 
             # Load more pages?
-            if data['pagination']['page'] == 1 and not self.is_sample():
+            if data['pagination']['page'] == 1 and not self.sample:
                 total = data['pagination']['total']
                 page = 1
                 limit = data['pagination']['pageSize']

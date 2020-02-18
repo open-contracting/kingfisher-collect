@@ -150,7 +150,7 @@ Eg. in ``start_requests``:
 
 .. code-block:: python
 
-    if hasattr(self, 'sample') and self.sample == 'true':
+    if self.sample:
             yield scrapy.Request(urls[0])
         else:
             for url in urls:
@@ -162,7 +162,7 @@ Eg. in ``parse``:
 .. code-block:: python
 
     files_urls = json.loads(response.body)
-        if hasattr(self, 'sample') and self.sample == 'true':
+        if self.sample:
             files_urls = [files_urls[0]]
             
         for file_url in files_urls:

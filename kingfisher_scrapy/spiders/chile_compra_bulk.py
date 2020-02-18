@@ -17,7 +17,7 @@ class ChileCompraBulk(BaseSpider):
 
     def start_requests(self):
         url = 'https://ocds.blob.core.windows.net/ocds/{}{}.zip'
-        if self.is_sample():
+        if self.sample:
             years = ['2017']
             months = ['02']
         else:

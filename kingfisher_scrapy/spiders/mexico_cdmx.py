@@ -19,7 +19,7 @@ class MexicoCDMXSource(BaseSpider):
         if response.status == 200:
 
             data = json.loads(response.text)
-            if hasattr(self, 'sample') and self.sample == 'true':
+            if self.sample:
                 data = [data[0]]
 
             for data_item in data:

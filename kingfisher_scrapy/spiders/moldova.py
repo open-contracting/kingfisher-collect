@@ -44,7 +44,7 @@ class Moldova(BaseSpider):
                         meta={'kf_filename': 'data-{}-{}.json'.format(endpoint, data['ocid']), 'endpoint': endpoint, 'data': True}
                     )
 
-                if self.is_sample():
+                if self.sample:
                     return
 
                 yield scrapy.Request(

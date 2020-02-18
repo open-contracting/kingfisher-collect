@@ -26,7 +26,7 @@ class UKContractsFinder(BaseSpider):
                 encoding='ISO-8859-1'
             )
 
-            if not self.is_sample() and response.request.meta['kf_filename'] == 'page1.json':
+            if not self.sample and response.request.meta['kf_filename'] == 'page1.json':
                 json_data = json.loads(response.text)
                 last_page = json_data['maxPage']
                 for page in range(1, last_page + 1):

@@ -13,7 +13,7 @@ class Australia(BaseSpider):
 
     def start_requests(self):
 
-        if self.is_sample():
+        if self.sample:
             yield scrapy.Request(
                 url='https://api.tenders.gov.au/ocds/findByDates/contractPublished/2018-01-01T00:00:00Z/2018-12-31T23'
                     ':59:59Z',
@@ -35,7 +35,7 @@ class Australia(BaseSpider):
             yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type='release_package')
 
             json_data = json.loads(response.text)
-            if not self.is_sample():
+            if not self.sampl
                 if 'links' in json_data and 'next' in json_data['links'] and json_data['links']['next']:
                     yield scrapy.Request(
                         url=json_data['links']['next'],

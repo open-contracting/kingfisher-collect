@@ -22,7 +22,7 @@ class Armenia(BaseSpider):
             yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="release_package")
 
             json_data = json.loads(response.text)
-            if not (hasattr(self, 'sample') and self.sample == 'true'):
+            if not (self.sample):
                 if 'next_page' in json_data and 'uri' in json_data['next_page']:
                     url = json_data['next_page']['uri']
                     yield scrapy.Request(

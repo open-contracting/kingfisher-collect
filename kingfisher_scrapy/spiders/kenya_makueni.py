@@ -12,7 +12,7 @@ class KenyaMakueni(BaseSpider):
     name = 'kenya_makueni'
 
     def start_requests(self):
-        if self.is_sample():
+        if self.sample:
             total = 10
             page_size = 10
         else:
