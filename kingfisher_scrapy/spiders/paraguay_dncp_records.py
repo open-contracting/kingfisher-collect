@@ -8,5 +8,4 @@ class ParaguayDNCPRecords(ParaguayDNCPBaseSpider):
     def get_files_to_download(self, content):
         for record in content['records']:
             url = 'http://beta.dncp.gov.py/datos/api/v3/doc/ocds/record/{}'.format(record['compiledRelease']['ocid'])
-            file_name = '{}.json'.format(record['compiledRelease']['ocid'])
-            yield url, file_name
+            yield url
