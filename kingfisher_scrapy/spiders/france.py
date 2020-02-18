@@ -11,7 +11,7 @@ class France(BaseSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            url='https://www.data.gouv.fr/api/1/datasets/',
+            url='https://www.data.gouv.fr/api/1/datasets/?organization=534fff75a3a7292c64a77de4',
             callback=self.parse_item
         )
 
@@ -29,16 +29,18 @@ class France(BaseSpider):
                             url,
                             meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'},
                         )
-                        break
+                        if self.sample:
+                            break
                 else:
                     continue
                 break
             else:
                 next_page = json_data.get('next_page')
-                yield scrapy.Request(
-                    next_page,
-                    callback=self.parse_item
-                )
+                if next_page:
+                    yield scrapy.Request(
+                        next_page,
+                        callback=self.parse_item
+                    )
         else:
             yield {
                 'success': False,
