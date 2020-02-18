@@ -32,7 +32,7 @@ Using the Scrapyd web interface
 -  To see the scheduled, running and finished crawls, click "Jobs"
 -  To browse the crawls' log files, click "Logs"
 
-For help understanding the log files, read :doc:crawl-report-guide`.
+For help understanding the log files, read :doc:`crawl-report-guide`.
 
 .. note::
 
