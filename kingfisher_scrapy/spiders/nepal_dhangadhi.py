@@ -6,8 +6,8 @@ import scrapy
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class Dhangadhi(BaseSpider):
-    name = "dhangadhi"
+class NepalDhangadhi(BaseSpider):
+    name = "nepal_dhangadhi"
 
     def start_requests(self):
         yield scrapy.Request(

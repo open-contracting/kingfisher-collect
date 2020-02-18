@@ -7,8 +7,8 @@ import scrapy
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class QuienEsQuien(BaseSpider):
-    name = 'quien_es_quien'
+class MexicoQuienEsQuien(BaseSpider):
+    name = 'mexico_quien_es_quien'
     download_delay = 0.9
     url = 'https://api.quienesquien.wiki/v2/contracts?limit={}&offset={}'
 
