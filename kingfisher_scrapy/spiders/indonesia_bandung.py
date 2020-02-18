@@ -21,7 +21,7 @@ class IndonesiaBandung(BaseSpider):
     def parse(self, response):
 
         if response.status == 200:
-            json_data = json.loads(response.body_as_unicode())
+            json_data = json.loads(response.text)
             if len(json_data) == 0:
                 return
             yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="release_list")

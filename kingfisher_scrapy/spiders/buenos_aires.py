@@ -23,7 +23,7 @@ class BuenosAires(BaseSpider):
     def parse(self, response):
         if response.status == 200:
             if response.request.meta['type'] == 'meta':
-                data = json.loads(response.body_as_unicode())
+                data = json.loads(response.text)
                 for resource in data['result']['resources']:
                     if resource['format'].upper() == 'JSON':
                         yield scrapy.Request(

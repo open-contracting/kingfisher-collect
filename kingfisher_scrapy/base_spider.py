@@ -156,6 +156,21 @@ class LinksSpider:
                 meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
             )
 
+    def parse_next_link(self, response, sample, save_response_to_disk, data_type):
+        if response.status == 200:
+
+            yield save_response_to_disk(response, response.request.meta['kf_filename'], data_type=data_type)
+
+            if not sample:
+                yield self.next_link(response)
+        else:
+            yield {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                'url': response.request.url,
+                'errors': {"http_code": response.status}
+            }
+
 
 # `scrapy.Spider` is not set up for cooperative multiple inheritance (it doesn't call `super()`), so the mixin must be
 # the first declared parent class, in order for its `__init__()` and `from_crawler()` methods to be run.

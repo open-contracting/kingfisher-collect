@@ -29,7 +29,7 @@ class Moldova(BaseSpider):
                 yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="record_package")
             else:
                 self.save_response_to_disk(response, response.request.meta['kf_filename'])
-                json_data = json.loads(response.body_as_unicode())
+                json_data = json.loads(response.text)
                 offset = json_data.get('offset')
                 # not having an offset in the data means the data has come to an end.
                 if not offset:
