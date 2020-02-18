@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 
@@ -103,6 +104,38 @@ class KingfisherSpiderMixin:
         if self.sample:
             name += '_sample'
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
+
+
+class LinksSpider:
+    @staticmethod
+    def next_link(response):
+        """
+        Handling API response with a links field
+
+        Access to ``links/next`` for the new url, and returns a Request
+        """
+        json_data = json.loads(response.text)
+        if 'links' in json_data and 'next' in json_data['links']:
+            url = json_data['links']['next']
+            return scrapy.Request(
+                url=url,
+                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+            )
+
+    def parse_next_link(self, response, sample, save_response_to_disk, data_type):
+        if response.status == 200:
+
+            yield save_response_to_disk(response, response.request.meta['kf_filename'], data_type=data_type)
+
+            if not sample:
+                yield self.next_link(response)
+        else:
+            yield {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                'url': response.request.url,
+                'errors': {"http_code": response.status}
+            }
 
 
 # `scrapy.Spider` is not set up for cooperative multiple inheritance (it doesn't call `super()`), so the mixin must be

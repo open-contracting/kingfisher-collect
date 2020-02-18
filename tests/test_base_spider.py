@@ -4,8 +4,9 @@ from tempfile import TemporaryDirectory
 from unittest.mock import Mock
 
 import pytest
+from scrapy.http.response import text
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider
 from tests import spider_with_crawler
 
 
@@ -132,3 +133,14 @@ def test_save_data_to_disk_with_existing_directory():
         os.makedirs(os.path.join(files_store, 'test/20010203_040506'))
 
         spider.save_data_to_disk(b'{"key": "value"}', 'file.json')  # no FileExistsError exception
+
+
+def test_next_link():
+    url = 'https://example.com/remote.json'
+    text_response = text.TextResponse('test')
+    response = text_response.replace(body='{"links": {"next": "' + url + '"}}')
+
+    spider = LinksSpider()
+    actual = spider.next_link(response)
+
+    assert actual.url == url
