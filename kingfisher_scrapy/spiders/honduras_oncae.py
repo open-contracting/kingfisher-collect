@@ -19,7 +19,7 @@ class HondurasONCAE(BaseSpider):
             urls = response.css(".article-content ul")\
                 .xpath(".//a[contains(., '[json]')]/@href")\
                 .getall()
-            if self.is_sample():
+            if self.sample:
                 urls = [urls[0]]
             for url in urls:
                 filename = urlparse(url).path.split('/')[-1]

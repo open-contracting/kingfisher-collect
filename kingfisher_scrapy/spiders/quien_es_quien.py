@@ -13,7 +13,7 @@ class QuienEsQuien(BaseSpider):
     url = 'https://api.quienesquien.wiki/v2/contracts?limit={}&offset={}'
 
     def start_requests(self):
-        if self.is_sample():
+        if self.sample:
             limit = 10
             offset = 0
             yield scrapy.Request(

@@ -12,7 +12,7 @@ class KenyaMakueni(BaseSpider):
     url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={}&pageNumber={}'
 
     def start_requests(self):
-        if self.is_sample():
+        if self.sample:
             page_number = 0
             page_size = 10
             yield scrapy.Request(

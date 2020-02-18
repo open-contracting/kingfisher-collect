@@ -3,7 +3,7 @@ Download data to a remote server
 
 .. note::
 
-   This is an advanced guide, that assumes knowledge of web hosting.
+   This is an advanced guide that assumes knowledge of web hosting.
 
 Some spiders take a long time to run (days or weeks), and some data sources have a lot of OCDS data (GBs). In such cases, you might not want to :doc:`download data to your computer<local>`, and instead use a separate machine. You have two options:
 
@@ -24,13 +24,15 @@ On the remote server, follow Scrapyd's `installation instructions <https://scrap
 Start Scrapyd
 -------------
 
-On the remote server, follow Scrapy's `starting instructions <https://scrapyd.readthedocs.io/en/latest/overview.html#starting-scrapyd>`__. Scrapyd should be accessible at ``http://your-remote-server:6800/``. If not, refer to `Scrapyd's documentation <http://scrapyd.readthedocs.org/>`__ or its `GitHub issues <https://github.com/scrapy/scrapyd/issues>`__ to troubleshoot.
+On the remote server, follow `these instructions <https://scrapyd.readthedocs.io/en/latest/overview.html#starting-scrapyd>`__ to start Scrapyd. Scrapyd should then be accessible at ``http://your-remote-server:6800/``. If not, refer to `Scrapyd's documentation <http://scrapyd.readthedocs.org/>`__ or its `GitHub issues <https://github.com/scrapy/scrapyd/issues>`__ to troubleshoot.
 
 Using the Scrapyd web interface
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  To see the scheduled, running and finished crawls, click "Jobs"
 -  To browse the crawls' log files, click "Logs"
+
+For help understanding the log files, read :doc:crawl-report-guide`.
 
 .. note::
 
@@ -54,7 +56,7 @@ Update the ``url`` variable in the ``scrapy.cfg`` file in your ``kingfisher-scra
 
 You need to at least replace ``localhost``. If you changed the ``http_port`` variable in Scrapyd's `configuration file <https://scrapyd.readthedocs.io/en/stable/config.html>`__, you need to replace ``6800``.
 
-If you changed the ``FILES_STORE`` variable when :ref:`installing Kingfisher Scrape<configure>`, that same directory needs to exist on the remote server, and the ``scrapyd`` process needs permission to write to it. If you are using the default value, then files will be stored in a ``data`` directory under your Scrapyd directory.
+If you changed the ``FILES_STORE`` variable when :ref:`installing Kingfisher Scrape<configure>`, that same directory needs to exist on the remote server, and the ``scrapyd`` process needs permission to write to it. If you are using the default value, then files will be stored in a ``data`` directory under the Scrapyd directory on the remote server.
 
 Deploy spiders
 --------------
@@ -82,7 +84,7 @@ If successful, you'll see something like:
 
     {"status": "ok", "jobid": "6487ec79947edab326d6db28a2d86511e8247444"}
 
-Like when :ref:`downloading data to your computer<collect-data>`, you can download only a sample of the available data or :ref:`use a proxy<proxy>` – just remember to use ``-d`` instead of ``-a`` before each spider argument. For example:
+Like when :ref:`downloading data to your computer<collect-data>`, you can download only a sample of the available data or :ref:`use a proxy<proxy>` – just remember to use ``-d`` instead of ``-a`` before each spider argument. For example, replace ``localhost`` with your remote server and ``spider_name`` with a spider's name:
 
 .. code-block:: bash
 

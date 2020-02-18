@@ -6,10 +6,6 @@ class Client:
         self.url = url
         self.key = key
 
-    @property
-    def configured(self):
-        return self.url and self.key
-
     def create_file(self, data, files):
         return self._post('/api/v1/submit/file/', data, files=files)
 

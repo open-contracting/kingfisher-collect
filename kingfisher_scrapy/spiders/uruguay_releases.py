@@ -12,7 +12,7 @@ class UruguayReleases(UruguayBase):
         if response.status == 200:
             root = response.xpath('//item/link/text()').getall()
 
-            if self.is_sample():
+            if self.sample:
                 root = [root[0]]
 
             for url in root:
