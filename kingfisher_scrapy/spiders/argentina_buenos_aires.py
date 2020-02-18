@@ -8,8 +8,8 @@ import scrapy
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class BuenosAires(BaseSpider):
-    name = 'buenos_aires'
+class ArgentinaBuenosAires(BaseSpider):
+    name = 'argentina_buenos_aires'
     start_urls = ['https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras']
     # the data list service takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000
@@ -23,7 +23,7 @@ class BuenosAires(BaseSpider):
     def parse(self, response):
         if response.status == 200:
             if response.request.meta['type'] == 'meta':
-                data = json.loads(response.body_as_unicode())
+                data = json.loads(response.text)
                 for resource in data['result']['resources']:
                     if resource['format'].upper() == 'JSON':
                         yield scrapy.Request(

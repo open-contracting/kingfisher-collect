@@ -18,7 +18,7 @@ class MexicoCDMXSource(BaseSpider):
     def parse_list(self, response):
         if response.status == 200:
 
-            data = json.loads(response.body_as_unicode())
+            data = json.loads(response.text)
             if self.sample:
                 data = [data[0]]
 

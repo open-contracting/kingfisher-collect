@@ -27,7 +27,7 @@ class CanadaMontreal(BaseSpider):
 
             # Load more pages?
             if not self.sample and response.request.meta['kf_filename'] == 'page0.json':
-                data = json.loads(response.body_as_unicode())
+                data = json.loads(response.text)
                 total = data['meta']['count']
                 offset = self.page_limit
                 while offset < total:

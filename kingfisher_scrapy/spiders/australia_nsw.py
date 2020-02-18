@@ -24,7 +24,7 @@ class AustraliaNSW(BaseSpider):
     def parse_list(self, response):
         if response.status == 200:
 
-            json_data = json.loads(response.body_as_unicode())
+            json_data = json.loads(response.text)
 
             # More Pages?
             if 'links' in json_data and isinstance(json_data['links'], dict) and 'next' in json_data['links'] \
