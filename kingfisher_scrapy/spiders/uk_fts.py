@@ -27,7 +27,7 @@ class UKContractsFinder(BaseSpider):
                 data_type='release_package_in_ocdsReleasePackage_in_list_in_results'
             )
 
-            json_data = json.loads(response.body_as_unicode())
+            json_data = json.loads(response.text)
             if not self.sample and json_data['nextCursor']:
                 yield scrapy.Request(
                     url="https://enoticetest.service.xgov.uk/api/1.0/ocdsReleasePackages?cursor=" + json_data['nextCursor'],

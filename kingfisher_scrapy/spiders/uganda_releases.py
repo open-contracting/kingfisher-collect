@@ -52,7 +52,7 @@ class Uganda(BaseSpider):
     def parse(self, response):
         if response.status == 200:
 
-            json_data = json.loads(response.body_as_unicode())
+            json_data = json.loads(response.text)
             if len(json.dumps(json_data.get('releases')).encode()) > 2:
                 yield self.save_data_to_disk(
                     json.dumps(json_data).encode(),

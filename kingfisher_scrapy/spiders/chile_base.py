@@ -47,7 +47,7 @@ class ChileCompraBaseSpider(BaseSpider):
                 )
 
     def base_parse(self, response, package_type):
-        data = json.loads(response.body_as_unicode())
+        data = json.loads(response.text)
         if 'data' in data:
             yield_list = []
             for data_item in data['data']:
