@@ -19,7 +19,7 @@ class Zambia(BaseSpider):
     def parse_list(self, response):
         if response.status == 200:
 
-            json_data = json.loads(response.body_as_unicode())
+            json_data = json.loads(response.text)
             files_urls = json_data['packagesPerMonth']
 
             if self.sample:
