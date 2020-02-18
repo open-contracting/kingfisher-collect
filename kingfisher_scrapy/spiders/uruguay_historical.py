@@ -21,7 +21,7 @@ class UruguayHistorical(BaseSpider):
         base_url = 'https://www.gub.uy/agencia-compras-contrataciones-estado/sites/agencia-compras-contrataciones' \
                    '-estado/files/2019-04/OCDS-{}.zip'
         end_year = 2018
-        if self.is_sample():
+        if self.sample:
             end_year = 2003
         for year in range(2002, end_year):
             yield scrapy.Request(

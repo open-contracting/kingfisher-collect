@@ -34,7 +34,7 @@ class Scotland(BaseSpider):
 
     def start_requests(self):
         now = datetime.datetime.today()
-        if self.is_sample():
+        if self.sample:
             marker = now - datetime.timedelta(days=14)
             for notice_type in self.notice_types:
                 yield scrapy.Request(

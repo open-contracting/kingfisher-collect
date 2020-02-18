@@ -1,14 +1,14 @@
 from unittest.mock import Mock, patch
 
 import pytest
-from scrapy.exceptions import DropItem, NotConfigured
+from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.pipelines import KingfisherPostPipeline
+from kingfisher_scrapy.extensions import KingfisherAPI
 from tests import spider_with_crawler
 
 
-def spider_after_open(tmpdir, sample=False):
-    spider = spider_with_crawler(sample)
+def spider_after_open(tmpdir, **kwargs):
+    spider = spider_with_crawler(**kwargs)
     spider.crawler.settings['FILES_STORE'] = tmpdir
     spider.crawler.settings['KINGFISHER_API_URI'] = 'http://httpbin.org/anything'
     spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
@@ -24,9 +24,9 @@ def test_from_crawler():
     spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
     spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = 'data'
 
-    pipeline = KingfisherPostPipeline.from_crawler(spider.crawler)
+    extension = KingfisherAPI.from_crawler(spider.crawler)
 
-    assert pipeline.directory == 'data'
+    assert extension.directory == 'data'
 
 
 @pytest.mark.parametrize('api_url,api_key', [
@@ -40,9 +40,9 @@ def test_from_crawler_missing_arguments(api_url, api_key):
     spider.crawler.settings['KINGFISHER_API_KEY'] = api_key
 
     with pytest.raises(NotConfigured) as excinfo:
-        KingfisherPostPipeline.from_crawler(spider.crawler)
+        KingfisherAPI.from_crawler(spider.crawler)
 
-    assert str(excinfo.value) == 'Kingfisher API not configured.'
+    assert str(excinfo.value) == 'KINGFISHER_API_URI and/or KINGFISHER_API_KEY is not set.'
 
 
 @pytest.mark.parametrize('sample,is_sample,path', [
@@ -53,14 +53,13 @@ def test_from_crawler_missing_arguments(api_url, api_key):
 @pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
 @pytest.mark.parametrize('directory', [False, True])
 @pytest.mark.parametrize('ok', [True, False])
-def test_process_file_success(sample, is_sample, path, note, encoding, encoding2, directory, ok, tmpdir, caplog):
-    spider = spider_after_open(tmpdir, sample)
-    spider.note = note
+def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, tmpdir, caplog):
+    spider = spider_after_open(tmpdir, sample=sample, note=note)
 
     if directory:
         spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
 
-    pipeline = KingfisherPostPipeline.from_crawler(spider.crawler)
+    extension = KingfisherAPI.from_crawler(spider.crawler)
     spider.save_data_to_disk(b'{"key": "value"}', 'file.json', url='https://example.com/remote.json')
 
     with patch('requests.post') as mocked:
@@ -79,14 +78,9 @@ def test_process_file_success(sample, is_sample, path, note, encoding, encoding2
         if encoding:
             data['encoding'] = encoding
 
-        if ok:
-            with pytest.raises(DropItem) as excinfo:
-                pipeline.process_item(data, spider)
+        extension.item_scraped(data, spider)
 
-            assert str(excinfo.value) == 'Response from [https://example.com/remote.json] posted to API.'
-        else:
-            pipeline.process_item(data, spider)
-
+        if not ok:
             message = 'Failed to post [https://example.com/remote.json]. API status code: 400'
 
             assert len(caplog.records) == 1
@@ -130,11 +124,10 @@ def test_process_file_success(sample, is_sample, path, note, encoding, encoding2
 @pytest.mark.parametrize('note', ['', 'Started by NAME.'])
 @pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
 @pytest.mark.parametrize('ok', [True, False])
-def test_process_item_success(sample, is_sample, note, encoding, encoding2, ok, tmpdir, caplog):
-    spider = spider_after_open(tmpdir, sample)
-    spider.note = note
+def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok, tmpdir, caplog):
+    spider = spider_after_open(tmpdir, sample=sample, note=note)
 
-    pipeline = KingfisherPostPipeline.from_crawler(spider.crawler)
+    extension = KingfisherAPI.from_crawler(spider.crawler)
 
     with patch('requests.post') as mocked:
         response = Mock()
@@ -154,14 +147,9 @@ def test_process_item_success(sample, is_sample, note, encoding, encoding2, ok, 
         if encoding:
             data['encoding'] = encoding
 
-        if ok:
-            with pytest.raises(DropItem) as excinfo:
-                pipeline.process_item(data, spider)
+        extension.item_scraped(data, spider)
 
-            assert str(excinfo.value) == 'Response from [https://example.com/remote.json] posted to API.'
-        else:
-            pipeline.process_item(data, spider)
-
+        if not ok:
             message = 'Failed to post [https://example.com/remote.json]. API status code: 400'
 
             assert len(caplog.records) == 1
@@ -195,10 +183,10 @@ def test_process_item_success(sample, is_sample, note, encoding, encoding2, ok, 
 
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
-def test_process_failure(sample, is_sample, ok, tmpdir, caplog):
-    spider = spider_after_open(tmpdir, sample)
+def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
+    spider = spider_after_open(tmpdir, sample=sample)
 
-    pipeline = KingfisherPostPipeline.from_crawler(spider.crawler)
+    extension = KingfisherAPI.from_crawler(spider.crawler)
 
     with patch('requests.post') as mocked:
         response = Mock()
@@ -214,14 +202,9 @@ def test_process_failure(sample, is_sample, ok, tmpdir, caplog):
             'errors': {'http_code': 500},
         }
 
-        if ok:
-            with pytest.raises(DropItem) as excinfo:
-                pipeline.process_item(data, spider)
+        extension.item_scraped(data, spider)
 
-            assert str(excinfo.value) == 'Response from [https://example.com/remote.json] posted to File Errors API.'
-        else:
-            pipeline.process_item(data, spider)
-
+        if not ok:
             message = 'Failed to post [https://example.com/remote.json]. File Errors API status code: 400'
 
             assert len(caplog.records) == 1
@@ -246,3 +229,48 @@ def test_process_failure(sample, is_sample, ok, tmpdir, caplog):
             },
             data=expected,
         )
+
+
+@pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
+@pytest.mark.parametrize('ok', [True, False])
+def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
+    spider = spider_after_open(tmpdir, sample=sample)
+
+    extension = KingfisherAPI.from_crawler(spider.crawler)
+
+    with patch('requests.post') as mocked:
+        response = Mock()
+        response.ok = ok
+        response.status_code = 400
+        mocked.return_value = response
+
+        extension.spider_closed(spider, 'finished')
+
+        mocked.assert_called_once_with(
+            'http://httpbin.org/anything/api/v1/submit/end_collection_store/',
+            headers={
+                'Authorization': 'ApiKey xxx',
+            },
+            data={
+                'collection_source': 'test',
+                'collection_data_version': '2001-02-03 04:05:06',
+                'collection_sample': is_sample,
+            },
+        )
+
+        if not ok:
+            assert len(caplog.records) == 1
+            assert caplog.records[0].name == 'test'
+            assert caplog.records[0].levelname == 'WARNING'
+            assert caplog.records[0].message == 'Failed to post End Collection Store. API status code: 400'
+
+
+def test_spider_closed_other_reason(tmpdir):
+    spider = spider_after_open(tmpdir)
+
+    extension = KingfisherAPI.from_crawler(spider.crawler)
+
+    with patch('requests.post') as mocked:
+        extension.spider_closed(spider, 'xxx')
+
+        mocked.assert_not_called()

@@ -12,7 +12,7 @@ class NepalDhangadhi(BaseSpider):
             url='https://admin.ims.susasan.org/ocds/json/dhangadhi-2074-75.json',
             meta={'kf_filename': 'dhangadhi-2074-75.json'}
         )
-        if not self.is_sample():
+        if not self.sample:
             yield scrapy.Request(
                 url='https://admin.ims.susasan.org/ocds/json/dhangadhi-2075-76.json',
                 meta={'kf_filename': 'dhangadhi-2075-76.json'}

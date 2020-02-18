@@ -48,7 +48,7 @@ class ParaguayHacienda(BaseSpider):
             base_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/ocds/release-package/{}'
 
             # If is the first URL, we need to iterate over all the pages to get all the process ids to query
-            if response.request.meta['first'] and not self.is_sample():
+            if response.request.meta['first'] and not self.sample:
                 total_pages = data['meta']['totalPages']
                 for page in range(2,  total_pages+1):
                     yield scrapy.Request(
@@ -59,7 +59,7 @@ class ParaguayHacienda(BaseSpider):
 
             # if is a meta request it means that is the page that have the process ids to query
             if response.request.meta['meta']:
-                if self.is_sample():
+                if self.sample:
                     data['results'] = data['results'][:50]
 
                 # Now that we have the ids we iterate over them, without duplicate them, and make the
