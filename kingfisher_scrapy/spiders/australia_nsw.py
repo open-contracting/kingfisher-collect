@@ -1,6 +1,7 @@
-import json
-import scrapy
 import hashlib
+import json
+
+import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
@@ -8,16 +9,10 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class AustraliaNSW(BaseSpider):
     name = 'australia_nsw'
     start_urls = ['https://tenders.nsw.gov.au']
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         release_types = ['planning', 'tender', 'contract']
-        page_limit = 10 if self.is_sample() else 1000
+        page_limit = 10 if self.sample else 1000
         url = 'https://tenders.nsw.gov.au/?event=public.api.{}.search&ResultsPerPage={}'
         for release_type in release_types:
             yield scrapy.Request(
@@ -33,7 +28,7 @@ class AustraliaNSW(BaseSpider):
 
             # More Pages?
             if 'links' in json_data and isinstance(json_data['links'], dict) and 'next' in json_data['links'] \
-                    and not self.is_sample():
+                    and not self.sample:
                 yield scrapy.Request(
                     json_data['links']['next'],
                     meta={'release_type': response.request.meta['release_type']},

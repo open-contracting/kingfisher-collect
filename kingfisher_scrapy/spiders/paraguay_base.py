@@ -1,9 +1,11 @@
 import hashlib
 import json
-
-import scrapy
-import requests
 import logging
+import re
+
+import requests
+import scrapy
+
 from kingfisher_scrapy.base_spider import BaseSpider
 from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
@@ -19,16 +21,12 @@ class ParaguayDNCPBaseSpider(BaseSpider):
     base_page_url = 'http://beta.dncp.gov.py/datos/api/v3/doc/search/processes?fecha_desde=2010-01-01'
 
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'DOWNLOADER_MIDDLEWARES': {
             'kingfisher_scrapy.middlewares.HttpProxyWithSpiderArgsMiddleware': 350,
-            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543
+            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
         },
-        'HTTPERROR_ALLOW_ALL': True,
         'CONCURRENT_REQUESTS': 1,
-        'DUPEFILTER_DEBUG': True
+        'DUPEFILTER_DEBUG': True,
     }
 
     @classmethod
@@ -42,7 +40,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
             raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
 
         spider.proxies = None
-        if hasattr(spider, 'https_proxy'):
+        if spider.https_proxy:
             spider.proxies = {'https': spider.https_proxy}
 
         return spider
@@ -62,7 +60,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
                     meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
                 )
             pagination = content['pagination']
-            if pagination['current_page'] < pagination['total_pages'] and not self.is_sample():
+            if pagination['current_page'] < pagination['total_pages'] and not self.sample:
                 yield scrapy.Request(
                     (self.base_page_url + '&page={}').format(pagination['current_page'] + 1),
                     meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'},

@@ -1,17 +1,12 @@
-import scrapy
 import datetime
+
+import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class Scotland(BaseSpider):
     name = 'scotland'
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     notice_types = [
         1,  # OJEU - F1 - Prior Information Notice
@@ -39,7 +34,7 @@ class Scotland(BaseSpider):
 
     def start_requests(self):
         now = datetime.datetime.today()
-        if self.is_sample():
+        if self.sample:
             marker = now - datetime.timedelta(days=14)
             for notice_type in self.notice_types:
                 yield scrapy.Request(

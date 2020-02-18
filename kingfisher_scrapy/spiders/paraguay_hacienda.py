@@ -1,6 +1,8 @@
 import json
+
 import requests
 import scrapy
+
 from kingfisher_scrapy.base_spider import BaseSpider
 from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
@@ -15,14 +17,10 @@ class ParaguayHacienda(BaseSpider):
     request_time_limit = 14.0
 
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'DOWNLOADER_MIDDLEWARES': {
-           'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543
+           'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
         },
-        'HTTPERROR_ALLOW_ALL': True,
-        'CONCURRENT_REQUESTS': 1
+        'CONCURRENT_REQUESTS': 1,
     }
 
     @classmethod
@@ -50,7 +48,7 @@ class ParaguayHacienda(BaseSpider):
             base_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/ocds/release-package/{}'
 
             # If is the first URL, we need to iterate over all the pages to get all the process ids to query
-            if response.request.meta['first'] and not self.is_sample():
+            if response.request.meta['first'] and not self.sample:
                 total_pages = data['meta']['totalPages']
                 for page in range(2,  total_pages+1):
                     yield scrapy.Request(
@@ -61,7 +59,7 @@ class ParaguayHacienda(BaseSpider):
 
             # if is a meta request it means that is the page that have the process ids to query
             if response.request.meta['meta']:
-                if self.is_sample():
+                if self.sample:
                     data['results'] = data['results'][:50]
 
                 # Now that we have the ids we iterate over them, without duplicate them, and make the

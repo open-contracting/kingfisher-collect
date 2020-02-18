@@ -13,7 +13,7 @@ class UruguayRecords(UruguayBase):
         if response.status == 200:
             root = response.xpath('//item/title/text()').getall()
 
-            if self.is_sample():
+            if self.sample:
                 root = [root[0]]
 
             for id_compra in root:

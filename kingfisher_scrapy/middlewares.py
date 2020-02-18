@@ -1,14 +1,23 @@
-import scrapy
+# -*- coding: utf-8 -*-
+
+# Define here the models for your spider middleware
+#
+# See documentation in:
+# https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+
 import logging
 from datetime import datetime
+
+import scrapy
+
 from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
 
-class HttpProxyWithSpiderArgsMiddleware(object):
+class HttpProxyWithSpiderArgsMiddleware:
 
     def __init__(self, spider):
         logging.info('Using HttpProxyWithSpiderArgsMiddleware.')
-        if not hasattr(spider, 'http_proxy') and not hasattr(spider, 'https_proxy'):
+        if not spider.http_proxy and not spider.https_proxy:
             logging.warning('No proxy arguments have been set!')
 
     @classmethod
@@ -16,13 +25,13 @@ class HttpProxyWithSpiderArgsMiddleware(object):
         return cls(crawler.spider)
 
     def process_request(self, request, spider):
-        if request.url.startswith('https:') and hasattr(spider, 'https_proxy'):
+        if request.url.startswith('https:') and spider.https_proxy:
             request.meta['proxy'] = spider.https_proxy
-        elif request.url.startswith('http:') and hasattr(spider, 'http_proxy'):
+        elif request.url.startswith('http:') and spider.http_proxy:
             request.meta['proxy'] = spider.http_proxy
 
 
-class ParaguayAuthMiddleware(object):
+class ParaguayAuthMiddleware:
     """Downloader middleware that manages API authentication for Paraguay
     scrapers.
 
@@ -79,7 +88,7 @@ class ParaguayAuthMiddleware(object):
         return spider.expires_soon(datetime.now() - AuthManager.start_time)
 
 
-class AuthManager(object):
+class AuthManager:
     """ Helper class for ParaguayAuthMiddleware """
 
     access_token = None

@@ -8,11 +8,7 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class ChileCompraBaseSpider(BaseSpider):
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
-        'HTTPERROR_ALLOW_ALL': True,
     }
     download_timeout = 300
     limit = 100
@@ -36,7 +32,7 @@ class ChileCompraBaseSpider(BaseSpider):
             )
 
     def start_requests(self):
-        if self.is_sample():
+        if self.sample:
             yield self.get_sample_request()
             return
         until_year, until_month = self.get_year_month_until()

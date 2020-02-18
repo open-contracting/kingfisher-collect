@@ -6,19 +6,13 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class Dhangadhi(BaseSpider):
     name = "dhangadhi"
     start_urls = ['https://ims.susasan.org/dhangadhi#downloads']
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(
             url='https://admin.ims.susasan.org/ocds/json/dhangadhi-2074-75.json',
             meta={'kf_filename': 'dhangadhi-2074-75.json'}
         )
-        if not self.is_sample():
+        if not self.sample:
             yield scrapy.Request(
                 url='https://admin.ims.susasan.org/ocds/json/dhangadhi-2075-76.json',
                 meta={'kf_filename': 'dhangadhi-2075-76.json'}

@@ -1,18 +1,14 @@
 import json
-import scrapy
 from io import BytesIO
 from zipfile import ZipFile
+
+import scrapy
+
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class Zambia(BaseSpider):
     name = 'zambia'
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(
@@ -26,7 +22,7 @@ class Zambia(BaseSpider):
             json_data = json.loads(response.body_as_unicode())
             files_urls = json_data['packagesPerMonth']
 
-            if self.is_sample():
+            if self.sample:
                 files_urls = [files_urls[0]]
 
             for file_url in files_urls:

@@ -1,5 +1,5 @@
-import json
 import hashlib
+import json
 
 import scrapy
 
@@ -8,18 +8,13 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class UKContractsFinder(BaseSpider):
     name = 'uk_fts'
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(
+            # This URL was provided by the publisher and is not the production URL.
             url='https://enoticetest.service.xgov.uk/api/1.0/ocdsReleasePackages',
             meta={'kf_filename': 'start.json'},
-            headers={'Accept': 'application/json'}
+            headers={'Accept': 'application/json'},
         )
 
     def parse(self, response):
@@ -33,7 +28,7 @@ class UKContractsFinder(BaseSpider):
             )
 
             json_data = json.loads(response.body_as_unicode())
-            if not self.is_sample() and json_data['nextCursor']:
+            if not self.sample and json_data['nextCursor']:
                 yield scrapy.Request(
                     url="https://enoticetest.service.xgov.uk/api/1.0/ocdsReleasePackages?cursor=" + json_data['nextCursor'],
                     meta={'kf_filename': hashlib.md5(json_data['nextCursor'].encode('utf-8')).hexdigest() + '.json'},

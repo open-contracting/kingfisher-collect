@@ -1,17 +1,12 @@
-import scrapy
 import json
+
+import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class MexicoCDMXSource(BaseSpider):
     name = 'mexico_cdmx'
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(
@@ -24,7 +19,7 @@ class MexicoCDMXSource(BaseSpider):
         if response.status == 200:
 
             data = json.loads(response.body_as_unicode())
-            if hasattr(self, 'sample') and self.sample == 'true':
+            if self.sample:
                 data = [data[0]]
 
             for data_item in data:

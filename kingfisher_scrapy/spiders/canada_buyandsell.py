@@ -6,19 +6,13 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class CanadaBuyAndSell(BaseSpider):
     name = "canada_buyandsell"
     start_urls = ['https://buyandsell.gc.ca']
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(
             url='https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-13-14.json',
             meta={'kf_filename': '13-14.json'}
         )
-        if hasattr(self, 'sample') and self.sample == 'true':
+        if self.sample:
             return
         yield scrapy.Request(
             url='https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-14-15.json',

@@ -1,18 +1,14 @@
 import hashlib
 import json
+
 import scrapy
+
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class HondurasPortalRecords(BaseSpider):
     name = 'honduras_portal_records'
     download_delay = 0.9
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         url = 'http://200.13.162.86/api/v1/record/?format=json'
@@ -33,7 +29,7 @@ class HondurasPortalRecords(BaseSpider):
             )
 
             url = json_data.get('next')
-            if not url or self.is_sample():
+            if not url or self.sample:
                 return
             else:
                 yield scrapy.Request(

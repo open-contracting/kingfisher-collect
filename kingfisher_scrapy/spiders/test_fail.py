@@ -1,3 +1,6 @@
+"""
+This spider deliberately generates HTTP errors. You can use this to test whether errors are recorded properly.
+"""
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
@@ -6,12 +9,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class TestFail(BaseSpider):
     name = "test_fail"
     start_urls = ['https://www.open-contracting.org']
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         # Fine

@@ -1,4 +1,5 @@
 import json
+
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
@@ -6,12 +7,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class CanadaMontreal(BaseSpider):
     name = 'canada_montreal'
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
     page_limit = 10000
 
     def start_requests(self):
@@ -31,7 +26,7 @@ class CanadaMontreal(BaseSpider):
             )
 
             # Load more pages?
-            if not self.is_sample() and response.request.meta['kf_filename'] == 'page0.json':
+            if not self.sample and response.request.meta['kf_filename'] == 'page0.json':
                 data = json.loads(response.body_as_unicode())
                 total = data['meta']['count']
                 offset = self.page_limit

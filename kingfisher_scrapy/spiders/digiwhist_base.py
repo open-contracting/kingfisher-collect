@@ -1,16 +1,10 @@
-import tarfile
 import json
+import tarfile
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class DigiwhistBase(BaseSpider):
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def parse(self, response):
         if response.status == 200:
@@ -44,7 +38,7 @@ class DigiwhistBase(BaseSpider):
                             'url': self.start_urls[0],
                         }
                         line = readfp.readline()
-                        if self.is_sample() and number > 10:
+                        if self.sample and number > 10:
                             break
 
         else:

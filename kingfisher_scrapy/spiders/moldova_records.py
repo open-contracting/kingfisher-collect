@@ -1,18 +1,13 @@
-import json
-import scrapy
 import hashlib
+import json
+
+import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class MoldovaRecords(BaseSpider):
     name = 'moldova_records'
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(
@@ -25,7 +20,7 @@ class MoldovaRecords(BaseSpider):
 
             yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="record_package")
 
-            if not (hasattr(self, 'sample') and self.sample == 'true'):
+            if not (self.sample):
                 json_data = json.loads(response.body_as_unicode())
                 if 'links' in json_data and 'next' in json_data['links']:
                     url = json_data['links']['next']

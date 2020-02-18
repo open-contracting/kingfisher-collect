@@ -1,5 +1,6 @@
 import json
 import time
+
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
@@ -9,12 +10,6 @@ class AfghanistanReleases(BaseSpider):
     name = 'afghanistan_releases'
     start_urls = ['https://ocds.ageops.net/api/ocds/releases/dates']
     download_delay = 1.5
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
 
     def start_requests(self):
         yield scrapy.Request(
@@ -26,7 +21,7 @@ class AfghanistanReleases(BaseSpider):
         if response.status == 200:
 
             files_urls = json.loads(response.body_as_unicode())
-            if hasattr(self, 'sample') and self.sample == 'true':
+            if self.sample:
                 files_urls = [files_urls[0]]
 
             for file_url in files_urls:
@@ -47,7 +42,7 @@ class AfghanistanReleases(BaseSpider):
         if response.status == 200:
 
             files_urls = json.loads(response.body_as_unicode())
-            if hasattr(self, 'sample') and self.sample == 'true':
+            if self.sample:
                 files_urls = [files_urls[0]]
 
             for file_url in files_urls:

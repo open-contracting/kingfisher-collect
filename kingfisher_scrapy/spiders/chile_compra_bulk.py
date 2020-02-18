@@ -12,16 +12,12 @@ class ChileCompraBulk(BaseSpider):
     download_warnsize = 0
     download_timeout = 99999
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
-        'HTTPERROR_ALLOW_ALL': True,
     }
 
     def start_requests(self):
         url = 'https://ocds.blob.core.windows.net/ocds/{}{}.zip'
-        if self.is_sample():
+        if self.sample:
             years = ['2017']
             months = ['02']
         else:

@@ -7,12 +7,6 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class UKContractsFinder(BaseSpider):
     name = 'uk_contracts_finder'
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'kingfisher_scrapy.pipelines.KingfisherPostPipeline': 400
-        },
-        'HTTPERROR_ALLOW_ALL': True,
-    }
     base_url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=asc&page=%d'
 
     def start_requests(self):
@@ -32,7 +26,7 @@ class UKContractsFinder(BaseSpider):
                 encoding='ISO-8859-1'
             )
 
-            if not self.is_sample() and response.request.meta['kf_filename'] == 'page1.json':
+            if not self.sample and response.request.meta['kf_filename'] == 'page1.json':
                 json_data = json.loads(response.body_as_unicode())
                 last_page = json_data['maxPage']
                 for page in range(1, last_page + 1):

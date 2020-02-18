@@ -1,5 +1,7 @@
 import os
+
 import pytest
+
 from kingfisher_scrapy.scrape_report import ScrapeReport
 
 
