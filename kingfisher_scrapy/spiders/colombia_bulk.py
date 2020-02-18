@@ -14,6 +14,9 @@ class ColombiaBulk(BaseSpider):
     start_urls = ['https://www.colombiacompra.gov.co/transparencia/datos-json']
     download_warnsize = 0
     download_timeout = 99999
+    custom_settings = {
+        'DOWNLOAD_FAIL_ON_DATALOSS': False,
+    }
 
     def parse(self, response):
         if response.status == 200:
@@ -31,16 +34,28 @@ class ColombiaBulk(BaseSpider):
 
     def parse_items(self, response):
         if response.status == 200:
+            release_list = []
+            page = 0
             with ZipFile(BytesIO(response.body)) as zfile:
                 for name in zfile.namelist():
                     with zfile.open(name, 'r') as read_file:
                         for line in codecs.iterdecode(read_file, 'iso-8859-1'):
                             release_data = json.loads(line)['Release']
-                            yield self.save_data_to_disk(release_data, '{}-{}'.format(release_data['ocid'], name),
+                            release_list.append(release_data)
+                            if len(release_list) == 1000:
+                                yield self.save_data_to_disk(release_list, '{}-{}'.format(page,
+                                                                                          name),
+                                                             encoding='iso-8859-1',
+                                                             data_type='release_list', url=response.request.url)
+                                release_list = []
+                                page = page + 1
+                        if release_list:
+                            yield self.save_data_to_disk(release_list, '{}-{}'.format(page,
+                                                                                      name),
                                                          encoding='iso-8859-1',
-                                                         data_type='release', url=response.request.url)
-                            if self.is_sample():
-                                break
+                                                         data_type='release_list', url=response.request.url)
+                    if self.is_sample():
+                        break
         else:
             yield {
                 'success': False,

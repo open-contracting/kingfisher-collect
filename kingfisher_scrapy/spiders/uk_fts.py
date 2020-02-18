@@ -8,9 +8,10 @@ class UKContractsFinder(BaseSpider, LinksSpider):
 
     def start_requests(self):
         yield scrapy.Request(
+            # This URL was provided by the publisher and is not the production URL.
             url='https://enoticetest.service.xgov.uk/api/1.0/ocdsReleasePackages',
             meta={'kf_filename': 'start.json'},
-            headers={'Accept': 'application/json'}
+            headers={'Accept': 'application/json'},
         )
 
     def parse(self, response):
@@ -23,7 +24,7 @@ class UKContractsFinder(BaseSpider, LinksSpider):
                 data_type='release_package_in_ocdsReleasePackage_in_list_in_results'
             )
 
-            if not self.is_sample():
+            if not self.sample:
                 yield self.next_link(response)
         else:
             yield {

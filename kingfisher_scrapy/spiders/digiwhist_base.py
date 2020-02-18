@@ -38,7 +38,7 @@ class DigiwhistBase(BaseSpider):
                             'url': self.start_urls[0],
                         }
                         line = readfp.readline()
-                        if self.is_sample() and number > 10:
+                        if self.sample and number > 10:
                             break
 
         else:

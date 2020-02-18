@@ -11,7 +11,7 @@ class Australia(BaseSpider, LinksSpider):
 
     def start_requests(self):
 
-        if self.is_sample():
+        if self.sample:
             yield scrapy.Request(
                 url='https://api.tenders.gov.au/ocds/findByDates/contractPublished/2018-01-01T00:00:00Z/2018-12-31T23'
                     ':59:59Z',
@@ -32,7 +32,7 @@ class Australia(BaseSpider, LinksSpider):
 
             yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type='release_package')
 
-            if not self.is_sample():
+            if not self.sample:
                 yield self.next_link(response)
         else:
             yield {

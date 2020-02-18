@@ -17,7 +17,7 @@ class MoldovaRecords(BaseSpider, LinksSpider):
 
             yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="record_package")
 
-            if not self.is_sample():
+            if not self.sample:
                 yield self.next_link(response)
         else:
             yield {

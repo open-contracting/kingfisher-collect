@@ -13,7 +13,7 @@ class QuienEsQuien(BaseSpider):
     download_delay = 0.9
 
     def start_requests(self):
-        if self.is_sample():
+        if self.sample:
             limit = 10
             url = 'https://api.quienesquien.wiki/v2/contracts?limit={}'
             yield scrapy.Request(
