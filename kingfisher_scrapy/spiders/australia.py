@@ -2,10 +2,10 @@ import datetime
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider
+from kingfisher_scrapy.base_spider import LinksSpider
 
 
-class Australia(BaseSpider, LinksSpider):
+class Australia(LinksSpider):
 
     name = 'australia'
 
@@ -27,5 +27,5 @@ class Australia(BaseSpider, LinksSpider):
                 )
 
     def parse(self, response):
+        yield from self.parse_next_link(response, 'release_package')
 
-        return self.parse_next_link(response, self.sample, self.save_response_to_disk, 'release_package')

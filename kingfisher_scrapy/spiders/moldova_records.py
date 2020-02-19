@@ -1,9 +1,9 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider
+from kingfisher_scrapy.base_spider import LinksSpider
 
 
-class MoldovaRecords(BaseSpider, LinksSpider):
+class MoldovaRecords(LinksSpider):
     name = 'moldova_records'
 
     def start_requests(self):
@@ -13,4 +13,4 @@ class MoldovaRecords(BaseSpider, LinksSpider):
         )
 
     def parse(self, response):
-        yield self.parse_next_link(response, self.sample, self.save_response_to_disk, 'record_package')
+        yield from self.parse_next_link(response, 'record_package')
