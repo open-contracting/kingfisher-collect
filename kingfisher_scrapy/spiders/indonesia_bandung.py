@@ -37,7 +37,7 @@ class IndonesiaBandung(BaseSpider):
                 next_page_url = json_data.get('next_page')
                 if next_page_url:
                     yield scrapy.Request(
-                        next_page,
+                        next_page_url,
                         callback=self.parse_data
                     )
         else:
