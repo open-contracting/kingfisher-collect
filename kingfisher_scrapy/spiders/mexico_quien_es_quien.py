@@ -7,36 +7,38 @@ import scrapy
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class KenyaMakueni(BaseSpider):
-    name = 'kenya_makueni'
-    url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={}&pageNumber={}'
+class MexicoQuienEsQuien(BaseSpider):
+    name = 'mexico_quien_es_quien'
+    download_delay = 0.9
+    url = 'https://api.quienesquien.wiki/v2/contracts?limit={}&offset={}'
 
     def start_requests(self):
         if self.sample:
-            page_number = 0
-            page_size = 10
+            limit = 10
+            offset = 0
             yield scrapy.Request(
-                self.url.format(page_size, page_number),
-                meta={'kf_filename': hashlib.md5((self.url +
-                                                  str(page_number)).encode('utf-8')).hexdigest() + '.json'}
+                self.url.format(limit, offset),
+                meta={'kf_filename': 'sample.json'}
             )
         else:
             yield scrapy.Request(
-                'https://opencontracting.makueni.go.ke/api/ocds/release/count',
+                'https://api.quienesquien.wiki/v2/sources',
                 meta={'kf_filename': 'start_requests'},
                 callback=self.parse_count
             )
 
     def parse_count(self, response):
         if response.status == 200:
-            total = int(response.text)
-            page_size = 300
+            limit = 1000
+            json_data = json.loads(response.text)
+            count_list = json_data.get('data')
+            count = int(count_list[0].get('collections').get('contracts').get('count'))
 
-            for page_number in range((ceil(total / page_size))):
+            for offset in range(ceil(count / limit)):
                 yield scrapy.Request(
-                    self.url.format(page_size, page_number),
+                    self.url.format(limit, (offset * limit)),
                     meta={'kf_filename': hashlib.md5((self.url +
-                                                      str(page_number)).encode('utf-8')).hexdigest() + '.json'}
+                                                      str(offset)).encode('utf-8')).hexdigest() + '.json'}
                 )
         else:
             yield {
@@ -48,11 +50,12 @@ class KenyaMakueni(BaseSpider):
 
     def parse(self, response):
         if response.status == 200:
+
             json_data = json.loads(response.text)
             yield self.save_data_to_disk(
-                json.dumps(json_data).encode(),
+                json.dumps(json_data.get('data')).encode(),
                 response.request.meta['kf_filename'],
-                data_type='release_package_list',
+                data_type='record_package_list',
                 url=response.request.url
             )
 

@@ -31,7 +31,7 @@ class UruguayBase(BaseSpider):
 
     def parse(self, response):
         if response.status == 200:
-            json_data = json.loads(response.body_as_unicode())
+            json_data = json.loads(response.text)
             yield self.save_data_to_disk(
                 json.dumps(json_data).encode(),
                 response.request.meta['kf_filename'],

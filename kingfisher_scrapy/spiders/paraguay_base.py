@@ -1,6 +1,6 @@
+import hashlib
 import json
 import logging
-import re
 
 import requests
 import scrapy
@@ -45,34 +45,41 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         return spider
 
     def start_requests(self):
-        return [scrapy.Request(self.base_page_url, callback=self.parse_pages)]
+        return [scrapy.Request(
+            self.base_page_url,
+            callback=self.parse_pages
+        )]
 
     def parse_pages(self, response):
         if response.status == 200:
-            content = json.loads(response.body_as_unicode())
-            for url, file_name in self.get_files_to_download(content):
-                yield scrapy.Request(url, meta={'kf_filename': file_name})
+            content = json.loads(response.text)
+            for url in self.get_files_to_download(content):
+                yield scrapy.Request(
+                    url,
+                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+                )
             pagination = content['pagination']
             if pagination['current_page'] < pagination['total_pages'] and not self.sample:
-                yield scrapy.Request((self.base_page_url + '&page={}').format(pagination['current_page'] + 1),
-                                     callback=self.parse_pages)
+                yield scrapy.Request(
+                    (self.base_page_url + '&page={}').format(pagination['current_page'] + 1),
+                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'},
+                    callback=self.parse_pages
+                )
         else:
-            match = re.search('\\page=(\\d+)$', response.request.url)
-            if match:
-                file_number = match.group(1)
-            else:
-                file_number = 1
             yield {
                 'success': False,
-                'file_name': 'page-{}.json'.format(file_number),
+                'file_name': response.request.meta['kf_filename'],
                 'url': response.request.url,
                 'errors': {'http_code': response.status}
             }
 
     def parse(self, response):
         if response.status == 200:
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
-                                             data_type=self.data_type)
+            yield self.save_response_to_disk(
+                response,
+                response.request.meta['kf_filename'],
+                data_type=self.data_type
+            )
         else:
             yield {
                 'success': False,

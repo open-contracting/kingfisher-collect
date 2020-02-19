@@ -24,7 +24,7 @@ class Portugal(BaseSpider):
 
     def parse_list(self, response):
         if response.status == 200:
-            datas = json.loads(response.body_as_unicode())
+            datas = json.loads(response.text)
             for data in datas['data']:
                 for resource in data['resources']:
                     description = resource['description']

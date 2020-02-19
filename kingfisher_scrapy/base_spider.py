@@ -1,4 +1,4 @@
-import datetime
+import hashlib
 import json
 import os
 
@@ -33,39 +33,6 @@ class KingfisherSpiderMixin:
         self.note = note
         self.http_proxy = http_proxy
         self.https_proxy = https_proxy
-
-    @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        # https://docs.scrapy.org/en/latest/topics/signals.html
-        spider = super().from_crawler(crawler, *args, **kwargs)
-        crawler.signals.connect(spider.spider_opened, signal=scrapy.signals.spider_opened)
-        crawler.signals.connect(spider.spider_closed, signal=scrapy.signals.spider_closed)
-        return spider
-
-    def spider_opened(self, spider):
-        """
-        Writes a ``kingfisher.collectioninfo`` metadata file in the crawl's directory.
-        """
-        data = {
-            'source': self.name,
-            'data_version': self.get_start_time('%Y%m%d_%H%M%S'),
-            'sample': self.sample,
-        }
-        if spider.note:
-            data['note'] = spider.note
-
-        self._write_file('kingfisher.collectioninfo', data)
-
-    def spider_closed(self, spider, reason):
-        """
-        Writes a ``kingfisher-finished.collectioninfo`` metadata file in the crawl's directory.
-        """
-        if reason != 'finished':
-            return
-
-        self._write_file('kingfisher-finished.collectioninfo', {
-            'at': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        })
 
     def get_local_file_path_including_filestore(self, filename):
         """
@@ -137,6 +104,38 @@ class KingfisherSpiderMixin:
         if self.sample:
             name += '_sample'
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
+
+
+class LinksSpider:
+    @staticmethod
+    def next_link(response):
+        """
+        Handling API response with a links field
+
+        Access to ``links/next`` for the new url, and returns a Request
+        """
+        json_data = json.loads(response.text)
+        if 'links' in json_data and 'next' in json_data['links']:
+            url = json_data['links']['next']
+            return scrapy.Request(
+                url=url,
+                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+            )
+
+    def parse_next_link(self, response, sample, save_response_to_disk, data_type):
+        if response.status == 200:
+
+            yield save_response_to_disk(response, response.request.meta['kf_filename'], data_type=data_type)
+
+            if not sample:
+                yield self.next_link(response)
+        else:
+            yield {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                'url': response.request.url,
+                'errors': {"http_code": response.status}
+            }
 
 
 # `scrapy.Spider` is not set up for cooperative multiple inheritance (it doesn't call `super()`), so the mixin must be
