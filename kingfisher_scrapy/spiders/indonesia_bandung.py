@@ -1,3 +1,5 @@
+import datetime
+import hashlib
 import json
 
 import scrapy
@@ -8,35 +10,57 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class IndonesiaBandung(BaseSpider):
     name = 'indonesia_bandung'
 
-    base_url = 'https://webhooks.mongodb-stitch.com/api/client/v2.0/app/birms-cvrbm/service/query-birms' \
-               '/incoming_webhook/find-releases?secret=6WkBFKh6SS4ibE2O0Fm5UHGEQWv8hQbj&limit=50'
-    next_url = base_url + '&fromId={}'
-
     def start_requests(self):
-        yield scrapy.Request(
-            url=self.base_url,
-            meta={'kf_filename': 'page1.json'}
-        )
+        url = 'https://birms.bandung.go.id/api/packages/year/{}'
+        current_year = datetime.datetime.now().year + 1
+        for year in range(2013, current_year):
+            yield scrapy.Request(
+                url.format(year),
+                meta={'kf_filename': 'start_requests'},
+                callback=self.parse_data
+            )
 
-    def parse(self, response):
-
+    def parse_data(self, response):
         if response.status == 200:
-            json_data = json.loads(response.text)
-            if len(json_data) == 0:
-                return
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="release_list")
-
-            if not self.sample:
-                last_id = json_data[len(json_data)-1]['_id']
-                yield scrapy.Request(
-                    url=self.next_url.format(last_id),
-                    meta={'kf_filename': 'page{}.json'.format(last_id)}
-                )
-
+            json_data = json.loads(response.text).get('data')
+            for data in json_data:
+                url = data.get('uri')
+                if url:
+                    yield scrapy.Request(
+                        url,
+                        meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'},
+                    )
+                    if self.sample:
+                        break
+            else:
+                next_page_url = json_data.get('next_page')
+                if next_page_url:
+                    yield scrapy.Request(
+                        next_page_url,
+                        callback=self.parse_data
+                    )
         else:
             yield {
                 'success': False,
                 'file_name': response.request.meta['kf_filename'],
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
+                'url': response.request.url,
+                'errors': {'http_code': response.status}
+            }
+
+    def parse(self, response):
+        if response.status == 200:
+            json_data = json.loads(response.text)
+            if len(json_data) == 0:
+                return
+            yield self.save_response_to_disk(
+                response,
+                response.request.meta['kf_filename'],
+                data_type='release'
+            )
+        else:
+            yield {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                'url': response.request.url,
+                'errors': {'http_code': response.status}
             }
