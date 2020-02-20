@@ -1,9 +1,9 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider
+from kingfisher_scrapy.base_spider import LinksSpider
 
 
-class GeorgiaRecords(BaseSpider, LinksSpider):
+class GeorgiaRecords(LinksSpider):
     name = 'georgia_records'
     start_urls = ['https://odapi.spa.ge/api/records.json']
 
@@ -14,4 +14,4 @@ class GeorgiaRecords(BaseSpider, LinksSpider):
         )
 
     def parse(self, response):
-        return self.parse_next_link(response, self.sample, self.save_response_to_disk, 'record_package')
+        yield from self.parse_next_link(response, 'record_package')
