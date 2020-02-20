@@ -28,4 +28,3 @@ class Australia(LinksSpider):
 
     def parse(self, response):
         yield from self.parse_next_link(response, 'release_package')
-
