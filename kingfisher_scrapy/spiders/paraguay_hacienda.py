@@ -1,6 +1,6 @@
 import json
+from datetime import datetime
 
-import requests
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
@@ -11,6 +11,9 @@ class ParaguayHacienda(BaseSpider):
 
     name = 'paraguay_hacienda'
 
+    start_time = None
+    access_token = None
+    auth_failed = False
     base_list_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/pagos/cdp?page={}'
     release_ids = []
     request_limit = 10000
@@ -84,29 +87,65 @@ class ParaguayHacienda(BaseSpider):
                 'errors': {'http_code': response.status}
             }
 
-    def request_access_token(self):
+    def request_access_token2(self):
         """ Requests an access token (required by ParaguayAuthMiddleware). """
-        token = None
+        r = requests.post("https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
+                          headers={"Authorization": self.request_token},
+                          json={"clientSecret": "%s" % self.client_secret})
+
+    def request_access_token(self):
+        """ Requests a new access token """
         attempt = 0
         max_attempts = 5
-        while attempt < max_attempts and token is None:
-            self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, max_attempts))
-            r = requests.post("https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
-                              headers={"Authorization": self.request_token},
-                              json={"clientSecret": "%s" % self.client_secret})
-            if r.status_code == 200:
-                try:
-                    token = r.json()['accessToken']
-                except requests.exceptions.RequestException:
-                    self.logger.error(r)
+        self.start_time = datetime.now()
+        self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, max_attempts))
+
+        payload = [{
+            "clientSecret": "%s" % self.client_secret
+        }]
+
+        print(self.request_token)
+        print(json.dumps(payload))
+
+        self.crawler.engine.crawl(scrapy.Request(
+            "https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
+            method='POST',
+            headers={"Authorization": self.request_token},
+            body=json.dumps(payload),
+            meta={'attempt': attempt, 'auth': False},
+            callback=self.parse_access_token,
+            dont_filter=True,
+            priority=1000
+        ), spider=self)
+
+    def parse_access_token(self, response):
+        if response.status == 200:
+            r = json.loads(response.text)
+            token = r.get('access_token')
+            if token:
+                self.logger.info('New access token: {}'.format(token))
+                self.access_token = 'Bearer ' + token
             else:
-                self.logger.error('Authentication failed. Status code: {}. {}'.format(r.status_code, r.text))
-            attempt = attempt + 1
-        if token is None:
-            self.logger.error('Max attempts to get an access token reached.')
+                attempt = response.request.meta['attempt']
+                self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
+                if attempt == self.max_attempts:
+                    self.logger.error('Max attempts to get an access token reached.')
+                    self.auth_failed = True
+                    raise AuthenticationFailureException()
+                else:
+                    self.crawler.engine.crawl(scrapy.Request(
+                        'https://www.contrataciones.gov.py:443/datos/api/v2/oauth/token',
+                        method='POST',
+                        headers={'Authorization': self.request_token},
+                        meta={'attempt': attempt + 1, 'auth': False},
+                        callback=self.parse_access_token,
+                        dont_filter=True,
+                        priority=1000
+                    ), spider=self)
+        else:
+            self.logger.error('Authentication failed. Status code: {}'.format(response.status))
+            self.auth_failed = True
             raise AuthenticationFailureException()
-        self.logger.info('New access token: {}'.format(token))
-        return token
 
     def expires_soon(self, count, timediff):
         """ Tells if current access token will expire soon (required by

@@ -10,8 +10,6 @@ from datetime import datetime
 
 import scrapy
 
-from kingfisher_scrapy.exceptions import AuthenticationFailureException
-
 
 class HttpProxyWithSpiderArgsMiddleware:
 
@@ -55,7 +53,6 @@ class ParaguayAuthMiddleware:
 
     def __init__(self, spider):
         logging.info('Initialized authentication middleware with spider: {}.'.format(spider.name))
-        AuthManager.reset_access_token(spider)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -64,46 +61,26 @@ class ParaguayAuthMiddleware:
     def process_request(self, request, spider):
         if 'auth' in request.meta and request.meta['auth'] is not None and not request.meta['auth']:
             return
-        if AuthManager.auth_failed:
+        if spider.auth_failed:
             logging.error('Fatal: no authentication token, stopping now...')
             spider.crawler.stop()
             raise scrapy.exceptions.IgnoreRequest()
-        token = AuthManager.get_access_token()
-        request.headers['Authorization'] = token
-        # spider MUST implement the expires_soon method
+        request.headers['Authorization'] = spider.access_token
         if self._expires_soon(spider):
-            AuthManager.reset_access_token(spider)
+            # spider MUST implement the request_access_token method
+            spider.request_access_token()
 
     def process_response(self, request, response, spider):
         if response.status == 401 or response.status == 429:
-            spider.logger.info('Time transcurred: {}'.format((datetime.now() - AuthManager.start_time).total_seconds()))
+            spider.logger.info('Time transcurred: {}'.format((datetime.now() - spider.start_time).total_seconds()))
             logging.info('{} returned for request to {}'.format(response.status, request.url))
-            if not AuthManager.access_token == request.headers['Authorization'] and self._expires_soon(spider):
-                AuthManager.reset_access_token(spider)
-            request.headers['Authorization'] = AuthManager.get_access_token()
+            if not spider.access_token == request.headers['Authorization'] and self._expires_soon(spider):
+                spider.request_access_token()
+            request.headers['Authorization'] = spider.access_token
             return request
         return response
 
-    def _expires_soon(self, spider):
-        return spider.expires_soon(datetime.now() - AuthManager.start_time)
-
-
-class AuthManager:
-    """ Helper class for ParaguayAuthMiddleware """
-
-    access_token = None
-    start_time = None
-    auth_failed = False
-
-    @classmethod
-    def get_access_token(cls):
-        return cls.access_token
-
-    @classmethod
-    def reset_access_token(cls, spider):
-        cls.start_time = datetime.now()
-        try:
-            # spider MUST implement the request_access_token method
-            cls.access_token = spider.request_access_token()
-        except AuthenticationFailureException:
-            cls.auth_failed = True
+    @staticmethod
+    def _expires_soon(spider):
+        # spider MUST implement the expires_soon method
+        return spider.expires_soon(datetime.now() - spider.start_time) if spider.start_time else True
