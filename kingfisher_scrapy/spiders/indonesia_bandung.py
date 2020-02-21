@@ -22,8 +22,9 @@ class IndonesiaBandung(BaseSpider):
 
     def parse_data(self, response):
         if response.status == 200:
-            json_data = json.loads(response.text).get('data')
-            for data in json_data:
+            json_data = json.loads(response.text)
+            items = json_data.get('data')
+            for data in items:
                 url = data.get('uri')
                 if url:
                     yield scrapy.Request(
@@ -33,7 +34,7 @@ class IndonesiaBandung(BaseSpider):
                     if self.sample:
                         break
             else:
-                next_page_url = json_data.get('next_page')
+                next_page_url = json_data.get('next_page_url')
                 if next_page_url:
                     yield scrapy.Request(
                         next_page_url,
