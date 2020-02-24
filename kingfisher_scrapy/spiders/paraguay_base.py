@@ -19,7 +19,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
     start_time = None
     access_token = None
     auth_failed = False
-    request_time_limit = 1  # in minutes
+    request_time_limit = 13  # in minutes
     base_page_url = 'http://beta.dncp.gov.py/datos/api/v3/doc/search/processes?fecha_desde=2010-01-01'
 
     custom_settings = {
@@ -48,6 +48,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         return spider
 
     def start_requests(self):
+        # Start request access token
         self.request_access_token()
         yield scrapy.Request(
             self.base_page_url,
@@ -65,7 +66,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
             'https://www.contrataciones.gov.py:443/datos/api/v2/oauth/token',
             method='POST',
             headers={'Authorization': self.request_token},
-            meta={'attempt': attempt, 'auth': False},
+            meta={'attempt': attempt + 1, 'auth': False},
             callback=self.parse_access_token,
             dont_filter=True,
             priority=1000
