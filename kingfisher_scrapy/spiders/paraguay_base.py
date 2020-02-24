@@ -1,8 +1,8 @@
 import hashlib
 import json
 import logging
+from datetime import datetime
 
-import requests
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
@@ -16,6 +16,9 @@ class ParaguayDNCPBaseSpider(BaseSpider):
 
     # request limits: since we can't control when Scrapy decides to send a
     # request, values here are slighly less than real limits.
+    start_time = None
+    access_token = None
+    auth_failed = False
     request_time_limit = 13  # in minutes
     base_page_url = 'http://beta.dncp.gov.py/datos/api/v3/doc/search/processes?fecha_desde=2010-01-01'
 
@@ -45,10 +48,58 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         return spider
 
     def start_requests(self):
-        return [scrapy.Request(
+        # Start request access token
+        self.request_access_token()
+        yield scrapy.Request(
             self.base_page_url,
             callback=self.parse_pages
-        )]
+        )
+
+    def request_access_token(self):
+        """ Requests a new access token """
+        attempt = 0
+        max_attempts = self.max_attempts if hasattr(self, 'max_attempts') and self.max_attempts.isdigit() else 10
+        self.start_time = datetime.now()
+        self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, max_attempts))
+
+        self.crawler.engine.crawl(scrapy.Request(
+            'https://www.contrataciones.gov.py:443/datos/api/v2/oauth/token',
+            method='POST',
+            headers={'Authorization': self.request_token},
+            meta={'attempt': attempt + 1, 'auth': False},
+            callback=self.parse_access_token,
+            dont_filter=True,
+            priority=1000
+        ), spider=self)
+
+    def parse_access_token(self, response):
+        if response.status == 200:
+            r = json.loads(response.text)
+            token = r.get('access_token')
+            if token:
+                self.logger.info('New access token: {}'.format(token))
+                self.access_token = 'Bearer ' + token
+            else:
+                attempt = response.request.meta['attempt']
+                self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
+                if attempt == self.max_attempts:
+                    self.logger.error('Max attempts to get an access token reached.')
+                    self.auth_failed = True
+                    raise AuthenticationFailureException()
+                else:
+                    self.crawler.engine.crawl(scrapy.Request(
+                        'https://www.contrataciones.gov.py:443/datos/api/v2/oauth/token',
+                        method='POST',
+                        headers={'Authorization': self.request_token},
+                        meta={'attempt': attempt + 1, 'auth': False},
+                        callback=self.parse_access_token,
+                        dont_filter=True,
+                        priority=1000
+                    ), spider=self)
+        else:
+            self.logger.error('Authentication failed. Status code: {}'.format(response.status))
+            self.auth_failed = True
+            raise AuthenticationFailureException()
 
     def parse_pages(self, response):
         if response.status == 200:
@@ -93,35 +144,11 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         """
         yield from ()
 
-    def request_access_token(self):
-        """ Requests a new access token (required by ParaguayAuthMiddleware) """
-        token = None
-        attempt = 0
-        max_attempts = self.max_attempts if hasattr(self, 'max_attempts') and self.max_attempts.isdigit() else 10
-        while attempt < max_attempts and token is None:
-            self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, max_attempts))
-            r = requests.post('https://www.contrataciones.gov.py:443/datos/api/v2/oauth/token',
-                              headers={'Authorization': self.request_token}, proxies=self.proxies)
-            if r.status_code == 200:
-                try:
-                    token = r.json()['access_token']
-                except requests.exceptions.RequestException:
-                    self.logger.error(r)
-            else:
-                self.logger.error('Authentication failed. Status code: {}. {}'.format(r.status_code, r.text))
-            attempt = attempt + 1
-        if token is None:
-            self.logger.error('Max attempts to get an access token reached.')
-            raise AuthenticationFailureException()
-        self.logger.info('New access token: {}'.format(token))
-
-        return 'Bearer ' + token
-
-    def expires_soon(self, timediff):
+    def expires_soon(self, time_diff):
         """ Tells if the access token will expire soon (required by
         ParaguayAuthMiddleware)
         """
-        if timediff.total_seconds() < ParaguayDNCPBaseSpider.request_time_limit * 60:
+        if time_diff.total_seconds() < ParaguayDNCPBaseSpider.request_time_limit * 60:
             return False
-        self.logger.info('Timediff: {}'.format(timediff.total_seconds()))
+        self.logger.info('Time_diff: {}'.format(time_diff.total_seconds()))
         return True

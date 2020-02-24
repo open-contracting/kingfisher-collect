@@ -1,6 +1,6 @@
 import json
+from datetime import datetime
 
-import requests
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
@@ -8,9 +8,12 @@ from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
 
 class ParaguayHacienda(BaseSpider):
-
     name = 'paraguay_hacienda'
 
+    start_time = None
+    access_token = None
+    auth_failed = False
+    max_attempts = 5
     base_list_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/pagos/cdp?page={}'
     release_ids = []
     request_limit = 10000
@@ -36,6 +39,8 @@ class ParaguayHacienda(BaseSpider):
         return spider
 
     def start_requests(self):
+        # Start request access token
+        self.request_access_token()
         # Paraguay Hacienda has a service that return all the ids that we need to get the releases packages
         # so we first iterate over this list that is paginated
         yield scrapy.Request(self.base_list_url.format(1), meta={'meta': True, 'first': True})
@@ -85,34 +90,58 @@ class ParaguayHacienda(BaseSpider):
             }
 
     def request_access_token(self):
-        """ Requests an access token (required by ParaguayAuthMiddleware). """
-        token = None
+        """ Requests a new access token """
         attempt = 0
-        max_attempts = 5
-        while attempt < max_attempts and token is None:
-            self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, max_attempts))
-            r = requests.post("https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
-                              headers={"Authorization": self.request_token},
-                              json={"clientSecret": "%s" % self.client_secret})
-            if r.status_code == 200:
-                try:
-                    token = r.json()['accessToken']
-                except requests.exceptions.RequestException:
-                    self.logger.error(r)
-            else:
-                self.logger.error('Authentication failed. Status code: {}. {}'.format(r.status_code, r.text))
-            attempt = attempt + 1
-        if token is None:
-            self.logger.error('Max attempts to get an access token reached.')
-            raise AuthenticationFailureException()
-        self.logger.info('New access token: {}'.format(token))
-        return token
+        self.start_time = datetime.now()
+        self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
+        payload = {"clientSecret": "0f4a391ac4c9a1478a95a9404e7973c110e75cd4dce0bd3d93a78b1427209dde"}
 
-    def expires_soon(self, count, timediff):
-        """ Tells if current access token will expire soon (required by
+        self.crawler.engine.crawl(scrapy.Request(
+            "https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
+            method='POST',
+            headers={"Authorization": self.request_token, "Content-Type": "application/json"},
+            body=json.dumps(payload),
+            meta={'attempt': attempt + 1, 'auth': False},
+            callback=self.parse_access_token,
+            dont_filter=True,
+            priority=1000
+        ), spider=self)
+
+    def parse_access_token(self, response):
+        if response.status == 200:
+            r = json.loads(response.text)
+            token = r.get('accessToken')
+            if token:
+                self.logger.info('New access token: {}'.format(token))
+                self.access_token = 'Bearer ' + token
+            else:
+                attempt = response.request.meta['attempt']
+                self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
+                if attempt == self.max_attempts:
+                    self.logger.error('Max attempts to get an access token reached.')
+                    self.auth_failed = True
+                    raise AuthenticationFailureException()
+                else:
+                    self.crawler.engine.crawl(scrapy.Request(
+                        "https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
+                        method='POST',
+                        headers={"Authorization": self.request_token, "Content-Type": "application/json"},
+                        body=response.request.body,
+                        meta={'attempt': attempt + 1, 'auth': False},
+                        callback=self.parse_access_token,
+                        dont_filter=True,
+                        priority=1000
+                    ), spider=self)
+        else:
+            self.logger.error('Authentication failed. Status code: {}'.format(response.status))
+            self.auth_failed = True
+            raise AuthenticationFailureException()
+
+    def expires_soon(self, time_diff):
+        """ Tells if the access token will expire soon (required by
         ParaguayAuthMiddleware)
         """
-        if timediff.total_seconds() < ParaguayHacienda.request_time_limit * 60 and count < ParaguayHacienda.request_limit:
+        if time_diff.total_seconds() < ParaguayHacienda.request_time_limit * 60:
             return False
-        self.logger.info('Count: {}, Timediff: {}'.format(count, timediff.total_seconds()))
+        self.logger.info('Time_diff: {}'.format(time_diff.total_seconds()))
         return True
