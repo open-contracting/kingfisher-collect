@@ -81,12 +81,12 @@ class ParaguayDNCPBaseSpider(BaseSpider):
                 self.access_token = 'Bearer ' + token
             else:
                 attempt = response.request.meta['attempt']
-                self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
                 if attempt == self.max_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.auth_failed = True
                     raise AuthenticationFailureException()
                 else:
+                    self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
                     self.crawler.engine.crawl(scrapy.Request(
                         'https://www.contrataciones.gov.py:443/datos/api/v2/oauth/token',
                         method='POST',

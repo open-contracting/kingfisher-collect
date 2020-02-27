@@ -16,7 +16,6 @@ class ParaguayHacienda(BaseSpider):
     max_attempts = 5
     base_list_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/pagos/cdp?page={}'
     release_ids = []
-    request_limit = 10000
     request_time_limit = 14.0
 
     custom_settings = {
@@ -94,7 +93,7 @@ class ParaguayHacienda(BaseSpider):
         attempt = 0
         self.start_time = datetime.now()
         self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
-        payload = {"clientSecret": "0f4a391ac4c9a1478a95a9404e7973c110e75cd4dce0bd3d93a78b1427209dde"}
+        payload = {"clientSecret": self.client_secret}
 
         self.crawler.engine.crawl(scrapy.Request(
             "https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
@@ -116,12 +115,12 @@ class ParaguayHacienda(BaseSpider):
                 self.access_token = 'Bearer ' + token
             else:
                 attempt = response.request.meta['attempt']
-                self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
                 if attempt == self.max_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.auth_failed = True
                     raise AuthenticationFailureException()
                 else:
+                    self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
                     self.crawler.engine.crawl(scrapy.Request(
                         "https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
                         method='POST',
