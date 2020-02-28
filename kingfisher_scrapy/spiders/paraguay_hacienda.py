@@ -13,6 +13,7 @@ class ParaguayHacienda(BaseSpider):
     start_time = None
     access_token = None
     auth_failed = False
+    last_request = None
     max_attempts = 5
     base_list_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/pagos/cdp?page={}'
     release_ids = []
@@ -23,6 +24,7 @@ class ParaguayHacienda(BaseSpider):
            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
         },
         'CONCURRENT_REQUESTS': 1,
+        'DUPEFILTER_DEBUG': True,
     }
 
     @classmethod
@@ -38,11 +40,13 @@ class ParaguayHacienda(BaseSpider):
         return spider
 
     def start_requests(self):
-        # Start request access token
-        self.request_access_token()
         # Paraguay Hacienda has a service that return all the ids that we need to get the releases packages
         # so we first iterate over this list that is paginated
-        yield scrapy.Request(self.base_list_url.format(1), meta={'meta': True, 'first': True})
+        yield scrapy.Request(
+            self.base_list_url.format(1),
+            dont_filter=True,
+            meta={'meta': True, 'first': True}
+        )
 
     def parse(self, response):
         if response.status == 200:
@@ -95,7 +99,7 @@ class ParaguayHacienda(BaseSpider):
         self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
         payload = {"clientSecret": self.client_secret}
 
-        self.crawler.engine.crawl(scrapy.Request(
+        return scrapy.Request(
             "https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
             method='POST',
             headers={"Authorization": self.request_token, "Content-Type": "application/json"},
@@ -104,7 +108,7 @@ class ParaguayHacienda(BaseSpider):
             callback=self.parse_access_token,
             dont_filter=True,
             priority=1000
-        ), spider=self)
+        )
 
     def parse_access_token(self, response):
         if response.status == 200:
@@ -113,6 +117,8 @@ class ParaguayHacienda(BaseSpider):
             if token:
                 self.logger.info('New access token: {}'.format(token))
                 self.access_token = 'Bearer ' + token
+                # continue scraping where it stopped after getting the token
+                yield self.last_request
             else:
                 attempt = response.request.meta['attempt']
                 if attempt == self.max_attempts:
@@ -121,7 +127,7 @@ class ParaguayHacienda(BaseSpider):
                     raise AuthenticationFailureException()
                 else:
                     self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
-                    self.crawler.engine.crawl(scrapy.Request(
+                    return scrapy.Request(
                         "https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
                         method='POST',
                         headers={"Authorization": self.request_token, "Content-Type": "application/json"},
@@ -130,7 +136,7 @@ class ParaguayHacienda(BaseSpider):
                         callback=self.parse_access_token,
                         dont_filter=True,
                         priority=1000
-                    ), spider=self)
+                    )
         else:
             self.logger.error('Authentication failed. Status code: {}'.format(response.status))
             self.auth_failed = True
