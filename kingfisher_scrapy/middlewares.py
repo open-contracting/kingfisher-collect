@@ -5,12 +5,10 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-import json
 import logging
 from datetime import datetime
 
 import scrapy
-from scrapy import signals
 
 
 class HttpProxyWithSpiderArgsMiddleware:
