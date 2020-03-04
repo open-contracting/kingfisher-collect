@@ -106,7 +106,21 @@ class KingfisherSpiderMixin:
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
 
 
-class LinksSpider:
+# `scrapy.Spider` is not set up for cooperative multiple inheritance (it doesn't call `super()`), so the mixin must be
+# the first declared parent class, in order for its `__init__()` and `from_crawler()` methods to be run.
+#
+# https://github.com/scrapy/scrapy/blob/1.8.0/scrapy/spiders/__init__.py#L25-L32
+# https://docs.python.org/3.8/library/functions.html#super
+# https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
+class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
+    pass
+
+
+class BaseXMLFeedSpider(KingfisherSpiderMixin, scrapy.spiders.XMLFeedSpider):
+    pass
+
+
+class LinksSpider(BaseSpider):
     @staticmethod
     def next_link(response):
         """
@@ -122,31 +136,17 @@ class LinksSpider:
                 meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
             )
 
-    def parse_next_link(self, response, sample, save_response_to_disk, data_type):
+    def parse_next_link(self, response, data_type):
         if response.status == 200:
 
-            yield save_response_to_disk(response, response.request.meta['kf_filename'], data_type=data_type)
+            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type=data_type)
 
-            if not sample:
+            if not self.sample:
                 yield self.next_link(response)
         else:
             yield {
                 'success': False,
                 'file_name': response.request.meta['kf_filename'],
                 'url': response.request.url,
-                'errors': {"http_code": response.status}
+                'errors': {'http_code': response.status}
             }
-
-
-# `scrapy.Spider` is not set up for cooperative multiple inheritance (it doesn't call `super()`), so the mixin must be
-# the first declared parent class, in order for its `__init__()` and `from_crawler()` methods to be run.
-#
-# https://github.com/scrapy/scrapy/blob/1.8.0/scrapy/spiders/__init__.py#L25-L32
-# https://docs.python.org/3.8/library/functions.html#super
-# https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
-class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
-    pass
-
-
-class BaseXMLFeedSpider(KingfisherSpiderMixin, scrapy.spiders.XMLFeedSpider):
-    pass

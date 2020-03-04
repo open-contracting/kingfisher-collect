@@ -5,10 +5,10 @@ from json import JSONDecodeError
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider
+from kingfisher_scrapy.base_spider import LinksSpider
 
 
-class Colombia(BaseSpider, LinksSpider):
+class Colombia(LinksSpider):
     name = 'colombia'
     sleep = 120 * 60
 

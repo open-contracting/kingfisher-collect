@@ -140,7 +140,7 @@ def test_next_link():
     text_response = text.TextResponse('test')
     response = text_response.replace(body='{"links": {"next": "' + url + '"}}')
 
-    spider = LinksSpider()
+    spider = spider_with_crawler(spider_class=LinksSpider)
     actual = spider.next_link(response)
 
     assert actual.url == url
@@ -152,8 +152,8 @@ def test_parse_next_link_404():
     response.request = Mock()
     response.request.meta = {'kf_filename': 'test'}
     response.request.url = 'url'
-    spider = LinksSpider()
-    actual = spider.parse_next_link(response, False, None, None).__next__()
+    spider = spider_with_crawler(spider_class=LinksSpider)
+    actual = spider.parse_next_link(response, None).__next__()
     assert actual['success'] is False
 
 
@@ -166,10 +166,7 @@ def test_parse_next_link_200():
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
         os.makedirs(os.path.join(files_store, 'test/20010203_040506'))
-        spider = LinksSpider()
-        base_spider = spider_with_crawler()
-        base_spider.crawler.settings['FILES_STORE'] = files_store
-        actual = spider.parse_next_link(response, False, base_spider.save_response_to_disk, None).__next__()
-        assert actual['success'] is True and actual['file_name'] == 'test'
-        actual = spider.parse_next_link(response, True, base_spider.save_response_to_disk, None).__next__()
+        spider = spider_with_crawler(spider_class=LinksSpider)
+        spider.crawler.settings['FILES_STORE'] = files_store
+        actual = spider.parse_next_link(response, None).__next__()
         assert actual['success'] is True and actual['file_name'] == 'test'

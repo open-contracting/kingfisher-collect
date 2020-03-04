@@ -1,9 +1,9 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider
+from kingfisher_scrapy.base_spider import LinksSpider
 
 
-class UKContractsFinder(BaseSpider, LinksSpider):
+class UKContractsFinder(LinksSpider):
     name = 'uk_fts'
 
     def start_requests(self):
@@ -15,5 +15,4 @@ class UKContractsFinder(BaseSpider, LinksSpider):
         )
 
     def parse(self, response):
-        return self.parse_next_link(response, self.sample, self.save_response_to_disk,
-                                    'release_package_in_ocdsReleasePackage_in_list_in_results')
+        yield from self.parse_next_link(response, 'release_package_in_ocdsReleasePackage_in_list_in_results')
