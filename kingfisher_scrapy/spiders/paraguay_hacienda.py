@@ -24,7 +24,6 @@ class ParaguayHacienda(BaseSpider):
            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
         },
         'CONCURRENT_REQUESTS': 1,
-        'DUPEFILTER_DEBUG': True,
     }
 
     @classmethod

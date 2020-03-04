@@ -59,14 +59,14 @@ class ParaguayAuthMiddleware:
         return cls(crawler.spider)
 
     def process_request(self, request, spider):
-        if 'auth' in request.meta and request.meta['auth'] is not None and not request.meta['auth']:
+        if 'auth' in request.meta and request.meta['auth'] is False:
             return
         if spider.auth_failed:
             logging.error('Fatal: no authentication token, stopping now...')
             spider.crawler.stop()
             raise scrapy.exceptions.IgnoreRequest()
         request.headers['Authorization'] = spider.access_token
-        if self._expires_soon(spider) or not spider.access_token:
+        if self._expires_soon(spider):
             # SAVE the last request to continue after getting the token
             spider.last_request = request
             # spider MUST implement the request_access_token method
@@ -88,4 +88,5 @@ class ParaguayAuthMiddleware:
     @staticmethod
     def _expires_soon(spider):
         # spider MUST implement the expires_soon method
-        return spider.expires_soon(datetime.now() - spider.start_time) if spider.start_time else True
+        return spider.expires_soon(datetime.now() - spider.start_time) \
+            if (spider.start_time and spider.access_token) else True

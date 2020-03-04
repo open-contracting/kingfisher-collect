@@ -29,7 +29,6 @@ class ParaguayDNCPBaseSpider(BaseSpider):
             'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
         },
         'CONCURRENT_REQUESTS': 1,
-        'DUPEFILTER_DEBUG': True,
     }
 
     @classmethod
@@ -51,7 +50,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
     def start_requests(self):
         yield scrapy.Request(
             self.base_page_url,
-            dont_filter=True,
+            dont_filter=True,  # send duplicate requests when the token expired or doesn't have one yet
             callback=self.parse_pages
         )
 
