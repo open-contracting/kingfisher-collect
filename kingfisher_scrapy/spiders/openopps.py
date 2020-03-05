@@ -9,14 +9,12 @@ from kingfisher_scrapy.base_spider import BaseSpider
 from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
 
+# API documentation: https://docs.google.com/document/d/1u0da3BTU7fBFjX6i7j_tKXa1YwdXL7hY4Kw9GdsaAr0/edit#
 class OpenOpps(BaseSpider):
-    name = 'open_opps'
+    name = 'openopps'
 
     access_token = None
     api_limit = 10000  # OpenOpps API limit for search results
-    page_size = 1000
-    page_format = 'json'
-    ordering = 'releasedate'
 
     base_page_url = \
         'https://api.openopps.com/api/ocds/?' \
@@ -35,6 +33,8 @@ class OpenOpps(BaseSpider):
         spider.username = crawler.settings.get('KINGFISHER_OPENOPPS_USERNAME')
         spider.password = crawler.settings.get('KINGFISHER_OPENOPPS_PASSWORD')
         if spider.username is None or spider.password is None:
+            spider.logger.error('Please set the environment variables '
+                                'KINGFISHER_OPENOPPS_USERNAME and KINGFISHER_OPENOPPS_PASSWORD')
             raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
 
         return spider
@@ -69,24 +69,28 @@ class OpenOpps(BaseSpider):
             raise AuthenticationFailureException()
 
     def start_requests_pages(self):
-        # use larger ranges for filters with less than (api_limit) search results
+        page_size = 1000
+        page_format = 'json'
+        ordering = 'releasedate'
+        search_h = 24  # start splitting one day search
+        self.base_page_url = self.base_page_url.format(page_format, ordering, page_size, '{}', '{}')
+
+        # Use larger ranges for filters with less than (api_limit) search results
         if not self.sample:
             release_date_gte_list = ['', '2009-01-01', '2010-01-01', '2010-07-01']
             release_date_lte_list = ['2008-12-31', '2009-12-31', '2010-06-30', '2010-12-31']
 
-            for i in range(0, 4):
+            for i in range(len(release_date_gte_list)):
                 yield scrapy.Request(
                     url=self.base_page_url.format(
-                        self.page_format,
-                        self.ordering,
-                        self.page_size,
                         release_date_gte_list[i],
                         release_date_lte_list[i]
                     ),
                     headers={"Accept": "*/*", "Content-Type": "application/json"},
+                    meta={"release_date": release_date_gte_list[i], "search_h": search_h},
                 )
 
-        # use smaller ranges (day by day) for filters with more than (api_limit) search results
+        # Use smaller ranges (day by day) for filters with more than (api_limit) search results
         for year in range(2011, datetime.now().year + 1):
             start_date = datetime(year, 1, 1)
             end_date = datetime(year, datetime.now().month, datetime.now().day) \
@@ -99,16 +103,14 @@ class OpenOpps(BaseSpider):
                 release_date_lte = date
                 yield scrapy.Request(
                     url=self.base_page_url.format(
-                        self.page_format,
-                        self.ordering,
-                        self.page_size,
                         release_date_gte,
                         release_date_lte
                     ),
                     headers={"Accept": "*/*", "Content-Type": "application/json"},
-                    meta={"release_date": date},
+                    meta={"release_date": date, "search_h": search_h},
                 )
 
+                # The sample will be data released on 2011-01-01
                 if self.sample:
                     break
             if self.sample:
@@ -117,15 +119,18 @@ class OpenOpps(BaseSpider):
     def parse(self, response):
         if response.status == 200:
             results = json.loads(response.text)
-            count = results.get('count')
-            if count <= 10000:
+            count = results['count']
+            release_date = response.request.meta['release_date']  # date used for the search
+            search_h = response.request.meta['search_h']  # hour range used for the search
 
-                # data type changed to release package list in order to have fewer files
-                all_data = {}
-                for data in results.get('results'):
-                    json_data = data.get('json')
+            # Counts response and range hour split control
+            if count <= self.api_limit or search_h == 1:
+                # Data type changed to release package list in order to have fewer files
+                all_data = []
+                for data in results['results']:
+                    json_data = data['json']
                     if json_data:
-                        all_data.update({len(all_data): json_data})
+                        all_data.append(json_data)
 
                 if all_data:
                     self.save_data_to_disk(
@@ -142,37 +147,44 @@ class OpenOpps(BaseSpider):
                     yield scrapy.Request(
                         url=next_url,
                         headers={"Accept": "*/*", "Content-Type": "application/json"},
+                        meta={"release_date": release_date, "search_h": search_h},
                     )
             else:
-                if 'release_date' in response.request.meta and response.request.meta['release_date']:
-                    parts = int(ceil(count / self.api_limit))  # parts we split a search that exceeds the limit
-                    split_h = int(ceil(24 / parts))  # hours we split
-                    date = response.request.meta['release_date']
-                    date = datetime.strptime(date, "%Y-%m-%d")
+                # Change search filter if count exceeds the API limit or search_h > 1 hour
+                parts = int(ceil(count / self.api_limit))  # parts we split a search that exceeds the limit
+                split_h = int(ceil(search_h / parts))  # hours we split
 
-                    # create time lists depending on how many hours we split a day
-                    start_hour_list = [(date + timedelta(hours=H)
-                                        ).strftime("%Y-%m-%dT%H:%M:%S") for H in range(0, 24, split_h)]
-                    end_hour_list = [(date + timedelta(hours=H, minutes=59, seconds=59)
-                                      ).strftime("%Y-%m-%dT%H:%M:%S") for H in range(split_h-1, 24, split_h)]
+                # If we have last_hour variable here, we have to split hours
+                last_hour = response.request.meta.get('last_hour')
+                if last_hour:
+                    date = datetime.strptime(release_date, "%Y-%m-%dT%H:%M:%S")  # release_date with start hour
+                else:
+                    date = datetime.strptime(release_date, "%Y-%m-%d")  # else we have to split a day by day range
+                    last_hour = date.strftime("%Y-%m-%d") + 'T23:59:59'  # last hour of a day
 
-                    # if parts is not a divisor of 24
-                    if len(start_hour_list) != len(end_hour_list):
-                        end_hour_list.append(response.request.meta['release_date'] + 'T23:59:59')
+                # Create time lists depending on how many hours we split a search
+                start_hour_list = [(date + timedelta(hours=h)
+                                    ).strftime("%Y-%m-%dT%H:%M:%S") for h in range(0, search_h, split_h)]
+                end_hour_list = [(date + timedelta(hours=h, minutes=59, seconds=59)
+                                  ).strftime("%Y-%m-%dT%H:%M:%S") for h in
+                                 range(split_h - 1, search_h, split_h)]
 
-                    self.logger.info('Changing filters, split in {}: {}.'.format(parts, response.request.url))
-                    for i in range(0, parts):
-                        yield scrapy.Request(
-                            url=self.base_page_url.format(
-                                self.page_format,
-                                self.ordering,
-                                self.page_size,
-                                start_hour_list[i],
-                                end_hour_list[i]
-                            ),
-                            headers={"Accept": "*/*", "Content-Type": "application/json"},
-                            meta={"release_date": date},
-                        )
+                # If parts is not a divisor of hours we split, append the last missing hour
+                if len(start_hour_list) != len(end_hour_list):
+                    end_hour_list.append(last_hour)
+
+                self.logger.info('Changing filters, split in {}: {}.'.format(parts, response.request.url))
+                for i in range(parts):
+                    yield scrapy.Request(
+                        url=self.base_page_url.format(
+                            start_hour_list[i],
+                            end_hour_list[i]
+                        ),
+                        headers={"Accept": "*/*", "Content-Type": "application/json"},
+                        meta={"release_date": start_hour_list[i],  # release_date with star hour
+                              "last_hour": end_hour_list[i],  # release_date with last hour
+                              "search_h": split_h},  # new search range
+                    )
         else:
             yield {
                 'success': False,

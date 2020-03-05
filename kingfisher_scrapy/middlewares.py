@@ -90,17 +90,8 @@ class OpenOppsAuthMiddleware:
     """Downloader middleware that intercepts requests and adds the token
     for OpenOpps scraper."""
 
-    def __init__(self, spider):
-        logging.info('Initialized authentication middleware with spider: {}.'.format(spider.name))
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls(crawler.spider)
-
     @staticmethod
     def process_request(request, spider):
         if 'token_request' in request.meta and request.meta['token_request']:
-            logging.info('Requesting access token...')
             return
-        else:
-            request.headers['Authorization'] = spider.access_token
+        request.headers['Authorization'] = spider.access_token
