@@ -50,7 +50,8 @@ class ParaguayDNCPBaseSpider(BaseSpider):
     def start_requests(self):
         yield scrapy.Request(
             self.base_page_url,
-            dont_filter=True,  # send duplicate requests when the token expired or doesn't have one yet
+            # send duplicate requests when the token expired and in the continuation of last_request saved.
+            dont_filter=True,
             callback=self.parse_pages
         )
 

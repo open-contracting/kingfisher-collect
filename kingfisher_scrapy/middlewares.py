@@ -88,5 +88,6 @@ class ParaguayAuthMiddleware:
     @staticmethod
     def _expires_soon(spider):
         # spider MUST implement the expires_soon method
-        return spider.expires_soon(datetime.now() - spider.start_time) \
-            if (spider.start_time and spider.access_token) else True
+        if spider.start_time and spider.access_token:
+            return spider.expires_soon(datetime.now() - spider.start_time)
+        return True

@@ -43,6 +43,7 @@ class ParaguayHacienda(BaseSpider):
         # so we first iterate over this list that is paginated
         yield scrapy.Request(
             self.base_list_url.format(1),
+            # send duplicate requests when the token expired and in the continuation of last_request saved.
             dont_filter=True,
             meta={'meta': True, 'first': True}
         )
