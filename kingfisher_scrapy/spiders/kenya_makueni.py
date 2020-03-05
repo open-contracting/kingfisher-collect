@@ -1,5 +1,4 @@
 import hashlib
-import json
 from math import ceil
 
 import scrapy
@@ -48,12 +47,10 @@ class KenyaMakueni(BaseSpider):
 
     def parse(self, response):
         if response.status == 200:
-            json_data = json.loads(response.text)
-            yield self.save_data_to_disk(
-                json.dumps(json_data).encode(),
+            yield self.save_response_to_disk(
+                response,
                 response.request.meta['kf_filename'],
-                data_type='release_package_list',
-                url=response.request.url
+                data_type='release_package_list'
             )
 
         else:
