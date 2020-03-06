@@ -1,6 +1,8 @@
 import hashlib
 import json
 import os
+from io import BytesIO
+from zipfile import ZipFile
 
 import scrapy
 
@@ -143,6 +145,31 @@ class LinksSpider(BaseSpider):
 
             if not self.sample:
                 yield self.next_link(response)
+        else:
+            yield {
+                'success': False,
+                'file_name': response.request.meta['kf_filename'],
+                'url': response.request.url,
+                'errors': {'http_code': response.status}
+            }
+
+
+class ZipSpider(BaseSpider):
+    def parse_zipfile(self, response, data_type):
+        """
+        Handling response with JSON data in ZIP files
+
+        """
+        if response.status == 200:
+            zip_files = ZipFile(BytesIO(response.body))
+            for finfo in zip_files.infolist():
+                data = zip_files.open(finfo.filename).read()
+                if finfo.filename.endswith('.json'):
+                    filename = finfo.filename
+                else:
+                    filename = finfo.filename + '.json'
+                yield self.save_data_to_disk(data, filename, data_type=data_type, url=response.request.url)
+
         else:
             yield {
                 'success': False,
