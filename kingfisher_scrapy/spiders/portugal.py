@@ -3,10 +3,10 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class Portugal(ZipSpider):
+class Portugal(BaseSpider):
     name = 'portugal'
     download_warnsize = 0
     download_timeout = 9999

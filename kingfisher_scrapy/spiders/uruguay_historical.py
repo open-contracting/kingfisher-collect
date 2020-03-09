@@ -1,9 +1,9 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class UruguayHistorical(ZipSpider):
+class UruguayHistorical(BaseSpider):
     name = 'uruguay_historical'
     # the files takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000

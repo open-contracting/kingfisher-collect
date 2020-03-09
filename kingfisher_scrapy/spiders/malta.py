@@ -4,10 +4,10 @@ from urllib.parse import urlparse
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class Malta(ZipSpider):
+class Malta(BaseSpider):
     name = 'malta'
 
     def start_requests(self):

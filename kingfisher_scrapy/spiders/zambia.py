@@ -2,10 +2,10 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import BaseSpider
 
 
-class Zambia(ZipSpider):
+class Zambia(BaseSpider):
     name = 'zambia'
 
     def start_requests(self):
