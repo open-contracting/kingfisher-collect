@@ -81,22 +81,12 @@ class Uganda(BaseSpider):
 
     def parse(self, response):
         if response.status == 200:
+            yield self.save_response_to_disk(
+                response,
+                response.request.meta['kf_filename'],
+                data_type='release_package'
+            )
 
-            json_data = json.loads(response.text)
-            if len(json.dumps(json_data.get('releases')).encode()) > 2:
-                yield self.save_data_to_disk(
-                    json.dumps(json_data).encode(),
-                    response.request.meta['kf_filename'],
-                    data_type='release_package',
-                    url=response.request.url
-                )
-            else:
-                yield {
-                    'success': False,
-                    'file_name': response.request.meta['kf_filename'],
-                    'url': response.request.url,
-                    'errors': 'Empty release'
-                }
         else:
             yield {
                 'success': False,
