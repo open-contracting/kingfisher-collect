@@ -1,8 +1,6 @@
 import hashlib
 import json
-from io import BytesIO
 from urllib.parse import urlparse
-from zipfile import ZipFile
 
 import scrapy
 
@@ -43,20 +41,4 @@ class Malta(BaseSpider):
             }
 
     def parse(self, response):
-        if response.status == 200:
-            zip_file = ZipFile(BytesIO(response.body))
-            for finfo in zip_file.infolist():
-                data = zip_file.open(finfo.filename).read()
-                yield self.save_data_to_disk(
-                    data,
-                    response.request.meta['kf_filename'] + finfo.filename,
-                    data_type='record_package',
-                    url=response.request.url
-                )
-        else:
-            yield {
-                'success': False,
-                'kf_filename': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+        yield from self.parse_zipfile(response, data_type='record_package')

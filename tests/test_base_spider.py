@@ -2,6 +2,7 @@ import json
 import os.path
 from tempfile import TemporaryDirectory
 from unittest.mock import Mock
+from zipfile import ZipFile
 
 import pytest
 from scrapy.http.response import text
@@ -170,3 +171,37 @@ def test_parse_next_link_200():
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_next_link(response, None).__next__()
         assert actual['success'] is True and actual['file_name'] == 'test'
+
+
+def test_parse_zipfile_404():
+    response = text.TextResponse('test')
+    response.status = 404
+    response.request = Mock()
+    response.request.meta = {'kf_filename': 'test'}
+    response.request.url = 'url'
+    spider = spider_with_crawler(spider_class=BaseSpider)
+    actual = spider.parse_zipfile(response, None).__next__()
+    assert actual['success'] is False
+
+
+def test_parse_zipfile_200():
+    response = text.TextResponse('test')
+    response.status = 200
+    response.request = Mock()
+    response.request.meta = {'kf_filename': 'test.json'}
+    response.request.url = 'url'
+    with TemporaryDirectory() as tmpdirname:
+        files_store = os.path.join(tmpdirname, 'data')
+        tmp = os.path.join(files_store, 'test/20010203_040506')
+        os.makedirs(tmp)
+
+        open(tmp + "test.json", "w").close()
+        with ZipFile(tmp + '/test.zip', 'w') as z:
+            z.write(tmp + "test.json")
+        with open(tmp + '/test.zip', 'rb') as z:
+            response = response.replace(body=z.read())
+
+        spider = spider_with_crawler(spider_class=BaseSpider)
+        spider.crawler.settings['FILES_STORE'] = files_store
+        actual = spider.parse_zipfile(response, None).__next__()
+        assert actual['success'] is True and actual['file_name'].find('.json')
