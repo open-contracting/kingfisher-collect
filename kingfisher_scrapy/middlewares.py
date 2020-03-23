@@ -84,3 +84,14 @@ class ParaguayAuthMiddleware:
     def _expires_soon(spider):
         # spider MUST implement the expires_soon method
         return spider.expires_soon(datetime.now() - spider.start_time) if spider.start_time else True
+
+
+class OpenOppsAuthMiddleware:
+    """Downloader middleware that intercepts requests and adds the token
+    for OpenOpps scraper."""
+
+    @staticmethod
+    def process_request(request, spider):
+        if 'token_request' in request.meta and request.meta['token_request']:
+            return
+        request.headers['Authorization'] = spider.access_token
