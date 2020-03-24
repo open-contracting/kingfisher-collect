@@ -11,7 +11,7 @@ class HondurasPortalRecords(BaseSpider):
     download_delay = 0.9
 
     def start_requests(self):
-        url = 'http://200.13.162.86/api/v1/record/?format=json'
+        url = 'http://www.contratacionesabiertas.gob.hn/api/v1/record/?format=json'
         yield scrapy.Request(
             url,
             meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
@@ -22,7 +22,7 @@ class HondurasPortalRecords(BaseSpider):
 
             json_data = json.loads(response.text)
             yield self.save_data_to_disk(
-                json.dumps(json_data.get('results')).encode(),
+                json.dumps(json_data.get('recordPackage')).encode(),
                 response.request.meta['kf_filename'],
                 data_type='record_list',
                 url=response.request.url

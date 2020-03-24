@@ -1,6 +1,4 @@
-from io import BytesIO
 from urllib.parse import urlparse
-from zipfile import ZipFile
 
 import scrapy
 
@@ -30,16 +28,4 @@ class HondurasONCAE(BaseSpider):
             raise scrapy.exceptions.CloseSpider()
 
     def parse_items(self, response):
-        if response.status == 200:
-            zip_file = ZipFile(BytesIO(response.body))
-            for finfo in zip_file.infolist():
-                data = zip_file.open(finfo.filename).read()
-                yield \
-                    self.save_data_to_disk(data, finfo.filename, data_type='release_package', url=response.request.url)
-        else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+        yield from self.parse_zipfile(response, data_type='release_package')
