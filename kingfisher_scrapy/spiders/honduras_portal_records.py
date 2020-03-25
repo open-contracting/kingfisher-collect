@@ -24,7 +24,7 @@ class HondurasPortalRecords(BaseSpider):
             yield self.save_data_to_disk(
                 json.dumps(json_data.get('recordPackage')).encode(),
                 response.request.meta['kf_filename'],
-                data_type='record_list',
+                data_type='record_package',
                 url=response.request.url
             )
 
