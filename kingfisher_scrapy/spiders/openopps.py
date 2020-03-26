@@ -9,8 +9,13 @@ from kingfisher_scrapy.base_spider import BaseSpider
 from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
 
-# API documentation: https://docs.google.com/document/d/1u0da3BTU7fBFjX6i7j_tKXa1YwdXL7hY4Kw9GdsaAr0/edit#
 class OpenOpps(BaseSpider):
+    """
+    API documentation
+      -  https://api.openopps.com/api/ocds/
+      -  https://api.openopps.com/api/schema/
+      -  https://docs.google.com/document/d/1u0da3BTU7fBFjX6i7j_tKXa1YwdXL7hY4Kw9GdsaAr0/edit
+    """
     name = 'openopps'
 
     access_token = None
