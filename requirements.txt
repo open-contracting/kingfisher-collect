@@ -25,9 +25,10 @@ pydispatcher==2.0.5       # via scrapy
 pyhamcrest==1.9.0         # via twisted
 pyopenssl==19.1.0         # via scrapy
 queuelib==1.5.0           # via scrapy
-requests==2.22.0
-scrapy==1.8.0
-scrapyd-client==1.1.0
+rarfile==3.1              # via -r requirements.in
+requests==2.22.0          # via -r requirements.in
+scrapy==1.8.0             # via -r requirements.in, scrapyd-client
+scrapyd-client==1.1.0     # via -r requirements.in
 service-identity==18.1.0  # via scrapy
 six==1.13.0               # via automat, cryptography, parsel, protego, pyhamcrest, pyopenssl, scrapy, scrapyd-client, w3lib
 twisted==19.10.0          # via scrapy
