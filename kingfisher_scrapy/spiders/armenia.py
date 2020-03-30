@@ -19,7 +19,8 @@ class Armenia(BaseSpider):
     def parse(self, response):
         if response.status == 200:
 
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="release_package")
+            yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
+                                             data_type='release_package')
 
             json_data = json.loads(response.text)
             if not (self.sample):

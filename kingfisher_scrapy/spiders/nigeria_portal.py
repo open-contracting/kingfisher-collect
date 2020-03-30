@@ -9,7 +9,7 @@ class NigeriaPortal(BaseSpider):
     name = 'nigeria_portal'
     start_urls = ['http://nocopo.bpp.gov.ng/OpenData.aspx']
     download_delay = 0.9
-    user_agent = ['Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36']
+    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
     def parse(self, response):
         if response.status == 200:

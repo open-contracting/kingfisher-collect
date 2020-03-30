@@ -34,7 +34,8 @@ class ArgentinaBuenosAires(BaseSpider):
                 zip_file = ZipFile(BytesIO(response.body))
                 for finfo in zip_file.infolist():
                     data = zip_file.open(finfo.filename).read()
-                    yield self.save_data_to_disk(data, finfo.filename, data_type='release_package', url=response.request.url)
+                    yield self.save_data_to_disk(data, finfo.filename, url=response.request.url,
+                                                 data_type='release_package')
         else:
             yield {
                 'success': False,

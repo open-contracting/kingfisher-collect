@@ -21,10 +21,11 @@ class MexicoINAI(BaseSpider):
             for result in datas['result']['results']:
                 for resource in result['resources']:
                     if resource['format'] == 'JSON':
+                        kf_filename = 'redirect-' + hashlib.md5(resource['url'].encode('utf-8')).hexdigest() + '.json'
                         yield scrapy.Request(
                             url=resource['url'],
                             meta={
-                                'kf_filename': 'redirect-' + hashlib.md5(resource['url'].encode('utf-8')).hexdigest() + '.json',
+                                'kf_filename': kf_filename,
                                 'dont_redirect': True
                             },
                             callback=self.parse_redirect

@@ -33,31 +33,28 @@ class Scotland(BaseSpider):
     ]
 
     def start_requests(self):
+        format_string = 'https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={}&outputType=1&noticeType={}'
+
         now = datetime.datetime.today()
         if self.sample:
             marker = now - datetime.timedelta(days=14)
             for notice_type in self.notice_types:
-                yield scrapy.Request(
-                    url='https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={}&outputType=1&noticeType={}'.format(
-                        marker, notice_type),
-                    meta={'kf_filename': 'sample_{}.json'.format(notice_type)}
-                )
+                yield scrapy.Request(url=format_string.format(marker, notice_type),
+                                     meta={'kf_filename': 'sample_{}.json'.format(notice_type)})
         else:
             # It's meant to go back a year, but in testing it seemed to be year minus one day!
             marker = now - datetime.timedelta(days=364)
             while marker <= now:
                 datestring = '{:04d}-{:02d}-{:02d}'.format(marker.year, marker.month, marker.day)
                 for notice_type in self.notice_types:
-                    yield scrapy.Request(
-                        url='https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={}&outputType=1&noticeType={}'.format(
-                            datestring, notice_type),
-                        meta={'kf_filename': '{}_type_{}.json'.format(datestring, notice_type)}
-                    )
+                    yield scrapy.Request(url=format_string.format(datestring, notice_type),
+                                         meta={'kf_filename': '{}_type_{}.json'.format(datestring, notice_type)})
                 marker = marker + datetime.timedelta(days=14)
 
     def parse(self, response):
         if response.status == 200:
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="release_package")
+            yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
+                                             data_type='release_package')
         else:
             yield {
                 'success': False,

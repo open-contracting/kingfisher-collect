@@ -30,25 +30,20 @@ class HttpProxyWithSpiderArgsMiddleware:
 
 
 class ParaguayAuthMiddleware:
-    """Downloader middleware that manages API authentication for Paraguay
-    scrapers.
+    """
+    Downloader middleware that manages API authentication for Paraguay scrapers.
 
-    Both DNCP (procurement authority) and Hacienda (finance ministry) use an
-    authentication protocol based on OAuth 2.0.
+    Both DNCP (procurement authority) and Hacienda (finance ministry) use an authentication protocol based on OAuth 2.
 
-    This middleware helps us to manage the protocol, which
-    consists on acquiring an access token every x minutes (usually 15) and
-    sending the token on each request. The acquisition method of the token is
-    delegated to the spider, since each publisher has their own credentials and
-    requirements.
+    This middleware helps us to manage the protocol, which consists on acquiring an access token every x minutes
+    (usually 15) and sending the token on each request. The acquisition method of the token is delegated to the spider,
+    since each publisher has their own credentials and requirements.
 
-    Apparently, a Downloader Middleware is the best place to set HTTP Request
-    Headers (see https://docs.scrapy.org/en/latest/topics/architecture.html), but it's not enough for this case :(.
-    Tokens should be generated and assigned just before sending a request,
-    but Scrapy does not provide any way to do this, which in turn means that sometimes we accidently send expired tokens.
-    For now, the issue seems to be avoided by setting the number of
-    concurrent requests to 1, at cost of download speed.
-
+    Apparently, a Downloader Middleware is the best place to set HTTP Request Headers (see
+    https://docs.scrapy.org/en/latest/topics/architecture.html), but it's not enough for this case :(.
+    Tokens should be generated and assigned just before sending a request, but Scrapy does not provide any way to do
+    this, which in turn means that sometimes we accidently send expired tokens. For now, the issue seems to be avoided
+    by setting the number of concurrent requests to 1, at cost of download speed.
     """
 
     def __init__(self, spider):
