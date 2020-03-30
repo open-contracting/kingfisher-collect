@@ -37,7 +37,8 @@ class DominicanRepublic(BaseSpider):
             with rarfile.RarFile(file.name, charset='utf-8') as tmpfile:
                 for f in tmpfile.infolist():
                     with tmpfile.open(f) as jsonFile:
-                        yield self.save_data_to_disk(jsonFile.read(), f.filename, data_type='release_package', url=response.request.url)
+                        yield self.save_data_to_disk(jsonFile.read(), f.filename, data_type='release_package',
+                                                     url=response.request.url)
             os.remove(file.name)
         else:
             filename = response.request.url.split('/')[-1]
