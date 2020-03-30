@@ -13,10 +13,11 @@ class Colombia(LinksSpider):
     sleep = 120 * 60
 
     def start_requests(self):
-        base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases?page=%d'
+        base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases'
         if hasattr(self, 'year'):
-            year = int(self.year)
-            base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases/page/{}?page=%d'.format(year)
+            base_url += '/page/{}'.format(int(self.year))
+        base_url += '?page=%d'
+
         start_page = 1
         if hasattr(self, 'page'):
             start_page = int(self.page)

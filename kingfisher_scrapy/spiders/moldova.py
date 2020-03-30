@@ -26,7 +26,8 @@ class Moldova(BaseSpider):
     def parse(self, response):
         if response.status == 200:
             if response.request.meta['data']:
-                yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="record_package")
+                yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
+                                                 data_type='record_package')
             else:
                 self.save_response_to_disk(response, response.request.meta['kf_filename'])
                 json_data = json.loads(response.text)
@@ -41,7 +42,11 @@ class Moldova(BaseSpider):
                 for data in json_data.get('data', []):
                     yield scrapy.Request(
                         url=endpoint_url + data['ocid'],
-                        meta={'kf_filename': 'data-{}-{}.json'.format(endpoint, data['ocid']), 'endpoint': endpoint, 'data': True}
+                        meta={
+                            'kf_filename': 'data-{}-{}.json'.format(endpoint, data['ocid']),
+                            'endpoint': endpoint,
+                            'data': True,
+                        }
                     )
 
                 if self.sample:
@@ -49,7 +54,11 @@ class Moldova(BaseSpider):
 
                 yield scrapy.Request(
                     url=endpoint_url + '?offset=' + offset,
-                    meta={'kf_filename': 'meta-{}-{}.json'.format(endpoint, offset), 'endpoint': endpoint, 'data': False}
+                    meta={
+                        'kf_filename': 'meta-{}-{}.json'.format(endpoint, offset),
+                        'endpoint': endpoint,
+                        'data': False,
+                    }
                 )
 
         else:

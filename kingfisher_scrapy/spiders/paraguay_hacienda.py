@@ -47,8 +47,6 @@ class ParaguayHacienda(BaseSpider):
 
     def parse(self, response):
         if response.status == 200:
-
-            # When we have a 200 response, we update the number of remaining request calling the get access token method
             data = json.loads(response.text)
             base_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/ocds/release-package/{}'
 
@@ -79,7 +77,8 @@ class ParaguayHacienda(BaseSpider):
                             dont_filter=True
                         )
             else:
-                yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type='release_package')
+                yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
+                                                 data_type='release_package')
 
         else:
             yield {

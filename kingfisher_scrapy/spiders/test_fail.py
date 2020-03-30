@@ -13,7 +13,7 @@ class TestFail(BaseSpider):
     def start_requests(self):
         # Fine
         yield scrapy.Request(
-            url='https://raw.githubusercontent.com/open-contracting/sample-data/master/fictional-example/1.1/ocds-213czf-000-00001-01-planning.json',
+            url='https://raw.githubusercontent.com/open-contracting/sample-data/master/fictional-example/1.1/ocds-213czf-000-00001-01-planning.json',  # noqa: E501
             meta={'kf_filename': 'fine.json'}
         )
         # A straight 404
@@ -34,7 +34,8 @@ class TestFail(BaseSpider):
 
     def parse(self, response):
         if response.status == 200:
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type='release_package')
+            yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
+                                             data_type='release_package')
 
         else:
 

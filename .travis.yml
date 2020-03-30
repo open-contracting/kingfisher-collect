@@ -3,11 +3,14 @@ language: python
 cache: pip
 python:
   - "3.6"
+env:
+  - BASEDIR="https://raw.githubusercontent.com/open-contracting/standard-maintenance-scripts/master"
 install:
+  - curl -s -S --retry 3 $BASEDIR/tests/install.sh | bash -
   - pip install -r requirements_dev.txt
+  - pip install coveralls
 script:
-  - flake8
-  - isort
+  - curl -s -S --retry 3 $BASEDIR/tests/script.sh | bash -
   - python -m pytest --cov kingfisher_scrapy tests
 after_success:
-  - coveralls
+  coveralls
