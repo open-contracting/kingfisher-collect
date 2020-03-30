@@ -21,7 +21,7 @@ class Malta(BaseSpider):
         if response.status == 200:
             url = 'http://demowww.etenders.gov.mt{}'
             json_data = json.loads(response.text)
-            packages = json_data.get('packagesPerMonth')
+            packages = json_data['packagesPerMonth']
             for package in packages:
                 parsed = urlparse(package)
                 path = parsed.path
