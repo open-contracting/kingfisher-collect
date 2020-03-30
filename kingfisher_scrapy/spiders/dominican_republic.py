@@ -9,6 +9,9 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class DominicanRepublic(BaseSpider):
     name = 'dominican_republic'
+    custom_settings = {
+        'DOWNLOAD_TIMEOUT': 360
+    }
 
     def start_requests(self):
         yield scrapy.Request('https://www.dgcp.gob.do/estandar-mundial-ocds/',
