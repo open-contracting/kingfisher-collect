@@ -1,5 +1,5 @@
 -r requirements.txt
-coveralls
+coverage
 flake8
 isort
 pip-tools
