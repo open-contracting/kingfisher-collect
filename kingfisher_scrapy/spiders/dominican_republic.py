@@ -1,8 +1,8 @@
 import os
 import tempfile
 
-import scrapy
 import rarfile
+import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
