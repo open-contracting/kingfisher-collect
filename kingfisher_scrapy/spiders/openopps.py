@@ -20,6 +20,9 @@ class OpenOpps(BaseSpider):
 
     access_token = None
     api_limit = 10000  # OpenOpps API limit for search results
+    request_time_limit = 60  # in minutes
+    re_authenticate = False  # flag for request a new token
+    start_time = None
 
     base_page_url = \
         'https://api.openopps.com/api/ocds/?' \
@@ -51,6 +54,8 @@ class OpenOpps(BaseSpider):
             method='POST',
             headers={"Accept": "*/*", "Content-Type": "application/json"},
             body=json.dumps({"username": self.username, "password": self.password}),
+            # send duplicate requests when we re-authenticate before the token expires
+            dont_filter=True,
             meta={'token_request': True},
             callback=self.parse_access_token
         )
@@ -62,8 +67,11 @@ class OpenOpps(BaseSpider):
             if token:
                 self.logger.info('New access token: {}'.format(token))
                 self.access_token = 'JWT ' + token
-                """ Start requests """
-                return self.start_requests_pages()
+                self.start_time = datetime.now()
+                if not self.re_authenticate:
+                    """ Start requests """
+                    return self.start_requests_pages()
+                self.re_authenticate = False
             else:
                 self.logger.error(
                     'Authentication failed. Status code: {}. {}'.format(response.status, response.text))
@@ -154,6 +162,22 @@ class OpenOpps(BaseSpider):
                         headers={"Accept": "*/*", "Content-Type": "application/json"},
                         meta={"release_date": release_date, "search_h": search_h},
                     )
+
+                # Tells if we have to re-authenticate before the token expires
+                time_diff = datetime.now() - self.start_time
+                if not self.re_authenticate and time_diff.total_seconds() > self.request_time_limit * 60:
+                    self.logger.info('Time_diff: {}'.format(time_diff.total_seconds()))
+                    self.re_authenticate = True
+                    yield scrapy.Request(
+                        url="https://api.openopps.com/api/api-token-auth/",
+                        method='POST',
+                        headers={"Accept": "*/*", "Content-Type": "application/json"},
+                        body=json.dumps({"username": self.username, "password": self.password}),
+                        dont_filter=True,
+                        meta={'token_request': True},
+                        priority=100000,
+                        callback=self.parse_access_token
+                    )
             else:
                 # Change search filter if count exceeds the API limit or search_h > 1 hour
                 parts = int(ceil(count / self.api_limit))  # parts we split a search that exceeds the limit
@@ -179,7 +203,7 @@ class OpenOpps(BaseSpider):
                     end_hour_list.append(last_hour)
 
                 self.logger.info('Changing filters, split in {}: {}.'.format(parts, response.request.url))
-                for i in range(parts):
+                for i in range(len(start_hour_list)):
                     yield scrapy.Request(
                         url=self.base_page_url.format(
                             start_hour_list[i],
@@ -191,8 +215,13 @@ class OpenOpps(BaseSpider):
                               "search_h": split_h},  # new search range
                     )
         else:
-            yield {
-                'success': False,
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            if response.status == 500:
+                self.logger.info('Status: {}. Results exceeded in a range of one hour, we save the '
+                                 'first 10,000 data for: {}'.format(response.status, response.request.url))
+            else:
+                yield {
+                    'success': False,
+                    'file_name': hashlib.md5(response.request.url.encode('utf-8')).hexdigest(),
+                    'url': response.request.url,
+                    'errors': {'http_code': response.status}
+                }

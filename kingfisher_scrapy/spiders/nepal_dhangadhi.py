@@ -19,9 +19,9 @@ class NepalDhangadhi(BaseSpider):
         if response.status == 200:
             url = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
             json_data = json.loads(response.text)
-            fiscal_years = json_data.get('data').get('fiscal_years')
+            fiscal_years = json_data['data']['fiscal_years']
             for item in fiscal_years:
-                fy = item.get('name')
+                fy = item['name']
                 yield scrapy.Request(
                     url.format(fy),
                     meta={'kf_filename': hashlib.md5((url + fy).encode('utf-8')).hexdigest() + '.json'},
