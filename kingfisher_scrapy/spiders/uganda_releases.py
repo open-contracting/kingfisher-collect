@@ -25,7 +25,7 @@ class Uganda(BaseSpider):
                 total_pages = 1
             else:
                 json_data = json.loads(response.text)
-                total_pages = json_data['data']['last_page']
+                total_pages = json_data.get('data').get('last_page')
 
             for page_number in range(total_pages):
                 yield scrapy.Request(
@@ -48,7 +48,7 @@ class Uganda(BaseSpider):
             pdes_fdy_checks = []
 
             json_data = json.loads(response.text)
-            list_pdes = json_data['data']['data']
+            list_pdes = json_data.get('data').get('data')
 
             for pdes in list_pdes:
                 pde_plans = pdes['procurement_plans']

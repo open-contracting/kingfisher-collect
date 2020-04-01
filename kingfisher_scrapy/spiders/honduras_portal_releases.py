@@ -22,7 +22,7 @@ class HondurasPortalReleases(BaseSpider):
 
             json_data = json.loads(response.text)
             yield self.save_data_to_disk(
-                json.dumps(json_data['releasePackage']).encode(),
+                json.dumps(json_data.get('releasePackage')).encode(),
                 response.request.meta['kf_filename'],
                 data_type='release_package',
                 url=response.request.url
