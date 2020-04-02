@@ -217,7 +217,9 @@ class OpenOpps(BaseSpider):
                               "search_h": split_h},  # new search range
                     )
         else:
-            if response.status == 500:
+            # Message for pages that exceed the 10,000 search results in the range of one hour
+            # These are pages with status 500 and 'page=11' in the URL request
+            if response.status == 500 and response.request.url.count("page=11"):
                 self.logger.info('Status: {}. Results exceeded in a range of one hour, we save the '
                                  'first 10,000 data for: {}'.format(response.status, response.request.url))
             else:
