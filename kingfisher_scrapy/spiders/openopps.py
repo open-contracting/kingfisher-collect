@@ -21,7 +21,7 @@ class OpenOpps(BaseSpider):
     access_token = None
     api_limit = 10000  # OpenOpps API limit for search results
     request_time_limit = 60  # in minutes
-    re_authenticate = False  # flag for request a new token
+    reauthenticating = False  # flag for request a new token
     start_time = None
 
     base_page_url = \
@@ -54,9 +54,10 @@ class OpenOpps(BaseSpider):
             method='POST',
             headers={"Accept": "*/*", "Content-Type": "application/json"},
             body=json.dumps({"username": self.username, "password": self.password}),
-            # send duplicate requests when we re-authenticate before the token expires
+            # Send duplicate requests when we re-authenticate before the token expires
             dont_filter=True,
-            meta={'token_request': True},
+            # Flag request access token for middleware and initial authentication for callback function
+            meta={'token_request': True, 'initial_authentication': True},
             callback=self.parse_access_token
         )
 
@@ -68,10 +69,11 @@ class OpenOpps(BaseSpider):
                 self.logger.info('New access token: {}'.format(token))
                 self.access_token = 'JWT ' + token
                 self.start_time = datetime.now()
-                if not self.re_authenticate:
-                    """ Start requests """
+                # If the request is initial authentication, start requests
+                if response.request.meta.get('initial_authentication'):
                     return self.start_requests_pages()
-                self.re_authenticate = False
+                # For reauthenticating request, set to False and continue
+                self.reauthenticating = False
             else:
                 self.logger.error(
                     'Authentication failed. Status code: {}. {}'.format(response.status, response.text))
@@ -165,16 +167,16 @@ class OpenOpps(BaseSpider):
 
                 # Tells if we have to re-authenticate before the token expires
                 time_diff = datetime.now() - self.start_time
-                if not self.re_authenticate and time_diff.total_seconds() > self.request_time_limit * 60:
+                if not self.reauthenticating and time_diff.total_seconds() > self.request_time_limit * 60:
                     self.logger.info('Time_diff: {}'.format(time_diff.total_seconds()))
-                    self.re_authenticate = True
+                    self.reauthenticating = True
                     yield scrapy.Request(
                         url="https://api.openopps.com/api/api-token-auth/",
                         method='POST',
                         headers={"Accept": "*/*", "Content-Type": "application/json"},
                         body=json.dumps({"username": self.username, "password": self.password}),
                         dont_filter=True,
-                        meta={'token_request': True},
+                        meta={'token_request': True, 'initial_authentication': False},
                         priority=100000,
                         callback=self.parse_access_token
                     )
