@@ -42,6 +42,7 @@ pyparsing==2.4.5          # via packaging
 pytest-cov==2.8.1
 pytest==5.3.2
 queuelib==1.5.0
+rarfile==3.1
 requests==2.22.0
 scrapy==1.8.0
 scrapyd-client==1.1.0
