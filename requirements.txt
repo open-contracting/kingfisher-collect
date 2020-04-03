@@ -31,7 +31,7 @@ scrapy==1.8.0
 scrapyd-client==1.1.0
 service-identity==18.1.0  # via scrapy
 six==1.13.0               # via automat, cryptography, parsel, protego, pyhamcrest, pyopenssl, scrapy, scrapyd-client, w3lib
-twisted==19.10.0          # via scrapy
+twisted==20.3.0           # via scrapy
 urllib3==1.25.7           # via requests
 w3lib==1.21.0             # via parsel, scrapy
 zope.interface==4.7.1     # via scrapy, twisted
