@@ -25,6 +25,11 @@ class OpenOpps(BaseSpider):
       until_date
         The end date for range to download. See API documentation for date format.
         Today's date by default if from_date is set and until_date not.
+    Environment variables
+      KINGFISHER_OPENOPPS_USERNAME
+        Username variable for credentials.
+      KINGFISHER_OPENOPPS_PASSWORD
+        Password variable for credentials.
     """
     name = 'openopps'
 
