@@ -15,6 +15,18 @@ class KingfisherSpiderMixin:
 
         scrapy crawl spider_name -a sample=true
 
+    Set the start date for range to download:
+
+    .. code:: bash
+
+        scrapy crawl spider_name -a from_date='2010-01-01'
+
+    Set the end date for range to download:
+
+    .. code:: bash
+
+        scrapy crawl spider_name -a until_date='2020-01-01'
+
     Add a note to the collection:
 
     .. code:: bash
@@ -27,11 +39,14 @@ class KingfisherSpiderMixin:
 
        scrapy crawl spider_name -a http_proxy=URL -a https_proxy=URL
     """
-    def __init__(self, sample=None, note=None, http_proxy=None, https_proxy=None, *args, **kwargs):
+    def __init__(self, sample=None, from_date=None, until_date=None, note=None, http_proxy=None, https_proxy=None,
+                 *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
         self.sample = sample == 'true'
+        self.from_date = from_date
+        self.until_date = until_date
         self.note = note
         self.http_proxy = http_proxy
         self.https_proxy = https_proxy
