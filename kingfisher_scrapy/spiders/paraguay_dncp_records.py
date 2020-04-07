@@ -1,4 +1,4 @@
-from kingfisher_scrapy.spiders.paraguay_base import ParaguayDNCPBaseSpider
+from kingfisher_scrapy.spiders.paraguay_dncp_base import ParaguayDNCPBaseSpider
 
 
 class ParaguayDNCPRecords(ParaguayDNCPBaseSpider):
@@ -7,5 +7,5 @@ class ParaguayDNCPRecords(ParaguayDNCPBaseSpider):
 
     def get_files_to_download(self, content):
         for record in content['records']:
-            url = 'http://beta.dncp.gov.py/datos/api/v3/doc/ocds/record/{}'.format(record['compiledRelease']['ocid'])
-            yield url
+            yield '{}/ocds/record/{}'.format(self.base_url, record['ocid'])
+

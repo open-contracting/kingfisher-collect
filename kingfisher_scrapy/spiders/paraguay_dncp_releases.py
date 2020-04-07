@@ -1,6 +1,4 @@
-from urllib.parse import urlparse
-
-from kingfisher_scrapy.spiders.paraguay_base import ParaguayDNCPBaseSpider
+from kingfisher_scrapy.spiders.paraguay_dncp_base import ParaguayDNCPBaseSpider
 
 
 class ParaguayDNCPReleases(ParaguayDNCPBaseSpider):
@@ -10,10 +8,4 @@ class ParaguayDNCPReleases(ParaguayDNCPBaseSpider):
     def get_files_to_download(self, content):
         for record in content['records']:
             for release in record['releases']:
-                parsed = urlparse(release['url'])
-                id_path = parsed.path.replace("/datos/api/v3/doc/releases/", "")
-                if id_path:
-                    url = 'http://beta.dncp.gov.py/datos/api/v3/doc/ocds/releases/id/{}'.format(id_path)
-                    yield url
-                else:
-                    raise Exception('Release ID not found')
+                yield release['url']
