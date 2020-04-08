@@ -34,7 +34,7 @@ class OpenOpps(BaseSpider):
 
     access_token = None
     api_limit = 10000  # OpenOpps API limit for search results
-    download_delay = 0.9
+    download_delay = 1
 
     base_page_url = \
         'https://api.openopps.com/api/ocds/?' \
