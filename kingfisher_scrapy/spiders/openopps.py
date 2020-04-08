@@ -12,24 +12,23 @@ from kingfisher_scrapy.exceptions import AuthenticationFailureException
 class OpenOpps(BaseSpider):
     """
     API documentation
-      -  https://docs.google.com/document/d/1u0da3BTU7fBFjX6i7j_tKXa1YwdXL7hY4Kw9GdsaAr0/edit
+      https://docs.google.com/document/d/1u0da3BTU7fBFjX6i7j_tKXa1YwdXL7hY4Kw9GdsaAr0/edit
     Swagger API documentation
-      -  https://api.openopps.com/api/ocds/
-      -  https://api.openopps.com/api/schema/
+      https://api.openopps.com/api/schema/
     Spider arguments
       sample
-        Download only data released on 2011-01-01 for sample.
+        Download only data released on 2011-01-01.
       from_date
-        The start date for range to download. See API documentation for date format.
-        Date '2011-01-01' by default if until_date is set and from_date not.
+        Download only data from this date onward (YYYY-MM-DD format).
+        If ``until_date`` is provided, defaults to '2011-01-01'.
       until_date
-        The end date for range to download. See API documentation for date format.
-        Today's date by default if from_date is set and until_date not.
+        Download only data until this date (YYYY-MM-DD format).
+        If ``from_date`` is provided, defaults to today.
     Environment variables
       KINGFISHER_OPENOPPS_USERNAME
-        Username variable for credentials.
+        To get an API account, contact contact@openopps.com.
       KINGFISHER_OPENOPPS_PASSWORD
-        Password variable for credentials.
+        Your API account password.
     """
     name = 'openopps'
 
