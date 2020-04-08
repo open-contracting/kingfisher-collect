@@ -1,4 +1,3 @@
-import hashlib
 import json
 import logging
 from datetime import datetime
@@ -88,7 +87,10 @@ class ParaguayDNCPBaseSpider(BaseSpider):
                     self.auth_failed = True
                     raise AuthenticationFailureException()
                 else:
-                    self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
+                    self.logger.info('Requesting access token, attempt {} of {}'.format(
+                        attempt + 1,
+                        self.max_attempts)
+                    )
                     return scrapy.Request(
                         self.auth_url,
                         method='POST',
