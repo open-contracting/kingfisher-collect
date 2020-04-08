@@ -125,7 +125,10 @@ class ParaguayHacienda(BaseSpider):
                     self.auth_failed = True
                     raise AuthenticationFailureException()
                 else:
-                    self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
+                    self.logger.info('Requesting access token, attempt {} of {}'.format(
+                        attempt + 1,
+                        self.max_attempts)
+                    )
                     return scrapy.Request(
                         "https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
                         method='POST',
