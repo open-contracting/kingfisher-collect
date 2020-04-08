@@ -118,20 +118,12 @@ class OpenOpps(BaseSpider):
         else:
             # Case if we have date range parameters
             if self.from_date or self.until_date:
-                try:
-                    if not self.from_date:
-                        self.from_date = '2011-01-01'
-                    if not self.until_date:
-                        self.until_date = datetime.now().strftime("%Y-%m-%d")
-                    start_date = datetime.strptime(self.from_date, "%Y-%m-%d")
-                    end_date = datetime.strptime(self.until_date, "%Y-%m-%d")
-
-                except ValueError as e:
-                    self.logger.error(e.args)
-                    self.logger.info('See API documentation for date format.')
-                    return
-
-                yield from self.request_date_list(start_date, end_date, search_h)
+                start_date, end_date = self.parse_date_arguments(
+                    date_format='%Y-%m-%d',
+                    default_from_date='2011-01-01'
+                )
+                if start_date and end_date:
+                    yield from self.request_date_list(start_date, end_date, search_h)
             else:
                 # Use larger ranges for filters with less than (api_limit) search results
                 release_date_gte_list = ['', '2009-01-01', '2010-01-01', '2010-07-01']

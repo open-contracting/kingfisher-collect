@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile
 
@@ -151,6 +152,30 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
                 'url': response.request.url,
                 'errors': {'http_code': response.status}
             }
+
+    def parse_date_arguments(self, date_format, default_from_date=None):
+        """
+        Parsing logic for date range to download.
+
+        Set ``date_format`` (e.g. %Y-%m-%d)
+        If ``until_date`` is provided, defaults to ``default_from_date``.
+        If ``from_date`` is provided, defaults to today.
+
+        Returns datetime objects or false if the format is wrong.
+        """
+        try:
+            if not self.from_date:
+                self.from_date = default_from_date
+            if not self.until_date:
+                self.until_date = datetime.now().strftime(date_format)
+            from_date = datetime.strptime(self.from_date, date_format)
+            until_date = datetime.strptime(self.until_date, date_format)
+            return from_date, until_date
+
+        except ValueError as e:
+            self.logger.error(e.args)
+            self.logger.info('See API documentation for date format.')
+            return False, False
 
 
 class BaseXMLFeedSpider(KingfisherSpiderMixin, scrapy.spiders.XMLFeedSpider):
