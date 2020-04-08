@@ -38,7 +38,7 @@ class OpenOpps(BaseSpider):
 
     base_page_url = \
         'https://api.openopps.com/api/ocds/?' \
-        'format={}&ordering={}&page_size={}&releasedate__gte={}&releasedate__lte={}'
+        'format={}&ordering={}&page_size={}&releasedate__gte={{}}&releasedate__lte={{}}'
 
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
@@ -109,7 +109,7 @@ class OpenOpps(BaseSpider):
         page_format = 'json'
         ordering = 'releasedate'
         search_h = 24  # start splitting one day search
-        self.base_page_url = self.base_page_url.format(page_format, ordering, page_size, '{}', '{}')
+        self.base_page_url = self.base_page_url.format(page_format, ordering, page_size)
 
         # Case if we want to download a sample
         if self.sample:
