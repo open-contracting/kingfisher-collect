@@ -54,7 +54,7 @@ class ParaguayAuthMiddleware:
         return cls(crawler.spider)
 
     def process_request(self, request, spider):
-        if 'auth' in request.meta and request.meta['auth'] is not None and not request.meta['auth']:
+        if 'auth' in request.meta and request.meta['auth'] is False:
             return
         if spider.auth_failed:
             logging.error('Fatal: no authentication token, stopping now...')
@@ -62,15 +62,20 @@ class ParaguayAuthMiddleware:
             raise scrapy.exceptions.IgnoreRequest()
         request.headers['Authorization'] = spider.access_token
         if self._expires_soon(spider):
+            # SAVE the last request to continue after getting the token
+            spider.last_request = request
             # spider MUST implement the request_access_token method
-            spider.request_access_token()
+            return spider.request_access_token()
 
     def process_response(self, request, response, spider):
         if response.status == 401 or response.status == 429:
             spider.logger.info('Time transcurred: {}'.format((datetime.now() - spider.start_time).total_seconds()))
             logging.info('{} returned for request to {}'.format(response.status, request.url))
             if not spider.access_token == request.headers['Authorization'] and self._expires_soon(spider):
-                spider.request_access_token()
+                # SAVE the last request to continue after getting the token
+                spider.last_request = request
+                # spider MUST implement the request_access_token method
+                return spider.request_access_token()
             request.headers['Authorization'] = spider.access_token
             return request
         return response
@@ -78,7 +83,7 @@ class ParaguayAuthMiddleware:
     @staticmethod
     def _expires_soon(spider):
         # spider MUST implement the expires_soon method
-        return spider.expires_soon(datetime.now() - spider.start_time) if spider.start_time else True
+        return spider.expires_soon(datetime.now() - spider.start_time) if spider.start_time and spider.access_token else True
 
 
 class OpenOppsAuthMiddleware:

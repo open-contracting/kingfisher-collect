@@ -31,8 +31,8 @@ class MexicoQuienEsQuien(BaseSpider):
         if response.status == 200:
             limit = 1000
             json_data = json.loads(response.text)
-            count_list = json_data.get('data')
-            count = int(count_list[0].get('collections').get('contracts').get('count'))
+            count_list = json_data['data']
+            count = int(count_list[0]['collections']['contracts']['count'])
 
             for offset in range(ceil(count / limit)):
                 yield scrapy.Request(
@@ -53,7 +53,7 @@ class MexicoQuienEsQuien(BaseSpider):
 
             json_data = json.loads(response.text)
             yield self.save_data_to_disk(
-                json.dumps(json_data.get('data')).encode(),
+                json.dumps(json_data['data']).encode(),
                 response.request.meta['kf_filename'],
                 data_type='record_package_list',
                 url=response.request.url

@@ -69,7 +69,7 @@ class KingfisherAPI:
                 data['collection_note'] = spider.note
 
             # File Item
-            if item.get('number'):
+            if 'number' in item:
                 data['number'] = item['number']
                 data['data'] = item['data']
 
