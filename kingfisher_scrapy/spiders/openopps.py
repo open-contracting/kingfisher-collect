@@ -88,22 +88,6 @@ class OpenOpps(BaseSpider):
                 'Authentication failed. Status code: {}. {}'.format(response.status, response.text))
             raise AuthenticationFailureException()
 
-    def request_date_list(self, start_date, end_date, search_h):
-        date_list = [(start_date + timedelta(days=d)).strftime("%Y-%m-%d")
-                     for d in range((end_date - start_date).days + 1)]
-
-        for date in date_list:
-            release_date_gte = date
-            release_date_lte = date
-            yield scrapy.Request(
-                url=self.base_page_url.format(
-                    release_date_gte,
-                    release_date_lte
-                ),
-                headers={"Accept": "*/*", "Content-Type": "application/json"},
-                meta={"release_date": date, "search_h": search_h},
-            )
-
     def start_requests_pages(self):
         page_size = 1000
         page_format = 'json'
@@ -114,7 +98,7 @@ class OpenOpps(BaseSpider):
         # Case if we want to download a sample
         if self.sample:
             date = datetime(2011, 1, 1)
-            yield from self.request_date_list(date, date, search_h)
+            yield from self.parse_date_list(date, date, search_h)
         else:
             # Case if we have date range parameters
             if self.from_date or self.until_date:
@@ -123,28 +107,38 @@ class OpenOpps(BaseSpider):
                     default_from_date='2011-01-01'
                 )
                 if start_date and end_date:
-                    yield from self.request_date_list(start_date, end_date, search_h)
+                    yield from self.parse_date_list(start_date, end_date, search_h)
             else:
                 # Use larger ranges for filters with less than (api_limit) search results
                 release_date_gte_list = ['', '2009-01-01', '2010-01-01', '2010-07-01']
                 release_date_lte_list = ['2008-12-31', '2009-12-31', '2010-06-30', '2010-12-31']
 
                 for i in range(len(release_date_gte_list)):
-                    yield scrapy.Request(
-                        url=self.base_page_url.format(
-                            release_date_gte_list[i],
-                            release_date_lte_list[i]
-                        ),
-                        headers={"Accept": "*/*", "Content-Type": "application/json"},
-                        meta={"release_date": release_date_gte_list[i], "search_h": search_h},
-                    )
+                    yield self.request_range(release_date_gte_list[i], release_date_lte_list[i], search_h)
 
                 # Use smaller ranges (day by day) for filters with more than (api_limit) search results
                 for year in range(2011, datetime.now().year + 1):
                     start_date = datetime(year, 1, 1)
                     end_date = datetime(year, datetime.now().month, datetime.now().day) \
                         if year == datetime.now().year else datetime(year, 12, 31)
-                    yield from self.request_date_list(start_date, end_date, search_h)
+                    yield from self.parse_date_list(start_date, end_date, search_h)
+
+    def request_range(self, start_date, end_date, search_h):
+        return scrapy.Request(
+            url=self.base_page_url.format(
+                start_date,
+                end_date
+            ),
+            headers={"Accept": "*/*", "Content-Type": "application/json"},
+            meta={"release_date": start_date, "search_h": search_h},
+        )
+
+    def parse_date_list(self, start_date, end_date, search_h):
+        date_list = [(start_date + timedelta(days=d)).strftime("%Y-%m-%d")
+                     for d in range((end_date - start_date).days + 1)]
+
+        for date in date_list:
+            yield self.request_range(date, date, search_h)
 
     def parse(self, response):
         if response.status == 200:
