@@ -175,7 +175,7 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
         except ValueError as e:
             self.logger.error(e.args)
             self.logger.info('See API documentation for date format.')
-            return False, False
+            raise scrapy.exceptions.CloseSpider()
 
 
 class BaseXMLFeedSpider(KingfisherSpiderMixin, scrapy.spiders.XMLFeedSpider):
