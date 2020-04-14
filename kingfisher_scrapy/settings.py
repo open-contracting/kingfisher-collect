@@ -113,7 +113,7 @@ KINGFISHER_OPENOPPS_PASSWORD = os.getenv('KINGFISHER_OPENOPPS_PASSWORD')
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std:setting-FILES_STORE
-FILES_STORE = 'data'
+FILES_STORE = os.getenv('FILES_STORE', 'data')
 
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
 HTTPERROR_ALLOW_ALL = True
