@@ -76,8 +76,13 @@ EXTENSIONS = {
 #    'kingfisher_scrapy.pipelines.KingfisherScrapyPipeline': 300,
 #}
 
+# To send items to Kingfishet Process, set this to, for example, "http://kingfisher.example.com" (no trailing slash).
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
+# Set this to the same value as Kingfisher Process' `API_KEYS` setting.
+# See https://kingfisher-process.readthedocs.io/en/latest/config.html#web-api
 KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
+# If Kingfisher Process can read Kingfisher Scrape's `FILES_STORE`, then Kingfisher Scrape can send file paths instead
+# of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.
 KINGFISHER_API_LOCAL_DIRECTORY = os.getenv('KINGFISHER_API_LOCAL_DIRECTORY')
 
 KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')

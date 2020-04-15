@@ -4,7 +4,6 @@ __pycache__
 .pytest_cache
 venv/
 /data/
-env.sh
 /.coverage
 /docs/_build
 /htmlcov
