@@ -117,3 +117,6 @@ FILES_STORE = os.getenv('FILES_STORE', 'data')
 
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
 HTTPERROR_ALLOW_ALL = True
+
+# https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpproxy-enabled
+HTTPPROXY_ENABLED = False

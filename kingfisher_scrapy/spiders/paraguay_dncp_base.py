@@ -30,7 +30,6 @@ class ParaguayDNCPBaseSpider(BaseSpider):
 
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
-            'kingfisher_scrapy.middlewares.HttpProxyWithSpiderArgsMiddleware': 350,
             'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
         },
         'CONCURRENT_REQUESTS': 1,
@@ -45,10 +44,6 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         if spider.request_token is None:
             logging.error('No request token available')
             raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
-
-        spider.proxies = None
-        if spider.https_proxy:
-            spider.proxies = {'https': spider.https_proxy}
 
         return spider
 
