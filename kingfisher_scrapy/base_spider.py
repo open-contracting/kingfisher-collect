@@ -33,15 +33,8 @@ class KingfisherSpiderMixin:
     .. code:: bash
 
         scrapy crawl spider_name -a note='Started by NAME.'
-
-    Use a proxy:
-
-    .. code:: bash
-
-       scrapy crawl spider_name -a http_proxy=URL -a https_proxy=URL
     """
-    def __init__(self, sample=None, from_date=None, until_date=None, note=None, http_proxy=None, https_proxy=None,
-                 *args, **kwargs):
+    def __init__(self, sample=None, note=None, from_date=None, until_date=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
@@ -49,8 +42,6 @@ class KingfisherSpiderMixin:
         self.from_date = from_date
         self.until_date = until_date
         self.note = note
-        self.http_proxy = http_proxy
-        self.https_proxy = https_proxy
 
     def get_local_file_path_including_filestore(self, filename):
         """
