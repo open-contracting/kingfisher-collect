@@ -84,8 +84,14 @@ If successful, you'll see something like:
 
     {"status": "ok", "jobid": "6487ec79947edab326d6db28a2d86511e8247444"}
 
-Like when :ref:`downloading data to your computer<collect-data>`, you can download only a sample of the available data or :ref:`use a proxy<proxy>` – just remember to use ``-d`` instead of ``-a`` before each spider argument. For example, replace ``localhost`` with your remote server and ``spider_name`` with a spider's name:
+To :ref:`download only a sample of the available data<sample>`, use ``-d`` instead of ``-a`` before each spider argument. For example, replace ``localhost`` with your remote server and ``spider_name`` with a spider's name:
 
 .. code-block:: bash
 
     curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d sample=true
+
+To :ref:`use an HTTP and/or HTTPS proxy<proxy>`, `use <https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__ ``-d setting=`` instead of ``-s`` before each overridden setting. (The ``http_proxy`` and/or ``https_proxy`` environment variables must already be set in Scrapyd's environment.) For example, replace ``localhost`` with your remote server and ``spider_name`` with a spider's name:
+
+.. code-block:: bash
+
+    curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d setting=HTTPPROXY_ENABLED=True
