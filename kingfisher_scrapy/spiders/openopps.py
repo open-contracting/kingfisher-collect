@@ -34,6 +34,8 @@ class OpenOpps(BaseSpider):
 
     access_token = None
     api_limit = 10000  # OpenOpps API limit for search results
+    date_format = '%Y-%m-%d'
+    default_from_date = '2011-01-01'
     download_delay = 1
     request_time_limit = 60  # in minutes
     reauthenticating = False  # flag for request a new token
@@ -111,13 +113,8 @@ class OpenOpps(BaseSpider):
             yield from self.parse_date_list(date, date, search_h)
         else:
             # Case if we have date range parameters
-            if self.from_date or self.until_date:
-                start_date, end_date = self.parse_date_arguments(
-                    date_format='%Y-%m-%d',
-                    default_from_date='2011-01-01'
-                )
-                if start_date and end_date:
-                    yield from self.parse_date_list(start_date, end_date, search_h)
+            if self.from_date and self.until_date:
+                yield from self.parse_date_list(self.from_date, self.until_date, search_h)
             else:
                 # Use larger ranges for filters with less than (api_limit) search results
                 release_date_gte_list = ['', '2009-01-01', '2010-01-01', '2010-07-01']
