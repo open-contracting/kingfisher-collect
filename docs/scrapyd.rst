@@ -50,9 +50,9 @@ Update the ``url`` variable in the ``scrapy.cfg`` file in your ``kingfisher-scra
 
 .. code-block:: ini
 
-    [deploy]
-    url = http://localhost:6800/
-    project = kingfisher
+   [deploy]
+   url = http://localhost:6800/
+   project = kingfisher
 
 You need to at least replace ``localhost``. If you changed the ``http_port`` variable in Scrapyd's `configuration file <https://scrapyd.readthedocs.io/en/stable/config.html>`__, you need to replace ``6800``.
 
@@ -65,33 +65,57 @@ On your local machine, deploy the spiders in Kingfisher Scrape to Scrapyd, using
 
 .. code-block:: bash
 
-    scrapyd-deploy 
+   scrapyd-deploy
 
 Remember to run this command every time you add or update a spider.
 
 Collect data
 ------------
 
-Schedule a crawl, using `Scrapyd's schedule.json API endpoint <https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__. For example, replace ``localhost`` with your remote server and ``spider_name`` with a spider's name:
+.. note::
+
+   In all examples below, replace ``localhost`` with your remote server's domain name, and replace ``spider_name`` with a spider's name.
+
+You're now ready to collect data!
+
+To list the spiders, use `Scrapyd's listspiders.json API endpoint <https://scrapyd.readthedocs.io/en/stable/api.html#listspiders-json>`__:
 
 .. code-block:: bash
 
-    curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name
+   curl 'http://localhost:6800/listspiders.json?project=kingfisher'
+
+To make the list of spiders easier to read, pipe the response through ``python -m json.tool``:
+
+.. code-block:: bash
+
+   curl 'http://localhost:6800/listspiders.json?project=kingfisher' | python -m json.tool
+
+The spiders' names might be ambiguous. If you're unsure which spider to run, you can compare their names to the list of `OCDS publishers <https://www.open-contracting.org/worldwide/#/table>`__, or contact the OCDS Helpdesk at data@open-contracting.org.
+
+To run a spider (that is, to schedule a "crawl"), use `Scrapyd's schedule.json API endpoint <https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__:
+
+.. code-block:: bash
+
+   curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name
 
 If successful, you'll see something like:
 
 .. code-block:: json
 
-    {"status": "ok", "jobid": "6487ec79947edab326d6db28a2d86511e8247444"}
+   {"status": "ok", "jobid": "6487ec79947edab326d6db28a2d86511e8247444"}
 
-To :ref:`download only a sample of the available data<sample>`, use ``-d`` instead of ``-a`` before each spider argument. For example, replace ``localhost`` with your remote server and ``spider_name`` with a spider's name:
-
-.. code-block:: bash
-
-    curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d sample=true
-
-To :ref:`use an HTTP and/or HTTPS proxy<proxy>`, `use <https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__ ``-d setting=`` instead of ``-s`` before each overridden setting. (The ``http_proxy`` and/or ``https_proxy`` environment variables must already be set in Scrapyd's environment.) For example, replace ``localhost`` with your remote server and ``spider_name`` with a spider's name:
+To :ref:`download only a sample of the available data<sample>`, use ``-d`` instead of ``-a`` before each spider argument:
 
 .. code-block:: bash
 
-    curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d setting=HTTPPROXY_ENABLED=True
+   curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d sample=true
+
+To :ref:`use an HTTP and/or HTTPS proxy<proxy>`, `use <https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__ ``-d setting=`` instead of ``-s`` before each overridden setting:
+
+.. code-block:: bash
+
+   curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d setting=HTTPPROXY_ENABLED=True
+
+.. note::
+
+   The ``http_proxy`` and/or ``https_proxy`` environment variables must already be set in Scrapyd's environment on the remote server.

@@ -48,8 +48,6 @@ To list the spiders, run:
 
     scrapy list
 
-Alternately, you can get the list of spiders by accessing the ``kingfisher_scrapy/spiders`` directory in the `GitHub repository <https://github.com/open-contracting/kingfisher-scrape/tree/master/kingfisher_scrapy/spiders>`_. Each ``.py`` file is a spider, and the part before the ``.py`` extension is the spider's name.
-
 The spiders' names might be ambiguous. If you're unsure which spider to run, you can compare their names to the list of `OCDS publishers <https://www.open-contracting.org/worldwide/#/table>`__, or contact the OCDS Helpdesk at data@open-contracting.org.
 
 To run a spider (that is, to start a "crawl"), replace ``spider_name`` below with the name of a spider from ``scrapy list`` above:
