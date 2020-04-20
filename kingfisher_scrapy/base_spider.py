@@ -5,6 +5,8 @@ from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile
 
+from kingfisher_scrapy.exceptions import SpiderArgumentError
+
 import scrapy
 
 
@@ -20,13 +22,13 @@ class KingfisherSpiderMixin:
 
     .. code:: bash
 
-        scrapy crawl spider_name -a from_date='2010-01-01'
+        scrapy crawl spider_name -a from_date=2010-01-01
 
     Set the end date for range to download:
 
     .. code:: bash
 
-        scrapy crawl spider_name -a until_date='2020-01-01'
+        scrapy crawl spider_name -a until_date=2020-01-01
 
     Add a note to the collection:
 
@@ -115,20 +117,6 @@ class KingfisherSpiderMixin:
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
 
 
-class SpiderArgumentError(Exception):
-    def __init__(self, *args):
-        if args:
-            self.message = args[0]
-        else:
-            self.message = None
-
-    def __str__(self):
-        if self.message:
-            return self.message
-        else:
-            return 'SpiderArgumentError has been raised.'
-
-
 # `scrapy.Spider` is not set up for cooperative multiple inheritance (it doesn't call `super()`), so the mixin must be
 # the first declared parent class, in order for its `__init__()` and `from_crawler()` methods to be run.
 #
@@ -142,10 +130,21 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
 
         # Checks Spider date ranges arguments
         if spider.from_date or spider.until_date:
-            spider.parse_date_arguments(
-                spider.date_format,
-                spider.default_from_date,
-            )
+            # YYYY-MM-DD format
+            date_format = '%Y-%m-%d'
+            if not spider.from_date:
+                # 'from_date' defaults to 'default_from_date' spider class attribute
+                spider.from_date = spider.default_from_date
+            if not spider.until_date:
+                # 'until_date' defaults to today
+                spider.until_date = datetime.now().strftime(date_format)
+
+            try:
+                spider.from_date = datetime.strptime(spider.from_date, date_format)
+                spider.until_date = datetime.strptime(spider.until_date, date_format)
+
+            except ValueError as e:
+                raise SpiderArgumentError(e)
 
         return spider
 
@@ -170,28 +169,6 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
                 'url': response.request.url,
                 'errors': {'http_code': response.status}
             }
-
-    def parse_date_arguments(self, date_format, default_from_date=None):
-        """
-        Parsing logic for date range to download.
-        Specific spider class must have the attributes ``date_format`` and optionally ``default_from_date``.
-
-        Set ``date_format`` (e.g. %Y-%m-%d)
-        If ``until_date`` is provided, defaults to ``default_from_date``.
-        If ``from_date`` is provided, defaults to today.
-
-        Returns datetime objects or false if the format is wrong.
-        """
-        try:
-            if not self.from_date:
-                self.from_date = default_from_date
-            if not self.until_date:
-                self.until_date = datetime.now().strftime(date_format)
-            self.from_date = datetime.strptime(self.from_date, date_format)
-            self.until_date = datetime.strptime(self.until_date, date_format)
-
-        except ValueError as e:
-            raise SpiderArgumentError(e.args[0] + ", see API documentation.")
 
 
 class BaseXMLFeedSpider(KingfisherSpiderMixin, scrapy.spiders.XMLFeedSpider):
