@@ -11,24 +11,6 @@ from datetime import datetime
 import scrapy
 
 
-class HttpProxyWithSpiderArgsMiddleware:
-
-    def __init__(self, spider):
-        logging.info('Using HttpProxyWithSpiderArgsMiddleware.')
-        if not spider.http_proxy and not spider.https_proxy:
-            logging.warning('No proxy arguments have been set!')
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls(crawler.spider)
-
-    def process_request(self, request, spider):
-        if request.url.startswith('https:') and spider.https_proxy:
-            request.meta['proxy'] = spider.https_proxy
-        elif request.url.startswith('http:') and spider.http_proxy:
-            request.meta['proxy'] = spider.http_proxy
-
-
 class ParaguayAuthMiddleware:
     """
     Downloader middleware that manages API authentication for Paraguay scrapers.
@@ -83,7 +65,8 @@ class ParaguayAuthMiddleware:
     @staticmethod
     def _expires_soon(spider):
         # spider MUST implement the expires_soon method
-        return spider.expires_soon(datetime.now() - spider.start_time) if spider.start_time and spider.access_token else True
+        return spider.expires_soon(datetime.now() - spider.start_time) \
+            if spider.start_time and spider.access_token else True
 
 
 class OpenOppsAuthMiddleware:

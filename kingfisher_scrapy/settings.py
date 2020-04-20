@@ -29,6 +29,10 @@ CONCURRENT_REQUESTS = 32
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 #DOWNLOAD_DELAY = 3
+
+# The maximum response size (in bytes) that downloader will download (default: 1073741824):
+DOWNLOAD_MAXSIZE = 4000000000
+
 # The download delay setting will honor only one of:
 CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -72,20 +76,24 @@ EXTENSIONS = {
 #    'kingfisher_scrapy.pipelines.KingfisherScrapyPipeline': 300,
 #}
 
-KINGFISHER_API_URI = os.environ.get('KINGFISHER_API_URI')
-KINGFISHER_API_KEY = os.environ.get('KINGFISHER_API_KEY')
-KINGFISHER_API_LOCAL_DIRECTORY = os.environ.get('KINGFISHER_API_LOCAL_DIRECTORY')
+# To send items to Kingfishet Process, set this to, for example, "http://kingfisher.example.com" (no trailing slash).
+KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
+# Set this to the same value as Kingfisher Process' `API_KEYS` setting.
+# See https://kingfisher-process.readthedocs.io/en/latest/config.html#web-api
+KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
+# If Kingfisher Process can read Kingfisher Scrape's `FILES_STORE`, then Kingfisher Scrape can send file paths instead
+# of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.
+KINGFISHER_API_LOCAL_DIRECTORY = os.getenv('KINGFISHER_API_LOCAL_DIRECTORY')
 
-# This is used for some legacy environment variables - not needed for new installs
-if not KINGFISHER_API_URI and os.environ.get('KINGFISHER_API_FILE_URI'):
-    KINGFISHER_API_URI = os.environ.get('KINGFISHER_API_FILE_URI')[:-len('/api/v1/submit/file/')]
+KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
+KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
 
-KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN = os.environ.get('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
-KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET = os.environ.get('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
-KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN = os.environ.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
+# To get an API account, visit https://contrataciones.gov.py/datos/signup
+KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
-KINGFISHER_OPENOPPS_USERNAME = os.environ.get('KINGFISHER_OPENOPPS_USERNAME')
-KINGFISHER_OPENOPPS_PASSWORD = os.environ.get('KINGFISHER_OPENOPPS_PASSWORD')
+# To get an API account, contact contact@openopps.com.
+KINGFISHER_OPENOPPS_USERNAME = os.getenv('KINGFISHER_OPENOPPS_USERNAME')
+KINGFISHER_OPENOPPS_PASSWORD = os.getenv('KINGFISHER_OPENOPPS_PASSWORD')
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -109,7 +117,10 @@ KINGFISHER_OPENOPPS_PASSWORD = os.environ.get('KINGFISHER_OPENOPPS_PASSWORD')
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std:setting-FILES_STORE
-FILES_STORE = 'data'
+FILES_STORE = os.getenv('FILES_STORE', 'data')
 
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
 HTTPERROR_ALLOW_ALL = True
+
+# https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpproxy-enabled
+HTTPPROXY_ENABLED = False

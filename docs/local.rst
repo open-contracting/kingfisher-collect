@@ -48,15 +48,18 @@ To list the spiders, run:
 
     scrapy list
 
-Alternately, you can get the list of spiders by accessing the ``kingfisher_scrapy/spiders`` directory in the `GitHub repository <https://github.com/open-contracting/kingfisher-scrape/tree/master/kingfisher_scrapy/spiders>`_. Each ``.py`` file is a spider, and the part before the ``.py`` extension is the spider's name.
-
-The spiders' names might be ambiguous. If you're unsure which spider to run, you can compare their names to the list of `OCDS publishers <https://www.open-contracting.org/worldwide/#/table>`__, or contact the OCDS Helpdesk at data@open-contracting.org.
+The spiders' names might be ambiguous. If you're unsure which spider to run, you can compare their names to the list of `OCDS publishers <https://www.open-contracting.org/worldwide/#/table>`__, or `contact the OCDS Helpdesk <data@open-contracting.org>`__.
 
 To run a spider (that is, to start a "crawl"), replace ``spider_name`` below with the name of a spider from ``scrapy list`` above:
 
 .. code-block:: bash
 
     scrapy crawl spider_name
+
+.. _sample:
+
+Download a sample
+~~~~~~~~~~~~~~~~~
 
 To download only a sample of the available data, add the ``sample=true`` spider argument:
 
@@ -68,8 +71,8 @@ Scrapy will then output a log of its activity.
 
 .. _proxy:
 
-Using an HTTP proxy
-~~~~~~~~~~~~~~~~~~~
+Use a proxy
+~~~~~~~~~~~
 
 .. note::
 
@@ -77,11 +80,11 @@ Using an HTTP proxy
 
 If the data source is blocking Scrapy's requests, you might need to use a proxy.
 
-To use an HTTP and/or HTTPS proxy, add the ``http_proxy`` and/or ``https_proxy`` spider arguments:
+To use an HTTP and/or HTTPS proxy, set the ``http_proxy`` and/or ``https_proxy`` environment variables, and `override <https://docs.scrapy.org/en/latest/topics/settings.html#command-line-options>`__ the ``HTTPPROXY_ENABLED`` Scrapy setting:
 
 .. code-block:: bash
 
-    scrapy crawl spider_name -a http_proxy=YOUR-PROXY-URL -a https_proxy=YOUR-PROXY-URL
+    env http_proxy=YOUR-PROXY-URL https_proxy=YOUR-PROXY-URL scrapy crawl spider_name -s HTTPPROXY_ENABLED=True
 
 Use data
 --------

@@ -46,15 +46,18 @@ On your local machine, :ref:`install Kingfisher Scrape<install>`.
 Configure Kingfisher Scrape
 ---------------------------
 
-Update the ``url`` variable in the ``scrapy.cfg`` file in your ``kingfisher-scrape`` directory, to point to the remote server. By default, the ``scrapy.cfg`` file contains:
+Create a ``scrapy.cfg`` file in your ``kingfisher-scrape`` directory using the template below, and set the ``url`` variable to point to the remote server:
 
 .. code-block:: ini
 
-    [deploy]
-    url = http://localhost:6800/
-    project = kingfisher
+   [settings]
+   default = kingfisher_scrapy.settings
 
-You need to at least replace ``localhost``. If you changed the ``http_port`` variable in Scrapyd's `configuration file <https://scrapyd.readthedocs.io/en/stable/config.html>`__, you need to replace ``6800``.
+   [deploy]
+   url = http://localhost:6800/
+   project = kingfisher
+
+You need to at least replace ``localhost`` with the remote server's domain name. If you changed the ``http_port`` variable in Scrapyd's `configuration file <https://scrapyd.readthedocs.io/en/stable/config.html>`__, you need to replace ``6800``.
 
 If you changed the ``FILES_STORE`` variable when :ref:`installing Kingfisher Scrape<configure>`, that same directory needs to exist on the remote server, and the ``scrapyd`` process needs permission to write to it. If you are using the default value, then files will be stored in a ``data`` directory under the Scrapyd directory on the remote server.
 
@@ -65,27 +68,57 @@ On your local machine, deploy the spiders in Kingfisher Scrape to Scrapyd, using
 
 .. code-block:: bash
 
-    scrapyd-deploy 
+   scrapyd-deploy
 
 Remember to run this command every time you add or update a spider.
 
 Collect data
 ------------
 
-Schedule a crawl, using `Scrapyd's schedule.json API endpoint <https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__. For example, replace ``localhost`` with your remote server and ``spider_name`` with a spider's name:
+.. note::
+
+   In all examples below, replace ``localhost`` with your remote server's domain name, and replace ``spider_name`` with a spider's name.
+
+You're now ready to collect data!
+
+To list the spiders, use `Scrapyd's listspiders.json API endpoint <https://scrapyd.readthedocs.io/en/stable/api.html#listspiders-json>`__:
 
 .. code-block:: bash
 
-    curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name
+   curl 'http://localhost:6800/listspiders.json?project=kingfisher'
+
+To make the list of spiders easier to read, pipe the response through ``python -m json.tool``:
+
+.. code-block:: bash
+
+   curl 'http://localhost:6800/listspiders.json?project=kingfisher' | python -m json.tool
+
+The spiders' names might be ambiguous. If you're unsure which spider to run, you can compare their names to the list of `OCDS publishers <https://www.open-contracting.org/worldwide/#/table>`__, or `contact the OCDS Helpdesk <data@open-contracting.org>`__.
+
+To run a spider (that is, to schedule a "crawl"), use `Scrapyd's schedule.json API endpoint <https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__:
+
+.. code-block:: bash
+
+   curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name
 
 If successful, you'll see something like:
 
 .. code-block:: json
 
-    {"status": "ok", "jobid": "6487ec79947edab326d6db28a2d86511e8247444"}
+   {"status": "ok", "jobid": "6487ec79947edab326d6db28a2d86511e8247444"}
 
-Like when :ref:`downloading data to your computer<collect-data>`, you can download only a sample of the available data or :ref:`use a proxy<proxy>` – just remember to use ``-d`` instead of ``-a`` before each spider argument. For example, replace ``localhost`` with your remote server and ``spider_name`` with a spider's name:
+To :ref:`download only a sample of the available data<sample>`, use ``-d`` instead of ``-a`` before each spider argument:
 
 .. code-block:: bash
 
-    curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d sample=true
+   curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d sample=true
+
+To :ref:`use an HTTP and/or HTTPS proxy<proxy>`, `use <https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__ ``-d setting=`` instead of ``-s`` before each overridden setting:
+
+.. code-block:: bash
+
+   curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d setting=HTTPPROXY_ENABLED=True
+
+.. note::
+
+   The ``http_proxy`` and/or ``https_proxy`` environment variables must already be set in Scrapyd's environment on the remote server.
