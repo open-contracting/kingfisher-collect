@@ -7,3 +7,4 @@ venv/
 /.coverage
 /docs/_build
 /htmlcov
+/scrapy.cfg
