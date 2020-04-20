@@ -115,20 +115,41 @@ class KingfisherSpiderMixin:
 # https://docs.python.org/3.8/library/functions.html#super
 # https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
 class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
-    def parse_zipfile(self, response, data_type):
+
+    def parse_json_lines(self, json_file, data_type, url, encoding='utf-8'):
+        number = 0
+        line = json_file.readline()
+        while line:
+            number += 1
+            yield {
+                'success': True,
+                'number': number,
+                'file_name': 'data.json',
+                'data': line,
+                'data_type': data_type,
+                'url': url,
+                'enconding': encoding,
+            }
+            line = json_file.readline()
+            if self.sample and number > 10:
+                break
+
+    def parse_zipfile(self, response, data_type, big_file=False, encoding='utf-8'):
         """
         Handling response with JSON data in ZIP files
         """
         if response.status == 200:
+            if big_file:
+                self.save_response_to_disk(response, 'file.zip')
             zip_file = ZipFile(BytesIO(response.body))
             for finfo in zip_file.infolist():
-                data = zip_file.open(finfo.filename).read()
-                if finfo.filename.endswith('.json'):
-                    filename = finfo.filename
+                filename = finfo.filename if finfo.filename.endswith('.json') else finfo.filename + '.json'
+                data = zip_file.open(finfo.filename)
+                if big_file:
+                    yield from self.parse_json_lines(data, data_type, response.request.url, encoding)
                 else:
-                    filename = finfo.filename + '.json'
-                yield self.save_data_to_disk(data, filename, data_type=data_type, url=response.request.url)
-
+                    yield self.save_data_to_disk(data.read(), filename, data_type=data_type, url=response.request.url,
+                                                 encoding=encoding)
         else:
             yield {
                 'success': False,
