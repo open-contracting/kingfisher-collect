@@ -41,4 +41,4 @@ class Portugal(BaseSpider):
             }
 
     def parse(self, response):
-        yield from self.parse_zipfile(response, data_type='record_package_json_lines')
+        yield from self.parse_zipfile(response, 'record_package_json_lines', True, encoding='ISO-8859-1')
