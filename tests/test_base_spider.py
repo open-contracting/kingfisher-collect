@@ -226,4 +226,3 @@ def test_exceptions():
     with pytest.raises(Exception) as e:
         raise SpiderArgumentError()
     assert str(e.value) == exception_message
-
