@@ -120,7 +120,7 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
                 'data': line,
                 'data_type': data_type,
                 'url': url,
-                'enconding': encoding,
+                'encoding': encoding,
             }
             line = json_file.readline()
             if self.sample and number > 10:
