@@ -5,9 +5,9 @@ from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile
 
-from kingfisher_scrapy.exceptions import SpiderArgumentError
-
 import scrapy
+
+from kingfisher_scrapy.exceptions import SpiderArgumentError
 
 
 class KingfisherSpiderMixin:
