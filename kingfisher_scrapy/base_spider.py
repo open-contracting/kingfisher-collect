@@ -131,7 +131,7 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
                                 slitted by lines before send it to kingfisher-process and only the zip file will be
                                 stored as file.
         :param response response: the response that contains the zip file.
-        :param str data_type: the zippend files data_type
+        :param str data_type: the zipped files data_type
         :param str encoding: the zipped files encoding. Default to utf-8
         """
         if response.status == 200:
