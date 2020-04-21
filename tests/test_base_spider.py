@@ -210,7 +210,7 @@ def test_parse_zipfile_200():
 
 def test_date_arguments():
     test_date = '2000-01-01'
-    exception_message = "time data 'test' does not match format '%Y-%m-%d'"
+    error_message = "time data 'test' does not match format '%Y-%m-%d'"
 
     assert spider_with_crawler(from_date=test_date)
 
@@ -218,11 +218,10 @@ def test_date_arguments():
 
     with pytest.raises(Exception) as e:
         assert spider_with_crawler(from_date='test')
-    assert str(e.value) == exception_message
 
+    assert str(e.value) == 'spider argument from_date: invalid date value: {}'.format(error_message)
 
-def test_exceptions():
-    exception_message = ''
     with pytest.raises(Exception) as e:
-        raise SpiderArgumentError()
-    assert str(e.value) == exception_message
+        assert spider_with_crawler(until_date='test', default_from_date=test_date)
+
+    assert str(e.value) == 'spider argument until_date: invalid date value: {}'.format(error_message)

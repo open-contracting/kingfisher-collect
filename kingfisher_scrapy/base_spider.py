@@ -132,6 +132,7 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
         if spider.from_date or spider.until_date:
             # YYYY-MM-DD format
             date_format = '%Y-%m-%d'
+
             if not spider.from_date:
                 # 'from_date' defaults to 'default_from_date' spider class attribute
                 spider.from_date = spider.default_from_date
@@ -141,10 +142,12 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
 
             try:
                 spider.from_date = datetime.strptime(spider.from_date, date_format)
-                spider.until_date = datetime.strptime(spider.until_date, date_format)
-
             except ValueError as e:
-                raise SpiderArgumentError(e)
+                raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
+            try:
+                spider.until_date = datetime.strptime(spider.until_date, date_format)
+            except ValueError as e:
+                raise SpiderArgumentError('spider argument until_date: invalid date value: {}'.format(e))
 
         return spider
 
