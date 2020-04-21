@@ -126,6 +126,12 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
     def parse_zipfile(self, response, data_type, file_format=None, encoding='utf-8'):
         """
         Handling response with JSON data in ZIP files
+
+        :param str file_format: The zipped files format. If this is set to 'json_lines', then the zipped file will be
+                                slitted by lines before send it to kingfisher-process
+        :param response response: the response that contains the zip file.
+        :param str data_type: the zippend files data_type
+        :param str encoding: the zipped files encoding. Default to utf-8
         """
         if response.status == 200:
             if file_format == 'json_lines':
