@@ -18,13 +18,13 @@ class France(BaseSpider):
     def parse_item(self, response):
         if response.status == 200:
             json_data = json.loads(response.text)
-            data = json_data.get('data')
+            data = json_data['data']
             for item in data:
-                resources = item.get('resources')
+                resources = item['resources']
                 for resource in resources:
-                    description = resource.get('description')
+                    description = resource['description']
                     if description and (description.count("OCDS") or description.count("ocds")):
-                        url = resource.get('url')
+                        url = resource['url']
                         yield scrapy.Request(
                             url,
                             meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'},
