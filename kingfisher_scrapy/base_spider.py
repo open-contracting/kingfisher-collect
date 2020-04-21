@@ -128,7 +128,8 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
         Handling response with JSON data in ZIP files
 
         :param str file_format: The zipped files format. If this is set to 'json_lines', then the zipped file will be
-                                slitted by lines before send it to kingfisher-process
+                                slitted by lines before send it to kingfisher-process and only the zip file will be
+                                stored as file.
         :param response response: the response that contains the zip file.
         :param str data_type: the zippend files data_type
         :param str encoding: the zipped files encoding. Default to utf-8
