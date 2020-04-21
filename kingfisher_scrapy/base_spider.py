@@ -1,10 +1,13 @@
 import hashlib
 import json
 import os
+from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile
 
 import scrapy
+
+from kingfisher_scrapy.exceptions import SpiderArgumentError
 
 
 class KingfisherSpiderMixin:
@@ -15,17 +18,31 @@ class KingfisherSpiderMixin:
 
         scrapy crawl spider_name -a sample=true
 
+    Set the start date for range to download:
+
+    .. code:: bash
+
+        scrapy crawl spider_name -a from_date=2010-01-01
+
+    Set the end date for range to download:
+
+    .. code:: bash
+
+        scrapy crawl spider_name -a until_date=2020-01-01
+
     Add a note to the collection:
 
     .. code:: bash
 
         scrapy crawl spider_name -a note='Started by NAME.'
     """
-    def __init__(self, sample=None, note=None, *args, **kwargs):
+    def __init__(self, sample=None, note=None, from_date=None, until_date=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
         self.sample = sample == 'true'
+        self.from_date = from_date
+        self.until_date = until_date
         self.note = note
 
     def get_local_file_path_including_filestore(self, filename):
@@ -107,6 +124,30 @@ class KingfisherSpiderMixin:
 # https://docs.python.org/3.8/library/functions.html#super
 # https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
 class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
+
+        # Checks Spider date ranges arguments
+        if spider.from_date or spider.until_date:
+            # YYYY-MM-DD format
+            date_format = '%Y-%m-%d'
+            if not spider.from_date:
+                # 'from_date' defaults to 'default_from_date' spider class attribute
+                spider.from_date = spider.default_from_date
+            if not spider.until_date:
+                # 'until_date' defaults to today
+                spider.until_date = datetime.now().strftime(date_format)
+
+            try:
+                spider.from_date = datetime.strptime(spider.from_date, date_format)
+                spider.until_date = datetime.strptime(spider.until_date, date_format)
+
+            except ValueError as e:
+                raise SpiderArgumentError(e)
+
+        return spider
+
     def parse_zipfile(self, response, data_type):
         """
         Handling response with JSON data in ZIP files
