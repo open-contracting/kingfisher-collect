@@ -34,7 +34,6 @@ class OpenOpps(BaseSpider):
 
     access_token = None
     api_limit = 10000  # OpenOpps API limit for search results
-    date_format = '%Y-%m-%d'
     default_from_date = '2011-01-01'
     download_delay = 1
     request_time_limit = 60  # in minutes
