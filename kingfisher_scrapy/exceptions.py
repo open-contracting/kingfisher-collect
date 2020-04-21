@@ -3,7 +3,7 @@ class KingfisherScrapyError(Exception):
 
 
 class AuthenticationFailureException(KingfisherScrapyError):
-    """Raised when the maximum attempts to get an access token has been reached."""
+    """Raised when the maximum attempts to get an access token has been reached"""
 
 
 class SpiderArgumentError(KingfisherScrapyError):
