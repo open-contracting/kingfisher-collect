@@ -34,4 +34,4 @@ class UpdateDocs(ScrapyCommand):
 
                 for module in group:
                     for cls in iter_spider_classes(module):
-                        f.write('\n.. autoclass:: {}.{}\n'.format(module.__name__, cls.__name__))
+                        f.write('\n.. autoclass:: {}.{}\n   :no-members:\n'.format(module.__name__, cls.__name__))
