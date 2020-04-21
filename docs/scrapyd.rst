@@ -46,14 +46,11 @@ On your local machine, :ref:`install Kingfisher Scrape<install>`.
 Configure Kingfisher Scrape
 ---------------------------
 
-Create a ``scrapy.cfg`` file in your ``kingfisher-scrape`` directory using the template below, and set the ``url`` variable to point to the remote server:
+Create a ``~/.config/scrapy.cfg`` file using the template below, and set the ``url`` variable to point to the remote server:
 
 .. code-block:: ini
 
-   [settings]
-   default = kingfisher_scrapy.settings
-
-   [deploy]
+   [deploy:kingfisher]
    url = http://localhost:6800/
    project = kingfisher
 
@@ -68,7 +65,7 @@ On your local machine, deploy the spiders in Kingfisher Scrape to Scrapyd, using
 
 .. code-block:: bash
 
-   scrapyd-deploy
+   scrapyd-deploy kingfisher
 
 Remember to run this command every time you add or update a spider.
 
