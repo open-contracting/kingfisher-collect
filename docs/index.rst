@@ -41,4 +41,4 @@ The crawl's directory will contain ``.json`` and ``.fileinfo`` files. The JSON f
    scrapyd.rst
    crawl-report-guide.rst
    writing-scrapers.rst
-   cli.rst
+   api/index.rst
