@@ -108,10 +108,8 @@ class KingfisherSpiderMixin:
 # https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
 class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
 
-    def parse_json_lines(self, json_file, data_type, url, encoding='utf-8'):
-        number = 0
-        line = json_file.readline()
-        while line:
+    def parse_json_lines(self, f, data_type, url, encoding='utf-8'):
+        for number, line in enumerate(f):
             number += 1
             yield {
                 'success': True,
@@ -122,25 +120,26 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
                 'url': url,
                 'encoding': encoding,
             }
-            line = json_file.readline()
             if self.sample and number > 10:
                 break
 
-    def parse_zipfile(self, response, data_type, big_file=False, encoding='utf-8'):
+    def parse_zipfile(self, response, data_type, file_format=None, encoding='utf-8'):
         """
         Handling response with JSON data in ZIP files
         """
         if response.status == 200:
-            if big_file:
+            if file_format == 'json_lines':
                 self.save_response_to_disk(response, 'file.zip')
             zip_file = ZipFile(BytesIO(response.body))
             for finfo in zip_file.infolist():
-                filename = finfo.filename if finfo.filename.endswith('.json') else finfo.filename + '.json'
+                filename = finfo.filename
+                if not filename.endswith('.json'):
+                    filename += '.json'
                 data = zip_file.open(finfo.filename)
-                if big_file:
-                    yield from self.parse_json_lines(data, data_type, response.request.url, encoding)
+                if file_format == 'json_lines':
+                    yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding)
                 else:
-                    yield self.save_data_to_disk(data.read(), filename, data_type=data_type, url=response.request.url,
+                    yield self.save_data_to_disk(data.read(), filename, data_type, response.request.url,
                                                  encoding=encoding)
         else:
             yield {
