@@ -23,24 +23,9 @@ class DigiwhistBase(BaseSpider):
                 }))
 
             # Load a line at the time, pass it to API
-            number = 0
             with tarfile.open(save_file_name, "r:gz") as tar:
                 with tar.extractfile(tar.getnames()[0]) as readfp:
-                    line = readfp.readline()
-                    while line:
-                        number += 1
-                        yield {
-                            'success': True,
-                            'number': number,
-                            'file_name': 'data.json',
-                            'data': line,
-                            'data_type': 'release_package',
-                            'url': self.start_urls[0],
-                        }
-                        line = readfp.readline()
-                        if self.sample and number > 10:
-                            break
-
+                    yield from self.parse_json_lines(readfp, 'release_package', self.start_urls[0])
         else:
             yield {
                 'success': False,

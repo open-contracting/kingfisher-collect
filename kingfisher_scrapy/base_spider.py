@@ -124,6 +124,21 @@ class KingfisherSpiderMixin:
 # https://docs.python.org/3.8/library/functions.html#super
 # https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
 class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
+
+    def parse_json_lines(self, f, data_type, url, encoding='utf-8'):
+        for number, line in enumerate(f, 1):
+            yield {
+                'success': True,
+                'number': number,
+                'file_name': 'data.json',
+                'data': line,
+                'data_type': data_type,
+                'url': url,
+                'encoding': encoding,
+            }
+            if self.sample and number > 9:
+                break
+
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
@@ -151,20 +166,31 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
 
         return spider
 
-    def parse_zipfile(self, response, data_type):
+    def parse_zipfile(self, response, data_type, file_format=None, encoding='utf-8'):
         """
         Handling response with JSON data in ZIP files
+
+        :param str file_format: The zipped files format. If this is set to 'json_lines', then the zipped file will be
+                                slitted by lines before send it to kingfisher-process and only the zip file will be
+                                stored as file.
+        :param response response: the response that contains the zip file.
+        :param str data_type: the zipped files data_type
+        :param str encoding: the zipped files encoding. Default to utf-8
         """
         if response.status == 200:
+            if file_format == 'json_lines':
+                self.save_response_to_disk(response, 'file.zip')
             zip_file = ZipFile(BytesIO(response.body))
             for finfo in zip_file.infolist():
-                data = zip_file.open(finfo.filename).read()
-                if finfo.filename.endswith('.json'):
-                    filename = finfo.filename
+                filename = finfo.filename
+                if not filename.endswith('.json'):
+                    filename += '.json'
+                data = zip_file.open(finfo.filename)
+                if file_format == 'json_lines':
+                    yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding)
                 else:
-                    filename = finfo.filename + '.json'
-                yield self.save_data_to_disk(data, filename, data_type=data_type, url=response.request.url)
-
+                    yield self.save_data_to_disk(data.read(), filename, data_type, response.request.url,
+                                                 encoding=encoding)
         else:
             yield {
                 'success': False,
