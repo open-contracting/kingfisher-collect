@@ -136,8 +136,7 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
                 'url': url,
                 'encoding': encoding,
             }
-            number += 1
-            if self.sample and number > 10:
+            if self.sample and number > 9:
                 break
 
     @classmethod
