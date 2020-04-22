@@ -8,6 +8,7 @@ import pytest
 from scrapy.http.response import text
 
 from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider
+from kingfisher_scrapy.exceptions import SpiderArgumentError
 from tests import spider_with_crawler
 
 
@@ -205,3 +206,22 @@ def test_parse_zipfile_200():
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_zipfile(response, None).__next__()
         assert actual['success'] is True and actual['file_name'].find('.json')
+
+
+def test_date_arguments():
+    test_date = '2000-01-01'
+    error_message = "time data 'test' does not match format '%Y-%m-%d'"
+
+    assert spider_with_crawler(from_date=test_date)
+
+    assert spider_with_crawler(until_date=test_date, default_from_date=test_date)
+
+    with pytest.raises(SpiderArgumentError) as e:
+        assert spider_with_crawler(from_date='test')
+
+    assert str(e.value) == 'spider argument from_date: invalid date value: {}'.format(error_message)
+
+    with pytest.raises(SpiderArgumentError) as e:
+        assert spider_with_crawler(until_date='test', default_from_date=test_date)
+
+    assert str(e.value) == 'spider argument until_date: invalid date value: {}'.format(error_message)

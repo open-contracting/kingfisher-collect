@@ -124,3 +124,6 @@ HTTPERROR_ALLOW_ALL = True
 
 # https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpproxy-enabled
 HTTPPROXY_ENABLED = False
+
+# https://docs.scrapy.org/en/latest/topics/commands.html#commands-module
+COMMANDS_MODULE = 'kingfisher_scrapy.commands'
