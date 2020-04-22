@@ -200,10 +200,6 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
             }
 
 
-class BaseXMLFeedSpider(KingfisherSpiderMixin, scrapy.spiders.XMLFeedSpider):
-    pass
-
-
 class LinksSpider(BaseSpider):
     @staticmethod
     def next_link(response):
