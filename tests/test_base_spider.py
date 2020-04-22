@@ -208,6 +208,36 @@ def test_parse_zipfile_200():
         assert actual['success'] is True and actual['file_name'].find('.json')
 
 
+def test_parse_zipfile_json_lines():
+    response = text.TextResponse('test')
+    response.status = 200
+    response.request = Mock()
+    response.request.meta = {'kf_filename': 'test.json'}
+    response.request.url = 'url'
+    with TemporaryDirectory() as tmpdirname:
+        files_store = os.path.join(tmpdirname, 'data')
+        tmp = os.path.join(files_store, 'test/20010203_040506')
+        os.makedirs(tmp)
+        with open(tmp + "test.json", 'w') as f:
+            f.write('{"key": "value"}\n{"key": "value"}\n{"key": "value"}\n{"key": "value"}\n{"key": "value"}'
+                    '\n{"key": "value"}\n{"key": "value"}\n{"key": "value"}\n{"key": "value"}\n{"key": "value"}'
+                    '\n{"key": "value"}')
+        with ZipFile(tmp + '/test.zip', 'w') as z:
+            z.write(tmp + "test.json")
+        with open(tmp + '/test.zip', 'rb') as z:
+            response = response.replace(body=z.read())
+        spider = spider_with_crawler(spider_class=BaseSpider)
+        spider.crawler.settings['FILES_STORE'] = files_store
+        actual = spider.parse_zipfile(response, None, file_format='json_lines').__next__()
+        assert actual['success'] is True and actual['number'] == 1
+        spider.sample = True
+        total = 0
+        for item in spider.parse_zipfile(response, None, file_format='json_lines'):
+            total = total + 1
+            assert item['success'] is True and item['number'] == total
+        assert total == 10
+
+
 def test_date_arguments():
     test_date = '2000-01-01'
     error_message = "time data 'test' does not match format '%Y-%m-%d'"
