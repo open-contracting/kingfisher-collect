@@ -3,10 +3,10 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import ZipSpider
 
 
-class Portugal(BaseSpider):
+class Portugal(ZipSpider):
     name = 'portugal'
     download_warnsize = 0
     download_timeout = 9999
@@ -32,6 +32,8 @@ class Portugal(BaseSpider):
                             url,
                             meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
                         )
+                        if self.sample:
+                            break
         else:
             yield {
                 'success': False,
