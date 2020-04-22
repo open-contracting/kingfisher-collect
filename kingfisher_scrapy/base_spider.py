@@ -10,7 +10,7 @@ import scrapy
 from kingfisher_scrapy.exceptions import SpiderArgumentError
 
 
-class KingfisherSpiderMixin:
+class BaseSpider(scrapy.Spider):
     """
     Download a sample:
 
@@ -115,15 +115,6 @@ class KingfisherSpiderMixin:
         if self.sample:
             name += '_sample'
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
-
-
-# `scrapy.Spider` is not set up for cooperative multiple inheritance (it doesn't call `super()`), so the mixin must be
-# the first declared parent class, in order for its `__init__()` and `from_crawler()` methods to be run.
-#
-# https://github.com/scrapy/scrapy/blob/1.8.0/scrapy/spiders/__init__.py#L25-L32
-# https://docs.python.org/3.8/library/functions.html#super
-# https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
-class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
 
     def parse_json_lines(self, f, data_type, url, encoding='utf-8'):
         for number, line in enumerate(f, 1):
