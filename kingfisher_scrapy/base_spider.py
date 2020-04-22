@@ -45,6 +45,33 @@ class BaseSpider(scrapy.Spider):
         self.until_date = until_date
         self.note = note
 
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
+
+        # Checks Spider date ranges arguments
+        if spider.from_date or spider.until_date:
+            # YYYY-MM-DD format
+            date_format = '%Y-%m-%d'
+
+            if not spider.from_date:
+                # 'from_date' defaults to 'default_from_date' spider class attribute
+                spider.from_date = spider.default_from_date
+            if not spider.until_date:
+                # 'until_date' defaults to today
+                spider.until_date = datetime.now().strftime(date_format)
+
+            try:
+                spider.from_date = datetime.strptime(spider.from_date, date_format)
+            except ValueError as e:
+                raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
+            try:
+                spider.until_date = datetime.strptime(spider.until_date, date_format)
+            except ValueError as e:
+                raise SpiderArgumentError('spider argument until_date: invalid date value: {}'.format(e))
+
+        return spider
+
     def get_local_file_path_including_filestore(self, filename):
         """
         Prepends Scrapy's storage directory and the crawl's relative directory to the filename.
@@ -129,33 +156,6 @@ class BaseSpider(scrapy.Spider):
             }
             if self.sample and number > 9:
                 break
-
-    @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
-
-        # Checks Spider date ranges arguments
-        if spider.from_date or spider.until_date:
-            # YYYY-MM-DD format
-            date_format = '%Y-%m-%d'
-
-            if not spider.from_date:
-                # 'from_date' defaults to 'default_from_date' spider class attribute
-                spider.from_date = spider.default_from_date
-            if not spider.until_date:
-                # 'until_date' defaults to today
-                spider.until_date = datetime.now().strftime(date_format)
-
-            try:
-                spider.from_date = datetime.strptime(spider.from_date, date_format)
-            except ValueError as e:
-                raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
-            try:
-                spider.until_date = datetime.strptime(spider.until_date, date_format)
-            except ValueError as e:
-                raise SpiderArgumentError('spider argument until_date: invalid date value: {}'.format(e))
-
-        return spider
 
     def parse_zipfile(self, response, data_type, file_format=None, encoding='utf-8'):
         """
