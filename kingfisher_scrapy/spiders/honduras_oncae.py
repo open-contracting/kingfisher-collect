@@ -2,10 +2,10 @@ from urllib.parse import urlparse
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import ZipSpider
 
 
-class HondurasONCAE(BaseSpider):
+class HondurasONCAE(ZipSpider):
     name = 'honduras_oncae'
     start_urls = ['http://oncae.gob.hn/datosabiertos']
 
