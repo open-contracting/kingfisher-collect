@@ -109,7 +109,7 @@ class KingfisherSpiderMixin:
 class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
 
     def parse_json_lines(self, f, data_type, url, encoding='utf-8'):
-        for number, line in enumerate(f):
+        for number, line in enumerate(f, 1):
             number += 1
             yield {
                 'success': True,
