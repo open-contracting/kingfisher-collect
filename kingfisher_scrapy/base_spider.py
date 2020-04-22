@@ -143,20 +143,8 @@ class BaseSpider(scrapy.Spider):
             name += '_sample'
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
 
-    def parse_json_lines(self, f, data_type, url, encoding='utf-8'):
-        for number, line in enumerate(f, 1):
-            yield {
-                'success': True,
-                'number': number,
-                'file_name': 'data.json',
-                'data': line,
-                'data_type': data_type,
-                'url': url,
-                'encoding': encoding,
-            }
-            if self.sample and number > 9:
-                break
 
+class ZipSpider(BaseSpider):
     def parse_zipfile(self, response, data_type, file_format=None, encoding='utf-8'):
         """
         Handling response with JSON data in ZIP files
@@ -189,6 +177,20 @@ class BaseSpider(scrapy.Spider):
                 'url': response.request.url,
                 'errors': {'http_code': response.status}
             }
+
+    def parse_json_lines(self, f, data_type, url, encoding='utf-8'):
+        for number, line in enumerate(f, 1):
+            yield {
+                'success': True,
+                'number': number,
+                'file_name': 'data.json',
+                'data': line,
+                'data_type': data_type,
+                'url': url,
+                'encoding': encoding,
+            }
+            if self.sample and number > 9:
+                break
 
 
 class LinksSpider(BaseSpider):
