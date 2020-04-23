@@ -2,9 +2,11 @@ import hashlib
 import json
 import os
 from datetime import datetime
+from decimal import Decimal
 from io import BytesIO
 from zipfile import ZipFile
 
+import ijson
 import scrapy
 
 from kingfisher_scrapy.exceptions import SpiderArgumentError
@@ -36,6 +38,7 @@ class KingfisherSpiderMixin:
 
         scrapy crawl spider_name -a note='Started by NAME.'
     """
+
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -125,19 +128,43 @@ class KingfisherSpiderMixin:
 # https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
 class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
 
+    MAX_SAMPLE = 10
+
+    @staticmethod
+    def json_dumps(data):
+        """
+        From ocdskit, returns the data as JSON.
+        """
+        def default(obj):
+            if isinstance(obj, Decimal):
+                return float(obj)
+            raise TypeError('%s is not JSON serializable' % repr(obj))
+
+        return json.dumps(data, default=default)
+
+    @staticmethod
+    def _parse_json_item(number, line, data_type, url, encoding):
+        yield {
+            'success': True,
+            'number': number,
+            'file_name': 'data.json',
+            'data': line,
+            'data_type': data_type,
+            'url': url,
+            'encoding': encoding,
+        }
+
     def parse_json_lines(self, f, data_type, url, encoding='utf-8'):
         for number, line in enumerate(f, 1):
-            yield {
-                'success': True,
-                'number': number,
-                'file_name': 'data.json',
-                'data': line,
-                'data_type': data_type,
-                'url': url,
-                'encoding': encoding,
-            }
-            if self.sample and number > 9:
+            if self.sample and number > self.MAX_SAMPLE:
                 break
+            yield from self._parse_json_item(number, line, data_type, url, encoding)
+
+    def parse_json_array(self, f, data_type, url, encoding='utf-8', array_field_name='releases'):
+        for number, item in enumerate(ijson.items(f, '{}.item'.format(array_field_name)), 1):
+            if self.sample and number > self.MAX_SAMPLE:
+                break
+            yield from self._parse_json_item(number, self.json_dumps(item), data_type, url, encoding)
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -171,14 +198,15 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
         Handling response with JSON data in ZIP files
 
         :param str file_format: The zipped files format. If this is set to 'json_lines', then the zipped file will be
-                                slitted by lines before send it to kingfisher-process and only the zip file will be
-                                stored as file.
+                                splitted by lines before send it to kingfisher-process and only the zip file will be
+                                stored as file. If it is set to 'release_package' the zipped file will be splitted by
+                                releases.
         :param response response: the response that contains the zip file.
         :param str data_type: the zipped files data_type
         :param str encoding: the zipped files encoding. Default to utf-8
         """
         if response.status == 200:
-            if file_format == 'json_lines':
+            if file_format:
                 self.save_response_to_disk(response, 'file.zip')
             zip_file = ZipFile(BytesIO(response.body))
             for finfo in zip_file.infolist():
@@ -188,6 +216,8 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
                 data = zip_file.open(finfo.filename)
                 if file_format == 'json_lines':
                     yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding)
+                if file_format == 'release_package':
+                    yield from self.parse_json_array(data, data_type, response.request.url, encoding=encoding)
                 else:
                     yield self.save_data_to_disk(data.read(), filename, data_type, response.request.url,
                                                  encoding=encoding)

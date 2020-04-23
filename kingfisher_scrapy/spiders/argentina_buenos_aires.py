@@ -17,29 +17,25 @@ class ArgentinaBuenosAires(BaseSpider):
     def start_requests(self):
         yield scrapy.Request(
             url='https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras',
-            meta={'type': 'meta'}
+            callback=self.parse_list
         )
 
-    def parse(self, response):
+    @staticmethod
+    def parse_list(response):
         if response.status == 200:
-            if response.request.meta['type'] == 'meta':
-                data = json.loads(response.text)
-                for resource in data['result']['resources']:
-                    if resource['format'].upper() == 'JSON':
-                        yield scrapy.Request(
-                            url=resource['url'],
-                            meta={'type': 'data'}
-                        )
-            else:
-                zip_file = ZipFile(BytesIO(response.body))
-                for finfo in zip_file.infolist():
-                    data = zip_file.open(finfo.filename).read()
-                    yield self.save_data_to_disk(data, finfo.filename, url=response.request.url,
-                                                 data_type='release_package')
+            data = json.loads(response.text)
+            for resource in data['result']['resources']:
+                if resource['format'].upper() == 'JSON':
+                    yield scrapy.Request(
+                        url=resource['url']
+                    )
         else:
             yield {
                 'success': False,
-                'file_name': hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json',
+                'file_name': 'list.json',
                 'url': response.request.url,
                 'errors': {'http_code': response.status}
             }
+
+    def parse(self, response):
+        yield from self.parse_zipfile(response, 'release', file_format='release_package')
