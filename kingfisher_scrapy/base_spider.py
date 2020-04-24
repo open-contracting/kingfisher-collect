@@ -45,6 +45,15 @@ class BaseSpider(scrapy.Spider):
         self.until_date = until_date
         self.note = note
 
+        spider_arguments = {
+            'sample': sample,
+            'note': note,
+            'from_date': from_date,
+            'until_date': until_date,
+        }
+        spider_arguments.update(kwargs)
+        self.logger.info('Spider arguments: {!r}'.format(spider_arguments))
+
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
