@@ -2,10 +2,10 @@ import hashlib
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import ZipSpider
 
 
-class ChileCompraBulk(BaseSpider):
+class ChileCompraBulk(ZipSpider):
     name = 'chile_compra_bulk'
     download_warnsize = 0
     download_timeout = 99999

@@ -12,7 +12,7 @@ import scrapy
 from kingfisher_scrapy.exceptions import SpiderArgumentError
 
 
-class KingfisherSpiderMixin:
+class BaseSpider(scrapy.Spider):
     """
     Download a sample:
 
@@ -39,6 +39,8 @@ class KingfisherSpiderMixin:
         scrapy crawl spider_name -a note='Started by NAME.'
     """
 
+    MAX_SAMPLE = 10
+
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -47,6 +49,42 @@ class KingfisherSpiderMixin:
         self.from_date = from_date
         self.until_date = until_date
         self.note = note
+
+        spider_arguments = {
+            'sample': sample,
+            'note': note,
+            'from_date': from_date,
+            'until_date': until_date,
+        }
+        spider_arguments.update(kwargs)
+        self.logger.info('Spider arguments: {!r}'.format(spider_arguments))
+
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
+
+        # Checks Spider date ranges arguments
+        if spider.from_date or spider.until_date:
+            # YYYY-MM-DD format
+            date_format = '%Y-%m-%d'
+
+            if not spider.from_date:
+                # 'from_date' defaults to 'default_from_date' spider class attribute
+                spider.from_date = spider.default_from_date
+            if not spider.until_date:
+                # 'until_date' defaults to today
+                spider.until_date = datetime.now().strftime(date_format)
+
+            try:
+                spider.from_date = datetime.strptime(spider.from_date, date_format)
+            except ValueError as e:
+                raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
+            try:
+                spider.until_date = datetime.strptime(spider.until_date, date_format)
+            except ValueError as e:
+                raise SpiderArgumentError('spider argument until_date: invalid date value: {}'.format(e))
+
+        return spider
 
     def get_local_file_path_including_filestore(self, filename):
         """
@@ -119,29 +157,6 @@ class KingfisherSpiderMixin:
             name += '_sample'
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
 
-
-# `scrapy.Spider` is not set up for cooperative multiple inheritance (it doesn't call `super()`), so the mixin must be
-# the first declared parent class, in order for its `__init__()` and `from_crawler()` methods to be run.
-#
-# https://github.com/scrapy/scrapy/blob/1.8.0/scrapy/spiders/__init__.py#L25-L32
-# https://docs.python.org/3.8/library/functions.html#super
-# https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
-class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
-
-    MAX_SAMPLE = 10
-
-    @staticmethod
-    def json_dumps(data):
-        """
-        From ocdskit, returns the data as JSON.
-        """
-        def default(obj):
-            if isinstance(obj, Decimal):
-                return float(obj)
-            raise TypeError('%s is not JSON serializable' % repr(obj))
-
-        return json.dumps(data, default=default)
-
     @staticmethod
     def _parse_json_item(number, line, data_type, url, encoding):
         yield {
@@ -166,32 +181,20 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
                 break
             yield from self._parse_json_item(number, self.json_dumps(item), data_type, url, encoding)
 
-    @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
+    @staticmethod
+    def json_dumps(data):
+        """
+        From ocdskit, returns the data as JSON.
+        """
+        def default(obj):
+            if isinstance(obj, Decimal):
+                return float(obj)
+            raise TypeError('%s is not JSON serializable' % repr(obj))
 
-        # Checks Spider date ranges arguments
-        if spider.from_date or spider.until_date:
-            # YYYY-MM-DD format
-            date_format = '%Y-%m-%d'
+        return json.dumps(data, default=default)
 
-            if not spider.from_date:
-                # 'from_date' defaults to 'default_from_date' spider class attribute
-                spider.from_date = spider.default_from_date
-            if not spider.until_date:
-                # 'until_date' defaults to today
-                spider.until_date = datetime.now().strftime(date_format)
 
-            try:
-                spider.from_date = datetime.strptime(spider.from_date, date_format)
-            except ValueError as e:
-                raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
-            try:
-                spider.until_date = datetime.strptime(spider.until_date, date_format)
-            except ValueError as e:
-                raise SpiderArgumentError('spider argument until_date: invalid date value: {}'.format(e))
-
-        return spider
+class ZipSpider(BaseSpider):
 
     def parse_zipfile(self, response, data_type, file_format=None, encoding='utf-8'):
         """
@@ -228,10 +231,6 @@ class BaseSpider(KingfisherSpiderMixin, scrapy.Spider):
                 'url': response.request.url,
                 'errors': {'http_code': response.status}
             }
-
-
-class BaseXMLFeedSpider(KingfisherSpiderMixin, scrapy.spiders.XMLFeedSpider):
-    pass
 
 
 class LinksSpider(BaseSpider):

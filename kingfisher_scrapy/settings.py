@@ -125,5 +125,7 @@ HTTPERROR_ALLOW_ALL = True
 # https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpproxy-enabled
 HTTPPROXY_ENABLED = False
 
-# https://docs.scrapy.org/en/latest/topics/commands.html#commands-module
-COMMANDS_MODULE = 'kingfisher_scrapy.commands'
+# Scrapyd won't have (and doesn't need) access to this module.
+if os.getenv('SCRAPY_PROJECT') is None:
+    # https://docs.scrapy.org/en/latest/topics/commands.html#commands-module
+    COMMANDS_MODULE = 'kingfisher_scrapy.commands'

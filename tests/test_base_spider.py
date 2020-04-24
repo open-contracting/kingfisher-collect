@@ -7,7 +7,7 @@ from zipfile import ZipFile
 import pytest
 from scrapy.http.response import text
 
-from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider
+from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider, ZipSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
 from tests import spider_with_crawler
 
@@ -160,7 +160,9 @@ def test_parse_next_link_404():
 
 
 def test_parse_next_link_200():
-    response = text.TextResponse('test')
+    url = 'https://example.com/remote.json'
+    text_response = text.TextResponse('test')
+    response = text_response.replace(body='{"links": {"next": "' + url + '"}}')
     response.status = 200
     response.request = Mock()
     response.request.meta = {'kf_filename': 'test'}
@@ -172,6 +174,8 @@ def test_parse_next_link_200():
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_next_link(response, None).__next__()
         assert actual['success'] is True and actual['file_name'] == 'test'
+        for item in spider.parse_next_link(response, None):
+            assert item
 
 
 def test_parse_zipfile_404():
@@ -180,7 +184,7 @@ def test_parse_zipfile_404():
     response.request = Mock()
     response.request.meta = {'kf_filename': 'test'}
     response.request.url = 'url'
-    spider = spider_with_crawler(spider_class=BaseSpider)
+    spider = spider_with_crawler(spider_class=ZipSpider)
     actual = spider.parse_zipfile(response, None).__next__()
     assert actual['success'] is False
 
@@ -196,13 +200,13 @@ def test_parse_zipfile_200():
         tmp = os.path.join(files_store, 'test/20010203_040506')
         os.makedirs(tmp)
 
-        open(tmp + "test.json", "w").close()
+        open(tmp + "test", "w").close()
         with ZipFile(tmp + '/test.zip', 'w') as z:
-            z.write(tmp + "test.json")
+            z.write(tmp + "test")
         with open(tmp + '/test.zip', 'rb') as z:
             response = response.replace(body=z.read())
 
-        spider = spider_with_crawler(spider_class=BaseSpider)
+        spider = spider_with_crawler(spider_class=ZipSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_zipfile(response, None).__next__()
         assert actual['success'] is True and actual['file_name'].find('.json')
@@ -226,7 +230,7 @@ def test_parse_zipfile_json_lines():
             z.write(tmp + "test.json")
         with open(tmp + '/test.zip', 'rb') as z:
             response = response.replace(body=z.read())
-        spider = spider_with_crawler(spider_class=BaseSpider)
+        spider = spider_with_crawler(spider_class=ZipSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_zipfile(response, None, file_format='json_lines').__next__()
         assert actual['success'] is True and actual['number'] == 1
