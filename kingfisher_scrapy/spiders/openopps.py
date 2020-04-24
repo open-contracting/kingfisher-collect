@@ -164,7 +164,7 @@ class OpenOpps(BaseSpider):
                         all_data.append(json_data)
 
                 if all_data:
-                    self.save_data_to_disk(
+                    yield self.save_data_to_disk(
                         all_data,
                         filename=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json',
                         url=response.request.url,
