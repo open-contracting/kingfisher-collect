@@ -223,6 +223,7 @@ class BaseSpider(scrapy.Spider):
 
         return json.dumps(data, default=default)
 
+
 class ZipSpider(BaseSpider):
 
     def parse_zipfile(self, response, data_type, file_format=None, encoding='utf-8'):
@@ -250,7 +251,8 @@ class ZipSpider(BaseSpider):
                     yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding)
                 if file_format == 'release_package':
                     data_package = zip_file.open(finfo.filename)
-                    yield from self.parse_json_array(data_package, data, data_type, response.request.url, encoding=encoding)
+                    yield from self.parse_json_array(data_package, data, data_type, response.request.url,
+                                                     encoding=encoding)
                 else:
                     yield self.save_data_to_disk(data.read(), filename, data_type, response.request.url,
                                                  encoding=encoding)
