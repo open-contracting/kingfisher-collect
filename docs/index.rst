@@ -1,27 +1,27 @@
-OCDS Kingfisher Scrape
-======================
+OCDS Kingfisher Collect
+=======================
 
 .. include:: ../README.rst
 
 You can:
 
--  :doc:`Download data to your computer, by installing Kingfisher Scrape<local>`
+-  :doc:`Download data to your computer, by installing Kingfisher Collect<local>`
 -  :doc:`Download data to a remote server, by using Scrapyd<scrapyd>`
 
-You can also try using Kingfisher Scrape with `Scrapy Cloud <https://scrapinghub.com/scrapy-cloud>`_.
+You can also try using Kingfisher Collect with `Scrapy Cloud <https://scrapinghub.com/scrapy-cloud>`_.
 
 How it works
 ------------
 
-Kingfisher Scrape is built on the `Scrapy <https://scrapy.org/>`_ framework. Using this framework, we have authored "spiders" that you can run in order to "crawl" data sources and extract OCDS data.
+Kingfisher Collect is built on the `Scrapy <https://scrapy.org/>`_ framework. Using this framework, we have authored "spiders" that you can run in order to "crawl" data sources and extract OCDS data.
 
 When collecting data from a data source, each of its OCDS files will be written to a separate file on your computer. (Depending on the data source, an OCDS file might be a `record package <https://standard.open-contracting.org/latest/en/schema/record_package/>`__, `release package <https://standard.open-contracting.org/latest/en/schema/release_package/>`__, individual `record <https://standard.open-contracting.org/latest/en/schema/records_reference/>`__ or individual `release <https://standard.open-contracting.org/latest/en/schema/reference/>`__.)
 
-By default, these files are written to a ``data`` directory (you can :ref:`change this<configure>`) within your ``kingfisher-scrape`` directory (which you will create :ref:`during installation<install>`). Each spider creates its own directory within the ``data`` directory, and each crawl of a given spider creates its own directory within its spider's directory. For example, if you run the ``zambia`` spider (:ref:`learn how<collect-data>`), then the directory hierarchy will look like:
+By default, these files are written to a ``data`` directory (you can :ref:`change this<configure>`) within your ``kingfisher-collect`` directory (which you will create :ref:`during installation<install>`). Each spider creates its own directory within the ``data`` directory, and each crawl of a given spider creates its own directory within its spider's directory. For example, if you run the ``zambia`` spider (:ref:`learn how<collect-data>`), then the directory hierarchy will look like:
 
 .. code-block:: none
 
-   kingfisher-scrape/
+   kingfisher-collect/
    └── data
        └── zambia
            └── 20200102_030405

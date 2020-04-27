@@ -38,13 +38,13 @@ For help understanding the log files, read :doc:`crawl-report-guide`.
 
    If Scrapyd restarts or the server reboots, all scheduled crawls are cancelled, all running crawls are interrupted, and all finished crawls are delisted from the web interface. However, you can still browse the crawls' logs files to review the finished crawls.
 
-Install Kingfisher Scrape
--------------------------
+Install Kingfisher Collect
+--------------------------
 
-On your local machine, :ref:`install Kingfisher Scrape<install>`.
+On your local machine, :ref:`install Kingfisher Collect<install>`.
 
-Configure Kingfisher Scrape
----------------------------
+Configure Kingfisher Collect
+----------------------------
 
 Create a ``~/.config/scrapy.cfg`` file using the template below, and set the ``url`` variable to point to the remote server:
 
@@ -56,12 +56,12 @@ Create a ``~/.config/scrapy.cfg`` file using the template below, and set the ``u
 
 You need to at least replace ``localhost`` with the remote server's domain name. If you changed the ``http_port`` variable in Scrapyd's `configuration file <https://scrapyd.readthedocs.io/en/stable/config.html>`__, you need to replace ``6800``.
 
-If you changed the ``FILES_STORE`` variable when :ref:`installing Kingfisher Scrape<configure>`, that same directory needs to exist on the remote server, and the ``scrapyd`` process needs permission to write to it. If you are using the default value, then files will be stored in a ``data`` directory under the Scrapyd directory on the remote server.
+If you changed the ``FILES_STORE`` variable when :ref:`installing Kingfisher Collect<configure>`, that same directory needs to exist on the remote server, and the ``scrapyd`` process needs permission to write to it. If you are using the default value, then files will be stored in a ``data`` directory under the Scrapyd directory on the remote server.
 
 Deploy spiders
 --------------
 
-On your local machine, deploy the spiders in Kingfisher Scrape to Scrapyd, using the `scrapyd-deploy <https://github.com/scrapy/scrapyd-client/blob/v1.1.0/README.rst>`__ command, which was installed with Kingfisher Scrape:
+On your local machine, deploy the spiders in Kingfisher Collect to Scrapyd, using the `scrapyd-deploy <https://github.com/scrapy/scrapyd-client/blob/v1.1.0/README.rst>`__ command, which was installed with Kingfisher Collect:
 
 .. code-block:: bash
 
