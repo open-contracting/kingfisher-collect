@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from decimal import Decimal
 from io import BytesIO
+from math import ceil
 from zipfile import ZipFile
 
 import ijson
@@ -176,7 +177,8 @@ class BaseSpider(scrapy.Spider):
                 break
             yield from self._parse_json_item(number, line, data_type, url, encoding)
 
-    def get_package(self, f, array_name):
+    @staticmethod
+    def get_package(f, array_name):
         package = {'extensions': []}
         for prefix, event, value in ijson.parse(f):
             if prefix and 'map' not in event and array_name not in prefix:
@@ -196,20 +198,20 @@ class BaseSpider(scrapy.Spider):
         return package
 
     def parse_json_array(self, f_package, f_list, data_type, url, encoding='utf-8', array_field_name='releases'):
-        last_number = 0
+        packages = 0
         package = self.get_package(f_package, array_field_name)
         package[array_field_name] = []
-        for number, item in enumerate(ijson.items(f_list, '{}.item'.format(array_field_name)), 1):
+        for number, item in enumerate(ijson.items(f_list, '{}.item'.format(array_field_name))):
             if self.sample and number > self.MAX_SAMPLE:
                 break
-            last_number = number
             if len(package[array_field_name]) < self.MAX_RELEASES_PER_PACKAGE:
                 package[array_field_name].append(item)
             else:
-                yield from self._parse_json_item(number, self.json_dumps(package), data_type, url, encoding)
-                package[array_field_name] = []
+                packages += 1
+                yield from self._parse_json_item(packages, self.json_dumps(package), data_type, url, encoding)
+                package[array_field_name].clear()
         if package[array_field_name]:
-            yield from self._parse_json_item(last_number + 1, self.json_dumps(package), data_type, url, encoding)
+            yield from self._parse_json_item(packages + 1, self.json_dumps(package), data_type, url, encoding)
 
     @staticmethod
     def json_dumps(data):
