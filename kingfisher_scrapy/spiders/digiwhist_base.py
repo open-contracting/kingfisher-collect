@@ -1,4 +1,5 @@
 import json
+import os
 import tarfile
 
 from kingfisher_scrapy.base_spider import BaseSpider
@@ -10,6 +11,9 @@ class DigiwhistBase(BaseSpider):
         if response.status == 200:
 
             save_file_name = self.get_local_file_path_including_filestore('file.tar.gz')
+
+            # Create folder for data
+            os.makedirs(os.path.dirname(save_file_name), exist_ok=True)
 
             # Save original file
             with open(save_file_name, "wb") as fp:
