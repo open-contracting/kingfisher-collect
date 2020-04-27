@@ -249,7 +249,7 @@ class ZipSpider(BaseSpider):
                 data = zip_file.open(finfo.filename)
                 if file_format == 'json_lines':
                     yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding)
-                if file_format == 'release_package':
+                elif file_format == 'release_package':
                     data_package = zip_file.open(finfo.filename)
                     yield from self.parse_json_array(data_package, data, data_type, response.request.url,
                                                      encoding=encoding)
