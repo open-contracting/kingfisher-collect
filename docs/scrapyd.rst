@@ -54,6 +54,15 @@ Create a ``~/.config/scrapy.cfg`` file using the template below, and set the ``u
    url = http://localhost:6800/
    project = kingfisher
 
+If you need a username and password to access the remote server, you can put them in here:
+
+.. code-block:: ini
+
+   [deploy:kingfisher]
+   ...
+   username = scrape
+   password = PASSWORD
+
 You need to at least replace ``localhost`` with the remote server's domain name. If you changed the ``http_port`` variable in Scrapyd's `configuration file <https://scrapyd.readthedocs.io/en/stable/config.html>`__, you need to replace ``6800``.
 
 If you changed the ``FILES_STORE`` variable when :ref:`installing Kingfisher Scrape<configure>`, that same directory needs to exist on the remote server, and the ``scrapyd`` process needs permission to write to it. If you are using the default value, then files will be stored in a ``data`` directory under the Scrapyd directory on the remote server.
