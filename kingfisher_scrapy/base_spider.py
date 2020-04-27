@@ -1,7 +1,6 @@
 import hashlib
 import json
 import os
-from copy import copy
 from datetime import datetime
 from decimal import Decimal
 from io import BytesIO
@@ -224,7 +223,6 @@ class BaseSpider(scrapy.Spider):
             raise TypeError('%s is not JSON serializable' % repr(obj))
 
         return json.dumps(data, default=default)
-
 
 class ZipSpider(BaseSpider):
 
