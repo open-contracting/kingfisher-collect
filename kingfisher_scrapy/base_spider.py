@@ -188,7 +188,6 @@ class BaseSpider(scrapy.Spider):
                     object_field = prefix.split('.')[1]
                     if object_name not in package:
                         package[object_name] = {}
-                    print(object_name, object_field, value)
                     package[object_name][object_field] = value
                 else:
                     package[prefix] = value
