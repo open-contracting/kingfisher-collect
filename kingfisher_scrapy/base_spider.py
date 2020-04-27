@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+from copy import copy
 from datetime import datetime
 from decimal import Decimal
 from io import BytesIO
@@ -40,6 +41,7 @@ class BaseSpider(scrapy.Spider):
     """
 
     MAX_SAMPLE = 10
+    MAX_RELEASES_PER_PACKAGE = 100
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -175,11 +177,41 @@ class BaseSpider(scrapy.Spider):
                 break
             yield from self._parse_json_item(number, line, data_type, url, encoding)
 
-    def parse_json_array(self, f, data_type, url, encoding='utf-8', array_field_name='releases'):
-        for number, item in enumerate(ijson.items(f, '{}.item'.format(array_field_name)), 1):
+    def get_package(self, f, array_name):
+        package = {'extensions': []}
+        for prefix, event, value in ijson.parse(f):
+            if prefix and 'map' not in event and array_name not in prefix:
+                if 'extensions' in prefix:
+                    if value:
+                        package['extensions'].append(value)
+                elif '.' in prefix:
+                    object_name = prefix.split('.')[0]
+                    object_field = prefix.split('.')[1]
+                    if object_name not in package:
+                        package[object_name] = {}
+                    print(object_name, object_field, value)
+                    package[object_name][object_field] = value
+                else:
+                    package[prefix] = value
+        if not package['extensions']:
+            del(package['extensions'])
+        return package
+
+    def parse_json_array(self, f_package, f_list, data_type, url, encoding='utf-8', array_field_name='releases'):
+        last_number = 0
+        package = self.get_package(f_package, array_field_name)
+        package[array_field_name] = []
+        for number, item in enumerate(ijson.items(f_list, '{}.item'.format(array_field_name)), 1):
             if self.sample and number > self.MAX_SAMPLE:
                 break
-            yield from self._parse_json_item(number, self.json_dumps(item), data_type, url, encoding)
+            last_number = number
+            if len(package[array_field_name]) < self.MAX_RELEASES_PER_PACKAGE:
+                package[array_field_name].append(item)
+            else:
+                yield from self._parse_json_item(number, self.json_dumps(package), data_type, url, encoding)
+                package[array_field_name] = []
+        if package[array_field_name]:
+            yield from self._parse_json_item(last_number + 1, self.json_dumps(package), data_type, url, encoding)
 
     @staticmethod
     def json_dumps(data):
@@ -220,7 +252,8 @@ class ZipSpider(BaseSpider):
                 if file_format == 'json_lines':
                     yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding)
                 if file_format == 'release_package':
-                    yield from self.parse_json_array(data, data_type, response.request.url, encoding=encoding)
+                    data_package = zip_file.open(finfo.filename)
+                    yield from self.parse_json_array(data_package, data, data_type, response.request.url, encoding=encoding)
                 else:
                     yield self.save_data_to_disk(data.read(), filename, data_type, response.request.url,
                                                  encoding=encoding)
