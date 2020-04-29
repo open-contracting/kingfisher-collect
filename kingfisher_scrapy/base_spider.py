@@ -231,7 +231,7 @@ class ZipSpider(BaseSpider):
                     yield from self.parse_json_array(package, data, data_type, response.request.url,
                                                      encoding=encoding)
                 else:
-                    yield self.save_data_to_disk(data.read(), filename, data_type, response.request.url,
+                    yield self.save_data_to_disk(data.read(), filename, data_type=data_type, url=response.request.url,
                                                  encoding=encoding)
         else:
             yield {

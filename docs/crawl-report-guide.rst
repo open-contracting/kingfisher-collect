@@ -31,6 +31,6 @@ Unfortunately, it's hard to give clear guides on how to interpret problems as th
 
 For hosted Kingfisher, please ask a developer for help with any issues.
 
-If you are running Kingfisher yourself, please open an issue in `GitHub <https://github.com/open-contracting/kingfisher-scrape>`_.
+If you are running Kingfisher yourself, please open an issue in `GitHub <https://github.com/open-contracting/kingfisher-collect>`_.
 
 In both cases, we will try and build up this documentation as common patterns are uncovered.

@@ -1,29 +1,29 @@
 Download data to your computer
 ==============================
 
-This page will guide you through installing Kingfisher Scrape and using it to collect data from data sources.
+This page will guide you through installing Kingfisher Collect and using it to collect data from data sources.
 
 .. _install:
 
-Install Kingfisher Scrape
--------------------------
+Install Kingfisher Collect
+--------------------------
 
-To use Kingfisher Scrape, you need access to a `Unix-like shell <https://en.wikipedia.org/wiki/Shell_(computing)>`__ (some are available for Windows). `Git <https://git-scm.com>`__ and `Python <https://www.python.org>`__ (version 3.6 or greater) must be installed.
+To use Kingfisher Collect, you need access to a `Unix-like shell <https://en.wikipedia.org/wiki/Shell_(computing)>`__ (some are available for Windows). `Git <https://git-scm.com>`__ and `Python <https://www.python.org>`__ (version 3.6 or greater) must be installed.
 
 When ready, open a shell, and run:
 
 .. code-block:: bash
 
-   git clone https://github.com/open-contracting/kingfisher-scrape.git
-   cd kingfisher-scrape
+   git clone https://github.com/open-contracting/kingfisher-collect.git
+   cd kingfisher-collect
    pip install -r requirements.txt
 
-The next steps assume that you have changed to the ``kingfisher-scrape`` directory (the ``cd`` command above).
+The next steps assume that you have changed to the ``kingfisher-collect`` directory (the ``cd`` command above).
 
 .. _configure:
 
-Configure Kingfisher Scrape
----------------------------
+Configure Kingfisher Collect
+----------------------------
 
 .. note::
 

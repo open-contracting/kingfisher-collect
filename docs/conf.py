@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'OCDS Kingfisher Scrape'
+project = 'OCDS Kingfisher Collect'
 copyright = '2019, Open Contracting Partnership'
 author = 'Open Contracting Partnership'
 
