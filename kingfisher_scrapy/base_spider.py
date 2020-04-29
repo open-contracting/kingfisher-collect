@@ -2,13 +2,13 @@ import hashlib
 import json
 import os
 from datetime import datetime
-from decimal import Decimal
 from io import BytesIO
 from zipfile import ZipFile
 
 import ijson
 import scrapy
 
+from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import SpiderArgumentError
 
 
@@ -158,9 +158,8 @@ class BaseSpider(scrapy.Spider):
             name += '_sample'
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
 
-    @staticmethod
-    def _parse_json_item(number, line, data_type, url, encoding):
-        yield {
+    def _build_file_item(self, number, line, data_type, url, encoding):
+        return {
             'success': True,
             'number': number,
             'file_name': 'data.json',
@@ -174,67 +173,44 @@ class BaseSpider(scrapy.Spider):
         for number, line in enumerate(f, 1):
             if self.sample and number > self.MAX_SAMPLE:
                 break
-            yield from self._parse_json_item(number, line, data_type, url, encoding)
+            if isinstance(line, bytes):
+                line = line.decode()
+            yield self._build_file_item(number, line, data_type, url, encoding)
 
-    @staticmethod
-    def get_package(f, array_name):
-        package = {'extensions': []}
-        for prefix, event, value in ijson.parse(f):
-            if prefix and 'map' not in event and array_name not in prefix:
-                if 'extensions' in prefix:
-                    if value:
-                        package['extensions'].append(value)
-                elif '.' in prefix:
-                    object_name = prefix.split('.')[0]
-                    object_field = prefix.split('.')[1]
-                    if object_name not in package:
-                        package[object_name] = {}
-                    package[object_name][object_field] = value
-                else:
-                    package[prefix] = value
-        if not package['extensions']:
-            del(package['extensions'])
+    def get_package(self, f, array_name):
+        """
+        Returns the package data from a array_name_package object
+        """
+        package = {}
+        for item in util.items(ijson.parse(f), '', array_name=array_name):
+            package.update(item)
         return package
 
     def parse_json_array(self, f_package, f_list, data_type, url, encoding='utf-8', array_field_name='releases'):
-        packages = 0
+        if self.sample:
+            size = self.MAX_SAMPLE
+        else:
+            size = self.MAX_RELEASES_PER_PACKAGE
+
         package = self.get_package(f_package, array_field_name)
-        package[array_field_name] = []
-        for number, item in enumerate(ijson.items(f_list, '{}.item'.format(array_field_name))):
-            if self.sample and number > self.MAX_SAMPLE:
+
+        for number, items in enumerate(util.grouper(ijson.items(f_list, '{}.item'.format(array_field_name)), size), 1):
+            package[array_field_name] = [item for item in items if item is not None]
+            yield self._build_file_item(number, json.dumps(package, default=util.default), data_type, url, encoding)
+            if self.sample:
                 break
-            if len(package[array_field_name]) < self.MAX_RELEASES_PER_PACKAGE:
-                package[array_field_name].append(item)
-            else:
-                packages += 1
-                yield from self._parse_json_item(packages, self.json_dumps(package), data_type, url, encoding)
-                package[array_field_name].clear()
-        if package[array_field_name]:
-            yield from self._parse_json_item(packages + 1, self.json_dumps(package), data_type, url, encoding)
-
-    @staticmethod
-    def json_dumps(data):
-        """
-        From ocdskit, returns the data as JSON.
-        """
-        def default(obj):
-            if isinstance(obj, Decimal):
-                return float(obj)
-            raise TypeError('%s is not JSON serializable' % repr(obj))
-
-        return json.dumps(data, default=default)
 
 
 class ZipSpider(BaseSpider):
-
     def parse_zipfile(self, response, data_type, file_format=None, encoding='utf-8'):
         """
         Handling response with JSON data in ZIP files
 
-        :param str file_format: The zipped files format. If this is set to 'json_lines', then the zipped file will be
-                                splitted by lines before send it to kingfisher-process and only the zip file will be
-                                stored as file. If it is set to 'release_package' the zipped file will be splitted by
-                                releases.
+        :param str file_format: The zipped file's format. If this is set to "json_lines", then each line of the zipped
+                                file will be yielded separately. If this is set to "release_package", then the releases
+                                will be re-packaged in groups of :const:~kingfisher_scrapy.base_spider.BaseSpider.
+                                MAX_RELEASES_PER_PACKAGE and yielded. In both cases, only the zipped file will be saved
+                                to disk. If this is not set, the file will be yielded and saved to disk.
         :param response response: the response that contains the zip file.
         :param str data_type: the zipped files data_type
         :param str encoding: the zipped files encoding. Default to utf-8
@@ -251,8 +227,8 @@ class ZipSpider(BaseSpider):
                 if file_format == 'json_lines':
                     yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding)
                 elif file_format == 'release_package':
-                    data_package = zip_file.open(finfo.filename)
-                    yield from self.parse_json_array(data_package, data, data_type, response.request.url,
+                    package = zip_file.open(finfo.filename)
+                    yield from self.parse_json_array(package, data, data_type, response.request.url,
                                                      encoding=encoding)
                 else:
                     yield self.save_data_to_disk(data.read(), filename, data_type, response.request.url,

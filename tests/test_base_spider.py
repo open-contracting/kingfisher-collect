@@ -253,7 +253,7 @@ def test_parse_zipfile_release_package():
         os.makedirs(tmp)
         with open(tmp + "test.json", 'w') as f:
             release = {'releases': [], 'publisher': {'name': 'test'},
-                       'extensions': ['a', 'b'], 'license': 'test'}
+                       'extensions': ['a', 'b'], 'license': 'test', 'extra': 1.1}
             for i in range(110):
                 release['releases'].append({'key': 'value'})
             json.dump(release, f)
@@ -263,13 +263,19 @@ def test_parse_zipfile_release_package():
             response = response.replace(body=z.read())
         spider = spider_with_crawler(spider_class=ZipSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
-        for number, actual in enumerate(spider.parse_zipfile(response, None, file_format='release_package'), 1):
-            assert actual['success'] is True and actual['number'] == number
+        actual = spider.parse_zipfile(response, None, file_format='release_package').__next__()
+        data = json.loads(actual['data'])
+        assert actual['success'] is True and actual['number'] == 1
+        assert data['publisher']['name'] == 'test'
+        assert data['extensions'] == ['a', 'b']
+        assert len(data['releases']) == spider.MAX_RELEASES_PER_PACKAGE
         spider.sample = True
         total = 0
         for item in spider.parse_zipfile(response, None, file_format='release_package'):
             total = total + 1
+            data = json.loads(item['data'])
             assert item['success'] is True and item['number'] == total
+            assert len(data['releases']) == spider.MAX_SAMPLE
         assert total == 1
 
 
