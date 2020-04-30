@@ -2,14 +2,14 @@ import itertools
 import json
 from decimal import Decimal
 
-from ijson import utils, ObjectBuilder
+from ijson import ObjectBuilder, utils
 
 
 @utils.coroutine
 def items_basecoro(target, prefix, map_type=None, array_name=None):
     """
-    An couroutine dispatching native Python objects constructed from the events
-    under a given prefix.
+    This is copied from ``ijson/common.py``. An ``array_name`` argument is added. If the ``array_name`` is in the
+    current path, the current event is skipped. Otherwise, the method is identical.
     """
     while True:
         current, event, value = (yield)
@@ -29,21 +29,28 @@ def items_basecoro(target, prefix, map_type=None, array_name=None):
 
 
 def items(events, prefix, map_type=None, array_name=None):
-    """Like ijson.items, but takes events generated via ijson.parse instead of
-    a file"""
-    return utils.coros2gen(events, (items_basecoro, (prefix, ), {'map_type': map_type, 'array_name': array_name}))
+    """
+    This is copied from ``ijson/common.py``. An ``array_name`` argument is added, which is passed as a keyword argument
+    to :meth:`~kingfisher_scrapy.util.items_basecoro`. Otherwise, the method is identical.
+
+    """
+    return utils.coros2gen(events,
+                           (items_basecoro, (prefix,), {'map_type': map_type, 'array_name': array_name})
+                           )
 
 
 def default(obj):
     """
-    From ocdskit, returns the data as JSON.
+    Dumps JSON to a string, and returns it.
     """
     if isinstance(obj, Decimal):
         return float(obj)
     try:
-        iter(obj)
+        iterable = iter(obj)
     except TypeError:
         pass
+    else:
+        return list(iterable)
     return json.JSONEncoder().default(obj)
 
 
