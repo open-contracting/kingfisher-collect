@@ -207,11 +207,10 @@ class ZipSpider(BaseSpider):
         Handling response with JSON data in ZIP files
 
         :param str file_format: The zipped file's format. If this is set to "json_lines", then each line of the zipped
-                                file will be yielded separately. If this is set to "release_package", then the releases
-                                will be re-packaged in groups of :const:~kingfisher_scrapy.base_spider.BaseSpider.
-                                `~kingfisher_scrapy.base_spider.BaseSpider.MAX_RELEASES_PER_PACKAGE` and yielded.
-                                In both cases, only the zipped file will be saved to disk. If this is not set, the file
-                                will be yielded and saved to disk.
+            file will be yielded separately. If this is set to "release_package", then the releases will be re-packaged
+            in groups of :const:`~kingfisher_scrapy.base_spider.BaseSpider.MAX_RELEASES_PER_PACKAGE` and yielded. In
+            both cases, only the zipped file will be saved to disk. If this is not set, the file will be yielded and
+            saved to disk.
         :param response response: the response that contains the zip file.
         :param str data_type: the zipped files data_type
         :param str encoding: the zipped files encoding. Default to utf-8
