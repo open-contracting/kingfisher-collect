@@ -195,7 +195,7 @@ class BaseSpider(scrapy.Spider):
         package = self.get_package(f_package, array_field_name)
 
         for number, items in enumerate(util.grouper(ijson.items(f_list, '{}.item'.format(array_field_name)), size), 1):
-            package[array_field_name] = [item for item in items if item is not None]
+            package[array_field_name] = filter(None, items)
             yield self._build_file_item(number, json.dumps(package, default=util.default), data_type, url, encoding)
             if self.sample:
                 break
