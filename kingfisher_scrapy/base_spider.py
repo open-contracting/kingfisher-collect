@@ -5,8 +5,10 @@ from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile
 
+import ijson
 import scrapy
 
+from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import SpiderArgumentError
 
 
@@ -36,6 +38,10 @@ class BaseSpider(scrapy.Spider):
 
         scrapy crawl spider_name -a note='Started by NAME.'
     """
+
+    MAX_SAMPLE = 10
+    MAX_RELEASES_PER_PACKAGE = 100
+
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -152,18 +158,46 @@ class BaseSpider(scrapy.Spider):
             name += '_sample'
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
 
+    def _build_file_item(self, number, line, data_type, url, encoding):
+        return {
+            'success': True,
+            'number': number,
+            'file_name': 'data.json',
+            'data': line,
+            'data_type': data_type,
+            'url': url,
+            'encoding': encoding,
+        }
+
     def parse_json_lines(self, f, data_type, url, encoding='utf-8'):
         for number, line in enumerate(f, 1):
-            yield {
-                'success': True,
-                'number': number,
-                'file_name': 'data.json',
-                'data': line,
-                'data_type': data_type,
-                'url': url,
-                'encoding': encoding,
-            }
-            if self.sample and number > 9:
+            if self.sample and number > self.MAX_SAMPLE:
+                break
+            if isinstance(line, bytes):
+                line = line.decode()
+            yield self._build_file_item(number, line, data_type, url, encoding)
+
+    def get_package(self, f, array_name):
+        """
+        Returns the package data from a array_name_package object
+        """
+        package = {}
+        for item in util.items(ijson.parse(f), '', array_name=array_name):
+            package.update(item)
+        return package
+
+    def parse_json_array(self, f_package, f_list, data_type, url, encoding='utf-8', array_field_name='releases'):
+        if self.sample:
+            size = self.MAX_SAMPLE
+        else:
+            size = self.MAX_RELEASES_PER_PACKAGE
+
+        package = self.get_package(f_package, array_field_name)
+
+        for number, items in enumerate(util.grouper(ijson.items(f_list, '{}.item'.format(array_field_name)), size), 1):
+            package[array_field_name] = [item for item in items if item is not None]
+            yield self._build_file_item(number, json.dumps(package, default=util.default), data_type, url, encoding)
+            if self.sample:
                 break
 
 
@@ -172,15 +206,17 @@ class ZipSpider(BaseSpider):
         """
         Handling response with JSON data in ZIP files
 
-        :param str file_format: The zipped files format. If this is set to 'json_lines', then the zipped file will be
-                                slitted by lines before send it to kingfisher-process and only the zip file will be
-                                stored as file.
+        :param str file_format: The zipped file's format. If this is set to "json_lines", then each line of the zipped
+            file will be yielded separately. If this is set to "release_package", then the releases will be re-packaged
+            in groups of :const:`~kingfisher_scrapy.base_spider.BaseSpider.MAX_RELEASES_PER_PACKAGE` and yielded. In
+            both cases, only the zipped file will be saved to disk. If this is not set, the file will be yielded and
+            saved to disk.
         :param response response: the response that contains the zip file.
         :param str data_type: the zipped files data_type
         :param str encoding: the zipped files encoding. Default to utf-8
         """
         if response.status == 200:
-            if file_format == 'json_lines':
+            if file_format:
                 self.save_response_to_disk(response, 'file.zip')
             zip_file = ZipFile(BytesIO(response.body))
             for finfo in zip_file.infolist():
@@ -190,6 +226,10 @@ class ZipSpider(BaseSpider):
                 data = zip_file.open(finfo.filename)
                 if file_format == 'json_lines':
                     yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding)
+                elif file_format == 'release_package':
+                    package = zip_file.open(finfo.filename)
+                    yield from self.parse_json_array(package, data, data_type, response.request.url,
+                                                     encoding=encoding)
                 else:
                     yield self.save_data_to_disk(data.read(), filename, data_type=data_type, url=response.request.url,
                                                  encoding=encoding)
