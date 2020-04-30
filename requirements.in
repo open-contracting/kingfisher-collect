@@ -5,3 +5,4 @@ rarfile
 requests
 Scrapy
 scrapyd-client
+ijson>=3

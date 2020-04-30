@@ -14,6 +14,7 @@ cryptography==2.8         # via pyopenssl, scrapy, service-identity
 cssselect==1.1.0          # via parsel, scrapy
 hyperlink==19.0.0         # via twisted
 idna==2.8                 # via hyperlink, requests
+ijson==3.0.3
 incremental==17.5.0       # via twisted
 lxml==4.4.2               # via parsel, scrapy
 parsel==1.5.2             # via scrapy
