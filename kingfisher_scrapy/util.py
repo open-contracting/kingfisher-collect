@@ -32,11 +32,10 @@ def items(events, prefix, map_type=None, array_name=None):
     """
     This is copied from ``ijson/common.py``. An ``array_name`` argument is added, which is passed as a keyword argument
     to :meth:`~kingfisher_scrapy.util.items_basecoro`. Otherwise, the method is identical.
-
     """
     return utils.coros2gen(events,
-                           (items_basecoro, (prefix,), {'map_type': map_type, 'array_name': array_name})
-                           )
+        (items_basecoro, (prefix,), {'map_type': map_type, 'array_name': array_name})  # noqa: E128
+    )
 
 
 def default(obj):
