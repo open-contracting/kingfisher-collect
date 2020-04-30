@@ -9,7 +9,7 @@ automat==0.8.0
 certifi==2019.11.28
 cffi==1.13.2
 chardet==3.0.4
-click==7.0                # via pip-tools
+click==7.1.2
 constantly==15.1.0
 coverage==5.0.3           # via coveralls, pytest-cov
 coveralls==2.0.0
@@ -29,7 +29,7 @@ mccabe==0.6.1             # via flake8
 more-itertools==8.0.2     # via pytest, zipp
 packaging==19.2           # via pytest
 parsel==1.5.2
-pip-tools==4.3.0
+pip-tools==5.1.0
 pluggy==0.13.1            # via pytest
 protego==0.1.16
 py==1.8.0                 # via pytest
@@ -59,4 +59,5 @@ zipp==0.6.0               # via importlib-metadata
 zope.interface==4.7.1
 
 # The following packages are considered to be unsafe in a requirements file:
+# pip
 # setuptools
