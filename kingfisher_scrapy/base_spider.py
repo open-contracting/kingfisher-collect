@@ -169,7 +169,7 @@ class BaseSpider(scrapy.Spider):
             'encoding': encoding,
         }
 
-    def parse_json_lines(self, f, data_type, url, encoding='utf-8', in_object=None):
+    def parse_json_lines(self, f, data_type, url, encoding='utf-8'):
         for number, line in enumerate(f, 1):
             if self.sample and number > self.MAX_SAMPLE:
                 break
