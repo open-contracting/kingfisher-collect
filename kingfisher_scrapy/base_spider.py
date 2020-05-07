@@ -174,7 +174,7 @@ class BaseSpider(scrapy.Spider):
             if self.sample and number > self.MAX_SAMPLE:
                 break
             if isinstance(line, bytes):
-                line = line.decode()
+                line = line.decode(encoding=encoding)
             yield self._build_file_item(number, line, data_type, url, encoding)
 
     def get_package(self, f, array_name):
@@ -217,7 +217,8 @@ class ZipSpider(BaseSpider):
         """
         if response.status == 200:
             if file_format:
-                self.save_response_to_disk(response, 'file.zip')
+                self.save_response_to_disk(response, '{}.zip'.format(hashlib.md5(response.url.encode('utf-8'))
+                                                                     .hexdigest()))
             zip_file = ZipFile(BytesIO(response.body))
             for finfo in zip_file.infolist():
                 filename = finfo.filename
