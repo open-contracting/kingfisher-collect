@@ -68,6 +68,8 @@ class BaseSpider(scrapy.Spider):
         if spider.from_date or spider.until_date:
             # YYYY-MM-DD format
             date_format = '%Y-%m-%d'
+            if spider.date_format:
+                date_format = spider.date_format
 
             if not spider.from_date:
                 # 'from_date' defaults to 'default_from_date' spider class attribute

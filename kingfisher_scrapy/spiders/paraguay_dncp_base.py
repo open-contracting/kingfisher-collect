@@ -26,6 +26,8 @@ class ParaguayDNCPBaseSpider(BaseSpider):
     request_token = None
     max_attempts = 10
     data_type = None
+    date_format = '%Y-%m-%dT%H:%M:%S'
+    default_from_date = '2010-01-01T00:00:00'
 
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
@@ -47,6 +49,10 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         return spider
 
     def start_requests(self):
+        if self.until_date:
+            self.until_date = self.until_date.strftime(self.date_format)
+            self.base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}'\
+                .format(self.base_url, self.until_date)
         yield scrapy.Request(
             self.base_page_url,
             # send duplicate requests when the token expired and in the continuation of last_request saved.
