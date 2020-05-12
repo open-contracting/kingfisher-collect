@@ -26,7 +26,6 @@ class ParaguayDNCPBaseSpider(BaseSpider):
     request_token = None
     max_attempts = 10
     data_type = None
-    date_format = '%Y-%m-%dT%H:%M:%S'
     default_from_date = '2010-01-01T00:00:00'
 
     custom_settings = {
@@ -38,7 +37,8 @@ class ParaguayDNCPBaseSpider(BaseSpider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(ParaguayDNCPBaseSpider, cls).from_crawler(crawler, *args, **kwargs)
+        spider = super(ParaguayDNCPBaseSpider, cls).from_crawler(crawler, date_format='%Y-%m-%dT%H:%M:%S',
+                                                                 *args, **kwargs)
 
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
