@@ -49,10 +49,10 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         return spider
 
     def start_requests(self):
-        if self.until_date:
-            self.until_date = self.until_date.strftime(self.date_format)
+        if self.from_date:
+            self.from_date = self.from_date.strftime(self.date_format)
             self.base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}'\
-                .format(self.base_url, self.until_date)
+                .format(self.base_url, self.from_date)
         yield scrapy.Request(
             self.base_page_url,
             # send duplicate requests when the token expired and in the continuation of last_request saved.
@@ -132,7 +132,6 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         else:
             yield {
                 'success': False,
-                'file_name': response.request.meta['kf_filename'],
                 'url': response.request.url,
                 'errors': {'http_code': response.status}
             }
