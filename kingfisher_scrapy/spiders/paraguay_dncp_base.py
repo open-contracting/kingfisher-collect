@@ -26,6 +26,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
     request_token = None
     max_attempts = 10
     data_type = None
+    default_from_date = '2010-01-01T00:00:00'
 
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
@@ -36,7 +37,8 @@ class ParaguayDNCPBaseSpider(BaseSpider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(ParaguayDNCPBaseSpider, cls).from_crawler(crawler, *args, **kwargs)
+        spider = super(ParaguayDNCPBaseSpider, cls).from_crawler(crawler, date_format='datetime',
+                                                                 *args, **kwargs)
 
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
@@ -47,6 +49,9 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         return spider
 
     def start_requests(self):
+        if self.from_date:
+            self.base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}'\
+                .format(self.base_url, self.from_date.strftime(self.date_format))
         yield scrapy.Request(
             self.base_page_url,
             # send duplicate requests when the token expired and in the continuation of last_request saved.
@@ -126,7 +131,6 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         else:
             yield {
                 'success': False,
-                'file_name': response.request.meta['kf_filename'],
                 'url': response.request.url,
                 'errors': {'http_code': response.status}
             }

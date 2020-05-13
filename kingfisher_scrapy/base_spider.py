@@ -41,8 +41,10 @@ class BaseSpider(scrapy.Spider):
 
     MAX_SAMPLE = 10
     MAX_RELEASES_PER_PACKAGE = 100
+    VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
-    def __init__(self, sample=None, note=None, from_date=None, until_date=None, *args, **kwargs):
+    def __init__(self, sample=None, note=None, from_date=None, until_date=None,
+                 date_format='date', *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
@@ -50,6 +52,7 @@ class BaseSpider(scrapy.Spider):
         self.from_date = from_date
         self.until_date = until_date
         self.note = note
+        self.date_format = self.VALID_DATE_FORMATS[date_format]
 
         spider_arguments = {
             'sample': sample,
@@ -66,22 +69,18 @@ class BaseSpider(scrapy.Spider):
 
         # Checks Spider date ranges arguments
         if spider.from_date or spider.until_date:
-            # YYYY-MM-DD format
-            date_format = '%Y-%m-%d'
-
             if not spider.from_date:
                 # 'from_date' defaults to 'default_from_date' spider class attribute
                 spider.from_date = spider.default_from_date
             if not spider.until_date:
                 # 'until_date' defaults to today
-                spider.until_date = datetime.now().strftime(date_format)
-
+                spider.until_date = datetime.now().strftime(spider.date_format)
             try:
-                spider.from_date = datetime.strptime(spider.from_date, date_format)
+                spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
             except ValueError as e:
                 raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
             try:
-                spider.until_date = datetime.strptime(spider.until_date, date_format)
+                spider.until_date = datetime.strptime(spider.until_date, spider.date_format)
             except ValueError as e:
                 raise SpiderArgumentError('spider argument until_date: invalid date value: {}'.format(e))
 
