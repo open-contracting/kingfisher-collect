@@ -37,7 +37,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(ParaguayDNCPBaseSpider, cls).from_crawler(crawler, date_format='year_month_day_time',
+        spider = super(ParaguayDNCPBaseSpider, cls).from_crawler(crawler, date_format='datetime',
                                                                  *args, **kwargs)
 
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')

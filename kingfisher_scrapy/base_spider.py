@@ -41,10 +41,10 @@ class BaseSpider(scrapy.Spider):
 
     MAX_SAMPLE = 10
     MAX_RELEASES_PER_PACKAGE = 100
-    VALID_DATE_FORMATS = {'year_month_day': '%Y-%m-%d', 'year_month_day_time': '%Y-%m-%dT%H:%M:%S'}
+    VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None,
-                 date_format='year_month_day', *args, **kwargs):
+                 date_format='date', *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
