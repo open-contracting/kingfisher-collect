@@ -37,7 +37,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(ParaguayDNCPBaseSpider, cls).from_crawler(crawler, date_format='%Y-%m-%dT%H:%M:%S',
+        spider = super(ParaguayDNCPBaseSpider, cls).from_crawler(crawler, date_format='year_month_day_time',
                                                                  *args, **kwargs)
 
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
@@ -50,9 +50,8 @@ class ParaguayDNCPBaseSpider(BaseSpider):
 
     def start_requests(self):
         if self.from_date:
-            self.from_date = self.from_date.strftime(self.date_format)
             self.base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}'\
-                .format(self.base_url, self.from_date)
+                .format(self.base_url, self.from_date.strftime(self.date_format))
         yield scrapy.Request(
             self.base_page_url,
             # send duplicate requests when the token expired and in the continuation of last_request saved.

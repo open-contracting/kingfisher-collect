@@ -41,9 +41,10 @@ class BaseSpider(scrapy.Spider):
 
     MAX_SAMPLE = 10
     MAX_RELEASES_PER_PACKAGE = 100
+    VALID_DATE_FORMATS = {'year_month_day': '%Y-%m-%d', 'year_month_day_time': '%Y-%m-%dT%H:%M:%S'}
 
-    def __init__(self, sample=None, note=None, from_date=None, until_date=None, date_format='%Y-%m-%d',
-                 *args, **kwargs):
+    def __init__(self, sample=None, note=None, from_date=None, until_date=None,
+                 date_format='year_month_day', *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
@@ -51,7 +52,7 @@ class BaseSpider(scrapy.Spider):
         self.from_date = from_date
         self.until_date = until_date
         self.note = note
-        self.date_format = date_format
+        self.date_format = self.VALID_DATE_FORMATS[date_format]
 
         spider_arguments = {
             'sample': sample,
@@ -74,7 +75,6 @@ class BaseSpider(scrapy.Spider):
             if not spider.until_date:
                 # 'until_date' defaults to today
                 spider.until_date = datetime.now().strftime(spider.date_format)
-
             try:
                 spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
             except ValueError as e:
