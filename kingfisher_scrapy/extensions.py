@@ -8,6 +8,56 @@ from kingfisher_scrapy.kingfisher_process import Client
 
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
+class KingfisherStoreFiles:
+    def __init__(self, directory, stats):
+        self.directory = directory
+        self.stats = stats
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        directory = crawler.settings['FILES_STORE']
+        extension = cls(directory, crawler.stats)
+        crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+        return extension
+
+    def item_scraped(self, item, spider):
+        """
+        Writes the response's body to the filename in the crawl's directory.
+
+        Writes a ``<filename>.fileinfo`` metadata file in the crawl's directory, and returns a dict with the metadata.
+        """
+        self._write_file(item['file_name'], item['data'], spider)
+
+        metadata = {
+            'url': item['url'],
+            'data_type': item['data_type'],
+            'encoding': item['encoding'],
+        }
+
+        self._write_file(item['file_name'] + '.fileinfo', metadata, spider)
+
+        metadata['success'] = True
+        metadata['file_name'] = item['file_name']
+        item['success'] = True
+
+        return metadata
+
+    def _write_file(self, filename, data, spider):
+        path = spider.get_local_file_path_including_filestore(filename)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+        if isinstance(data, bytes):
+            mode = 'wb'
+        else:
+            mode = 'w'
+
+        with open(path, mode) as f:
+            if isinstance(data, (bytes, str)):
+                f.write(data)
+            else:
+                json.dump(data, f)
+
+
 class KingfisherAPI:
     def __init__(self, url, key, directory=None):
         """

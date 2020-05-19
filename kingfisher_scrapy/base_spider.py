@@ -100,62 +100,39 @@ class BaseSpider(scrapy.Spider):
 
     def save_response_to_disk(self, response, filename, data_type=None, encoding='utf-8'):
         """
-        Writes the response's body to the filename in the crawl's directory.
-
-        Writes a ``<filename>.fileinfo`` metadata file in the crawl's directory, and returns a dict with the metadata.
+        Sends a dict to KingfisherStoreFiles to store the data
         """
-        return self._save_response_to_disk(response.body, filename, response.request.url, data_type, encoding)
+        return {
+            'data': response.body,
+            'file_name': filename,
+            'url': response.request.url,
+            'data_type': data_type,
+            'encoding': encoding
+        }
 
     def save_data_to_disk(self, data, filename, url=None, data_type=None, encoding='utf-8'):
         """
-        Writes the data to the filename in the crawl's directory.
-
-        Writes a ``<filename>.fileinfo`` metadata file in the crawl's directory, and returns a dict with the metadata.
+        Sends a dict to KingfisherStoreFiles to store the data
         """
-        return self._save_response_to_disk(data, filename, url, data_type, encoding)
-
-    def get_start_time(self, format):
-        """
-        Returns the formatted start time of the crawl.
-        """
-        return self.crawler.stats.get_value('start_time').strftime(format)
-
-    def _save_response_to_disk(self, data, filename, url, data_type, encoding):
-        self._write_file(filename, data)
-
-        metadata = {
+        return {
+            'data': data,
+            'file_name': filename,
             'url': url,
             'data_type': data_type,
-            'encoding': encoding,
+            'encoding': encoding
         }
-
-        self._write_file(filename + '.fileinfo', metadata)
-
-        metadata['success'] = True
-        metadata['file_name'] = filename
-
-        return metadata
-
-    def _write_file(self, filename, data):
-        path = self.get_local_file_path_including_filestore(filename)
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-
-        if isinstance(data, bytes):
-            mode = 'wb'
-        else:
-            mode = 'w'
-
-        with open(path, mode) as f:
-            if isinstance(data, (bytes, str)):
-                f.write(data)
-            else:
-                json.dump(data, f)
 
     def _get_crawl_path(self):
         name = self.name
         if self.sample:
             name += '_sample'
         return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
+
+    def get_start_time(self, format):
+        """
+        Returns the formatted start time of the crawl.
+        """
+        return self.crawler.stats.get_value('start_time').strftime(format)
 
     def _build_file_item(self, number, line, data_type, url, encoding):
         return {

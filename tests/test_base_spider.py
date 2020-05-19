@@ -52,91 +52,6 @@ def test_get_local_file_path_excluding_filestore(sample, expected):
     assert spider.get_local_file_path_excluding_filestore('file.json') == expected
 
 
-@pytest.mark.parametrize('sample,path', [
-    (None, 'test/20010203_040506/file.json'),
-    ('true', 'test_sample/20010203_040506/file.json'),
-])
-def test_save_response_to_disk(sample, path):
-    spider = spider_with_crawler(sample=sample)
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-
-        response = Mock()
-        response.body = b'{"key": "value"}'
-        response.request = Mock()
-        response.request.url = 'https://example.com/remote.json'
-
-        actual = spider.save_response_to_disk(response, 'file.json', data_type='release_package',
-                                              encoding='iso-8859-1')
-
-        with open(os.path.join(files_store, path)) as f:
-            assert f.read() == '{"key": "value"}'
-
-        with open(os.path.join(files_store, path + '.fileinfo')) as f:
-            assert json.load(f) == {
-                'url': 'https://example.com/remote.json',
-                'data_type': 'release_package',
-                'encoding': 'iso-8859-1',
-            }
-
-        assert actual == {
-            'success': True,
-            'file_name': 'file.json',
-            "data_type": 'release_package',
-            "url": 'https://example.com/remote.json',
-            'encoding': 'iso-8859-1',
-        }
-
-
-@pytest.mark.parametrize('sample,path', [
-    (None, 'test/20010203_040506/file.json'),
-    ('true', 'test_sample/20010203_040506/file.json'),
-])
-def test_save_data_to_disk(sample, path):
-    spider = spider_with_crawler(sample=sample)
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-
-        data = b'{"key": "value"}'
-        url = 'https://example.com/remote.json'
-
-        actual = spider.save_data_to_disk(data, 'file.json', url=url, data_type='release_package',
-                                          encoding='iso-8859-1')
-
-        with open(os.path.join(files_store, path)) as f:
-            assert f.read() == '{"key": "value"}'
-
-        with open(os.path.join(files_store, path + '.fileinfo')) as f:
-            assert json.load(f) == {
-                'url': 'https://example.com/remote.json',
-                'data_type': 'release_package',
-                'encoding': 'iso-8859-1',
-            }
-
-        assert actual == {
-            'success': True,
-            'file_name': 'file.json',
-            "data_type": 'release_package',
-            "url": 'https://example.com/remote.json',
-            'encoding': 'iso-8859-1',
-        }
-
-
-def test_save_data_to_disk_with_existing_directory():
-    spider = spider_with_crawler()
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-        os.makedirs(os.path.join(files_store, 'test/20010203_040506'))
-
-        spider.save_data_to_disk(b'{"key": "value"}', 'file.json')  # no FileExistsError exception
-
-
 def test_next_link():
     url = 'https://example.com/remote.json'
     text_response = text.TextResponse('test')
@@ -173,7 +88,7 @@ def test_parse_next_link_200():
         spider = spider_with_crawler(spider_class=LinksSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_next_link(response, None).__next__()
-        assert actual['success'] is True and actual['file_name'] == 'test'
+        assert actual['file_name'] == 'test'
         for item in spider.parse_next_link(response, None):
             assert item
 
@@ -209,7 +124,7 @@ def test_parse_zipfile_200():
         spider = spider_with_crawler(spider_class=ZipSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_zipfile(response, None).__next__()
-        assert actual['success'] is True and actual['file_name'].find('.json')
+        assert actual['file_name'].find('.json')
 
 
 def test_parse_zipfile_json_lines():
@@ -232,12 +147,12 @@ def test_parse_zipfile_json_lines():
         spider = spider_with_crawler(spider_class=ZipSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_zipfile(response, None, file_format='json_lines').__next__()
-        assert actual['success'] is True and actual['number'] == 1
+        assert actual['number'] == 1
         spider.sample = True
         total = 0
         for item in spider.parse_zipfile(response, None, file_format='json_lines'):
             total = total + 1
-            assert item['success'] is True and item['number'] == total
+            assert item['number'] == total
         assert total == 10
 
 
@@ -265,7 +180,7 @@ def test_parse_zipfile_release_package():
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_zipfile(response, None, file_format='release_package').__next__()
         data = json.loads(actual['data'])
-        assert actual['success'] is True and actual['number'] == 1
+        assert actual['number'] == 1
         assert data['publisher']['name'] == 'test'
         assert data['extensions'] == ['a', 'b']
         assert len(data['releases']) == spider.MAX_RELEASES_PER_PACKAGE
@@ -274,7 +189,7 @@ def test_parse_zipfile_release_package():
         for item in spider.parse_zipfile(response, None, file_format='release_package'):
             total = total + 1
             data = json.loads(item['data'])
-            assert item['success'] is True and item['number'] == total
+            assert item['number'] == total
             assert len(data['releases']) == spider.MAX_SAMPLE
         assert total == 1
 
