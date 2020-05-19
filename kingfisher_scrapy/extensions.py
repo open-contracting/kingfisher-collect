@@ -9,14 +9,13 @@ from kingfisher_scrapy.kingfisher_process import Client
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 class KingfisherStoreFiles:
-    def __init__(self, directory, stats):
+    def __init__(self, directory):
         self.directory = directory
-        self.stats = stats
 
     @classmethod
     def from_crawler(cls, crawler):
         directory = crawler.settings['FILES_STORE']
-        extension = cls(directory, crawler.stats)
+        extension = cls(directory)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         return extension
 
