@@ -360,7 +360,7 @@ def test_get_local_file_path_including_filestore(sample, expected):
     spider = spider_with_crawler(sample=sample)
     spider.crawler.settings['FILES_STORE'] = 'data'
     extension_store = KingfisherFilesStore.from_crawler(spider.crawler)
-    assert extension_store.get_local_file_path_including_filestore('file.json') == expected
+    assert extension_store.get_local_file_path_including_filestore('file.json', spider) == expected
 
 
 @pytest.mark.parametrize('sample,expected', [
@@ -370,4 +370,4 @@ def test_get_local_file_path_including_filestore(sample, expected):
 def test_get_local_file_path_excluding_filestore(sample, expected):
     spider = spider_with_crawler(sample=sample)
     extension_store = KingfisherFilesStore.from_crawler(spider.crawler)
-    assert extension_store.get_local_file_path_excluding_filestore('file.json') == expected
+    assert extension_store.get_local_file_path_excluding_filestore('file.json', spider) == expected
