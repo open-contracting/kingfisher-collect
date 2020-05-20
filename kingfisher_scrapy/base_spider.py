@@ -1,6 +1,5 @@
 import hashlib
 import json
-import os
 from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile

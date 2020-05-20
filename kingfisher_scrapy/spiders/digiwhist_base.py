@@ -1,5 +1,3 @@
-import json
-import os
 import tarfile
 from io import BytesIO
 
