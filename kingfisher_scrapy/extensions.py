@@ -8,7 +8,7 @@ from kingfisher_scrapy.kingfisher_process import Client
 
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
-class KingfisherStoreFiles:
+class KingfisherFilesStore:
     def __init__(self, directory):
         self.directory = directory
 
@@ -21,28 +21,25 @@ class KingfisherStoreFiles:
 
     def item_scraped(self, item, spider):
         """
-        Writes the response's body to the filename in the crawl's directory.
+        Writes the item's data to the filename in the crawl's directory.
 
         Writes a ``<filename>.fileinfo`` metadata file in the crawl's directory, and returns a dict with the metadata.
         """
-        self._write_file(item['file_name'], item['data'], spider)
-
-        metadata = {
-            'url': item['url'],
-            'data_type': item['data_type'],
-            'encoding': item['encoding'],
-        }
-
-        self._write_file(item['file_name'] + '.fileinfo', metadata, spider)
-
-        metadata['success'] = True
-        metadata['file_name'] = item['file_name']
-        item['success'] = True
-
-        return metadata
+        if 'number' not in item:
+            self._write_file(item['file_name'], item['data'], spider)
+            metadata = {
+                'url': item['url'],
+                'data_type': item['data_type'],
+                'encoding': item['encoding'],
+            }
+            self._write_file(item['file_name'] + '.fileinfo', metadata, spider)
+        item['path_including_file_store'] = self.get_local_file_path_including_filestore(item['file_name'],
+                                                                                         spider)
+        item['path_excluding_file_store'] = self.get_local_file_path_excluding_filestore(item['file_name'],
+                                                                                         spider)
 
     def _write_file(self, filename, data, spider):
-        path = spider.get_local_file_path_including_filestore(filename)
+        path = self.get_local_file_path_including_filestore(filename, spider)
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
         if isinstance(data, bytes):
@@ -55,6 +52,24 @@ class KingfisherStoreFiles:
                 f.write(data)
             else:
                 json.dump(data, f)
+
+    def get_local_file_path_including_filestore(self, filename, spider):
+        """
+        Prepends Scrapy's storage directory and the crawl's relative directory to the filename.
+        """
+        return os.path.join(self.directory, self._get_crawl_path(spider), filename)
+
+    def get_local_file_path_excluding_filestore(self, filename, spider):
+        """
+        Prepends the crawl's relative directory to the filename.
+        """
+        return os.path.join(self._get_crawl_path(spider), filename)
+
+    def _get_crawl_path(self, spider):
+        name = spider.name
+        if spider.sample:
+            name += '_sample'
+        return os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'))
 
 
 class KingfisherAPI:
@@ -103,6 +118,9 @@ class KingfisherAPI:
         If the Scrapy item indicates success, sends a Kingfisher Process API request to create either a Kingfisher
         Process file or file item. Otherwise, sends an API request to create a file error.
         """
+        if not item.get('post_to_api', True):
+            return
+
         data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
@@ -127,11 +145,11 @@ class KingfisherAPI:
             # File
             else:
                 if self.directory:
-                    path = spider.get_local_file_path_excluding_filestore(item['file_name'])
+                    path = item['path_excluding_file_store']
                     data['local_file_name'] = os.path.join(self.directory, path)
                     files = {}
                 else:
-                    path = spider.get_local_file_path_including_filestore(item['file_name'])
+                    path = item['path_including_file_store']
                     f = open(path, 'rb')
                     files = {'file': (item['file_name'], f, 'application/json')}
 

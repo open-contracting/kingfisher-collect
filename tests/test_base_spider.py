@@ -31,27 +31,6 @@ def test_sample_no_kwarg():
     assert spider.sample is False
 
 
-@pytest.mark.parametrize('sample,expected', [
-    (None, 'data/test/20010203_040506/file.json'),
-    ('true', 'data/test_sample/20010203_040506/file.json'),
-])
-def test_get_local_file_path_including_filestore(sample, expected):
-    spider = spider_with_crawler(sample=sample)
-    spider.crawler.settings['FILES_STORE'] = 'data'
-
-    assert spider.get_local_file_path_including_filestore('file.json') == expected
-
-
-@pytest.mark.parametrize('sample,expected', [
-    (None, 'test/20010203_040506/file.json'),
-    ('true', 'test_sample/20010203_040506/file.json'),
-])
-def test_get_local_file_path_excluding_filestore(sample, expected):
-    spider = spider_with_crawler(sample=sample)
-
-    assert spider.get_local_file_path_excluding_filestore('file.json') == expected
-
-
 def test_next_link():
     url = 'https://example.com/remote.json'
     text_response = text.TextResponse('test')
@@ -88,7 +67,7 @@ def test_parse_next_link_200():
         spider = spider_with_crawler(spider_class=LinksSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_next_link(response, None).__next__()
-        assert actual['file_name'] == 'test'
+        assert actual['success'] is True and actual['file_name'] == 'test'
         for item in spider.parse_next_link(response, None):
             assert item
 
@@ -124,7 +103,7 @@ def test_parse_zipfile_200():
         spider = spider_with_crawler(spider_class=ZipSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_zipfile(response, None).__next__()
-        assert actual['file_name'].find('.json')
+        assert actual['success'] is True and actual['file_name'].find('.json')
 
 
 def test_parse_zipfile_json_lines():
@@ -147,12 +126,12 @@ def test_parse_zipfile_json_lines():
         spider = spider_with_crawler(spider_class=ZipSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_zipfile(response, None, file_format='json_lines').__next__()
-        assert actual['number'] == 1
+        assert actual['success'] is True and actual['number'] == 1
         spider.sample = True
         total = 0
         for item in spider.parse_zipfile(response, None, file_format='json_lines'):
             total = total + 1
-            assert item['number'] == total
+            assert item['success'] is True and item['number'] == total
         assert total == 10
 
 
@@ -180,7 +159,7 @@ def test_parse_zipfile_release_package():
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_zipfile(response, None, file_format='release_package').__next__()
         data = json.loads(actual['data'])
-        assert actual['number'] == 1
+        assert actual['success'] is True and actual['number'] == 1
         assert data['publisher']['name'] == 'test'
         assert data['extensions'] == ['a', 'b']
         assert len(data['releases']) == spider.MAX_RELEASES_PER_PACKAGE
@@ -189,7 +168,7 @@ def test_parse_zipfile_release_package():
         for item in spider.parse_zipfile(response, None, file_format='release_package'):
             total = total + 1
             data = json.loads(item['data'])
-            assert item['number'] == total
+            assert item['success'] is True and item['number'] == total
             assert len(data['releases']) == spider.MAX_SAMPLE
         assert total == 1
 

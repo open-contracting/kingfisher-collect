@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.extensions import KingfisherAPI, KingfisherStoreFiles
+from kingfisher_scrapy.extensions import KingfisherAPI, KingfisherFilesStore
 from tests import spider_with_crawler
 
 
@@ -59,8 +59,9 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
 
     if directory:
         spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
+    spider.crawler.settings['FILES_STORE'] = tmpdir
 
-    extension_store = KingfisherStoreFiles.from_crawler(spider.crawler)
+    extension_store = KingfisherFilesStore.from_crawler(spider.crawler)
 
     extension = KingfisherAPI.from_crawler(spider.crawler)
     extension_store.item_scraped(spider.save_data_to_disk(b'{"key": "value"}', 'file.json',
@@ -72,15 +73,18 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
         response.status_code = 400
         mocked.return_value = response
 
-        data = {
-            'success': True,
-            'file_name': 'file.json',
-            'url': 'https://example.com/remote.json',
+        data = spider.save_data_to_disk(
+            data=None,
+            filename='file.json',
+            url='https://example.com/remote.json',
             # Specific to this test case.
-            'data_type': 'release_package',
-        }
-        if encoding:
-            data['encoding'] = encoding
+            data_type='release_package',
+            encoding=encoding2
+        )
+        data['path_excluding_file_store'] = os.path.join(tmpdir, path)
+        data['path_including_file_store'] = os.path.join(tmpdir, path)
+        if directory:
+            data['path_excluding_file_store'] = tmpdir.join('xxx', path)
 
         extension.item_scraped(data, spider)
 
@@ -139,18 +143,15 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
         response.status_code = 400
         mocked.return_value = response
 
-        data = {
-            'success': True,
-            'file_name': 'file.json',
-            'url': 'https://example.com/remote.json',
+        data = spider._build_file_item(
+            1,
+            b'{"key": "value"}',
+            url='https://example.com/remote.json',
             # Specific to this test case.
-            'data_type': 'release_package',
-            'number': 1,
-            'data': b'{"key": "value"}',
-        }
-        if encoding:
-            data['encoding'] = encoding
-
+            data_type='release_package',
+            encoding=encoding2,
+            file_name='data.json',
+        )
         extension.item_scraped(data, spider)
 
         if not ok:
@@ -165,13 +166,13 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
             'collection_sample': is_sample,
-            'file_name': 'file.json',
+            'file_name': 'data.json',
             'url': 'https://example.com/remote.json',
             # Specific to this test case.
             'data_type': 'release_package',
             'encoding': encoding2,
             'number': 1,
-            'data': b'{"key": "value"}',
+            'data': b'{"key": "value"}'
         }
         if note:
             expected['collection_note'] = note
@@ -286,21 +287,18 @@ def test_spider_closed_other_reason(tmpdir):
 ])
 def test_save_response_to_disk(sample, path, tmpdir):
     spider = spider_after_open(tmpdir, sample=sample)
-
-    extension_store = KingfisherStoreFiles.from_crawler(spider.crawler)
-
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
         spider.crawler.settings['FILES_STORE'] = files_store
-
+        extension_store = KingfisherFilesStore.from_crawler(spider.crawler)
         response = Mock()
         response.body = b'{"key": "value"}'
         response.request = Mock()
         response.request.url = 'https://example.com/remote.json'
 
-        actual = extension_store.item_scraped(spider.save_response_to_disk(response, 'file.json',
-                                                                           data_type='release_package',
-                                                                           encoding='iso-8859-1'), spider)
+        extension_store.item_scraped(spider.save_response_to_disk(response, 'file.json',
+                                                                  data_type='release_package',
+                                                                  encoding='iso-8859-1'), spider)
 
         with open(os.path.join(files_store, path)) as f:
             assert f.read() == '{"key": "value"}'
@@ -311,14 +309,6 @@ def test_save_response_to_disk(sample, path, tmpdir):
                 'data_type': 'release_package',
                 'encoding': 'iso-8859-1',
             }
-
-        assert actual == {
-            'success': True,
-            'file_name': 'file.json',
-            "data_type": 'release_package',
-            "url": 'https://example.com/remote.json',
-            'encoding': 'iso-8859-1',
-        }
 
 
 @pytest.mark.parametrize('sample,path', [
@@ -327,17 +317,18 @@ def test_save_response_to_disk(sample, path, tmpdir):
 ])
 def test_save_data_to_disk(sample, path):
     spider = spider_with_crawler(sample=sample)
-    extension_store = KingfisherStoreFiles.from_crawler(spider.crawler)
+
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
         spider.crawler.settings['FILES_STORE'] = files_store
+        extension_store = KingfisherFilesStore.from_crawler(spider.crawler)
 
         data = b'{"key": "value"}'
         url = 'https://example.com/remote.json'
 
-        actual = extension_store.item_scraped(spider.save_data_to_disk(data, 'file.json', url=url,
-                                                                       data_type='release_package',
-                                                                       encoding='iso-8859-1'), spider)
+        extension_store.item_scraped(spider.save_data_to_disk(data, 'file.json', url=url,
+                                                              data_type='release_package',
+                                                              encoding='iso-8859-1'), spider)
 
         with open(os.path.join(files_store, path)) as f:
             assert f.read() == '{"key": "value"}'
@@ -349,21 +340,34 @@ def test_save_data_to_disk(sample, path):
                 'encoding': 'iso-8859-1',
             }
 
-        assert actual == {
-            'success': True,
-            'file_name': 'file.json',
-            "data_type": 'release_package',
-            "url": 'https://example.com/remote.json',
-            'encoding': 'iso-8859-1',
-        }
-
 
 def test_save_data_to_disk_with_existing_directory():
     spider = spider_with_crawler()
-    extension_store = KingfisherStoreFiles.from_crawler(spider.crawler)
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
         spider.crawler.settings['FILES_STORE'] = files_store
+        extension_store = KingfisherFilesStore.from_crawler(spider.crawler)
         os.makedirs(os.path.join(files_store, 'test/20010203_040506'))
         extension_store.item_scraped(spider.save_data_to_disk(b'{"key": "value"}', 'file.json'),
                                      spider)  # no FileExistsError exception
+
+
+@pytest.mark.parametrize('sample,expected', [
+    (None, 'data/test/20010203_040506/file.json'),
+    ('true', 'data/test_sample/20010203_040506/file.json'),
+])
+def test_get_local_file_path_including_filestore(sample, expected):
+    spider = spider_with_crawler(sample=sample)
+    spider.crawler.settings['FILES_STORE'] = 'data'
+    extension_store = KingfisherFilesStore.from_crawler(spider.crawler)
+    assert extension_store.get_local_file_path_including_filestore('file.json') == expected
+
+
+@pytest.mark.parametrize('sample,expected', [
+    (None, 'test/20010203_040506/file.json'),
+    ('true', 'test_sample/20010203_040506/file.json'),
+])
+def test_get_local_file_path_excluding_filestore(sample, expected):
+    spider = spider_with_crawler(sample=sample)
+    extension_store = KingfisherFilesStore.from_crawler(spider.crawler)
+    assert extension_store.get_local_file_path_excluding_filestore('file.json') == expected

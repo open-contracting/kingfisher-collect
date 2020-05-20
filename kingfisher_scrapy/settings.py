@@ -67,7 +67,9 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
 EXTENSIONS = {
-    'kingfisher_scrapy.extensions.KingfisherStoreFiles': 100,
+    'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
+    # KingfisherAPI must have lower priority than KingfisherStoreFiles, because the file needs to be written before the
+    # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.KingfisherAPI': 500,
 }
 
