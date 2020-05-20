@@ -86,47 +86,26 @@ class BaseSpider(scrapy.Spider):
 
         return spider
 
-    def get_local_file_path_including_filestore(self, filename):
+    def save_response_to_disk(self, response, filename, data_type=None, encoding='utf-8', post_to_api=True):
         """
-        Prepends Scrapy's storage directory and the crawl's relative directory to the filename.
+        Returns an item to yield, based on the response to a request.
         """
-        return os.path.join(self.crawler.settings['FILES_STORE'], self._get_crawl_path(), filename)
+        return self.save_data_to_disk(response.body, filename, response.request.url, data_type, encoding,
+                                      post_to_api)
 
-    def get_local_file_path_excluding_filestore(self, filename):
+    def save_data_to_disk(self, data, filename, url=None, data_type=None, encoding='utf-8', post_to_api=True):
         """
-        Prepends the crawl's relative directory to the filename.
-        """
-        return os.path.join(self._get_crawl_path(), filename)
-
-    def save_response_to_disk(self, response, filename, data_type=None, encoding='utf-8'):
-        """
-        Sends a dict to KingfisherStoreFiles to store the data
-        """
-        return {
-            'data': response.body,
-            'file_name': filename,
-            'url': response.request.url,
-            'data_type': data_type,
-            'encoding': encoding
-        }
-
-    def save_data_to_disk(self, data, filename, url=None, data_type=None, encoding='utf-8'):
-        """
-        Sends a dict to KingfisherStoreFiles to store the data
+        Returns an item to yield
         """
         return {
             'data': data,
             'file_name': filename,
             'url': url,
             'data_type': data_type,
-            'encoding': encoding
+            'encoding': encoding,
+            'success': True,
+            'post_to_api': post_to_api,
         }
-
-    def _get_crawl_path(self):
-        name = self.name
-        if self.sample:
-            name += '_sample'
-        return os.path.join(name, self.get_start_time('%Y%m%d_%H%M%S'))
 
     def get_start_time(self, format):
         """
@@ -134,24 +113,25 @@ class BaseSpider(scrapy.Spider):
         """
         return self.crawler.stats.get_value('start_time').strftime(format)
 
-    def _build_file_item(self, number, line, data_type, url, encoding):
+    def _build_file_item(self, number, line, data_type, url, encoding, file_name):
         return {
             'success': True,
             'number': number,
-            'file_name': 'data.json',
+            'file_name': file_name,
             'data': line,
             'data_type': data_type,
             'url': url,
             'encoding': encoding,
+            'post_to_api': True
         }
 
-    def parse_json_lines(self, f, data_type, url, encoding='utf-8'):
+    def parse_json_lines(self, f, data_type, url, encoding='utf-8', file_name='data.json'):
         for number, line in enumerate(f, 1):
             if self.sample and number > self.MAX_SAMPLE:
                 break
             if isinstance(line, bytes):
                 line = line.decode(encoding=encoding)
-            yield self._build_file_item(number, line, data_type, url, encoding)
+            yield self._build_file_item(number, line, data_type, url, encoding, file_name)
 
     def get_package(self, f, array_name):
         """
@@ -162,7 +142,8 @@ class BaseSpider(scrapy.Spider):
             package.update(item)
         return package
 
-    def parse_json_array(self, f_package, f_list, data_type, url, encoding='utf-8', array_field_name='releases'):
+    def parse_json_array(self, f_package, f_list, data_type, url, encoding='utf-8',
+                         array_field_name='releases', file_name='data.json'):
         if self.sample:
             size = self.MAX_SAMPLE
         else:
@@ -172,7 +153,8 @@ class BaseSpider(scrapy.Spider):
 
         for number, items in enumerate(util.grouper(ijson.items(f_list, '{}.item'.format(array_field_name)), size), 1):
             package[array_field_name] = filter(None, items)
-            yield self._build_file_item(number, json.dumps(package, default=util.default), data_type, url, encoding)
+            yield self._build_file_item(number, json.dumps(package, default=util.default), data_type, url, encoding,
+                                        file_name)
             if self.sample:
                 break
 
@@ -194,7 +176,8 @@ class ZipSpider(BaseSpider):
         if response.status == 200:
             if file_format:
                 self.save_response_to_disk(response, '{}.zip'.format(hashlib.md5(response.url.encode('utf-8'))
-                                                                     .hexdigest()))
+                                                                     .hexdigest()),
+                                           post_to_api=False)
             zip_file = ZipFile(BytesIO(response.body))
             for finfo in zip_file.infolist():
                 filename = finfo.filename
@@ -202,11 +185,12 @@ class ZipSpider(BaseSpider):
                     filename += '.json'
                 data = zip_file.open(finfo.filename)
                 if file_format == 'json_lines':
-                    yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding)
+                    yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding,
+                                                     file_name=filename)
                 elif file_format == 'release_package':
                     package = zip_file.open(finfo.filename)
                     yield from self.parse_json_array(package, data, data_type, response.request.url,
-                                                     encoding=encoding)
+                                                     encoding=encoding, file_name=filename)
                 else:
                     yield self.save_data_to_disk(data.read(), filename, data_type=data_type, url=response.request.url,
                                                  encoding=encoding)
