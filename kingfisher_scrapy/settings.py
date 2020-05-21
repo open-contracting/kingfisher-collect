@@ -88,6 +88,9 @@ KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
 # instead of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.
 KINGFISHER_API_LOCAL_DIRECTORY = os.getenv('KINGFISHER_API_LOCAL_DIRECTORY')
 
+# We use a custom formatter to avoid logging a item content
+LOG_FORMATTER = 'kingfisher_scrapy.log_formatter.KingfisherCustomLoggerFormatter'
+
 KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
 KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
 
