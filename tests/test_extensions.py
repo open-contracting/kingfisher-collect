@@ -54,7 +54,9 @@ def test_from_crawler_missing_arguments(api_url, api_key):
 @pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
 @pytest.mark.parametrize('directory', [False, True])
 @pytest.mark.parametrize('ok', [True, False])
-def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, tmpdir, caplog):
+@pytest.mark.parametrize('post_to_api', [True, True, False])
+def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, tmpdir, caplog,
+                           post_to_api):
     spider = spider_after_open(tmpdir, sample=sample, note=note)
 
     if directory:
@@ -79,7 +81,8 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
             url='https://example.com/remote.json',
             # Specific to this test case.
             data_type='release_package',
-            encoding=encoding2
+            encoding=encoding2,
+            post_to_api=post_to_api
         )
         data['path_excluding_file_store'] = os.path.join(tmpdir, path)
         data['path_including_file_store'] = os.path.join(tmpdir, path)
@@ -89,12 +92,15 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
         extension.item_scraped(data, spider)
 
         if not ok:
-            message = 'Failed to post [https://example.com/remote.json]. API status code: 400'
+            if not post_to_api:
+                assert len(caplog.records) == 0
+            else:
+                message = 'Failed to post [https://example.com/remote.json]. API status code: 400'
 
-            assert len(caplog.records) == 1
-            assert caplog.records[0].name == 'test'
-            assert caplog.records[0].levelname == 'WARNING'
-            assert caplog.records[0].message == message
+                assert len(caplog.records) == 1
+                assert caplog.records[0].name == 'test'
+                assert caplog.records[0].levelname == 'WARNING'
+                assert caplog.records[0].message == message
 
         expected = {
             'collection_source': 'test',
@@ -110,22 +116,25 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
             expected['collection_note'] = note
         if directory:
             expected['local_file_name'] = tmpdir.join('xxx', path)
+        if not post_to_api:
+            assert mocked.call_count == 0
+        else:
+            with open(tmpdir.join(path), 'rb') as f:
+                assert mocked.call_count == 1
+                assert mocked.call_args[0] == ('http://httpbin.org/anything/api/v1/submit/file/',)
+                assert mocked.call_args[1]['headers'] == {'Authorization': 'ApiKey xxx'}
+                assert mocked.call_args[1]['data'] == expected
+                if post_to_api:
+                    assert len(mocked.call_args[1]) == 3
 
-        with open(tmpdir.join(path), 'rb') as f:
-            assert mocked.call_count == 1
-            assert mocked.call_args[0] == ('http://httpbin.org/anything/api/v1/submit/file/',)
-            assert mocked.call_args[1]['headers'] == {'Authorization': 'ApiKey xxx'}
-            assert mocked.call_args[1]['data'] == expected
-            assert len(mocked.call_args[1]) == 3
-
-            if directory:
-                assert mocked.call_args[1]['files'] == {}
-            else:
-                assert len(mocked.call_args[1]['files']) == 1
-                assert len(mocked.call_args[1]['files']['file']) == 3
-                assert mocked.call_args[1]['files']['file'][0] == 'file.json'
-                assert mocked.call_args[1]['files']['file'][1].read() == f.read()
-                assert mocked.call_args[1]['files']['file'][2] == 'application/json'
+                if directory:
+                    assert mocked.call_args[1]['files'] == {}
+                else:
+                    assert len(mocked.call_args[1]['files']) == 1
+                    assert len(mocked.call_args[1]['files']['file']) == 3
+                    assert mocked.call_args[1]['files']['file'][0] == 'file.json'
+                    assert mocked.call_args[1]['files']['file'][1].read() == f.read()
+                    assert mocked.call_args[1]['files']['file'][2] == 'application/json'
 
 
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
