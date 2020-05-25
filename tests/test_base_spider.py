@@ -31,6 +31,46 @@ def test_sample_no_kwarg():
     assert spider.sample is False
 
 
+def test_save_response_to_disk():
+    spider = BaseSpider(name='test')
+
+    response = Mock()
+    response.body = b'{"key": "value"}'
+    response.request = Mock()
+    response.request.url = 'https://example.com/remote.json'
+
+    actual = spider.save_response_to_disk(response, 'file.json', data_type='release_package', encoding='iso-8859-1')
+
+    assert actual == {
+        'success': True,
+        'file_name': 'file.json',
+        'data': b'{"key": "value"}',
+        "data_type": 'release_package',
+        "url": 'https://example.com/remote.json',
+        'encoding': 'iso-8859-1',
+        'post_to_api': True,
+    }
+
+
+def test_save_data_to_disk():
+    spider = BaseSpider(name='test')
+
+    data = b'{"key": "value"}'
+    url = 'https://example.com/remote.json'
+
+    actual = spider.save_data_to_disk(data, 'file.json', url=url, data_type='release_package', encoding='iso-8859-1')
+
+    assert actual == {
+        'success': True,
+        'file_name': 'file.json',
+        'data': b'{"key": "value"}',
+        "data_type": 'release_package',
+        "url": 'https://example.com/remote.json',
+        'encoding': 'iso-8859-1',
+        'post_to_api': True,
+    }
+
+
 def test_next_link():
     url = 'https://example.com/remote.json'
     text_response = text.TextResponse('test')
