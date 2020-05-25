@@ -94,15 +94,15 @@ class BaseSpider(scrapy.Spider):
 
     def save_data_to_disk(self, data, filename, url=None, data_type=None, encoding='utf-8', post_to_api=True):
         """
-        Returns an item to yield
+        Returns an item to yield.
         """
         return {
-            'data': data,
-            'file_name': filename,
-            'url': url,
-            'data_type': data_type,
-            'encoding': encoding,
             'success': True,
+            'file_name': filename,
+            'data': data,
+            'data_type': data_type,
+            'url': url,
+            'encoding': encoding,
             'post_to_api': post_to_api,
         }
 
@@ -121,7 +121,7 @@ class BaseSpider(scrapy.Spider):
             'data_type': data_type,
             'url': url,
             'encoding': encoding,
-            'post_to_api': True
+            'post_to_api': True,
         }
 
     def parse_json_lines(self, f, data_type, url, encoding='utf-8', file_name='data.json'):
