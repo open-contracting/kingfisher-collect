@@ -25,6 +25,9 @@ class KingfisherFilesStore:
 
         Writes a ``<filename>.fileinfo`` metadata file in the crawl's directory, and returns a dict with the metadata.
         """
+        if item['success'] is False:
+            return
+
         if 'number' not in item:
             self._write_file(item['file_name'], item['data'], spider)
             metadata = {
