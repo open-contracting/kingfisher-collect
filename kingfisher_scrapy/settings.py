@@ -67,9 +67,9 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
 EXTENSIONS = {
+    # `KingfisherFilesStore` must run before `KingfisherAPI`, because the file needs to be written before the request
+    # is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
-    # KingfisherAPI must have lower priority than KingfisherStoreFiles, because the file needs to be written before the
-    # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.KingfisherAPI': 500,
 }
 
@@ -88,8 +88,7 @@ KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
 # instead of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.
 KINGFISHER_API_LOCAL_DIRECTORY = os.getenv('KINGFISHER_API_LOCAL_DIRECTORY')
 
-# We use a custom formatter to avoid logging a item content
-LOG_FORMATTER = 'kingfisher_scrapy.log_formatter.KingfisherCustomLoggerFormatter'
+LOG_FORMATTER = 'kingfisher_scrapy.log_formatter.KingfisherLogFormatter'
 
 KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
 KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
