@@ -10,9 +10,9 @@ from kingfisher_scrapy.extensions import KingfisherAPI, KingfisherFilesStore
 from tests import spider_with_crawler
 
 
-def spider_after_open(tmpdir, **kwargs):
+def spider_with_files_store(files_store, **kwargs):
     spider = spider_with_crawler(**kwargs)
-    spider.crawler.settings['FILES_STORE'] = tmpdir
+    spider.crawler.settings['FILES_STORE'] = files_store
     spider.crawler.settings['KINGFISHER_API_URI'] = 'http://httpbin.org/anything'
     spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
 
@@ -23,11 +23,11 @@ def test_from_crawler():
     spider = spider_with_crawler()
     spider.crawler.settings['KINGFISHER_API_URI'] = 'http://httpbin.org/anything'
     spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
-    spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = 'data'
+    spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = 'localdir'
 
     api_extension = KingfisherAPI.from_crawler(spider.crawler)
 
-    assert api_extension.directory == 'data'
+    assert api_extension.directory == 'localdir'
 
 
 @pytest.mark.parametrize('api_url,api_key', [
@@ -47,8 +47,8 @@ def test_from_crawler_missing_arguments(api_url, api_key):
 
 
 @pytest.mark.parametrize('sample,is_sample,path', [
-    (None, False, 'test/20010203_040506/file.json'),
-    ('true', True, 'test_sample/20010203_040506/file.json'),
+    (None, False, os.path.join('test', '20010203_040506', 'file.json')),
+    ('true', True, os.path.join('test_sample', '20010203_040506', 'file.json')),
 ])
 @pytest.mark.parametrize('note', ['', 'Started by NAME.'])
 @pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
@@ -57,7 +57,7 @@ def test_from_crawler_missing_arguments(api_url, api_key):
 @pytest.mark.parametrize('post_to_api', [True, False])
 def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, post_to_api, tmpdir,
                            caplog):
-    spider = spider_after_open(tmpdir, sample=sample, note=note)
+    spider = spider_with_files_store(tmpdir, sample=sample, note=note)
 
     if directory:
         spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
@@ -131,7 +131,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
 @pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
 @pytest.mark.parametrize('ok', [True, False])
 def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok, tmpdir, caplog):
-    spider = spider_after_open(tmpdir, sample=sample, note=note)
+    spider = spider_with_files_store(tmpdir, sample=sample, note=note)
 
     api_extension = KingfisherAPI.from_crawler(spider.crawler)
 
@@ -190,7 +190,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
 def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
-    spider = spider_after_open(tmpdir, sample=sample)
+    spider = spider_with_files_store(tmpdir, sample=sample)
 
     api_extension = KingfisherAPI.from_crawler(spider.crawler)
 
@@ -239,7 +239,7 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
 def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
-    spider = spider_after_open(tmpdir, sample=sample)
+    spider = spider_with_files_store(tmpdir, sample=sample)
 
     api_extension = KingfisherAPI.from_crawler(spider.crawler)
 
@@ -271,7 +271,7 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
 
 
 def test_spider_closed_other_reason(tmpdir):
-    spider = spider_after_open(tmpdir)
+    spider = spider_with_files_store(tmpdir)
 
     api_extension = KingfisherAPI.from_crawler(spider.crawler)
 
@@ -282,12 +282,11 @@ def test_spider_closed_other_reason(tmpdir):
 
 
 @pytest.mark.parametrize('sample,path', [
-    (None, 'test/20010203_040506/file.json'),
-    ('true', 'test_sample/20010203_040506/file.json'),
+    (None, os.path.join('test', '20010203_040506', 'file.json')),
+    ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
 ])
 def test_item_scraped_with_save_response_to_disk(sample, path, tmpdir):
-    spider = spider_after_open(tmpdir, sample=sample)
-
+    spider = spider_with_files_store(tmpdir, sample=sample)
     store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
 
     response = Mock()
@@ -308,14 +307,16 @@ def test_item_scraped_with_save_response_to_disk(sample, path, tmpdir):
             'encoding': 'iso-8859-1',
         }
 
+    assert item['path'] == path
+    assert item['files_store'] == tmpdir
+
 
 @pytest.mark.parametrize('sample,path', [
-    (None, 'test/20010203_040506/file.json'),
-    ('true', 'test_sample/20010203_040506/file.json'),
+    (None, os.path.join('test', '20010203_040506', 'file.json')),
+    ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
 ])
 def test_item_scraped_with_save_data_to_disk(sample, path, tmpdir):
-    spider = spider_after_open(tmpdir, sample=sample)
-
+    spider = spider_with_files_store(tmpdir, sample=sample)
     store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
 
     data = b'{"key": "value"}'
@@ -334,6 +335,9 @@ def test_item_scraped_with_save_data_to_disk(sample, path, tmpdir):
             'encoding': 'iso-8859-1',
         }
 
+    assert item['path'] == path
+    assert item['files_store'] == tmpdir
+
 
 def test_save_data_to_disk_with_existing_directory():
     spider = spider_with_crawler()
@@ -342,30 +346,7 @@ def test_save_data_to_disk_with_existing_directory():
         files_store = os.path.join(tmpdirname, 'data')
         spider.crawler.settings['FILES_STORE'] = files_store
         store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
-        os.makedirs(os.path.join(files_store, 'test/20010203_040506'))
+        os.makedirs(os.path.join(files_store, 'test', '20010203_040506'))
 
         # No FileExistsError exception.
         store_extension.item_scraped(spider.save_data_to_disk(b'{"key": "value"}', 'file.json'), spider)
-
-
-@pytest.mark.parametrize('sample,expected', [
-    (None, 'data/test/20010203_040506/file.json'),
-    ('true', 'data/test_sample/20010203_040506/file.json'),
-])
-def test_get_local_file_path_including_filestore(sample, expected):
-    spider = spider_with_crawler(sample=sample)
-    spider.crawler.settings['FILES_STORE'] = 'data'
-    store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
-
-    assert store_extension.get_local_file_path_including_filestore('file.json', spider) == expected
-
-
-@pytest.mark.parametrize('sample,expected', [
-    (None, 'test/20010203_040506/file.json'),
-    ('true', 'test_sample/20010203_040506/file.json'),
-])
-def test_get_local_file_path_excluding_filestore(sample, expected):
-    spider = spider_with_crawler(sample=sample)
-    store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
-
-    assert store_extension.get_local_file_path_excluding_filestore('file.json', spider) == expected

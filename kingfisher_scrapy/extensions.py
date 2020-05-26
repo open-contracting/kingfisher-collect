@@ -29,21 +29,25 @@ class KingfisherFilesStore:
         if not item['success'] or 'number' in item:
             return
 
-        self._write_file(item['file_name'], item['data'], spider)
+        # The crawl's relative directory, in the format `<spider_name>[_sample]/<YYMMDD_HHMMSS>`.
+        name = spider.name
+        if spider.sample:
+            name += '_sample'
+        path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), item['file_name'])
+
+        self._write_file(path, item['data'], spider)
         metadata = {
             'url': item['url'],
             'data_type': item['data_type'],
             'encoding': item['encoding'],
         }
-        self._write_file(item['file_name'] + '.fileinfo', metadata, spider)
+        self._write_file(path + '.fileinfo', metadata, spider)
 
-        item['path_including_file_store'] = self.get_local_file_path_including_filestore(item['file_name'],
-                                                                                         spider)
-        item['path_excluding_file_store'] = self.get_local_file_path_excluding_filestore(item['file_name'],
-                                                                                         spider)
+        item['path'] = path
+        item['files_store'] = self.directory
 
-    def _write_file(self, filename, data, spider):
-        path = self.get_local_file_path_including_filestore(filename, spider)
+    def _write_file(self, path, data, spider):
+        path = os.path.join(self.directory, path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
         if isinstance(data, bytes):
@@ -56,24 +60,6 @@ class KingfisherFilesStore:
                 f.write(data)
             else:
                 json.dump(data, f)
-
-    def get_local_file_path_including_filestore(self, filename, spider):
-        """
-        Prepends Scrapy's storage directory and the crawl's relative directory to the filename.
-        """
-        return os.path.join(self.directory, self._get_crawl_path(spider), filename)
-
-    def get_local_file_path_excluding_filestore(self, filename, spider):
-        """
-        Prepends the crawl's relative directory to the filename.
-        """
-        return os.path.join(self._get_crawl_path(spider), filename)
-
-    def _get_crawl_path(self, spider):
-        name = spider.name
-        if spider.sample:
-            name += '_sample'
-        return os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'))
 
 
 class KingfisherAPI:
@@ -149,11 +135,11 @@ class KingfisherAPI:
             # File
             else:
                 if self.directory:
-                    path = item['path_excluding_file_store']
+                    path = item['path']
                     data['local_file_name'] = os.path.join(self.directory, path)
                     files = {}
                 else:
-                    path = item['path_including_file_store']
+                    path = os.path.join(item['files_store'], item['path'])
                     f = open(path, 'rb')
                     files = {'file': (item['file_name'], f, 'application/json')}
 
