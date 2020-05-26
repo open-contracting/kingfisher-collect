@@ -31,110 +31,44 @@ def test_sample_no_kwarg():
     assert spider.sample is False
 
 
-@pytest.mark.parametrize('sample,expected', [
-    (None, 'data/test/20010203_040506/file.json'),
-    ('true', 'data/test_sample/20010203_040506/file.json'),
-])
-def test_get_local_file_path_including_filestore(sample, expected):
-    spider = spider_with_crawler(sample=sample)
-    spider.crawler.settings['FILES_STORE'] = 'data'
+def test_save_response_to_disk():
+    spider = BaseSpider(name='test')
 
-    assert spider.get_local_file_path_including_filestore('file.json') == expected
+    response = Mock()
+    response.body = b'{"key": "value"}'
+    response.request = Mock()
+    response.request.url = 'https://example.com/remote.json'
 
+    actual = spider.save_response_to_disk(response, 'file.json', data_type='release_package', encoding='iso-8859-1')
 
-@pytest.mark.parametrize('sample,expected', [
-    (None, 'test/20010203_040506/file.json'),
-    ('true', 'test_sample/20010203_040506/file.json'),
-])
-def test_get_local_file_path_excluding_filestore(sample, expected):
-    spider = spider_with_crawler(sample=sample)
-
-    assert spider.get_local_file_path_excluding_filestore('file.json') == expected
-
-
-@pytest.mark.parametrize('sample,path', [
-    (None, 'test/20010203_040506/file.json'),
-    ('true', 'test_sample/20010203_040506/file.json'),
-])
-def test_save_response_to_disk(sample, path):
-    spider = spider_with_crawler(sample=sample)
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-
-        response = Mock()
-        response.body = b'{"key": "value"}'
-        response.request = Mock()
-        response.request.url = 'https://example.com/remote.json'
-
-        actual = spider.save_response_to_disk(response, 'file.json', data_type='release_package',
-                                              encoding='iso-8859-1')
-
-        with open(os.path.join(files_store, path)) as f:
-            assert f.read() == '{"key": "value"}'
-
-        with open(os.path.join(files_store, path + '.fileinfo')) as f:
-            assert json.load(f) == {
-                'url': 'https://example.com/remote.json',
-                'data_type': 'release_package',
-                'encoding': 'iso-8859-1',
-            }
-
-        assert actual == {
-            'success': True,
-            'file_name': 'file.json',
-            "data_type": 'release_package',
-            "url": 'https://example.com/remote.json',
-            'encoding': 'iso-8859-1',
-        }
+    assert actual == {
+        'success': True,
+        'file_name': 'file.json',
+        'data': b'{"key": "value"}',
+        "data_type": 'release_package',
+        "url": 'https://example.com/remote.json',
+        'encoding': 'iso-8859-1',
+        'post_to_api': True,
+    }
 
 
-@pytest.mark.parametrize('sample,path', [
-    (None, 'test/20010203_040506/file.json'),
-    ('true', 'test_sample/20010203_040506/file.json'),
-])
-def test_save_data_to_disk(sample, path):
-    spider = spider_with_crawler(sample=sample)
+def test_save_data_to_disk():
+    spider = BaseSpider(name='test')
 
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
+    data = b'{"key": "value"}'
+    url = 'https://example.com/remote.json'
 
-        data = b'{"key": "value"}'
-        url = 'https://example.com/remote.json'
+    actual = spider.save_data_to_disk(data, 'file.json', url=url, data_type='release_package', encoding='iso-8859-1')
 
-        actual = spider.save_data_to_disk(data, 'file.json', url=url, data_type='release_package',
-                                          encoding='iso-8859-1')
-
-        with open(os.path.join(files_store, path)) as f:
-            assert f.read() == '{"key": "value"}'
-
-        with open(os.path.join(files_store, path + '.fileinfo')) as f:
-            assert json.load(f) == {
-                'url': 'https://example.com/remote.json',
-                'data_type': 'release_package',
-                'encoding': 'iso-8859-1',
-            }
-
-        assert actual == {
-            'success': True,
-            'file_name': 'file.json',
-            "data_type": 'release_package',
-            "url": 'https://example.com/remote.json',
-            'encoding': 'iso-8859-1',
-        }
-
-
-def test_save_data_to_disk_with_existing_directory():
-    spider = spider_with_crawler()
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-        os.makedirs(os.path.join(files_store, 'test/20010203_040506'))
-
-        spider.save_data_to_disk(b'{"key": "value"}', 'file.json')  # no FileExistsError exception
+    assert actual == {
+        'success': True,
+        'file_name': 'file.json',
+        'data': b'{"key": "value"}',
+        "data_type": 'release_package',
+        "url": 'https://example.com/remote.json',
+        'encoding': 'iso-8859-1',
+        'post_to_api': True,
+    }
 
 
 def test_next_link():
@@ -169,7 +103,7 @@ def test_parse_next_link_200():
     response.request.url = 'url'
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
-        os.makedirs(os.path.join(files_store, 'test/20010203_040506'))
+        os.makedirs(os.path.join(files_store, 'test', '20010203_040506'))
         spider = spider_with_crawler(spider_class=LinksSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_next_link(response, None).__next__()
@@ -197,13 +131,14 @@ def test_parse_zipfile_200():
     response.request.url = 'url'
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
-        tmp = os.path.join(files_store, 'test/20010203_040506')
+        tmp = os.path.join(files_store, 'test', '20010203_040506')
         os.makedirs(tmp)
 
-        open(tmp + "test", "w").close()
-        with ZipFile(tmp + '/test.zip', 'w') as z:
-            z.write(tmp + "test")
-        with open(tmp + '/test.zip', 'rb') as z:
+        with open(os.path.join(tmp, 'test'), 'w'):
+            pass
+        with ZipFile(os.path.join(tmp, 'test.zip'), 'w') as z:
+            z.write(os.path.join(tmp, 'test'))
+        with open(os.path.join(tmp, 'test.zip'), 'rb') as z:
             response = response.replace(body=z.read())
 
         spider = spider_with_crawler(spider_class=ZipSpider)
@@ -220,14 +155,14 @@ def test_parse_zipfile_json_lines():
     response.request.url = 'url'
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
-        tmp = os.path.join(files_store, 'test/20010203_040506')
+        tmp = os.path.join(files_store, 'test', '20010203_040506')
         os.makedirs(tmp)
-        with open(tmp + "test.json", 'w') as f:
+        with open(os.path.join(tmp, 'test.json'), 'w') as f:
             for i in range(10):
                 f.write('{"key": "value"}\n')
-        with ZipFile(tmp + '/test.zip', 'w') as z:
-            z.write(tmp + "test.json")
-        with open(tmp + '/test.zip', 'rb') as z:
+        with ZipFile(os.path.join(tmp, 'test.zip'), 'w') as z:
+            z.write(os.path.join(tmp, 'test.json'))
+        with open(os.path.join(tmp, 'test.zip'), 'rb') as z:
             response = response.replace(body=z.read())
         spider = spider_with_crawler(spider_class=ZipSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
@@ -249,17 +184,17 @@ def test_parse_zipfile_release_package():
     response.request.url = 'url'
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
-        tmp = os.path.join(files_store, 'test/20010203_040506')
+        tmp = os.path.join(files_store, 'test', '20010203_040506')
         os.makedirs(tmp)
-        with open(tmp + "test.json", 'w') as f:
+        with open(os.path.join(tmp, 'test.json'), 'w') as f:
             release = {'releases': [], 'publisher': {'name': 'test'},
                        'extensions': ['a', 'b'], 'license': 'test', 'extra': 1.1}
             for i in range(110):
                 release['releases'].append({'key': 'value'})
             json.dump(release, f)
-        with ZipFile(tmp + '/test.zip', 'w') as z:
-            z.write(tmp + "test.json")
-        with open(tmp + '/test.zip', 'rb') as z:
+        with ZipFile(os.path.join(tmp, 'test.zip'), 'w') as z:
+            z.write(os.path.join(tmp, 'test.json'))
+        with open(os.path.join(tmp, 'test.zip'), 'rb') as z:
             response = response.replace(body=z.read())
         spider = spider_with_crawler(spider_class=ZipSpider)
         spider.crawler.settings['FILES_STORE'] = files_store

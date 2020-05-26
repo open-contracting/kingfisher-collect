@@ -6,14 +6,14 @@ from ijson import ObjectBuilder, utils
 
 
 @utils.coroutine
-def items_basecoro(target, prefix, map_type=None, array_name=None):
+def items_basecoro(target, prefix, map_type=None, skip_key=None):
     """
-    This is copied from ``ijson/common.py``. An ``array_name`` argument is added. If the ``array_name`` is in the
-    current path, the current event is skipped. Otherwise, the method is identical.
+    This is copied from ``ijson/common.py``. A ``skip_key`` argument is added. If the ``skip_key`` is in the current
+    path, the current event is skipped. Otherwise, the method is identical.
     """
     while True:
         current, event, value = (yield)
-        if array_name and array_name in current:
+        if skip_key and skip_key in current:
             continue
         if current == prefix:
             if event in ('start_map', 'start_array'):
@@ -28,13 +28,13 @@ def items_basecoro(target, prefix, map_type=None, array_name=None):
                 target.send(value)
 
 
-def items(events, prefix, map_type=None, array_name=None):
+def items(events, prefix, map_type=None, skip_key=None):
     """
-    This is copied from ``ijson/common.py``. An ``array_name`` argument is added, which is passed as a keyword argument
-    to :meth:`~kingfisher_scrapy.util.items_basecoro`. Otherwise, the method is identical.
+    This is copied from ``ijson/common.py``. A ``skip_key`` argument is added, which is passed as a keyword argument to
+    :meth:`~kingfisher_scrapy.util.items_basecoro`. Otherwise, the method is identical.
     """
     return utils.coros2gen(events,
-        (items_basecoro, (prefix,), {'map_type': map_type, 'array_name': array_name})  # noqa: E128
+        (items_basecoro, (prefix,), {'map_type': map_type, 'skip_key': skip_key})  # noqa: E128
     )
 
 
