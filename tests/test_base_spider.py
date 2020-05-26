@@ -103,7 +103,7 @@ def test_parse_next_link_200():
     response.request.url = 'url'
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
-        os.makedirs(os.path.join(files_store, 'test/20010203_040506'))
+        os.makedirs(os.path.join(files_store, 'test', '20010203_040506'))
         spider = spider_with_crawler(spider_class=LinksSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
         actual = spider.parse_next_link(response, None).__next__()
@@ -131,13 +131,14 @@ def test_parse_zipfile_200():
     response.request.url = 'url'
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
-        tmp = os.path.join(files_store, 'test/20010203_040506')
+        tmp = os.path.join(files_store, 'test', '20010203_040506')
         os.makedirs(tmp)
 
-        open(tmp + "test", "w").close()
-        with ZipFile(tmp + '/test.zip', 'w') as z:
-            z.write(tmp + "test")
-        with open(tmp + '/test.zip', 'rb') as z:
+        with open(os.path.join(tmp, 'test'), 'w'):
+            pass
+        with ZipFile(os.path.join(tmp, 'test.zip'), 'w') as z:
+            z.write(os.path.join(tmp, 'test'))
+        with open(os.path.join(tmp, 'test.zip'), 'rb') as z:
             response = response.replace(body=z.read())
 
         spider = spider_with_crawler(spider_class=ZipSpider)
@@ -154,14 +155,14 @@ def test_parse_zipfile_json_lines():
     response.request.url = 'url'
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
-        tmp = os.path.join(files_store, 'test/20010203_040506')
+        tmp = os.path.join(files_store, 'test', '20010203_040506')
         os.makedirs(tmp)
-        with open(tmp + "test.json", 'w') as f:
+        with open(os.path.join(tmp, 'test.json'), 'w') as f:
             for i in range(10):
                 f.write('{"key": "value"}\n')
-        with ZipFile(tmp + '/test.zip', 'w') as z:
-            z.write(tmp + "test.json")
-        with open(tmp + '/test.zip', 'rb') as z:
+        with ZipFile(os.path.join(tmp, 'test.zip'), 'w') as z:
+            z.write(os.path.join(tmp, 'test.json'))
+        with open(os.path.join(tmp, 'test.zip'), 'rb') as z:
             response = response.replace(body=z.read())
         spider = spider_with_crawler(spider_class=ZipSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
@@ -183,17 +184,17 @@ def test_parse_zipfile_release_package():
     response.request.url = 'url'
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
-        tmp = os.path.join(files_store, 'test/20010203_040506')
+        tmp = os.path.join(files_store, 'test', '20010203_040506')
         os.makedirs(tmp)
-        with open(tmp + "test.json", 'w') as f:
+        with open(os.path.join(tmp, 'test.json'), 'w') as f:
             release = {'releases': [], 'publisher': {'name': 'test'},
                        'extensions': ['a', 'b'], 'license': 'test', 'extra': 1.1}
             for i in range(110):
                 release['releases'].append({'key': 'value'})
             json.dump(release, f)
-        with ZipFile(tmp + '/test.zip', 'w') as z:
-            z.write(tmp + "test.json")
-        with open(tmp + '/test.zip', 'rb') as z:
+        with ZipFile(os.path.join(tmp, 'test.zip'), 'w') as z:
+            z.write(os.path.join(tmp, 'test.json'))
+        with open(os.path.join(tmp, 'test.zip'), 'rb') as z:
             response = response.replace(body=z.read())
         spider = spider_with_crawler(spider_class=ZipSpider)
         spider.crawler.settings['FILES_STORE'] = files_store
