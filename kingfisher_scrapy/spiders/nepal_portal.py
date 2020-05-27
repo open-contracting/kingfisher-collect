@@ -27,7 +27,7 @@ class NepalPortal(BaseSpider):
             )
             current_year += 1
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield self.build_file_from_response(
             response,

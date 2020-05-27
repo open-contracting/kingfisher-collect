@@ -16,7 +16,7 @@ class France(BaseSpider):
             callback=self.parse_item
         )
 
-    @handle_error()
+    @handle_error
     def parse_item(self, response):
         json_data = json.loads(response.text)
         data = json_data['data']
@@ -43,7 +43,7 @@ class France(BaseSpider):
                     callback=self.parse_item
                 )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield self.build_file_from_response(
             response,

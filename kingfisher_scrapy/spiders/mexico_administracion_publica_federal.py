@@ -18,7 +18,7 @@ class MexicoAdministracionPublicaFederal(BaseSpider):
             meta={'kf_filename': 'page1.json'}
         )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         data = json.loads(response.text)
 

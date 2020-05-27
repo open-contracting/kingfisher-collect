@@ -9,7 +9,7 @@ from kingfisher_scrapy.util import handle_error
 class UruguayReleases(UruguayBase):
     name = 'uruguay_releases'
 
-    @handle_error()
+    @handle_error
     def parse_list(self, response):
         root = response.xpath('//item/link/text()').getall()
 

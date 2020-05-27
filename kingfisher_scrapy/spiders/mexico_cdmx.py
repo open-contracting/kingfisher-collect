@@ -16,7 +16,7 @@ class MexicoCDMXSource(BaseSpider):
             callback=self.parse_list
         )
 
-    @handle_error(file_name='list.json')
+    @handle_error
     def parse_list(self, response):
         data = json.loads(response.text)
         if self.sample:
@@ -29,7 +29,7 @@ class MexicoCDMXSource(BaseSpider):
                 callback=self.parse_record
             )
 
-    @handle_error()
+    @handle_error
     def parse_record(self, response):
         yield self.build_file_from_response(response, response.request.meta['kf_filename'],
                                             data_type='release_package')

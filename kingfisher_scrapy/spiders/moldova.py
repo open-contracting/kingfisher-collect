@@ -24,7 +24,7 @@ class Moldova(BaseSpider):
                 meta={'kf_filename': 'meta-{}-start.json'.format(endpoint), 'endpoint': endpoint, 'data': False}
             )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         if response.request.meta['data']:
             yield self.build_file_from_response(response, response.request.meta['kf_filename'],

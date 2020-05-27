@@ -16,7 +16,7 @@ class HondurasPortalBulkFiles(BaseSpider):
             callback=self.parse_json_list
         )
 
-    @handle_error()
+    @handle_error
     def parse_json_list(self, response):
         filelist = json.loads(response.text)
 

@@ -26,6 +26,6 @@ class UruguayHistorical(ZipSpider):
                 url=base_url.format(year)
             )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield from self.parse_zipfile(response, data_type='release_package')

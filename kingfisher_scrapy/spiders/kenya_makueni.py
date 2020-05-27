@@ -27,7 +27,7 @@ class KenyaMakueni(BaseSpider):
                 callback=self.parse_count
             )
 
-    @handle_error()
+    @handle_error
     def parse_count(self, response):
         total = int(response.text)
         page_size = 300
@@ -39,7 +39,7 @@ class KenyaMakueni(BaseSpider):
                                                   str(page_number)).encode('utf-8')).hexdigest() + '.json'}
             )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield self.build_file_from_response(response, response.request.meta['kf_filename'],
                                             data_type='release_package_list')

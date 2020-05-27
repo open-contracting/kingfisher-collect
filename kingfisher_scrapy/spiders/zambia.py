@@ -12,10 +12,11 @@ class Zambia(ZipSpider):
     def start_requests(self):
         yield scrapy.Request(
             'https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackagelist',
+            meta={'kf_filename': 'list.json'},
             callback=self.parse_list
         )
 
-    @handle_error(file_name='list.json')
+    @handle_error
     def parse_list(self, response):
         json_data = json.loads(response.text)
         files_urls = json_data['packagesPerMonth']
@@ -29,6 +30,6 @@ class Zambia(ZipSpider):
                 meta={'kf_filename': '%s.json' % file_url[-16:].replace('/', '-')},
             )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield from self.parse_zipfile(response, data_type='record_package')

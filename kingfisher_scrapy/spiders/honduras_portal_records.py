@@ -18,7 +18,7 @@ class HondurasPortalRecords(BaseSpider):
             meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
         )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         json_data = json.loads(response.text)
         yield self.build_file(

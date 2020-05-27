@@ -16,7 +16,7 @@ class NepalDhangadhi(BaseSpider):
             callback=self.parse_item,
         )
 
-    @handle_error()
+    @handle_error
     def parse_item(self, response):
         url = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
         json_data = json.loads(response.text)
@@ -30,7 +30,7 @@ class NepalDhangadhi(BaseSpider):
             if self.sample:
                 break
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield self.build_file_from_response(
             response,

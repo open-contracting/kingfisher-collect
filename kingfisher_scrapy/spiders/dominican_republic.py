@@ -18,7 +18,7 @@ class DominicanRepublic(BaseSpider):
         yield scrapy.Request('https://www.dgcp.gob.do/estandar-mundial-ocds/',
                              callback=self.parse_main_page)
 
-    @handle_error()
+    @handle_error
     def parse_main_page(self, response):
         urls = response.css('.fileLink::attr(href)').getall()
         json_urls = list(filter(lambda x: '/JSON_DGCP_' in x, urls))

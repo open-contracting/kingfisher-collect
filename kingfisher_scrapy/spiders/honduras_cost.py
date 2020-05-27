@@ -10,7 +10,7 @@ class HondurasCoST(BaseSpider):
     name = 'honduras_cost'
     start_urls = ['http://app.sisocs.org/protected/ocdsShow/']
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         btns = response.css('script').xpath('text()').getall()
         for btn in btns:
@@ -25,7 +25,7 @@ class HondurasCoST(BaseSpider):
                             callback=self.parse_btn
                         )
 
-    @handle_error()
+    @handle_error
     def parse_btn(self, response):
         yield self.build_file_from_response(
             response,

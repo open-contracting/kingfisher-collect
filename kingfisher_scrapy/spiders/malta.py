@@ -18,7 +18,7 @@ class Malta(ZipSpider):
             callback=self.parse_list
         )
 
-    @handle_error()
+    @handle_error
     def parse_list(self, response):
         url = 'http://demowww.etenders.gov.mt{}'
         json_data = json.loads(response.text)
@@ -34,6 +34,6 @@ class Malta(ZipSpider):
                 if self.sample:
                     break
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield from self.parse_zipfile(response, data_type='record_package')

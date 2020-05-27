@@ -28,7 +28,7 @@ class MexicoQuienEsQuien(BaseSpider):
                 callback=self.parse_count
             )
 
-    @handle_error()
+    @handle_error
     def parse_count(self, response):
         limit = 1000
         json_data = json.loads(response.text)
@@ -42,7 +42,7 @@ class MexicoQuienEsQuien(BaseSpider):
                                                   str(offset)).encode('utf-8')).hexdigest() + '.json'}
             )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         json_data = json.loads(response.text)
         yield self.build_file(

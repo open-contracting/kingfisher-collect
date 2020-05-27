@@ -15,10 +15,11 @@ class AfghanistanReleases(BaseSpider):
     def start_requests(self):
         yield scrapy.Request(
             url='https://ocds.ageops.net/api/ocds/releases/dates',
+            meta={'kf_filename': 'list.json'},
             callback=self.parse_list
         )
 
-    @handle_error(file_name='list.json')
+    @handle_error
     def parse_list(self, response):
         files_urls = json.loads(response.text)
         if self.sample:

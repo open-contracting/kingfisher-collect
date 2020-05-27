@@ -6,7 +6,7 @@ from kingfisher_scrapy.util import handle_error
 
 
 class DigiwhistBase(BaseSpider):
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield self.build_file_from_response(response, 'file.tar.gz', post_to_api=False)
 

@@ -17,7 +17,7 @@ class MexicoJalisco(BaseSpider):
             callback=self.parse_list
         )
 
-    @handle_error(file_name='list.json')
+    @handle_error
     def parse_list(self, response):
         datas = json.loads(response.text)
         if self.sample:
@@ -29,7 +29,7 @@ class MexicoJalisco(BaseSpider):
                 callback=self.parse_record_package
             )
 
-    @handle_error()
+    @handle_error
     def parse_record_package(self, response):
         json_data = json.loads(response.text)
         if 'packages' in json_data:
@@ -42,7 +42,7 @@ class MexicoJalisco(BaseSpider):
         yield self.build_file_from_response(response, response.request.meta['kf_filename'],
                                             data_type='record_package')
 
-    @handle_error()
+    @handle_error
     def parse_release_package(self, response):
         yield self.build_file_from_response(response, response.request.meta['kf_filename'],
                                             data_type='release_package')

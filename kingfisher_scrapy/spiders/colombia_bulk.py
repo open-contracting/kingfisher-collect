@@ -27,7 +27,7 @@ class ColombiaBulk(ZipSpider):
             callback=self.parse_list
         )
 
-    @handle_error()
+    @handle_error
     def parse_list(self, response):
         urls = response.css('.enlaces_contenido').css('a::attr(href)').getall()
         urls = [urls[0]] if self.sample else urls
@@ -35,6 +35,6 @@ class ColombiaBulk(ZipSpider):
             filename = urlparse(url).path.split('/')[-1]
             yield scrapy.Request(url, meta={'kf_filename': filename})
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield from self.parse_zipfile(response, 'release_in_Release', file_format='json_lines', encoding='iso-8859-1')

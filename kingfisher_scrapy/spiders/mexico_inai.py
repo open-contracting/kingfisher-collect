@@ -13,10 +13,11 @@ class MexicoINAI(BaseSpider):
     def start_requests(self):
         yield scrapy.Request(
             url='https://datos.gob.mx/busca/api/3/action/package_search?q=organization:inai&rows=500',
+            meta={'kf_filename': 'list.json'},
             callback=self.parse_list
         )
 
-    @handle_error(file_name='list.json')
+    @handle_error
     def parse_list(self, response):
         datas = json.loads(response.text)
         for result in datas['result']['results']:
@@ -43,7 +44,7 @@ class MexicoINAI(BaseSpider):
         else:
             yield self.build_file_error_from_response(response)
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield self.build_file_from_response(
             response,

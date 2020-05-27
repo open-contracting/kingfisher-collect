@@ -19,7 +19,7 @@ class AfghanistanRecords(BaseSpider):
             callback=self.parse_list
         )
 
-    @handle_error(file_name='list.json')
+    @handle_error
     def parse_list(self, response):
         files_urls = json.loads(response.text)
         if self.sample:

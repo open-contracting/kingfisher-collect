@@ -112,7 +112,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
             self.auth_failed = True
             raise AuthenticationError()
 
-    @handle_error()
+    @handle_error
     def parse_pages(self, response):
         content = json.loads(response.text)
         for url in self.get_files_to_download(content):
@@ -130,7 +130,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
                 callback=self.parse_pages
             )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield self.build_file_from_response(
             response,

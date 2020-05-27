@@ -18,7 +18,7 @@ class Uganda(BaseSpider):
             callback=self.parse_pages
         )
 
-    @handle_error()
+    @handle_error
     def parse_pages(self, response):
         url_pdes = 'https://gpp.ppda.go.ug/adminapi/public/api/pdes?page={}'
 
@@ -35,7 +35,7 @@ class Uganda(BaseSpider):
                 callback=self.parse_data
             )
 
-    @handle_error()
+    @handle_error
     def parse_data(self, response):
         url = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v1/releases/{}?fy={}&pde={}'
         tags = ['planning', 'tender', 'award', 'contract']
@@ -66,7 +66,7 @@ class Uganda(BaseSpider):
                     if self.sample:
                         break
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield self.build_file_from_response(
             response,

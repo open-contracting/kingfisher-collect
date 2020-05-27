@@ -16,7 +16,7 @@ class CanadaMontreal(BaseSpider):
             meta={'kf_filename': 'page0.json'}
         )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         # Actual data
         yield self.build_file_from_response(

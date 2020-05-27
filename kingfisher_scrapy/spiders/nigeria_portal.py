@@ -12,7 +12,7 @@ class NigeriaPortal(BaseSpider):
     download_delay = 0.9
     user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         formdata = {
             '__VIEWSTATE': response.css('input#__VIEWSTATE::attr(value)').extract_first(),
@@ -35,7 +35,7 @@ class NigeriaPortal(BaseSpider):
             callback=self.parse_post
         )
 
-    @handle_error()
+    @handle_error
     def parse_post(self, response):
         yield self.build_file_from_response(
             response,

@@ -21,7 +21,7 @@ class IndonesiaBandung(BaseSpider):
                 callback=self.parse_data
             )
 
-    @handle_error()
+    @handle_error
     def parse_data(self, response):
         json_data = json.loads(response.text)
         items = json_data['data']
@@ -42,7 +42,7 @@ class IndonesiaBandung(BaseSpider):
                     callback=self.parse_data
                 )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         json_data = json.loads(response.text)
         if len(json_data) == 0:

@@ -20,7 +20,7 @@ class MoldovaOld(BaseSpider):
                     meta={'kf_filename': 'year-%d.json' % year}
                 )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield self.build_file_from_response(response, response.request.meta['kf_filename'],
                                             data_type='release_package')

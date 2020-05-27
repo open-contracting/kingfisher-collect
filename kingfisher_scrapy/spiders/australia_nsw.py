@@ -65,7 +65,7 @@ class AustraliaNSW(BaseSpider):
             yield self.build_file_error_from_response(
                 response, file_name=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json')
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield self.build_file_from_response(response, response.request.meta['kf_filename'],
                                             data_type='release_package')

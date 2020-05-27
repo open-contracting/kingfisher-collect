@@ -10,7 +10,7 @@ class UruguayRecords(UruguayBase):
     name = 'uruguay_records'
     base_record_url = 'https://www.comprasestatales.gub.uy/ocds/record/{}'
 
-    @handle_error()
+    @handle_error
     def parse_list(self, response):
         root = response.xpath('//item/title/text()').getall()
 

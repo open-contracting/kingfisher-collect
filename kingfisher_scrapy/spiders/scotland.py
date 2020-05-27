@@ -52,7 +52,7 @@ class Scotland(BaseSpider):
                                          meta={'kf_filename': '{}_type_{}.json'.format(datestring, notice_type)})
                 marker = marker + datetime.timedelta(days=14)
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield self.build_file_from_response(response, response.request.meta['kf_filename'],
                                             data_type='release_package')

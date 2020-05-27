@@ -6,23 +6,21 @@ from functools import wraps
 from ijson import ObjectBuilder, utils
 
 
-def handle_error(**kwargs):
+def handle_error(decorated):
     """
     A decorator for spider parse methods.
 
     Yields a :class:`~kingfisher_scrapy.items.FileError` for non-2xx HTTP status codes.
     """
-    def decorator(decorated):
-        @wraps(decorated)
-        def wrapper(self, response):
-            # All 2xx codes are successful.
-            # https://tools.ietf.org/html/rfc7231#section-6.3
-            if 200 <= response.status < 300:
-                return decorated(self, response)
-            else:
-                yield self.build_file_error_from_response(response, **kwargs)
-        return wrapper
-    return decorator
+    @wraps(decorated)
+    def wrapper(self, response):
+        # All 2xx codes are successful.
+        # https://tools.ietf.org/html/rfc7231#section-6.3
+        if self.is_http_success(response):
+            return decorated(self, response)
+        else:
+            yield self.build_file_error_from_response(response)
+    return wrapper
 
 
 @utils.coroutine

@@ -49,7 +49,7 @@ class ParaguayHacienda(BaseSpider):
             meta={'meta': True, 'first': True}
         )
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         data = json.loads(response.text)
         base_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/ocds/release-package/{}'

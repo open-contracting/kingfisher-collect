@@ -17,11 +17,12 @@ class Portugal(ZipSpider):
         id = '5ae97fa2c8d8c915d5faa3bf'
         page_size = 20
         yield scrapy.Request(
-            url.format(id, page_size),
+            url=url.format(id, page_size),
+            meta={'kf_filename': 'list.json'},
             callback=self.parse_list
         )
 
-    @handle_error(file_name='list.json')
+    @handle_error
     def parse_list(self, response):
         datas = json.loads(response.text)
         for data in datas['data']:
@@ -36,7 +37,7 @@ class Portugal(ZipSpider):
                     if self.sample:
                         break
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield from self.parse_zipfile(response, data_type='record_package',
                                       file_format='json_lines', encoding='iso-8859-1')

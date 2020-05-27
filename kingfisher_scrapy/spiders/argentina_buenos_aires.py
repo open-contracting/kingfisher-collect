@@ -24,16 +24,17 @@ class ArgentinaBuenosAires(ZipSpider):
     def start_requests(self):
         yield scrapy.Request(
             url='https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras',
+            meta={'kf_filename': 'list.json'},
             callback=self.parse_list
         )
 
-    @handle_error(file_name='list.json')
+    @handle_error
     def parse_list(self, response):
         data = json.loads(response.text)
         for resource in data['result']['resources']:
             if resource['format'].upper() == 'JSON':
                 yield scrapy.Request(url=resource['url'])
 
-    @handle_error()
+    @handle_error
     def parse(self, response):
         yield from self.parse_zipfile(response, 'release_package', file_format='release_package')
