@@ -1,13 +1,11 @@
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 
 import json
-import logging
 import os
 
 import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
-from sentry_sdk.integrations.logging import LoggingIntegration
 
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.kingfisher_process import Client
