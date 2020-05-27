@@ -64,6 +64,10 @@ class KingfisherFilesStore:
 
 
 class KingfisherProcessAPI:
+    """
+    If the ``KINGFISHER_API_URI`` and ``KINGFISHER_API_KEY`` environment variables or configuration settings are set,
+    then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
+    """
     def __init__(self, url, key, directory=None):
         """
         Initializes a Kingfisher Process API client.
@@ -106,8 +110,7 @@ class KingfisherProcessAPI:
 
     def item_scraped(self, item, spider):
         """
-        If the Scrapy item indicates success, sends a Kingfisher Process API request to create either a Kingfisher
-        Process file or file item. Otherwise, sends an API request to create a file error.
+        Sends an API request to store the file, file item or file error in Kingfisher Process.
         """
         if not item.get('post_to_api', True):
             return
@@ -130,7 +133,6 @@ class KingfisherProcessAPI:
             if spider.note:
                 data['collection_note'] = spider.note
 
-            # File Item
             if isinstance(item, FileItem):
                 data['number'] = item['number']
                 data['data'] = item['data']
