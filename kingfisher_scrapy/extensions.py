@@ -1,10 +1,13 @@
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 
 import json
+import logging
 import os
 
+import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.kingfisher_process import Client
@@ -157,3 +160,20 @@ class KingfisherProcessAPI:
         if not response.ok:
             spider.logger.warning(
                 'Failed to post [{}]. {} status code: {}'.format(item['url'], name, response.status_code))
+
+
+# https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry
+class SentryLogging:
+    """
+    Send exceptions and errors to Sentry.
+    """
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        sentry_dsn = crawler.settings.get('SENTRY_DSN', None)
+        if sentry_dsn is None:
+            raise NotConfigured
+        extension = cls()
+        # by default only the errors are sent you sentry https://docs.sentry.io/platforms/python/logging/
+        sentry_sdk.init(sentry_dsn)
+        return extension

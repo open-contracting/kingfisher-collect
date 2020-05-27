@@ -71,6 +71,8 @@ EXTENSIONS = {
     # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
     'kingfisher_scrapy.extensions.KingfisherProcessAPI': 500,
+    # before any other extension
+    'kingfisher_scrapy.extensions.SentryLogging': -1,
 }
 
 # Configure item pipelines
@@ -79,6 +81,8 @@ EXTENSIONS = {
 #    'kingfisher_scrapy.pipelines.KingfisherScrapyPipeline': 300,
 #}
 
+# To send the logs to sentry
+SENTRY_DSN = os.getenv('SENTRY_DSN')
 # To send items to Kingfishet Process, set this to, for example, "http://kingfisher.example.com" (no trailing slash).
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
 # Set this to the same value as Kingfisher Process' `API_KEYS` setting.
