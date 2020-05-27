@@ -42,11 +42,7 @@ class France(BaseSpider):
                         callback=self.parse_item
                     )
         else:
-            yield {
-                'success': False,
-                'url': response.request.url,
-                'errors': {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def parse(self, response):
         if response.status == 200:
@@ -56,9 +52,4 @@ class France(BaseSpider):
                 data_type="release_package"
             )
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)

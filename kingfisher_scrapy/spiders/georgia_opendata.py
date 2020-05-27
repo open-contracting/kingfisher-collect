@@ -19,9 +19,4 @@ class GeorgiaOpenData(ZipSpider):
         if response.status == 200:
             yield from self.parse_zipfile(response, 'release_package', file_format='release_package')
         else:
-            yield {
-                'success': False,
-                'file_name': 'zip.json',
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response, filename='zip.json')

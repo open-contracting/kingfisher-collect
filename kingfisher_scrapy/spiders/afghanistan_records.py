@@ -32,12 +32,7 @@ class AfghanistanRecords(BaseSpider):
                     callback=self.parse_record
                 )
         else:
-            yield {
-                'success': False,
-                'file_name': 'list.json',
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response, file_name='list.json')
 
     def parse_record(self, response):
         if response.status == 200:
@@ -57,9 +52,4 @@ class AfghanistanRecords(BaseSpider):
                     dont_filter=True,
                 )
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)

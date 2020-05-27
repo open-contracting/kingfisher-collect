@@ -35,9 +35,4 @@ class NepalPortal(BaseSpider):
             )
 
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)

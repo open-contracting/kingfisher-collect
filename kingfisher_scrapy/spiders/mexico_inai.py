@@ -31,12 +31,7 @@ class MexicoINAI(BaseSpider):
                             callback=self.parse_redirect
                         )
         else:
-            yield {
-                'success': False,
-                'file_name': 'list.json',
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response, filename='list.json')
 
     def parse_redirect(self, response):
         if response.status == 301:
@@ -47,12 +42,7 @@ class MexicoINAI(BaseSpider):
                 callback=self.parse
             )
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def parse(self, response):
         if response.status == 200:
@@ -63,9 +53,4 @@ class MexicoINAI(BaseSpider):
                 encoding='utf-8-sig'
             )
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)

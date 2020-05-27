@@ -129,11 +129,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
                     callback=self.parse_pages
                 )
         else:
-            yield {
-                'success': False,
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def parse(self, response):
         if response.status == 200:
@@ -143,12 +139,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
                 data_type=self.data_type
             )
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def get_files_to_download(self, content):
         """ Override this

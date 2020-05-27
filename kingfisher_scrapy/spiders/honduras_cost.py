@@ -24,12 +24,7 @@ class HondurasCoST(BaseSpider):
                                 callback=self.parse_btn
                             )
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def parse_btn(self, response):
         if response.status == 200:
@@ -40,9 +35,4 @@ class HondurasCoST(BaseSpider):
             )
 
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)

@@ -33,12 +33,7 @@ class Malta(ZipSpider):
                     if self.sample:
                         break
         else:
-            yield {
-                'success': False,
-                'kf_filename': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def parse(self, response):
         yield from self.parse_zipfile(response, data_type='record_package')

@@ -238,9 +238,5 @@ class OpenOpps(BaseSpider):
                 self.logger.info('Status: {}. Results exceeded in a range of one hour, we save the '
                                  'first 10,000 data for: {}'.format(response.status, response.request.url))
             else:
-                yield {
-                    'success': False,
-                    'file_name': hashlib.md5(response.request.url.encode('utf-8')).hexdigest(),
-                    'url': response.request.url,
-                    'errors': {'http_code': response.status}
-                }
+                yield self.build_file_error_from_response(
+                    response, filename=hashlib.md5(response.request.url.encode('utf-8')).hexdigest())

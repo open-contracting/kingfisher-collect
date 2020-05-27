@@ -34,11 +34,7 @@ class ColombiaBulk(ZipSpider):
                 filename = urlparse(url).path.split('/')[-1]
                 yield scrapy.Request(url, meta={'kf_filename': filename})
         else:
-            yield {
-                'success': False,
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def parse(self, response):
         yield from self.parse_zipfile(response, 'release_in_Release', file_format='json_lines', encoding='iso-8859-1')

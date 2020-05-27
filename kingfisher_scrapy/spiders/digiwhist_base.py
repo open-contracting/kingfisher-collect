@@ -16,9 +16,4 @@ class DigiwhistBase(BaseSpider):
                 with tar.extractfile(tar.getnames()[0]) as readfp:
                     yield from self.parse_json_lines(readfp, 'release_package', self.start_urls[0])
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)

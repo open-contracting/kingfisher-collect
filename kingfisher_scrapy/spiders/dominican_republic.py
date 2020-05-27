@@ -42,9 +42,4 @@ class DominicanRepublic(BaseSpider):
             os.remove(file.name)
         else:
             filename = response.request.url.split('/')[-1]
-            yield {
-                'success': False,
-                'file_name': filename,
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response, filename=filename)

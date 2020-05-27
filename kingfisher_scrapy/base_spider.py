@@ -124,6 +124,17 @@ class BaseSpider(scrapy.Spider):
             'post_to_api': True,
         }
 
+    def build_file_error_from_response(self, response, **kwargs):
+        file_error = {
+            'success': False,
+            'url': response.request.url,
+            'errors': {'http_code': response.status},
+        }
+        if 'kf_filename' in response.request.meta:
+            file_error['file_name'] = response.request.meta['kf_filename']
+        file_error.update(kwargs)
+        return file_error
+
     def _get_package_metadata(self, f, skip_key):
         """
         Returns the package metadata from a file object.
@@ -208,12 +219,7 @@ class ZipSpider(BaseSpider):
                     yield self.save_data_to_disk(data.read(), filename, data_type=data_type, url=response.request.url,
                                                  encoding=encoding)
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
 
 class LinksSpider(BaseSpider):
@@ -240,9 +246,4 @@ class LinksSpider(BaseSpider):
             if not self.sample:
                 yield self.next_link(response)
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)
