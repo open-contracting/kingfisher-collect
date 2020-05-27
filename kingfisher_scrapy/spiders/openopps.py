@@ -6,7 +6,7 @@ from math import ceil
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.exceptions import AuthenticationFailureException
+from kingfisher_scrapy.exceptions import AuthenticationError
 
 
 class OpenOpps(BaseSpider):
@@ -93,11 +93,11 @@ class OpenOpps(BaseSpider):
             else:
                 self.logger.error(
                     'Authentication failed. Status code: {}. {}'.format(response.status, response.text))
-                raise AuthenticationFailureException()
+                raise AuthenticationError()
         else:
             self.logger.error(
                 'Authentication failed. Status code: {}. {}'.format(response.status, response.text))
-            raise AuthenticationFailureException()
+            raise AuthenticationError()
 
     def start_requests_pages(self):
         page_size = 1000

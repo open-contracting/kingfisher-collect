@@ -4,7 +4,7 @@ from datetime import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.exceptions import AuthenticationFailureException
+from kingfisher_scrapy.exceptions import AuthenticationError
 
 
 class ParaguayHacienda(BaseSpider):
@@ -118,7 +118,7 @@ class ParaguayHacienda(BaseSpider):
                 if attempt == self.max_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.auth_failed = True
-                    raise AuthenticationFailureException()
+                    raise AuthenticationError()
                 else:
                     self.logger.info('Requesting access token, attempt {} of {}'.format(
                         attempt + 1,
@@ -137,7 +137,7 @@ class ParaguayHacienda(BaseSpider):
         else:
             self.logger.error('Authentication failed. Status code: {}'.format(response.status))
             self.auth_failed = True
-            raise AuthenticationFailureException()
+            raise AuthenticationError()
 
     def expires_soon(self, time_diff):
         """ Tells if the access token will expire soon (required by

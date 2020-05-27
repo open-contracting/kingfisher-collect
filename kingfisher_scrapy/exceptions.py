@@ -2,7 +2,7 @@ class KingfisherScrapyError(Exception):
     """Base class for exceptions from within this application"""
 
 
-class AuthenticationFailureException(KingfisherScrapyError):
+class AuthenticationError(KingfisherScrapyError):
     """Raised when the maximum number of attempts to retrieve an access token is reached"""
 
 
