@@ -1,6 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class GeorgiaOpenData(ZipSpider):
@@ -17,4 +18,4 @@ class GeorgiaOpenData(ZipSpider):
 
     @handle_error(file_name='all.json')
     def parse(self, response):
-            yield from self.parse_zipfile(response, 'release_package', file_format='release_package')
+        yield from self.parse_zipfile(response, 'release_package', file_format='release_package')
