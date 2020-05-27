@@ -44,7 +44,7 @@ class BaseSpider(scrapy.Spider):
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None,
-                 date_format='date', *args, **kwargs):
+                 date_format='date', last=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
@@ -53,12 +53,14 @@ class BaseSpider(scrapy.Spider):
         self.until_date = until_date
         self.note = note
         self.date_format = self.VALID_DATE_FORMATS[date_format]
+        self.last = last == 'true'
 
         spider_arguments = {
             'sample': sample,
             'note': note,
             'from_date': from_date,
             'until_date': until_date,
+            'last': last,
         }
         spider_arguments.update(kwargs)
         self.logger.info('Spider arguments: {!r}'.format(spider_arguments))
@@ -97,6 +99,12 @@ class BaseSpider(scrapy.Spider):
         Prepends the crawl's relative directory to the filename.
         """
         return os.path.join(self._get_crawl_path(), filename)
+
+    def build_last_release_date_item(self, response, data_type):
+        if data_type == 'releases':
+            return {
+                'date': json.loads(response.text)[data_type][0]['date']
+            }
 
     def save_response_to_disk(self, response, filename, data_type=None, encoding='utf-8'):
         """

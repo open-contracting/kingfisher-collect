@@ -14,17 +14,25 @@ class AustraliaNSW(BaseSpider):
         release_types = ['planning', 'tender', 'contract']
         page_limit = 10 if self.sample else 1000
         url = 'https://tenders.nsw.gov.au/?event=public.api.{}.search&ResultsPerPage={}'
-        for release_type in release_types:
+        if self.last:
             yield scrapy.Request(
-                url.format(release_type, page_limit),
-                meta={'release_type': release_type},
+                url=url.format('tender', 1),
                 callback=self.parse_list
             )
+        else:
+            for release_type in release_types:
+                yield scrapy.Request(
+                    url.format(release_type, page_limit),
+                    meta={'release_type': release_type},
+                    callback=self.parse_list
+                )
 
     def parse_list(self, response):
         if response.status == 200:
 
             json_data = json.loads(response.text)
+            if self.last:
+                yield self.build_last_release_date_item(response, 'releases')
 
             # More Pages?
             if 'links' in json_data and isinstance(json_data['links'], dict) and 'next' in json_data['links'] \

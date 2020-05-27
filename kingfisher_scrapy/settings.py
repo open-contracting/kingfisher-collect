@@ -68,6 +68,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #}
 EXTENSIONS = {
    'kingfisher_scrapy.extensions.KingfisherAPI': 0,
+   'kingfisher_scrapy.extensions.KingfisherLastDate': 0,
 }
 
 # Configure item pipelines

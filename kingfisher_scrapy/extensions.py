@@ -8,6 +8,23 @@ from kingfisher_scrapy.kingfisher_process import Client
 
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
+class KingfisherLastDate:
+    def __init__(self, filename):
+        self.filename = filename
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        directory = 'last_dates.txt'
+        extension = cls(filename=directory)
+        crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+        return extension
+
+    def item_scraped(self, item, spider):
+        if 'date' in item:
+            with open(self.filename, 'a+') as output:
+                output.write(spider.name + ': ' + item['date'] + '\n')
+
+
 class KingfisherAPI:
     def __init__(self, url, key, directory=None):
         """
@@ -54,6 +71,9 @@ class KingfisherAPI:
         If the Scrapy item indicates success, sends a Kingfisher Process API request to create either a Kingfisher
         Process file or file item. Otherwise, sends an API request to create a file error.
         """
+
+        if 'date' in item:
+            return
         data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
