@@ -28,12 +28,7 @@ class MexicoJalisco(BaseSpider):
                     callback=self.parse_record_package
                 )
         else:
-            yield {
-                'success': False,
-                'file_name': 'list.json',
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response, filename='list.json')
 
     def parse_record_package(self, response):
         if response.status == 200:
@@ -45,24 +40,14 @@ class MexicoJalisco(BaseSpider):
                         meta={'kf_filename': 'packages-%s.json' % hashlib.md5(url.encode('utf-8')).hexdigest()},
                         callback=self.parse_release_package
                     )
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
-                                             data_type='record_package')
+            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                                data_type='record_package')
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def parse_release_package(self, response):
         if response.status == 200:
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
-                                             data_type='release_package')
+            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                                data_type='release_package')
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)

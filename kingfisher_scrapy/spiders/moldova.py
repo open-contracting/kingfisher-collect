@@ -26,10 +26,10 @@ class Moldova(BaseSpider):
     def parse(self, response):
         if response.status == 200:
             if response.request.meta['data']:
-                yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
-                                                 data_type='record_package')
+                yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                                    data_type='record_package')
             else:
-                self.save_response_to_disk(response, response.request.meta['kf_filename'])
+                self.build_file_from_response(response, response.request.meta['kf_filename'])
                 json_data = json.loads(response.text)
                 offset = json_data.get('offset')
                 # not having an offset in the data means the data has come to an end.
@@ -62,9 +62,4 @@ class Moldova(BaseSpider):
                 )
 
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)

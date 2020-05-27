@@ -1,14 +1,30 @@
-# -*- coding: utf-8 -*-
-
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
-
 import scrapy
 
 
-class KingfisherScrapyItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class File(scrapy.Item):
+    file_name = scrapy.Field()
+    url = scrapy.Field()
+    data = scrapy.Field()
+    data_type = scrapy.Field()
+    encoding = scrapy.Field()
+    post_to_api = scrapy.Field()
+
+    # Added by extensions.
+    path = scrapy.Field()
+    files_store = scrapy.Field()
+
+
+class FileItem(scrapy.Item):
+    number = scrapy.Field()
+    file_name = scrapy.Field()
+    url = scrapy.Field()
+    data = scrapy.Field()
+    data_type = scrapy.Field()
+    encoding = scrapy.Field()
+    post_to_api = scrapy.Field()
+
+
+class FileError(scrapy.Item):
+    file_name = scrapy.Field()
+    url = scrapy.Field()
+    errors = scrapy.Field()

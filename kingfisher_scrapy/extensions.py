@@ -1,13 +1,15 @@
+# https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
+
 import json
 import os
 
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
+from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.kingfisher_process import Client
 
 
-# https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 class KingfisherFilesStore:
     def __init__(self, directory):
         self.directory = directory
@@ -21,12 +23,11 @@ class KingfisherFilesStore:
 
     def item_scraped(self, item, spider):
         """
-        Writes the item's data to the filename in the crawl's directory.
+        If the item is a file, writes its data to the filename in the crawl's directory.
 
         Writes a ``<filename>.fileinfo`` metadata file in the crawl's directory, and returns a dict with the metadata.
         """
-        # Skip failures and parts of files.
-        if not item['success'] or 'number' in item:
+        if not isinstance(item, File):
             return
 
         # The crawl's relative directory, in the format `<spider_name>[_sample]/<YYMMDD_HHMMSS>`.
@@ -119,14 +120,18 @@ class KingfisherAPI:
             'url': item['url'],
         }
 
-        if item['success']:
+        if isinstance(item, FileError):
+            data['errors'] = json.dumps(item['errors'])
+
+            self._request(item, spider, 'create_file_error', data, name='File Errors API')
+        else:
             data['data_type'] = item['data_type']
             data['encoding'] = item.get('encoding', 'utf-8')
             if spider.note:
                 data['collection_note'] = spider.note
 
             # File Item
-            if 'number' in item:
+            if isinstance(item, FileItem):
                 data['number'] = item['number']
                 data['data'] = item['data']
 
@@ -144,12 +149,6 @@ class KingfisherAPI:
                     files = {'file': (item['file_name'], f, 'application/json')}
 
                 self._request(item, spider, 'create_file', data, files)
-
-        # File Error
-        else:
-            data['errors'] = json.dumps(item['errors'])
-
-            self._request(item, spider, 'create_file_error', data, name='File Errors API')
 
     def _request(self, item, spider, method, *args, name='API'):
         response = getattr(self.client, method)(*args)

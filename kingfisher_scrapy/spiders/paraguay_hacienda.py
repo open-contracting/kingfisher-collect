@@ -21,7 +21,7 @@ class ParaguayHacienda(BaseSpider):
 
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
-           'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
+            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
         },
         'CONCURRENT_REQUESTS': 1,
     }
@@ -80,16 +80,11 @@ class ParaguayHacienda(BaseSpider):
                             dont_filter=True
                         )
             else:
-                yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
-                                                 data_type='release_package')
+                yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                                    data_type='release_package')
 
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def request_access_token(self):
         """ Requests a new access token """

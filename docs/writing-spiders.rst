@@ -42,7 +42,7 @@ Then, for *each* URL:
 
 2. GET requests are passes it to the crawler engine to be executed. The response is passed back to the ``parse`` method in the spider.
 3. The ``parse`` method must check the return status code! If it is not 200, this must be reported by fielding a block of information.
-4. If the ``parse`` method has got a file it wants to save, it must call ``save_response_to_disk`` to do so! It should then yield a block of information.
+4. If the ``parse`` method has got a file it wants to save, it must yield something, typically using ``build_file_from_response``.
 5. The ``parse`` method can then yield further requests for processing.
 6. The blocks of information are passed to the pipeline which fires it all off to the Kingfisher Process API.
 
@@ -66,24 +66,11 @@ Here is a sample:
             # We must check the response code
             if response.status == 200:
                 # It was a success!
-                # We must call to save to the disk
-                self.save_response_to_disk(response, response.request.meta['kf_filename'])
-                # We must send some information about this success
-                yield {
-                    'success': True,
-                    'file_name': response.request.meta['kf_filename'],
-                    "data_type": "release_package",
-                    "url": response.request.url,
-                }
+                yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type='release_package')
             else:
                 # It was a failure :-(
                 # We must send some information about this failure
-                yield {
-                    'success': False,
-                    'file_name': response.request.meta['kf_filename'],
-                    "url": response.request.url,
-                    "errors": {"http_code": response.status}
-                }
+                yield self.build_file_error_from_response(response)
 
 Spider properties
 -----------------
