@@ -5,7 +5,7 @@ from unittest.mock import Mock
 from zipfile import ZipFile
 
 import pytest
-from scrapy.http.response import text
+from scrapy.http import TextResponse
 
 from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider, ZipSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
@@ -74,7 +74,7 @@ def test_next_link():
     spider = spider_with_crawler(spider_class=LinksSpider)
 
     url = 'https://example.com/remote.json'
-    text_response = text.TextResponse('test')
+    text_response = TextResponse('test')
     response = text_response.replace(body='{"links": {"next": "' + url + '"}}')
 
     actual = spider.next_link(response)
@@ -85,7 +85,7 @@ def test_next_link():
 def test_parse_next_link_404():
     spider = spider_with_crawler(spider_class=LinksSpider)
 
-    response = text.TextResponse('test')
+    response = TextResponse('test')
     response.status = 404
     response.request = Mock()
     response.request.meta = {'kf_filename': 'test'}
@@ -100,7 +100,7 @@ def test_parse_next_link_200():
     spider = spider_with_crawler(spider_class=LinksSpider)
 
     url = 'https://example.com/remote.json'
-    text_response = text.TextResponse('test')
+    text_response = TextResponse('test')
 
     response = text_response.replace(body='{"links": {"next": "' + url + '"}}')
     response.status = 200
@@ -124,7 +124,7 @@ def test_parse_next_link_200():
 def test_parse_zipfile_404():
     spider = spider_with_crawler(spider_class=ZipSpider)
 
-    response = text.TextResponse('test')
+    response = TextResponse('test')
     response.status = 404
     response.request = Mock()
     response.request.meta = {'kf_filename': 'test'}
@@ -138,7 +138,7 @@ def test_parse_zipfile_404():
 def test_parse_zipfile_200():
     spider = spider_with_crawler(spider_class=ZipSpider)
 
-    response = text.TextResponse('test')
+    response = TextResponse('test')
     response.status = 200
     response.request = Mock()
     response.request.meta = {'kf_filename': 'test.json'}
@@ -166,7 +166,7 @@ def test_parse_zipfile_200():
 def test_parse_zipfile_json_lines():
     spider = spider_with_crawler(spider_class=ZipSpider)
 
-    response = text.TextResponse('test')
+    response = TextResponse('test')
     response.status = 200
     response.request = Mock()
     response.request.meta = {'kf_filename': 'test.json'}
@@ -203,7 +203,7 @@ def test_parse_zipfile_json_lines():
 def test_parse_zipfile_release_package():
     spider = spider_with_crawler(spider_class=ZipSpider)
 
-    response = text.TextResponse('test')
+    response = TextResponse('test')
     response.status = 200
     response.request = Mock()
     response.request.meta = {'kf_filename': 'test.json'}
