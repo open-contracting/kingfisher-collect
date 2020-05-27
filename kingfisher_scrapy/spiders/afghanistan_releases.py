@@ -31,7 +31,7 @@ class AfghanistanReleases(BaseSpider):
                     callback=self.parse_release_list
                 )
         else:
-            yield self.build_file_error_from_response(response, filename='list.json')
+            yield self.build_file_error_from_response(response, file_name='list.json')
 
     def parse_release_list(self, response):
         if response.status == 200:

@@ -62,7 +62,7 @@ class AustraliaNSW(BaseSpider):
 
         else:
             yield self.build_file_error_from_response(
-                response, filename=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json')
+                response, file_name=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json')
 
     def parse(self, response):
         if response.status == 200:

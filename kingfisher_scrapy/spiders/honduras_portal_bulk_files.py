@@ -35,4 +35,4 @@ class HondurasPortalBulkFiles(BaseSpider):
                 data_type='release_package'
             )
         else:
-            yield self.build_file_error_from_response(response, filename=filename)
+            yield self.build_file_error_from_response(response, file_name=filename)

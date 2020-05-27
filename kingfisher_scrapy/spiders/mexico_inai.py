@@ -31,7 +31,7 @@ class MexicoINAI(BaseSpider):
                             callback=self.parse_redirect
                         )
         else:
-            yield self.build_file_error_from_response(response, filename='list.json')
+            yield self.build_file_error_from_response(response, file_name='list.json')
 
     def parse_redirect(self, response):
         if response.status == 301:

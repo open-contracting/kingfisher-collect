@@ -29,7 +29,7 @@ class MexicoCDMXSource(BaseSpider):
                     callback=self.parse_record
                 )
         else:
-            yield self.build_file_error_from_response(response, filename='list.json')
+            yield self.build_file_error_from_response(response, file_name='list.json')
 
     def parse_record(self, response):
         if response.status == 200:

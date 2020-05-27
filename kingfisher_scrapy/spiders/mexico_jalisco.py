@@ -28,7 +28,7 @@ class MexicoJalisco(BaseSpider):
                     callback=self.parse_record_package
                 )
         else:
-            yield self.build_file_error_from_response(response, filename='list.json')
+            yield self.build_file_error_from_response(response, file_name='list.json')
 
     def parse_record_package(self, response):
         if response.status == 200:
