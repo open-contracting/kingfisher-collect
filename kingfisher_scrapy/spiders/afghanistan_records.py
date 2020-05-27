@@ -28,26 +28,10 @@ class AfghanistanRecords(BaseSpider):
         for file_url in files_urls:
             yield scrapy.Request(
                 url=file_url,
-                meta={'kf_filename': file_url.split('/')[-1]+'.json'},
+                meta={'kf_filename': file_url.split('/')[-1] + '.json'},
                 callback=self.parse_record
             )
 
+    @handle_error
     def parse_record(self, response):
-        if self.is_http_success(response):
-
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type="record")
-
-        elif response.status == 429:
-            self.crawler.engine.pause()
-            time.sleep(600)  # 10 minutes
-            self.crawler.engine.unpause()
-            url = response.request.url
-            # This is dangerous as we might get stuck in a loop here if we always get a 429 response. Try this for now.
-            yield scrapy.Request(
-                url=url,
-                meta={'kf_filename': url.split('/')[-1]+'.json'},
-                callback=self.parse_record,
-                dont_filter=True,
-            )
-        else:
-            yield self.build_file_error_from_response(response)
+        yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type="record")
