@@ -28,6 +28,8 @@ class DominicanRepublic(BaseSpider):
             for url in json_urls:
                 if '/JSON_DGCP_' in url:
                     yield scrapy.Request('https:' + url)
+        else:
+            yield self.build_file_error_from_response(response)
 
     def parse(self, response):
         if response.status == 200:

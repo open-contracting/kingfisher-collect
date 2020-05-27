@@ -16,23 +16,28 @@ class HondurasPortalBulkFiles(BaseSpider):
         )
 
     def parse_json_list(self, response):
-        filelist = json.loads(response.text)
+        if response.status == 200:
+            filelist = json.loads(response.text)
 
-        if self.sample:
-            yield scrapy.Request(filelist[0]['urls']['json'])
+            if self.sample:
+                yield scrapy.Request(filelist[0]['urls']['json'])
 
+            else:
+                for item in filelist:
+                    yield scrapy.Request(item['urls']['json'])
         else:
-            for item in filelist:
-                yield scrapy.Request(item['urls']['json'])
+            yield self.build_file_error_from_response(response)
 
     def parse(self, response):
-
-        filename = urlparse(response.request.url).path.split('/')[-2]
         if response.status == 200:
-            yield self.build_file_from_response(
-                response,
-                filename,
-                data_type='release_package'
-            )
+            filename = urlparse(response.request.url).path.split('/')[-2]
+            if response.status == 200:
+                yield self.build_file_from_response(
+                    response,
+                    filename,
+                    data_type='release_package'
+                )
+            else:
+                yield self.build_file_error_from_response(response, file_name=filename)
         else:
-            yield self.build_file_error_from_response(response, file_name=filename)
+            yield self.build_file_error_from_response(response)

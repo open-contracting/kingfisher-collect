@@ -23,9 +23,7 @@ class HondurasONCAE(ZipSpider):
                 filename = urlparse(url).path.split('/')[-1]
                 yield scrapy.Request(url, meta={'kf_filename': filename}, callback=self.parse_items)
         else:
-            self.logger.info(
-                'Request to main site {} has failed with code {}'.format(response.url, response.status))
-            raise scrapy.exceptions.CloseSpider()
+            yield self.build_file_error_from_response(response)
 
     def parse_items(self, response):
         yield from self.parse_zipfile(response, data_type='release_package')
