@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.extensions import KingfisherProcessAPI, KingfisherFilesStore
+from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessAPI
 from kingfisher_scrapy.items import FileError
 from tests import spider_with_crawler
 
