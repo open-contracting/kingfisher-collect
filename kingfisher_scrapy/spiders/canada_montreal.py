@@ -22,7 +22,7 @@ class CanadaMontreal(BaseSpider):
             if self.last:
                 yield self.build_last_release_date_item(response, 'releases')
             # Actual data
-            yield self.save_response_to_disk(
+            yield self.build_file_from_response(
                 response,
                 response.request.meta['kf_filename'],
                 data_type="release_package"
@@ -43,9 +43,4 @@ class CanadaMontreal(BaseSpider):
                     offset += self.page_limit
 
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)

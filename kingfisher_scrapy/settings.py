@@ -67,8 +67,11 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
 EXTENSIONS = {
-   'kingfisher_scrapy.extensions.KingfisherAPI': 0,
    'kingfisher_scrapy.extensions.KingfisherLastDate': 0,
+    # `KingfisherFilesStore` must run before `KingfisherProcessAPI`, because the file needs to be written before the
+    # request is sent to Kingfisher Process.
+    'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
+    'kingfisher_scrapy.extensions.KingfisherProcessAPI': 500,
 }
 
 # Configure item pipelines
@@ -85,6 +88,8 @@ KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
 # If Kingfisher Process can read Kingfisher Collect's `FILES_STORE`, then Kingfisher Collect can send file paths
 # instead of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.
 KINGFISHER_API_LOCAL_DIRECTORY = os.getenv('KINGFISHER_API_LOCAL_DIRECTORY')
+
+LOG_FORMATTER = 'kingfisher_scrapy.log_formatter.KingfisherLogFormatter'
 
 KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
 KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')

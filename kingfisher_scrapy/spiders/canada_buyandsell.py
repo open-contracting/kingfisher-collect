@@ -31,12 +31,8 @@ class CanadaBuyAndSell(BaseSpider):
         if response.status == 200:
             if self.last:
                 yield self.build_last_release_date_item(response, 'releases')
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
-                                             data_type='release_package')
+            else:
+                yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                                    data_type='release_package')
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)

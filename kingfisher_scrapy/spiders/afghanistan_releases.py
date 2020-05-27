@@ -31,12 +31,7 @@ class AfghanistanReleases(BaseSpider):
                     callback=self.parse_release_list
                 )
         else:
-            yield {
-                'success': False,
-                'file_name': 'list.json',
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response, filename='list.json')
 
     def parse_release_list(self, response):
         if response.status == 200:
@@ -64,17 +59,12 @@ class AfghanistanReleases(BaseSpider):
                 dont_filter=True,
             )
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def parse_release(self, response):
         if response.status == 200:
 
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="release")
+            yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type="release")
 
         elif response.status == 429:
             self.crawler.engine.pause()
@@ -89,9 +79,4 @@ class AfghanistanReleases(BaseSpider):
                 dont_filter=True,
             )
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)

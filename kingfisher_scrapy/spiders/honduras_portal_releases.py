@@ -21,7 +21,7 @@ class HondurasPortalReleases(BaseSpider):
         if response.status == 200:
 
             json_data = json.loads(response.text)
-            yield self.save_data_to_disk(
+            yield self.build_file(
                 json.dumps(json_data['releasePackage']).encode(),
                 response.request.meta['kf_filename'],
                 data_type='release_package',
@@ -38,9 +38,4 @@ class HondurasPortalReleases(BaseSpider):
                 )
 
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)

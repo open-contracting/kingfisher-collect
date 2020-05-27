@@ -18,11 +18,6 @@ class ArgentinaVialidad(BaseSpider):
             if self.last:
                 yield self.build_last_release_date_item(response, 'releases')
             else:
-                yield self.save_response_to_disk(response, 'all.json', data_type='release_package_list')
+                yield self.build_file_from_response(response, 'all.json', data_type='release_package_list')
         else:
-            yield {
-                'success': False,
-                'file_name': 'all.json',
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response, filename='all.json')

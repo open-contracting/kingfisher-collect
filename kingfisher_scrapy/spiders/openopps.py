@@ -6,7 +6,7 @@ from math import ceil
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.exceptions import AuthenticationFailureException
+from kingfisher_scrapy.exceptions import AuthenticationError
 
 
 class OpenOpps(BaseSpider):
@@ -93,11 +93,11 @@ class OpenOpps(BaseSpider):
             else:
                 self.logger.error(
                     'Authentication failed. Status code: {}. {}'.format(response.status, response.text))
-                raise AuthenticationFailureException()
+                raise AuthenticationError()
         else:
             self.logger.error(
                 'Authentication failed. Status code: {}. {}'.format(response.status, response.text))
-            raise AuthenticationFailureException()
+            raise AuthenticationError()
 
     def start_requests_pages(self):
         page_size = 1000
@@ -163,7 +163,7 @@ class OpenOpps(BaseSpider):
                         all_data.append(json_data)
 
                 if all_data:
-                    yield self.save_data_to_disk(
+                    yield self.build_file(
                         all_data,
                         filename=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json',
                         url=response.request.url,
@@ -238,9 +238,5 @@ class OpenOpps(BaseSpider):
                 self.logger.info('Status: {}. Results exceeded in a range of one hour, we save the '
                                  'first 10,000 data for: {}'.format(response.status, response.request.url))
             else:
-                yield {
-                    'success': False,
-                    'file_name': hashlib.md5(response.request.url.encode('utf-8')).hexdigest(),
-                    'url': response.request.url,
-                    'errors': {'http_code': response.status}
-                }
+                yield self.build_file_error_from_response(
+                    response, filename=hashlib.md5(response.request.url.encode('utf-8')).hexdigest())

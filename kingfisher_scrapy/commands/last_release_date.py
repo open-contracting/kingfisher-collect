@@ -27,4 +27,4 @@ class GetLastReleaseDatePerPublisher(ScrapyCommand):
         process.crawl(AustraliaNSW, last='true')
         process.crawl(CanadaBuyAndSell, last='true')
         process.crawl(CanadaMontreal, last='true')
-        process.start()  # the script will block here until all crawling jobs are finished
+        process.start()

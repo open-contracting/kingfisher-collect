@@ -1,9 +1,12 @@
+# https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
+
 import json
 import os
 
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
+from kingfisher_scrapy.items import File, FileError, FileItem, LastReleaseDate
 from kingfisher_scrapy.kingfisher_process import Client
 
 
@@ -14,18 +17,76 @@ class KingfisherLastDate:
 
     @classmethod
     def from_crawler(cls, crawler):
-        directory = 'last_dates.txt'
-        extension = cls(filename=directory)
+        filename = os.path.join(crawler.settings['LAST_RELEASE_DATE_FILE_PATH'], 'last_dates.txt')
+        extension = cls(filename=filename)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         return extension
 
     def item_scraped(self, item, spider):
-        if 'date' in item:
-            with open(self.filename, 'a+') as output:
-                output.write(spider.name + ': ' + item['date'] + '\n')
+        if not isinstance(item, LastReleaseDate):
+            return
+        with open(self.filename, 'a+') as output:
+            output.write(spider.name + ': ' + item['date'] + '\n')
 
 
-class KingfisherAPI:
+class KingfisherFilesStore:
+    def __init__(self, directory):
+        self.directory = directory
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        directory = crawler.settings['FILES_STORE']
+        extension = cls(directory)
+        crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+        return extension
+
+    def item_scraped(self, item, spider):
+        """
+        If the item is a file, writes its data to the filename in the crawl's directory.
+
+        Writes a ``<filename>.fileinfo`` metadata file in the crawl's directory, and returns a dict with the metadata.
+        """
+        if not isinstance(item, File):
+            return
+
+        # The crawl's relative directory, in the format `<spider_name>[_sample]/<YYMMDD_HHMMSS>`.
+        name = spider.name
+        if spider.sample:
+            name += '_sample'
+        path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), item['file_name'])
+
+        self._write_file(path, item['data'], spider)
+        metadata = {
+            'url': item['url'],
+            'data_type': item['data_type'],
+            'encoding': item['encoding'],
+        }
+        self._write_file(path + '.fileinfo', metadata, spider)
+
+        item['path'] = path
+        item['files_store'] = self.directory
+
+    def _write_file(self, path, data, spider):
+        path = os.path.join(self.directory, path)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+        if isinstance(data, bytes):
+            mode = 'wb'
+        else:
+            mode = 'w'
+
+        with open(path, mode) as f:
+            if isinstance(data, (bytes, str)):
+                f.write(data)
+            else:
+                json.dump(data, f)
+
+
+class KingfisherProcessAPI:
+    """
+    If the ``KINGFISHER_API_URI`` and ``KINGFISHER_API_KEY`` environment variables or configuration settings are set,
+    then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
+    """
     def __init__(self, url, key, directory=None):
         """
         Initializes a Kingfisher Process API client.
@@ -68,11 +129,12 @@ class KingfisherAPI:
 
     def item_scraped(self, item, spider):
         """
-        If the Scrapy item indicates success, sends a Kingfisher Process API request to create either a Kingfisher
-        Process file or file item. Otherwise, sends an API request to create a file error.
+        Sends an API request to store the file, file item or file error in Kingfisher Process.
         """
 
         if 'date' in item:
+            return
+        if not item.get('post_to_api', True):
             return
         data = {
             'collection_source': spider.name,
@@ -82,14 +144,17 @@ class KingfisherAPI:
             'url': item['url'],
         }
 
-        if item['success']:
+        if isinstance(item, FileError):
+            data['errors'] = json.dumps(item['errors'])
+
+            self._request(item, spider, 'create_file_error', data, name='File Errors API')
+        else:
             data['data_type'] = item['data_type']
             data['encoding'] = item.get('encoding', 'utf-8')
             if spider.note:
                 data['collection_note'] = spider.note
 
-            # File Item
-            if 'number' in item:
+            if isinstance(item, FileItem):
                 data['number'] = item['number']
                 data['data'] = item['data']
 
@@ -98,21 +163,15 @@ class KingfisherAPI:
             # File
             else:
                 if self.directory:
-                    path = spider.get_local_file_path_excluding_filestore(item['file_name'])
+                    path = item['path']
                     data['local_file_name'] = os.path.join(self.directory, path)
                     files = {}
                 else:
-                    path = spider.get_local_file_path_including_filestore(item['file_name'])
+                    path = os.path.join(item['files_store'], item['path'])
                     f = open(path, 'rb')
                     files = {'file': (item['file_name'], f, 'application/json')}
 
                 self._request(item, spider, 'create_file', data, files)
-
-        # File Error
-        else:
-            data['errors'] = json.dumps(item['errors'])
-
-            self._request(item, spider, 'create_file_error', data, name='File Errors API')
 
     def _request(self, item, spider, method, *args, name='API'):
         response = getattr(self.client, method)(*args)
