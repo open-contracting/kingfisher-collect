@@ -27,7 +27,7 @@ class Moldova(BaseSpider):
         if response.status == 200:
             if response.request.meta['data']:
                 yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                 data_type='record_package')
+                                                    data_type='record_package')
             else:
                 self.build_file_from_response(response, response.request.meta['kf_filename'])
                 json_data = json.loads(response.text)

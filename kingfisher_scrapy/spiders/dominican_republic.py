@@ -38,7 +38,7 @@ class DominicanRepublic(BaseSpider):
                 for f in tmpfile.infolist():
                     with tmpfile.open(f) as jsonFile:
                         yield self.build_file(jsonFile.read(), f.filename, data_type='release_package',
-                                                     url=response.request.url)
+                                              url=response.request.url)
             os.remove(file.name)
         else:
             filename = response.request.url.split('/')[-1]

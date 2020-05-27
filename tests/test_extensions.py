@@ -70,7 +70,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
     if encoding:
         kwargs['encoding'] = encoding
     item = spider.build_file(b'{"key": "value"}', 'file.json', url='https://example.com/remote.json',
-                                    data_type='release_package', post_to_api=post_to_api, **kwargs)
+                             data_type='release_package', post_to_api=post_to_api, **kwargs)
 
     store_extension.item_scraped(item, spider)
 

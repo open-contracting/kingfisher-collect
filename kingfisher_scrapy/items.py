@@ -14,7 +14,6 @@ class File(scrapy.Item):
     files_store = scrapy.Field()
 
 
-
 class FileItem(scrapy.Item):
     number = scrapy.Field()
     file_name = scrapy.Field()

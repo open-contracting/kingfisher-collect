@@ -41,13 +41,13 @@ class MexicoJalisco(BaseSpider):
                         callback=self.parse_release_package
                     )
             yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                             data_type='record_package')
+                                                data_type='record_package')
         else:
             yield self.build_file_error_from_response(response)
 
     def parse_release_package(self, response):
         if response.status == 200:
             yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                             data_type='release_package')
+                                                data_type='release_package')
         else:
             yield self.build_file_error_from_response(response)

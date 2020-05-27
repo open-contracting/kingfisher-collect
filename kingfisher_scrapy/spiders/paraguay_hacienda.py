@@ -21,7 +21,7 @@ class ParaguayHacienda(BaseSpider):
 
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
-           'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
+            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
         },
         'CONCURRENT_REQUESTS': 1,
     }
@@ -81,7 +81,7 @@ class ParaguayHacienda(BaseSpider):
                         )
             else:
                 yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                 data_type='release_package')
+                                                    data_type='release_package')
 
         else:
             yield self.build_file_error_from_response(response)

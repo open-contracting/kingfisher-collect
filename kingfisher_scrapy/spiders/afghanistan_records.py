@@ -46,10 +46,10 @@ class AfghanistanRecords(BaseSpider):
             url = response.request.url
             # This is dangerous as we might get stuck in a loop here if we always get a 429 response. Try this for now.
             yield scrapy.Request(
-                    url=url,
-                    meta={'kf_filename': url.split('/')[-1]+'.json'},
-                    callback=self.parse_record,
-                    dont_filter=True,
-                )
+                url=url,
+                meta={'kf_filename': url.split('/')[-1]+'.json'},
+                callback=self.parse_record,
+                dont_filter=True,
+            )
         else:
             yield self.build_file_error_from_response(response)

@@ -214,7 +214,7 @@ class ZipSpider(BaseSpider):
                                                      encoding=encoding, file_name=filename)
                 else:
                     yield self.build_file(data.read(), filename, data_type=data_type, url=response.request.url,
-                                                 encoding=encoding)
+                                          encoding=encoding)
         else:
             yield self.build_file_error_from_response(response)
 

@@ -27,9 +27,9 @@ class ChileCompraBaseSpider(BaseSpider):
 
     def get_sample_request(self):
         return scrapy.Request(
-                url=self.base_list_url.format(2017, 10, 0, 10),
-                meta={'year': 2017, 'month': 10}
-            )
+            url=self.base_list_url.format(2017, 10, 0, 10),
+            meta={'year': 2017, 'month': 10}
+        )
 
     def start_requests(self):
         if self.sample:
@@ -85,4 +85,4 @@ class ChileCompraBaseSpider(BaseSpider):
             return [self.build_file_error_from_response(response, errors={'http_code': data['status']})]
         else:
             return [self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                               data_type='%s_package' % package_type)]
+                                                  data_type='%s_package' % package_type)]

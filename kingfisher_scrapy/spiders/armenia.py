@@ -20,7 +20,7 @@ class Armenia(BaseSpider):
         if response.status == 200:
 
             yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                             data_type='release_package')
+                                                data_type='release_package')
 
             json_data = json.loads(response.text)
             if not (self.sample):
