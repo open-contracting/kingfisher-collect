@@ -132,9 +132,7 @@ class KingfisherProcessAPI:
         Sends an API request to store the file, file item or file error in Kingfisher Process.
         """
 
-        if 'date' in item:
-            return
-        if not item.get('post_to_api', True):
+        if not item.get('post_to_api', True) or isinstance(item, LastReleaseDate):
             return
         data = {
             'collection_source': spider.name,
