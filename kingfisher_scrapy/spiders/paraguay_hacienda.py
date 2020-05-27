@@ -80,7 +80,7 @@ class ParaguayHacienda(BaseSpider):
                             dont_filter=True
                         )
             else:
-                yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
+                yield self.build_file_from_response(response, response.request.meta['kf_filename'],
                                                  data_type='release_package')
 
         else:

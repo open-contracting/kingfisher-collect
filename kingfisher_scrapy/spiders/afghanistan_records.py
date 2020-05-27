@@ -37,7 +37,7 @@ class AfghanistanRecords(BaseSpider):
     def parse_record(self, response):
         if response.status == 200:
 
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type="record")
+            yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type="record")
 
         elif response.status == 429:
             self.crawler.engine.pause()

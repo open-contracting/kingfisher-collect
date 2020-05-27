@@ -71,7 +71,7 @@ class Uganda(BaseSpider):
 
     def parse(self, response):
         if response.status == 200:
-            yield self.save_response_to_disk(
+            yield self.build_file_from_response(
                 response,
                 response.request.meta['kf_filename'],
                 data_type='release_package'

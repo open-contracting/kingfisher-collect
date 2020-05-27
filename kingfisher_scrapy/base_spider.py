@@ -91,14 +91,13 @@ class BaseSpider(scrapy.Spider):
         """
         return self.crawler.stats.get_value('start_time').strftime(format)
 
-    def save_response_to_disk(self, response, filename, data_type=None, encoding='utf-8', post_to_api=True):
+    def build_file_from_response(self, response, filename, data_type=None, encoding='utf-8', post_to_api=True):
         """
         Returns an item to yield, based on the response to a request.
         """
-        return self.save_data_to_disk(response.body, filename, response.request.url, data_type, encoding,
-                                      post_to_api)
+        return self.build_file(response.body, filename, response.request.url, data_type, encoding, post_to_api)
 
-    def save_data_to_disk(self, data, filename, url=None, data_type=None, encoding='utf-8', post_to_api=True):
+    def build_file(self, data, filename, url=None, data_type=None, encoding='utf-8', post_to_api=True):
         """
         Returns an item to yield.
         """
@@ -112,7 +111,7 @@ class BaseSpider(scrapy.Spider):
             'post_to_api': post_to_api,
         }
 
-    def _build_file_item(self, number, data, data_type, url, encoding, file_name):
+    def build_file_item(self, number, data, data_type, url, encoding, file_name):
         return {
             'success': True,
             'number': number,
@@ -155,7 +154,7 @@ class BaseSpider(scrapy.Spider):
                 break
             if isinstance(line, bytes):
                 line = line.decode(encoding=encoding)
-            yield self._build_file_item(number, line, data_type, url, encoding, file_name)
+            yield self.build_file_item(number, line, data_type, url, encoding, file_name)
 
     def parse_json_array(self, f_package, f_list, data_type, url, encoding='utf-8', array_field_name='releases',
                          file_name='data.json'):
@@ -169,7 +168,7 @@ class BaseSpider(scrapy.Spider):
         for number, items in enumerate(util.grouper(ijson.items(f_list, '{}.item'.format(array_field_name)), size), 1):
             package[array_field_name] = filter(None, items)
             data = json.dumps(package, default=util.default)
-            yield self._build_file_item(number, data, data_type, url, encoding, file_name)
+            yield self.build_file_item(number, data, data_type, url, encoding, file_name)
             if self.sample:
                 break
 
@@ -198,7 +197,7 @@ class ZipSpider(BaseSpider):
         if response.status == 200:
             if file_format:
                 filename = '{}.zip'.format(hashlib.md5(response.url.encode('utf-8')).hexdigest())
-                self.save_response_to_disk(response, filename, post_to_api=False)
+                self.build_file_from_response(response, filename, post_to_api=False)
 
             zip_file = ZipFile(BytesIO(response.body))
             for finfo in zip_file.infolist():
@@ -216,7 +215,7 @@ class ZipSpider(BaseSpider):
                     yield from self.parse_json_array(package, data, data_type, response.request.url,
                                                      encoding=encoding, file_name=filename)
                 else:
-                    yield self.save_data_to_disk(data.read(), filename, data_type=data_type, url=response.request.url,
+                    yield self.build_file(data.read(), filename, data_type=data_type, url=response.request.url,
                                                  encoding=encoding)
         else:
             yield self.build_file_error_from_response(response)
@@ -241,7 +240,7 @@ class LinksSpider(BaseSpider):
     def parse_next_link(self, response, data_type):
         if response.status == 200:
 
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'], data_type=data_type)
+            yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type=data_type)
 
             if not self.sample:
                 yield self.next_link(response)

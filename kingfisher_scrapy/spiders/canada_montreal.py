@@ -19,7 +19,7 @@ class CanadaMontreal(BaseSpider):
         if response.status == 200:
 
             # Actual data
-            yield self.save_response_to_disk(
+            yield self.build_file_from_response(
                 response,
                 response.request.meta['kf_filename'],
                 data_type="release_package"

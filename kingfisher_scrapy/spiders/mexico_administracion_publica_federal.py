@@ -23,7 +23,7 @@ class MexicoAdministracionPublicaFederal(BaseSpider):
             data = json.loads(response.text)
 
             # Actual data
-            yield self.save_response_to_disk(
+            yield self.build_file_from_response(
                 response,
                 response.request.meta['kf_filename'],
                 data_type="record_package_list_in_results"

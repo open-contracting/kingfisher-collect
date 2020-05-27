@@ -84,5 +84,5 @@ class ChileCompraBaseSpider(BaseSpider):
         elif 'status' in data and data['status'] != 200:
             return [self.build_file_error_from_response(response, errors={'http_code': data['status']})]
         else:
-            return [self.save_response_to_disk(response, response.request.meta['kf_filename'],
+            return [self.build_file_from_response(response, response.request.meta['kf_filename'],
                                                data_type='%s_package' % package_type)]

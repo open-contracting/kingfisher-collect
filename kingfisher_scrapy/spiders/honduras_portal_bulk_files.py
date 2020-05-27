@@ -29,7 +29,7 @@ class HondurasPortalBulkFiles(BaseSpider):
 
         filename = urlparse(response.request.url).path.split('/')[-2]
         if response.status == 200:
-            yield self.save_response_to_disk(
+            yield self.build_file_from_response(
                 response,
                 filename,
                 data_type='release_package'

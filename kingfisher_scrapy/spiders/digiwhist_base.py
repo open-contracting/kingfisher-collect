@@ -9,7 +9,7 @@ class DigiwhistBase(BaseSpider):
     def parse(self, response):
         if response.status == 200:
 
-            yield self.save_response_to_disk(response, 'file.tar.gz', post_to_api=False)
+            yield self.build_file_from_response(response, 'file.tar.gz', post_to_api=False)
 
             # Load a line at the time, pass it to API
             with tarfile.open(fileobj=BytesIO(response.body), mode="r:gz") as tar:
