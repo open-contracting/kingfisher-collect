@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.extensions import KingfisherAPI, KingfisherFilesStore
+from kingfisher_scrapy.extensions import KingfisherProcessAPI, KingfisherFilesStore
 from kingfisher_scrapy.items import FileError
 from tests import spider_with_crawler
 
@@ -26,7 +26,7 @@ def test_from_crawler():
     spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
     spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = 'localdir'
 
-    api_extension = KingfisherAPI.from_crawler(spider.crawler)
+    api_extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
     assert api_extension.directory == 'localdir'
 
@@ -42,7 +42,7 @@ def test_from_crawler_missing_arguments(api_url, api_key):
     spider.crawler.settings['KINGFISHER_API_KEY'] = api_key
 
     with pytest.raises(NotConfigured) as excinfo:
-        KingfisherAPI.from_crawler(spider.crawler)
+        KingfisherProcessAPI.from_crawler(spider.crawler)
 
     assert str(excinfo.value) == 'KINGFISHER_API_URI and/or KINGFISHER_API_KEY is not set.'
 
@@ -64,7 +64,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
         spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
 
     store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
-    api_extension = KingfisherAPI.from_crawler(spider.crawler)
+    api_extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
     kwargs = {}
     if encoding:
@@ -134,7 +134,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
 def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, sample=sample, note=note)
 
-    api_extension = KingfisherAPI.from_crawler(spider.crawler)
+    api_extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
     with patch('requests.post') as mocked:
         response = Mock()
@@ -193,7 +193,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
 def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, sample=sample)
 
-    api_extension = KingfisherAPI.from_crawler(spider.crawler)
+    api_extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
     with patch('requests.post') as mocked:
         response = Mock()
@@ -241,7 +241,7 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
 def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, sample=sample)
 
-    api_extension = KingfisherAPI.from_crawler(spider.crawler)
+    api_extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
     with patch('requests.post') as mocked:
         response = Mock()
@@ -273,7 +273,7 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
 def test_spider_closed_other_reason(tmpdir):
     spider = spider_with_files_store(tmpdir)
 
-    api_extension = KingfisherAPI.from_crawler(spider.crawler)
+    api_extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
     with patch('requests.post') as mocked:
         api_extension.spider_closed(spider, 'xxx')

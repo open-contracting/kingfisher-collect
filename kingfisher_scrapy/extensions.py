@@ -63,7 +63,7 @@ class KingfisherFilesStore:
                 json.dump(data, f)
 
 
-class KingfisherAPI:
+class KingfisherProcessAPI:
     def __init__(self, url, key, directory=None):
         """
         Initializes a Kingfisher Process API client.
