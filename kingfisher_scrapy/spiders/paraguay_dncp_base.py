@@ -78,7 +78,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         )
 
     def parse_access_token(self, response):
-        if response.status == 200:
+        if self.is_http_success(response):
             r = json.loads(response.text)
             token = r.get('access_token')
             if token:

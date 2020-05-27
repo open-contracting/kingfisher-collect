@@ -33,7 +33,7 @@ class AfghanistanRecords(BaseSpider):
             )
 
     def parse_record(self, response):
-        if response.status == 200:
+        if self.is_http_success(response):
 
             yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type="record")
 

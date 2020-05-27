@@ -32,6 +32,15 @@ def test_sample_no_kwarg():
     assert spider.sample is False
 
 
+@pytest.mark.parametrize('status,expected', [(100, False), (200, True), (204, True), (300, False), (500, False)])
+def test_is_http_success(status, expected):
+    spider = BaseSpider(name='test')
+
+    response = TextResponse('http://example.com', status=status)
+
+    assert spider.is_http_success(response) == expected
+
+
 def test_build_file_from_response():
     spider = BaseSpider(name='test')
 

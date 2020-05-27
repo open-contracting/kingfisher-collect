@@ -32,7 +32,7 @@ class AfghanistanReleases(BaseSpider):
             )
 
     def parse_release_list(self, response):
-        if response.status == 200:
+        if self.is_http_success(response):
 
             files_urls = json.loads(response.text)
             if self.sample:
@@ -60,7 +60,7 @@ class AfghanistanReleases(BaseSpider):
             yield self.build_file_error_from_response(response)
 
     def parse_release(self, response):
-        if response.status == 200:
+        if self.is_http_success(response):
 
             yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type="release")
 

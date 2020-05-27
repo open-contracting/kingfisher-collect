@@ -31,7 +31,7 @@ class DominicanRepublic(BaseSpider):
                 yield scrapy.Request('https:' + url)
 
     def parse(self, response):
-        if response.status == 200:
+        if self.is_http_success(response):
             file = tempfile.NamedTemporaryFile(delete=False)
             file.write(response.body)
             file.close()

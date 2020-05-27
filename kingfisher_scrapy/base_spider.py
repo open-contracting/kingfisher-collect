@@ -86,6 +86,12 @@ class BaseSpider(scrapy.Spider):
 
         return spider
 
+    def is_http_success(self, response):
+        """
+        Returns whether the response status is a non-2xx code.
+        """
+        return 200 <= response.status < 300
+
     def get_start_time(self, format):
         """
         Returns the formatted start time of the crawl.

@@ -29,7 +29,7 @@ class HondurasPortalBulkFiles(BaseSpider):
 
     def parse(self, response):
         filename = urlparse(response.request.url).path.split('/')[-2]
-        if response.status == 200:
+        if self.is_http_success(response):
             yield self.build_file_from_response(
                 response,
                 filename,

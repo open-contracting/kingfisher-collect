@@ -23,7 +23,7 @@ class AustraliaNSW(BaseSpider):
             )
 
     def parse_list(self, response):
-        if response.status == 200:
+        if self.is_http_success(response):
 
             json_data = json.loads(response.text)
 
