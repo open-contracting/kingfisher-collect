@@ -15,8 +15,6 @@ class GeorgiaOpenData(ZipSpider):
             url='http://opendata.spa.ge/json/allTenders.zip'
         )
 
+    @handle_error(file_name='all.json')
     def parse(self, response):
-        if response.status == 200:
             yield from self.parse_zipfile(response, 'release_package', file_format='release_package')
-        else:
-            yield self.build_file_error_from_response(response, file_name='zip.json')

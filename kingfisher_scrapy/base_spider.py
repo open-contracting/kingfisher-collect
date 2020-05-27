@@ -191,31 +191,28 @@ class ZipSpider(BaseSpider):
               Each compressed file is saved to disk.
         :param str encoding: the compressed files' encoding
         """
-        if response.status == 200:
-            if file_format:
-                filename = '{}.zip'.format(hashlib.md5(response.url.encode('utf-8')).hexdigest())
-                self.build_file_from_response(response, filename, post_to_api=False)
+        if file_format:
+            filename = '{}.zip'.format(hashlib.md5(response.url.encode('utf-8')).hexdigest())
+            self.build_file_from_response(response, filename, post_to_api=False)
 
-            zip_file = ZipFile(BytesIO(response.body))
-            for finfo in zip_file.infolist():
-                filename = finfo.filename
-                if not filename.endswith('.json'):
-                    filename += '.json'
+        zip_file = ZipFile(BytesIO(response.body))
+        for finfo in zip_file.infolist():
+            filename = finfo.filename
+            if not filename.endswith('.json'):
+                filename += '.json'
 
-                data = zip_file.open(finfo.filename)
+            data = zip_file.open(finfo.filename)
 
-                if file_format == 'json_lines':
-                    yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding,
-                                                     file_name=filename)
-                elif file_format == 'release_package':
-                    package = zip_file.open(finfo.filename)
-                    yield from self.parse_json_array(package, data, data_type, response.request.url,
-                                                     encoding=encoding, file_name=filename)
-                else:
-                    yield self.build_file(data.read(), filename, data_type=data_type, url=response.request.url,
-                                          encoding=encoding)
-        else:
-            yield self.build_file_error_from_response(response)
+            if file_format == 'json_lines':
+                yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding,
+                                                 file_name=filename)
+            elif file_format == 'release_package':
+                package = zip_file.open(finfo.filename)
+                yield from self.parse_json_array(package, data, data_type, response.request.url,
+                                                 encoding=encoding, file_name=filename)
+            else:
+                yield self.build_file(data.read(), filename, data_type=data_type, url=response.request.url,
+                                      encoding=encoding)
 
 
 class LinksSpider(BaseSpider):

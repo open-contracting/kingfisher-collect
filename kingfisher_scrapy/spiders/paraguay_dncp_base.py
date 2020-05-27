@@ -6,6 +6,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
+from kingfisher_scrapy.util import handle_error
 
 
 class ParaguayDNCPBaseSpider(BaseSpider):
@@ -111,35 +112,31 @@ class ParaguayDNCPBaseSpider(BaseSpider):
             self.auth_failed = True
             raise AuthenticationError()
 
+    @handle_error()
     def parse_pages(self, response):
-        if response.status == 200:
-            content = json.loads(response.text)
-            for url in self.get_files_to_download(content):
-                yield scrapy.Request(
-                    url,
-                    dont_filter=True,
-                    meta={'kf_filename': url.split('/')[-1] + '.json'}
-                )
-            pagination = content['pagination']
-            if pagination['current_page'] < pagination['total_pages'] and not self.sample:
-                url = '{}&page={}'.format(self.base_page_url, pagination['current_page'] + 1)
-                yield scrapy.Request(
-                    url,
-                    dont_filter=True,
-                    callback=self.parse_pages
-                )
-        else:
-            yield self.build_file_error_from_response(response)
-
-    def parse(self, response):
-        if response.status == 200:
-            yield self.build_file_from_response(
-                response,
-                response.request.meta['kf_filename'],
-                data_type=self.data_type
+        content = json.loads(response.text)
+        for url in self.get_files_to_download(content):
+            yield scrapy.Request(
+                url,
+                dont_filter=True,
+                meta={'kf_filename': url.split('/')[-1] + '.json'}
             )
-        else:
-            yield self.build_file_error_from_response(response)
+        pagination = content['pagination']
+        if pagination['current_page'] < pagination['total_pages'] and not self.sample:
+            url = '{}&page={}'.format(self.base_page_url, pagination['current_page'] + 1)
+            yield scrapy.Request(
+                url,
+                dont_filter=True,
+                callback=self.parse_pages
+            )
+
+    @handle_error()
+    def parse(self, response):
+        yield self.build_file_from_response(
+            response,
+            response.request.meta['kf_filename'],
+            data_type=self.data_type
+        )
 
     def get_files_to_download(self, content):
         """ Override this

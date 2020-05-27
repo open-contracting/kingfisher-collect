@@ -5,6 +5,7 @@ from math import ceil
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class MexicoQuienEsQuien(BaseSpider):
@@ -27,32 +28,26 @@ class MexicoQuienEsQuien(BaseSpider):
                 callback=self.parse_count
             )
 
+    @handle_error()
     def parse_count(self, response):
-        if response.status == 200:
-            limit = 1000
-            json_data = json.loads(response.text)
-            count_list = json_data['data']
-            count = int(count_list[0]['collections']['contracts']['count'])
+        limit = 1000
+        json_data = json.loads(response.text)
+        count_list = json_data['data']
+        count = int(count_list[0]['collections']['contracts']['count'])
 
-            for offset in range(ceil(count / limit)):
-                yield scrapy.Request(
-                    self.url.format(limit, (offset * limit)),
-                    meta={'kf_filename': hashlib.md5((self.url +
-                                                      str(offset)).encode('utf-8')).hexdigest() + '.json'}
-                )
-        else:
-            yield self.build_file_error_from_response(response)
-
-    def parse(self, response):
-        if response.status == 200:
-
-            json_data = json.loads(response.text)
-            yield self.build_file(
-                json.dumps(json_data['data']).encode(),
-                response.request.meta['kf_filename'],
-                data_type='record_package_list',
-                url=response.request.url
+        for offset in range(ceil(count / limit)):
+            yield scrapy.Request(
+                self.url.format(limit, (offset * limit)),
+                meta={'kf_filename': hashlib.md5((self.url +
+                                                  str(offset)).encode('utf-8')).hexdigest() + '.json'}
             )
 
-        else:
-            yield self.build_file_error_from_response(response)
+    @handle_error()
+    def parse(self, response):
+        json_data = json.loads(response.text)
+        yield self.build_file(
+            json.dumps(json_data['data']).encode(),
+            response.request.meta['kf_filename'],
+            data_type='record_package_list',
+            url=response.request.url
+        )

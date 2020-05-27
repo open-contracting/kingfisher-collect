@@ -4,6 +4,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class MexicoINAI(BaseSpider):
@@ -15,23 +16,21 @@ class MexicoINAI(BaseSpider):
             callback=self.parse_list
         )
 
+    @handle_error(file_name='list.json')
     def parse_list(self, response):
-        if response.status == 200:
-            datas = json.loads(response.text)
-            for result in datas['result']['results']:
-                for resource in result['resources']:
-                    if resource['format'] == 'JSON':
-                        kf_filename = 'redirect-' + hashlib.md5(resource['url'].encode('utf-8')).hexdigest() + '.json'
-                        yield scrapy.Request(
-                            url=resource['url'],
-                            meta={
-                                'kf_filename': kf_filename,
-                                'dont_redirect': True
-                            },
-                            callback=self.parse_redirect
-                        )
-        else:
-            yield self.build_file_error_from_response(response, file_name='list.json')
+        datas = json.loads(response.text)
+        for result in datas['result']['results']:
+            for resource in result['resources']:
+                if resource['format'] == 'JSON':
+                    kf_filename = 'redirect-' + hashlib.md5(resource['url'].encode('utf-8')).hexdigest() + '.json'
+                    yield scrapy.Request(
+                        url=resource['url'],
+                        meta={
+                            'kf_filename': kf_filename,
+                            'dont_redirect': True
+                        },
+                        callback=self.parse_redirect
+                    )
 
     def parse_redirect(self, response):
         if response.status == 301:
@@ -44,13 +43,11 @@ class MexicoINAI(BaseSpider):
         else:
             yield self.build_file_error_from_response(response)
 
+    @handle_error()
     def parse(self, response):
-        if response.status == 200:
-            yield self.build_file_from_response(
-                response,
-                response.request.meta['kf_filename'],
-                data_type="release_package",
-                encoding='utf-8-sig'
-            )
-        else:
-            yield self.build_file_error_from_response(response)
+        yield self.build_file_from_response(
+            response,
+            response.request.meta['kf_filename'],
+            data_type="release_package",
+            encoding='utf-8-sig'
+        )

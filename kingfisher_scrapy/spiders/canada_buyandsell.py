@@ -1,6 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class CanadaBuyAndSell(BaseSpider):
@@ -27,9 +28,7 @@ class CanadaBuyAndSell(BaseSpider):
             meta={'kf_filename': '16-17.json'}
         )
 
+    @handle_error()
     def parse(self, response):
-        if response.status == 200:
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                data_type='release_package')
-        else:
-            yield self.build_file_error_from_response(response)
+        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                            data_type='release_package')

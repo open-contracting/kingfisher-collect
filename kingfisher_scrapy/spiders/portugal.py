@@ -4,6 +4,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class Portugal(ZipSpider):
@@ -20,23 +21,22 @@ class Portugal(ZipSpider):
             callback=self.parse_list
         )
 
+    @handle_error(file_name='list.json')
     def parse_list(self, response):
-        if response.status == 200:
-            datas = json.loads(response.text)
-            for data in datas['data']:
-                for resource in data['resources']:
-                    description = resource['description']
-                    url = resource['url']
-                    if description.count("OCDS") or description.count("ocds"):
-                        yield scrapy.Request(
-                            url,
-                            meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
-                        )
-                        if self.sample:
-                            break
-        else:
-            yield self.build_file_error_from_response(response, file_name='list.json')
+        datas = json.loads(response.text)
+        for data in datas['data']:
+            for resource in data['resources']:
+                description = resource['description']
+                url = resource['url']
+                if description.count("OCDS") or description.count("ocds"):
+                    yield scrapy.Request(
+                        url,
+                        meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+                    )
+                    if self.sample:
+                        break
 
+    @handle_error()
     def parse(self, response):
         yield from self.parse_zipfile(response, data_type='record_package',
                                       file_format='json_lines', encoding='iso-8859-1')

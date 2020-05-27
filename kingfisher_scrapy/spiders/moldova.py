@@ -3,6 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class Moldova(BaseSpider):
@@ -23,43 +24,40 @@ class Moldova(BaseSpider):
                 meta={'kf_filename': 'meta-{}-start.json'.format(endpoint), 'endpoint': endpoint, 'data': False}
             )
 
+    @handle_error()
     def parse(self, response):
-        if response.status == 200:
-            if response.request.meta['data']:
-                yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                    data_type='record_package')
-            else:
-                self.build_file_from_response(response, response.request.meta['kf_filename'])
-                json_data = json.loads(response.text)
-                offset = json_data.get('offset')
-                # not having an offset in the data means the data has come to an end.
-                if not offset:
-                    return
+        if response.request.meta['data']:
+            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                                data_type='record_package')
+        else:
+            self.build_file_from_response(response, response.request.meta['kf_filename'])
+            json_data = json.loads(response.text)
+            offset = json_data.get('offset')
+            # not having an offset in the data means the data has come to an end.
+            if not offset:
+                return
 
-                endpoint = response.request.meta['endpoint']
-                endpoint_url = self.endpoints[endpoint]
+            endpoint = response.request.meta['endpoint']
+            endpoint_url = self.endpoints[endpoint]
 
-                for data in json_data.get('data', []):
-                    yield scrapy.Request(
-                        url=endpoint_url + data['ocid'],
-                        meta={
-                            'kf_filename': 'data-{}-{}.json'.format(endpoint, data['ocid']),
-                            'endpoint': endpoint,
-                            'data': True,
-                        }
-                    )
-
-                if self.sample:
-                    return
-
+            for data in json_data.get('data', []):
                 yield scrapy.Request(
-                    url=endpoint_url + '?offset=' + offset,
+                    url=endpoint_url + data['ocid'],
                     meta={
-                        'kf_filename': 'meta-{}-{}.json'.format(endpoint, offset),
+                        'kf_filename': 'data-{}-{}.json'.format(endpoint, data['ocid']),
                         'endpoint': endpoint,
-                        'data': False,
+                        'data': True,
                     }
                 )
 
-        else:
-            yield self.build_file_error_from_response(response)
+            if self.sample:
+                return
+
+            yield scrapy.Request(
+                url=endpoint_url + '?offset=' + offset,
+                meta={
+                    'kf_filename': 'meta-{}-{}.json'.format(endpoint, offset),
+                    'endpoint': endpoint,
+                    'data': False,
+                }
+            )

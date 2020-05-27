@@ -1,6 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class UruguayHistorical(ZipSpider):
@@ -25,5 +26,6 @@ class UruguayHistorical(ZipSpider):
                 url=base_url.format(year)
             )
 
+    @handle_error()
     def parse(self, response):
         yield from self.parse_zipfile(response, data_type='release_package')

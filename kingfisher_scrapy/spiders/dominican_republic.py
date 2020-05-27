@@ -5,6 +5,7 @@ import rarfile
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class DominicanRepublic(BaseSpider):
@@ -17,19 +18,17 @@ class DominicanRepublic(BaseSpider):
         yield scrapy.Request('https://www.dgcp.gob.do/estandar-mundial-ocds/',
                              callback=self.parse_main_page)
 
+    @handle_error()
     def parse_main_page(self, response):
-        if response.status == 200:
-            urls = response.css('.fileLink::attr(href)').getall()
-            json_urls = list(filter(lambda x: '/JSON_DGCP_' in x, urls))
+        urls = response.css('.fileLink::attr(href)').getall()
+        json_urls = list(filter(lambda x: '/JSON_DGCP_' in x, urls))
 
-            if self.sample and len(json_urls) > 0:
-                json_urls = [json_urls[0]]
+        if self.sample and len(json_urls) > 0:
+            json_urls = [json_urls[0]]
 
-            for url in json_urls:
-                if '/JSON_DGCP_' in url:
-                    yield scrapy.Request('https:' + url)
-        else:
-            yield self.build_file_error_from_response(response)
+        for url in json_urls:
+            if '/JSON_DGCP_' in url:
+                yield scrapy.Request('https:' + url)
 
     def parse(self, response):
         if response.status == 200:

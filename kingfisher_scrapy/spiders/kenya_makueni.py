@@ -4,6 +4,7 @@ from math import ceil
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class KenyaMakueni(BaseSpider):
@@ -26,27 +27,19 @@ class KenyaMakueni(BaseSpider):
                 callback=self.parse_count
             )
 
+    @handle_error()
     def parse_count(self, response):
-        if response.status == 200:
-            total = int(response.text)
-            page_size = 300
+        total = int(response.text)
+        page_size = 300
 
-            for page_number in range((ceil(total / page_size))):
-                yield scrapy.Request(
-                    self.url.format(page_size, page_number),
-                    meta={'kf_filename': hashlib.md5((self.url +
-                                                      str(page_number)).encode('utf-8')).hexdigest() + '.json'}
-                )
-        else:
-            yield self.build_file_error_from_response(response)
-
-    def parse(self, response):
-        if response.status == 200:
-            yield self.build_file_from_response(
-                response,
-                response.request.meta['kf_filename'],
-                data_type='release_package_list'
+        for page_number in range((ceil(total / page_size))):
+            yield scrapy.Request(
+                self.url.format(page_size, page_number),
+                meta={'kf_filename': hashlib.md5((self.url +
+                                                  str(page_number)).encode('utf-8')).hexdigest() + '.json'}
             )
 
-        else:
-            yield self.build_file_error_from_response(response)
+    @handle_error()
+    def parse(self, response):
+        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                            data_type='release_package_list')

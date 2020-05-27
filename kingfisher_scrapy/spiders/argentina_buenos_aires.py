@@ -3,6 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class ArgentinaBuenosAires(ZipSpider):
@@ -26,14 +27,13 @@ class ArgentinaBuenosAires(ZipSpider):
             callback=self.parse_list
         )
 
+    @handle_error(file_name='list.json')
     def parse_list(self, response):
-        if response.status == 200:
-            data = json.loads(response.text)
-            for resource in data['result']['resources']:
-                if resource['format'].upper() == 'JSON':
-                    yield scrapy.Request(url=resource['url'])
-        else:
-            yield self.build_file_error_from_response(response, file_name='list.json')
+        data = json.loads(response.text)
+        for resource in data['result']['resources']:
+            if resource['format'].upper() == 'JSON':
+                yield scrapy.Request(url=resource['url'])
 
+    @handle_error()
     def parse(self, response):
         yield from self.parse_zipfile(response, 'release_package', file_format='release_package')

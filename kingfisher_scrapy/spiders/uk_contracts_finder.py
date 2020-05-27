@@ -3,6 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class UKContractsFinder(BaseSpider):
@@ -15,24 +16,20 @@ class UKContractsFinder(BaseSpider):
             meta={'kf_filename': 'page1.json'}
         )
 
+    @handle_error()
     def parse(self, response):
+        yield self.build_file_from_response(
+            response,
+            response.request.meta['kf_filename'],
+            data_type='release_package_list_in_results',
+            encoding='ISO-8859-1'
+        )
 
-        if response.status == 200:
-
-            yield self.build_file_from_response(
-                response,
-                response.request.meta['kf_filename'],
-                data_type='release_package_list_in_results',
-                encoding='ISO-8859-1'
-            )
-
-            if not self.sample and response.request.meta['kf_filename'] == 'page1.json':
-                json_data = json.loads(response.text)
-                last_page = json_data['maxPage']
-                for page in range(1, last_page + 1):
-                    yield scrapy.Request(
-                        url=self.base_url % page,
-                        meta={'kf_filename': 'page%d.json' % page}
-                    )
-        else:
-            yield self.build_file_error_from_response(response)
+        if not self.sample and response.request.meta['kf_filename'] == 'page1.json':
+            json_data = json.loads(response.text)
+            last_page = json_data['maxPage']
+            for page in range(1, last_page + 1):
+                yield scrapy.Request(
+                    url=self.base_url % page,
+                    meta={'kf_filename': 'page%d.json' % page}
+                )

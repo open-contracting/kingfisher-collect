@@ -3,6 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class MexicoAdministracionPublicaFederal(BaseSpider):
@@ -17,29 +18,25 @@ class MexicoAdministracionPublicaFederal(BaseSpider):
             meta={'kf_filename': 'page1.json'}
         )
 
+    @handle_error()
     def parse(self, response):
-        if response.status == 200:
+        data = json.loads(response.text)
 
-            data = json.loads(response.text)
+        # Actual data
+        yield self.build_file_from_response(
+            response,
+            response.request.meta['kf_filename'],
+            data_type="record_package_list_in_results"
+        )
 
-            # Actual data
-            yield self.build_file_from_response(
-                response,
-                response.request.meta['kf_filename'],
-                data_type="record_package_list_in_results"
-            )
-
-            # Load more pages?
-            if data['pagination']['page'] == 1 and not self.sample:
-                total = data['pagination']['total']
-                page = 1
-                limit = data['pagination']['pageSize']
-                while ((page - 1) * limit) < total:
-                    yield scrapy.Request(
-                        url='https://api.datos.gob.mx/v1/contratacionesabiertas?page=%d' % page,
-                        meta={'kf_filename': 'page' + str(page) + '.json'}
-                    )
-                    page += 1
-
-        else:
-            yield self.build_file_error_from_response(response)
+        # Load more pages?
+        if data['pagination']['page'] == 1 and not self.sample:
+            total = data['pagination']['total']
+            page = 1
+            limit = data['pagination']['pageSize']
+            while ((page - 1) * limit) < total:
+                yield scrapy.Request(
+                    url='https://api.datos.gob.mx/v1/contratacionesabiertas?page=%d' % page,
+                    meta={'kf_filename': 'page' + str(page) + '.json'}
+                )
+                page += 1

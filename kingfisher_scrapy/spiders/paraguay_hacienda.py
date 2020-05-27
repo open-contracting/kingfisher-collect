@@ -5,6 +5,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
+from kingfisher_scrapy.util import handle_error
 
 
 class ParaguayHacienda(BaseSpider):
@@ -48,43 +49,40 @@ class ParaguayHacienda(BaseSpider):
             meta={'meta': True, 'first': True}
         )
 
+    @handle_error()
     def parse(self, response):
-        if response.status == 200:
-            data = json.loads(response.text)
-            base_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/ocds/release-package/{}'
+        data = json.loads(response.text)
+        base_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/ocds/release-package/{}'
 
-            # If is the first URL, we need to iterate over all the pages to get all the process ids to query
-            if response.request.meta['first'] and not self.sample:
-                total_pages = data['meta']['totalPages']
-                for page in range(2,  total_pages+1):
+        # If is the first URL, we need to iterate over all the pages to get all the process ids to query
+        if response.request.meta['first'] and not self.sample:
+            total_pages = data['meta']['totalPages']
+            for page in range(2,  total_pages+1):
+                yield scrapy.Request(
+                    url=self.base_list_url.format(page),
+                    meta={'meta': True, 'first': False},
+                    dont_filter=True
+                )
+
+        # if is a meta request it means that is the page that have the process ids to query
+        if response.request.meta['meta']:
+            if self.sample:
+                data['results'] = data['results'][:50]
+
+            # Now that we have the ids we iterate over them, without duplicate them, and make the
+            # final requests for the release_package this time
+            for row in data['results']:
+                if row['idLlamado'] and row['idLlamado'] not in self.release_ids:
+                    self.release_ids.append(row['idLlamado'])
                     yield scrapy.Request(
-                        url=self.base_list_url.format(page),
-                        meta={'meta': True, 'first': False},
+                        url=base_url.format(row['idLlamado']),
+                        meta={'meta': False, 'first': False,
+                              'kf_filename': 'release-{}.json'.format(row['idLlamado'])},
                         dont_filter=True
                     )
-
-            # if is a meta request it means that is the page that have the process ids to query
-            if response.request.meta['meta']:
-                if self.sample:
-                    data['results'] = data['results'][:50]
-
-                # Now that we have the ids we iterate over them, without duplicate them, and make the
-                # final requests for the release_package this time
-                for row in data['results']:
-                    if row['idLlamado'] and row['idLlamado'] not in self.release_ids:
-                        self.release_ids.append(row['idLlamado'])
-                        yield scrapy.Request(
-                            url=base_url.format(row['idLlamado']),
-                            meta={'meta': False, 'first': False,
-                                  'kf_filename': 'release-{}.json'.format(row['idLlamado'])},
-                            dont_filter=True
-                        )
-            else:
-                yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                    data_type='release_package')
-
         else:
-            yield self.build_file_error_from_response(response)
+            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                                data_type='release_package')
 
     def request_access_token(self):
         """ Requests a new access token """
