@@ -121,21 +121,7 @@ def test_parse_next_link_200():
             assert item
 
 
-def test_parse_zipfile_404():
-    spider = spider_with_crawler(spider_class=ZipSpider)
-
-    response = TextResponse('test')
-    response.status = 404
-    response.request = Mock()
-    response.request.meta = {'kf_filename': 'test'}
-    response.request.url = 'url'
-
-    actual = spider.parse_zipfile(response, None).__next__()
-
-    assert isinstance(actual, FileError)
-
-
-def test_parse_zipfile_200():
+def test_parse_zipfile():
     spider = spider_with_crawler(spider_class=ZipSpider)
 
     response = TextResponse('test')
