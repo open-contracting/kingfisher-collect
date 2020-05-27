@@ -1,14 +1,15 @@
+# https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
+
 import json
 import os
 
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.items import File, FileError
+from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.kingfisher_process import Client
 
 
-# https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 class KingfisherFilesStore:
     def __init__(self, directory):
         self.directory = directory
@@ -130,7 +131,7 @@ class KingfisherAPI:
                 data['collection_note'] = spider.note
 
             # File Item
-            if 'number' in item:
+            if isinstance(item, FileItem):
                 data['number'] = item['number']
                 data['data'] = item['data']
 
