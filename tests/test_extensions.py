@@ -7,6 +7,7 @@ import pytest
 from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import KingfisherAPI, KingfisherFilesStore
+from kingfisher_scrapy.items import FileError
 from tests import spider_with_crawler
 
 
@@ -68,7 +69,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
     kwargs = {}
     if encoding:
         kwargs['encoding'] = encoding
-    item = spider.save_data_to_disk(b'{"key": "value"}', 'file.json', url='https://example.com/remote.json',
+    item = spider.build_file(b'{"key": "value"}', 'file.json', url='https://example.com/remote.json',
                                     data_type='release_package', post_to_api=post_to_api, **kwargs)
 
     store_extension.item_scraped(item, spider)
@@ -144,7 +145,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
         kwargs = {}
         if encoding:
             kwargs['encoding'] = encoding
-        item = spider._build_file_item(
+        item = spider.build_file_item(
             1,
             b'{"key": "value"}',
             data_type='release_package',
@@ -200,12 +201,11 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
         response.status_code = 400
         mocked.return_value = response
 
-        data = {
-            'success': False,
+        data = FileError({
             'file_name': 'file.json',
             'url': 'https://example.com/remote.json',
             'errors': {'http_code': 500},
-        }
+        })
 
         api_extension.item_scraped(data, spider)
 
@@ -285,7 +285,7 @@ def test_spider_closed_other_reason(tmpdir):
     (None, os.path.join('test', '20010203_040506', 'file.json')),
     ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
 ])
-def test_item_scraped_with_save_response_to_disk(sample, path, tmpdir):
+def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
     spider = spider_with_files_store(tmpdir, sample=sample)
     store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
 
@@ -294,7 +294,7 @@ def test_item_scraped_with_save_response_to_disk(sample, path, tmpdir):
     response.request = Mock()
     response.request.url = 'https://example.com/remote.json'
 
-    item = spider.save_response_to_disk(response, 'file.json', data_type='release_package', encoding='iso-8859-1')
+    item = spider.build_file_from_response(response, 'file.json', data_type='release_package', encoding='iso-8859-1')
     store_extension.item_scraped(item, spider)
 
     with open(tmpdir.join(path)) as f:
@@ -315,14 +315,14 @@ def test_item_scraped_with_save_response_to_disk(sample, path, tmpdir):
     (None, os.path.join('test', '20010203_040506', 'file.json')),
     ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
 ])
-def test_item_scraped_with_save_data_to_disk(sample, path, tmpdir):
+def test_item_scraped_with_build_file(sample, path, tmpdir):
     spider = spider_with_files_store(tmpdir, sample=sample)
     store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
 
     data = b'{"key": "value"}'
     url = 'https://example.com/remote.json'
 
-    item = spider.save_data_to_disk(data, 'file.json', url=url, data_type='release_package', encoding='iso-8859-1')
+    item = spider.build_file(data, 'file.json', url=url, data_type='release_package', encoding='iso-8859-1')
     store_extension.item_scraped(item, spider)
 
     with open(tmpdir.join(path)) as f:
@@ -339,7 +339,7 @@ def test_item_scraped_with_save_data_to_disk(sample, path, tmpdir):
     assert item['files_store'] == tmpdir
 
 
-def test_save_data_to_disk_with_existing_directory():
+def test_build_file_with_existing_directory():
     spider = spider_with_crawler()
 
     with TemporaryDirectory() as tmpdirname:
@@ -349,4 +349,4 @@ def test_save_data_to_disk_with_existing_directory():
         os.makedirs(os.path.join(files_store, 'test', '20010203_040506'))
 
         # No FileExistsError exception.
-        store_extension.item_scraped(spider.save_data_to_disk(b'{"key": "value"}', 'file.json'), spider)
+        store_extension.item_scraped(spider.build_file(b'{"key": "value"}', 'file.json'), spider)

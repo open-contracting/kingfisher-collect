@@ -9,6 +9,7 @@ import scrapy
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import SpiderArgumentError
+from kingfisher_scrapy.items import File, FileError, FileItem
 
 
 class BaseSpider(scrapy.Spider):
@@ -101,19 +102,17 @@ class BaseSpider(scrapy.Spider):
         """
         Returns an item to yield.
         """
-        return {
-            'success': True,
+        return File({
             'file_name': filename,
             'data': data,
             'data_type': data_type,
             'url': url,
             'encoding': encoding,
             'post_to_api': post_to_api,
-        }
+        })
 
     def build_file_item(self, number, data, data_type, url, encoding, file_name):
-        return {
-            'success': True,
+        return FileItem({
             'number': number,
             'file_name': file_name,
             'data': data,
@@ -121,18 +120,17 @@ class BaseSpider(scrapy.Spider):
             'url': url,
             'encoding': encoding,
             'post_to_api': True,
-        }
+        })
 
     def build_file_error_from_response(self, response, **kwargs):
         file_error = {
-            'success': False,
             'url': response.request.url,
             'errors': {'http_code': response.status},
         }
         if 'kf_filename' in response.request.meta:
             file_error['file_name'] = response.request.meta['kf_filename']
         file_error.update(kwargs)
-        return file_error
+        return FileError(file_error)
 
     def _get_package_metadata(self, f, skip_key):
         """
