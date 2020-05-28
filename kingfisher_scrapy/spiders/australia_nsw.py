@@ -7,6 +7,13 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class AustraliaNSW(BaseSpider):
+    """
+    API documentation
+      https://github.com/NSW-eTendering/NSW-eTendering-API/blob/master/README.md
+    Spider arguments
+      sample
+        Download only 30 releases.
+    """
     name = 'australia_nsw'
     start_urls = ['https://tenders.nsw.gov.au']
 
