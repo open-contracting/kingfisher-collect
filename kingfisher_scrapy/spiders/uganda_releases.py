@@ -7,6 +7,13 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class Uganda(BaseSpider):
+    """
+    API documentation
+        https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
+    Spider arguments
+      sample
+        Download only 19 releases.
+    """
     name = 'uganda_releases'
     download_delay = 0.9
 
