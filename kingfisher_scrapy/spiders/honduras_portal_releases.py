@@ -7,6 +7,13 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class HondurasPortalReleases(BaseSpider):
+    """
+    API documentation
+      http://www.contratacionesabiertas.gob.hn/servicio/
+    Spider arguments
+      sample
+        Download only the first release package in the dataset.
+    """
     name = 'honduras_portal_releases'
     download_delay = 0.9
 
