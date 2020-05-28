@@ -7,6 +7,13 @@ from kingfisher_scrapy.base_spider import ZipSpider
 
 
 class Portugal(ZipSpider):
+    """
+    API documentation
+        https://dados.gov.pt/pt/apidoc/
+    Spider arguments
+      sample
+        Download only the first file in the dataset.
+    """
     name = 'portugal'
     download_warnsize = 0
     download_timeout = 9999
