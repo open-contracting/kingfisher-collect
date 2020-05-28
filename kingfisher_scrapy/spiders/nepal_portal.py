@@ -7,6 +7,11 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class NepalPortal(BaseSpider):
+    """
+    Spider arguments
+      sample
+        Download only data released on 2018.
+    """
     name = 'nepal_portal'
 
     def start_requests(self):

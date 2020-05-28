@@ -7,6 +7,11 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class NepalDhangadhi(BaseSpider):
+    """
+    Spider arguments
+      sample
+        Download only the first release package in the dataset.
+    """
     name = "nepal_dhangadhi"
 
     def start_requests(self):
