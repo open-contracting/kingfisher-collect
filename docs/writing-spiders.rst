@@ -52,6 +52,8 @@ Here is a sample:
 
 .. code-block:: python
 
+    from kingfisher_scrapy.util import handle_error
+
     class VerySimple(BaseSpider):
         name = "very_simple"
 
@@ -62,15 +64,9 @@ Here is a sample:
                 meta={'kf_filename': '13-14.json'}
             )
 
+        @handle_error
         def parse(self, response):
-            # We must check the response code
-            if response.status == 200:
-                # It was a success!
-                yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type='release_package')
-            else:
-                # It was a failure :-(
-                # We must send some information about this failure
-                yield self.build_file_error_from_response(response)
+            yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type='release_package')
 
 Spider properties
 -----------------

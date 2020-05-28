@@ -5,6 +5,7 @@ from kingfisher_scrapy.base_spider import LinksSpider
 
 class UKContractsFinder(LinksSpider):
     name = 'uk_fts'
+    data_type = 'release_package_in_ocdsReleasePackage_in_list_in_results'
 
     def start_requests(self):
         yield scrapy.Request(
@@ -13,6 +14,3 @@ class UKContractsFinder(LinksSpider):
             meta={'kf_filename': 'start.json'},
             headers={'Accept': 'application/json'},
         )
-
-    def parse(self, response):
-        yield from self.parse_next_link(response, 'release_package_in_ocdsReleasePackage_in_list_in_results')

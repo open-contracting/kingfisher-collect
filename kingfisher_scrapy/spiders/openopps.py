@@ -78,7 +78,7 @@ class OpenOpps(BaseSpider):
         )
 
     def parse_access_token(self, response):
-        if response.status == 200:
+        if self.is_http_success(response):
             r = json.loads(response.text)
             token = r.get('token')
             if token:
@@ -147,7 +147,7 @@ class OpenOpps(BaseSpider):
             yield self.request_range(date, date, search_h)
 
     def parse(self, response):
-        if response.status == 200:
+        if self.is_http_success(response):
             results = json.loads(response.text)
             count = results['count']
             release_date = response.request.meta['release_date']  # date used for the search

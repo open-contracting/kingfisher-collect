@@ -3,6 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class MexicoCDMXSource(BaseSpider):
@@ -15,25 +16,20 @@ class MexicoCDMXSource(BaseSpider):
             callback=self.parse_list
         )
 
+    @handle_error
     def parse_list(self, response):
-        if response.status == 200:
+        data = json.loads(response.text)
+        if self.sample:
+            data = [data[0]]
 
-            data = json.loads(response.text)
-            if self.sample:
-                data = [data[0]]
+        for data_item in data:
+            yield scrapy.Request(
+                url=data_item['uri'],
+                meta={'kf_filename': 'id%s.json' % data_item['id']},
+                callback=self.parse_record
+            )
 
-            for data_item in data:
-                yield scrapy.Request(
-                    url=data_item['uri'],
-                    meta={'kf_filename': 'id%s.json' % data_item['id']},
-                    callback=self.parse_record
-                )
-        else:
-            yield self.build_file_error_from_response(response, filename='list.json')
-
+    @handle_error
     def parse_record(self, response):
-        if response.status == 200:
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                data_type='release_package')
-        else:
-            yield self.build_file_error_from_response(response)
+        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                            data_type='release_package')

@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class HondurasPortalBulkFiles(BaseSpider):
@@ -15,6 +16,7 @@ class HondurasPortalBulkFiles(BaseSpider):
             callback=self.parse_json_list
         )
 
+    @handle_error
     def parse_json_list(self, response):
         filelist = json.loads(response.text)
 
@@ -26,13 +28,12 @@ class HondurasPortalBulkFiles(BaseSpider):
                 yield scrapy.Request(item['urls']['json'])
 
     def parse(self, response):
-
         filename = urlparse(response.request.url).path.split('/')[-2]
-        if response.status == 200:
+        if self.is_http_success(response):
             yield self.build_file_from_response(
                 response,
                 filename,
                 data_type='release_package'
             )
         else:
-            yield self.build_file_error_from_response(response, filename=filename)
+            yield self.build_file_error_from_response(response, file_name=filename)
