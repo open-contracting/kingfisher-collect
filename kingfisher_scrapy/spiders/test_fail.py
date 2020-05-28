@@ -9,7 +9,6 @@ from kingfisher_scrapy.util import handle_error
 
 class TestFail(BaseSpider):
     name = "test_fail"
-    start_urls = ['https://www.open-contracting.org']
 
     def start_requests(self):
         # Fine

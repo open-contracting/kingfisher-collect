@@ -9,7 +9,6 @@ from kingfisher_scrapy.util import handle_error
 
 class Armenia(BaseSpider):
     name = 'armenia'
-    start_urls = ['https://armeps.am/ocds/release']
 
     def start_requests(self):
         yield scrapy.Request(

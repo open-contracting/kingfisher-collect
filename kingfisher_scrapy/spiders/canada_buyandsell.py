@@ -6,7 +6,6 @@ from kingfisher_scrapy.util import handle_error
 
 class CanadaBuyAndSell(BaseSpider):
     name = "canada_buyandsell"
-    start_urls = ['https://buyandsell.gc.ca']
 
     def start_requests(self):
         yield scrapy.Request(

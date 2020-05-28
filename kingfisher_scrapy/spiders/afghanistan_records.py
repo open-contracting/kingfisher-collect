@@ -1,5 +1,4 @@
 import json
-import time
 
 import scrapy
 
@@ -9,7 +8,6 @@ from kingfisher_scrapy.util import handle_error
 
 class AfghanistanRecords(BaseSpider):
     name = 'afghanistan_records'
-    start_urls = ['https://ocds.ageops.net/api/ocds/records']
     download_delay = 1
 
     def start_requests(self):

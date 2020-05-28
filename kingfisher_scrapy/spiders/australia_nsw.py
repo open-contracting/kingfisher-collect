@@ -9,7 +9,6 @@ from kingfisher_scrapy.util import handle_error
 
 class AustraliaNSW(BaseSpider):
     name = 'australia_nsw'
-    start_urls = ['https://tenders.nsw.gov.au']
 
     def start_requests(self):
         release_types = ['planning', 'tender', 'contract']
