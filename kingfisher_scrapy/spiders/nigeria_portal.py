@@ -6,6 +6,11 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class NigeriaPortal(BaseSpider):
+    """
+    Spider arguments
+      sample
+        Download only the first release package in the dataset.
+    """
     name = 'nigeria_portal'
     start_urls = ['http://nocopo.bpp.gov.ng/OpenData.aspx']
     download_delay = 0.9
