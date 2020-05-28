@@ -6,6 +6,11 @@ from kingfisher_scrapy.base_spider import ZipSpider
 
 
 class Zambia(ZipSpider):
+    """
+    Spider arguments
+      sample
+        Download only data released on July 2016.
+    """
     name = 'zambia'
 
     def start_requests(self):
