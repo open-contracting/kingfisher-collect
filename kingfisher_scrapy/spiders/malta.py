@@ -8,6 +8,13 @@ from kingfisher_scrapy.base_spider import ZipSpider
 
 
 class Malta(ZipSpider):
+    """
+    API documentation
+      https://docs.google.com/document/d/1VnCEywKkkQ7BcVbT7HlW2s_N_QI8W0KE/edit
+    Spider arguments
+      sample
+        Download only data released on October 2019.
+    """
     name = 'malta'
 
     def start_requests(self):
