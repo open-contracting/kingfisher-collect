@@ -7,6 +7,13 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 
 class KenyaMakueni(BaseSpider):
+    """
+    Swagger API documentation
+        https://opencontracting.makueni.go.ke/swagger-ui.html#/ocds-controller
+    Spider arguments
+      sample
+        Download only the first 10 release packages in the dataset.
+    """
     name = 'kenya_makueni'
     url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={}&pageNumber={}'
 
