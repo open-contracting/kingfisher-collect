@@ -9,6 +9,19 @@ from kingfisher_scrapy.base_spider import LinksSpider
 
 
 class Colombia(LinksSpider):
+    """
+    API documentation
+      https://www.colombiacompra.gov.co/transparencia/api
+    Swagger API documentation
+      https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/
+    Spider arguments
+      sample
+        Download only the first page of results.
+      page
+        The page number from which to start crawling.
+      year
+        The year to crawl. See API documentation for valid values.
+    """
     name = 'colombia'
     sleep = 120 * 60
 
