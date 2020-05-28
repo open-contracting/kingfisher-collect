@@ -7,9 +7,9 @@ from zipfile import ZipFile
 import pytest
 from scrapy.http import TextResponse
 
-from kingfisher_scrapy.base_spider import BaseSpider, LinksSpider, ZipSpider
+from kingfisher_scrapy.base_spider import BaseSpider, ZipSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.items import File, FileError, FileItem
+from kingfisher_scrapy.items import File, FileItem
 from tests import spider_with_crawler
 
 
@@ -77,57 +77,6 @@ def test_build_file():
         'encoding': 'iso-8859-1',
         'post_to_api': True,
     })
-
-
-def test_next_link():
-    spider = spider_with_crawler(spider_class=LinksSpider)
-
-    url = 'https://example.com/remote.json'
-    text_response = TextResponse('test')
-    response = text_response.replace(body='{"links": {"next": "' + url + '"}}')
-
-    actual = spider.next_link(response)
-
-    assert actual.url == url
-
-
-def test_parse_next_link_404():
-    spider = spider_with_crawler(spider_class=LinksSpider)
-
-    response = TextResponse('test')
-    response.status = 404
-    response.request = Mock()
-    response.request.meta = {'kf_filename': 'test'}
-    response.request.url = 'url'
-
-    actual = spider.parse_next_link(response, None).__next__()
-
-    assert isinstance(actual, FileError)
-
-
-def test_parse_next_link_200():
-    spider = spider_with_crawler(spider_class=LinksSpider)
-
-    url = 'https://example.com/remote.json'
-    text_response = TextResponse('test')
-
-    response = text_response.replace(body='{"links": {"next": "' + url + '"}}')
-    response.status = 200
-    response.request = Mock()
-    response.request.meta = {'kf_filename': 'test'}
-    response.request.url = 'url'
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-        os.makedirs(os.path.join(files_store, 'test', '20010203_040506'))
-
-        actual = spider.parse_next_link(response, None).__next__()
-
-        assert isinstance(actual, File)
-        assert actual['file_name'] == 'test'
-        for item in spider.parse_next_link(response, None):
-            assert item
 
 
 def test_parse_zipfile():

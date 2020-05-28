@@ -10,6 +10,7 @@ import scrapy
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import SpiderArgumentError
 from kingfisher_scrapy.items import File, FileError, FileItem
+from kingfisher_scrapy.util import handle_error
 
 
 class BaseSpider(scrapy.Spider):
@@ -222,27 +223,42 @@ class ZipSpider(BaseSpider):
 
 
 class LinksSpider(BaseSpider):
+    """
+    This class makes it easy to collect data from an API that implements the `pagination
+    <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__ pattern.
+
+    All you need to do is set the ``data_type`` of the API responses as a class attribute.
+
+    .. code-block:: python
+
+        import scrapy
+
+        from kingfisher_scrapy.base_spider import LinksSpider
+
+        class MySpider(LinksSpider):
+            name = 'my_spider'
+            data_type = 'release_package'
+
+            def start_requests(self):
+                yield scrapy.Request(
+                    url='https://example.com/api/releases.json',
+                    meta={'kf_filename': 'page1.json'}
+                )
+    """
+
+    @handle_error
+    def parse(self, response):
+        yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type=self.data_type)
+
+        if not self.sample:
+            yield self.next_link(response)
+
     @staticmethod
     def next_link(response):
         """
-        Handling API response with a links field
-
-        Access to ``links/next`` for the new url, and returns a Request
+        If the JSON response has a ``links.next`` key, returns a ``scrapy.Request`` for the URL.
         """
-        json_data = json.loads(response.text)
-        if 'links' in json_data and 'next' in json_data['links']:
-            url = json_data['links']['next']
-            return scrapy.Request(
-                url=url,
-                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
-            )
-
-    def parse_next_link(self, response, data_type):
-        if response.status == 200:
-
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type=data_type)
-
-            if not self.sample:
-                yield self.next_link(response)
-        else:
-            yield self.build_file_error_from_response(response)
+        data = json.loads(response.text)
+        if 'links' in data and 'next' in data['links']:
+            url = data['links']['next']
+            return scrapy.Request(url, meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'})
