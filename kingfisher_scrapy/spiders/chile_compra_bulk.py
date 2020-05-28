@@ -6,6 +6,11 @@ from kingfisher_scrapy.base_spider import ZipSpider
 
 
 class ChileCompraBulk(ZipSpider):
+    """
+    Spider arguments
+      sample
+        Download only data released on February 2017.
+    """
     name = 'chile_compra_bulk'
     download_warnsize = 0
     download_timeout = 99999
