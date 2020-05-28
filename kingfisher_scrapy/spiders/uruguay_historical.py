@@ -4,6 +4,13 @@ from kingfisher_scrapy.base_spider import ZipSpider
 
 
 class UruguayHistorical(ZipSpider):
+    """
+    API documentation
+      https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
+    Spider arguments
+      sample
+        Download only data released on 2002.
+    """
     name = 'uruguay_historical'
     # the files takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000

@@ -6,6 +6,13 @@ from kingfisher_scrapy.spiders.uruguay_base import UruguayBase
 
 
 class UruguayReleases(UruguayBase):
+    """
+    API documentation
+      https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
+    Spider arguments
+      sample
+        Download only 1 release.
+    """
     name = 'uruguay_releases'
 
     def parse_list(self, response):
