@@ -35,12 +35,7 @@ class Zambia(ZipSpider):
                 )
 
         else:
-            yield {
-                'success': False,
-                'file_name': 'list.json',
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response, filename='list.json')
 
     def parse(self, response):
         yield from self.parse_zipfile(response, data_type='record_package')

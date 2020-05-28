@@ -4,7 +4,7 @@ from datetime import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.exceptions import AuthenticationFailureException
+from kingfisher_scrapy.exceptions import AuthenticationError
 
 
 class ParaguayHacienda(BaseSpider):
@@ -33,7 +33,7 @@ class ParaguayHacienda(BaseSpider):
 
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
-           'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
+            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
         },
         'CONCURRENT_REQUESTS': 1,
     }
@@ -92,16 +92,11 @@ class ParaguayHacienda(BaseSpider):
                             dont_filter=True
                         )
             else:
-                yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
-                                                 data_type='release_package')
+                yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                                    data_type='release_package')
 
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def request_access_token(self):
         """ Requests a new access token """
@@ -135,7 +130,7 @@ class ParaguayHacienda(BaseSpider):
                 if attempt == self.max_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.auth_failed = True
-                    raise AuthenticationFailureException()
+                    raise AuthenticationError()
                 else:
                     self.logger.info('Requesting access token, attempt {} of {}'.format(
                         attempt + 1,
@@ -154,7 +149,7 @@ class ParaguayHacienda(BaseSpider):
         else:
             self.logger.error('Authentication failed. Status code: {}'.format(response.status))
             self.auth_failed = True
-            raise AuthenticationFailureException()
+            raise AuthenticationError()
 
     def expires_soon(self, time_diff):
         """ Tells if the access token will expire soon (required by

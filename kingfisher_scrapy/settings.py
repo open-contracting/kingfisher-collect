@@ -67,10 +67,10 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
 EXTENSIONS = {
-    # `KingfisherFilesStore` must run before `KingfisherAPI`, because the file needs to be written before the request
-    # is sent to Kingfisher Process.
+    # `KingfisherFilesStore` must run before `KingfisherProcessAPI`, because the file needs to be written before the
+    # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
-    'kingfisher_scrapy.extensions.KingfisherAPI': 500,
+    'kingfisher_scrapy.extensions.KingfisherProcessAPI': 500,
 }
 
 # Configure item pipelines

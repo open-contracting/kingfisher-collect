@@ -24,8 +24,8 @@ class Armenia(BaseSpider):
     def parse(self, response):
         if response.status == 200:
 
-            yield self.save_response_to_disk(response, response.request.meta['kf_filename'],
-                                             data_type='release_package')
+            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                                data_type='release_package')
 
             json_data = json.loads(response.text)
             if not self.sample:
@@ -36,9 +36,4 @@ class Armenia(BaseSpider):
                         meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest()+'.json'}
                     )
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response)

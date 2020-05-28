@@ -5,7 +5,7 @@ from datetime import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.exceptions import AuthenticationFailureException
+from kingfisher_scrapy.exceptions import AuthenticationError
 
 
 class ParaguayDNCPBaseSpider(BaseSpider):
@@ -90,7 +90,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
                 if attempt == self.max_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.auth_failed = True
-                    raise AuthenticationFailureException()
+                    raise AuthenticationError()
                 else:
                     self.logger.info('Requesting access token, attempt {} of {}'.format(
                         attempt + 1,
@@ -109,7 +109,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         else:
             self.logger.error('Authentication failed. Status code: {}'.format(response.status))
             self.auth_failed = True
-            raise AuthenticationFailureException()
+            raise AuthenticationError()
 
     def parse_pages(self, response):
         if response.status == 200:
@@ -129,26 +129,17 @@ class ParaguayDNCPBaseSpider(BaseSpider):
                     callback=self.parse_pages
                 )
         else:
-            yield {
-                'success': False,
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def parse(self, response):
         if response.status == 200:
-            yield self.save_response_to_disk(
+            yield self.build_file_from_response(
                 response,
                 response.request.meta['kf_filename'],
                 data_type=self.data_type
             )
         else:
-            yield {
-                'success': False,
-                'file_name': response.request.meta['kf_filename'],
-                'url': response.request.url,
-                'errors': {'http_code': response.status}
-            }
+            yield self.build_file_error_from_response(response)
 
     def get_files_to_download(self, content):
         """ Override this

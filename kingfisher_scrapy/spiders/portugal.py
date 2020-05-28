@@ -42,12 +42,7 @@ class Portugal(ZipSpider):
                         if self.sample:
                             break
         else:
-            yield {
-                'success': False,
-                'kf_filename': 'list.json',
-                "url": response.request.url,
-                "errors": {"http_code": response.status}
-            }
+            yield self.build_file_error_from_response(response, filename='list.json')
 
     def parse(self, response):
         yield from self.parse_zipfile(response, data_type='record_package',
