@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from scrapy import Request
-from scrapy.http import TextResponse
 from scrapy.crawler import Crawler
+from scrapy.http import TextResponse
 
 from kingfisher_scrapy.base_spider import BaseSpider
 

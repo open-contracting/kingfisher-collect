@@ -1,5 +1,5 @@
 import pytest
-from scrapy.http import Request, TextResponse
+from scrapy.http import Request
 
 from kingfisher_scrapy.base_spider import LinksSpider
 from kingfisher_scrapy.items import File, FileError
