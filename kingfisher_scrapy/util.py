@@ -17,7 +17,7 @@ def handle_error(decorated):
         # All 2xx codes are successful.
         # https://tools.ietf.org/html/rfc7231#section-6.3
         if self.is_http_success(response):
-            return decorated(self, response)
+            yield from decorated(self, response)
         else:
             yield self.build_file_error_from_response(response)
     return wrapper
