@@ -8,6 +8,18 @@ from kingfisher_scrapy.exceptions import AuthenticationFailureException
 
 
 class ParaguayHacienda(BaseSpider):
+    """
+    Swagger API documentation
+      https://datos.hacienda.gov.py/odmh-api-v1/api-docs/
+    Spider arguments
+      sample
+        Download only 11 releases.
+    Environment variables
+      KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN
+        To get an API account and request token go to https://datos.hacienda.gov.py/aplicaciones/new.
+      KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET
+        Your client secret generated.
+    """
     name = 'paraguay_hacienda'
 
     start_time = None
