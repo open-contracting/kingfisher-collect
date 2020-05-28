@@ -1,7 +1,6 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
-from kingfisher_scrapy.util import handle_error
 
 
 class UruguayHistorical(ZipSpider):
@@ -15,6 +14,8 @@ class UruguayHistorical(ZipSpider):
                       'Chrome/37.0.2049.0 Safari/537.36',
     }
 
+    parse_zipfile_kwargs = {'data_type': 'release_package'}
+
     def start_requests(self):
         base_url = 'https://www.gub.uy/agencia-compras-contrataciones-estado/sites/agencia-compras-contrataciones' \
                    '-estado/files/2019-04/OCDS-{}.zip'
@@ -25,7 +26,3 @@ class UruguayHistorical(ZipSpider):
             yield scrapy.Request(
                 url=base_url.format(year)
             )
-
-    @handle_error
-    def parse(self, response):
-        yield from self.parse_zipfile(response, data_type='release_package')

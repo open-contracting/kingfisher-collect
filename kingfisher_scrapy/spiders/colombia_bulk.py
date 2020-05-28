@@ -21,6 +21,8 @@ class ColombiaBulk(ZipSpider):
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
 
+    parse_zipfile_kwargs = {'data_type': 'release_in_Release', 'file_format': 'json_lines', 'encoding': 'iso-8859-1'}
+
     def start_requests(self):
         yield scrapy.Request(
             url='https://www.colombiacompra.gov.co/transparencia/datos-json',
@@ -34,7 +36,3 @@ class ColombiaBulk(ZipSpider):
         for url in urls:
             filename = urlparse(url).path.split('/')[-1]
             yield scrapy.Request(url, meta={'kf_filename': filename})
-
-    @handle_error
-    def parse(self, response):
-        yield from self.parse_zipfile(response, 'release_in_Release', file_format='json_lines', encoding='iso-8859-1')

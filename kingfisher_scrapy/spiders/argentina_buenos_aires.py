@@ -17,9 +17,10 @@ class ArgentinaBuenosAires(ZipSpider):
         Downloads the zip file and sends 10 releases to kingfisher process.
     """
     name = 'argentina_buenos_aires'
-    start_urls = ['https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras']
     # the data list service takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000
+
+    parse_zipfile_kwargs = {'data_type': 'release_package', 'file_format': 'release_package'}
 
     def start_requests(self):
         yield scrapy.Request(
@@ -34,7 +35,3 @@ class ArgentinaBuenosAires(ZipSpider):
         for resource in data['result']['resources']:
             if resource['format'].upper() == 'JSON':
                 yield scrapy.Request(url=resource['url'])
-
-    @handle_error
-    def parse(self, response):
-        yield from self.parse_zipfile(response, 'release_package', file_format='release_package')

@@ -178,6 +178,35 @@ class BaseSpider(scrapy.Spider):
 
 
 class ZipSpider(BaseSpider):
+    """
+    This class makes it easy to collect data from ZIP files:
+
+    -  Inherit from ``ZipSpider``
+    -  Set a ``parse_zipfile_kwargs`` class attribute to the keyword arguments for the
+       :meth:`kingfisher_scrapy.base_spider.ZipSpider.parse_zipfile` method
+    -  Write a ``start_requests`` method to request the ZIP files
+
+    .. code-block:: python
+
+        import scrapy
+
+        from kingfisher_scrapy.base_spider import ZipSpider
+
+        class MySpider(LinksSpider):
+            name = 'my_spider'
+
+            parse_zipfile_kwargs = {'data_type': 'release_package'}
+
+            def start_requests(self):
+                yield scrapy.Request(
+                    url='https://example.com/api/packages.zip',
+                    meta={'kf_filename': 'all.json'}
+                )
+    """
+    @handle_error
+    def parse(self, response):
+        yield from self.parse_zipfile(response, **self.parse_zipfile_kwargs)
+
     def parse_zipfile(self, response, data_type, file_format=None, encoding='utf-8'):
         """
         Handles a response that is a ZIP file.
@@ -225,9 +254,11 @@ class ZipSpider(BaseSpider):
 class LinksSpider(BaseSpider):
     """
     This class makes it easy to collect data from an API that implements the `pagination
-    <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__ pattern.
+    <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__ pattern:
 
-    All you need to do is set the ``data_type`` of the API responses as a class attribute.
+    -  Inherit from ``LinksSpider``
+    -  Set a ``data_type`` class attribute to the data type of the API responses
+    -  Write a ``start_requests`` method to request the first page
 
     .. code-block:: python
 
@@ -241,7 +272,7 @@ class LinksSpider(BaseSpider):
 
             def start_requests(self):
                 yield scrapy.Request(
-                    url='https://example.com/api/releases.json',
+                    url='https://example.com/api/packages.json',
                     meta={'kf_filename': 'page1.json'}
                 )
     """

@@ -12,6 +12,8 @@ class Portugal(ZipSpider):
     download_warnsize = 0
     download_timeout = 9999
 
+    parse_zipfile_kwargs = {'data_type': 'record_package', 'file_format': 'json_lines', 'encoding': 'iso-8859-1'}
+
     def start_requests(self):
         url = 'https://dados.gov.pt/api/1/datasets/?q=ocds&organization={}&page_size={}'
         id = '5ae97fa2c8d8c915d5faa3bf'
@@ -36,8 +38,3 @@ class Portugal(ZipSpider):
                     )
                     if self.sample:
                         break
-
-    @handle_error
-    def parse(self, response):
-        yield from self.parse_zipfile(response, data_type='record_package',
-                                      file_format='json_lines', encoding='iso-8859-1')

@@ -9,6 +9,8 @@ from kingfisher_scrapy.util import handle_error
 class Zambia(ZipSpider):
     name = 'zambia'
 
+    parse_zipfile_kwargs = {'data_type': 'record_package'}
+
     def start_requests(self):
         yield scrapy.Request(
             'https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackagelist',
@@ -29,7 +31,3 @@ class Zambia(ZipSpider):
                 file_url,
                 meta={'kf_filename': '%s.json' % file_url[-16:].replace('/', '-')},
             )
-
-    @handle_error
-    def parse(self, response):
-        yield from self.parse_zipfile(response, data_type='record_package')

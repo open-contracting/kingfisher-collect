@@ -1,15 +1,11 @@
-import json
-import os.path
-from tempfile import TemporaryDirectory
 from unittest.mock import Mock
-from zipfile import ZipFile
 
 import pytest
 from scrapy.http import TextResponse
 
-from kingfisher_scrapy.base_spider import BaseSpider, ZipSpider
+from kingfisher_scrapy.base_spider import BaseSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.items import File, FileItem
+from kingfisher_scrapy.items import File
 from tests import spider_with_crawler
 
 
@@ -77,117 +73,6 @@ def test_build_file():
         'encoding': 'iso-8859-1',
         'post_to_api': True,
     })
-
-
-def test_parse_zipfile():
-    spider = spider_with_crawler(spider_class=ZipSpider)
-
-    response = TextResponse('test')
-    response.status = 200
-    response.request = Mock()
-    response.request.meta = {'kf_filename': 'test.json'}
-    response.request.url = 'url'
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-        tmp = os.path.join(files_store, 'test', '20010203_040506')
-        os.makedirs(tmp)
-
-        with open(os.path.join(tmp, 'test'), 'w'):
-            pass
-        with ZipFile(os.path.join(tmp, 'test.zip'), 'w') as z:
-            z.write(os.path.join(tmp, 'test'))
-        with open(os.path.join(tmp, 'test.zip'), 'rb') as z:
-            response = response.replace(body=z.read())
-
-        actual = spider.parse_zipfile(response, None).__next__()
-
-        assert isinstance(actual, File)
-        assert actual['file_name'].find('.json')
-
-
-def test_parse_zipfile_json_lines():
-    spider = spider_with_crawler(spider_class=ZipSpider)
-
-    response = TextResponse('test')
-    response.status = 200
-    response.request = Mock()
-    response.request.meta = {'kf_filename': 'test.json'}
-    response.request.url = 'url'
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-        tmp = os.path.join(files_store, 'test', '20010203_040506')
-        os.makedirs(tmp)
-
-        with open(os.path.join(tmp, 'test.json'), 'w') as f:
-            for i in range(10):
-                f.write('{"key": "value"}\n')
-        with ZipFile(os.path.join(tmp, 'test.zip'), 'w') as z:
-            z.write(os.path.join(tmp, 'test.json'))
-        with open(os.path.join(tmp, 'test.zip'), 'rb') as z:
-            response = response.replace(body=z.read())
-
-        actual = spider.parse_zipfile(response, None, file_format='json_lines').__next__()
-
-        assert isinstance(actual, FileItem)
-        assert actual['number'] == 1
-
-        spider.sample = True
-        total = 0
-        for item in spider.parse_zipfile(response, None, file_format='json_lines'):
-            total = total + 1
-            assert isinstance(item, FileItem)
-            assert item['number'] == total
-        assert total == 10
-
-
-def test_parse_zipfile_release_package():
-    spider = spider_with_crawler(spider_class=ZipSpider)
-
-    response = TextResponse('test')
-    response.status = 200
-    response.request = Mock()
-    response.request.meta = {'kf_filename': 'test.json'}
-    response.request.url = 'url'
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-        tmp = os.path.join(files_store, 'test', '20010203_040506')
-        os.makedirs(tmp)
-
-        with open(os.path.join(tmp, 'test.json'), 'w') as f:
-            release = {'releases': [], 'publisher': {'name': 'test'},
-                       'extensions': ['a', 'b'], 'license': 'test', 'extra': 1.1}
-            for i in range(110):
-                release['releases'].append({'key': 'value'})
-            json.dump(release, f)
-        with ZipFile(os.path.join(tmp, 'test.zip'), 'w') as z:
-            z.write(os.path.join(tmp, 'test.json'))
-        with open(os.path.join(tmp, 'test.zip'), 'rb') as z:
-            response = response.replace(body=z.read())
-
-        actual = spider.parse_zipfile(response, None, file_format='release_package').__next__()
-        data = json.loads(actual['data'])
-
-        assert isinstance(actual, FileItem)
-        assert actual['number'] == 1
-        assert data['publisher']['name'] == 'test'
-        assert data['extensions'] == ['a', 'b']
-        assert len(data['releases']) == spider.MAX_RELEASES_PER_PACKAGE
-
-        spider.sample = True
-        total = 0
-        for item in spider.parse_zipfile(response, None, file_format='release_package'):
-            total = total + 1
-            data = json.loads(item['data'])
-            assert isinstance(item, FileItem)
-            assert item['number'] == total
-            assert len(data['releases']) == spider.MAX_SAMPLE
-        assert total == 1
 
 
 def test_date_arguments():
