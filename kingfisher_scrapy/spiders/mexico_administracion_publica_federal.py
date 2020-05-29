@@ -8,7 +8,11 @@ from kingfisher_scrapy.util import handle_error
 
 class MexicoAdministracionPublicaFederal(BaseSpider):
     """
-    Bulk downloads: https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
+    Bulk download documentation
+      https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
+    Spider arguments
+      sample
+        Download only 100 records.
     """
     name = 'mexico_administracion_publica_federal'
 
