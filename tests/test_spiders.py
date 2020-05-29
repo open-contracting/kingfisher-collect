@@ -35,8 +35,9 @@ def test_start_requests_http_error(spider_name):
             assert len(items) == 1
             for item in items:
                 assert isinstance(item, FileError)
-                assert len(item) <= 3
+                assert len(item) == 3
                 assert item['errors'] == {'http_code': 555}
+                assert item['file_name']
                 assert item['url']
     except CloseSpider as e:
         warnings.warn('{}: {}'.format(spidercls.name, e.reason))
@@ -46,4 +47,4 @@ def test_start_requests_http_error(spider_name):
 def test_start_urls_start_requests(spider_name):
     spidercls = runner.spider_loader.load(spider_name)
 
-    assert hasattr(spidercls, 'start_urls') ^ method_is_overridden(spidercls, scrapy.Spider, 'start_requests')
+    assert 'start_urls' not in spidercls.__dict__ or 'start_requests' not in spidercls.__dict__
