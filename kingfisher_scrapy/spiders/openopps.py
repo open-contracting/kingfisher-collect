@@ -165,7 +165,7 @@ class OpenOpps(BaseSpider):
                 if all_data:
                     yield self.build_file(
                         all_data,
-                        filename=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json',
+                        file_name=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json',
                         url=response.request.url,
                         data_type='release_package_list'
                     )
@@ -244,4 +244,4 @@ class OpenOpps(BaseSpider):
                                  'first 10,000 data for: {}'.format(response.status, response.request.url))
             else:
                 yield self.build_file_error_from_response(
-                    response, filename=hashlib.md5(response.request.url.encode('utf-8')).hexdigest())
+                    response, file_name=hashlib.md5(response.request.url.encode('utf-8')).hexdigest())

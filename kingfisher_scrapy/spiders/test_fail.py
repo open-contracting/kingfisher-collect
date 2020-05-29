@@ -34,5 +34,4 @@ class TestFail(BaseSpider):
 
     @handle_error
     def parse(self, response):
-        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                            data_type='release_package')
+        yield self.build_file_from_response(response, data_type='release_package')

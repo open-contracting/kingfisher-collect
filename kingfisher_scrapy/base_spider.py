@@ -99,18 +99,25 @@ class BaseSpider(scrapy.Spider):
         """
         return self.crawler.stats.get_value('start_time').strftime(format)
 
-    def build_file_from_response(self, response, filename, data_type=None, encoding='utf-8', post_to_api=True):
+    def build_file_from_response(self, response, file_name=None, url=None, data=None, data_type=None, encoding='utf-8',
+                                 post_to_api=True):
         """
         Returns an item to yield, based on the response to a request.
         """
-        return self.build_file(response.body, filename, response.request.url, data_type, encoding, post_to_api)
+        if not file_name:
+            file_name = response.request.meta['kf_filename']
+        if not url:
+            url = response.request.url
+        if not data:
+            data = response.body
+        return self.build_file(data, file_name, url, data_type, encoding, post_to_api)
 
-    def build_file(self, data, filename, url=None, data_type=None, encoding='utf-8', post_to_api=True):
+    def build_file(self, data, file_name, url=None, data_type=None, encoding='utf-8', post_to_api=True):
         """
         Returns an item to yield.
         """
         return File({
-            'file_name': filename,
+            'file_name': file_name,
             'data': data,
             'data_type': data_type,
             'url': url,

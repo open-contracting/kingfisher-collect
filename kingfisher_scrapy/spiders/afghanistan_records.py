@@ -27,9 +27,8 @@ class AfghanistanRecords(BaseSpider):
             yield scrapy.Request(
                 url=file_url,
                 meta={'kf_filename': file_url.split('/')[-1] + '.json'},
-                callback=self.parse_record
             )
 
     @handle_error
-    def parse_record(self, response):
-        yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type="record")
+    def parse(self, response):
+        yield self.build_file_from_response(response, data_type='record')

@@ -27,10 +27,9 @@ class Moldova(BaseSpider):
     @handle_error
     def parse(self, response):
         if response.request.meta['data']:
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                data_type='record_package')
+            yield self.build_file_from_response(response, data_type='record_package')
         else:
-            self.build_file_from_response(response, response.request.meta['kf_filename'])
+            self.build_file_from_response(response)
             json_data = json.loads(response.text)
             offset = json_data.get('offset')
             # not having an offset in the data means the data has come to an end.

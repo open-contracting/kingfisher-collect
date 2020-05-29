@@ -39,10 +39,8 @@ class MexicoJalisco(BaseSpider):
                     meta={'kf_filename': 'packages-%s.json' % hashlib.md5(url.encode('utf-8')).hexdigest()},
                     callback=self.parse_release_package
                 )
-        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                            data_type='record_package')
+        yield self.build_file_from_response(response, data_type='record_package')
 
     @handle_error
     def parse_release_package(self, response):
-        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                            data_type='release_package')
+        yield self.build_file_from_response(response, data_type='release_package')

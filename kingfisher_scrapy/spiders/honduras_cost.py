@@ -32,8 +32,4 @@ class HondurasCoST(BaseSpider):
 
     @handle_error
     def parse_btn(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type="record_package"
-        )
+        yield self.build_file_from_response(response, data_type='record_package')

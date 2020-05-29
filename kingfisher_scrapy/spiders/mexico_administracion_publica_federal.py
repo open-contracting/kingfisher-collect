@@ -23,11 +23,7 @@ class MexicoAdministracionPublicaFederal(BaseSpider):
         data = json.loads(response.text)
 
         # Actual data
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type="record_package_list_in_results"
-        )
+        yield self.build_file_from_response(response, data_type='record_package_list_in_results')
 
         # Load more pages?
         if data['pagination']['page'] == 1 and not self.sample:

@@ -15,4 +15,4 @@ class ArgentinaVialidad(BaseSpider):
 
     @handle_error
     def parse(self, response):
-        yield self.build_file_from_response(response, 'all.json', data_type='release_package_list')
+        yield self.build_file_from_response(response, file_name='all.json', data_type='release_package_list')

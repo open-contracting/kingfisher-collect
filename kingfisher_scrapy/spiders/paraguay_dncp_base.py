@@ -139,11 +139,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
 
     @handle_error
     def parse(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type=self.data_type
-        )
+        yield self.build_file_from_response(response, data_type=self.data_type)
 
     def get_files_to_download(self, content):
         """ Override this

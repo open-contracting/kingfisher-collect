@@ -18,12 +18,9 @@ class UruguayRecords(UruguayBase):
             root = [root[0]]
 
         for id_compra in root:
-            url = self.get_url_compra(id_compra)
+            url = self.base_record_url.format(id_compra.split(',')[0].replace('id_compra:', ''))
             yield scrapy.Request(
                 url,
                 meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json',
                       'data_type': 'record_package'}
             )
-
-    def get_url_compra(self, text):
-        return self.base_record_url.format(text.split(',')[0].replace('id_compra:', ''))

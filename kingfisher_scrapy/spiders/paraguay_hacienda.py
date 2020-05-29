@@ -92,8 +92,7 @@ class ParaguayHacienda(BaseSpider):
                         dont_filter=True
                     )
         else:
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                data_type='release_package')
+            yield self.build_file_from_response(response, data_type='release_package')
 
     def request_access_token(self):
         """ Requests a new access token """

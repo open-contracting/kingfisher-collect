@@ -40,9 +40,8 @@ class AfghanistanReleases(BaseSpider):
             yield scrapy.Request(
                 url=file_url,
                 meta={'kf_filename': file_url.split('/')[-1] + '.json'},
-                callback=self.parse_release
             )
 
     @handle_error
-    def parse_release(self, response):
-        yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type="release")
+    def parse(self, response):
+        yield self.build_file_from_response(response, data_type='release')

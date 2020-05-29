@@ -33,10 +33,6 @@ class HondurasPortalBulkFiles(BaseSpider):
     def parse(self, response):
         filename = urlparse(response.request.url).path.split('/')[-2]
         if self.is_http_success(response):
-            yield self.build_file_from_response(
-                response,
-                filename,
-                data_type='release_package'
-            )
+            yield self.build_file_from_response(response, file_name=filename, data_type='release_package')
         else:
             yield self.build_file_error_from_response(response, file_name=filename)
