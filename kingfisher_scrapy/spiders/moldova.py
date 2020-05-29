@@ -7,6 +7,11 @@ from kingfisher_scrapy.util import handle_error
 
 
 class Moldova(BaseSpider):
+    """
+    Spider arguments
+      sample
+        Download only one set of records.
+    """
     name = 'moldova'
 
     endpoints = {"budgets": "https://public.mtender.gov.md/budgets/",

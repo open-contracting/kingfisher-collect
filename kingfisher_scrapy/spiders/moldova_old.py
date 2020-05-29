@@ -5,6 +5,13 @@ from kingfisher_scrapy.util import handle_error
 
 
 class MoldovaOld(BaseSpider):
+    """
+    Bulk download documentation
+      http://opencontracting.date.gov.md/downloads
+    Spider arguments
+      sample
+        Download only data released on 2017.
+    """
     name = 'moldova_old'
 
     def start_requests(self):
