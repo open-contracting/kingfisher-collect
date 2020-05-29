@@ -163,7 +163,9 @@ class KingfisherProcessAPI:
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry
 class SentryLogging:
     """
-    Send exceptions and errors to Sentry.
+    Sends exceptions and log records to Sentry. Log records with a level of ``ERROR`` or higher are captured as events.
+
+    https://docs.sentry.io/platforms/python/logging/
     """
 
     @classmethod
@@ -172,6 +174,5 @@ class SentryLogging:
         if sentry_dsn is None:
             raise NotConfigured
         extension = cls()
-        # by default only the errors are sent you sentry https://docs.sentry.io/platforms/python/logging/
         sentry_sdk.init(sentry_dsn)
         return extension
