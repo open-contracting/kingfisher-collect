@@ -7,6 +7,13 @@ from kingfisher_scrapy.util import handle_error
 
 
 class Scotland(BaseSpider):
+    """
+    API documentation
+      https://api.publiccontractsscotland.gov.uk/v1
+    Spider arguments
+      sample
+        Download only 21 releases.
+    """
     name = 'scotland'
 
     notice_types = [
