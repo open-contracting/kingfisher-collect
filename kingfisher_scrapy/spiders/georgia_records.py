@@ -4,6 +4,13 @@ from kingfisher_scrapy.base_spider import LinksSpider
 
 
 class GeorgiaRecords(LinksSpider):
+    """
+    Swagger API documentation
+      https://odapi.spa.ge/api/swagger.ui
+    Spider arguments
+      sample
+        Download one set of releases.
+    """
     name = 'georgia_records'
     data_type = 'record_package'
 
