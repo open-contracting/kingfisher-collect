@@ -1,11 +1,9 @@
 import warnings
 
 import pytest
-import scrapy
 from scrapy.crawler import Crawler, CrawlerRunner
 from scrapy.exceptions import CloseSpider
 from scrapy.http import Response
-from scrapy.utils.deprecate import method_is_overridden
 from scrapy.utils.project import get_project_settings
 
 from kingfisher_scrapy.items import FileError
