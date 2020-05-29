@@ -8,6 +8,13 @@ from kingfisher_scrapy.util import handle_error
 
 
 class France(BaseSpider):
+    """
+    Swagger API documentation
+      https://doc.data.gouv.fr/api/reference/
+    Spider arguments
+      sample
+        Download one set of releases.
+    """
     name = "france"
 
     def start_requests(self):
