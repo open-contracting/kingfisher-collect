@@ -9,6 +9,13 @@ from kingfisher_scrapy.util import handle_error
 
 
 class DominicanRepublic(BaseSpider):
+    """
+    Bulk download documentation
+      https://www.dgcp.gob.do/estandar-mundial-ocds/
+    Spider arguments
+      sample
+        Download only one set of releases.
+    """
     name = 'dominican_republic'
     custom_settings = {
         'DOWNLOAD_TIMEOUT': 360
