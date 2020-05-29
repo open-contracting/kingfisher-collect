@@ -8,10 +8,14 @@ from kingfisher_scrapy.util import handle_error
 
 class HondurasONCAE(ZipSpider):
     name = 'honduras_oncae'
-    start_urls = ['http://oncae.gob.hn/datosabiertos']
-
     # the files take too long to be downloaded, so we increase the download timeout
     download_timeout = 900
+
+    def start_requests(self):
+        yield scrapy.Request(
+            'http://oncae.gob.hn/datosabiertos',
+            meta={'kf_filename': 'list.html'},
+        )
 
     @handle_error
     def parse(self, response):

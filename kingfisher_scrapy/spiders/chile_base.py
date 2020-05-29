@@ -25,16 +25,14 @@ class ChileCompraBaseSpider(BaseSpider):
             until_month = 12 if self.start_year != datetime.datetime.now().year else until_month
         return until_year, until_month
 
-    def get_sample_request(self):
-        return scrapy.Request(
-            url=self.base_list_url.format(2017, 10, 0, 10),
-            meta={'year': 2017, 'month': 10}
-        )
-
     def start_requests(self):
         if self.sample:
-            yield self.get_sample_request()
+            yield scrapy.Request(
+                url=self.base_list_url.format(2017, 10, 0, 10),
+                meta={'kf_filename': 'list-2017-10.json', 'year': 2017, 'month': 10},
+            )
             return
+
         until_year, until_month = self.get_year_month_until()
         for year in range(self.start_year, until_year):
             for month in range(1, 13):
@@ -43,7 +41,7 @@ class ChileCompraBaseSpider(BaseSpider):
                     break
                 yield scrapy.Request(
                     url=self.base_list_url.format(year, month, 0, self.limit),
-                    meta={'year': year, 'month': month}
+                    meta={'kf_filename': 'list-{}-{:02d}.json'.format(year, month), 'year': year, 'month': month},
                 )
 
     def base_parse(self, response, package_type):

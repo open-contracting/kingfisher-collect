@@ -8,7 +8,12 @@ from kingfisher_scrapy.util import handle_error
 
 class HondurasCoST(BaseSpider):
     name = 'honduras_cost'
-    start_urls = ['http://app.sisocs.org/protected/ocdsShow/']
+
+    def start_requests(self):
+        yield scrapy.Request(
+            'http://app.sisocs.org/protected/ocdsShow/',
+            meta={'kf_filename': 'list.html'},
+        )
 
     @handle_error
     def parse(self, response):

@@ -8,9 +8,14 @@ from kingfisher_scrapy.util import handle_error
 
 class NigeriaPortal(BaseSpider):
     name = 'nigeria_portal'
-    start_urls = ['http://nocopo.bpp.gov.ng/OpenData.aspx']
     download_delay = 0.9
     user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
+
+    def start_requests(self):
+        yield scrapy.Request(
+            'http://nocopo.bpp.gov.ng/OpenData.aspx',
+            meta={'kf_filename': 'list.html'},
+        )
 
     @handle_error
     def parse(self, response):

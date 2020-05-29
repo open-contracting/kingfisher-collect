@@ -13,11 +13,12 @@ class France(BaseSpider):
     def start_requests(self):
         yield scrapy.Request(
             url='https://www.data.gouv.fr/api/1/datasets/?organization=534fff75a3a7292c64a77de4',
-            callback=self.parse_item
+            meta={'kf_filename': 'list.json'},
+            callback=self.parse_list,
         )
 
     @handle_error
-    def parse_item(self, response):
+    def parse_list(self, response):
         json_data = json.loads(response.text)
         data = json_data['data']
         for item in data:

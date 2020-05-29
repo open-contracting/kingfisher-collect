@@ -13,11 +13,12 @@ class HondurasPortalBulkFiles(BaseSpider):
     def start_requests(self):
         yield scrapy.Request(
             'http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json',
-            callback=self.parse_json_list
+            meta={'kf_filename': 'list.json'},
+            callback=self.parse_list,
         )
 
     @handle_error
-    def parse_json_list(self, response):
+    def parse_list(self, response):
         filelist = json.loads(response.text)
 
         if self.sample:

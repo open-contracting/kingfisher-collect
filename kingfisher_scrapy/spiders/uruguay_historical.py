@@ -23,6 +23,4 @@ class UruguayHistorical(ZipSpider):
         if self.sample:
             end_year = 2003
         for year in range(2002, end_year):
-            yield scrapy.Request(
-                url=base_url.format(year)
-            )
+            yield scrapy.Request(base_url.format(year), meta={'kf_filename': 'OCDS-{}.zip'.format(year)})
