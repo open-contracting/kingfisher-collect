@@ -129,14 +129,14 @@ class BaseSpider(scrapy.Spider):
         })
 
     def build_file_error_from_response(self, response, **kwargs):
-        file_error = {
+        item = FileError({
             'url': response.request.url,
             'errors': {'http_code': response.status},
-        }
+        })
         if 'kf_filename' in response.request.meta:
-            file_error['file_name'] = response.request.meta['kf_filename']
-        file_error.update(kwargs)
-        return FileError(file_error)
+            item['file_name'] = response.request.meta['kf_filename']
+        item.update(kwargs)
+        return item
 
     def _get_package_metadata(self, f, skip_key):
         """

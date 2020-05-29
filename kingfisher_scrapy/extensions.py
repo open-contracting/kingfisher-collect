@@ -40,7 +40,7 @@ class KingfisherFilesStore:
         metadata = {
             'url': item['url'],
             'data_type': item['data_type'],
-            'encoding': item['encoding'],
+            'encoding': item.get('encoding', 'utf-8'),
         }
         self._write_file(path + '.fileinfo', metadata, spider)
 
