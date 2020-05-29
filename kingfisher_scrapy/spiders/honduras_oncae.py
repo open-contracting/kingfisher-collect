@@ -7,6 +7,13 @@ from kingfisher_scrapy.util import handle_error
 
 
 class HondurasONCAE(ZipSpider):
+    """
+    Bulk download documentation
+      http://oncae.gob.hn/datosabiertos
+    Spider arguments
+      sample
+        Download one set of releases.
+    """
     name = 'honduras_oncae'
     start_urls = ['http://oncae.gob.hn/datosabiertos']
 

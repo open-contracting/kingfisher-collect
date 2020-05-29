@@ -8,6 +8,13 @@ from kingfisher_scrapy.util import handle_error
 
 
 class HondurasPortalBulkFiles(BaseSpider):
+    """
+    Bulk download documentation
+      http://www.contratacionesabiertas.gob.hn/descargas/
+    Spider arguments
+      sample
+        Download one set of releases.
+    """
     name = 'honduras_portal_bulk_files'
 
     def start_requests(self):

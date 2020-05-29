@@ -7,6 +7,11 @@ from kingfisher_scrapy.util import handle_error
 
 
 class HondurasCoST(BaseSpider):
+    """
+    Spider arguments
+      sample
+        Download only 20 records.
+    """
     name = 'honduras_cost'
     start_urls = ['http://app.sisocs.org/protected/ocdsShow/']
 
