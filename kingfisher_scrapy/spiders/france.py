@@ -41,7 +41,8 @@ class France(BaseSpider):
             if next_page:
                 yield scrapy.Request(
                     next_page,
-                    callback=self.parse_item
+                    meta={'kf_filename': hashlib.md5(next_page.encode('utf-8')).hexdigest() + '.json'},
+                    callback=self.parse_list
                 )
 
     @handle_error

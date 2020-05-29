@@ -22,11 +22,13 @@ class HondurasPortalBulkFiles(BaseSpider):
         filelist = json.loads(response.text)
 
         if self.sample:
-            yield scrapy.Request(filelist[0]['urls']['json'])
+            url = filelist[0]['urls']['json']
+            yield scrapy.Request(url, meta={'kf_filename': url.rsplit('/', 1)[-1]})
 
         else:
             for item in filelist:
-                yield scrapy.Request(item['urls']['json'])
+                url = item['urls']['json']
+                yield scrapy.Request(url, meta={'kf_filename': url.rsplit('/', 1)[-1]})
 
     def parse(self, response):
         filename = urlparse(response.request.url).path.split('/')[-2]

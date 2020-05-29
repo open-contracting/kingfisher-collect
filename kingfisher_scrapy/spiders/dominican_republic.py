@@ -31,7 +31,7 @@ class DominicanRepublic(BaseSpider):
 
         for url in json_urls:
             if '/JSON_DGCP_' in url:
-                yield scrapy.Request('https:' + url)
+                yield scrapy.Request('https:' + url, meta={'kf_filename': url.rsplit('/', 1)[-1]})
 
     def parse(self, response):
         if self.is_http_success(response):
