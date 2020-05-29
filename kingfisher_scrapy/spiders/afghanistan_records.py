@@ -1,14 +1,13 @@
 import json
-import time
 
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class AfghanistanRecords(BaseSpider):
     name = 'afghanistan_records'
-    start_urls = ['https://ocds.ageops.net/api/ocds/records']
     download_delay = 1
 
     def start_requests(self):
@@ -18,9 +17,13 @@ class AfghanistanRecords(BaseSpider):
             callback=self.parse_list
         )
 
+    @handle_error
     def parse_list(self, response):
-        if response.status == 200:
+        files_urls = json.loads(response.text)
+        if self.sample:
+            files_urls = [files_urls[0]]
 
+<<<<<<< HEAD
             files_urls = json.loads(response.text)
             if self.sample or self.last:
                 files_urls = [files_urls[0]]
@@ -46,11 +49,15 @@ class AfghanistanRecords(BaseSpider):
             self.crawler.engine.unpause()
             url = response.request.url
             # This is dangerous as we might get stuck in a loop here if we always get a 429 response. Try this for now.
+=======
+        for file_url in files_urls:
+>>>>>>> 4b2ff8bf9342f1be8ee9d0bc26ad68fdc23c8826
             yield scrapy.Request(
-                url=url,
-                meta={'kf_filename': url.split('/')[-1]+'.json'},
-                callback=self.parse_record,
-                dont_filter=True,
+                url=file_url,
+                meta={'kf_filename': file_url.split('/')[-1] + '.json'},
+                callback=self.parse_record
             )
-        else:
-            yield self.build_file_error_from_response(response)
+
+    @handle_error
+    def parse_record(self, response):
+        yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type="record")

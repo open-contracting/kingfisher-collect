@@ -3,24 +3,22 @@ import hashlib
 import scrapy
 
 from kingfisher_scrapy.spiders.uruguay_base import UruguayBase
+from kingfisher_scrapy.util import handle_error
 
 
 class UruguayReleases(UruguayBase):
     name = 'uruguay_releases'
 
+    @handle_error
     def parse_list(self, response):
-        if response.status == 200:
-            root = response.xpath('//item/link/text()').getall()
+        root = response.xpath('//item/link/text()').getall()
 
-            if self.sample:
-                root = [root[0]]
+        if self.sample:
+            root = [root[0]]
 
-            for url in root:
-                yield scrapy.Request(
-                    url,
-                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json',
-                          'data_type': 'release_package'}
-                )
-
-        else:
-            yield self.build_file_error_from_response(response)
+        for url in root:
+            yield scrapy.Request(
+                url,
+                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json',
+                      'data_type': 'release_package'}
+            )

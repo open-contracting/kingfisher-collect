@@ -1,11 +1,11 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class CanadaBuyAndSell(BaseSpider):
     name = "canada_buyandsell"
-    start_urls = ['https://buyandsell.gc.ca']
 
     def start_requests(self):
         yield scrapy.Request(
@@ -27,12 +27,7 @@ class CanadaBuyAndSell(BaseSpider):
             meta={'kf_filename': '13-14.json'}
         )
 
+    @handle_error
     def parse(self, response):
-        if response.status == 200:
-            if self.last:
-                yield self.build_last_release_date_item(response, 'releases')
-            else:
-                yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                    data_type='release_package')
-        else:
-            yield self.build_file_error_from_response(response)
+        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                            data_type='release_package')

@@ -4,11 +4,11 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class AustraliaNSW(BaseSpider):
     name = 'australia_nsw'
-    start_urls = ['https://tenders.nsw.gov.au']
 
     def start_requests(self):
         release_types = ['planning', 'tender', 'contract']
@@ -28,7 +28,7 @@ class AustraliaNSW(BaseSpider):
                 )
 
     def parse_list(self, response):
-        if response.status == 200:
+        if self.is_http_success(response):
 
             json_data = json.loads(response.text)
             if self.last:
@@ -70,12 +70,9 @@ class AustraliaNSW(BaseSpider):
 
         else:
             yield self.build_file_error_from_response(
-                response, filename=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json')
+                response, file_name=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json')
 
+    @handle_error
     def parse(self, response):
-        if response.status == 200:
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                data_type='release_package')
-
-        else:
-            yield self.build_file_error_from_response(response)
+        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
+                                            data_type='release_package')

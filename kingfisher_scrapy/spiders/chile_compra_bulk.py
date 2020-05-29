@@ -13,6 +13,8 @@ class ChileCompraBulk(ZipSpider):
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
 
+    parse_zipfile_kwargs = {'data_type': 'record_package'}
+
     def start_requests(self):
         url = 'https://ocds.blob.core.windows.net/ocds/{}{}.zip'
         if self.sample:
@@ -28,6 +30,3 @@ class ChileCompraBulk(ZipSpider):
                     url.format(year, month),
                     meta={'kf_filename': hashlib.md5((url).encode('utf-8')).hexdigest()}
                 )
-
-    def parse(self, response):
-        yield from self.parse_zipfile(response, data_type='record_package')

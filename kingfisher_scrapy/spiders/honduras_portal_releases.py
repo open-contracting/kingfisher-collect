@@ -4,6 +4,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class HondurasPortalReleases(BaseSpider):
@@ -17,25 +18,21 @@ class HondurasPortalReleases(BaseSpider):
             meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
         )
 
+    @handle_error
     def parse(self, response):
-        if response.status == 200:
+        json_data = json.loads(response.text)
+        yield self.build_file(
+            json.dumps(json_data['releasePackage']).encode(),
+            response.request.meta['kf_filename'],
+            data_type='release_package',
+            url=response.request.url
+        )
 
-            json_data = json.loads(response.text)
-            yield self.build_file(
-                json.dumps(json_data['releasePackage']).encode(),
-                response.request.meta['kf_filename'],
-                data_type='release_package',
-                url=response.request.url
-            )
-
-            url = json_data.get('next')
-            if not url or self.sample:
-                return
-            else:
-                yield scrapy.Request(
-                    url,
-                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
-                )
-
+        url = json_data.get('next')
+        if not url or self.sample:
+            return
         else:
-            yield self.build_file_error_from_response(response)
+            yield scrapy.Request(
+                url,
+                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+            )
