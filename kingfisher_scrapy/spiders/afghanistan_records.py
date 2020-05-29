@@ -7,6 +7,13 @@ from kingfisher_scrapy.util import handle_error
 
 
 class AfghanistanRecords(BaseSpider):
+    """
+    API documentation
+      https://ocds.ageops.net/
+    Spider arguments
+      sample
+        Download only 1 record.
+    """
     name = 'afghanistan_records'
     download_delay = 1
 
