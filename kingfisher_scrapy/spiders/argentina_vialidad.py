@@ -5,6 +5,13 @@ from kingfisher_scrapy.util import handle_error
 
 
 class ArgentinaVialidad(BaseSpider):
+    """
+    API documentation
+      https://datosabiertos.vialidad.gob.ar/ui/index.html#!/datos_abiertos
+    Spider arguments
+      sample
+        Download one set of releases.
+    """
     name = 'argentina_vialidad'
 
     def start_requests(self):
