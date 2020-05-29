@@ -9,6 +9,11 @@ from kingfisher_scrapy.util import handle_error
 
 
 class IndonesiaBandung(BaseSpider):
+    """
+    Spider arguments
+      sample
+        Download only 10 releases.
+    """
     name = 'indonesia_bandung'
 
     def start_requests(self):
