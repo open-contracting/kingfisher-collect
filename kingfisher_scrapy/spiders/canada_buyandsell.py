@@ -5,6 +5,13 @@ from kingfisher_scrapy.util import handle_error
 
 
 class CanadaBuyAndSell(BaseSpider):
+    """
+    API documentation
+      https://buyandsell.gc.ca/procurement-data/open-contracting-data-standard-pilot/download-ocds-pilot-data
+    Spider arguments
+      sample
+        Download only one set of releases.
+    """
     name = "canada_buyandsell"
 
     def start_requests(self):

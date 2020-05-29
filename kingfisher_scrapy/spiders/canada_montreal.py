@@ -7,6 +7,13 @@ from kingfisher_scrapy.util import handle_error
 
 
 class CanadaMontreal(BaseSpider):
+    """
+    API documentation
+      http://donnees.ville.montreal.qc.ca/dataset/contrats-et-subventions-api
+    Spider arguments
+      sample
+        Download only the first page.
+    """
     name = 'canada_montreal'
     page_limit = 10000
 
