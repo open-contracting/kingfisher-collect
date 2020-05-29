@@ -7,6 +7,11 @@ from kingfisher_scrapy.util import handle_error
 
 
 class UKContractsFinder(BaseSpider):
+    """
+    Spider arguments
+      sample
+        Download only 100 release packages.
+    """
     name = 'uk_contracts_finder'
     base_url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=asc&page=%d'
 

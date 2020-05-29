@@ -4,6 +4,11 @@ from kingfisher_scrapy.base_spider import LinksSpider
 
 
 class UKContractsFinder(LinksSpider):
+    """
+    Spider arguments
+      sample
+        Download only 1 release package.
+    """
     name = 'uk_fts'
     data_type = 'release_package_in_ocdsReleasePackage_in_list_in_results'
 
