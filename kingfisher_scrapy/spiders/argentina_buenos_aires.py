@@ -34,4 +34,4 @@ class ArgentinaBuenosAires(ZipSpider):
         data = json.loads(response.text)
         for resource in data['result']['resources']:
             if resource['format'].upper() == 'JSON':
-                yield scrapy.Request(url=resource['url'])
+                yield scrapy.Request(resource['url'], meta={'kf_filename': resource['url'].rsplit('/', 1)[-1]})

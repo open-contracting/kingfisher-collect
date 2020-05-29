@@ -26,7 +26,8 @@ class ColombiaBulk(ZipSpider):
     def start_requests(self):
         yield scrapy.Request(
             url='https://www.colombiacompra.gov.co/transparencia/datos-json',
-            callback=self.parse_list
+            meta={'kf_filename': 'list.html'},
+            callback=self.parse_list,
         )
 
     @handle_error

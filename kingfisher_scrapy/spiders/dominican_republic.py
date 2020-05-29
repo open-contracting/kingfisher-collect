@@ -15,11 +15,14 @@ class DominicanRepublic(BaseSpider):
     }
 
     def start_requests(self):
-        yield scrapy.Request('https://www.dgcp.gob.do/estandar-mundial-ocds/',
-                             callback=self.parse_main_page)
+        yield scrapy.Request(
+            'https://www.dgcp.gob.do/estandar-mundial-ocds/',
+            meta={'kf_filename': 'list.html'},
+            callback=self.parse_list,
+        )
 
     @handle_error
-    def parse_main_page(self, response):
+    def parse_list(self, response):
         urls = response.css('.fileLink::attr(href)').getall()
         json_urls = list(filter(lambda x: '/JSON_DGCP_' in x, urls))
 
@@ -28,7 +31,7 @@ class DominicanRepublic(BaseSpider):
 
         for url in json_urls:
             if '/JSON_DGCP_' in url:
-                yield scrapy.Request('https:' + url)
+                yield scrapy.Request('https:' + url, meta={'kf_filename': url.rsplit('/', 1)[-1]})
 
     def parse(self, response):
         if self.is_http_success(response):

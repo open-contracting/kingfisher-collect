@@ -51,10 +51,15 @@ class ParaguayDNCPBaseSpider(BaseSpider):
 
     def start_requests(self):
         if self.from_date:
+            from_date = self.from_date.strftime(self.date_format)
             self.base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}'\
-                .format(self.base_url, self.from_date.strftime(self.date_format))
+                .format(self.base_url, from_date)
         yield scrapy.Request(
             self.base_page_url,
+            meta={
+                'kf_filename': '{}-1.json'.format(from_date),
+                'from_date': from_date,
+            },
             # send duplicate requests when the token expired and in the continuation of last_request saved.
             dont_filter=True,
             callback=self.parse_pages
@@ -123,9 +128,11 @@ class ParaguayDNCPBaseSpider(BaseSpider):
             )
         pagination = content['pagination']
         if pagination['current_page'] < pagination['total_pages'] and not self.sample:
-            url = '{}&page={}'.format(self.base_page_url, pagination['current_page'] + 1)
+            page = pagination['current_page'] + 1
+            url = '{}&page={}'.format(self.base_page_url, page)
             yield scrapy.Request(
                 url,
+                meta={'kf_filename': '{}-{}.json'.format(response.request.meta['from_date'], page)},
                 dont_filter=True,
                 callback=self.parse_pages
             )

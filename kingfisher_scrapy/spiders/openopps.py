@@ -175,9 +175,13 @@ class OpenOpps(BaseSpider):
                 next_url = results.get('next')
                 if next_url:
                     yield scrapy.Request(
-                        url=next_url,
-                        headers={"Accept": "*/*", "Content-Type": "application/json"},
-                        meta={"release_date": release_date, "search_h": search_h},
+                        next_url,
+                        meta={
+                            'kf_filename': hashlib.md5(next_url.encode('utf-8')).hexdigest() + '.json',
+                            'release_date': release_date,
+                            'search_h': search_h,
+                        },
+                        headers={'Accept': '*/*', 'Content-Type': 'application/json'}
                     )
 
                 # Tells if we have to re-authenticate before the token expires
@@ -221,15 +225,16 @@ class OpenOpps(BaseSpider):
 
                 self.logger.info('Changing filters, split in {}: {}.'.format(parts, response.request.url))
                 for i in range(len(start_hour_list)):
+                    url = self.base_page_url.format(start_hour_list[i], end_hour_list[i])
                     yield scrapy.Request(
-                        url=self.base_page_url.format(
-                            start_hour_list[i],
-                            end_hour_list[i]
-                        ),
-                        headers={"Accept": "*/*", "Content-Type": "application/json"},
-                        meta={"release_date": start_hour_list[i],  # release_date with star hour
-                              "last_hour": end_hour_list[i],  # release_date with last hour
-                              "search_h": split_h},  # new search range
+                        url,
+                        meta={
+                            'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json',
+                            'release_date': start_hour_list[i],  # release_date with star hour
+                            'last_hour': end_hour_list[i],  # release_date with last hour
+                            'search_h': split_h,  # new search range
+                        },
+                        headers={'Accept': '*/*', 'Content-Type': 'application/json'}
                     )
         else:
             # Message for pages that exceed the 10,000 search results in the range of one hour

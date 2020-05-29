@@ -7,4 +7,8 @@ class AuthenticationError(KingfisherScrapyError):
 
 
 class SpiderArgumentError(KingfisherScrapyError):
-    """Raises when a spider argument's value is invalid"""
+    """Raised when a spider argument's value is invalid"""
+
+
+class MissingRequiredFieldError(KingfisherScrapyError, KeyError):
+    """Raised when an item is missing a required field"""

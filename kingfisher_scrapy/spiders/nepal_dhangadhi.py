@@ -13,11 +13,12 @@ class NepalDhangadhi(BaseSpider):
     def start_requests(self):
         yield scrapy.Request(
             'https://admin.ims.susasan.org/api/static-data/dhangadhi',
-            callback=self.parse_item,
+            meta={'kf_filename': 'list.json'},
+            callback=self.parse_list,
         )
 
     @handle_error
-    def parse_item(self, response):
+    def parse_list(self, response):
         url = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
         json_data = json.loads(response.text)
         fiscal_years = json_data['data']['fiscal_years']

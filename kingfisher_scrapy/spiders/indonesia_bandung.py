@@ -39,6 +39,7 @@ class IndonesiaBandung(BaseSpider):
             if next_page_url:
                 yield scrapy.Request(
                     next_page_url,
+                    meta={'kf_filename': next_page_url.rsplit('/', 1)[-1] + '.json'},
                     callback=self.parse_data
                 )
 
