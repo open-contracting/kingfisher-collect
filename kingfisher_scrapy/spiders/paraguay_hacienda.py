@@ -63,7 +63,7 @@ class ParaguayHacienda(BaseSpider):
             total_pages = data['meta']['totalPages']
             for page in range(2,  total_pages+1):
                 yield scrapy.Request(
-                    url=self.base_list_url.format(page),
+                    self.base_list_url.format(page),
                     meta={
                         'kf_filename': 'list-{}.json'.format(page),
                         'meta': True,
@@ -83,7 +83,7 @@ class ParaguayHacienda(BaseSpider):
                 if row['idLlamado'] and row['idLlamado'] not in self.release_ids:
                     self.release_ids.append(row['idLlamado'])
                     yield scrapy.Request(
-                        url=base_url.format(row['idLlamado']),
+                        base_url.format(row['idLlamado']),
                         meta={
                             'kf_filename': 'release-{}.json'.format(row['idLlamado']),
                             'meta': False,

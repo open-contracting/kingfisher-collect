@@ -12,7 +12,7 @@ class AfghanistanRecords(BaseSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            url='https://ocds.ageops.net/api/ocds/records',
+            'https://ocds.ageops.net/api/ocds/records',
             meta={'kf_filename': 'list.json'},
             callback=self.parse_list
         )
@@ -24,10 +24,7 @@ class AfghanistanRecords(BaseSpider):
             files_urls = [files_urls[0]]
 
         for file_url in files_urls:
-            yield scrapy.Request(
-                url=file_url,
-                meta={'kf_filename': file_url.split('/')[-1] + '.json'},
-            )
+            yield scrapy.Request(file_url, meta={'kf_filename': file_url.split('/')[-1] + '.json'})
 
     @handle_error
     def parse(self, response):

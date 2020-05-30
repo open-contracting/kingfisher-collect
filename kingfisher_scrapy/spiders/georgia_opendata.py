@@ -12,7 +12,4 @@ class GeorgiaOpenData(ZipSpider):
     download_timeout = 1200  # 20min
 
     def start_requests(self):
-        yield scrapy.Request(
-            url='http://opendata.spa.ge/json/allTenders.zip',
-            meta={'kf_filename': 'all.json'}
-        )
+        yield scrapy.Request('http://opendata.spa.ge/json/allTenders.zip', meta={'kf_filename': 'all.json'})

@@ -28,7 +28,7 @@ class ChileCompraBaseSpider(BaseSpider):
     def start_requests(self):
         if self.sample:
             yield scrapy.Request(
-                url=self.base_list_url.format(2017, 10, 0, 10),
+                self.base_list_url.format(2017, 10, 0, 10),
                 meta={'kf_filename': 'list-2017-10.json', 'year': 2017, 'month': 10},
             )
             return
@@ -40,7 +40,7 @@ class ChileCompraBaseSpider(BaseSpider):
                 if (until_year - 1) == year and month > until_month:
                     break
                 yield scrapy.Request(
-                    url=self.base_list_url.format(year, month, 0, self.limit),
+                    self.base_list_url.format(year, month, 0, self.limit),
                     meta={'kf_filename': 'list-{}-{:02d}.json'.format(year, month), 'year': year, 'month': month},
                 )
 
@@ -51,7 +51,7 @@ class ChileCompraBaseSpider(BaseSpider):
             for data_item in data['data']:
                 if package_type == 'record':
                     yield_list.append(scrapy.Request(
-                        url=self.record_url % data_item['ocid'].replace('ocds-70d2nz-', ''),
+                        self.record_url % data_item['ocid'].replace('ocds-70d2nz-', ''),
                         meta={'kf_filename': 'data-%s-%s.json' % (data_item['ocid'], package_type)}
                     ))
                 else:
@@ -67,7 +67,7 @@ class ChileCompraBaseSpider(BaseSpider):
                         if 'url' in stage:
                             name = stage.replace('url', '')
                             yield_list.append(scrapy.Request(
-                                url=data_item[stage],
+                                data_item[stage],
                                 meta={'kf_filename': 'data-%s-%s.json' % (data_item['ocid'], name)}
                             ))
             if 'pagination' in data and (data['pagination']['offset'] + self.limit) < data['pagination']['total']:
@@ -75,7 +75,7 @@ class ChileCompraBaseSpider(BaseSpider):
                 month = response.request.meta['month']
                 offset = data['pagination']['offset']
                 yield_list.append(scrapy.Request(
-                    url=self.base_list_url.format(year, month, self.limit + offset, self.limit),
+                    self.base_list_url.format(year, month, self.limit + offset, self.limit),
                     meta={'year': year, 'month': month}
                 ))
             return yield_list

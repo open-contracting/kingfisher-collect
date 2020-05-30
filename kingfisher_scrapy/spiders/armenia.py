@@ -11,10 +11,7 @@ class Armenia(BaseSpider):
     name = 'armenia'
 
     def start_requests(self):
-        yield scrapy.Request(
-            url='https://armeps.am/ocds/release',
-            meta={'kf_filename': 'page1.json'}
-        )
+        yield scrapy.Request('https://armeps.am/ocds/release', meta={'kf_filename': 'page1.json'})
 
     @handle_error
     def parse(self, response):
@@ -24,7 +21,4 @@ class Armenia(BaseSpider):
         if not (self.sample):
             if 'next_page' in json_data and 'uri' in json_data['next_page']:
                 url = json_data['next_page']['uri']
-                yield scrapy.Request(
-                    url=url,
-                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest()+'.json'}
-                )
+                yield scrapy.Request(url, meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest()+'.json'})

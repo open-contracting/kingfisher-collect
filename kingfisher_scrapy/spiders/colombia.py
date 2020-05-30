@@ -21,10 +21,7 @@ class Colombia(LinksSpider):
         start_page = 1
         if hasattr(self, 'page'):
             start_page = int(self.page)
-        yield scrapy.Request(
-            url=base_url % start_page,
-            meta={'kf_filename': 'page{}.json'.format(start_page)}
-        )
+        yield scrapy.Request(base_url % start_page, meta={'kf_filename': 'page{}.json'.format(start_page)})
 
     def parse(self, response):
         # In Colombia, every day at certain hour they run a process in their system that drops the database and make

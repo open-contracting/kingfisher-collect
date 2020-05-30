@@ -10,13 +10,13 @@ class MoldovaOld(BaseSpider):
     def start_requests(self):
         if self.sample:
             yield scrapy.Request(
-                url='http://opencontracting.date.gov.md/ocds-api/year/2017',
+                'http://opencontracting.date.gov.md/ocds-api/year/2017',
                 meta={'kf_filename': 'sample.json'}
             )
         else:
             for year in range(2012, 2018):
                 yield scrapy.Request(
-                    url='http://opencontracting.date.gov.md/ocds-api/year/%d' % year,
+                    'http://opencontracting.date.gov.md/ocds-api/year/%d' % year,
                     meta={'kf_filename': 'year-%d.json' % year}
                 )
 

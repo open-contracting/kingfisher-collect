@@ -11,7 +11,7 @@ class MexicoCDMXSource(BaseSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            url='http://www.contratosabiertos.cdmx.gob.mx/api/contratos/todos',
+            'http://www.contratosabiertos.cdmx.gob.mx/api/contratos/todos',
             meta={'kf_filename': 'list.json'},
             callback=self.parse_list
         )
@@ -24,7 +24,7 @@ class MexicoCDMXSource(BaseSpider):
 
         for data_item in data:
             yield scrapy.Request(
-                url=data_item['uri'],
+                data_item['uri'],
                 meta={'kf_filename': 'id%s.json' % data_item['id']},
                 callback=self.parse_record
             )

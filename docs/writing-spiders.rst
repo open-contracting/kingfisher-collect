@@ -60,7 +60,7 @@ Here is a sample:
         def start_requests(self):
             # This API only has one URL to get. Make a request for that, and set a filename
             yield scrapy.Request(
-                url='https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-13-14.json',
+                'https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-13-14.json',
                 meta={'kf_filename': '13-14.json'}
             )
 

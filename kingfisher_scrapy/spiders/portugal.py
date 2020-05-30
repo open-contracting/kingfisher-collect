@@ -21,7 +21,7 @@ class Portugal(ZipSpider):
         id = '5ae97fa2c8d8c915d5faa3bf'
         page_size = 20
         yield scrapy.Request(
-            url=url.format(id, page_size),
+            url.format(id, page_size),
             meta={'kf_filename': 'list.json'},
             callback=self.parse_list
         )

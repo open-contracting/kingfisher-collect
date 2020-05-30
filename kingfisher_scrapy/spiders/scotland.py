@@ -40,7 +40,7 @@ class Scotland(BaseSpider):
         if self.sample:
             marker = now - datetime.timedelta(days=14)
             for notice_type in self.notice_types:
-                yield scrapy.Request(url=format_string.format(marker, notice_type),
+                yield scrapy.Request(format_string.format(marker, notice_type),
                                      meta={'kf_filename': 'sample_{}.json'.format(notice_type)})
         else:
             # It's meant to go back a year, but in testing it seemed to be year minus one day!
@@ -48,7 +48,7 @@ class Scotland(BaseSpider):
             while marker <= now:
                 datestring = '{:04d}-{:02d}-{:02d}'.format(marker.year, marker.month, marker.day)
                 for notice_type in self.notice_types:
-                    yield scrapy.Request(url=format_string.format(datestring, notice_type),
+                    yield scrapy.Request(format_string.format(datestring, notice_type),
                                          meta={'kf_filename': '{}_type_{}.json'.format(datestring, notice_type)})
                 marker = marker + datetime.timedelta(days=14)
 

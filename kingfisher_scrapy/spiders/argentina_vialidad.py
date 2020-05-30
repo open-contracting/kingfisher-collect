@@ -9,7 +9,7 @@ class ArgentinaVialidad(BaseSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            url='https://datosabiertos.vialidad.gob.ar/api/ocds/package/all',
+            'https://datosabiertos.vialidad.gob.ar/api/ocds/package/all',
             meta={'kf_filename': 'all.json'}
         )
 

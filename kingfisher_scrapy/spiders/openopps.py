@@ -66,7 +66,7 @@ class OpenOpps(BaseSpider):
     def start_requests(self):
         """ Start requesting access token """
         yield scrapy.Request(
-            url="https://api.openopps.com/api/api-token-auth/",
+            'https://api.openopps.com/api/api-token-auth/',
             method='POST',
             headers={"Accept": "*/*", "Content-Type": "application/json"},
             body=json.dumps({"username": self.username, "password": self.password}),
@@ -131,10 +131,7 @@ class OpenOpps(BaseSpider):
 
     def request_range(self, start_date, end_date, search_h):
         return scrapy.Request(
-            url=self.base_page_url.format(
-                start_date,
-                end_date
-            ),
+            self.base_page_url.format(start_date, end_date),
             headers={"Accept": "*/*", "Content-Type": "application/json"},
             meta={"release_date": start_date, "search_h": search_h},
         )
@@ -190,7 +187,7 @@ class OpenOpps(BaseSpider):
                     self.logger.info('Time_diff: {}'.format(time_diff.total_seconds()))
                     self.reauthenticating = True
                     yield scrapy.Request(
-                        url="https://api.openopps.com/api/api-token-auth/",
+                        'https://api.openopps.com/api/api-token-auth/',
                         method='POST',
                         headers={"Accept": "*/*", "Content-Type": "application/json"},
                         body=json.dumps({"username": self.username, "password": self.password}),

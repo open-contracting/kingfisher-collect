@@ -25,7 +25,7 @@ class ArgentinaBuenosAires(ZipSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            url='https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras',
+            'https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras',
             meta={'kf_filename': 'list.json'},
             callback=self.parse_list
         )

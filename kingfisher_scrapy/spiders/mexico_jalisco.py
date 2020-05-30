@@ -12,7 +12,7 @@ class MexicoJalisco(BaseSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            url='https://contratacionesabiertas.jalisco.gob.mx/OCApi/2017/contracts',
+            'https://contratacionesabiertas.jalisco.gob.mx/OCApi/2017/contracts',
             meta={'kf_filename': 'list.json'},
             callback=self.parse_list
         )
@@ -24,7 +24,7 @@ class MexicoJalisco(BaseSpider):
             datas = [datas[0]]
         for data in datas:
             yield scrapy.Request(
-                url=data['URIContract'],
+                data['URIContract'],
                 meta={'kf_filename': 'id%s.json' % data['ocid']},
                 callback=self.parse_record_package
             )
@@ -35,7 +35,7 @@ class MexicoJalisco(BaseSpider):
         if 'packages' in json_data:
             for url in json_data['packages']:
                 yield scrapy.Request(
-                    url=url,
+                    url,
                     meta={'kf_filename': 'packages-%s.json' % hashlib.md5(url.encode('utf-8')).hexdigest()},
                     callback=self.parse_release_package
                 )

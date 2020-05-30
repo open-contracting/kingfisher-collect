@@ -274,10 +274,7 @@ class LinksSpider(BaseSpider):
             data_type = 'release_package'
 
             def start_requests(self):
-                yield scrapy.Request(
-                    url='https://example.com/api/packages.json',
-                    meta={'kf_filename': 'page1.json'}
-                )
+                yield scrapy.Request('https://example.com/api/packages.json', meta={'kf_filename': 'page1.json'})
     """
 
     @handle_error

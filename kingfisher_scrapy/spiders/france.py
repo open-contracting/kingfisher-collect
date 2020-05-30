@@ -12,7 +12,7 @@ class France(BaseSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            url='https://www.data.gouv.fr/api/1/datasets/?organization=534fff75a3a7292c64a77de4',
+            'https://www.data.gouv.fr/api/1/datasets/?organization=534fff75a3a7292c64a77de4',
             meta={'kf_filename': 'list.json'},
             callback=self.parse_list,
         )

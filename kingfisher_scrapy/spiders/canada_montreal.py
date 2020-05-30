@@ -12,7 +12,7 @@ class CanadaMontreal(BaseSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            url='https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=%d' % self.page_limit,
+            'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=%d' % self.page_limit,
             meta={'kf_filename': 'page0.json'}
         )
 
@@ -30,7 +30,7 @@ class CanadaMontreal(BaseSpider):
                 url = 'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=%d&offset=%d' % \
                       (self.page_limit, offset)
                 yield scrapy.Request(
-                    url=url,
+                    url,
                     meta={'kf_filename': 'page' + str(offset) + '.json'}
                 )
                 offset += self.page_limit
