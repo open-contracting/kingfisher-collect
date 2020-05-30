@@ -164,9 +164,9 @@ class OpenOpps(BaseSpider):
 
                 if all_data:
                     yield self.build_file(
-                        all_data,
                         file_name=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json',
                         url=response.request.url,
+                        data=all_data,
                         data_type='release_package_list'
                     )
                     if self.sample:
