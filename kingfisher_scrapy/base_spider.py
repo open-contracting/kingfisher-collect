@@ -91,6 +91,8 @@ class BaseSpider(scrapy.Spider):
         """
         Returns whether the response status is a non-2xx code.
         """
+        # All 2xx codes are successful.
+        # https://tools.ietf.org/html/rfc7231#section-6.3
         return 200 <= response.status < 300
 
     def get_start_time(self, format):
