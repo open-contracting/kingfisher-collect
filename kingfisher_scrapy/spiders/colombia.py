@@ -34,19 +34,16 @@ class Colombia(LinksSpider):
                 url = response.request.url
                 logging.info('Sleeping due error {} in url {}'.format(response.status, url))
                 time.sleep(self.sleep)
-                yield scrapy.Request(url,
-                                     dont_filter=True,
-                                     meta={'kf_filename': hashlib.md5(
-                                         url.encode('utf-8')).hexdigest() + '.json'})
-
+                yield scrapy.Request(
+                    url,
+                    dont_filter=True,
+                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+                )
             elif self.is_http_success(response):
-
                 yield self.build_file_from_response(response, data_type='release_package')
-
                 if not self.sample:
                     yield self.next_link(response)
             else:
-
                 yield self.build_file_error_from_response(response)
 
         except JSONDecodeError:
