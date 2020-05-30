@@ -10,9 +10,8 @@ from kingfisher_scrapy.util import handle_error
 
 class DominicanRepublic(BaseSpider):
     name = 'dominican_republic'
-    custom_settings = {
-        'DOWNLOAD_TIMEOUT': 360
-    }
+
+    download_timeout = 360  # 6min
 
     def start_requests(self):
         yield scrapy.Request(
