@@ -109,11 +109,11 @@ class OpenOpps(BaseSpider):
         # Case if we want to download a sample
         if self.sample:
             date = datetime(2011, 1, 1)
-            yield from self.parse_date_list(date, date, search_h)
+            yield from self.request_range_per_day(date, date, search_h)
         else:
             # Case if we have date range parameters
             if self.from_date and self.until_date:
-                yield from self.parse_date_list(self.from_date, self.until_date, search_h)
+                yield from self.request_range_per_day(self.from_date, self.until_date, search_h)
             else:
                 # Use larger ranges for filters with less than (api_limit) search results
                 release_date_gte_list = ['', '2009-01-01', '2010-01-01', '2010-07-01']
@@ -127,16 +127,21 @@ class OpenOpps(BaseSpider):
                     start_date = datetime(year, 1, 1)
                     end_date = datetime(year, datetime.now().month, datetime.now().day) \
                         if year == datetime.now().year else datetime(year, 12, 31)
-                    yield from self.parse_date_list(start_date, end_date, search_h)
+                    yield from self.request_range_per_day(start_date, end_date, search_h)
 
     def request_range(self, start_date, end_date, search_h):
+        url = self.base_page_url.format(start_date, end_date)
         return scrapy.Request(
-            self.base_page_url.format(start_date, end_date),
-            headers={"Accept": "*/*", "Content-Type": "application/json"},
-            meta={"release_date": start_date, "search_h": search_h},
+            url,
+            meta={
+                'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json',
+                'release_date': start_date,
+                'search_h': search_h,
+            },
+            headers={'Accept': '*/*', 'Content-Type': 'application/json'}
         )
 
-    def parse_date_list(self, start_date, end_date, search_h):
+    def request_range_per_day(self, start_date, end_date, search_h):
         date_list = [(start_date + timedelta(days=d)).strftime("%Y-%m-%d")
                      for d in range((end_date - start_date).days + 1)]
 
@@ -160,12 +165,7 @@ class OpenOpps(BaseSpider):
                         all_data.append(json_data)
 
                 if all_data:
-                    yield self.build_file(
-                        file_name=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json',
-                        url=response.request.url,
-                        data=all_data,
-                        data_type='release_package_list'
-                    )
+                    yield self.build_file_from_response(data=all_data, data_type='release_package_list')
                     if self.sample:
                         return
 
@@ -240,5 +240,4 @@ class OpenOpps(BaseSpider):
                 self.logger.info('Status: {}. Results exceeded in a range of one hour, we save the '
                                  'first 10,000 data for: {}'.format(response.status, response.request.url))
             else:
-                yield self.build_file_error_from_response(
-                    response, file_name=hashlib.md5(response.request.url.encode('utf-8')).hexdigest())
+                yield self.build_file_error_from_response(response)
