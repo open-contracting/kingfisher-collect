@@ -1,10 +1,6 @@
-import hashlib
-import json
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
-from kingfisher_scrapy.util import handle_error
 
 
 class Armenia(LinksSpider):

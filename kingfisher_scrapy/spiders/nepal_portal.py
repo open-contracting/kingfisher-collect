@@ -4,7 +4,6 @@ import hashlib
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_error
 
 
 class NepalPortal(SimpleSpider):
