@@ -44,16 +44,15 @@ class ChileCompraBaseSpider(BaseSpider):
                     meta={'kf_filename': 'list-{}-{:02d}.json'.format(year, month), 'year': year, 'month': month},
                 )
 
-    def base_parse(self, response, package_type):
+    def parse(self, response):
         data = json.loads(response.text)
         if 'data' in data:
-            yield_list = []
             for data_item in data['data']:
-                if package_type == 'record':
-                    yield_list.append(scrapy.Request(
+                if self.data_type == 'record_package':
+                    yield scrapy.Request(
                         self.record_url % data_item['ocid'].replace('ocds-70d2nz-', ''),
-                        meta={'kf_filename': 'data-%s-%s.json' % (data_item['ocid'], package_type)}
-                    ))
+                        meta={'kf_filename': 'data-%s-%s.json' % (data_item['ocid'], self.data_type)}
+                    )
                 else:
                     # the data comes in this format:
                     # "data": [
@@ -74,12 +73,11 @@ class ChileCompraBaseSpider(BaseSpider):
                 year = response.request.meta['year']
                 month = response.request.meta['month']
                 offset = data['pagination']['offset']
-                yield_list.append(scrapy.Request(
+                yield scrapy.Request(
                     self.base_list_url.format(year, month, self.limit + offset, self.limit),
                     meta={'year': year, 'month': month}
-                ))
-            return yield_list
+                )
         elif 'status' in data and data['status'] != 200:
-            return [self.build_file_error_from_response(response, errors={'http_code': data['status']})]
+            yield self.build_file_error_from_response(response, errors={'http_code': data['status']})
         else:
-            return [self.build_file_from_response(response, data_type='{}_package'.format(package_type))]
+            yield self.build_file_from_response(response, data_type=self.data_type)
