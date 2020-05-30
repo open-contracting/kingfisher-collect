@@ -29,8 +29,5 @@ class CanadaMontreal(BaseSpider):
             while offset < total:
                 url = 'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=%d&offset=%d' % \
                       (self.page_limit, offset)
-                yield scrapy.Request(
-                    url,
-                    meta={'kf_filename': 'page' + str(offset) + '.json'}
-                )
+                yield scrapy.Request(url, meta={'kf_filename': 'page' + str(offset) + '.json'})
                 offset += self.page_limit
