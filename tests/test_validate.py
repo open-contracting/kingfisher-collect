@@ -1,4 +1,5 @@
 import pytest
+
 from kingfisher_scrapy.exceptions import MissingRequiredFieldError
 from kingfisher_scrapy.items import File
 from kingfisher_scrapy.pipelines import Validate

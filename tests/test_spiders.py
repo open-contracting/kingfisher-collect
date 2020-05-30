@@ -32,7 +32,7 @@ def test_start_requests_http_error(spider_name):
 
             assert len(items) == 1
             for item in items:
-                assert isinstance(item, FileError)
+                assert type(item) is FileError
                 assert len(item) == 3
                 assert item['errors'] == {'http_code': 555}
                 assert item['file_name']
