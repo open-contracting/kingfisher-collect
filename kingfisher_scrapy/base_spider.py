@@ -6,6 +6,7 @@ from zipfile import ZipFile
 
 import ijson
 import scrapy
+from jsonpointer import resolve_pointer
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import SpiderArgumentError
@@ -194,6 +195,7 @@ class SimpleSpider(BaseSpider):
     1. Inherit from ``SimpleSpider``
     1. Set a ``data_type`` class attribute to the data type of the responses
     1. Optionally, set an ``encoding`` class attribute to the encoding of the responses (default UTF-8)
+    1. Optionally, set a ``data_pointer`` class attribute to the JSON Pointer for OCDS data (default "")
     1. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
 
     .. code-block:: python
@@ -211,10 +213,15 @@ class SimpleSpider(BaseSpider):
     """
 
     encoding = 'utf-8'
+    data_pointer = ''
 
     @handle_error
     def parse(self, response):
-        yield self.build_file_from_response(response, data_type=self.data_type, encoding=self.encoding)
+        kwargs = {}
+        if self.data_pointer:
+            kwargs['data'] = json.dumps(resolve_pointer(json.loads(response.text), self.data_pointer)).encode()
+
+        yield self.build_file_from_response(response, data_type=self.data_type, encoding=self.encoding, **kwargs)
 
 
 class ZipSpider(BaseSpider):
@@ -286,13 +293,14 @@ class ZipSpider(BaseSpider):
                 yield self.build_file(data=data.read(), **kwargs)
 
 
-class LinksSpider(BaseSpider):
+class LinksSpider(SimpleSpider):
     """
     This class makes it easy to collect data from an API that implements the `pagination
     <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__ pattern:
 
     1. Inherit from ``LinksSpider``
     1. Set a ``data_type`` class attribute to the data type of the API responses
+    1. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
     1. Write a ``start_requests`` method to request the first page of API results
 
     .. code-block:: python
@@ -309,19 +317,20 @@ class LinksSpider(BaseSpider):
                 yield scrapy.Request('https://example.com/api/packages.json', meta={'kf_filename': 'page1.json'})
     """
 
+    next_pointer = '/links/next'
+
     @handle_error
     def parse(self, response):
-        yield self.build_file_from_response(response, data_type=self.data_type)
+        yield from super().parse(response)
 
         if not self.sample:
             yield self.next_link(response)
 
-    @staticmethod
-    def next_link(response):
+    def next_link(self, response):
         """
         If the JSON response has a ``links.next`` key, returns a ``scrapy.Request`` for the URL.
         """
         data = json.loads(response.text)
-        if 'links' in data and 'next' in data['links']:
-            url = data['links']['next']
+        url = resolve_pointer(data, self.next_pointer, None)
+        if url:
             return scrapy.Request(url, meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'})
