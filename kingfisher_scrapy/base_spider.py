@@ -193,6 +193,7 @@ class SimpleSpider(BaseSpider):
 
     1. Inherit from ``SimpleSpider``
     1. Set a ``data_type`` class attribute to the data type of the responses
+    1. Optionally, set an ``encoding`` class attribute to the encoding of the responses (default UTF-8)
     1. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
 
     .. code-block:: python
@@ -209,9 +210,11 @@ class SimpleSpider(BaseSpider):
                 yield scrapy.Request('https://example.com/api/package.json', meta={'kf_filename': 'all.json'})
     """
 
+    encoding = 'utf-8'
+
     @handle_error
     def parse(self, response):
-        yield self.build_file_from_response(response, data_type=self.data_type)
+        yield self.build_file_from_response(response, data_type=self.data_type, encoding=self.encoding)
 
 
 class ZipSpider(BaseSpider):

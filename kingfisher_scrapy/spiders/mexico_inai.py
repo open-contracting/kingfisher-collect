@@ -3,12 +3,14 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class MexicoINAI(BaseSpider):
+class MexicoINAI(SimpleSpider):
     name = 'mexico_inai'
+    data_type = 'release_package'
+    encoding = 'utf-8-sig'
 
     def start_requests(self):
         yield scrapy.Request(
@@ -42,7 +44,3 @@ class MexicoINAI(BaseSpider):
             )
         else:
             yield self.build_file_error_from_response(response)
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(response, data_type='release_package', encoding='utf-8-sig')
