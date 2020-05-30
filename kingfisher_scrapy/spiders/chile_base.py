@@ -4,6 +4,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class ChileCompraBaseSpider(BaseSpider):
@@ -44,6 +45,7 @@ class ChileCompraBaseSpider(BaseSpider):
                     meta={'kf_filename': 'list-{}-{:02d}.json'.format(year, month), 'year': year, 'month': month},
                 )
 
+    @handle_error
     def parse(self, response):
         data = json.loads(response.text)
         if 'data' in data:
@@ -65,10 +67,10 @@ class ChileCompraBaseSpider(BaseSpider):
                     for stage in list(data_item.keys()):
                         if 'url' in stage:
                             name = stage.replace('url', '')
-                            yield_list.append(scrapy.Request(
+                            yield scrapy.Request(
                                 data_item[stage],
                                 meta={'kf_filename': 'data-%s-%s.json' % (data_item['ocid'], name)}
-                            ))
+                            )
             if 'pagination' in data and (data['pagination']['offset'] + self.limit) < data['pagination']['total']:
                 year = response.request.meta['year']
                 month = response.request.meta['month']
