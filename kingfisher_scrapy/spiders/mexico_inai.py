@@ -38,8 +38,7 @@ class MexicoINAI(BaseSpider):
             url = response.headers['Location'].decode("utf-8").replace("open?", "uc?export=download&")
             yield scrapy.Request(
                 url,
-                meta={'kf_filename': 'data-' + hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'},
-                callback=self.parse
+                meta={'kf_filename': 'data-' + hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
             )
         else:
             yield self.build_file_error_from_response(response)
