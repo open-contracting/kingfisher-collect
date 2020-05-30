@@ -24,52 +24,47 @@ class AustraliaNSW(BaseSpider):
                 callback=self.parse_list
             )
 
+    @handle_error
     def parse_list(self, response):
-        if self.is_http_success(response):
+        json_data = json.loads(response.text)
+        release_type = response.request.meta['release_type']
 
-            json_data = json.loads(response.text)
-            release_type = response.request.meta['release_type']
+        # More Pages?
+        if 'links' in json_data and isinstance(json_data['links'], dict) and 'next' in json_data['links'] \
+                and not self.sample:
+            yield scrapy.Request(
+                json_data['links']['next'],
+                meta={
+                    'kf_filename': hashlib.md5(json_data['links']['next'].encode('utf-8')).hexdigest() + '.json',
+                    'release_type': release_type,
+                },
+                callback=self.parse_list
+            )
 
-            # More Pages?
-            if 'links' in json_data and isinstance(json_data['links'], dict) and 'next' in json_data['links'] \
-                    and not self.sample:
+        # Data?
+        for release in json_data['releases']:
+            if release_type == 'planning':
+                uuid = release['tender']['plannedProcurementUUID']
                 yield scrapy.Request(
-                    json_data['links']['next'],
-                    meta={
-                        'kf_filename': hashlib.md5(json_data['links']['next'].encode('utf-8')).hexdigest() + '.json',
-                        'release_type': release_type,
-                    },
-                    callback=self.parse_list
+                    'https://tenders.nsw.gov.au/?event=public.api.planning.view&PlannedProcurementUUID=%s' % uuid,
+                    meta={'kf_filename': 'plannning-%s.json' % uuid},
+                    callback=self.parse
                 )
-
-            # Data?
-            for release in json_data['releases']:
-                if release_type == 'planning':
-                    uuid = release['tender']['plannedProcurementUUID']
+            if release_type == 'tender':
+                uuid = release['tender']['RFTUUID']
+                yield scrapy.Request(
+                    'https://tenders.nsw.gov.au/?event=public.api.tender.view&RFTUUID=%s' % uuid,
+                    meta={'kf_filename': 'tender-%s.json' % uuid},
+                    callback=self.parse
+                )
+            if release_type == 'contract':
+                for award in release['awards']:
+                    uuid = award['CNUUID']
                     yield scrapy.Request(
-                        'https://tenders.nsw.gov.au/?event=public.api.planning.view&PlannedProcurementUUID=%s' % uuid,
-                        meta={'kf_filename': 'plannning-%s.json' % uuid},
+                        'https://tenders.nsw.gov.au/?event=public.api.contract.view&CNUUID=%s' % uuid,
+                        meta={'kf_filename': 'contract-%s.json' % uuid},
                         callback=self.parse
                     )
-                if release_type == 'tender':
-                    uuid = release['tender']['RFTUUID']
-                    yield scrapy.Request(
-                        'https://tenders.nsw.gov.au/?event=public.api.tender.view&RFTUUID=%s' % uuid,
-                        meta={'kf_filename': 'tender-%s.json' % uuid},
-                        callback=self.parse
-                    )
-                if release_type == 'contract':
-                    for award in release['awards']:
-                        uuid = award['CNUUID']
-                        yield scrapy.Request(
-                            'https://tenders.nsw.gov.au/?event=public.api.contract.view&CNUUID=%s' % uuid,
-                            meta={'kf_filename': 'contract-%s.json' % uuid},
-                            callback=self.parse
-                        )
-
-        else:
-            yield self.build_file_error_from_response(
-                response, file_name=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json')
 
     @handle_error
     def parse(self, response):
