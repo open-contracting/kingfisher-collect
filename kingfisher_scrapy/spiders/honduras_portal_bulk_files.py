@@ -2,12 +2,13 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class HondurasPortalBulkFiles(BaseSpider):
+class HondurasPortalBulkFiles(SimpleSpider):
     name = 'honduras_portal_bulk_files'
+    data_type = 'release_package'
 
     def start_requests(self):
         yield scrapy.Request(
@@ -28,7 +29,3 @@ class HondurasPortalBulkFiles(BaseSpider):
             for item in filelist:
                 url = item['urls']['json']
                 yield scrapy.Request(url, meta={'kf_filename': url.rsplit('/', 1)[-1]})
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(response, data_type='release_package')

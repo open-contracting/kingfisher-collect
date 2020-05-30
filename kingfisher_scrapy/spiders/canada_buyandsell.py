@@ -1,11 +1,12 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class CanadaBuyAndSell(BaseSpider):
-    name = "canada_buyandsell"
+class CanadaBuyAndSell(SimpleSpider):
+    name = 'canada_buyandsell'
+    data_type = 'release_package'
 
     def start_requests(self):
         yield scrapy.Request(
@@ -26,7 +27,3 @@ class CanadaBuyAndSell(BaseSpider):
             'https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-16-17.json',
             meta={'kf_filename': '16-17.json'}
         )
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(response, data_type='release_package')

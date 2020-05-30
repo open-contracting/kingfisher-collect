@@ -3,12 +3,13 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class AustraliaNSW(BaseSpider):
+class AustraliaNSW(SimpleSpider):
     name = 'australia_nsw'
+    data_type = 'release_package'
 
     def start_requests(self):
         release_types = ['planning', 'tender', 'contract']
@@ -47,25 +48,18 @@ class AustraliaNSW(BaseSpider):
                 uuid = release['tender']['plannedProcurementUUID']
                 yield scrapy.Request(
                     'https://tenders.nsw.gov.au/?event=public.api.planning.view&PlannedProcurementUUID=%s' % uuid,
-                    meta={'kf_filename': 'plannning-%s.json' % uuid},
-                    callback=self.parse
+                    meta={'kf_filename': 'plannning-%s.json' % uuid}
                 )
             if release_type == 'tender':
                 uuid = release['tender']['RFTUUID']
                 yield scrapy.Request(
                     'https://tenders.nsw.gov.au/?event=public.api.tender.view&RFTUUID=%s' % uuid,
-                    meta={'kf_filename': 'tender-%s.json' % uuid},
-                    callback=self.parse
+                    meta={'kf_filename': 'tender-%s.json' % uuid}
                 )
             if release_type == 'contract':
                 for award in release['awards']:
                     uuid = award['CNUUID']
                     yield scrapy.Request(
                         'https://tenders.nsw.gov.au/?event=public.api.contract.view&CNUUID=%s' % uuid,
-                        meta={'kf_filename': 'contract-%s.json' % uuid},
-                        callback=self.parse
+                        meta={'kf_filename': 'contract-%s.json' % uuid}
                     )
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(response, data_type='release_package')

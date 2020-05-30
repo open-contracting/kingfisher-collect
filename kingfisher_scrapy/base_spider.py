@@ -187,9 +187,36 @@ class BaseSpider(scrapy.Spider):
                 break
 
 
+class SimpleSpider(BaseSpider):
+    """
+    Most spiders can inherit from this class. It assumes all responses have the same data type.
+
+    1. Inherit from ``SimpleSpider``
+    1. Set a ``data_type`` class attribute to the data type of the responses
+    1. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
+
+    .. code-block:: python
+
+        import scrapy
+
+        from kingfisher_scrapy.base_spider import SimpleSpider
+
+        class MySpider(SimpleSpider):
+            name = 'my_spider'
+            data_type = 'release_package'
+
+            def start_requests(self):
+                yield scrapy.Request('https://example.com/api/package.json', meta={'kf_filename': 'all.json'})
+    """
+
+    @handle_error
+    def parse(self, response):
+        yield self.build_file_from_response(response, data_type=self.data_type)
+
+
 class ZipSpider(BaseSpider):
     """
-    This class makes it easy to collect data from ZIP files. It assumes all files have the same format.
+    This class makes it easy to collect data from ZIP files. It assumes all files have the same data type.
 
     1. Inherit from ``ZipSpider``
     1. Set a ``data_type`` class attribute to the data type of the compressed files
@@ -215,7 +242,7 @@ class ZipSpider(BaseSpider):
 
         from kingfisher_scrapy.base_spider import ZipSpider
 
-        class MySpider(LinksSpider):
+        class MySpider(ZipSpider):
             name = 'my_spider'
             data_type = 'release_package'
 

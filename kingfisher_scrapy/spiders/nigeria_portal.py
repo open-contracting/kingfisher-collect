@@ -2,12 +2,14 @@ import hashlib
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class NigeriaPortal(BaseSpider):
+class NigeriaPortal(SimpleSpider):
     name = 'nigeria_portal'
+    data_type = 'release_package'
+
     download_delay = 0.9
     user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
@@ -15,10 +17,11 @@ class NigeriaPortal(BaseSpider):
         yield scrapy.Request(
             'http://nocopo.bpp.gov.ng/OpenData.aspx',
             meta={'kf_filename': 'list.html'},
+            callback=self.parse_list
         )
 
     @handle_error
-    def parse(self, response):
+    def parse_list(self, response):
         formdata = {
             '__VIEWSTATE': response.css('input#__VIEWSTATE::attr(value)').extract_first(),
             '__VIEWSTATEGENERATOR': 'CA0B0334',
@@ -36,10 +39,5 @@ class NigeriaPortal(BaseSpider):
         yield scrapy.FormRequest.from_response(
             response,
             formdata=formdata,
-            meta={'kf_filename': hashlib.md5(response.url.encode('utf-8')).hexdigest() + '.json'},
-            callback=self.parse_post
+            meta={'kf_filename': hashlib.md5(response.url.encode('utf-8')).hexdigest() + '.json'}
         )
-
-    @handle_error
-    def parse_post(self, response):
-        yield self.build_file_from_response(response, data_type='release_package')

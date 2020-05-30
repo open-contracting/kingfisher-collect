@@ -2,12 +2,14 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class AfghanistanReleases(BaseSpider):
+class AfghanistanReleases(SimpleSpider):
     name = 'afghanistan_releases'
+    data_type = 'release'
+
     download_delay = 1.5
 
     def start_requests(self):
@@ -38,7 +40,3 @@ class AfghanistanReleases(BaseSpider):
 
         for file_url in files_urls:
             yield scrapy.Request(file_url, meta={'kf_filename': file_url.split('/')[-1] + '.json'})
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(response, data_type='release')

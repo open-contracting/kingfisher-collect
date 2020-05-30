@@ -2,12 +2,13 @@ import datetime
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class Scotland(BaseSpider):
+class Scotland(SimpleSpider):
     name = 'scotland'
+    data_type = 'release_package'
 
     notice_types = [
         1,  # OJEU - F1 - Prior Information Notice
@@ -51,7 +52,3 @@ class Scotland(BaseSpider):
                     yield scrapy.Request(format_string.format(datestring, notice_type),
                                          meta={'kf_filename': '{}_type_{}.json'.format(datestring, notice_type)})
                 marker = marker + datetime.timedelta(days=14)
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(response, data_type='release_package')

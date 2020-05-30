@@ -3,12 +3,13 @@ This spider deliberately generates HTTP errors. You can use this to test whether
 """
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class TestFail(BaseSpider):
-    name = "test_fail"
+class TestFail(SimpleSpider):
+    name = 'test_fail'
+    data_type = 'release_package'
 
     def start_requests(self):
         # Fine
@@ -25,7 +26,3 @@ class TestFail(BaseSpider):
         yield scrapy.Request('http://httpstat.us/500', meta={'kf_filename': 'http-500.json'})
         # .... but actually, yes, I also broke the Proxy too
         yield scrapy.Request('http://httpstat.us/502', meta={'kf_filename': 'http-502.json'})
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(response, data_type='release_package')

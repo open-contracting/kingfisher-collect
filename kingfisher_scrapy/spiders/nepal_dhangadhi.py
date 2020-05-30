@@ -3,12 +3,13 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class NepalDhangadhi(BaseSpider):
-    name = "nepal_dhangadhi"
+class NepalDhangadhi(SimpleSpider):
+    name = 'nepal_dhangadhi'
+    data_type = 'release_package'
 
     def start_requests(self):
         yield scrapy.Request(
@@ -30,7 +31,3 @@ class NepalDhangadhi(BaseSpider):
             )
             if self.sample:
                 break
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(response, data_type='release_package')
