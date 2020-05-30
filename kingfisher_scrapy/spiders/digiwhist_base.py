@@ -20,4 +20,4 @@ class DigiwhistBase(BaseSpider):
         # Load a line at the time, pass it to API
         with tarfile.open(fileobj=BytesIO(response.body), mode="r:gz") as tar:
             with tar.extractfile(tar.getnames()[0]) as readfp:
-                yield from self.parse_json_lines(readfp, 'release_package', self.start_urls[0])
+                yield from self.parse_json_lines(readfp, url=self.start_urls[0], data_type='release_package')

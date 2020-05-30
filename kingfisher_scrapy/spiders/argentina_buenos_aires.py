@@ -17,10 +17,11 @@ class ArgentinaBuenosAires(ZipSpider):
         Downloads the zip file and sends 10 releases to kingfisher process.
     """
     name = 'argentina_buenos_aires'
+    data_type = 'release_package'
+    zip_file_format = 'release_package'
+
     # the data list service takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000
-
-    parse_zipfile_kwargs = {'data_type': 'release_package', 'file_format': 'release_package'}
 
     def start_requests(self):
         yield scrapy.Request(
