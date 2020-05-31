@@ -1,13 +1,11 @@
 import hashlib
-import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.base_spider import LinksSpider
 
 
-class HondurasPortalRecords(BaseSpider):
+class HondurasPortalRecords(LinksSpider):
     """
     API documentation
       http://www.contratacionesabiertas.gob.hn/servicio/
@@ -16,30 +14,12 @@ class HondurasPortalRecords(BaseSpider):
         Download only the first record package in the dataset.
     """
     name = 'honduras_portal_records'
+    data_type = 'record_package'
+    data_pointer = '/recordPackage'
+    next_pointer = '/next'
+
     download_delay = 0.9
 
     def start_requests(self):
         url = 'http://www.contratacionesabiertas.gob.hn/api/v1/record/?format=json'
-        yield scrapy.Request(
-            url,
-            meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
-        )
-
-    @handle_error
-    def parse(self, response):
-        json_data = json.loads(response.text)
-        yield self.build_file(
-            json.dumps(json_data['releasePackage']).encode(),
-            response.request.meta['kf_filename'],
-            data_type='record_package',
-            url=response.request.url
-        )
-
-        url = json_data.get('next')
-        if not url or self.sample:
-            return
-        else:
-            yield scrapy.Request(
-                url,
-                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
-            )
+        yield scrapy.Request(url, meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'})

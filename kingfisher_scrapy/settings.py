@@ -75,9 +75,9 @@ EXTENSIONS = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'kingfisher_scrapy.pipelines.KingfisherScrapyPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'kingfisher_scrapy.pipelines.Validate': 300,
+}
 
 # To send items to Kingfishet Process, set this to, for example, "http://kingfisher.example.com" (no trailing slash).
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')

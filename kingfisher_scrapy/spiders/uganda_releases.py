@@ -3,11 +3,11 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class Uganda(BaseSpider):
+class Uganda(SimpleSpider):
     """
     API documentation
         https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
@@ -16,6 +16,8 @@ class Uganda(BaseSpider):
         Download only 19 releases.
     """
     name = 'uganda_releases'
+    data_type = 'release_package'
+
     download_delay = 0.9
 
     def start_requests(self):
@@ -72,11 +74,3 @@ class Uganda(BaseSpider):
                             break
                     if self.sample:
                         break
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type='release_package'
-        )

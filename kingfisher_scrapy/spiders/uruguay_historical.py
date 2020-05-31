@@ -12,6 +12,8 @@ class UruguayHistorical(ZipSpider):
         Download only data released on 2002.
     """
     name = 'uruguay_historical'
+    data_type = 'release_package'
+
     # the files takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000
     custom_settings = {
@@ -21,8 +23,6 @@ class UruguayHistorical(ZipSpider):
                       'Chrome/37.0.2049.0 Safari/537.36',
     }
 
-    parse_zipfile_kwargs = {'data_type': 'release_package'}
-
     def start_requests(self):
         base_url = 'https://www.gub.uy/agencia-compras-contrataciones-estado/sites/agencia-compras-contrataciones' \
                    '-estado/files/2019-04/OCDS-{}.zip'
@@ -30,6 +30,4 @@ class UruguayHistorical(ZipSpider):
         if self.sample:
             end_year = 2003
         for year in range(2002, end_year):
-            yield scrapy.Request(
-                url=base_url.format(year)
-            )
+            yield scrapy.Request(base_url.format(year), meta={'kf_filename': 'OCDS-{}.zip'.format(year)})

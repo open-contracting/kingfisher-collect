@@ -34,10 +34,7 @@ class Colombia(LinksSpider):
         start_page = 1
         if hasattr(self, 'page'):
             start_page = int(self.page)
-        yield scrapy.Request(
-            url=base_url % start_page,
-            meta={'kf_filename': 'page{}.json'.format(start_page)}
-        )
+        yield scrapy.Request(base_url % start_page, meta={'kf_filename': 'page{}.json'.format(start_page)})
 
     def parse(self, response):
         # In Colombia, every day at certain hour they run a process in their system that drops the database and make
@@ -50,20 +47,16 @@ class Colombia(LinksSpider):
                 url = response.request.url
                 logging.info('Sleeping due error {} in url {}'.format(response.status, url))
                 time.sleep(self.sleep)
-                yield scrapy.Request(url,
-                                     dont_filter=True,
-                                     meta={'kf_filename': hashlib.md5(
-                                         url.encode('utf-8')).hexdigest() + '.json'})
-
+                yield scrapy.Request(
+                    url,
+                    dont_filter=True,
+                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
+                )
             elif self.is_http_success(response):
-
-                yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                    data_type='release_package')
-
+                yield self.build_file_from_response(response, data_type='release_package')
                 if not self.sample:
                     yield self.next_link(response)
             else:
-
                 yield self.build_file_error_from_response(response)
 
         except JSONDecodeError:

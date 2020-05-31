@@ -15,6 +15,7 @@ class UruguayReleases(UruguayBase):
         Download only 1 release.
     """
     name = 'uruguay_releases'
+    data_type = 'release_package'
 
     @handle_error
     def parse_list(self, response):
@@ -24,8 +25,4 @@ class UruguayReleases(UruguayBase):
             root = [root[0]]
 
         for url in root:
-            yield scrapy.Request(
-                url,
-                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json',
-                      'data_type': 'release_package'}
-            )
+            yield scrapy.Request(url, meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'})

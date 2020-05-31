@@ -14,7 +14,7 @@ class MexicoAdministracionPublicaFederal(BaseSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            url='https://api.datos.gob.mx/v1/contratacionesabiertas',
+            'https://api.datos.gob.mx/v1/contratacionesabiertas',
             meta={'kf_filename': 'page1.json'}
         )
 
@@ -23,11 +23,7 @@ class MexicoAdministracionPublicaFederal(BaseSpider):
         data = json.loads(response.text)
 
         # Actual data
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type="record_package_list_in_results"
-        )
+        yield self.build_file_from_response(response, data_type='record_package_list_in_results')
 
         # Load more pages?
         if data['pagination']['page'] == 1 and not self.sample:
@@ -36,7 +32,7 @@ class MexicoAdministracionPublicaFederal(BaseSpider):
             limit = data['pagination']['pageSize']
             while ((page - 1) * limit) < total:
                 yield scrapy.Request(
-                    url='https://api.datos.gob.mx/v1/contratacionesabiertas?page=%d' % page,
+                    'https://api.datos.gob.mx/v1/contratacionesabiertas?page=%d' % page,
                     meta={'kf_filename': 'page' + str(page) + '.json'}
                 )
                 page += 1

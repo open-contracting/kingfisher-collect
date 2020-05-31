@@ -56,9 +56,13 @@ class ParaguayHacienda(BaseSpider):
         # so we first iterate over this list that is paginated
         yield scrapy.Request(
             self.base_list_url.format(1),
+            meta={
+                'kf_filename': 'list-1.json',
+                'meta': True,
+                'first': True,
+            },
             # send duplicate requests when the token expired and in the continuation of last_request saved.
             dont_filter=True,
-            meta={'meta': True, 'first': True}
         )
 
     @handle_error
@@ -71,8 +75,12 @@ class ParaguayHacienda(BaseSpider):
             total_pages = data['meta']['totalPages']
             for page in range(2,  total_pages+1):
                 yield scrapy.Request(
-                    url=self.base_list_url.format(page),
-                    meta={'meta': True, 'first': False},
+                    self.base_list_url.format(page),
+                    meta={
+                        'kf_filename': 'list-{}.json'.format(page),
+                        'meta': True,
+                        'first': False,
+                    },
                     dont_filter=True
                 )
 
@@ -87,14 +95,16 @@ class ParaguayHacienda(BaseSpider):
                 if row['idLlamado'] and row['idLlamado'] not in self.release_ids:
                     self.release_ids.append(row['idLlamado'])
                     yield scrapy.Request(
-                        url=base_url.format(row['idLlamado']),
-                        meta={'meta': False, 'first': False,
-                              'kf_filename': 'release-{}.json'.format(row['idLlamado'])},
+                        base_url.format(row['idLlamado']),
+                        meta={
+                            'kf_filename': 'release-{}.json'.format(row['idLlamado']),
+                            'meta': False,
+                            'first': False,
+                        },
                         dont_filter=True
                     )
         else:
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                data_type='release_package')
+            yield self.build_file_from_response(response, data_type='release_package')
 
     def request_access_token(self):
         """ Requests a new access token """

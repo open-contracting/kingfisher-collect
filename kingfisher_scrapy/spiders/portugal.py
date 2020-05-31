@@ -16,17 +16,19 @@ class Portugal(ZipSpider):
         Download only the first file in the dataset.
     """
     name = 'portugal'
+    data_type = 'record_package'
+    encoding = 'iso-8859-1'
+    zip_file_format = 'json_lines'
+
     download_warnsize = 0
     download_timeout = 9999
-
-    parse_zipfile_kwargs = {'data_type': 'record_package', 'file_format': 'json_lines', 'encoding': 'iso-8859-1'}
 
     def start_requests(self):
         url = 'https://dados.gov.pt/api/1/datasets/?q=ocds&organization={}&page_size={}'
         id = '5ae97fa2c8d8c915d5faa3bf'
         page_size = 20
         yield scrapy.Request(
-            url=url.format(id, page_size),
+            url.format(id, page_size),
             meta={'kf_filename': 'list.json'},
             callback=self.parse_list
         )

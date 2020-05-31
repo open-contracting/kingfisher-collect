@@ -13,8 +13,7 @@ class Zambia(ZipSpider):
         Download only data released on July 2016.
     """
     name = 'zambia'
-
-    parse_zipfile_kwargs = {'data_type': 'record_package'}
+    data_type = 'record_package'
 
     def start_requests(self):
         yield scrapy.Request(

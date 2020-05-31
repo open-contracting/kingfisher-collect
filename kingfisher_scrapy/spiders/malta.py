@@ -17,8 +17,7 @@ class Malta(ZipSpider):
         Download only data released on October 2019.
     """
     name = 'malta'
-
-    parse_zipfile_kwargs = {'data_type': 'record_package'}
+    data_type = 'record_package'
 
     def start_requests(self):
         yield scrapy.Request(

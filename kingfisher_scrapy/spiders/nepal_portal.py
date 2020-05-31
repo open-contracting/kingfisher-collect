@@ -3,17 +3,17 @@ import hashlib
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.base_spider import SimpleSpider
 
 
-class NepalPortal(BaseSpider):
+class NepalPortal(SimpleSpider):
     """
     Spider arguments
       sample
         Download only data released on 2018.
     """
     name = 'nepal_portal'
+    data_type = 'release_package'
 
     def start_requests(self):
         if self.sample:
@@ -31,11 +31,3 @@ class NepalPortal(BaseSpider):
                 meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
             )
             current_year += 1
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type='release_package'
-        )

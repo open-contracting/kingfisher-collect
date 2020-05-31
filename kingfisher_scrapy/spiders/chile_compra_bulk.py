@@ -12,13 +12,13 @@ class ChileCompraBulk(ZipSpider):
         Download only data released on February 2017.
     """
     name = 'chile_compra_bulk'
+    data_type = 'record_package'
+
     download_warnsize = 0
     download_timeout = 99999
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
-
-    parse_zipfile_kwargs = {'data_type': 'record_package'}
 
     def start_requests(self):
         url = 'https://ocds.blob.core.windows.net/ocds/{}{}.zip'

@@ -39,6 +39,7 @@ class IndonesiaBandung(BaseSpider):
             if next_page_url:
                 yield scrapy.Request(
                     next_page_url,
+                    meta={'kf_filename': next_page_url.rsplit('/', 1)[-1] + '.json'},
                     callback=self.parse_data
                 )
 
@@ -47,8 +48,4 @@ class IndonesiaBandung(BaseSpider):
         json_data = json.loads(response.text)
         if len(json_data) == 0:
             return
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type='release'
-        )
+        yield self.build_file_from_response(response, data_type='release')

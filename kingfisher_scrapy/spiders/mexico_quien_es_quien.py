@@ -54,9 +54,8 @@ class MexicoQuienEsQuien(BaseSpider):
     @handle_error
     def parse(self, response):
         json_data = json.loads(response.text)
-        yield self.build_file(
-            json.dumps(json_data['data']).encode(),
-            response.request.meta['kf_filename'],
-            data_type='record_package_list',
-            url=response.request.url
+        yield self.build_file_from_response(
+            response,
+            data=json.dumps(json_data['data']).encode(),
+            data_type='record_package_list'
         )

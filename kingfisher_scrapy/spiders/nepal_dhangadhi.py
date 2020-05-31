@@ -3,26 +3,28 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class NepalDhangadhi(BaseSpider):
+class NepalDhangadhi(SimpleSpider):
     """
     Spider arguments
       sample
         Download only the first release package in the dataset.
     """
-    name = "nepal_dhangadhi"
+    name = 'nepal_dhangadhi'
+    data_type = 'release_package'
 
     def start_requests(self):
         yield scrapy.Request(
             'https://admin.ims.susasan.org/api/static-data/dhangadhi',
-            callback=self.parse_item,
+            meta={'kf_filename': 'list.json'},
+            callback=self.parse_list,
         )
 
     @handle_error
-    def parse_item(self, response):
+    def parse_list(self, response):
         url = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
         json_data = json.loads(response.text)
         fiscal_years = json_data['data']['fiscal_years']
@@ -34,11 +36,3 @@ class NepalDhangadhi(BaseSpider):
             )
             if self.sample:
                 break
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type='release_package'
-        )
