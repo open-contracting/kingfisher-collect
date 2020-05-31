@@ -48,8 +48,4 @@ class IndonesiaBandung(BaseSpider):
         json_data = json.loads(response.text)
         if len(json_data) == 0:
             return
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type='release'
-        )
+        yield self.build_file_from_response(response, data_type='release')

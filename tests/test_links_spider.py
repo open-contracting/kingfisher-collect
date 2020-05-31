@@ -11,7 +11,7 @@ def test_next_link():
 
     request = spider.next_link(response_fixture())
 
-    assert isinstance(request, Request)
+    assert type(request) is Request
     assert request.url == 'http://example.com/next'
     assert request.meta == {'kf_filename': '166715ca8e5f3c1531156d8772b922b7.json'}
 
@@ -22,7 +22,7 @@ def test_parse_404():
     generator = spider.parse(response_fixture(status=404))
     item = next(generator)
 
-    assert isinstance(item, FileError)
+    assert type(item) is FileError
     assert item == {
         'file_name': 'test',
         'url': 'http://example.com',
@@ -41,7 +41,7 @@ def test_parse_200():
     item = next(generator)
     request = next(generator)
 
-    assert isinstance(item, File)
+    assert type(item) is File
     assert item == {
         'file_name': 'test',
         'url': 'http://example.com',
@@ -51,7 +51,7 @@ def test_parse_200():
         'post_to_api': True,
     }
 
-    assert isinstance(request, Request)
+    assert type(request) is Request
     assert request.url == 'http://example.com/next'
     assert request.meta == {'kf_filename': '166715ca8e5f3c1531156d8772b922b7.json'}
 

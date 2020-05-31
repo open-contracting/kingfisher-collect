@@ -10,8 +10,7 @@ from kingfisher_scrapy.util import handle_error
 
 class Malta(ZipSpider):
     name = 'malta'
-
-    parse_zipfile_kwargs = {'data_type': 'record_package'}
+    data_type = 'record_package'
 
     def start_requests(self):
         yield scrapy.Request(

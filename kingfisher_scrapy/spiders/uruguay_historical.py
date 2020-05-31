@@ -5,6 +5,8 @@ from kingfisher_scrapy.base_spider import ZipSpider
 
 class UruguayHistorical(ZipSpider):
     name = 'uruguay_historical'
+    data_type = 'release_package'
+
     # the files takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000
     custom_settings = {
@@ -13,8 +15,6 @@ class UruguayHistorical(ZipSpider):
         'USER_AGENT': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                       'Chrome/37.0.2049.0 Safari/537.36',
     }
-
-    parse_zipfile_kwargs = {'data_type': 'release_package'}
 
     def start_requests(self):
         base_url = 'https://www.gub.uy/agencia-compras-contrataciones-estado/sites/agencia-compras-contrataciones' \

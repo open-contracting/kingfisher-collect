@@ -3,22 +3,21 @@ from math import ceil
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class KenyaMakueni(BaseSpider):
+class KenyaMakueni(SimpleSpider):
     name = 'kenya_makueni'
+    data_type = 'release_package_list'
     url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={}&pageNumber={}'
 
     def start_requests(self):
         if self.sample:
-            page_number = 0
-            page_size = 10
+            url = self.url.format(10, 0)
             yield scrapy.Request(
-                self.url.format(page_size, page_number),
-                meta={'kf_filename': hashlib.md5((self.url +
-                                                  str(page_number)).encode('utf-8')).hexdigest() + '.json'}
+                url,
+                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
             )
         else:
             yield scrapy.Request(
@@ -33,13 +32,8 @@ class KenyaMakueni(BaseSpider):
         page_size = 300
 
         for page_number in range((ceil(total / page_size))):
+            url = self.url.format(page_size, page_number)
             yield scrapy.Request(
-                self.url.format(page_size, page_number),
-                meta={'kf_filename': hashlib.md5((self.url +
-                                                  str(page_number)).encode('utf-8')).hexdigest() + '.json'}
+                url,
+                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
             )
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                            data_type='release_package_list')

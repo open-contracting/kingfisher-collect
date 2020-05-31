@@ -3,16 +3,17 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class MexicoJalisco(BaseSpider):
+class MexicoJalisco(SimpleSpider):
     name = 'mexico_jalisco'
+    data_type = 'release_package'
 
     def start_requests(self):
         yield scrapy.Request(
-            url='https://contratacionesabiertas.jalisco.gob.mx/OCApi/2017/contracts',
+            'https://contratacionesabiertas.jalisco.gob.mx/OCApi/2017/contracts',
             meta={'kf_filename': 'list.json'},
             callback=self.parse_list
         )
@@ -24,7 +25,7 @@ class MexicoJalisco(BaseSpider):
             datas = [datas[0]]
         for data in datas:
             yield scrapy.Request(
-                url=data['URIContract'],
+                data['URIContract'],
                 meta={'kf_filename': 'id%s.json' % data['ocid']},
                 callback=self.parse_record_package
             )
@@ -35,14 +36,7 @@ class MexicoJalisco(BaseSpider):
         if 'packages' in json_data:
             for url in json_data['packages']:
                 yield scrapy.Request(
-                    url=url,
-                    meta={'kf_filename': 'packages-%s.json' % hashlib.md5(url.encode('utf-8')).hexdigest()},
-                    callback=self.parse_release_package
+                    url,
+                    meta={'kf_filename': 'packages-%s.json' % hashlib.md5(url.encode('utf-8')).hexdigest()}
                 )
-        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                            data_type='record_package')
-
-    @handle_error
-    def parse_release_package(self, response):
-        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                            data_type='release_package')
+        yield self.build_file_from_response(response, data_type='record_package')

@@ -4,12 +4,12 @@ from datetime import datetime
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
 from kingfisher_scrapy.util import handle_error
 
 
-class ParaguayDNCPBaseSpider(BaseSpider):
+class ParaguayDNCPBaseSpider(SimpleSpider):
     """ This base class contains methods used for Paraguay DNCP's
     authentication protocol.
     """
@@ -136,14 +136,6 @@ class ParaguayDNCPBaseSpider(BaseSpider):
                 dont_filter=True,
                 callback=self.parse_pages
             )
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type=self.data_type
-        )
 
     def get_files_to_download(self, content):
         """ Override this

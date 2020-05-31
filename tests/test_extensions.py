@@ -69,7 +69,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
     kwargs = {}
     if encoding:
         kwargs['encoding'] = encoding
-    item = spider.build_file(b'{"key": "value"}', 'file.json', url='https://example.com/remote.json',
+    item = spider.build_file(file_name='file.json', url='https://example.com/remote.json', data=b'{"key": "value"}',
                              data_type='release_package', post_to_api=post_to_api, **kwargs)
 
     store_extension.item_scraped(item, spider)
@@ -146,12 +146,12 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
         if encoding:
             kwargs['encoding'] = encoding
         item = spider.build_file_item(
-            1,
-            b'{"key": "value"}',
-            data_type='release_package',
-            url='https://example.com/remote.json',
-            encoding=encoding2,
+            number=1,
             file_name='data.json',
+            url='https://example.com/remote.json',
+            data=b'{"key": "value"}',
+            data_type='release_package',
+            encoding=encoding2,
         )
 
         api_extension.item_scraped(item, spider)
@@ -294,7 +294,8 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
     response.request = Mock()
     response.request.url = 'https://example.com/remote.json'
 
-    item = spider.build_file_from_response(response, 'file.json', data_type='release_package', encoding='iso-8859-1')
+    item = spider.build_file_from_response(response, file_name='file.json', data_type='release_package',
+                                           encoding='iso-8859-1')
     store_extension.item_scraped(item, spider)
 
     with open(tmpdir.join(path)) as f:
@@ -322,7 +323,8 @@ def test_item_scraped_with_build_file(sample, path, tmpdir):
     data = b'{"key": "value"}'
     url = 'https://example.com/remote.json'
 
-    item = spider.build_file(data, 'file.json', url=url, data_type='release_package', encoding='iso-8859-1')
+    item = spider.build_file(file_name='file.json', url=url, data=data, data_type='release_package',
+                             encoding='iso-8859-1')
     store_extension.item_scraped(item, spider)
 
     with open(tmpdir.join(path)) as f:
@@ -349,4 +351,4 @@ def test_build_file_with_existing_directory():
         os.makedirs(os.path.join(files_store, 'test', '20010203_040506'))
 
         # No FileExistsError exception.
-        store_extension.item_scraped(spider.build_file(b'{"key": "value"}', 'file.json'), spider)
+        store_extension.item_scraped(spider.build_file(file_name='file.json', data=b'{"key": "value"}'), spider)

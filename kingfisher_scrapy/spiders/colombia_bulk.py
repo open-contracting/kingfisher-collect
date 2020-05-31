@@ -15,17 +15,19 @@ class ColombiaBulk(ZipSpider):
         Downloads the zip file and sends 10 releases to kingfisher process.
     """
     name = 'colombia_bulk'
+    data_type = 'release_in_Release'
+    encoding = 'iso-8859-1'
+    zip_file_format = 'json_lines'
+
     download_warnsize = 0
     download_timeout = 99999
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
 
-    parse_zipfile_kwargs = {'data_type': 'release_in_Release', 'file_format': 'json_lines', 'encoding': 'iso-8859-1'}
-
     def start_requests(self):
         yield scrapy.Request(
-            url='https://www.colombiacompra.gov.co/transparencia/datos-json',
+            'https://www.colombiacompra.gov.co/transparencia/datos-json',
             meta={'kf_filename': 'list.html'},
             callback=self.parse_list,
         )

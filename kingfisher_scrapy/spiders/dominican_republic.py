@@ -10,9 +10,8 @@ from kingfisher_scrapy.util import handle_error
 
 class DominicanRepublic(BaseSpider):
     name = 'dominican_republic'
-    custom_settings = {
-        'DOWNLOAD_TIMEOUT': 360
-    }
+
+    download_timeout = 360  # 6min
 
     def start_requests(self):
         yield scrapy.Request(
@@ -33,17 +32,14 @@ class DominicanRepublic(BaseSpider):
             if '/JSON_DGCP_' in url:
                 yield scrapy.Request('https:' + url, meta={'kf_filename': url.rsplit('/', 1)[-1]})
 
+    @handle_error
     def parse(self, response):
-        if self.is_http_success(response):
-            file = tempfile.NamedTemporaryFile(delete=False)
-            file.write(response.body)
-            file.close()
-            with rarfile.RarFile(file.name, charset='utf-8') as tmpfile:
-                for f in tmpfile.infolist():
-                    with tmpfile.open(f) as jsonFile:
-                        yield self.build_file(jsonFile.read(), f.filename, data_type='release_package',
-                                              url=response.request.url)
-            os.remove(file.name)
-        else:
-            filename = response.request.url.split('/')[-1]
-            yield self.build_file_error_from_response(response, file_name=filename)
+        file = tempfile.NamedTemporaryFile(delete=False)
+        file.write(response.body)
+        file.close()
+        with rarfile.RarFile(file.name, charset='utf-8') as tmpfile:
+            for f in tmpfile.infolist():
+                with tmpfile.open(f) as jsonFile:
+                    yield self.build_file(file_name=f.filename, url=response.request.url, data=jsonFile.read(),
+                                          data_type='release_package')
+        os.remove(file.name)
