@@ -15,13 +15,20 @@ class HondurasONCAE(ZipSpider):
         Download one set of releases.
     """
     name = 'honduras_oncae'
-    start_urls = ['http://oncae.gob.hn/datosabiertos']
+    data_type = 'release_package'
 
     # the files take too long to be downloaded, so we increase the download timeout
     download_timeout = 900
 
+    def start_requests(self):
+        yield scrapy.Request(
+            'http://oncae.gob.hn/datosabiertos',
+            meta={'kf_filename': 'list.html'},
+            callback=self.parse_list
+        )
+
     @handle_error
-    def parse(self, response):
+    def parse_list(self, response):
         urls = response.css(".article-content ul")\
             .xpath(".//a[contains(., '[json]')]/@href")\
             .getall()
@@ -29,8 +36,4 @@ class HondurasONCAE(ZipSpider):
             urls = [urls[0]]
         for url in urls:
             filename = urlparse(url).path.split('/')[-1]
-            yield scrapy.Request(url, meta={'kf_filename': filename}, callback=self.parse_items)
-
-    @handle_error
-    def parse_items(self, response):
-        yield from self.parse_zipfile(response, data_type='release_package')
+            yield scrapy.Request(url, meta={'kf_filename': filename})

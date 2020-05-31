@@ -52,21 +52,19 @@ Here is a sample:
 
 .. code-block:: python
 
+    from kingfisher_scrapy.base_spider import SimpleSpider
     from kingfisher_scrapy.util import handle_error
 
-    class VerySimple(BaseSpider):
-        name = "very_simple"
+    class VerySimple(SimpleSpider):
+        name = 'very_simple'
+        data_type = 'release_package'
 
         def start_requests(self):
             # This API only has one URL to get. Make a request for that, and set a filename
             yield scrapy.Request(
-                url='https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-13-14.json',
+                'https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-13-14.json',
                 meta={'kf_filename': '13-14.json'}
             )
-
-        @handle_error
-        def parse(self, response):
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type='release_package')
 
 Spider properties
 -----------------

@@ -1,10 +1,9 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.base_spider import SimpleSpider
 
 
-class MoldovaOld(BaseSpider):
+class MoldovaOld(SimpleSpider):
     """
     Bulk download documentation
       http://opencontracting.date.gov.md/downloads
@@ -13,21 +12,17 @@ class MoldovaOld(BaseSpider):
         Download only data released on 2017.
     """
     name = 'moldova_old'
+    data_type = 'release_package'
 
     def start_requests(self):
         if self.sample:
             yield scrapy.Request(
-                url='http://opencontracting.date.gov.md/ocds-api/year/2017',
+                'http://opencontracting.date.gov.md/ocds-api/year/2017',
                 meta={'kf_filename': 'sample.json'}
             )
         else:
             for year in range(2012, 2018):
                 yield scrapy.Request(
-                    url='http://opencontracting.date.gov.md/ocds-api/year/%d' % year,
+                    'http://opencontracting.date.gov.md/ocds-api/year/%d' % year,
                     meta={'kf_filename': 'year-%d.json' % year}
                 )
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                            data_type='release_package')

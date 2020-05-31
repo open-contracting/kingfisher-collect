@@ -4,12 +4,12 @@ from datetime import datetime
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
 from kingfisher_scrapy.util import handle_error
 
 
-class ParaguayDNCPBaseSpider(BaseSpider):
+class ParaguayDNCPBaseSpider(SimpleSpider):
     """ This base class contains methods used for Paraguay DNCP's
     authentication protocol.
     """
@@ -51,10 +51,15 @@ class ParaguayDNCPBaseSpider(BaseSpider):
 
     def start_requests(self):
         if self.from_date:
+            from_date = self.from_date.strftime(self.date_format)
             self.base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}'\
-                .format(self.base_url, self.from_date.strftime(self.date_format))
+                .format(self.base_url, from_date)
         yield scrapy.Request(
             self.base_page_url,
+            meta={
+                'kf_filename': '{}-1.json'.format(from_date),
+                'from_date': from_date,
+            },
             # send duplicate requests when the token expired and in the continuation of last_request saved.
             dont_filter=True,
             callback=self.parse_pages
@@ -123,20 +128,14 @@ class ParaguayDNCPBaseSpider(BaseSpider):
             )
         pagination = content['pagination']
         if pagination['current_page'] < pagination['total_pages'] and not self.sample:
-            url = '{}&page={}'.format(self.base_page_url, pagination['current_page'] + 1)
+            page = pagination['current_page'] + 1
+            url = '{}&page={}'.format(self.base_page_url, page)
             yield scrapy.Request(
                 url,
+                meta={'kf_filename': '{}-{}.json'.format(response.request.meta['from_date'], page)},
                 dont_filter=True,
                 callback=self.parse_pages
             )
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type=self.data_type
-        )
 
     def get_files_to_download(self, content):
         """ Override this

@@ -9,7 +9,6 @@ automat==0.8.0            # via twisted
 certifi==2019.11.28       # via requests
 cffi==1.13.2              # via cryptography
 chardet==3.0.4            # via requests
-click==7.1.2              # via pip-tools
 constantly==15.1.0        # via twisted
 cryptography==2.8         # via pyopenssl, scrapy, service-identity
 cssselect==1.1.0          # via parsel, scrapy
@@ -17,9 +16,9 @@ hyperlink==19.0.0         # via twisted
 idna==2.8                 # via hyperlink, requests
 ijson==3.0.3
 incremental==17.5.0       # via twisted
+jsonpointer==2.0
 lxml==4.4.2               # via parsel, scrapy
 parsel==1.5.2             # via scrapy
-pip-tools==5.1.0
 protego==0.1.16           # via scrapy
 pyasn1-modules==0.2.7     # via service-identity
 pyasn1==0.4.8             # via pyasn1-modules, service-identity
@@ -33,12 +32,11 @@ requests==2.22.0
 scrapy==1.8.0
 scrapyd-client==1.1.0
 service-identity==18.1.0  # via scrapy
-six==1.13.0               # via automat, cryptography, parsel, pip-tools, protego, pyhamcrest, pyopenssl, scrapy, scrapyd-client, w3lib
+six==1.13.0               # via automat, cryptography, parsel, protego, pyhamcrest, pyopenssl, scrapy, scrapyd-client, w3lib
 twisted==20.3.0           # via scrapy
 urllib3==1.25.7           # via requests
 w3lib==1.21.0             # via parsel, scrapy
 zope.interface==4.7.1     # via scrapy, twisted
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip
 # setuptools

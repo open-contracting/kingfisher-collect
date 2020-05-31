@@ -9,6 +9,6 @@ class MoldovaReleases(LinksSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            url='http://ocds.mepps.openprocurement.io/api/releases.json',
+            'http://ocds.mepps.openprocurement.io/api/releases.json',
             meta={'kf_filename': 'page1.json'}
         )

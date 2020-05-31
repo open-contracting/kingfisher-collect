@@ -25,17 +25,16 @@ class Moldova(BaseSpider):
     def start_requests(self):
         for endpoint, url in self.endpoints.items():
             yield scrapy.Request(
-                url=url,
+                url,
                 meta={'kf_filename': 'meta-{}-start.json'.format(endpoint), 'endpoint': endpoint, 'data': False}
             )
 
     @handle_error
     def parse(self, response):
         if response.request.meta['data']:
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                data_type='record_package')
+            yield self.build_file_from_response(response, data_type='record_package')
         else:
-            self.build_file_from_response(response, response.request.meta['kf_filename'])
+            self.build_file_from_response(response)
             json_data = json.loads(response.text)
             offset = json_data.get('offset')
             # not having an offset in the data means the data has come to an end.
@@ -47,7 +46,7 @@ class Moldova(BaseSpider):
 
             for data in json_data.get('data', []):
                 yield scrapy.Request(
-                    url=endpoint_url + data['ocid'],
+                    endpoint_url + data['ocid'],
                     meta={
                         'kf_filename': 'data-{}-{}.json'.format(endpoint, data['ocid']),
                         'endpoint': endpoint,
@@ -59,7 +58,7 @@ class Moldova(BaseSpider):
                 return
 
             yield scrapy.Request(
-                url=endpoint_url + '?offset=' + offset,
+                endpoint_url + '?offset=' + offset,
                 meta={
                     'kf_filename': 'meta-{}-{}.json'.format(endpoint, offset),
                     'endpoint': endpoint,
