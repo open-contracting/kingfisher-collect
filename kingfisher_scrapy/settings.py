@@ -67,7 +67,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
 EXTENSIONS = {
-   'kingfisher_scrapy.extensions.KingfisherLastDate': 0,
+   'kingfisher_scrapy.extensions.KingfisherLastDate': 1,
     # `KingfisherFilesStore` must run before `KingfisherProcessAPI`, because the file needs to be written before the
     # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
@@ -76,9 +76,11 @@ EXTENSIONS = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'kingfisher_scrapy.pipelines.KingfisherScrapyPipeline': 300,
-#}
+ITEM_PIPELINES = {
+# 'kingfisher_scrapy.pipelines.KingfisherScrapyPipeline': 300,
+ 'kingfisher_scrapy.pipelines.LastReleaseDatePipeline': 300,
+
+}
 
 # To send items to Kingfishet Process, set this to, for example, "http://kingfisher.example.com" (no trailing slash).
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
@@ -125,6 +127,7 @@ KINGFISHER_OPENOPPS_PASSWORD = os.getenv('KINGFISHER_OPENOPPS_PASSWORD')
 # https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std:setting-FILES_STORE
 FILES_STORE = os.getenv('FILES_STORE', 'data')
 
+KINGFISHER_LAST_RELEASE_DATE_FILE_PATH = os.getenv('KINGFISHER_LAST_RELEASE_DATE_FILE_PATH', 'last_dates')
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
 HTTPERROR_ALLOW_ALL = True
 

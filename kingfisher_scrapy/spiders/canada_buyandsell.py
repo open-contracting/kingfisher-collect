@@ -12,7 +12,7 @@ class CanadaBuyAndSell(BaseSpider):
             url='https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-16-17.json',
             meta={'kf_filename': '16-17.json'}
         )
-        if self.sample or self.last:
+        if self.sample:
             return
         yield scrapy.Request(
             url='https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-15-16.json',

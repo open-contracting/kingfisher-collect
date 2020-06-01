@@ -11,8 +11,6 @@ class CanadaMontreal(BaseSpider):
     page_limit = 10000
 
     def start_requests(self):
-        if self.last:
-            self.page_limit = 1
         yield scrapy.Request(
             url='https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=%d' % self.page_limit,
             meta={'kf_filename': 'page0.json'}

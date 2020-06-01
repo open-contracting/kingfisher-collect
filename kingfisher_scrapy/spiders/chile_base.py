@@ -36,7 +36,7 @@ class ChileCompraBaseSpider(BaseSpider):
             yield self.get_sample_request()
             return
         until_year, until_month = self.get_year_month_until()
-        for year in range(self.start_year, until_year):
+        for year in reversed(range(self.start_year, until_year)):
             for month in range(1, 13):
                 # just scrape until the current month when the until year = current year
                 if (until_year - 1) == year and month > until_month:

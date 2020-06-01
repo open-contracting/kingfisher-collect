@@ -1,5 +1,4 @@
 import datetime
-import json
 
 import scrapy
 
@@ -19,7 +18,7 @@ class Australia(LinksSpider):
             )
         else:
             current_year = datetime.datetime.now().year + 1
-            for year in range(2004, current_year):
+            for year in reversed(range(2004, current_year)):
                 yield scrapy.Request(
                     url='https://api.tenders.gov.au/ocds/findByDates/contractPublished/'
                         '{}-01-01T00:00:00Z/{}-12-31T23:59:59Z'.format(year, year),

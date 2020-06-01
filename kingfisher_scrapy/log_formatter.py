@@ -7,6 +7,7 @@ class KingfisherLogFormatter(logformatter.LogFormatter):
         """
         Omits an item's `data` value from the log message.
         """
-        item = item.copy()
-        item.pop('data', None)
+        if item:
+            item = item.copy()
+            item.pop('data', None)
         return super().scraped(item, response, spider)

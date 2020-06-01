@@ -8,6 +8,7 @@ from kingfisher_scrapy.spiders.australia import Australia
 from kingfisher_scrapy.spiders.australia_nsw import AustraliaNSW
 from kingfisher_scrapy.spiders.canada_buyandsell import CanadaBuyAndSell
 from kingfisher_scrapy.spiders.canada_montreal import CanadaMontreal
+from kingfisher_scrapy.spiders.chile_compra_releases import ChileCompraReleases
 
 
 class GetLastReleaseDatePerPublisher(ScrapyCommand):
@@ -20,11 +21,5 @@ class GetLastReleaseDatePerPublisher(ScrapyCommand):
         settings.set('CONCURRENT_REQUESTS', 1)
         process = CrawlerProcess(settings=settings)
 
-        process.crawl(AfghanistanRecords, last='true')
-        process.crawl(ArgentinaVialidad, last='true')
-        process.crawl(Armenia, last='true')
-        process.crawl(Australia, last='true')
-        process.crawl(AustraliaNSW, last='true')
-        process.crawl(CanadaBuyAndSell, last='true')
-        process.crawl(CanadaMontreal, last='true')
+        process.crawl(ChileCompraReleases, last='true')
         process.start()

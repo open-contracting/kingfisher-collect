@@ -17,7 +17,10 @@ class KingfisherLastDate:
 
     @classmethod
     def from_crawler(cls, crawler):
-        filename = os.path.join(crawler.settings['LAST_RELEASE_DATE_FILE_PATH'], 'last_dates.txt')
+        path = crawler.settings['KINGFISHER_LAST_RELEASE_DATE_FILE_PATH']
+        if not os.path.exists(path):
+            os.makedirs(path)
+        filename = os.path.join(path, 'last_dates.txt')
         extension = cls(filename=filename)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         return extension
