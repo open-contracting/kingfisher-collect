@@ -45,7 +45,8 @@ def test_build_file_from_response():
     response.request = Mock()
     response.request.url = 'https://example.com/remote.json'
 
-    actual = spider.build_file_from_response(response, 'file.json', data_type='release_package', encoding='iso-8859-1')
+    actual = spider.build_file_from_response(response, file_name='file.json', data_type='release_package',
+                                             encoding='iso-8859-1')
 
     assert actual == File({
         'file_name': 'file.json',
@@ -63,7 +64,8 @@ def test_build_file():
     data = b'{"key": "value"}'
     url = 'https://example.com/remote.json'
 
-    actual = spider.build_file(data, 'file.json', url=url, data_type='release_package', encoding='iso-8859-1')
+    actual = spider.build_file(file_name='file.json', url=url, data=data, data_type='release_package',
+                               encoding='iso-8859-1')
 
     assert actual == File({
         'file_name': 'file.json',

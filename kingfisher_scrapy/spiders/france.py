@@ -3,21 +3,23 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_error
 
 
-class France(BaseSpider):
-    name = "france"
+class France(SimpleSpider):
+    name = 'france'
+    data_type = 'release_package'
 
     def start_requests(self):
         yield scrapy.Request(
-            url='https://www.data.gouv.fr/api/1/datasets/?organization=534fff75a3a7292c64a77de4',
-            callback=self.parse_item
+            'https://www.data.gouv.fr/api/1/datasets/?organization=534fff75a3a7292c64a77de4',
+            meta={'kf_filename': 'list.json'},
+            callback=self.parse_list,
         )
 
     @handle_error
-    def parse_item(self, response):
+    def parse_list(self, response):
         json_data = json.loads(response.text)
         data = json_data['data']
         for item in data:
@@ -40,13 +42,6 @@ class France(BaseSpider):
             if next_page:
                 yield scrapy.Request(
                     next_page,
-                    callback=self.parse_item
+                    meta={'kf_filename': hashlib.md5(next_page.encode('utf-8')).hexdigest() + '.json'},
+                    callback=self.parse_list
                 )
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type="release_package"
-        )

@@ -77,9 +77,9 @@ EXTENSIONS = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-# 'kingfisher_scrapy.pipelines.KingfisherScrapyPipeline': 300,
- 'kingfisher_scrapy.pipelines.LastReleaseDatePipeline': 300,
-
+   # 'kingfisher_scrapy.pipelines.KingfisherScrapyPipeline': 300,
+   'kingfisher_scrapy.pipelines.LastReleaseDatePipeline': 300,
+   'kingfisher_scrapy.pipelines.Validate': 300,
 }
 
 # To send items to Kingfishet Process, set this to, for example, "http://kingfisher.example.com" (no trailing slash).

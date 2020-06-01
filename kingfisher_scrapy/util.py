@@ -14,8 +14,6 @@ def handle_error(decorated):
     """
     @wraps(decorated)
     def wrapper(self, response):
-        # All 2xx codes are successful.
-        # https://tools.ietf.org/html/rfc7231#section-6.3
         if self.is_http_success(response):
             yield from decorated(self, response)
         else:

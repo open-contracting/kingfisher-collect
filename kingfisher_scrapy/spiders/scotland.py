@@ -2,12 +2,12 @@ import datetime
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.base_spider import SimpleSpider
 
 
-class Scotland(BaseSpider):
+class Scotland(SimpleSpider):
     name = 'scotland'
+    data_type = 'release_package'
 
     notice_types = [
         1,  # OJEU - F1 - Prior Information Notice
@@ -40,7 +40,7 @@ class Scotland(BaseSpider):
         if self.sample:
             marker = now - datetime.timedelta(days=14)
             for notice_type in self.notice_types:
-                yield scrapy.Request(url=format_string.format(marker, notice_type),
+                yield scrapy.Request(format_string.format(marker, notice_type),
                                      meta={'kf_filename': 'sample_{}.json'.format(notice_type)})
         else:
             # It's meant to go back a year, but in testing it seemed to be year minus one day!
@@ -48,11 +48,6 @@ class Scotland(BaseSpider):
             while marker <= now:
                 datestring = '{:04d}-{:02d}-{:02d}'.format(marker.year, marker.month, marker.day)
                 for notice_type in self.notice_types:
-                    yield scrapy.Request(url=format_string.format(datestring, notice_type),
+                    yield scrapy.Request(format_string.format(datestring, notice_type),
                                          meta={'kf_filename': '{}_type_{}.json'.format(datestring, notice_type)})
                 marker = marker + datetime.timedelta(days=14)
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                            data_type='release_package')
