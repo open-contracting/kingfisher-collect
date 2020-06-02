@@ -8,7 +8,5 @@ class ArgentinaVialidad(SimpleSpider):
     data_type = 'release_package_list'
 
     def start_requests(self):
-        yield scrapy.Request(
-            'https://datosabiertos.vialidad.gob.ar/api/ocds/package/all',
-            meta={'kf_filename': 'all.json'}
-        )
+        url = 'https://datosabiertos.vialidad.gob.ar/api/ocds/package/all'
+        yield scrapy.Request(url, meta={'kf_filename': 'all.json'})

@@ -3,7 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import components, handle_error
 
 
 class MexicoCDMXSource(SimpleSpider):
@@ -19,9 +19,10 @@ class MexicoCDMXSource(SimpleSpider):
 
     @handle_error
     def parse_list(self, response):
-        data = json.loads(response.text)
+        items = json.loads(response.text)
         if self.sample:
-            data = [data[0]]
+            items = [items[0]]
 
-        for data_item in data:
-            yield scrapy.Request(data_item['uri'], meta={'kf_filename': 'id%s.json' % data_item['id']})
+        for item in items:
+            # URL looks like http://www.contratosabiertos.cdmx.gob.mx/api/contrato/OCDS-87SD3T-SEDEMA-LP-0027-2017
+            yield self.build_request(item['uri'], formatter=components(-1))

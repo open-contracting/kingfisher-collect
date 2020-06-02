@@ -5,7 +5,7 @@ import rarfile
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import components, handle_error
 
 
 class DominicanRepublic(BaseSpider):
@@ -30,7 +30,7 @@ class DominicanRepublic(BaseSpider):
 
         for url in json_urls:
             if '/JSON_DGCP_' in url:
-                yield scrapy.Request('https:' + url, meta={'kf_filename': url.rsplit('/', 1)[-1]})
+                yield self.build_request('https:' + url, formatter=components(-1))
 
     @handle_error
     def parse(self, response):
