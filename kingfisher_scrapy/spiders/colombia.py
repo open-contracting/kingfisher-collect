@@ -10,7 +10,6 @@ from kingfisher_scrapy.util import parameters
 
 class Colombia(LinksSpider):
     name = 'colombia'
-    sleep = 120 * 60
     next_page_formatter = parameters('page')
 
     def start_requests(self):
@@ -27,7 +26,7 @@ class Colombia(LinksSpider):
     def retry(self, response, reason):
         url = response.request.url
         logging.info(reason.format(url=url, status=response.status))
-        time.sleep(self.sleep)
+        time.sleep(120 * 60)
         yield scrapy.Request(url, dont_filter=True, meta=response.request.meta)
 
     def parse(self, response):

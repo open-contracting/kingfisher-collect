@@ -10,7 +10,6 @@ from kingfisher_scrapy.util import handle_error, parameters
 class MexicoQuienEsQuien(BaseSpider):
     name = 'mexico_quien_es_quien'
     download_delay = 0.9
-    url = 'https://api.quienesquien.wiki/v2/contracts?limit={limit}&offset={offset}'
 
     def start_requests(self):
         yield scrapy.Request(
@@ -21,11 +20,12 @@ class MexicoQuienEsQuien(BaseSpider):
 
     @handle_error
     def parse_list(self, response):
+        pattern = 'https://api.quienesquien.wiki/v2/contracts?limit={limit}&offset={offset}'
         limit = 1000
-        count = json.loads(response.text)['data'][0]['collections']['contracts']['count']
 
+        count = json.loads(response.text)['data'][0]['collections']['contracts']['count']
         for offset in range(ceil(count / limit)):
-            url = self.url.format(limit=limit, offset=offset * limit)
+            url = pattern.format(limit=limit, offset=offset * limit)
             yield self.build_request(url, formatter=parameters('offset'))
             if self.sample:
                 break
