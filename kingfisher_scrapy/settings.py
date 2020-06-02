@@ -32,6 +32,7 @@ CONCURRENT_REQUESTS = 32
 
 # The maximum response size (in bytes) that downloader will download (default: 1073741824):
 DOWNLOAD_MAXSIZE = 4000000000
+DOWNLOAD_WARNSIZE = 0
 
 # The download delay setting will honor only one of:
 CONCURRENT_REQUESTS_PER_DOMAIN = 2

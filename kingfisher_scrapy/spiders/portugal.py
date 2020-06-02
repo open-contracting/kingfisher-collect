@@ -12,7 +12,6 @@ class Portugal(ZipSpider):
     encoding = 'iso-8859-1'
     zip_file_format = 'json_lines'
 
-    download_warnsize = 0
     download_timeout = 9999
 
     def start_requests(self):
