@@ -3,7 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
-from kingfisher_scrapy.util import components, handle_error
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class Portugal(ZipSpider):
@@ -19,7 +19,7 @@ class Portugal(ZipSpider):
         url = 'https://dados.gov.pt/api/1/datasets/?q=ocds&organization=5ae97fa2c8d8c915d5faa3bf&page_size=20'
         yield scrapy.Request(url, meta={'kf_filename': 'page-1.json'}, callback=self.parse_list)
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         data = json.loads(response.text)
         for item in data['data']:

@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import handle_http_error
 
 
 class NigeriaPortal(SimpleSpider):
@@ -18,7 +18,7 @@ class NigeriaPortal(SimpleSpider):
             callback=self.parse_list
         )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         formdata = {
             '__VIEWSTATE': response.css('input#__VIEWSTATE::attr(value)').extract_first(),

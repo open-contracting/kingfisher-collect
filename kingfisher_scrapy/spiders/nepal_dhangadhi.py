@@ -3,7 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components, handle_error
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class NepalDhangadhi(SimpleSpider):
@@ -17,7 +17,7 @@ class NepalDhangadhi(SimpleSpider):
             callback=self.parse_list,
         )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         pattern = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
         data = json.loads(response.text)

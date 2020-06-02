@@ -2,7 +2,7 @@ import json
 from datetime import date
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components, date_range_by_month, handle_error
+from kingfisher_scrapy.util import components, date_range_by_month, handle_http_error
 
 
 class ChileCompraBaseSpider(SimpleSpider):
@@ -39,7 +39,7 @@ class ChileCompraBaseSpider(SimpleSpider):
                 callback=self.parse_list
             )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         data = json.loads(response.text)
         if 'status' in data and data['status'] != 200:

@@ -4,7 +4,7 @@ from urllib.parse import urlsplit
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
-from kingfisher_scrapy.util import components, handle_error
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class Malta(ZipSpider):
@@ -18,7 +18,7 @@ class Malta(ZipSpider):
             callback=self.parse_list
         )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         urls = json.loads(response.text)['packagesPerMonth']
         if self.sample:

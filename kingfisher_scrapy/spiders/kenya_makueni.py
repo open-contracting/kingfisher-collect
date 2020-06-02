@@ -3,7 +3,7 @@ from math import ceil
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_error, parameters
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class KenyaMakueni(SimpleSpider):
@@ -24,7 +24,7 @@ class KenyaMakueni(SimpleSpider):
                 callback=self.parse_count
             )
 
-    @handle_error
+    @handle_http_error
     def parse_count(self, response):
         total = int(response.text)
         for page in range(ceil(total / self.step)):

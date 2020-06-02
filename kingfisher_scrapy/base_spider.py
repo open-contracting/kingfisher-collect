@@ -10,7 +10,7 @@ from jsonpointer import resolve_pointer
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import SpiderArgumentError
 from kingfisher_scrapy.items import File, FileError, FileItem
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import handle_http_error
 
 
 class BaseSpider(scrapy.Spider):
@@ -257,7 +257,7 @@ class SimpleSpider(BaseSpider):
     encoding = 'utf-8'
     data_pointer = ''
 
-    @handle_error
+    @handle_http_error
     def parse(self, response):
         kwargs = {}
         if self.data_pointer:
@@ -305,7 +305,7 @@ class ZipSpider(BaseSpider):
     encoding = 'utf-8'
     zip_file_format = None
 
-    @handle_error
+    @handle_http_error
     def parse(self, response):
         if self.zip_file_format:
             yield self.build_file_from_response(response, data_type='zip', post_to_api=False)
@@ -362,7 +362,7 @@ class LinksSpider(SimpleSpider):
 
     next_pointer = '/links/next'
 
-    @handle_error
+    @handle_http_error
     def parse(self, response):
         yield from super().parse(response)
 

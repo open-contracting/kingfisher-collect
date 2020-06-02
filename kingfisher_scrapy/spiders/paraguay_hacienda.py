@@ -5,7 +5,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
-from kingfisher_scrapy.util import components, handle_error, parameters
+from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 
 class ParaguayHacienda(BaseSpider):
@@ -54,7 +54,7 @@ class ParaguayHacienda(BaseSpider):
             dont_filter=True,
         )
 
-    @handle_error
+    @handle_http_error
     def parse(self, response):
         data = json.loads(response.text)
         pattern = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/ocds/release-package/{}'

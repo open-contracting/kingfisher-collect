@@ -1,7 +1,7 @@
 import json
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_error, parameters
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class AustraliaNSW(SimpleSpider):
@@ -18,7 +18,7 @@ class AustraliaNSW(SimpleSpider):
                 callback=self.parse_list
             )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         data = json.loads(response.text)
         release_type = response.request.meta['release_type']

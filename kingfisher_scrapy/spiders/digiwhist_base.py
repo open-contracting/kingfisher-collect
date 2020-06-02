@@ -4,7 +4,7 @@ from io import BytesIO
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import handle_http_error
 
 
 class DigiwhistBase(BaseSpider):
@@ -13,7 +13,7 @@ class DigiwhistBase(BaseSpider):
         for url in self.start_urls:
             yield scrapy.Request(url, dont_filter=True, meta={'kf_filename': 'file.tar.gz'})
 
-    @handle_error
+    @handle_http_error
     def parse(self, response):
         yield self.build_file_from_response(response, data_type='tar.gz', post_to_api=False)
 

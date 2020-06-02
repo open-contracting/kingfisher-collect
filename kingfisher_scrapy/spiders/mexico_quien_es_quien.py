@@ -4,7 +4,7 @@ from math import ceil
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error, parameters
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class MexicoQuienEsQuien(BaseSpider):
@@ -18,7 +18,7 @@ class MexicoQuienEsQuien(BaseSpider):
             callback=self.parse_list
         )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         pattern = 'https://api.quienesquien.wiki/v2/contracts?limit={limit}&offset={offset}'
         limit = 1000
@@ -30,7 +30,7 @@ class MexicoQuienEsQuien(BaseSpider):
             if self.sample:
                 break
 
-    @handle_error
+    @handle_http_error
     def parse(self, response):
         data = json.loads(response.text)
         yield self.build_file_from_response(

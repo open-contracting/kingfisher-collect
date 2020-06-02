@@ -3,7 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components, handle_error
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class AfghanistanReleases(SimpleSpider):
@@ -17,7 +17,7 @@ class AfghanistanReleases(SimpleSpider):
         url = 'https://ocds.ageops.net/api/ocds/releases/dates'
         yield scrapy.Request(url, meta={'kf_filename': 'list.json'}, callback=self.parse_list)
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         urls = json.loads(response.text)
         if self.sample:
@@ -27,7 +27,7 @@ class AfghanistanReleases(SimpleSpider):
             # URL looks like https://ocds.ageops.net/api/ocds/releases/2020-05-30
             yield self.build_request(url, formatter=components(-1), callback=self.parse_release_list)
 
-    @handle_error
+    @handle_http_error
     def parse_release_list(self, response):
         urls = json.loads(response.text)
         if self.sample:

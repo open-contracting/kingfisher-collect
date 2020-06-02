@@ -3,7 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components, handle_error
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class MexicoJalisco(SimpleSpider):
@@ -17,7 +17,7 @@ class MexicoJalisco(SimpleSpider):
             callback=self.parse_list
         )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         items = json.loads(response.text)
         if self.sample:
@@ -30,7 +30,7 @@ class MexicoJalisco(SimpleSpider):
                 callback=self.parse_record_package
             )
 
-    @handle_error
+    @handle_http_error
     def parse_record_package(self, response):
         yield self.build_file_from_response(response, data_type='record_package')
 

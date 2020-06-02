@@ -5,7 +5,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
-from kingfisher_scrapy.util import components, handle_error, parameters
+from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 
 class ParaguayDNCPBaseSpider(SimpleSpider):
@@ -113,7 +113,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
             self.auth_failed = True
             raise AuthenticationError()
 
-    @handle_error
+    @handle_http_error
     def parse_pages(self, response):
         content = json.loads(response.text)
         for url in self.get_files_to_download(content):

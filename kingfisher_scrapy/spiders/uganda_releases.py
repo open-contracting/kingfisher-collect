@@ -3,7 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components, handle_error, join, parameters
+from kingfisher_scrapy.util import components, handle_http_error, join, parameters
 
 
 class Uganda(SimpleSpider):
@@ -19,7 +19,7 @@ class Uganda(SimpleSpider):
             callback=self.parse_list
         )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         pattern = 'https://gpp.ppda.go.ug/adminapi/public/api/pdes?page={}'
 
@@ -32,7 +32,7 @@ class Uganda(SimpleSpider):
         for page in range(2, total + 1):
             yield self.build_request(pattern.format(page), formatter=parameters('page'), callback=self.parse_data)
 
-    @handle_error
+    @handle_http_error
     def parse_data(self, response):
         pattern = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v1/releases/{}?fy={}&pde={}'
 

@@ -1,12 +1,12 @@
 from kingfisher_scrapy.spiders.uruguay_base import UruguayBase
-from kingfisher_scrapy.util import components, handle_error
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class UruguayRecords(UruguayBase):
     name = 'uruguay_records'
     data_type = 'record_package'
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         pattern = 'https://www.comprasestatales.gub.uy/ocds/record/{}'
 

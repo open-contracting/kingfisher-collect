@@ -54,7 +54,7 @@ def join(*functions):
     return wrapper
 
 
-def handle_error(decorated):
+def handle_http_error(decorated):
     """
     A decorator for spider parse methods.
 
