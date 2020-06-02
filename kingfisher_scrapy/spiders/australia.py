@@ -9,7 +9,7 @@ from kingfisher_scrapy.util import parameters
 class Australia(LinksSpider):
     name = 'australia'
     data_type = 'release_package'
-    next_page_formatter = parameters('cursor')
+    next_page_formatter = staticmethod(parameters('cursor'))
 
     def start_requests(self):
         url = f'https://api.tenders.gov.au/ocds/findByDates/contractPublished/' \

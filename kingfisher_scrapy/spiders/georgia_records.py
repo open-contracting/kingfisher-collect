@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import parameters
 class GeorgiaRecords(LinksSpider):
     name = 'georgia_records'
     data_type = 'record_package'
-    next_page_formatter = parameters('page')
+    next_page_formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
         url = 'https://odapi.spa.ge/api/records.json'

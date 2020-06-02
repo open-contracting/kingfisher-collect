@@ -10,7 +10,7 @@ from kingfisher_scrapy.util import parameters
 
 class Colombia(LinksSpider):
     name = 'colombia'
-    next_page_formatter = parameters('page')
+    next_page_formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
         base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases'

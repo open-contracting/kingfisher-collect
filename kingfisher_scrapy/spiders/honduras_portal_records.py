@@ -9,7 +9,7 @@ class HondurasPortalRecords(LinksSpider):
     data_type = 'record_package'
     data_pointer = '/recordPackage'
     next_pointer = '/next'
-    next_page_formatter = parameters('page')
+    next_page_formatter = staticmethod(parameters('page'))
 
     download_delay = 0.9
 

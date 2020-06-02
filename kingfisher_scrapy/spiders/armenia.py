@@ -8,7 +8,7 @@ class Armenia(LinksSpider):
     name = 'armenia'
     data_type = 'release_package'
     next_pointer = '/next_page/uri'
-    next_page_formatter = parameters('offset')
+    next_page_formatter = staticmethod(parameters('offset'))
 
     def start_requests(self):
         url = 'https://armeps.am/ocds/release'
