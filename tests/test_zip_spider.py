@@ -60,7 +60,7 @@ def test_parse_json_lines(sample, len_items):
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'zip'
     assert item['encoding'] == 'utf-8'
-    assert item['post_to_api'] == False
+    assert item['post_to_api'] is False
 
     assert len(items) == len_items
 
@@ -101,7 +101,7 @@ def test_parse_release_package(sample, len_items, len_releases):
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'zip'
     assert item['encoding'] == 'utf-8'
-    assert item['post_to_api'] == False
+    assert item['post_to_api'] is False
 
     assert len(items) == len_items
 
