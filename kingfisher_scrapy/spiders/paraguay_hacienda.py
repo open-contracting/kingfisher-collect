@@ -34,7 +34,8 @@ class ParaguayHacienda(BaseSpider):
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
         spider.client_secret = crawler.settings.get('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
         if spider.request_token is None or spider.client_secret is None:
-            spider.logger.error('No request token or client secret available')
+            spider.logger.error('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN and/or '
+                                'KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET is not set.')
             raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
 
         return spider

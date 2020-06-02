@@ -17,7 +17,6 @@ class ColombiaBulk(ZipSpider):
     encoding = 'iso-8859-1'
     zip_file_format = 'json_lines'
 
-    download_warnsize = 0
     download_timeout = 99999
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,

@@ -9,7 +9,7 @@ class HondurasPortalReleases(LinksSpider):
     data_type = 'release_package'
     data_pointer = '/releasePackage'
     next_pointer = '/next'
-    next_page_formatter = parameters('page')
+    next_page_formatter = staticmethod(parameters('page'))
 
     download_delay = 0.9
 

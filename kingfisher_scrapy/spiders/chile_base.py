@@ -9,7 +9,7 @@ class ChileCompraBaseSpider(SimpleSpider):
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
-    download_timeout = 300
+
     limit = 100
     base_list_url = 'https://apis.mercadopublico.cl/OCDS/data/listaA%C3%B1oMes/{0.year:d}/{0.month:02d}/{1}/{2}'
 

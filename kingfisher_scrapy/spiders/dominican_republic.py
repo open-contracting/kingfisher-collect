@@ -11,8 +11,6 @@ from kingfisher_scrapy.util import components, handle_error
 class DominicanRepublic(BaseSpider):
     name = 'dominican_republic'
 
-    download_timeout = 360  # 6min
-
     def start_requests(self):
         yield scrapy.Request(
             'https://www.dgcp.gob.do/estandar-mundial-ocds/',

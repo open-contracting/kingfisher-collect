@@ -1,10 +1,10 @@
 import json
 
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import components, handle_error, parameters, replace_parameter
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import handle_error, parameters, replace_parameter
 
 
-class UKContractsFinder(BaseSpider):
+class UKContractsFinder(SimpleSpider):
     name = 'uk_contracts_finder'
     data_type = 'release_package_list_in_results'
     encoding = 'iso-8859-1'
@@ -22,4 +22,4 @@ class UKContractsFinder(BaseSpider):
             total = data['maxPage']
             for page in range(2, total + 1):
                 url = replace_parameter(response.request.url, 'page', page)
-                yield self.build_request(url, formatter=components('page'))
+                yield self.build_request(url, formatter=parameters('page'))

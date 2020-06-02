@@ -1,5 +1,4 @@
 import json
-import logging
 from datetime import datetime
 
 import scrapy
@@ -44,7 +43,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
         if spider.request_token is None:
-            logging.error('No request token available')
+            spider.logger.error('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN is not set.')
             raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
 
         return spider
