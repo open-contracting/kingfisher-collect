@@ -56,8 +56,7 @@ class OpenOpps(BaseSpider):
         spider.username = crawler.settings.get('KINGFISHER_OPENOPPS_USERNAME')
         spider.password = crawler.settings.get('KINGFISHER_OPENOPPS_PASSWORD')
         if spider.username is None or spider.password is None:
-            spider.logger.error('Please set the environment variables '
-                                'KINGFISHER_OPENOPPS_USERNAME and KINGFISHER_OPENOPPS_PASSWORD')
+            spider.logger.error('KINGFISHER_OPENOPPS_USERNAME and/or KINGFISHER_OPENOPPS_PASSWORD is not set.')
             raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
 
         return spider
