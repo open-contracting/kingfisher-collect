@@ -96,7 +96,7 @@ def replace_parameter(url, key, value):
     parsed = urlsplit(url)
     query = parse_qs(parsed.query)
     if value is None:
-        del query[key]
+        query.pop(key, None)
     else:
         query[key] = [value]
     return parsed._replace(query=urlencode(query, doseq=True)).geturl()
