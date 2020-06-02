@@ -15,7 +15,7 @@ class Uganda(SimpleSpider):
     def start_requests(self):
         yield scrapy.Request(
             'https://gpp.ppda.go.ug/adminapi/public/api/pdes',
-            meta={'kf_filename': 'page-1.json'},
+            meta={'file_name': 'page-1.json'},
             callback=self.parse_list
         )
 

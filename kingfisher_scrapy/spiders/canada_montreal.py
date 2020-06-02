@@ -13,7 +13,7 @@ class CanadaMontreal(SimpleSpider):
 
     def start_requests(self):
         url = 'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit={step}'.format(step=self.step)
-        yield scrapy.Request(url, meta={'kf_filename': 'offset-0.json'}, callback=self.parse_list)
+        yield scrapy.Request(url, meta={'file_name': 'offset-0.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

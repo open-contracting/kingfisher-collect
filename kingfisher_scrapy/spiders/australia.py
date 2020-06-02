@@ -15,4 +15,4 @@ class Australia(LinksSpider):
         url = f'https://api.tenders.gov.au/ocds/findByDates/contractPublished/' \
               f'2004-01-01T00:00:00Z/{date.today().year}-12-31T23:59:59Z'
 
-        yield scrapy.Request(url, meta={'kf_filename': 'start.json'})
+        yield scrapy.Request(url, meta={'file_name': 'start.json'})

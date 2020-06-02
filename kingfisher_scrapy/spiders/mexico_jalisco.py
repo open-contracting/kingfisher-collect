@@ -13,7 +13,7 @@ class MexicoJalisco(SimpleSpider):
     def start_requests(self):
         yield scrapy.Request(
             'https://contratacionesabiertas.jalisco.gob.mx/OCApi/2017/contracts',
-            meta={'kf_filename': 'list.json'},
+            meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
 
@@ -26,7 +26,7 @@ class MexicoJalisco(SimpleSpider):
         for item in items:
             yield scrapy.Request(
                 item['URIContract'],
-                meta={'kf_filename': f"id{item['ocid']}.json"},
+                meta={'file_name': f"id{item['ocid']}.json"},
                 callback=self.parse_record_package
             )
 

@@ -9,4 +9,4 @@ class ArgentinaVialidad(SimpleSpider):
 
     def start_requests(self):
         url = 'https://datosabiertos.vialidad.gob.ar/api/ocds/package/all'
-        yield scrapy.Request(url, meta={'kf_filename': 'all.json'})
+        yield scrapy.Request(url, meta={'file_name': 'all.json'})

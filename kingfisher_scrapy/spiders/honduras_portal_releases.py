@@ -15,4 +15,4 @@ class HondurasPortalReleases(LinksSpider):
 
     def start_requests(self):
         url = 'http://www.contratacionesabiertas.gob.hn/api/v1/release/?format=json'
-        yield scrapy.Request(url, meta={'kf_filename': 'page-1.json'})
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'})

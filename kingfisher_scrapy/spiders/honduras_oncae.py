@@ -14,7 +14,7 @@ class HondurasONCAE(ZipSpider):
     def start_requests(self):
         yield scrapy.Request(
             'http://oncae.gob.hn/datosabiertos',
-            meta={'kf_filename': 'list.html'},
+            meta={'file_name': 'list.html'},
             callback=self.parse_list
         )
 

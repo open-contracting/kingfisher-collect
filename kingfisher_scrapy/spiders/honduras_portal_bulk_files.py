@@ -13,7 +13,7 @@ class HondurasPortalBulkFiles(SimpleSpider):
     def start_requests(self):
         yield scrapy.Request(
             'http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json',
-            meta={'kf_filename': 'list.json'},
+            meta={'file_name': 'list.json'},
             callback=self.parse_list,
         )
 

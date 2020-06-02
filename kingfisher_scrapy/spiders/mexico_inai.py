@@ -15,7 +15,7 @@ class MexicoINAI(SimpleSpider):
         # A CKAN API JSON response.
         yield scrapy.Request(
             'https://datos.gob.mx/busca/api/3/action/package_search?q=organization:inai&rows=500',
-            meta={'kf_filename': 'list.json'},
+            meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
 

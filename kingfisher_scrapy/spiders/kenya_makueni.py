@@ -20,7 +20,7 @@ class KenyaMakueni(SimpleSpider):
         else:
             yield scrapy.Request(
                 'https://opencontracting.makueni.go.ke/api/ocds/release/count',
-                meta={'kf_filename': 'count.json'},
+                meta={'file_name': 'count.json'},
                 callback=self.parse_count
             )
 

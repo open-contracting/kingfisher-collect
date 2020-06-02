@@ -9,4 +9,4 @@ class HondurasCoST(SimpleSpider):
 
     def start_requests(self):
         # Extracted from http://app.sisocs.org/protected/ocdsShow/
-        yield scrapy.Request('http://67.207.88.38:8080/sisocs/records', meta={'kf_filename': 'all.json'})
+        yield scrapy.Request('http://67.207.88.38:8080/sisocs/records', meta={'file_name': 'all.json'})

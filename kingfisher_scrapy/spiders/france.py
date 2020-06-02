@@ -13,7 +13,7 @@ class France(SimpleSpider):
     def start_requests(self):
         # A CKAN API JSON response.
         url = 'https://www.data.gouv.fr/api/1/datasets/?organization=534fff75a3a7292c64a77de4'
-        yield scrapy.Request(url, meta={'kf_filename': 'page-1.json'}, callback=self.parse_list)
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

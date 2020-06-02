@@ -14,7 +14,7 @@ class Malta(ZipSpider):
     def start_requests(self):
         yield scrapy.Request(
             'http://demowww.etenders.gov.mt/ocds/services/recordpackage/getrecordpackagelist',
-            meta={'kf_filename': 'list.json'},
+            meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
 

@@ -12,4 +12,4 @@ class Armenia(LinksSpider):
 
     def start_requests(self):
         url = 'https://armeps.am/ocds/release'
-        yield scrapy.Request(url, meta={'kf_filename': 'offset-0.json'})
+        yield scrapy.Request(url, meta={'file_name': 'offset-0.json'})

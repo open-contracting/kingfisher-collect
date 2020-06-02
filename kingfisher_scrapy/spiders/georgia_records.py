@@ -11,4 +11,4 @@ class GeorgiaRecords(LinksSpider):
 
     def start_requests(self):
         url = 'https://odapi.spa.ge/api/records.json'
-        yield scrapy.Request(url, meta={'kf_filename': 'page-1.json'})
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'})

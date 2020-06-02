@@ -14,7 +14,7 @@ def test_next_link():
 
     assert type(request) is Request
     assert request.url == 'http://example.com/next'
-    assert request.meta == {'kf_filename': 'next.json'}
+    assert request.meta == {'file_name': 'next.json'}
 
 
 def test_parse_404():
@@ -55,7 +55,7 @@ def test_parse_200():
 
     assert type(request) is Request
     assert request.url == 'http://example.com/next'
-    assert request.meta == {'kf_filename': 'next.json'}
+    assert request.meta == {'file_name': 'next.json'}
 
     with pytest.raises(StopIteration):
         next(generator)

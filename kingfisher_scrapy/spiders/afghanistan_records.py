@@ -15,7 +15,7 @@ class AfghanistanRecords(SimpleSpider):
     def start_requests(self):
         # A JSON array of URL strings, in reverse chronological order.
         url = 'https://ocds.ageops.net/api/ocds/records'
-        yield scrapy.Request(url, meta={'kf_filename': 'list.json'}, callback=self.parse_list)
+        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

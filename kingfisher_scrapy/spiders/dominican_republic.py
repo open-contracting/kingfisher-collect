@@ -14,7 +14,7 @@ class DominicanRepublic(BaseSpider):
     def start_requests(self):
         yield scrapy.Request(
             'https://www.dgcp.gob.do/estandar-mundial-ocds/',
-            meta={'kf_filename': 'list.html'},
+            meta={'file_name': 'list.html'},
             callback=self.parse_list,
         )
 

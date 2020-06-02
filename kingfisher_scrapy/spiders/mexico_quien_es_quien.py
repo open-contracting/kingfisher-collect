@@ -14,7 +14,7 @@ class MexicoQuienEsQuien(BaseSpider):
     def start_requests(self):
         yield scrapy.Request(
             'https://api.quienesquien.wiki/v2/sources',
-            meta={'kf_filename': 'list.json'},
+            meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
 

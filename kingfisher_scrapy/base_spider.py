@@ -113,7 +113,7 @@ class BaseSpider(scrapy.Spider):
         >>> url = 'https://example.com/package.json'
         >>> formatter = components(-1)
         >>> BaseSpider(name='my_spider').build_request(url, formatter=formatter).meta
-        {'kf_filename': 'package.json'}
+        {'file_name': 'package.json'}
 
         To use a query string parameter as the file name:
 
@@ -121,7 +121,7 @@ class BaseSpider(scrapy.Spider):
         >>> url = 'https://example.com/packages?page=1&per_page=100'
         >>> formatter = parameters('page')
         >>> BaseSpider(name='my_spider').build_request(url, formatter=formatter).meta
-        {'kf_filename': 'page-1.json'}
+        {'file_name': 'page-1.json'}
 
         To add a query string parameter to the file name:
 
@@ -129,7 +129,7 @@ class BaseSpider(scrapy.Spider):
         >>> url = 'https://example.com/packages?page=1&per_page=100'
         >>> formatter = join(components(-1), parameters('page'))
         >>> BaseSpider(name='my_spider').build_request(url, formatter=formatter).meta
-        {'kf_filename': 'packages-page-1.json'}
+        {'file_name': 'packages-page-1.json'}
 
         :param str url: the URL to request
         :param formatter: a function that accepts a URL and returns a file name
@@ -139,7 +139,7 @@ class BaseSpider(scrapy.Spider):
         file_name = formatter(url)
         if not file_name.endswith(('.json', '.zip')):
             file_name += '.json'
-        meta = {'kf_filename': file_name}
+        meta = {'file_name': file_name}
         if 'meta' in kwargs:
             meta.update(kwargs.pop('meta'))
         return scrapy.Request(url, meta=meta, **kwargs)
@@ -149,7 +149,7 @@ class BaseSpider(scrapy.Spider):
         Returns an item to yield, based on the response to a request.
         """
         if 'file_name' not in kwargs:
-            kwargs['file_name'] = response.request.meta['kf_filename']
+            kwargs['file_name'] = response.request.meta['file_name']
         if 'url' not in kwargs:
             kwargs['url'] = response.request.url
         if 'data' not in kwargs:
@@ -184,8 +184,8 @@ class BaseSpider(scrapy.Spider):
             'url': response.request.url,
             'errors': {'http_code': response.status},
         })
-        if 'kf_filename' in response.request.meta:
-            item['file_name'] = response.request.meta['kf_filename']
+        if 'file_name' in response.request.meta:
+            item['file_name'] = response.request.meta['file_name']
         item.update(kwargs)
         return item
 
@@ -251,7 +251,7 @@ class SimpleSpider(BaseSpider):
             data_type = 'release_package'
 
             def start_requests(self):
-                yield scrapy.Request('https://example.com/api/package.json', meta={'kf_filename': 'all.json'})
+                yield scrapy.Request('https://example.com/api/package.json', meta={'file_name': 'all.json'})
     """
 
     encoding = 'utf-8'
@@ -299,7 +299,7 @@ class ZipSpider(BaseSpider):
             data_type = 'release_package'
 
             def start_requests(self):
-                yield scrapy.Request('https://example.com/api/packages.zip', meta={'kf_filename': 'all.json'})
+                yield scrapy.Request('https://example.com/api/packages.zip', meta={'file_name': 'all.json'})
     """
 
     encoding = 'utf-8'
@@ -357,7 +357,7 @@ class LinksSpider(SimpleSpider):
             data_type = 'release_package'
 
             def start_requests(self):
-                yield scrapy.Request('https://example.com/api/packages.json', meta={'kf_filename': 'page1.json'})
+                yield scrapy.Request('https://example.com/api/packages.json', meta={'file_name': 'page1.json'})
     """
 
     next_pointer = '/links/next'

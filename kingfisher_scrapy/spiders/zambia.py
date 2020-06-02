@@ -13,7 +13,7 @@ class Zambia(ZipSpider):
     def start_requests(self):
         yield scrapy.Request(
             'https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackagelist',
-            meta={'kf_filename': 'list.json'},
+            meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
 

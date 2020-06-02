@@ -9,4 +9,4 @@ class MexicoGrupoAeroporto(SimpleSpider):
 
     def start_requests(self):
         url = 'http://gacmda.gacm.mx:8880/files/opendata/coleccion/concentrado05032019RELEASE.json'
-        yield scrapy.Request(url, meta={'kf_filename': 'all.json'})
+        yield scrapy.Request(url, meta={'file_name': 'all.json'})
