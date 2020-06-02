@@ -308,7 +308,7 @@ class ZipSpider(BaseSpider):
     @handle_error
     def parse(self, response):
         if self.zip_file_format:
-            self.build_file_from_response(response, data_type='zip', post_to_api=False)
+            yield self.build_file_from_response(response, data_type='zip', post_to_api=False)
 
         zip_file = ZipFile(BytesIO(response.body))
         for finfo in zip_file.infolist():
