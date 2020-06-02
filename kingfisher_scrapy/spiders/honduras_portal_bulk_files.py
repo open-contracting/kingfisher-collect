@@ -3,7 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import components, handle_error
 
 
 class HondurasPortalBulkFiles(SimpleSpider):
@@ -19,13 +19,10 @@ class HondurasPortalBulkFiles(SimpleSpider):
 
     @handle_error
     def parse_list(self, response):
-        filelist = json.loads(response.text)
-
+        items = json.loads(response.text)
         if self.sample:
-            url = filelist[0]['urls']['json']
-            yield scrapy.Request(url, meta={'kf_filename': url.rsplit('/', 1)[-1]})
+            items = [items[0]]
 
-        else:
-            for item in filelist:
-                url = item['urls']['json']
-                yield scrapy.Request(url, meta={'kf_filename': url.rsplit('/', 1)[-1]})
+        for item in items:
+            url = item['urls']['json']
+            yield self.build_request(url, formatter=components(-1))

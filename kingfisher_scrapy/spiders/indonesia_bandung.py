@@ -1,51 +1,40 @@
-import datetime
-import hashlib
 import json
-
-import scrapy
+from datetime import date
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import components, date_range_by_year, handle_error, join, parameters
 
 
 class IndonesiaBandung(BaseSpider):
     name = 'indonesia_bandung'
 
     def start_requests(self):
-        url = 'https://birms.bandung.go.id/api/packages/year/{}'
-        current_year = datetime.datetime.now().year + 1
-        for year in range(2013, current_year):
-            yield scrapy.Request(
-                url.format(year),
-                meta={'kf_filename': 'start_requests'},
-                callback=self.parse_data
-            )
+        pattern = 'https://birms.bandung.go.id/api/packages/year/{}'
+
+        start = 2013
+        stop = date.today().year
+
+        for year in date_range_by_year(start, stop):
+            yield self.build_request(pattern.format(year), formatter=components(-1), callback=self.parse_list)
 
     @handle_error
-    def parse_data(self, response):
-        json_data = json.loads(response.text)
-        items = json_data['data']
-        for data in items:
-            url = data['uri']
+    def parse_list(self, response):
+        data = json.loads(response.text)
+        for item in data['data']:
+            url = item['uri']
             if url:
-                yield scrapy.Request(
-                    url,
-                    meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'},
-                )
+                yield self.build_request(url, formatter=components(-1))
                 if self.sample:
                     break
         else:
-            next_page_url = json_data.get('next_page_url')
+            next_page_url = data.get('next_page_url')
             if next_page_url:
-                yield scrapy.Request(
-                    next_page_url,
-                    meta={'kf_filename': next_page_url.rsplit('/', 1)[-1] + '.json'},
-                    callback=self.parse_data
-                )
+                yield self.build_request(next_page_url, formatter=join(components(-1), parameters('page')),
+                                         callback=self.parse_list)
 
     @handle_error
     def parse(self, response):
-        json_data = json.loads(response.text)
-        if len(json_data) == 0:
+        data = json.loads(response.text)
+        if len(data) == 0:
             return
         yield self.build_file_from_response(response, data_type='release')

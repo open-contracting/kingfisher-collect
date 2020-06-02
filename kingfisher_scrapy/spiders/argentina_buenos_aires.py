@@ -3,7 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import components, handle_error
 
 
 class ArgentinaBuenosAires(ZipSpider):
@@ -24,15 +24,14 @@ class ArgentinaBuenosAires(ZipSpider):
     download_timeout = 1000
 
     def start_requests(self):
-        yield scrapy.Request(
-            'https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras',
-            meta={'kf_filename': 'list.json'},
-            callback=self.parse_list
-        )
+        # A CKAN API JSON response.
+        url = 'https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras'
+        yield scrapy.Request(url, meta={'kf_filename': 'list.json'}, callback=self.parse_list)
 
     @handle_error
     def parse_list(self, response):
         data = json.loads(response.text)
         for resource in data['result']['resources']:
             if resource['format'].upper() == 'JSON':
-                yield scrapy.Request(resource['url'], meta={'kf_filename': resource['url'].rsplit('/', 1)[-1]})
+                # Presently, only one URL matches.
+                yield self.build_request(resource['url'], formatter=components(-1))

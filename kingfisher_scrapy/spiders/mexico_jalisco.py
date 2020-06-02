@@ -1,10 +1,9 @@
-import hashlib
 import json
 
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import components, handle_error
 
 
 class MexicoJalisco(SimpleSpider):
@@ -20,23 +19,22 @@ class MexicoJalisco(SimpleSpider):
 
     @handle_error
     def parse_list(self, response):
-        datas = json.loads(response.text)
+        items = json.loads(response.text)
         if self.sample:
-            datas = [datas[0]]
-        for data in datas:
+            items = [items[0]]
+
+        for item in items:
             yield scrapy.Request(
-                data['URIContract'],
-                meta={'kf_filename': 'id%s.json' % data['ocid']},
+                item['URIContract'],
+                meta={'kf_filename': f"id{item['ocid']}.json"},
                 callback=self.parse_record_package
             )
 
     @handle_error
     def parse_record_package(self, response):
-        json_data = json.loads(response.text)
-        if 'packages' in json_data:
-            for url in json_data['packages']:
-                yield scrapy.Request(
-                    url,
-                    meta={'kf_filename': 'packages-%s.json' % hashlib.md5(url.encode('utf-8')).hexdigest()}
-                )
         yield self.build_file_from_response(response, data_type='record_package')
+
+        data = json.loads(response.text)
+        if 'packages' in data:
+            for url in data['packages']:
+                yield self.build_request(url, formatter=components(-1))

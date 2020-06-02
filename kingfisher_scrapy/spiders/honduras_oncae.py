@@ -1,9 +1,7 @@
-from urllib.parse import urlparse
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import components, handle_error
 
 
 class HondurasONCAE(ZipSpider):
@@ -22,11 +20,9 @@ class HondurasONCAE(ZipSpider):
 
     @handle_error
     def parse_list(self, response):
-        urls = response.css(".article-content ul")\
-            .xpath(".//a[contains(., '[json]')]/@href")\
-            .getall()
+        urls = response.xpath('//a[contains(., "[json]")]/@href').getall()
         if self.sample:
             urls = [urls[0]]
         for url in urls:
-            filename = urlparse(url).path.split('/')[-1]
-            yield scrapy.Request(url, meta={'kf_filename': filename})
+            # URL looks like http://200.13.162.79/datosabiertos/HC1/HC1_datos_2020_json.zip
+            yield self.build_request(url, formatter=components(-1))

@@ -1,4 +1,3 @@
-import hashlib
 import json
 from datetime import datetime, timedelta
 from math import ceil
@@ -7,6 +6,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
+from kingfisher_scrapy.util import parameters
 
 
 class OpenOpps(BaseSpider):
@@ -40,9 +40,8 @@ class OpenOpps(BaseSpider):
     reauthenticating = False  # flag for request a new token
     start_time = None
 
-    base_page_url = \
-        'https://api.openopps.com/api/ocds/?' \
-        'format={}&ordering={}&page_size={}&releasedate__gte={{}}&releasedate__lte={{}}'
+    base_page_url = 'https://api.openopps.com/api/ocds/?format=json&ordering=releasedate&page_size=1000&' \
+                    'releasedate__gte={}&releasedate__lte={}'
 
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
@@ -82,7 +81,7 @@ class OpenOpps(BaseSpider):
             r = json.loads(response.text)
             token = r.get('token')
             if token:
-                self.logger.info('New access token: {}'.format(token))
+                self.logger.info(f'New access token: {token}')
                 self.access_token = 'JWT ' + token
                 self.start_time = datetime.now()
                 # If the request is initial authentication, start requests
@@ -92,19 +91,15 @@ class OpenOpps(BaseSpider):
                 self.reauthenticating = False
             else:
                 self.logger.error(
-                    'Authentication failed. Status code: {}. {}'.format(response.status, response.text))
+                    f'Authentication failed. Status code: {response.status}. {response.text}')
                 raise AuthenticationError()
         else:
             self.logger.error(
-                'Authentication failed. Status code: {}. {}'.format(response.status, response.text))
+                f'Authentication failed. Status code: {response.status}. {response.text}')
             raise AuthenticationError()
 
     def start_requests_pages(self):
-        page_size = 1000
-        page_format = 'json'
-        ordering = 'releasedate'
         search_h = 24  # start splitting one day search
-        self.base_page_url = self.base_page_url.format(page_format, ordering, page_size)
 
         # Case if we want to download a sample
         if self.sample:
@@ -130,11 +125,10 @@ class OpenOpps(BaseSpider):
                     yield from self.request_range_per_day(start_date, end_date, search_h)
 
     def request_range(self, start_date, end_date, search_h):
-        url = self.base_page_url.format(start_date, end_date)
-        return scrapy.Request(
-            url,
+        return self.build_request(
+            self.base_page_url.format(start_date, end_date),
+            formatter=parameters('releasedate__gte', 'releasedate__lte'),
             meta={
-                'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json',
                 'release_date': start_date,
                 'search_h': search_h,
             },
@@ -171,10 +165,10 @@ class OpenOpps(BaseSpider):
 
                 next_url = results.get('next')
                 if next_url:
-                    yield scrapy.Request(
+                    yield self.build_request(
                         next_url,
+                        formatter=parameters('releasedate__gte', 'releasedate__lte', 'page'),
                         meta={
-                            'kf_filename': hashlib.md5(next_url.encode('utf-8')).hexdigest() + '.json',
                             'release_date': release_date,
                             'search_h': search_h,
                         },
@@ -184,7 +178,7 @@ class OpenOpps(BaseSpider):
                 # Tells if we have to re-authenticate before the token expires
                 time_diff = datetime.now() - self.start_time
                 if not self.reauthenticating and time_diff.total_seconds() > self.request_time_limit * 60:
-                    self.logger.info('Time_diff: {}'.format(time_diff.total_seconds()))
+                    self.logger.info(f'Time_diff: {time_diff.total_seconds()}')
                     self.reauthenticating = True
                     yield scrapy.Request(
                         'https://api.openopps.com/api/api-token-auth/',
@@ -220,13 +214,12 @@ class OpenOpps(BaseSpider):
                 if len(start_hour_list) != len(end_hour_list):
                     end_hour_list.append(last_hour)
 
-                self.logger.info('Changing filters, split in {}: {}.'.format(parts, response.request.url))
+                self.logger.info(f'Changing filters, split in {parts}: {response.request.url}.')
                 for i in range(len(start_hour_list)):
-                    url = self.base_page_url.format(start_hour_list[i], end_hour_list[i])
-                    yield scrapy.Request(
-                        url,
+                    yield self.build_request(
+                        self.base_page_url.format(start_hour_list[i], end_hour_list[i]),
+                        formatter=parameters('releasedate__gte', 'releasedate__lte'),
                         meta={
-                            'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json',
                             'release_date': start_hour_list[i],  # release_date with star hour
                             'last_hour': end_hour_list[i],  # release_date with last hour
                             'search_h': split_h,  # new search range
@@ -237,7 +230,7 @@ class OpenOpps(BaseSpider):
             # Message for pages that exceed the 10,000 search results in the range of one hour
             # These are pages with status 500 and 'page=11' in the URL request
             if response.status == 500 and response.request.url.count("page=11"):
-                self.logger.info('Status: {}. Results exceeded in a range of one hour, we save the '
-                                 'first 10,000 data for: {}'.format(response.status, response.request.url))
+                self.logger.info(f'Status: {response.status}. Results exceeded in a range of one hour, we save the '
+                                 f'first 10,000 data for: {response.request.url}')
             else:
                 yield self.build_file_error_from_response(response)

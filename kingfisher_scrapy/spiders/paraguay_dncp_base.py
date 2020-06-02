@@ -6,7 +6,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import components, handle_error, parameters
 
 
 class ParaguayDNCPBaseSpider(SimpleSpider):
@@ -22,8 +22,8 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
     last_request = None
     request_time_limit = 13  # in minutes
     base_url = 'https://contrataciones.gov.py/datos/api/v3/doc'
-    base_page_url = '{}/search/processes?fecha_desde=2010-01-01'.format(base_url)
-    auth_url = '{}/oauth/token'.format(base_url)
+    base_page_url = f'{base_url}/search/processes?fecha_desde=2010-01-01'
+    auth_url = f'{base_url}/oauth/token'
     request_token = None
     max_attempts = 10
     data_type = None
@@ -54,10 +54,10 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
             from_date = self.from_date.strftime(self.date_format)
             self.base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}'\
                 .format(self.base_url, from_date)
-        yield scrapy.Request(
+        yield self.build_request(
             self.base_page_url,
+            formatter=parameters('fecha_desde'),
             meta={
-                'kf_filename': '{}-1.json'.format(from_date),
                 'from_date': from_date,
             },
             # send duplicate requests when the token expired and in the continuation of last_request saved.
@@ -69,7 +69,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         """ Requests a new access token """
         attempt = 0
         self.start_time = datetime.now()
-        self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
+        self.logger.info(f'Requesting access token, attempt {attempt + 1} of {self.max_attempts}')
 
         return scrapy.Request(
             self.auth_url,
@@ -87,7 +87,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
             r = json.loads(response.text)
             token = r.get('access_token')
             if token:
-                self.logger.info('New access token: {}'.format(token))
+                self.logger.info(f'New access token: {token}')
                 self.access_token = token
                 # continue scraping where it stopped after getting the token
                 yield self.last_request
@@ -98,10 +98,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
                     self.auth_failed = True
                     raise AuthenticationError()
                 else:
-                    self.logger.info('Requesting access token, attempt {} of {}'.format(
-                        attempt + 1,
-                        self.max_attempts)
-                    )
+                    self.logger.info(f'Requesting access token, attempt {attempt + 1} of {self.max_attempts}')
                     return scrapy.Request(
                         self.auth_url,
                         method='POST',
@@ -113,7 +110,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
                         priority=1000
                     )
         else:
-            self.logger.error('Authentication failed. Status code: {}'.format(response.status))
+            self.logger.error(f'Authentication failed. Status code: {response.status}')
             self.auth_failed = True
             raise AuthenticationError()
 
@@ -121,18 +118,14 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
     def parse_pages(self, response):
         content = json.loads(response.text)
         for url in self.get_files_to_download(content):
-            yield scrapy.Request(
-                url,
-                dont_filter=True,
-                meta={'kf_filename': url.split('/')[-1] + '.json'}
-            )
+            yield self.build_request(url, formatter=components(-1), dont_filter=True)
         pagination = content['pagination']
         if pagination['current_page'] < pagination['total_pages'] and not self.sample:
             page = pagination['current_page'] + 1
-            url = '{}&page={}'.format(self.base_page_url, page)
-            yield scrapy.Request(
+            url = f'{self.base_page_url}&page={page}'
+            yield self.build_request(
                 url,
-                meta={'kf_filename': '{}-{}.json'.format(response.request.meta['from_date'], page)},
+                formatter=parameters('fecha_desde', 'page'),
                 dont_filter=True,
                 callback=self.parse_pages
             )
@@ -148,5 +141,5 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         """
         if time_diff.total_seconds() < ParaguayDNCPBaseSpider.request_time_limit * 60:
             return False
-        self.logger.info('Time_diff: {}'.format(time_diff.total_seconds()))
+        self.logger.info(f'Time_diff: {time_diff.total_seconds()}')
         return True
