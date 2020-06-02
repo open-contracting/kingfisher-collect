@@ -20,4 +20,4 @@ class ParaguayDNCPRecords(ParaguayDNCPBaseSpider):
 
     def get_files_to_download(self, content):
         for record in content['records']:
-            yield '{}/ocds/record/{}'.format(self.base_url, record['ocid'])
+            yield f"{self.base_url}/ocds/record/{record['ocid']}"

@@ -1,6 +1,5 @@
-import scrapy
-
 from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import components, date_range_by_year
 
 
 class MoldovaOld(SimpleSpider):
@@ -15,14 +14,12 @@ class MoldovaOld(SimpleSpider):
     data_type = 'release_package'
 
     def start_requests(self):
+        pattern = 'http://opencontracting.date.gov.md/ocds-api/year/{}'
+
+        start = 2012
+        stop = 2018
         if self.sample:
-            yield scrapy.Request(
-                'http://opencontracting.date.gov.md/ocds-api/year/2017',
-                meta={'kf_filename': 'sample.json'}
-            )
-        else:
-            for year in range(2012, 2018):
-                yield scrapy.Request(
-                    'http://opencontracting.date.gov.md/ocds-api/year/%d' % year,
-                    meta={'kf_filename': 'year-%d.json' % year}
-                )
+            start = 2018
+
+        for year in date_range_by_year(start, stop):
+            yield self.build_request(pattern.format(year), formatter=components(-1))

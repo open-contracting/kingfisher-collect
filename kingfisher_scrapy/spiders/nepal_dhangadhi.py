@@ -1,10 +1,9 @@
-import hashlib
 import json
 
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import components, handle_error
 
 
 class NepalDhangadhi(SimpleSpider):
@@ -20,14 +19,9 @@ class NepalDhangadhi(SimpleSpider):
 
     @handle_error
     def parse_list(self, response):
-        url = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
-        json_data = json.loads(response.text)
-        fiscal_years = json_data['data']['fiscal_years']
-        for item in fiscal_years:
-            fy = item['name']
-            yield scrapy.Request(
-                url.format(fy),
-                meta={'kf_filename': hashlib.md5((url + fy).encode('utf-8')).hexdigest() + '.json'},
-            )
+        pattern = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
+        data = json.loads(response.text)
+        for item in data['data']['fiscal_years']:
+            yield self.build_request(pattern.format(item['name']), formatter=components(-1))
             if self.sample:
                 break

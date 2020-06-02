@@ -1,9 +1,5 @@
-import hashlib
-
-import scrapy
-
 from kingfisher_scrapy.spiders.uruguay_base import UruguayBase
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import components, handle_error
 
 
 class UruguayReleases(UruguayBase):
@@ -12,10 +8,9 @@ class UruguayReleases(UruguayBase):
 
     @handle_error
     def parse_list(self, response):
-        root = response.xpath('//item/link/text()').getall()
-
+        urls = response.xpath('//item/link/text()').getall()
         if self.sample:
-            root = [root[0]]
+            urls = [urls[0]]
 
-        for url in root:
-            yield scrapy.Request(url, meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'})
+        for url in urls:
+            yield self.build_request(url, formatter=components(-1))

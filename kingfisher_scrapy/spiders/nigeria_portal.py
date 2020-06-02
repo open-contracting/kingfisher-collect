@@ -1,5 +1,3 @@
-import hashlib
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
@@ -16,7 +14,7 @@ class NigeriaPortal(SimpleSpider):
     def start_requests(self):
         yield scrapy.Request(
             'http://nocopo.bpp.gov.ng/OpenData.aspx',
-            meta={'kf_filename': 'list.html'},
+            meta={'kf_filename': 'form.html'},
             callback=self.parse_list
         )
 
@@ -36,8 +34,4 @@ class NigeriaPortal(SimpleSpider):
                 if self.sample:
                     break
 
-        yield scrapy.FormRequest.from_response(
-            response,
-            formdata=formdata,
-            meta={'kf_filename': hashlib.md5(response.url.encode('utf-8')).hexdigest() + '.json'}
-        )
+        yield scrapy.FormRequest.from_response(response, formdata=formdata, meta={'kf_filename': 'all.json'})

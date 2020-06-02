@@ -1,16 +1,64 @@
 import itertools
 import json
+from datetime import date
 from decimal import Decimal
 from functools import wraps
+from urllib.parse import parse_qs, urlencode, urlsplit
 
 from ijson import ObjectBuilder, utils
+
+
+def components(start, stop=None):
+    """
+    Returns a function that returns the selected non-empty path components, excluding the ``.json`` extension.
+
+    >>> components(-1)('http://example.com/api/planning.json')
+    'planning'
+
+    >>> components(-2, -1)('http://example.com/api/planning/package.json')
+    'planning'
+    """
+    def wrapper(url):
+        value = '-'.join(list(filter(None, urlsplit(url).path.split('/')))[start:stop])
+        if value.endswith('.json'):
+            return value[:-5]
+        return value
+    return wrapper
+
+
+def parameters(*keys):
+    """
+    Returns a function that returns the selected query string parameters.
+
+    >>> parameters('page')('http://example.com/api/packages.json?page=1')
+    'page-1'
+
+    >>> parameters('year', 'page')('http://example.com/api/packages.json?year=2000&page=1')
+    'year-2000-page-1'
+    """
+    def wrapper(url):
+        query = parse_qs(urlsplit(url).query)
+        return '-'.join(s for key in keys for value in query[key] for s in [key, value])
+    return wrapper
+
+
+def join(*functions):
+    """
+    Returns a function that joins the given functions' outputs.
+
+    >>> join(components(-1), parameters('page'))('http://example.com/api/planning.json?page=1')
+    'planning-page-1'
+    """
+    def wrapper(url):
+        return '-'.join(function(url) for function in functions)
+    return wrapper
 
 
 def handle_error(decorated):
     """
     A decorator for spider parse methods.
 
-    Yields a :class:`~kingfisher_scrapy.items.FileError` for non-2xx HTTP status codes.
+    Yields a :class:`~kingfisher_scrapy.items.FileError` for successful HTTP status codes.
     """
     @wraps(decorated)
     def wrapper(self, response):
@@ -19,6 +67,39 @@ def handle_error(decorated):
         else:
             yield self.build_file_error_from_response(response)
     return wrapper
+
+
+# https://stackoverflow.com/questions/34898525/generate-list-of-months-between-interval-in-python
+def date_range_by_month(start, stop):
+    """
+    Yields the first day of the month from the ``start`` to the ``stop`` dates, in reverse chronological order.
+    """
+    def number_of_months(d):
+        return 12 * d.year + d.month
+
+    for months in reversed(range(number_of_months(start) - 1, number_of_months(stop))):
+        year, month = divmod(months, 12)
+        yield date(year, month + 1, 1)
+
+
+def date_range_by_year(start, stop):
+    """
+    Returns the year from the ``start`` to the ``stop`` years, in reverse chronological order.
+    """
+    return reversed(range(start, stop + 1))
+
+
+def replace_parameter(url, key, value):
+    """
+    Returns a URL after updating the query string parameter.
+    """
+    parsed = urlsplit(url)
+    query = parse_qs(parsed.query)
+    if value is None:
+        query.pop(key, None)
+    else:
+        query[key] = [value]
+    return parsed._replace(query=urlencode(query, doseq=True)).geturl()
 
 
 @utils.coroutine

@@ -8,12 +8,13 @@ from tests import response_fixture, spider_with_crawler
 
 def test_next_link():
     spider = spider_with_crawler(spider_class=LinksSpider)
+    spider.next_page_formatter = lambda url: 'next.json'
 
     request = spider.next_link(response_fixture())
 
     assert type(request) is Request
     assert request.url == 'http://example.com/next'
-    assert request.meta == {'kf_filename': '166715ca8e5f3c1531156d8772b922b7.json'}
+    assert request.meta == {'kf_filename': 'next.json'}
 
 
 def test_parse_404():
@@ -36,6 +37,7 @@ def test_parse_404():
 def test_parse_200():
     spider = spider_with_crawler(spider_class=LinksSpider)
     spider.data_type = 'release_package'
+    spider.next_page_formatter = lambda url: 'next.json'
 
     generator = spider.parse(response_fixture())
     item = next(generator)
@@ -53,7 +55,7 @@ def test_parse_200():
 
     assert type(request) is Request
     assert request.url == 'http://example.com/next'
-    assert request.meta == {'kf_filename': '166715ca8e5f3c1531156d8772b922b7.json'}
+    assert request.meta == {'kf_filename': 'next.json'}
 
     with pytest.raises(StopIteration):
         next(generator)
