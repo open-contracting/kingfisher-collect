@@ -90,23 +90,3 @@ Use data
 --------
 
 You should now have a crawl directory within the ``data`` directory containing OCDS files. For help using data, read about `using open contracting data <https://www.open-contracting.org/data/data-use/>`__.
-
-Integrate with `Kingfisher Process <https://kingfisher-process.readthedocs.io/>`_
---------
-
-Besides storing the scraped data on disk, you can also send them to an instance of `Kingfisher Process <https://kingfisher-process.readthedocs.io/>`_ for processing.
-
-To do that, you need to deploy an instance of Kingfisher Process, including its `web app <https://kingfisher-process.readthedocs.io/en/latest/web.html#web-app>`__. Then, set the following either as environment variables or as Scrapy settings in ``kingfisher_scrapy.settings.py``:
-
-``KINGFISHER_API_URI``
-  The URL from which Kingfisher Process' `web app <https://kingfisher-process.readthedocs.io/en/latest/web.html#web-app>`_ is served. Do not include a trailing slash.
-``KINGFISHER_API_KEY``
-  One of the API keys in Kingfisher Process' `API_KEYS <https://kingfisher-process.readthedocs.io/en/latest/config.html#web-api>`__ setting.
-
-For example, set the environment variables, then run ``scrapy crawl`` commands:
-
-.. code-block:: bash
-
-   export KINGFISHER_API_URI='http://127.0.0.1:5000'
-   export KINGFISHER_API_KEY=1234
-   scrapy crawl my_spider

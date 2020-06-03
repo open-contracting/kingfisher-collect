@@ -7,6 +7,7 @@ You can:
 
 -  :doc:`Download data to your computer, by installing Kingfisher Collect<local>`
 -  :doc:`Download data to a remote server, by using Scrapyd<scrapyd>`
+-  :doc:`Integrate with Kingfisher Process<kingfisher_process_integration>`
 
 You can also try using Kingfisher Collect with `Scrapy Cloud <https://scrapinghub.com/scrapy-cloud>`_.
 
