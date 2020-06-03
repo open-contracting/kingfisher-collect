@@ -36,10 +36,10 @@ class ChileCompraBaseSpider(BaseSpider):
 
         until_year, until_month = self.get_year_month_until()
         for year in reversed(range(self.start_year, until_year)):
-            for month in range(1, 13):
+            for month in reversed(range(1, 13)):
                 # just scrape until the current month when the until year = current year
                 if (until_year - 1) == year and month > until_month:
-                    break
+                    continue
                 yield scrapy.Request(
                     self.base_list_url.format(year, month, 0, self.limit),
                     meta={'kf_filename': 'list-{}-{:02d}.json'.format(year, month), 'year': year, 'month': month},
@@ -71,7 +71,8 @@ class ChileCompraBaseSpider(BaseSpider):
                                 data_item[stage],
                                 meta={'kf_filename': 'data-%s-%s.json' % (data_item['ocid'], name)}
                             )
-            if 'pagination' in data and (data['pagination']['offset'] + self.limit) < data['pagination']['total']:
+            if 'pagination' in data and (data['pagination']['offset'] + self.limit) < data['pagination']['total']\
+                    and not self.sample:
                 year = response.request.meta['year']
                 month = response.request.meta['month']
                 offset = data['pagination']['offset']

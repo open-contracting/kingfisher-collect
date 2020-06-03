@@ -10,7 +10,7 @@ from jsonpointer import resolve_pointer
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.items import File, FileError, FileItem, LastReleaseDate
+from kingfisher_scrapy.items import File, FileError, FileItem, LastReleaseDateItem
 from kingfisher_scrapy.util import handle_error
 
 

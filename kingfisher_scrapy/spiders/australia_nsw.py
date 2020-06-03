@@ -44,22 +44,31 @@ class AustraliaNSW(SimpleSpider):
 
         # Data?
         for release in json_data['releases']:
+            # we use the year as priority to scrape the recent years first
+            priority = 1
+            if 'date' in release:
+                year = release['date'].split('-')[0]
+                month = release['date'].split('-')[1]
+                priority = int(year + month)
             if release_type == 'planning':
                 uuid = release['tender']['plannedProcurementUUID']
                 yield scrapy.Request(
                     'https://tenders.nsw.gov.au/?event=public.api.planning.view&PlannedProcurementUUID=%s' % uuid,
-                    meta={'kf_filename': 'plannning-%s.json' % uuid}
+                    meta={'kf_filename': 'plannning-%s.json' % uuid},
+                    priority=priority
                 )
             if release_type == 'tender':
                 uuid = release['tender']['RFTUUID']
                 yield scrapy.Request(
                     'https://tenders.nsw.gov.au/?event=public.api.tender.view&RFTUUID=%s' % uuid,
-                    meta={'kf_filename': 'tender-%s.json' % uuid}
+                    meta={'kf_filename': 'tender-%s.json' % uuid},
+                    priority=priority
                 )
             if release_type == 'contract':
                 for award in release['awards']:
                     uuid = award['CNUUID']
                     yield scrapy.Request(
                         'https://tenders.nsw.gov.au/?event=public.api.contract.view&CNUUID=%s' % uuid,
-                        meta={'kf_filename': 'contract-%s.json' % uuid}
+                        meta={'kf_filename': 'contract-%s.json' % uuid},
+                        priority=priority
                     )

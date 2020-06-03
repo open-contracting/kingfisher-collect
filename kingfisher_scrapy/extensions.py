@@ -6,7 +6,7 @@ import os
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.items import File, FileError, FileItem, LastReleaseDate
+from kingfisher_scrapy.items import File, FileError, FileItem, LastReleaseDateItem
 from kingfisher_scrapy.kingfisher_process import Client
 
 
@@ -14,6 +14,7 @@ from kingfisher_scrapy.kingfisher_process import Client
 class KingfisherLastDate:
     def __init__(self, filename):
         self.filename = filename
+        self.written = {}
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -26,8 +27,9 @@ class KingfisherLastDate:
         return extension
 
     def item_scraped(self, item, spider):
-        if not isinstance(item, LastReleaseDate):
+        if not isinstance(item, LastReleaseDateItem) or spider.name in self.written.keys():
             return
+        self.written[spider.name] = True
         with open(self.filename, 'a+') as output:
             output.write(spider.name + ': ' + item['date'] + '\n')
 
@@ -135,7 +137,7 @@ class KingfisherProcessAPI:
         Sends an API request to store the file, file item or file error in Kingfisher Process.
         """
 
-        if not item.get('post_to_api', True) or isinstance(item, LastReleaseDate):
+        if not item.get('post_to_api', True) or isinstance(item, LastReleaseDateItem):
             return
         data = {
             'collection_source': spider.name,

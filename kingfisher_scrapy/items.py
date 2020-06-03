@@ -64,5 +64,5 @@ class FileError(KingfisherItem):
     ]
 
 
-class LastReleaseDate(scrapy.Item):
+class LastReleaseDateItem(scrapy.Item):
     date = scrapy.Field()

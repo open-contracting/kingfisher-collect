@@ -8,6 +8,8 @@ from kingfisher_scrapy.util import handle_error
 
 
 class DigiwhistBase(BaseSpider):
+    skip_last_release_date = 'Unordered json lines files'
+
     def start_requests(self):
         # See scrapy.spiders.Spider.start_requests
         for url in self.start_urls:

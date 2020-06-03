@@ -1,6 +1,7 @@
 import hashlib
 import logging
 import time
+from datetime import datetime
 from json import JSONDecodeError
 
 import scrapy
@@ -11,17 +12,24 @@ from kingfisher_scrapy.base_spider import LinksSpider
 class Colombia(LinksSpider):
     name = 'colombia'
     sleep = 120 * 60
+    start_year = 2011
+
+    def get_year_until(self):
+        until_year = datetime.now().year + 1
+        if hasattr(self, 'year'):
+            self.start_year = int(self.year)
+            until_year = self.start_year + 1
+        return until_year
 
     def start_requests(self):
-        base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases'
-        if hasattr(self, 'year'):
-            base_url += '/page/{}'.format(int(self.year))
-        base_url += '?page=%d'
-
+        base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases/page/{}'
+        base_url += '?page={}'
         start_page = 1
         if hasattr(self, 'page'):
             start_page = int(self.page)
-        yield scrapy.Request(base_url % start_page, meta={'kf_filename': 'page{}.json'.format(start_page)})
+        until_year = self.get_year_until()
+        for year in reversed(range(self.start_year, until_year)):
+            yield scrapy.Request(base_url.format(year, start_page), meta={'kf_filename': 'page{}.json'.format(start_page)})
 
     def parse(self, response):
         # In Colombia, every day at certain hour they run a process in their system that drops the database and make
