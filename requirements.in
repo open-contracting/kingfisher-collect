@@ -1,6 +1,7 @@
 # Any change to this file MUST be replicated in:
 # https://github.com/open-contracting/deploy/blob/master/salt/ocdskingfishercollect/scrapyd-requirements.txt
 
+jsonpointer
 rarfile
 requests
 Scrapy

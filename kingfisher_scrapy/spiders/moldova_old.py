@@ -1,27 +1,18 @@
-import scrapy
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import components, date_range_by_year
 
-from kingfisher_scrapy.base_spider import BaseSpider
 
-
-class MoldovaOld(BaseSpider):
+class MoldovaOld(SimpleSpider):
     name = 'moldova_old'
+    data_type = 'release_package'
 
     def start_requests(self):
-        if self.sample:
-            yield scrapy.Request(
-                url='http://opencontracting.date.gov.md/ocds-api/year/2017',
-                meta={'kf_filename': 'sample.json'}
-            )
-        else:
-            for year in range(2012, 2018):
-                yield scrapy.Request(
-                    url='http://opencontracting.date.gov.md/ocds-api/year/%d' % year,
-                    meta={'kf_filename': 'year-%d.json' % year}
-                )
+        pattern = 'http://opencontracting.date.gov.md/ocds-api/year/{}'
 
-    def parse(self, response):
-        if response.status == 200:
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                data_type='release_package')
-        else:
-            yield self.build_file_error_from_response(response)
+        start = 2012
+        stop = 2018
+        if self.sample:
+            start = 2018
+
+        for year in date_range_by_year(start, stop):
+            yield self.build_request(pattern.format(year), formatter=components(-1))

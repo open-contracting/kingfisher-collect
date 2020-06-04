@@ -1,73 +1,53 @@
-import hashlib
 import json
 
-import scrapy
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import handle_http_error, parameters
 
-from kingfisher_scrapy.base_spider import BaseSpider
 
-
-class AustraliaNSW(BaseSpider):
+class AustraliaNSW(SimpleSpider):
     name = 'australia_nsw'
-    start_urls = ['https://tenders.nsw.gov.au']
+    data_type = 'release_package'
 
     def start_requests(self):
-        release_types = ['planning', 'tender', 'contract']
-        page_limit = 10 if self.sample else 1000
-        url = 'https://tenders.nsw.gov.au/?event=public.api.{}.search&ResultsPerPage={}'
-        for release_type in release_types:
-            yield scrapy.Request(
-                url.format(release_type, page_limit),
+        pattern = 'https://tenders.nsw.gov.au/?event=public.api.{}.search&ResultsPerPage=1000'
+        for release_type in ('planning', 'tender', 'contract'):
+            yield self.build_request(
+                pattern.format(release_type),
+                formatter=parameters('event'),
                 meta={'release_type': release_type},
                 callback=self.parse_list
             )
 
+    @handle_http_error
     def parse_list(self, response):
-        if response.status == 200:
+        data = json.loads(response.text)
+        release_type = response.request.meta['release_type']
 
-            json_data = json.loads(response.text)
+        if 'links' in data and isinstance(data['links'], dict) and 'next' in data['links'] and not self.sample:
+            yield self.build_request(
+                data['links']['next'],
+                formatter=parameters('event', 'startRow'),
+                meta={'release_type': release_type},
+                callback=self.parse_list
+            )
 
-            # More Pages?
-            if 'links' in json_data and isinstance(json_data['links'], dict) and 'next' in json_data['links'] \
-                    and not self.sample:
-                yield scrapy.Request(
-                    json_data['links']['next'],
-                    meta={'release_type': response.request.meta['release_type']},
-                    callback=self.parse_list
+        for release in data['releases']:
+            if release_type == 'planning':
+                uuid = release['tender']['plannedProcurementUUID']
+                yield self.build_request(
+                    'https://tenders.nsw.gov.au/?event=public.api.planning.view&PlannedProcurementUUID=' + uuid,
+                    formatter=parameters('event', 'PlannedProcurementUUID')
                 )
-
-            # Data?
-            for release in json_data['releases']:
-                if response.request.meta['release_type'] == 'planning':
-                    uuid = release['tender']['plannedProcurementUUID']
-                    yield scrapy.Request(
-                        'https://tenders.nsw.gov.au/?event=public.api.planning.view&PlannedProcurementUUID=%s' % uuid,
-                        meta={'kf_filename': 'plannning-%s.json' % uuid},
-                        callback=self.parse
+            elif release_type == 'tender':
+                uuid = release['tender']['RFTUUID']
+                yield self.build_request(
+                    'https://tenders.nsw.gov.au/?event=public.api.tender.view&RFTUUID=' + uuid,
+                    formatter=parameters('event', 'RFTUUID')
+                )
+            elif release_type == 'contract':
+                for award in release['awards']:
+                    uuid = award['CNUUID']
+                    yield self.build_request(
+                        'https://tenders.nsw.gov.au/?event=public.api.contract.view&CNUUID=' + uuid,
+                        formatter=parameters('event', 'CNUUID')
                     )
-                if response.request.meta['release_type'] == 'tender':
-                    uuid = release['tender']['RFTUUID']
-                    yield scrapy.Request(
-                        'https://tenders.nsw.gov.au/?event=public.api.tender.view&RFTUUID=%s' % uuid,
-                        meta={'kf_filename': 'tender-%s.json' % uuid},
-                        callback=self.parse
-                    )
-                if response.request.meta['release_type'] == 'contract':
-                    for award in release['awards']:
-                        uuid = award['CNUUID']
-                        yield scrapy.Request(
-                            'https://tenders.nsw.gov.au/?event=public.api.contract.view&CNUUID=%s' % uuid,
-                            meta={'kf_filename': 'contract-%s.json' % uuid},
-                            callback=self.parse
-                        )
-
-        else:
-            yield self.build_file_error_from_response(
-                response, filename=hashlib.md5(response.request.url.encode('utf-8')).hexdigest() + '.json')
-
-    def parse(self, response):
-        if response.status == 200:
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                data_type='release_package')
-
-        else:
-            yield self.build_file_error_from_response(response)

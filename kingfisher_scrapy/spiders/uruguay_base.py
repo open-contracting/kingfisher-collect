@@ -1,40 +1,19 @@
-import hashlib
-from datetime import date, timedelta
+from datetime import date
 
-import scrapy
-
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import components, date_range_by_month
 
 
-class UruguayBase(BaseSpider):
-    base_url = 'http://comprasestatales.gub.uy/ocds/rss/{year:d}/{month:02d}'
+class UruguayBase(SimpleSpider):
     download_delay = 0.9
 
     def start_requests(self):
-        current_date = date(2017, 11, 1)
+        url = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
+
+        start = date(2017, 11, 1)
+        stop = date.today().replace(day=1)
         if self.sample:
-            end_date = date(2017, 12, 1)
-        else:
-            end_date = date.today().replace(day=1)
+            start = stop
 
-        while current_date < end_date:
-            current_date += timedelta(days=32)
-            current_date.replace(day=1)
-
-            url = self.base_url.format(year=current_date.year, month=current_date.month)
-            yield scrapy.Request(
-                url,
-                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'},
-                callback=self.parse_list
-            )
-
-    def parse(self, response):
-        if response.status == 200:
-            yield self.build_file_from_response(
-                response,
-                response.request.meta['kf_filename'],
-                data_type=response.request.meta['data_type']
-            )
-
-        else:
-            yield self.build_file_error_from_response(response)
+        for d in date_range_by_month(start, stop):
+            yield self.build_request(url.format(d), formatter=components(-2), callback=self.parse_list)

@@ -16,6 +16,7 @@ hyperlink==19.0.0         # via twisted
 idna==2.8                 # via hyperlink, requests
 ijson==3.0.3
 incremental==17.5.0       # via twisted
+jsonpointer==2.0
 lxml==4.4.2               # via parsel, scrapy
 parsel==1.5.2             # via scrapy
 protego==0.1.16           # via scrapy

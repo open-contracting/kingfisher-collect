@@ -3,6 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class ArgentinaBuenosAires(ZipSpider):
@@ -16,24 +17,21 @@ class ArgentinaBuenosAires(ZipSpider):
         Downloads the zip file and sends 10 releases to kingfisher process.
     """
     name = 'argentina_buenos_aires'
-    start_urls = ['https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras']
+    data_type = 'release_package'
+    zip_file_format = 'release_package'
+
     # the data list service takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000
 
     def start_requests(self):
-        yield scrapy.Request(
-            url='https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras',
-            callback=self.parse_list
-        )
+        # A CKAN API JSON response.
+        url = 'https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras'
+        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
+    @handle_http_error
     def parse_list(self, response):
-        if response.status == 200:
-            data = json.loads(response.text)
-            for resource in data['result']['resources']:
-                if resource['format'].upper() == 'JSON':
-                    yield scrapy.Request(url=resource['url'])
-        else:
-            yield self.build_file_error_from_response(response, filename='list.json')
-
-    def parse(self, response):
-        yield from self.parse_zipfile(response, 'release_package', file_format='release_package')
+        data = json.loads(response.text)
+        for resource in data['result']['resources']:
+            if resource['format'].upper() == 'JSON':
+                # Presently, only one URL matches.
+                yield self.build_request(resource['url'], formatter=components(-1))

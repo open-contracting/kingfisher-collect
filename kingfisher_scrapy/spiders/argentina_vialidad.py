@@ -1,18 +1,12 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 
 
-class ArgentinaVialidad(BaseSpider):
+class ArgentinaVialidad(SimpleSpider):
     name = 'argentina_vialidad'
+    data_type = 'release_package_list'
 
     def start_requests(self):
-        yield scrapy.Request(
-            'https://datosabiertos.vialidad.gob.ar/api/ocds/package/all'
-        )
-
-    def parse(self, response):
-        if response.status == 200:
-            yield self.build_file_from_response(response, 'all.json', data_type='release_package_list')
-        else:
-            yield self.build_file_error_from_response(response, filename='all.json')
+        url = 'https://datosabiertos.vialidad.gob.ar/api/ocds/package/all'
+        yield scrapy.Request(url, meta={'file_name': 'all.json'})

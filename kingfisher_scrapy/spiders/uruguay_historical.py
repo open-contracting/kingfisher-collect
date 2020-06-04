@@ -1,10 +1,11 @@
-import scrapy
-
 from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.util import components, date_range_by_year
 
 
 class UruguayHistorical(ZipSpider):
     name = 'uruguay_historical'
+    data_type = 'release_package'
+
     # the files takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000
     custom_settings = {
@@ -15,15 +16,12 @@ class UruguayHistorical(ZipSpider):
     }
 
     def start_requests(self):
-        base_url = 'https://www.gub.uy/agencia-compras-contrataciones-estado/sites/agencia-compras-contrataciones' \
-                   '-estado/files/2019-04/OCDS-{}.zip'
-        end_year = 2018
+        start = 2002
+        stop = 2017
         if self.sample:
-            end_year = 2003
-        for year in range(2002, end_year):
-            yield scrapy.Request(
-                url=base_url.format(year)
-            )
+            start = stop
 
-    def parse(self, response):
-        yield from self.parse_zipfile(response, data_type='release_package')
+        pattern = 'https://www.gub.uy/agencia-compras-contrataciones-estado/sites' \
+                  '/agencia-compras-contrataciones-estado/files/2019-04/OCDS-{}.zip'
+        for year in date_range_by_year(start, stop):
+            yield self.build_request(pattern.format(year), formatter=components(-1))

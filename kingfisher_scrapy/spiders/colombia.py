@@ -1,4 +1,3 @@
-import hashlib
 import logging
 import time
 from json import JSONDecodeError
@@ -6,25 +5,29 @@ from json import JSONDecodeError
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
+from kingfisher_scrapy.util import parameters
 
 
 class Colombia(LinksSpider):
     name = 'colombia'
-    sleep = 120 * 60
+    next_page_formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
         base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases'
         if hasattr(self, 'year'):
-            base_url += '/page/{}'.format(int(self.year))
-        base_url += '?page=%d'
+            base_url += f'/page/{int(self.year)}'
+        base_url += '?page={}'
 
-        start_page = 1
+        page = 1
         if hasattr(self, 'page'):
-            start_page = int(self.page)
-        yield scrapy.Request(
-            url=base_url % start_page,
-            meta={'kf_filename': 'page{}.json'.format(start_page)}
-        )
+            page = int(self.page)
+        yield self.build_request(base_url.format(page), formatter=parameters('page'))
+
+    def retry(self, response, reason):
+        url = response.request.url
+        logging.info(reason.format(url=url, status=response.status))
+        time.sleep(120 * 60)
+        yield scrapy.Request(url, dont_filter=True, meta=response.request.meta)
 
     def parse(self, response):
         # In Colombia, every day at certain hour they run a process in their system that drops the database and make
@@ -33,29 +36,13 @@ class Colombia(LinksSpider):
         # so eventually the spider will always face the service problems. For that, when the problem occurs, (503
         # status or invalid json) we wait 120 minutes and then continue
         try:
-            if response.status == 503 or response.status == 404:
-                url = response.request.url
-                logging.info('Sleeping due error {} in url {}'.format(response.status, url))
-                time.sleep(self.sleep)
-                yield scrapy.Request(url,
-                                     dont_filter=True,
-                                     meta={'kf_filename': hashlib.md5(
-                                         url.encode('utf-8')).hexdigest() + '.json'})
-
-            elif response.status == 200:
-
-                yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                    data_type='release_package')
-
+            if self.is_http_success(response):
+                yield self.build_file_from_response(response, data_type='release_package')
                 if not self.sample:
                     yield self.next_link(response)
+            elif response.status == 503 or response.status == 404:
+                self.retry(response, 'Sleeping due to HTTP error {status} from {url}')
             else:
-
                 yield self.build_file_error_from_response(response)
-
         except JSONDecodeError:
-            url = response.request.url
-            logging.info('Sleeping due json decode error in url {}'.format(url))
-            time.sleep(self.sleep)
-            yield scrapy.Request(url, dont_filter=True,
-                                 meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'})
+            self.retry(response, 'Sleeping due to JSONDecodeError from {url}')

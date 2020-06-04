@@ -1,45 +1,32 @@
 import json
+from math import ceil
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import handle_http_error, parameters, replace_parameter
 
 
-class MexicoAdministracionPublicaFederal(BaseSpider):
+class MexicoAdministracionPublicaFederal(SimpleSpider):
     """
     Bulk downloads: https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
     """
     name = 'mexico_administracion_publica_federal'
+    data_type = 'record_package_list_in_results'
 
     def start_requests(self):
-        yield scrapy.Request(
-            url='https://api.datos.gob.mx/v1/contratacionesabiertas',
-            meta={'kf_filename': 'page1.json'}
-        )
+        url = 'https://api.datos.gob.mx/v1/contratacionesabiertas'
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
-    def parse(self, response):
-        if response.status == 200:
+    @handle_http_error
+    def parse_list(self, response):
+        yield from self.parse(response)
 
+        if not self.sample:
             data = json.loads(response.text)
-
-            # Actual data
-            yield self.build_file_from_response(
-                response,
-                response.request.meta['kf_filename'],
-                data_type="record_package_list_in_results"
-            )
-
-            # Load more pages?
-            if data['pagination']['page'] == 1 and not self.sample:
-                total = data['pagination']['total']
-                page = 1
-                limit = data['pagination']['pageSize']
-                while ((page - 1) * limit) < total:
-                    yield scrapy.Request(
-                        url='https://api.datos.gob.mx/v1/contratacionesabiertas?page=%d' % page,
-                        meta={'kf_filename': 'page' + str(page) + '.json'}
-                    )
-                    page += 1
-
-        else:
-            yield self.build_file_error_from_response(response)
+            page = data['pagination']['page']
+            total = data['pagination']['total']
+            limit = data['pagination']['pageSize']
+            for page in range(page + 1, ceil(total / limit)):
+                url = replace_parameter(response.request.url, 'page', page)
+                yield self.build_request(url, formatter=parameters('page'))

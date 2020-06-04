@@ -1,39 +1,30 @@
-import hashlib
 import json
-from urllib.parse import urlparse
+from urllib.parse import urlsplit
 
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class Malta(ZipSpider):
     name = 'malta'
+    data_type = 'record_package'
 
     def start_requests(self):
         yield scrapy.Request(
             'http://demowww.etenders.gov.mt/ocds/services/recordpackage/getrecordpackagelist',
-            meta={'kf_filename': 'start_requests'},
+            meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
 
+    @handle_http_error
     def parse_list(self, response):
-        if response.status == 200:
-            url = 'http://demowww.etenders.gov.mt{}'
-            json_data = json.loads(response.text)
-            packages = json_data['packagesPerMonth']
-            for package in packages:
-                parsed = urlparse(package)
-                path = parsed.path
-                if path:
-                    yield scrapy.Request(
-                        url.format(path),
-                        meta={'kf_filename': hashlib.md5(path.encode('utf-8')).hexdigest() + '.json'}
-                    )
-                    if self.sample:
-                        break
-        else:
-            yield self.build_file_error_from_response(response)
+        urls = json.loads(response.text)['packagesPerMonth']
+        if self.sample:
+            urls = [urls[0]]
 
-    def parse(self, response):
-        yield from self.parse_zipfile(response, data_type='record_package')
+        netloc = urlsplit(response.request.url).netloc
+        for url in urls:
+            # URL looks like http://malta-demo-server.eurodyn.com/ocds/services/recordpackage/getrecordpackage/2020/1
+            yield self.build_request(urlsplit(url)._replace(netloc=netloc).geturl(), formatter=components(-2))

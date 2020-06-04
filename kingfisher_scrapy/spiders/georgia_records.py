@@ -1,17 +1,14 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
+from kingfisher_scrapy.util import parameters
 
 
 class GeorgiaRecords(LinksSpider):
     name = 'georgia_records'
-    start_urls = ['https://odapi.spa.ge/api/records.json']
+    data_type = 'record_package'
+    next_page_formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
-        yield scrapy.Request(
-            url='https://odapi.spa.ge/api/records.json',
-            meta={'kf_filename': 'page1.json'}
-        )
-
-    def parse(self, response):
-        yield from self.parse_next_link(response, 'record_package')
+        url = 'https://odapi.spa.ge/api/records.json'
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'})

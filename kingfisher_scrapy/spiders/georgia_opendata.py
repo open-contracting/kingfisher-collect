@@ -5,18 +5,11 @@ from kingfisher_scrapy.base_spider import ZipSpider
 
 class GeorgiaOpenData(ZipSpider):
     name = 'georgia_opendata'
-    custom_settings = {
-        # This has to download a 400MB file so .....
-        'DOWNLOAD_TIMEOUT': 60*20,
-    }
+    data_type = 'release_package'
+    zip_file_format = 'release_package'
+
+    # The file is about 450MB.
+    download_timeout = 1200  # 20min
 
     def start_requests(self):
-        yield scrapy.Request(
-            url='http://opendata.spa.ge/json/allTenders.zip'
-        )
-
-    def parse(self, response):
-        if response.status == 200:
-            yield from self.parse_zipfile(response, 'release_package', file_format='release_package')
-        else:
-            yield self.build_file_error_from_response(response, filename='zip.json')
+        yield scrapy.Request('http://opendata.spa.ge/json/allTenders.zip', meta={'file_name': 'all.json'})

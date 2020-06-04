@@ -3,34 +3,26 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class Zambia(ZipSpider):
     name = 'zambia'
+    data_type = 'record_package'
 
     def start_requests(self):
         yield scrapy.Request(
             'https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackagelist',
+            meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
 
+    @handle_http_error
     def parse_list(self, response):
-        if response.status == 200:
+        urls = json.loads(response.text)['packagesPerMonth']
+        if self.sample:
+            urls = [urls[0]]
 
-            json_data = json.loads(response.text)
-            files_urls = json_data['packagesPerMonth']
-
-            if self.sample:
-                files_urls = [files_urls[0]]
-
-            for file_url in files_urls:
-                yield scrapy.Request(
-                    file_url,
-                    meta={'kf_filename': '%s.json' % file_url[-16:].replace('/', '-')},
-                )
-
-        else:
-            yield self.build_file_error_from_response(response, filename='list.json')
-
-    def parse(self, response):
-        yield from self.parse_zipfile(response, data_type='record_package')
+        for url in urls:
+            # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
+            yield self.build_request(url, formatter=components(-2))

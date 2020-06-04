@@ -1,43 +1,27 @@
-import hashlib
 import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import components, handle_http_error
 
 
-class NepalDhangadhi(BaseSpider):
-    name = "nepal_dhangadhi"
+class NepalDhangadhi(SimpleSpider):
+    name = 'nepal_dhangadhi'
+    data_type = 'release_package'
 
     def start_requests(self):
         yield scrapy.Request(
             'https://admin.ims.susasan.org/api/static-data/dhangadhi',
-            callback=self.parse_item,
+            meta={'file_name': 'list.json'},
+            callback=self.parse_list,
         )
 
-    def parse_item(self, response):
-        if response.status == 200:
-            url = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
-            json_data = json.loads(response.text)
-            fiscal_years = json_data['data']['fiscal_years']
-            for item in fiscal_years:
-                fy = item['name']
-                yield scrapy.Request(
-                    url.format(fy),
-                    meta={'kf_filename': hashlib.md5((url + fy).encode('utf-8')).hexdigest() + '.json'},
-                )
-                if self.sample:
-                    break
-        else:
-            yield self.build_file_error_from_response(response)
-
-    def parse(self, response):
-        if response.status == 200:
-            yield self.build_file_from_response(
-                response,
-                response.request.meta['kf_filename'],
-                data_type='release_package'
-            )
-
-        else:
-            yield self.build_file_error_from_response(response)
+    @handle_http_error
+    def parse_list(self, response):
+        pattern = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
+        data = json.loads(response.text)
+        for item in data['data']['fiscal_years']:
+            yield self.build_request(pattern.format(item['name']), formatter=components(-1))
+            if self.sample:
+                break

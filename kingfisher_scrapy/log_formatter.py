@@ -1,7 +1,7 @@
-from scrapy import logformatter
+from scrapy.logformatter import LogFormatter
 
 
-class KingfisherLogFormatter(logformatter.LogFormatter):
+class KingfisherLogFormatter(LogFormatter):
     # https://docs.scrapy.org/en/latest/_modules/scrapy/logformatter.html#LogFormatter.scraped
     def scraped(self, item, response, spider):
         """
