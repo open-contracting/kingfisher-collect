@@ -16,9 +16,9 @@ class Australia(LinksSpider):
         Download only data released on 2018.
     """
     name = 'australia'
+    data_type = 'release_package'
 
     def start_requests(self):
-
         if self.sample:
             yield scrapy.Request(
                 url='https://api.tenders.gov.au/ocds/findByDates/contractPublished/2018-01-01T00:00:00Z/2018-12-31T23'
@@ -33,6 +33,3 @@ class Australia(LinksSpider):
                         '{}-01-01T00:00:00Z/{}-12-31T23:59:59Z'.format(year, year),
                     meta={'kf_filename': 'year-{}.json'.format(year)}
                 )
-
-    def parse(self, response):
-        yield from self.parse_next_link(response, 'release_package')

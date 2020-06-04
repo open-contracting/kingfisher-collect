@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.util import handle_error
 
 
 class Malta(ZipSpider):
@@ -17,6 +18,8 @@ class Malta(ZipSpider):
     """
     name = 'malta'
 
+    parse_zipfile_kwargs = {'data_type': 'record_package'}
+
     def start_requests(self):
         yield scrapy.Request(
             'http://demowww.etenders.gov.mt/ocds/services/recordpackage/getrecordpackagelist',
@@ -24,23 +27,18 @@ class Malta(ZipSpider):
             callback=self.parse_list
         )
 
+    @handle_error
     def parse_list(self, response):
-        if response.status == 200:
-            url = 'http://demowww.etenders.gov.mt{}'
-            json_data = json.loads(response.text)
-            packages = json_data['packagesPerMonth']
-            for package in packages:
-                parsed = urlparse(package)
-                path = parsed.path
-                if path:
-                    yield scrapy.Request(
-                        url.format(path),
-                        meta={'kf_filename': hashlib.md5(path.encode('utf-8')).hexdigest() + '.json'}
-                    )
-                    if self.sample:
-                        break
-        else:
-            yield self.build_file_error_from_response(response)
-
-    def parse(self, response):
-        yield from self.parse_zipfile(response, data_type='record_package')
+        url = 'http://demowww.etenders.gov.mt{}'
+        json_data = json.loads(response.text)
+        packages = json_data['packagesPerMonth']
+        for package in packages:
+            parsed = urlparse(package)
+            path = parsed.path
+            if path:
+                yield scrapy.Request(
+                    url.format(path),
+                    meta={'kf_filename': hashlib.md5(path.encode('utf-8')).hexdigest() + '.json'}
+                )
+                if self.sample:
+                    break

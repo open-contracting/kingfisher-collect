@@ -55,7 +55,7 @@ class Colombia(LinksSpider):
                                      meta={'kf_filename': hashlib.md5(
                                          url.encode('utf-8')).hexdigest() + '.json'})
 
-            elif response.status == 200:
+            elif self.is_http_success(response):
 
                 yield self.build_file_from_response(response, response.request.meta['kf_filename'],
                                                     data_type='release_package')

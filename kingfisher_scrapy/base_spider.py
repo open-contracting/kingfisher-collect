@@ -10,6 +10,7 @@ import scrapy
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import SpiderArgumentError
 from kingfisher_scrapy.items import File, FileError, FileItem
+from kingfisher_scrapy.util import handle_error
 
 
 class BaseSpider(scrapy.Spider):
@@ -85,6 +86,12 @@ class BaseSpider(scrapy.Spider):
                 raise SpiderArgumentError('spider argument until_date: invalid date value: {}'.format(e))
 
         return spider
+
+    def is_http_success(self, response):
+        """
+        Returns whether the response status is a non-2xx code.
+        """
+        return 200 <= response.status < 300
 
     def get_start_time(self, format):
         """
@@ -171,6 +178,35 @@ class BaseSpider(scrapy.Spider):
 
 
 class ZipSpider(BaseSpider):
+    """
+    This class makes it easy to collect data from ZIP files:
+
+    -  Inherit from ``ZipSpider``
+    -  Set a ``parse_zipfile_kwargs`` class attribute to the keyword arguments for the
+       :meth:`kingfisher_scrapy.base_spider.ZipSpider.parse_zipfile` method
+    -  Write a ``start_requests`` method to request the ZIP files
+
+    .. code-block:: python
+
+        import scrapy
+
+        from kingfisher_scrapy.base_spider import ZipSpider
+
+        class MySpider(LinksSpider):
+            name = 'my_spider'
+
+            parse_zipfile_kwargs = {'data_type': 'release_package'}
+
+            def start_requests(self):
+                yield scrapy.Request(
+                    url='https://example.com/api/packages.zip',
+                    meta={'kf_filename': 'all.json'}
+                )
+    """
+    @handle_error
+    def parse(self, response):
+        yield from self.parse_zipfile(response, **self.parse_zipfile_kwargs)
+
     def parse_zipfile(self, response, data_type, file_format=None, encoding='utf-8'):
         """
         Handles a response that is a ZIP file.
@@ -191,55 +227,69 @@ class ZipSpider(BaseSpider):
               Each compressed file is saved to disk.
         :param str encoding: the compressed files' encoding
         """
-        if response.status == 200:
-            if file_format:
-                filename = '{}.zip'.format(hashlib.md5(response.url.encode('utf-8')).hexdigest())
-                self.build_file_from_response(response, filename, post_to_api=False)
+        if file_format:
+            filename = '{}.zip'.format(hashlib.md5(response.url.encode('utf-8')).hexdigest())
+            self.build_file_from_response(response, filename, post_to_api=False)
 
-            zip_file = ZipFile(BytesIO(response.body))
-            for finfo in zip_file.infolist():
-                filename = finfo.filename
-                if not filename.endswith('.json'):
-                    filename += '.json'
+        zip_file = ZipFile(BytesIO(response.body))
+        for finfo in zip_file.infolist():
+            filename = finfo.filename
+            if not filename.endswith('.json'):
+                filename += '.json'
 
-                data = zip_file.open(finfo.filename)
+            data = zip_file.open(finfo.filename)
 
-                if file_format == 'json_lines':
-                    yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding,
-                                                     file_name=filename)
-                elif file_format == 'release_package':
-                    package = zip_file.open(finfo.filename)
-                    yield from self.parse_json_array(package, data, data_type, response.request.url,
-                                                     encoding=encoding, file_name=filename)
-                else:
-                    yield self.build_file(data.read(), filename, data_type=data_type, url=response.request.url,
-                                          encoding=encoding)
-        else:
-            yield self.build_file_error_from_response(response)
+            if file_format == 'json_lines':
+                yield from self.parse_json_lines(data, data_type, response.request.url, encoding=encoding,
+                                                 file_name=filename)
+            elif file_format == 'release_package':
+                package = zip_file.open(finfo.filename)
+                yield from self.parse_json_array(package, data, data_type, response.request.url,
+                                                 encoding=encoding, file_name=filename)
+            else:
+                yield self.build_file(data.read(), filename, data_type=data_type, url=response.request.url,
+                                      encoding=encoding)
 
 
 class LinksSpider(BaseSpider):
+    """
+    This class makes it easy to collect data from an API that implements the `pagination
+    <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__ pattern:
+
+    -  Inherit from ``LinksSpider``
+    -  Set a ``data_type`` class attribute to the data type of the API responses
+    -  Write a ``start_requests`` method to request the first page
+
+    .. code-block:: python
+
+        import scrapy
+
+        from kingfisher_scrapy.base_spider import LinksSpider
+
+        class MySpider(LinksSpider):
+            name = 'my_spider'
+            data_type = 'release_package'
+
+            def start_requests(self):
+                yield scrapy.Request(
+                    url='https://example.com/api/packages.json',
+                    meta={'kf_filename': 'page1.json'}
+                )
+    """
+
+    @handle_error
+    def parse(self, response):
+        yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type=self.data_type)
+
+        if not self.sample:
+            yield self.next_link(response)
+
     @staticmethod
     def next_link(response):
         """
-        Handling API response with a links field
-
-        Access to ``links/next`` for the new url, and returns a Request
+        If the JSON response has a ``links.next`` key, returns a ``scrapy.Request`` for the URL.
         """
-        json_data = json.loads(response.text)
-        if 'links' in json_data and 'next' in json_data['links']:
-            url = json_data['links']['next']
-            return scrapy.Request(
-                url=url,
-                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
-            )
-
-    def parse_next_link(self, response, data_type):
-        if response.status == 200:
-
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'], data_type=data_type)
-
-            if not self.sample:
-                yield self.next_link(response)
-        else:
-            yield self.build_file_error_from_response(response)
+        data = json.loads(response.text)
+        if 'links' in data and 'next' in data['links']:
+            url = data['links']['next']
+            return scrapy.Request(url, meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'})
