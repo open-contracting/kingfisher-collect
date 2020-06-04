@@ -9,7 +9,9 @@ from kingfisher_scrapy.base_spider import ZipSpider
 class Portugal(ZipSpider):
     """
     API documentation
-        https://dados.gov.pt/pt/apidoc/
+      https://dados.gov.pt/pt/apidoc/
+    Swagger API documentation
+      https://dados.gov.pt/pt/apidoc/#/datasets
     Spider arguments
       sample
         Download only the first file in the dataset.

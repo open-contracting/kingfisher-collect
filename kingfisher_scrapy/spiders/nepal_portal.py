@@ -8,6 +8,8 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class NepalPortal(BaseSpider):
     """
+    Bulk download documentation
+      http://ppip.gov.np/downloads
     Spider arguments
       sample
         Download only data released on 2018.

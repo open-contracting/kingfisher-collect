@@ -9,6 +9,8 @@ from kingfisher_scrapy.base_spider import BaseSpider
 class HondurasPortalRecords(BaseSpider):
     """
     API documentation
+      http://www.contratacionesabiertas.gob.hn/manual_api/
+    Swagger API documentation
       http://www.contratacionesabiertas.gob.hn/servicio/
     Spider arguments
       sample

@@ -5,7 +5,7 @@ from kingfisher_scrapy.base_spider import ZipSpider
 
 class UruguayHistorical(ZipSpider):
     """
-    API documentation
+    Bulk download documentation
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
     Spider arguments
       sample

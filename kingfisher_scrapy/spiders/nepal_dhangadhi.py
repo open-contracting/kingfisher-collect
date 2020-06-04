@@ -8,6 +8,8 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 class NepalDhangadhi(BaseSpider):
     """
+    Bulk download documentation
+      https://ims.susasan.org/dhangadhi/about
     Spider arguments
       sample
         Download only the first release package in the dataset.

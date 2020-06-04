@@ -7,6 +7,8 @@ from kingfisher_scrapy.base_spider import ZipSpider
 
 class ChileCompraBulk(ZipSpider):
     """
+    Bulk download documentation
+      https://desarrolladores.mercadopublico.cl/OCDS/DescargaMasiva
     Spider arguments
       sample
         Download only data released on February 2017.
