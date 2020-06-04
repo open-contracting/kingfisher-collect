@@ -82,10 +82,9 @@ ITEM_PIPELINES = {
    'kingfisher_scrapy.pipelines.Validate': 300,
 }
 
-# To send items to Kingfishet Process, set this to, for example, "http://kingfisher.example.com" (no trailing slash).
+# To send items to Kingfisher Process, see
+# https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process_integration.html
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
-# Set this to the same value as Kingfisher Process' `API_KEYS` setting.
-# See https://kingfisher-process.readthedocs.io/en/latest/config.html#web-api
 KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
 # If Kingfisher Process can read Kingfisher Collect's `FILES_STORE`, then Kingfisher Collect can send file paths
 # instead of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.
