@@ -83,7 +83,7 @@ ITEM_PIPELINES = {
 }
 
 # To send items to Kingfisher Process, see
-# https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process_integration.html
+# https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process.html
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
 KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
 # If Kingfisher Process can read Kingfisher Collect's `FILES_STORE`, then Kingfisher Collect can send file paths
