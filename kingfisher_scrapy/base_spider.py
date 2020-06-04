@@ -1,4 +1,3 @@
-import hashlib
 import json
 from datetime import datetime
 from io import BytesIO
@@ -10,8 +9,8 @@ from jsonpointer import resolve_pointer
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.items import File, FileError, FileItem, LastReleaseDateItem
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.items import File, FileError, FileItem
+from kingfisher_scrapy.util import handle_http_error
 
 
 class BaseSpider(scrapy.Spider):
@@ -104,12 +103,55 @@ class BaseSpider(scrapy.Spider):
         """
         return self.crawler.stats.get_value('start_time').strftime(format)
 
+    def build_request(self, url, formatter, **kwargs):
+        """
+        Returns a Scrapy request, with a file name added to the request's ``meta`` attribute. If the file name doesn't
+        have a ``.json`` or ``.zip`` extension, it adds a ``.json`` extension.
+
+        If the last component of a URL's path is unique, use it as the file name. For example:
+
+        >>> from kingfisher_scrapy.base_spider import BaseSpider
+        >>> from kingfisher_scrapy.util import components
+        >>> url = 'https://example.com/package.json'
+        >>> formatter = components(-1)
+        >>> BaseSpider(name='my_spider').build_request(url, formatter=formatter).meta
+        {'file_name': 'package.json'}
+
+        To use a query string parameter as the file name:
+
+        >>> from kingfisher_scrapy.util import parameters
+        >>> url = 'https://example.com/packages?page=1&per_page=100'
+        >>> formatter = parameters('page')
+        >>> BaseSpider(name='my_spider').build_request(url, formatter=formatter).meta
+        {'file_name': 'page-1.json'}
+
+        To add a query string parameter to the file name:
+
+        >>> from kingfisher_scrapy.util import join
+        >>> url = 'https://example.com/packages?page=1&per_page=100'
+        >>> formatter = join(components(-1), parameters('page'))
+        >>> BaseSpider(name='my_spider').build_request(url, formatter=formatter).meta
+        {'file_name': 'packages-page-1.json'}
+
+        :param str url: the URL to request
+        :param formatter: a function that accepts a URL and returns a file name
+        :returns: a Scrapy request
+        :rtype: scrapy.Request
+        """
+        file_name = formatter(url)
+        if not file_name.endswith(('.json', '.zip')):
+            file_name += '.json'
+        meta = {'file_name': file_name}
+        if 'meta' in kwargs:
+            meta.update(kwargs.pop('meta'))
+        return scrapy.Request(url, meta=meta, **kwargs)
+
     def build_file_from_response(self, response, **kwargs):
         """
         Returns an item to yield, based on the response to a request.
         """
         if 'file_name' not in kwargs:
-            kwargs['file_name'] = response.request.meta['kf_filename']
+            kwargs['file_name'] = response.request.meta['file_name']
         if 'url' not in kwargs:
             kwargs['url'] = response.request.url
         if 'data' not in kwargs:
@@ -144,8 +186,8 @@ class BaseSpider(scrapy.Spider):
             'url': response.request.url,
             'errors': {'http_code': response.status},
         })
-        if 'kf_filename' in response.request.meta:
-            item['file_name'] = response.request.meta['kf_filename']
+        if 'file_name' in response.request.meta:
+            item['file_name'] = response.request.meta['file_name']
         item.update(kwargs)
         return item
 
@@ -211,13 +253,13 @@ class SimpleSpider(BaseSpider):
             data_type = 'release_package'
 
             def start_requests(self):
-                yield scrapy.Request('https://example.com/api/package.json', meta={'kf_filename': 'all.json'})
+                yield scrapy.Request('https://example.com/api/package.json', meta={'file_name': 'all.json'})
     """
 
     encoding = 'utf-8'
     data_pointer = ''
 
-    @handle_error
+    @handle_http_error
     def parse(self, response):
         kwargs = {}
         if self.data_pointer:
@@ -259,17 +301,16 @@ class ZipSpider(BaseSpider):
             data_type = 'release_package'
 
             def start_requests(self):
-                yield scrapy.Request('https://example.com/api/packages.zip', meta={'kf_filename': 'all.json'})
+                yield scrapy.Request('https://example.com/api/packages.zip', meta={'file_name': 'all.json'})
     """
 
     encoding = 'utf-8'
     zip_file_format = None
 
-    @handle_error
+    @handle_http_error
     def parse(self, response):
         if self.zip_file_format:
-            filename = '{}.zip'.format(hashlib.md5(response.url.encode('utf-8')).hexdigest())
-            self.build_file_from_response(response, file_name=filename, post_to_api=False)
+            yield self.build_file_from_response(response, data_type='zip', post_to_api=False)
 
         zip_file = ZipFile(BytesIO(response.body))
         for finfo in zip_file.infolist():
@@ -302,6 +343,8 @@ class LinksSpider(SimpleSpider):
 
     1. Inherit from ``LinksSpider``
     1. Set a ``data_type`` class attribute to the data type of the API responses
+    1. Set a ``next_page_formatter`` class attribute to set the file name as in
+       :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
     1. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
     1. Write a ``start_requests`` method to request the first page of API results
 
@@ -316,12 +359,12 @@ class LinksSpider(SimpleSpider):
             data_type = 'release_package'
 
             def start_requests(self):
-                yield scrapy.Request('https://example.com/api/packages.json', meta={'kf_filename': 'page1.json'})
+                yield scrapy.Request('https://example.com/api/packages.json', meta={'file_name': 'page1.json'})
     """
 
     next_pointer = '/links/next'
 
-    @handle_error
+    @handle_http_error
     def parse(self, response):
         yield from super().parse(response)
 
@@ -335,4 +378,4 @@ class LinksSpider(SimpleSpider):
         data = json.loads(response.text)
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
-            return scrapy.Request(url, meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'})
+            return self.build_request(url, formatter=self.next_page_formatter)

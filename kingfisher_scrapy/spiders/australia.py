@@ -1,26 +1,17 @@
-import datetime
+from datetime import date
 
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
+from kingfisher_scrapy.util import parameters
 
 
 class Australia(LinksSpider):
     name = 'australia'
     data_type = 'release_package'
+    next_page_formatter = staticmethod(parameters('cursor'))
 
     def start_requests(self):
-        url_prefix = 'https://api.tenders.gov.au/ocds/findByDates/contractPublished/'
-
-        if self.sample:
-            yield scrapy.Request(
-                url_prefix + '2018-01-01T00:00:00Z/2018-12-31T23:59:59Z',
-                meta={'kf_filename': 'year-2018.json'}
-            )
-        else:
-            current_year = datetime.datetime.now().year + 1
-            for year in reversed(range(2004, current_year)):
-                yield scrapy.Request(
-                    url_prefix + '{}-01-01T00:00:00Z/{}-12-31T23:59:59Z'.format(year, year),
-                    meta={'kf_filename': 'year-{}.json'.format(year)}
-                )
+        url = f'https://api.tenders.gov.au/ocds/findByDates/contractPublished/' \
+              f'2004-01-01T00:00:00Z/{date.today().year}-12-31T23:59:59Z'
+        yield scrapy.Request(url, meta={'file_name': 'start.json'})

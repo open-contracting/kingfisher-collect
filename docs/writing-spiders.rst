@@ -53,18 +53,16 @@ Here is a sample:
 .. code-block:: python
 
     from kingfisher_scrapy.base_spider import SimpleSpider
-    from kingfisher_scrapy.util import handle_error
+    from kingfisher_scrapy.util import components, handle_http_error
 
     class VerySimple(SimpleSpider):
         name = 'very_simple'
         data_type = 'release_package'
 
         def start_requests(self):
-            # This API only has one URL to get. Make a request for that, and set a filename
-            yield scrapy.Request(
-                'https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-13-14.json',
-                meta={'kf_filename': '13-14.json'}
-            )
+            # Request the source's only URL, and transform the URL to a file name using ``basename``.
+            url = 'https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-13-14.json'
+            yield self.build_request(url, formatter=components(-1))
 
 Spider properties
 -----------------

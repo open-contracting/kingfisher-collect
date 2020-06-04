@@ -1,6 +1,5 @@
-import scrapy
-
 from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.util import components, date_range_by_year
 
 
 class UruguayHistorical(ZipSpider):
@@ -17,10 +16,12 @@ class UruguayHistorical(ZipSpider):
     }
 
     def start_requests(self):
-        base_url = 'https://www.gub.uy/agencia-compras-contrataciones-estado/sites/agencia-compras-contrataciones' \
-                   '-estado/files/2019-04/OCDS-{}.zip'
-        end_year = 2018
+        start = 2002
+        stop = 2017
         if self.sample:
-            end_year = 2003
-        for year in range(2002, end_year):
-            yield scrapy.Request(base_url.format(year), meta={'kf_filename': 'OCDS-{}.zip'.format(year)})
+            start = stop
+
+        pattern = 'https://www.gub.uy/agencia-compras-contrataciones-estado/sites' \
+                  '/agencia-compras-contrataciones-estado/files/2019-04/OCDS-{}.zip'
+        for year in date_range_by_year(start, stop):
+            yield self.build_request(pattern.format(year), formatter=components(-1))

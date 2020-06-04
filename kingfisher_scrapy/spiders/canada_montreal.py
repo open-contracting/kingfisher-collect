@@ -2,32 +2,27 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import handle_http_error, parameters, replace_parameter
 
 
-class CanadaMontreal(BaseSpider):
+class CanadaMontreal(SimpleSpider):
     name = 'canada_montreal'
-    page_limit = 10000
+    data_type = 'release_package'
+    step = 10000
 
     def start_requests(self):
-        yield scrapy.Request(
-            'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=%d' % self.page_limit,
-            meta={'kf_filename': 'page0.json'}
-        )
+        url = 'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit={step}'.format(step=self.step)
+        yield scrapy.Request(url, meta={'file_name': 'offset-0.json'}, callback=self.parse_list)
 
-    @handle_error
-    def parse(self, response):
-        # Actual data
-        yield self.build_file_from_response(response, data_type='release_package')
+    @handle_http_error
+    def parse_list(self, response):
+        yield from self.parse(response)
 
-        # Load more pages?
-        if not self.sample and response.request.meta['kf_filename'] == 'page0.json':
+        if not self.sample:
             data = json.loads(response.text)
+            offset = data['meta']['pagination']['limit']
             total = data['meta']['count']
-            offset = self.page_limit
-            while offset < total:
-                url = 'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit=%d&offset=%d' % \
-                      (self.page_limit, offset)
-                yield scrapy.Request(url, meta={'kf_filename': 'page' + str(offset) + '.json'})
-                offset += self.page_limit
+            for offset in range(offset, total, self.step):
+                url = replace_parameter(response.request.url, 'offset', offset)
+                yield self.build_request(url, formatter=parameters('offset'))

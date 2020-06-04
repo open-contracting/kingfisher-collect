@@ -51,9 +51,18 @@ def test_parse_json_lines(sample, len_items):
 
     response = response_fixture(body=io.getvalue())
     generator = spider.parse(response)
+    item = next(generator)
     items = list(generator)
 
-    # assert len(items) == len_items
+    assert type(item) is File
+    assert len(item) == 6
+    assert item['file_name'] == 'test'
+    assert item['url'] == 'http://example.com'
+    assert item['data_type'] == 'zip'
+    assert item['encoding'] == 'utf-8'
+    assert item['post_to_api'] is False
+
+    assert len(items) == len_items
 
     for i, item in enumerate(items, 1):
         assert type(item) is FileItem
@@ -83,7 +92,16 @@ def test_parse_release_package(sample, len_items, len_releases):
 
     response = response_fixture(body=io.getvalue())
     generator = spider.parse(response)
+    item = next(generator)
     items = list(generator)
+
+    assert type(item) is File
+    assert len(item) == 6
+    assert item['file_name'] == 'test'
+    assert item['url'] == 'http://example.com'
+    assert item['data_type'] == 'zip'
+    assert item['encoding'] == 'utf-8'
+    assert item['post_to_api'] is False
 
     assert len(items) == len_items
 
