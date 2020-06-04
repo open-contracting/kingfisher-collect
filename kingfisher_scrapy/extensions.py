@@ -6,12 +6,12 @@ import os
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.items import File, FileError, FileItem, LastReleaseDateItem
+from kingfisher_scrapy.items import File, FileError, FileItem, LatestReleaseDateItem
 from kingfisher_scrapy.kingfisher_process import Client
 
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
-class KingfisherLastDate:
+class KingfisherLatestDate:
     def __init__(self, filename):
         self.filename = filename
         self.written = {}
@@ -21,13 +21,13 @@ class KingfisherLastDate:
         path = crawler.settings['KINGFISHER_LAST_RELEASE_DATE_FILE_PATH']
         if not os.path.exists(path):
             os.makedirs(path)
-        filename = os.path.join(path, 'last_dates.txt')
+        filename = os.path.join(path, 'latest_dates.txt')
         extension = cls(filename=filename)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         return extension
 
     def item_scraped(self, item, spider):
-        if not isinstance(item, LastReleaseDateItem) or spider.name in self.written.keys():
+        if not isinstance(item, LatestReleaseDateItem) or spider.name in self.written.keys():
             return
         self.written[spider.name] = True
         with open(self.filename, 'a+') as output:
@@ -142,7 +142,7 @@ class KingfisherProcessAPI:
         Sends an API request to store the file, file item or file error in Kingfisher Process.
         """
 
-        if not item.get('post_to_api', True) or isinstance(item, LastReleaseDateItem):
+        if not item.get('post_to_api', True) or isinstance(item, LatestReleaseDateItem):
             return
         data = {
             'collection_source': spider.name,

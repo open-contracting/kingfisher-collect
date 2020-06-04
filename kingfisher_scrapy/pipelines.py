@@ -2,7 +2,7 @@
 # https://docs.scrapy.org/en/latest/topics/signals.html#item-signals
 import json
 
-from kingfisher_scrapy.items import FileItem, File, LastReleaseDateItem
+from kingfisher_scrapy.items import FileItem, File, LatestReleaseDateItem
 
 
 class Validate:
@@ -15,11 +15,11 @@ class Validate:
         return item
 
 
-class LastReleaseDate:
+class LatestReleaseDate:
     def process_item(self, item, spider):
         if spider.last and (isinstance(item, FileItem) or isinstance(item, File)):
             if item['data_type'] == 'release_package'\
                     or item['data_type'] == 'record_package':
-                return LastReleaseDateItem({
+                return LatestReleaseDateItem({
                     'date': json.loads(item['data'])['releases'][0]['date']
                 })

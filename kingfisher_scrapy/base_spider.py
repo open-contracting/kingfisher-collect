@@ -45,7 +45,7 @@ class BaseSpider(scrapy.Spider):
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None,
-                 date_format='date', last=None, *args, **kwargs):
+                 date_format='date', latest=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
@@ -54,14 +54,14 @@ class BaseSpider(scrapy.Spider):
         self.from_date = from_date
         self.until_date = until_date
         self.date_format = self.VALID_DATE_FORMATS[date_format]
-        self.last = last == 'true'
+        self.latest = latest == 'true'
 
         spider_arguments = {
             'sample': sample,
             'note': note,
             'from_date': from_date,
             'until_date': until_date,
-            'last': last,
+            'latest': latest,
         }
         spider_arguments.update(kwargs)
         self.logger.info('Spider arguments: {!r}'.format(spider_arguments))

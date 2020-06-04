@@ -80,7 +80,7 @@ EXTENSIONS = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'kingfisher_scrapy.pipelines.LastReleaseDate': 300,
+   'kingfisher_scrapy.pipelines.LatestReleaseDate': 300,
    'kingfisher_scrapy.pipelines.Validate': 300,
 }
 
@@ -129,7 +129,7 @@ KINGFISHER_OPENOPPS_PASSWORD = os.getenv('KINGFISHER_OPENOPPS_PASSWORD')
 # https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std:setting-FILES_STORE
 FILES_STORE = os.getenv('FILES_STORE', 'data')
 
-KINGFISHER_LAST_RELEASE_DATE_FILE_PATH = os.getenv('KINGFISHER_LAST_RELEASE_DATE_FILE_PATH', 'last_dates')
+KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH = os.getenv('KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH', 'latest_dates')
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
 HTTPERROR_ALLOW_ALL = True
 
