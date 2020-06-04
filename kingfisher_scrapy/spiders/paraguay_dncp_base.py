@@ -1,15 +1,14 @@
 import json
-import logging
 from datetime import datetime
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 
-class ParaguayDNCPBaseSpider(BaseSpider):
+class ParaguayDNCPBaseSpider(SimpleSpider):
     """ This base class contains methods used for Paraguay DNCP's
     authentication protocol.
     """
@@ -22,8 +21,8 @@ class ParaguayDNCPBaseSpider(BaseSpider):
     last_request = None
     request_time_limit = 13  # in minutes
     base_url = 'https://contrataciones.gov.py/datos/api/v3/doc'
-    base_page_url = '{}/search/processes?fecha_desde=2010-01-01'.format(base_url)
-    auth_url = '{}/oauth/token'.format(base_url)
+    base_page_url = f'{base_url}/search/processes?fecha_desde=2010-01-01'
+    auth_url = f'{base_url}/oauth/token'
     request_token = None
     max_attempts = 10
     data_type = None
@@ -44,17 +43,22 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
         if spider.request_token is None:
-            logging.error('No request token available')
+            spider.logger.error('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN is not set.')
             raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
 
         return spider
 
     def start_requests(self):
         if self.from_date:
+            from_date = self.from_date.strftime(self.date_format)
             self.base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}'\
-                .format(self.base_url, self.from_date.strftime(self.date_format))
-        yield scrapy.Request(
+                .format(self.base_url, from_date)
+        yield self.build_request(
             self.base_page_url,
+            formatter=parameters('fecha_desde'),
+            meta={
+                'from_date': from_date,
+            },
             # send duplicate requests when the token expired and in the continuation of last_request saved.
             dont_filter=True,
             callback=self.parse_pages
@@ -64,7 +68,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         """ Requests a new access token """
         attempt = 0
         self.start_time = datetime.now()
-        self.logger.info('Requesting access token, attempt {} of {}'.format(attempt + 1, self.max_attempts))
+        self.logger.info(f'Requesting access token, attempt {attempt + 1} of {self.max_attempts}')
 
         return scrapy.Request(
             self.auth_url,
@@ -82,7 +86,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
             r = json.loads(response.text)
             token = r.get('access_token')
             if token:
-                self.logger.info('New access token: {}'.format(token))
+                self.logger.info(f'New access token: {token}')
                 self.access_token = token
                 # continue scraping where it stopped after getting the token
                 yield self.last_request
@@ -93,10 +97,7 @@ class ParaguayDNCPBaseSpider(BaseSpider):
                     self.auth_failed = True
                     raise AuthenticationError()
                 else:
-                    self.logger.info('Requesting access token, attempt {} of {}'.format(
-                        attempt + 1,
-                        self.max_attempts)
-                    )
+                    self.logger.info(f'Requesting access token, attempt {attempt + 1} of {self.max_attempts}')
                     return scrapy.Request(
                         self.auth_url,
                         method='POST',
@@ -108,35 +109,25 @@ class ParaguayDNCPBaseSpider(BaseSpider):
                         priority=1000
                     )
         else:
-            self.logger.error('Authentication failed. Status code: {}'.format(response.status))
+            self.logger.error(f'Authentication failed. Status code: {response.status}')
             self.auth_failed = True
             raise AuthenticationError()
 
-    @handle_error
+    @handle_http_error
     def parse_pages(self, response):
         content = json.loads(response.text)
         for url in self.get_files_to_download(content):
-            yield scrapy.Request(
-                url,
-                dont_filter=True,
-                meta={'kf_filename': url.split('/')[-1] + '.json'}
-            )
+            yield self.build_request(url, formatter=components(-1), dont_filter=True)
         pagination = content['pagination']
         if pagination['current_page'] < pagination['total_pages'] and not self.sample:
-            url = '{}&page={}'.format(self.base_page_url, pagination['current_page'] + 1)
-            yield scrapy.Request(
+            page = pagination['current_page'] + 1
+            url = f'{self.base_page_url}&page={page}'
+            yield self.build_request(
                 url,
+                formatter=parameters('fecha_desde', 'page'),
                 dont_filter=True,
                 callback=self.parse_pages
             )
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type=self.data_type
-        )
 
     def get_files_to_download(self, content):
         """ Override this
@@ -149,5 +140,5 @@ class ParaguayDNCPBaseSpider(BaseSpider):
         """
         if time_diff.total_seconds() < ParaguayDNCPBaseSpider.request_time_limit * 60:
             return False
-        self.logger.info('Time_diff: {}'.format(time_diff.total_seconds()))
+        self.logger.info(f'Time_diff: {time_diff.total_seconds()}')
         return True

@@ -1,63 +1,40 @@
 import json
 
-import scrapy
-
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import components, handle_http_error, join, parameters, replace_parameter
 
 
-class Moldova(BaseSpider):
+class Moldova(SimpleSpider):
     name = 'moldova'
-
-    endpoints = {"budgets": "https://public.mtender.gov.md/budgets/",
-                 # From https://github.com/open-contracting/kingfisher-collect/issues/192#issuecomment-529928683
-                 # The /tenders/plans endpoint appeared to return exactly the same data as the /tenders endpoint except
-                 # that when given an OCID parameter it returned an error message. It may be that /tenders/plans just
-                 # lists a subset of /tenders but this isn't clear.
-                 # "plans": "https://public.mtender.gov.md/tenders/plan/",
-                 "tenders": "https://public.mtender.gov.md/tenders/"}
+    data_type = 'record_package'
 
     def start_requests(self):
-        for endpoint, url in self.endpoints.items():
-            yield scrapy.Request(
-                url=url,
-                meta={'kf_filename': 'meta-{}-start.json'.format(endpoint), 'endpoint': endpoint, 'data': False}
-            )
+        endpoints = {
+            'budgets': 'https://public.mtender.gov.md/budgets/',
+            # From https://github.com/open-contracting/kingfisher-collect/issues/192#issuecomment-529928683
+            # The /tenders/plans endpoint appeared to return exactly the same data as the /tenders endpoint except
+            # that when given an OCID parameter it returned an error message. It may be that /tenders/plans just
+            # lists a subset of /tenders but this isn't clear.
+            # 'plans': 'https://public.mtender.gov.md/tenders/plan/',
+            'tenders': 'https://public.mtender.gov.md/tenders/',
+        }
 
-    @handle_error
-    def parse(self, response):
-        if response.request.meta['data']:
-            yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                                data_type='record_package')
-        else:
-            self.build_file_from_response(response, response.request.meta['kf_filename'])
-            json_data = json.loads(response.text)
-            offset = json_data.get('offset')
-            # not having an offset in the data means the data has come to an end.
-            if not offset:
-                return
+        for endpoint, url in endpoints.items():
+            yield self.build_request(url, formatter=components(-1), callback=self.parse_list)
 
-            endpoint = response.request.meta['endpoint']
-            endpoint_url = self.endpoints[endpoint]
+    @handle_http_error
+    def parse_list(self, response):
+        data = json.loads(response.text)
+        # The last page returns an empty JSON object.
+        if not data:
+            return
 
-            for data in json_data.get('data', []):
-                yield scrapy.Request(
-                    url=endpoint_url + data['ocid'],
-                    meta={
-                        'kf_filename': 'data-{}-{}.json'.format(endpoint, data['ocid']),
-                        'endpoint': endpoint,
-                        'data': True,
-                    }
-                )
+        for item in data['data']:
+            url = replace_parameter(response.request.url, 'offset', None) + item['ocid']
+            yield self.build_request(url, formatter=components(-2))
 
-            if self.sample:
-                return
+        if self.sample:
+            return
 
-            yield scrapy.Request(
-                url=endpoint_url + '?offset=' + offset,
-                meta={
-                    'kf_filename': 'meta-{}-{}.json'.format(endpoint, offset),
-                    'endpoint': endpoint,
-                    'data': False,
-                }
-            )
+        url = replace_parameter(response.request.url, 'offset', data['offset'])
+        yield self.build_request(url, formatter=join(components(-1), parameters('offset')), callback=self.parse_list)

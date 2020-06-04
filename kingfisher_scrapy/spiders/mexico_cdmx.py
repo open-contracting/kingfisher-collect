@@ -2,34 +2,27 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import components, handle_http_error
 
 
-class MexicoCDMXSource(BaseSpider):
+class MexicoCDMXSource(SimpleSpider):
     name = 'mexico_cdmx'
+    data_type = 'release_package'
 
     def start_requests(self):
         yield scrapy.Request(
-            url='http://www.contratosabiertos.cdmx.gob.mx/api/contratos/todos',
-            meta={'kf_filename': 'list.json'},
+            'http://www.contratosabiertos.cdmx.gob.mx/api/contratos/todos',
+            meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
-        data = json.loads(response.text)
+        items = json.loads(response.text)
         if self.sample:
-            data = [data[0]]
+            items = [items[0]]
 
-        for data_item in data:
-            yield scrapy.Request(
-                url=data_item['uri'],
-                meta={'kf_filename': 'id%s.json' % data_item['id']},
-                callback=self.parse_record
-            )
-
-    @handle_error
-    def parse_record(self, response):
-        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                            data_type='release_package')
+        for item in items:
+            # URL looks like http://www.contratosabiertos.cdmx.gob.mx/api/contrato/OCDS-87SD3T-SEDEMA-LP-0027-2017
+            yield self.build_request(item['uri'], formatter=components(-1))

@@ -1,13 +1,10 @@
-import datetime
-import hashlib
+from datetime import date
 
-import scrapy
-
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import components, date_range_by_year
 
 
-class NepalPortal(BaseSpider):
+class NepalPortal(SimpleSpider):
     """
     Bulk download documentation
       http://ppip.gov.np/downloads
@@ -16,28 +13,17 @@ class NepalPortal(BaseSpider):
         Download only data released on 2018.
     """
     name = 'nepal_portal'
+    data_type = 'release_package'
 
     def start_requests(self):
+        pattern = 'http://ppip.gov.np/bulk-download/{}'
+
         if self.sample:
-            current_year = 2018
-            end_year = 2018
+            start = 2018
+            stop = 2018
         else:
-            current_year = 2013
-            now = datetime.datetime.now()
-            end_year = now.year
+            start = 2012
+            stop = date.today().year  # HTTP 500 after 2018
 
-        while current_year <= end_year:
-            url = 'http://ppip.gov.np/bulk-download/{}'.format(current_year)
-            yield scrapy.Request(
-                url,
-                meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'}
-            )
-            current_year += 1
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type='release_package'
-        )
+        for year in date_range_by_year(start, stop):
+            yield self.build_request(pattern.format(year), formatter=components(-1))

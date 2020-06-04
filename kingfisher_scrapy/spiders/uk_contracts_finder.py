@@ -1,35 +1,25 @@
 import json
 
-import scrapy
-
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import handle_http_error, parameters, replace_parameter
 
 
-class UKContractsFinder(BaseSpider):
+class UKContractsFinder(SimpleSpider):
     name = 'uk_contracts_finder'
-    base_url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=asc&page=%d'
+    data_type = 'release_package_list_in_results'
+    encoding = 'iso-8859-1'
 
     def start_requests(self):
-        yield scrapy.Request(
-            url=self.base_url % 1,
-            meta={'kf_filename': 'page1.json'}
-        )
+        url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=asc&page=1'
+        yield self.build_request(url, formatter=parameters('page'), callback=self.parse_list)
 
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type='release_package_list_in_results',
-            encoding='ISO-8859-1'
-        )
+    @handle_http_error
+    def parse_list(self, response):
+        yield from self.parse(response)
 
-        if not self.sample and response.request.meta['kf_filename'] == 'page1.json':
-            json_data = json.loads(response.text)
-            last_page = json_data['maxPage']
-            for page in range(1, last_page + 1):
-                yield scrapy.Request(
-                    url=self.base_url % page,
-                    meta={'kf_filename': 'page%d.json' % page}
-                )
+        if not self.sample:
+            data = json.loads(response.text)
+            total = data['maxPage']
+            for page in range(2, total + 1):
+                url = replace_parameter(response.request.url, 'page', page)
+                yield self.build_request(url, formatter=parameters('page'))

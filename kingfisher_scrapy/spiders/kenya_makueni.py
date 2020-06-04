@@ -1,13 +1,12 @@
-import hashlib
 from math import ceil
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
-class KenyaMakueni(BaseSpider):
+class KenyaMakueni(SimpleSpider):
     """
     Swagger API documentation
         https://opencontracting.makueni.go.ke/swagger-ui.html#/ocds-controller
@@ -16,37 +15,25 @@ class KenyaMakueni(BaseSpider):
         Download only the first 10 release packages in the dataset.
     """
     name = 'kenya_makueni'
-    url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={}&pageNumber={}'
+    data_type = 'release_package_list'
+    step = 10
+
+    url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={step}&pageNumber={page}'
 
     def start_requests(self):
         if self.sample:
-            page_number = 0
-            page_size = 10
-            yield scrapy.Request(
-                self.url.format(page_size, page_number),
-                meta={'kf_filename': hashlib.md5((self.url +
-                                                  str(page_number)).encode('utf-8')).hexdigest() + '.json'}
-            )
+            url = self.url.format(step=self.step, page=0)
+            yield self.build_request(url, formatter=parameters('pageNumber'))
         else:
             yield scrapy.Request(
                 'https://opencontracting.makueni.go.ke/api/ocds/release/count',
-                meta={'kf_filename': 'start_requests'},
+                meta={'file_name': 'count.json'},
                 callback=self.parse_count
             )
 
-    @handle_error
+    @handle_http_error
     def parse_count(self, response):
         total = int(response.text)
-        page_size = 300
-
-        for page_number in range((ceil(total / page_size))):
-            yield scrapy.Request(
-                self.url.format(page_size, page_number),
-                meta={'kf_filename': hashlib.md5((self.url +
-                                                  str(page_number)).encode('utf-8')).hexdigest() + '.json'}
-            )
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(response, response.request.meta['kf_filename'],
-                                            data_type='release_package_list')
+        for page in range(ceil(total / self.step)):
+            url = self.url.format(step=self.step, page=page)
+            yield self.build_request(url, formatter=parameters('pageNumber'))

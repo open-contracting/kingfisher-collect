@@ -1,52 +1,34 @@
-import hashlib
 import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 
-class France(BaseSpider):
-    name = "france"
+class France(SimpleSpider):
+    name = 'france'
+    data_type = 'release_package'
 
     def start_requests(self):
-        yield scrapy.Request(
-            url='https://www.data.gouv.fr/api/1/datasets/?organization=534fff75a3a7292c64a77de4',
-            callback=self.parse_item
-        )
+        # A CKAN API JSON response.
+        url = 'https://www.data.gouv.fr/api/1/datasets/?organization=534fff75a3a7292c64a77de4'
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
-    @handle_error
-    def parse_item(self, response):
-        json_data = json.loads(response.text)
-        data = json_data['data']
-        for item in data:
-            resources = item['resources']
-            for resource in resources:
+    @handle_http_error
+    def parse_list(self, response):
+        data = json.loads(response.text)
+        for item in data['data']:
+            for resource in item['resources']:
                 description = resource['description']
-                if description and (description.count("OCDS") or description.count("ocds")):
-                    url = resource['url']
-                    yield scrapy.Request(
-                        url,
-                        meta={'kf_filename': hashlib.md5(url.encode('utf-8')).hexdigest() + '.json'},
-                    )
+                if description and 'ocds' in description.lower():
+                    yield self.build_request(resource['url'], formatter=components(-2))
                     if self.sample:
                         break
             else:
                 continue
             break
         else:
-            next_page = json_data.get('next_page')
+            next_page = data.get('next_page')
             if next_page:
-                yield scrapy.Request(
-                    next_page,
-                    callback=self.parse_item
-                )
-
-    @handle_error
-    def parse(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type="release_package"
-        )
+                yield self.build_request(next_page, formatter=parameters('page'), callback=self.parse_list)

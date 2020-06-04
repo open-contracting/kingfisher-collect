@@ -1,11 +1,10 @@
-import hashlib
 import json
 from math import ceil
 
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class MexicoQuienEsQuien(BaseSpider):
@@ -20,43 +19,31 @@ class MexicoQuienEsQuien(BaseSpider):
     """
     name = 'mexico_quien_es_quien'
     download_delay = 0.9
-    url = 'https://api.quienesquien.wiki/v2/contracts?limit={}&offset={}'
 
     def start_requests(self):
-        if self.sample:
-            limit = 10
-            offset = 0
-            yield scrapy.Request(
-                self.url.format(limit, offset),
-                meta={'kf_filename': 'sample.json'}
-            )
-        else:
-            yield scrapy.Request(
-                'https://api.quienesquien.wiki/v2/sources',
-                meta={'kf_filename': 'start_requests'},
-                callback=self.parse_count
-            )
+        yield scrapy.Request(
+            'https://api.quienesquien.wiki/v2/sources',
+            meta={'file_name': 'list.json'},
+            callback=self.parse_list
+        )
 
-    @handle_error
-    def parse_count(self, response):
+    @handle_http_error
+    def parse_list(self, response):
+        pattern = 'https://api.quienesquien.wiki/v2/contracts?limit={limit}&offset={offset}'
         limit = 1000
-        json_data = json.loads(response.text)
-        count_list = json_data['data']
-        count = int(count_list[0]['collections']['contracts']['count'])
 
+        count = json.loads(response.text)['data'][0]['collections']['contracts']['count']
         for offset in range(ceil(count / limit)):
-            yield scrapy.Request(
-                self.url.format(limit, (offset * limit)),
-                meta={'kf_filename': hashlib.md5((self.url +
-                                                  str(offset)).encode('utf-8')).hexdigest() + '.json'}
-            )
+            url = pattern.format(limit=limit, offset=offset * limit)
+            yield self.build_request(url, formatter=parameters('offset'))
+            if self.sample:
+                break
 
-    @handle_error
+    @handle_http_error
     def parse(self, response):
-        json_data = json.loads(response.text)
-        yield self.build_file(
-            json.dumps(json_data['data']).encode(),
-            response.request.meta['kf_filename'],
-            data_type='record_package_list',
-            url=response.request.url
+        data = json.loads(response.text)
+        yield self.build_file_from_response(
+            response,
+            data=json.dumps(data['data']).encode(),
+            data_type='record_package_list'
         )

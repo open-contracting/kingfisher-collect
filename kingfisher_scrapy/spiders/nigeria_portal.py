@@ -1,24 +1,30 @@
-import hashlib
-
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import handle_http_error
 
 
-class NigeriaPortal(BaseSpider):
+class NigeriaPortal(SimpleSpider):
     """
     Spider arguments
       sample
         Download only the first release package in the dataset.
     """
     name = 'nigeria_portal'
-    start_urls = ['http://nocopo.bpp.gov.ng/OpenData.aspx']
+    data_type = 'release_package'
+
     download_delay = 0.9
     user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
-    @handle_error
-    def parse(self, response):
+    def start_requests(self):
+        yield scrapy.Request(
+            'http://nocopo.bpp.gov.ng/OpenData.aspx',
+            meta={'file_name': 'form.html'},
+            callback=self.parse_list
+        )
+
+    @handle_http_error
+    def parse_list(self, response):
         formdata = {
             '__VIEWSTATE': response.css('input#__VIEWSTATE::attr(value)').extract_first(),
             '__VIEWSTATEGENERATOR': 'CA0B0334',
@@ -33,17 +39,4 @@ class NigeriaPortal(BaseSpider):
                 if self.sample:
                     break
 
-        yield scrapy.FormRequest.from_response(
-            response,
-            formdata=formdata,
-            meta={'kf_filename': hashlib.md5(response.url.encode('utf-8')).hexdigest() + '.json'},
-            callback=self.parse_post
-        )
-
-    @handle_error
-    def parse_post(self, response):
-        yield self.build_file_from_response(
-            response,
-            response.request.meta['kf_filename'],
-            data_type='release_package'
-        )
+        yield scrapy.FormRequest.from_response(response, formdata=formdata, meta={'file_name': 'all.json'})

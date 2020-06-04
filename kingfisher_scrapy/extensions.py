@@ -17,8 +17,13 @@ class KingfisherFilesStore:
     @classmethod
     def from_crawler(cls, crawler):
         directory = crawler.settings['FILES_STORE']
+
+        if not directory:
+            raise NotConfigured('FILES_STORE is not set.')
+
         extension = cls(directory)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+
         return extension
 
     def item_scraped(self, item, spider):
@@ -40,7 +45,7 @@ class KingfisherFilesStore:
         metadata = {
             'url': item['url'],
             'data_type': item['data_type'],
-            'encoding': item['encoding'],
+            'encoding': item.get('encoding', 'utf-8'),
         }
         self._write_file(path + '.fileinfo', metadata, spider)
 
