@@ -82,7 +82,7 @@ ITEM_PIPELINES = {
    'kingfisher_scrapy.pipelines.Validate': 300,
 }
 
-# To send items to Kingfishet Process, for more info see
+# To send items to Kingfisher Process, see
 # https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process_integration.html
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
 KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
