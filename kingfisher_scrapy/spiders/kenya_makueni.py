@@ -7,6 +7,13 @@ from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class KenyaMakueni(SimpleSpider):
+    """
+    Swagger API documentation
+        https://opencontracting.makueni.go.ke/swagger-ui.html#/ocds-controller
+    Spider arguments
+      sample
+        Download only the first 10 release packages in the dataset.
+    """
     name = 'kenya_makueni'
     data_type = 'release_package_list'
     step = 10

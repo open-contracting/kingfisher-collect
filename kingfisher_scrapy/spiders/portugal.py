@@ -7,6 +7,15 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class Portugal(ZipSpider):
+    """
+    API documentation
+      https://dados.gov.pt/pt/apidoc/
+    Swagger API documentation
+      https://dados.gov.pt/pt/apidoc/#/datasets
+    Spider arguments
+      sample
+        Download only the first file in the dataset.
+    """
     name = 'portugal'
     data_type = 'record_package'
     encoding = 'iso-8859-1'

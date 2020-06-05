@@ -8,6 +8,15 @@ from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class MexicoQuienEsQuien(BaseSpider):
+    """
+    API documentation
+      https://quienesquienapi.readthedocs.io/es/latest/
+    Swagger API documentation
+      https://api.quienesquien.wiki/v2/docs/
+    Spider arguments
+      sample
+        Download a single record package with 10 records.
+    """
     name = 'mexico_quien_es_quien'
     download_delay = 0.9
 

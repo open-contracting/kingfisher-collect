@@ -7,6 +7,13 @@ from kingfisher_scrapy.util import components, handle_http_error, join, paramete
 
 
 class Uganda(SimpleSpider):
+    """
+    API documentation
+        https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
+    Spider arguments
+      sample
+        Download only 19 releases.
+    """
     name = 'uganda_releases'
     data_type = 'release_package'
 

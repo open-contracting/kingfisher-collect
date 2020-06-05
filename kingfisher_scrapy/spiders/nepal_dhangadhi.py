@@ -7,6 +7,13 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class NepalDhangadhi(SimpleSpider):
+    """
+    Bulk download documentation
+      https://ims.susasan.org/dhangadhi/about
+    Spider arguments
+      sample
+        Download only the first release package in the dataset.
+    """
     name = 'nepal_dhangadhi'
     data_type = 'release_package'
 

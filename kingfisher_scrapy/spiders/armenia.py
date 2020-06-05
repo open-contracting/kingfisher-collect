@@ -5,6 +5,11 @@ from kingfisher_scrapy.util import parameters
 
 
 class Armenia(LinksSpider):
+    """
+    Spider arguments
+      sample
+        Download only the first release package in the dataset.
+    """
     name = 'armenia'
     data_type = 'release_package'
     next_pointer = '/next_page/uri'

@@ -7,6 +7,11 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class Zambia(ZipSpider):
+    """
+    Spider arguments
+      sample
+        Download only data released on July 2016.
+    """
     name = 'zambia'
     data_type = 'record_package'
 

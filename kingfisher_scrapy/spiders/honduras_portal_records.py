@@ -5,6 +5,15 @@ from kingfisher_scrapy.util import parameters
 
 
 class HondurasPortalRecords(LinksSpider):
+    """
+    API documentation
+      http://www.contratacionesabiertas.gob.hn/manual_api/
+    Swagger API documentation
+      http://www.contratacionesabiertas.gob.hn/servicio/
+    Spider arguments
+      sample
+        Download only the first record package in the dataset.
+    """
     name = 'honduras_portal_records'
     data_type = 'record_package'
     data_pointer = '/recordPackage'
