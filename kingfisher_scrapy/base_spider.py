@@ -306,6 +306,7 @@ class ZipSpider(BaseSpider):
 
     encoding = 'utf-8'
     zip_file_format = None
+    skip_latest_release_date = 'Zip file'
 
     @handle_http_error
     def parse(self, response):

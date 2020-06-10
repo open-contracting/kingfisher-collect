@@ -2,6 +2,8 @@
 # https://docs.scrapy.org/en/latest/topics/signals.html#item-signals
 import json
 
+from scrapy.exceptions import DropItem
+
 from kingfisher_scrapy.items import FileItem, File, LatestReleaseDateItem
 
 
@@ -16,10 +18,17 @@ class Validate:
 
 
 class LatestReleaseDate:
+    def __init__(self):
+        self.processed = []
     def process_item(self, item, spider):
-        if spider.last and (isinstance(item, FileItem) or isinstance(item, File)):
+        if spider.latest and (isinstance(item, FileItem) or isinstance(item, File)):
+            if spider.name in self.processed:
+                raise DropItem("Duplicate item found: %s" % spider.name)
             if item['data_type'] == 'release_package'\
                     or item['data_type'] == 'record_package':
+                self.processed.append(spider.name)
                 return LatestReleaseDateItem({
                     'date': json.loads(item['data'])['releases'][0]['date']
                 })
+        else:
+            return item

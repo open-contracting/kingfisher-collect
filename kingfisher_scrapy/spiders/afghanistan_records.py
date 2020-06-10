@@ -9,6 +9,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class AfghanistanRecords(SimpleSpider):
     name = 'afghanistan_records'
     data_type = 'record'
+    skip_latest_release_date = 'Already covered by afghanistan_releases'
 
     download_delay = 1
 

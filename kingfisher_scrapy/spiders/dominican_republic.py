@@ -10,6 +10,8 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class DominicanRepublic(BaseSpider):
     name = 'dominican_republic'
+    skip_latest_release_date = 'Rar file'
+
 
     def start_requests(self):
         yield scrapy.Request(

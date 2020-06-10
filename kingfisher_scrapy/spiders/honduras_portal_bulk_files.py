@@ -9,6 +9,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class HondurasPortalBulkFiles(SimpleSpider):
     name = 'honduras_portal_bulk_files'
     data_type = 'release_package'
+    skip_latest_release_date = 'Already covered by honduras_portal_releases'
 
     def start_requests(self):
         yield scrapy.Request(

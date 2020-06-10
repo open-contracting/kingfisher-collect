@@ -5,6 +5,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class UruguayRecords(UruguayBase):
     name = 'uruguay_records'
     data_type = 'record_package'
+    skip_latest_release_date = 'Already covered by uruguay_releases'
 
     @handle_http_error
     def parse_list(self, response):

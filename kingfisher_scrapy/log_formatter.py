@@ -10,4 +10,4 @@ class KingfisherLogFormatter(LogFormatter):
         if item:
             item = item.copy()
             item.pop('data', None)
-        return super().scraped(item, response, spider)
+            return super().scraped(item, response, spider)

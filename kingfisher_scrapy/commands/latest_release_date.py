@@ -23,6 +23,8 @@ class LatestReleaseDatePerPublisher(ScrapyCommand):
         settings = get_project_settings()
         settings.set('CLOSESPIDER_ITEMCOUNT', 1)
         settings.set('CONCURRENT_REQUESTS', 1)
+        self.settings.set('CLOSESPIDER_ITEMCOUNT', 1)
+
         process = CrawlerProcess(settings=settings)
         spiders = process.spider_loader.list()
         path = settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH']
@@ -33,8 +35,7 @@ class LatestReleaseDatePerPublisher(ScrapyCommand):
             spidercls = process.spider_loader.load(spider)
             if hasattr(spidercls, 'skip_latest_release_date'):
                 with open(filename, 'a+') as output:
-                    output.write('Skipping {} because of {} \n'.format(spider, spidercls.skip_last_release_date))
-                continue
-
-            process.crawl(spider, latest='true')
+                    output.write('Skipping {} because of {} \n'.format(spider, spidercls.skip_latest_release_date))
+            else:
+                process.crawl(spider, latest='true', sample='true')
         process.start()
