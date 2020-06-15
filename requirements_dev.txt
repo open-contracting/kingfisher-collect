@@ -50,6 +50,7 @@ rarfile==3.1
 requests==2.22.0
 scrapy==1.8.0
 scrapyd-client==1.1.0
+sentry-sdk==0.14.4
 service-identity==18.1.0
 six==1.13.0
 twisted==20.3.0

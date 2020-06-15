@@ -70,6 +70,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
 EXTENSIONS = {
+    'kingfisher_scrapy.extensions.SentryLogging': -1,
     # `KingfisherFilesStore` must run before `KingfisherProcessAPI`, because the file needs to be written before the
     # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
@@ -81,6 +82,10 @@ EXTENSIONS = {
 ITEM_PIPELINES = {
    'kingfisher_scrapy.pipelines.Validate': 300,
 }
+
+
+# To send exceptions and log records to Sentry.
+SENTRY_DSN = os.getenv('SENTRY_DSN')
 
 # To send items to Kingfisher Process, see
 # https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process.html
