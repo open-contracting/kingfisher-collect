@@ -1,3 +1,4 @@
+import datetime
 import logging
 import time
 from json import JSONDecodeError
@@ -21,14 +22,30 @@ class Colombia(LinksSpider):
         The page number from which to start crawling.
       year
         The year to crawl. See API documentation for valid values.
+      from_date
+        Download only releases from this release.date onward (YYYY-MM-DD format).
+        If `until_date` is provided and ``from_date`` don't, defaults to '2011-01-01'.
+      until_date
+        Download only releases until this release.date (YYYY-MM-DD format).
+        If ``from_date`` is provided and ``until_date`` don't, defaults to today.
     """
     name = 'colombia'
     next_page_formatter = staticmethod(parameters('page'))
+    default_from_date = '2011-01-01'
 
     def start_requests(self):
         base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases'
         if hasattr(self, 'year'):
             base_url += f'/page/{int(self.year)}'
+        if self.from_date or self.until_date:
+            from_date = self.default_from_date
+            until_date = datetime.datetime.today().strftime(self.date_format)
+            if self.from_date:
+                from_date = self.from_date.strftime(self.date_format)
+            if self.until_date:
+                until_date = self.until_date.strftime(self.date_format)
+            base_url += f'/dates/{from_date}/{until_date}'
+
         base_url += '?page={}'
 
         page = 1
@@ -53,7 +70,7 @@ class Colombia(LinksSpider):
                 yield self.build_file_from_response(response, data_type='release_package')
                 if not self.sample:
                     yield self.next_link(response)
-            elif response.status == 503 or response.status == 404:
+            elif response.status == 503:
                 self.retry(response, 'Sleeping due to HTTP error {status} from {url}')
             else:
                 yield self.build_file_error_from_response(response)
