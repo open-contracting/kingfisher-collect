@@ -10,7 +10,7 @@ from jsonschema.validators import Draft4Validator
 class Validate:
     def __init__(self):
         here = os.path.dirname(os.path.abspath(__file__))
-        filename = os.path.join(here, 'item_schema.json')
+        filename = os.path.join(here, 'item_schema', 'item_schema.json')
         with open(filename) as f:
             schema = json.load(f)
 

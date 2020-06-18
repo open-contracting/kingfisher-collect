@@ -1,0 +1,16 @@
+Code,Title,Description
+record,Record,
+release,Release,
+record_list,Record List,
+release_list,Release List,
+compiled_release,Compiled Release,
+record_package,Record Package,
+release_package,Release Package,
+record_package_list,Record Package List
+release_package_list,Release Package List,
+record_package_list_in_results,Record Package List in Results,
+release_package_list_in_results,Release Package List in Results,
+release_package_json_lines,Release Package Json Lines,
+record_package_json_lines,Record Package Json Lines,
+release_package_in_ocdsReleasePackage_in_list_in_results,Release Package in ocdsReleasePackage in List in Results,
+release_in_Release, Release in Release,

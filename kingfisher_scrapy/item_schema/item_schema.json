@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Schema Kingfisher Collect File, FileItem and FileError",
+  "description": "",
+  "oneOf": [
+    {
+      "$ref": "#/definitions/File"
+    },
+    {
+      "$ref": "#/definitions/FileItem"
+    },
+    {
+      "$ref": "#/definitions/FileError"
+    }
+  ],
+  "definitions": {
+    "File": {
+      "title": "File",
+      "type": "object",
+      "properties": {
+        "file_name": {
+          "type": "string",
+          "pattern": "^[^/]*$",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "minLength": 1
+        },
+        "data": {
+          "type": "string",
+          "minLength": 1
+        },
+        "data_type": {
+          "type": "string",
+          "enum": [
+            "record",
+            "release",
+            "record_list",
+            "release_list",
+            "compiled_release",
+            "record_package",
+            "release_package",
+            "record_package_list",
+            "release_package_list",
+            "record_package_list_in_results",
+            "release_package_list_in_results",
+            "release_package_json_lines",
+            "record_package_json_lines",
+            "release_package_in_ocdsReleasePackage_in_list_in_results",
+            "release_in_Release"
+          ],
+          "openCodelist": false,
+          "codelist": "dataType.csv",
+          "minLength": 1
+        },
+        "encoding": {
+          "type": "string"
+        },
+        "post_to_api": {
+          "type": "boolean"
+        },
+        "path": {
+          "type": "string",
+          "title": "For the KingfisherProcessAPI extension to read the file."
+        },
+        "files_store": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "file_name",
+        "url",
+        "data",
+        "data_type"
+      ]
+    },
+    "FileItem": {
+      "title": "File Item",
+      "type": "object",
+      "properties": {
+        "file_name": {
+          "type": "string",
+          "pattern": "^[^/]*$",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "minLength": 1
+        },
+        "data": {
+          "type": "string",
+          "minLength": 1
+        },
+        "data_type": {
+          "type": "string",
+          "enum": [
+            "release_package",
+            "record_package"
+          ],
+          "minLength": 1
+        },
+        "encoding": {
+          "type": "string"
+        },
+        "number": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "number",
+        "file_name",
+        "url",
+        "data",
+        "data_type"
+      ]
+    },
+    "FileError": {
+      "title": "File Error",
+      "type": "object",
+      "properties": {
+        "file_name": {
+          "type": "string",
+          "pattern": "^[^/]*$",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "minLength": 1
+        },
+        "errors": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "file_name",
+        "url",
+        "errors"
+      ]
+    }
+  }
+}
