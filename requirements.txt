@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-attrs==19.3.0             # via automat, service-identity, twisted
+attrs==19.3.0             # via automat, jsonschema, service-identity, twisted
 automat==0.8.0            # via twisted
 certifi==2019.11.28       # via requests, sentry-sdk
 cffi==1.13.2              # via cryptography
@@ -15,8 +15,10 @@ cssselect==1.1.0          # via parsel, scrapy
 hyperlink==19.0.0         # via twisted
 idna==2.8                 # via hyperlink, requests
 ijson==3.0.3
+importlib-metadata==1.6.1  # via jsonschema
 incremental==17.5.0       # via twisted
 jsonpointer==2.0
+jsonschema==3.2.0
 lxml==4.4.2               # via parsel, scrapy
 parsel==1.5.2             # via scrapy
 protego==0.1.16           # via scrapy
@@ -26,6 +28,7 @@ pycparser==2.19           # via cffi
 pydispatcher==2.0.5       # via scrapy
 pyhamcrest==1.9.0         # via twisted
 pyopenssl==19.1.0         # via scrapy
+pyrsistent==0.16.0        # via jsonschema
 queuelib==1.5.0           # via scrapy
 rarfile==3.1
 requests==2.22.0
@@ -33,10 +36,11 @@ scrapy==1.8.0
 scrapyd-client==1.1.0
 sentry-sdk==0.14.4
 service-identity==18.1.0  # via scrapy
-six==1.13.0               # via automat, cryptography, parsel, protego, pyhamcrest, pyopenssl, scrapy, scrapyd-client, w3lib
+six==1.13.0               # via automat, cryptography, jsonschema, parsel, protego, pyhamcrest, pyopenssl, pyrsistent, scrapy, scrapyd-client, w3lib
 twisted==20.3.0           # via scrapy
 urllib3==1.25.7           # via requests, sentry-sdk
 w3lib==1.21.0             # via parsel, scrapy
+zipp==3.1.0               # via importlib-metadata
 zope.interface==4.7.1     # via scrapy, twisted
 
 # The following packages are considered to be unsafe in a requirements file:

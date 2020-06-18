@@ -8,3 +8,4 @@ Scrapy
 scrapyd-client
 ijson>=3
 sentry-sdk
+jsonschema
