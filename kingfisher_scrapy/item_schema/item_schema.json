@@ -14,8 +14,8 @@
     }
   ],
   "definitions": {
-    "File": {
-      "title": "File",
+    "KingfisherItem": {
+      "title": "Kingfisher Item",
       "type": "object",
       "properties": {
         "file_name": {
@@ -27,7 +27,18 @@
           "type": "string",
           "format": "uri",
           "minLength": 1
-        },
+        }
+      }
+    },
+    "File": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/KingfisherItem"
+        }
+      ],
+      "title": "File",
+      "type": "object",
+      "properties": {
         "data": {
           "type": "string",
           "minLength": 1
@@ -77,19 +88,14 @@
       ]
     },
     "FileItem": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/KingfisherItem"
+        }
+      ],
       "title": "File Item",
       "type": "object",
       "properties": {
-        "file_name": {
-          "type": "string",
-          "pattern": "^[^/]*$",
-          "minLength": 1
-        },
-        "url": {
-          "type": "string",
-          "format": "uri",
-          "minLength": 1
-        },
         "data": {
           "type": "string",
           "minLength": 1
@@ -119,19 +125,14 @@
       ]
     },
     "FileError": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/KingfisherItem"
+        }
+      ],
       "title": "File Error",
       "type": "object",
       "properties": {
-        "file_name": {
-          "type": "string",
-          "pattern": "^[^/]*$",
-          "minLength": 1
-        },
-        "url": {
-          "type": "string",
-          "format": "uri",
-          "minLength": 1
-        },
         "errors": {
           "type": "string",
           "minLength": 1

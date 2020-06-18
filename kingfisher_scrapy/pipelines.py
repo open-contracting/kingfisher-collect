@@ -22,6 +22,5 @@ class Validate:
             # as helpful for debugging, so we could also call it in ``BaseSpider`` if this becomes an issue.
             item_str = json.dumps(item.__dict__)
             json_item = json.loads(item_str)['_values']
-            print(json_item)
             self.validator.validate(json_item)
         return item
