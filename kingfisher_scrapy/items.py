@@ -1,23 +1,13 @@
 # https://docs.scrapy.org/en/latest/topics/items.html
-import scrapy
 
-from kingfisher_scrapy.exceptions import MissingRequiredFieldError
+import scrapy
 
 
 class KingfisherItem(scrapy.Item):
     file_name = scrapy.Field()
     url = scrapy.Field()
-
-    def validate(self):
-        """
-        Raises an error if any required field is missing.
-
-        :raises kingfisher_scrapy.extensions.MissingRequiredFieldError: if any required field is missing
-        """
-        if hasattr(self, 'required'):
-            for field in self.required:
-                if field not in self:
-                    raise MissingRequiredFieldError(field)
+    # indicate that this item should be validated against a schema
+    validate = True
 
 
 class File(KingfisherItem):
