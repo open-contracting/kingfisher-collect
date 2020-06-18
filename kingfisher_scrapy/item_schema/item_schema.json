@@ -19,31 +19,33 @@
       "type": "object",
       "properties": {
         "file_name": {
+          "title": "File Name",
+          "description": "File Name",
           "type": "string",
           "pattern": "^[^/]*$",
           "minLength": 1
         },
         "url": {
+          "title": "URL",
+          "description": "URL",
           "type": "string",
           "format": "uri",
           "minLength": 1
         }
       }
     },
-    "File": {
+    "KingfisherFileItem": {
+      "title": "Kingfisher Item",
+      "type": "object",
       "allOf": [
         {
           "$ref": "#/definitions/KingfisherItem"
         }
       ],
-      "title": "File",
-      "type": "object",
       "properties": {
-        "data": {
-          "type": "string",
-          "minLength": 1
-        },
         "data_type": {
+          "title": "Data Type",
+          "description": "Data Type",
           "type": "string",
           "enum": [
             "record",
@@ -67,17 +69,53 @@
           "minLength": 1
         },
         "encoding": {
-          "type": "string"
+          "title": "Encoding",
+          "description": "Encoding",
+          "type": [
+            "string",
+            "null"
+          ]
         },
+        "data": {
+          "title": "Data",
+          "description": "Data",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "File": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/KingfisherFileItem"
+        }
+      ],
+      "title": "File",
+      "type": "object",
+      "properties": {
         "post_to_api": {
-          "type": "boolean"
+          "title": "Post to Api?",
+          "description": "Post to Api?",
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "path": {
-          "type": "string",
-          "title": "For the KingfisherProcessAPI extension to read the file."
+          "description": "For the KingfisherProcessAPI extension to read the file.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Path"
         },
         "files_store": {
-          "type": "string"
+          "title": "Files Store",
+          "description": "Files Store",
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
@@ -90,27 +128,12 @@
     "FileItem": {
       "allOf": [
         {
-          "$ref": "#/definitions/KingfisherItem"
+          "$ref": "#/definitions/KingfisherFileItem"
         }
       ],
       "title": "File Item",
       "type": "object",
       "properties": {
-        "data": {
-          "type": "string",
-          "minLength": 1
-        },
-        "data_type": {
-          "type": "string",
-          "enum": [
-            "release_package",
-            "record_package"
-          ],
-          "minLength": 1
-        },
-        "encoding": {
-          "type": "string"
-        },
         "number": {
           "type": "integer",
           "minimum": 1
@@ -125,15 +148,17 @@
       ]
     },
     "FileError": {
+      "title": "File Error",
+      "type": "object",
       "allOf": [
         {
           "$ref": "#/definitions/KingfisherItem"
         }
       ],
-      "title": "File Error",
-      "type": "object",
       "properties": {
         "errors": {
+          "title": "Errors",
+          "description": "Errors",
           "type": "string",
           "minLength": 1
         }
