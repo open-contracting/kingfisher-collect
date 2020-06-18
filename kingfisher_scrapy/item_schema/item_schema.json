@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Schema Kingfisher Collect File, FileItem and FileError",
-  "description": "",
+  "title": "Schema for Kingfisher Collect File, FileItem and FileError",
+  "description": "Schema for Kingfisher Collect File, FileItem and FileError",
   "oneOf": [
     {
       "$ref": "#/definitions/File"
@@ -16,6 +16,7 @@
   "definitions": {
     "KingfisherItem": {
       "title": "Kingfisher Item",
+      "description": "A generic item with file_name and url to be extended by other items",
       "type": "object",
       "properties": {
         "file_name": {
@@ -32,10 +33,15 @@
           "format": "uri",
           "minLength": 1
         }
-      }
+      },
+      "required": [
+        "file_name",
+        "url"
+      ]
     },
     "KingfisherFileItem": {
       "title": "Kingfisher Item",
+      "description": "A base object to be extended by other File type items",
       "type": "object",
       "allOf": [
         {
@@ -91,6 +97,7 @@
         }
       ],
       "title": "File",
+      "description": "A file object to be send to an API and/or saved to the disk",
       "type": "object",
       "properties": {
         "post_to_api": {
@@ -117,13 +124,7 @@
             "null"
           ]
         }
-      },
-      "required": [
-        "file_name",
-        "url",
-        "data",
-        "data_type"
-      ]
+      }
     },
     "FileItem": {
       "allOf": [
@@ -132,6 +133,7 @@
         }
       ],
       "title": "File Item",
+      "description": "A file item to be send to an API and not saved to the disk",
       "type": "object",
       "properties": {
         "number": {
@@ -140,15 +142,12 @@
         }
       },
       "required": [
-        "number",
-        "file_name",
-        "url",
-        "data",
-        "data_type"
+        "number"
       ]
     },
     "FileError": {
       "title": "File Error",
+      "description": "An item to report and error",
       "type": "object",
       "allOf": [
         {
@@ -164,8 +163,6 @@
         }
       },
       "required": [
-        "file_name",
-        "url",
         "errors"
       ]
     }
