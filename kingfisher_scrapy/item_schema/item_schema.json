@@ -141,6 +141,8 @@
       "type": "object",
       "properties": {
         "number": {
+          "title": "Item number",
+          "description": "Item number",
           "type": "integer",
           "minimum": 1
         }
