@@ -38,12 +38,8 @@ class Colombia(LinksSpider):
         if hasattr(self, 'year'):
             base_url += f'/page/{int(self.year)}'
         if self.from_date or self.until_date:
-            from_date = self.default_from_date
-            until_date = datetime.datetime.today().strftime(self.date_format)
-            if self.from_date:
-                from_date = self.from_date.strftime(self.date_format)
-            if self.until_date:
-                until_date = self.until_date.strftime(self.date_format)
+            from_date = self.from_date.strftime(self.date_format)
+            until_date = self.until_date.strftime(self.date_format)
             base_url += f'/dates/{from_date}/{until_date}'
 
         base_url += '?page={}'
