@@ -5,6 +5,13 @@ from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class AustraliaNSW(SimpleSpider):
+    """
+    API documentation
+      https://github.com/NSW-eTendering/NSW-eTendering-API/blob/master/README.md
+    Spider arguments
+      sample
+        Download only 30 releases.
+    """
     name = 'australia_nsw'
     data_type = 'release_package'
 

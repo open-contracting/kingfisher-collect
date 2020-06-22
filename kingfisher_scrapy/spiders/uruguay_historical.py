@@ -3,6 +3,13 @@ from kingfisher_scrapy.util import components, date_range_by_year
 
 
 class UruguayHistorical(ZipSpider):
+    """
+    Bulk download documentation
+      https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
+    Spider arguments
+      sample
+        Download only data released on 2002.
+    """
     name = 'uruguay_historical'
     data_type = 'release_package'
 

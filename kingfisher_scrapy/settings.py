@@ -70,7 +70,8 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
 EXTENSIONS = {
-   'kingfisher_scrapy.extensions.KingfisherLatestDate': 1,
+    'kingfisher_scrapy.extensions.KingfisherLatestDate': 1,
+    'kingfisher_scrapy.extensions.SentryLogging': -1,
     # `KingfisherFilesStore` must run before `KingfisherProcessAPI`, because the file needs to be written before the
     # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
@@ -84,10 +85,13 @@ ITEM_PIPELINES = {
    'kingfisher_scrapy.pipelines.Validate': 300,
 }
 
-# To send items to Kingfishet Process, set this to, for example, "http://kingfisher.example.com" (no trailing slash).
+
+# To send exceptions and log records to Sentry.
+SENTRY_DSN = os.getenv('SENTRY_DSN')
+
+# To send items to Kingfisher Process, see
+# https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process.html
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
-# Set this to the same value as Kingfisher Process' `API_KEYS` setting.
-# See https://kingfisher-process.readthedocs.io/en/latest/config.html#web-api
 KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
 # If Kingfisher Process can read Kingfisher Collect's `FILES_STORE`, then Kingfisher Collect can send file paths
 # instead of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.

@@ -3,6 +3,7 @@
 import json
 import os
 
+import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
@@ -186,3 +187,21 @@ class KingfisherProcessAPI:
         if not response.ok:
             spider.logger.warning(
                 'Failed to post [{}]. {} status code: {}'.format(item['url'], name, response.status_code))
+
+
+# https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry
+class SentryLogging:
+    """
+    Sends exceptions and log records to Sentry. Log records with a level of ``ERROR`` or higher are captured as events.
+
+    https://docs.sentry.io/platforms/python/logging/
+    """
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        sentry_dsn = crawler.settings.get('SENTRY_DSN', None)
+        if sentry_dsn is None:
+            raise NotConfigured
+        extension = cls()
+        sentry_sdk.init(sentry_dsn)
+        return extension
