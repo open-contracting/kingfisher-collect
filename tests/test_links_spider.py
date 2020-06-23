@@ -2,7 +2,7 @@ import pytest
 from scrapy.http import Request
 
 from kingfisher_scrapy.base_spider import LinksSpider
-from kingfisher_scrapy.exceptions import KingfisherScrapyError
+from kingfisher_scrapy.exceptions import MissingNextLinkError
 from kingfisher_scrapy.items import File, FileError
 from tests import response_fixture, spider_with_crawler
 
@@ -67,7 +67,7 @@ def test_next_link_not_found():
     spider.next_page_formatter = lambda url: 'next.json'
     body = '{"links": {"next": ""}}'
 
-    with pytest.raises(KingfisherScrapyError) as e:
+    with pytest.raises(MissingNextLinkError) as e:
         meta = {'file_name': 'test', 'depth': 0}
         spider.next_link(response_fixture(meta=meta, body=body))
     assert str(e.value) == 'next link not found on the first page: http://example.com'
