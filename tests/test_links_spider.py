@@ -65,7 +65,13 @@ def test_parse_200():
 def test_next_link_not_found():
     spider = spider_with_crawler(spider_class=LinksSpider)
     spider.next_page_formatter = lambda url: 'next.json'
+    body = '{"links": {"next": ""}}'
 
     with pytest.raises(KingfisherScrapyError) as e:
-        assert spider.next_link(response_fixture(body='{"links": {"next": ""}}'))
+        meta = {'file_name': 'test', 'depth': 0}
+        assert spider.next_link(response_fixture(meta=meta, body=body))
     assert str(e.value) == 'next link not found on the first page: http://example.com'
+
+    meta = {'file_name': 'test', 'depth': 10}
+    response = spider.next_link(response_fixture(meta=meta, body=body))
+    assert response is None
