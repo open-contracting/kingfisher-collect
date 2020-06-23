@@ -8,7 +8,7 @@ import scrapy
 from jsonpointer import resolve_pointer
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.exceptions import KingfisherScrapyError, SpiderArgumentError
+from kingfisher_scrapy.exceptions import LinksSpiderError, SpiderArgumentError
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.util import handle_http_error
 
@@ -379,4 +379,4 @@ class LinksSpider(SimpleSpider):
             return self.build_request(url, formatter=self.next_page_formatter)
 
         if response.meta['depth'] == 0:
-            raise KingfisherScrapyError('next link not found on the first page: {}'.format(response.url))
+            raise LinksSpiderError('next link not found on the first page: {}'.format(response.url))
