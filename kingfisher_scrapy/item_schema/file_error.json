@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "File Error",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "item.json#/definitions/KingfisherItem"
+    }
+  ],
+  "properties": {
+    "errors": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "errors"
+  ]
+}

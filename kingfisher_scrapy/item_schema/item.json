@@ -7,14 +7,10 @@
       "type": "object",
       "properties": {
         "file_name": {
-          "title": "File Name",
-          "description": "File Name",
           "type": "string",
           "pattern": "^[^/]+$"
         },
         "url": {
-          "title": "URL",
-          "description": "URL",
           "type": "string",
           "format": "uri"
         }
@@ -35,8 +31,6 @@
       ],
       "properties": {
         "data_type": {
-          "title": "Data Type",
-          "description": "Data Type",
           "type": "string",
           "enum": [
             "record",
@@ -57,15 +51,11 @@
           ]
         },
         "encoding": {
-          "title": "Encoding",
-          "description": "Encoding",
           "type": [
             "string"
           ]
         },
         "data": {
-          "title": "Data",
-          "description": "Data",
           "type": "string",
           "minLength": 1
         }
@@ -73,81 +63,6 @@
       "required": [
         "data",
         "data_type"
-      ]
-    },
-    "File": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/KingfisherFileItem"
-        }
-      ],
-      "title": "File",
-      "description": "A file object to be send to an API and/or saved to the disk",
-      "type": "object",
-      "properties": {
-        "post_to_api": {
-          "title": "Post to Api?",
-          "description": "Post to Api?",
-          "type": [
-            "boolean"
-          ]
-        },
-        "path": {
-          "description": "For the KingfisherProcessAPI extension to read the file.",
-          "type": [
-            "string"
-          ],
-          "title": "Path"
-        },
-        "files_store": {
-          "title": "Files Store",
-          "description": "Files Store",
-          "type": [
-            "string"
-          ]
-        }
-      }
-    },
-    "FileItem": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/KingfisherFileItem"
-        }
-      ],
-      "title": "File Item",
-      "description": "A file item to be send to an API and not saved to the disk",
-      "type": "object",
-      "properties": {
-        "number": {
-          "title": "Item number",
-          "description": "Item number",
-          "type": "integer",
-          "minimum": 1
-        }
-      },
-      "required": [
-        "number"
-      ]
-    },
-    "FileError": {
-      "title": "File Error",
-      "description": "An item to report and error",
-      "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/definitions/KingfisherItem"
-        }
-      ],
-      "properties": {
-        "errors": {
-          "title": "Errors",
-          "description": "Errors",
-          "type": "string",
-          "minLength": 1
-        }
-      },
-      "required": [
-        "errors"
       ]
     }
   }

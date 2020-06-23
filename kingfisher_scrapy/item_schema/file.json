@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "allOf": [
+    {
+      "$ref": "item.json#/definitions/KingfisherFileItem"
+    }
+  ],
+  "title": "File",
+  "type": "object",
+  "properties": {
+    "post_to_api": {
+      "type": [
+        "boolean"
+      ]
+    },
+    "path": {
+      "description": "For the KingfisherProcessAPI extension to read the file.",
+      "type": [
+        "string"
+      ]
+    },
+    "files_store": {
+      "type": [
+        "string"
+      ]
+    }
+  }
+}
