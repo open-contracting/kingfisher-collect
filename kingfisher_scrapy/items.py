@@ -6,7 +6,6 @@ import scrapy
 class KingfisherItem(scrapy.Item):
     file_name = scrapy.Field()
     url = scrapy.Field()
-    # indicate that this item should be validated against a schema
     validate = True
 
 
@@ -22,13 +21,6 @@ class File(KingfisherItem):
     path = scrapy.Field()
     files_store = scrapy.Field()
 
-    required = [
-        'file_name',
-        'url',
-        'data',
-        'data_type',
-    ]
-
 
 class FileItem(KingfisherItem):
     number = scrapy.Field()
@@ -36,20 +28,6 @@ class FileItem(KingfisherItem):
     data_type = scrapy.Field()
     encoding = scrapy.Field()
 
-    required = [
-        'number',
-        'file_name',
-        'url',
-        'data',
-        'data_type',
-    ]
-
 
 class FileError(KingfisherItem):
     errors = scrapy.Field()
-
-    required = [
-        'file_name',
-        'url',
-        'errors',
-    ]
