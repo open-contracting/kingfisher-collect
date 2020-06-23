@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
-from kingfisher_scrapy.util import components, handle_error
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class ColombiaBulk(ZipSpider):
@@ -25,11 +25,11 @@ class ColombiaBulk(ZipSpider):
     def start_requests(self):
         yield scrapy.Request(
             'https://www.colombiacompra.gov.co/transparencia/datos-json',
-            meta={'kf_filename': 'list.html'},
+            meta={'file_name': 'list.html'},
             callback=self.parse_list,
         )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         urls = response.xpath('//a[@class="enlaces_contenido"]/@href').getall()
         if self.sample:

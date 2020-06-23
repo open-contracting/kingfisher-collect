@@ -4,21 +4,30 @@ from math import ceil
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.util import handle_error, parameters
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class MexicoQuienEsQuien(BaseSpider):
+    """
+    API documentation
+      https://quienesquienapi.readthedocs.io/es/latest/
+    Swagger API documentation
+      https://api.quienesquien.wiki/v2/docs/
+    Spider arguments
+      sample
+        Download a single record package with 10 records.
+    """
     name = 'mexico_quien_es_quien'
     download_delay = 0.9
 
     def start_requests(self):
         yield scrapy.Request(
             'https://api.quienesquien.wiki/v2/sources',
-            meta={'kf_filename': 'list.json'},
+            meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         pattern = 'https://api.quienesquien.wiki/v2/contracts?limit={limit}&offset={offset}'
         limit = 1000
@@ -30,7 +39,7 @@ class MexicoQuienEsQuien(BaseSpider):
             if self.sample:
                 break
 
-    @handle_error
+    @handle_http_error
     def parse(self, response):
         data = json.loads(response.text)
         yield self.build_file_from_response(

@@ -5,10 +5,22 @@ import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
-from kingfisher_scrapy.util import components, handle_error, parameters
+from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 
 class ParaguayHacienda(BaseSpider):
+    """
+    Swagger API documentation
+      https://datos.hacienda.gov.py/odmh-api-v1/api-docs/
+    Spider arguments
+      sample
+        Download only 11 releases.
+    Environment variables
+      KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN
+        To get an API account and request token go to https://datos.hacienda.gov.py/aplicaciones/new.
+      KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET
+        Your client secret generated.
+    """
     name = 'paraguay_hacienda'
 
     start_time = None
@@ -54,7 +66,7 @@ class ParaguayHacienda(BaseSpider):
             dont_filter=True,
         )
 
-    @handle_error
+    @handle_http_error
     def parse(self, response):
         data = json.loads(response.text)
         pattern = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/ocds/release-package/{}'

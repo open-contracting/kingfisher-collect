@@ -1,7 +1,7 @@
 import json
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_error, parameters, replace_parameter
+from kingfisher_scrapy.util import handle_http_error, parameters, replace_parameter
 
 
 class UKContractsFinder(SimpleSpider):
@@ -18,7 +18,7 @@ class UKContractsFinder(SimpleSpider):
         url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=asc&page=1'
         yield self.build_request(url, formatter=parameters('page'), callback=self.parse_list)
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         yield from self.parse(response)
 

@@ -17,4 +17,4 @@ class UKContractsFinder(LinksSpider):
     def start_requests(self):
         # This URL was provided by the publisher and is not the production URL.
         url = 'https://enoticetest.service.xgov.uk/api/1.0/ocdsReleasePackages'
-        yield scrapy.Request(url, meta={'kf_filename': 'start.json'}, headers={'Accept': 'application/json'})
+        yield scrapy.Request(url, meta={'file_name': 'start.json'}, headers={'Accept': 'application/json'})

@@ -3,10 +3,17 @@ from math import ceil
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_error, parameters
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class KenyaMakueni(SimpleSpider):
+    """
+    Swagger API documentation
+        https://opencontracting.makueni.go.ke/swagger-ui.html#/ocds-controller
+    Spider arguments
+      sample
+        Download only the first 10 release packages in the dataset.
+    """
     name = 'kenya_makueni'
     data_type = 'release_package_list'
     step = 10
@@ -20,11 +27,11 @@ class KenyaMakueni(SimpleSpider):
         else:
             yield scrapy.Request(
                 'https://opencontracting.makueni.go.ke/api/ocds/release/count',
-                meta={'kf_filename': 'count.json'},
+                meta={'file_name': 'count.json'},
                 callback=self.parse_count
             )
 
-    @handle_error
+    @handle_http_error
     def parse_count(self, response):
         total = int(response.text)
         for page in range(ceil(total / self.step)):

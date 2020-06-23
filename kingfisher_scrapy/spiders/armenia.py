@@ -5,6 +5,11 @@ from kingfisher_scrapy.util import parameters
 
 
 class Armenia(LinksSpider):
+    """
+    Spider arguments
+      sample
+        Download only the first release package in the dataset.
+    """
     name = 'armenia'
     data_type = 'release_package'
     next_pointer = '/next_page/uri'
@@ -12,4 +17,4 @@ class Armenia(LinksSpider):
 
     def start_requests(self):
         url = 'https://armeps.am/ocds/release'
-        yield scrapy.Request(url, meta={'kf_filename': 'offset-0.json'})
+        yield scrapy.Request(url, meta={'file_name': 'offset-0.json'})

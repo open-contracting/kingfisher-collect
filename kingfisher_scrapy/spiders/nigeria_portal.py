@@ -1,10 +1,15 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_error
+from kingfisher_scrapy.util import handle_http_error
 
 
 class NigeriaPortal(SimpleSpider):
+    """
+    Spider arguments
+      sample
+        Download only the first release package in the dataset.
+    """
     name = 'nigeria_portal'
     data_type = 'release_package'
 
@@ -14,11 +19,11 @@ class NigeriaPortal(SimpleSpider):
     def start_requests(self):
         yield scrapy.Request(
             'http://nocopo.bpp.gov.ng/OpenData.aspx',
-            meta={'kf_filename': 'form.html'},
+            meta={'file_name': 'form.html'},
             callback=self.parse_list
         )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         formdata = {
             '__VIEWSTATE': response.css('input#__VIEWSTATE::attr(value)').extract_first(),
@@ -34,4 +39,4 @@ class NigeriaPortal(SimpleSpider):
                 if self.sample:
                     break
 
-        yield scrapy.FormRequest.from_response(response, formdata=formdata, meta={'kf_filename': 'all.json'})
+        yield scrapy.FormRequest.from_response(response, formdata=formdata, meta={'file_name': 'all.json'})

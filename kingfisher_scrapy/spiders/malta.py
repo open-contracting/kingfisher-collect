@@ -4,21 +4,28 @@ from urllib.parse import urlsplit
 import scrapy
 
 from kingfisher_scrapy.base_spider import ZipSpider
-from kingfisher_scrapy.util import components, handle_error
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class Malta(ZipSpider):
+    """
+    API documentation
+      https://docs.google.com/document/d/1VnCEywKkkQ7BcVbT7HlW2s_N_QI8W0KE/edit
+    Spider arguments
+      sample
+        Download only data released on October 2019.
+    """
     name = 'malta'
     data_type = 'record_package'
 
     def start_requests(self):
         yield scrapy.Request(
             'http://demowww.etenders.gov.mt/ocds/services/recordpackage/getrecordpackagelist',
-            meta={'kf_filename': 'list.json'},
+            meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         urls = json.loads(response.text)['packagesPerMonth']
         if self.sample:

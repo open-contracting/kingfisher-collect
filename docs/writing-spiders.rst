@@ -53,7 +53,7 @@ Here is a sample:
 .. code-block:: python
 
     from kingfisher_scrapy.base_spider import SimpleSpider
-    from kingfisher_scrapy.util import components, handle_error
+    from kingfisher_scrapy.util import components, handle_http_error
 
     class VerySimple(SimpleSpider):
         name = 'very_simple'

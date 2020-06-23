@@ -258,13 +258,10 @@ Moldova
 .. autoclass:: kingfisher_scrapy.spiders.moldova.Moldova
    :no-members:
 
+.. autoclass:: kingfisher_scrapy.spiders.moldova_mtender.MoldovaMTender
+   :no-members:
+
 .. autoclass:: kingfisher_scrapy.spiders.moldova_old.MoldovaOld
-   :no-members:
-
-.. autoclass:: kingfisher_scrapy.spiders.moldova_records.MoldovaRecords
-   :no-members:
-
-.. autoclass:: kingfisher_scrapy.spiders.moldova_releases.MoldovaReleases
    :no-members:
 
 Nepal

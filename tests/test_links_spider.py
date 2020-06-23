@@ -2,6 +2,7 @@ import pytest
 from scrapy.http import Request
 
 from kingfisher_scrapy.base_spider import LinksSpider
+from kingfisher_scrapy.exceptions import KingfisherScrapyError
 from kingfisher_scrapy.items import File, FileError
 from tests import response_fixture, spider_with_crawler
 
@@ -14,7 +15,7 @@ def test_next_link():
 
     assert type(request) is Request
     assert request.url == 'http://example.com/next'
-    assert request.meta == {'kf_filename': 'next.json'}
+    assert request.meta == {'file_name': 'next.json'}
 
 
 def test_parse_404():
@@ -55,7 +56,16 @@ def test_parse_200():
 
     assert type(request) is Request
     assert request.url == 'http://example.com/next'
-    assert request.meta == {'kf_filename': 'next.json'}
+    assert request.meta == {'file_name': 'next.json'}
 
     with pytest.raises(StopIteration):
         next(generator)
+
+
+def test_next_link_not_found():
+    spider = spider_with_crawler(spider_class=LinksSpider)
+    spider.next_page_formatter = lambda url: 'next.json'
+
+    with pytest.raises(KingfisherScrapyError) as e:
+        assert spider.next_link(response_fixture(body='{"links": {"next": ""}}'))
+    assert str(e.value) == 'next link not found on the first page: http://example.com'

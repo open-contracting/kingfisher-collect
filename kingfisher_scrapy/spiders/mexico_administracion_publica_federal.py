@@ -4,7 +4,7 @@ from math import ceil
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_error, parameters, replace_parameter
+from kingfisher_scrapy.util import handle_http_error, parameters, replace_parameter
 
 
 class MexicoAdministracionPublicaFederal(SimpleSpider):
@@ -20,9 +20,9 @@ class MexicoAdministracionPublicaFederal(SimpleSpider):
 
     def start_requests(self):
         url = 'https://api.datos.gob.mx/v1/contratacionesabiertas'
-        yield scrapy.Request(url, meta={'kf_filename': 'page-1.json'}, callback=self.parse_list)
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
-    @handle_error
+    @handle_http_error
     def parse_list(self, response):
         yield from self.parse(response)
 

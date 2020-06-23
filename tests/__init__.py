@@ -8,7 +8,7 @@ from kingfisher_scrapy.base_spider import BaseSpider
 
 
 def response_fixture(**kwargs):
-    request = Request('http://example.com', meta={'kf_filename': 'test'})
+    request = Request('http://example.com', meta={'file_name': 'test', 'depth': 0})
     if 'status' not in kwargs:
         kwargs['status'] = 200
     if 'body' not in kwargs:
