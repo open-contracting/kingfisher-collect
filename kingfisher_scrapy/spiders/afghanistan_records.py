@@ -12,7 +12,7 @@ class AfghanistanRecords(SimpleSpider):
       https://ocds.ageops.net/
     Spider arguments
       sample
-        Download only 1 record.
+        Downloads the first record returned by the record list endpoint
     """
     name = 'afghanistan_records'
     data_type = 'record'
