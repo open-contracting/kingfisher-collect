@@ -12,7 +12,6 @@ class MoldovaMTender(SimpleSpider):
     """
     name = 'moldova_mtender'
     data_type = 'release_package'
-    base_url = 'http://public.eprocurement.systems/ocds/tenders/'
 
     def start_requests(self):
         url = 'https://public.mtender.gov.md/tenders/'
@@ -20,12 +19,13 @@ class MoldovaMTender(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
+        base_url = 'http://public.eprocurement.systems/ocds/tenders/'
         data = json.loads(response.text)
         # The last page returns an empty JSON object.
         if not data:
             return
         for item in data['data']:
-            yield self.build_request(self.base_url + item['ocid'], formatter=components(-2))
+            yield self.build_request(base_url + item['ocid'], formatter=components(-2))
 
         if self.sample:
             return
