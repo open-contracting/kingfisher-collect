@@ -1,18 +1,5 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Schema for Kingfisher Collect File, FileItem and FileError",
-  "description": "Schema for Kingfisher Collect File, FileItem and FileError",
-  "oneOf": [
-    {
-      "$ref": "#/definitions/File"
-    },
-    {
-      "$ref": "#/definitions/FileItem"
-    },
-    {
-      "$ref": "#/definitions/FileError"
-    }
-  ],
   "definitions": {
     "KingfisherItem": {
       "title": "Kingfisher Item",
@@ -23,15 +10,13 @@
           "title": "File Name",
           "description": "File Name",
           "type": "string",
-          "pattern": "^[^/]*$",
-          "minLength": 1
+          "pattern": "^[^/]+$"
         },
         "url": {
           "title": "URL",
           "description": "URL",
           "type": "string",
-          "format": "uri",
-          "minLength": 1
+          "format": "uri"
         }
       },
       "required": [
@@ -69,17 +54,13 @@
             "record_package_json_lines",
             "release_package_in_ocdsReleasePackage_in_list_in_results",
             "release_in_Release"
-          ],
-          "openCodelist": false,
-          "codelist": "dataType.csv",
-          "minLength": 1
+          ]
         },
         "encoding": {
           "title": "Encoding",
           "description": "Encoding",
           "type": [
-            "string",
-            "null"
+            "string"
           ]
         },
         "data": {
@@ -108,15 +89,13 @@
           "title": "Post to Api?",
           "description": "Post to Api?",
           "type": [
-            "boolean",
-            "null"
+            "boolean"
           ]
         },
         "path": {
           "description": "For the KingfisherProcessAPI extension to read the file.",
           "type": [
-            "string",
-            "null"
+            "string"
           ],
           "title": "Path"
         },
@@ -124,8 +103,7 @@
           "title": "Files Store",
           "description": "Files Store",
           "type": [
-            "string",
-            "null"
+            "string"
           ]
         }
       }

@@ -2,10 +2,12 @@
 # https://github.com/open-contracting/deploy/blob/master/salt/ocdskingfishercollect/scrapyd-requirements.txt
 
 jsonpointer
+jsonref
+jsonschema
 rarfile
 requests
+rfc3987
 Scrapy
 scrapyd-client
 ijson>=3
 sentry-sdk
-jsonschema
