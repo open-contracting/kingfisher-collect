@@ -1,7 +1,7 @@
 import pytest
 from jsonschema import ValidationError
 
-from kingfisher_scrapy.items import File, FileItem, FileError
+from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.pipelines import Validate
 
 
