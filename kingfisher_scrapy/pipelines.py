@@ -5,7 +5,7 @@ from kingfisher_scrapy.items import File, FileItem
 
 class Validate:
     def __init__(self):
-        self.file_names = set()
+        self.files = set()
         self.file_items = set()
 
     def process_item(self, item, spider):
@@ -15,13 +15,14 @@ class Validate:
             item.validate()
 
         if isinstance(item, FileItem):
-            if (item['file_name'], item['number']) in self.file_items:
-                spider.logger.warning('Duplicated filename and number pair: {}-{}'.format(item['file_name'],
-                                                                                          item['number']))
-            self.file_items.add((item['file_name'], item['number']))
+            key = (item['file_name'], item['number'])
+            if key in self.file_items:
+                spider.logger.warning('Duplicate FileItem: {!r}'.format(key))
+            self.file_items.add(key)
         elif isinstance(item, File):
-            if item['file_name'] in self.file_names:
-                spider.logger.warning('Duplicated filename: {}'.format(item['file_name']))
-            self.file_names.add(item['file_name'])
+            key = item['file_name']
+            if key in self.files:
+                spider.logger.warning('Duplicate File: {!r}'.format(key))
+            self.files.add(key)
 
         return item
