@@ -69,7 +69,7 @@ def test_next_link_not_found():
 
     with pytest.raises(KingfisherScrapyError) as e:
         meta = {'file_name': 'test', 'depth': 0}
-        assert spider.next_link(response_fixture(meta=meta, body=body))
+        spider.next_link(response_fixture(meta=meta, body=body))
     assert str(e.value) == 'next link not found on the first page: http://example.com'
 
     meta = {'file_name': 'test', 'depth': 10}

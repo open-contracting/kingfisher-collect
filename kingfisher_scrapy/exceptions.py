@@ -14,5 +14,5 @@ class MissingRequiredFieldError(KingfisherScrapyError, KeyError):
     """Raised when an item is missing a required field"""
 
 
-class LinksSpiderError(KingfisherScrapyError):
-    """Raised when a next link is invalid in LinksSpider"""
+class MissingNextLinkError(KingfisherScrapyError):
+    """Raised when a next link is not found on the first page of results"""
