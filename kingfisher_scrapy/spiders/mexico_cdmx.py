@@ -9,6 +9,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class MexicoCDMXSource(SimpleSpider):
     name = 'mexico_cdmx'
     data_type = 'release_package'
+    skip_latest_release_date = 'URL doesnt work anymore'
 
     def start_requests(self):
         yield scrapy.Request(

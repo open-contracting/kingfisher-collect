@@ -33,6 +33,7 @@ class KingfisherLatestDate:
         self.written[spider.name] = True
         with open(self.filename, 'a+') as output:
             output.write(spider.name + ': ' + item['date'] + '\n')
+        spider.close(spider, 'Latest item collected')
 
 
 class KingfisherFilesStore:
