@@ -1,8 +1,7 @@
 import pytest
 from jsonschema import ValidationError
 
-from kingfisher_scrapy.items import File, FileItem
-from kingfisher_scrapy.items import FileError
+from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.pipelines import Validate
 from tests import spider_with_crawler
 
