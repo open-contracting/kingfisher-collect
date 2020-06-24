@@ -10,7 +10,7 @@ class GeorgiaRecords(LinksSpider):
       https://odapi.spa.ge/api/swagger.ui
     Spider arguments
       sample
-        Download one set of releases.
+        Downloads the first page of packages returned by the record list endpoint.
     """
     name = 'georgia_records'
     data_type = 'record_package'

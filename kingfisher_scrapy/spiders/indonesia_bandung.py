@@ -9,7 +9,7 @@ class IndonesiaBandung(BaseSpider):
     """
     Spider arguments
       sample
-        Download only 10 releases.
+        Downloads the first release listed for 2013
     """
     name = 'indonesia_bandung'
 

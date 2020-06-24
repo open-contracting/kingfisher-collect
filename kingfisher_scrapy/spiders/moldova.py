@@ -8,7 +8,7 @@ class Moldova(SimpleSpider):
     """
     Spider arguments
       sample
-        Download only one set of records.
+        Downloads the first page of records for each available endpoint (budgets, tenders).
     """
     name = 'moldova'
     data_type = 'record_package'

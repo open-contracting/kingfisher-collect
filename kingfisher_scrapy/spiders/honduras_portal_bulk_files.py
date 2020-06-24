@@ -12,7 +12,7 @@ class HondurasPortalBulkFiles(SimpleSpider):
       http://www.contratacionesabiertas.gob.hn/descargas/
     Spider arguments
       sample
-        Download one set of releases.
+        Downloads the first package listed in http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json.
     """
     name = 'honduras_portal_bulk_files'
     data_type = 'release_package'

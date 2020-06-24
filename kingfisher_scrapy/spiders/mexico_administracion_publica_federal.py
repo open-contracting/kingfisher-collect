@@ -13,7 +13,7 @@ class MexicoAdministracionPublicaFederal(SimpleSpider):
       https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
     Spider arguments
       sample
-        Download only 100 records.
+        Downloads the records on the first page of the list endpoint.
     """
     name = 'mexico_administracion_publica_federal'
     data_type = 'record_package_list_in_results'

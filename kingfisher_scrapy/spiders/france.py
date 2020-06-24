@@ -12,7 +12,7 @@ class France(SimpleSpider):
       https://doc.data.gouv.fr/api/reference/
     Spider arguments
       sample
-        Download one set of releases.
+        Downloads the first OCDS package found using the CKAN API.
     """
     name = 'france'
     data_type = 'release_package'

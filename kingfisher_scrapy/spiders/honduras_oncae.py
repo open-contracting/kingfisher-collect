@@ -10,7 +10,7 @@ class HondurasONCAE(ZipSpider):
       http://oncae.gob.hn/datosabiertos
     Spider arguments
       sample
-        Download one set of releases.
+        Downloads the first package listed on the downloads page.
     """
     name = 'honduras_oncae'
     data_type = 'release_package'

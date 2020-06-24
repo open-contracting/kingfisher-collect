@@ -7,7 +7,7 @@ class HondurasCoST(SimpleSpider):
     """
     Spider arguments
       sample
-        Download only 20 records.
+        Ignored, a single file is downloaded.
     """
     name = 'honduras_cost'
     data_type = 'record_package'

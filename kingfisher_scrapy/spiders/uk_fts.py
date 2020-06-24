@@ -8,7 +8,7 @@ class UKContractsFinder(LinksSpider):
     """
     Spider arguments
       sample
-        Download only 1 release package.
+        Downloads the first release package returned by the main endpoint.
     """
     name = 'uk_fts'
     data_type = 'release_package_in_ocdsReleasePackage_in_list_in_results'

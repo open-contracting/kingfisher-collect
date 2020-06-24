@@ -10,7 +10,7 @@ class Scotland(SimpleSpider):
       https://api.publiccontractsscotland.gov.uk/v1
     Spider arguments
       sample
-        Download only 21 releases.
+        Downloads packages for releases dated one year ago, for each notice type available.
     """
     name = 'scotland'
     data_type = 'release_package'

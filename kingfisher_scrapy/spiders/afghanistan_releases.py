@@ -12,7 +12,7 @@ class AfghanistanReleases(SimpleSpider):
       https://ocds.ageops.net/
     Spider arguments
       sample
-        Download only 1 release.
+        Downloads the first release returned by the release endpoint of the API.
     """
     name = 'afghanistan_releases'
     data_type = 'release'

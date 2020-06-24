@@ -14,7 +14,7 @@ class DominicanRepublic(BaseSpider):
       https://www.dgcp.gob.do/estandar-mundial-ocds/
     Spider arguments
       sample
-        Download only one set of releases.
+        Downloads a release package for the oldest year (2018, first link in the downloads page).
     """
     name = 'dominican_republic'
 

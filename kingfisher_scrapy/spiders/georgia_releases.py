@@ -10,7 +10,7 @@ class GeorgiaReleases(LinksSpider):
       https://odapi.spa.ge/api/swagger.ui
     Spider arguments
       sample
-        Download one set of releases.
+        Downloads the first page of packages returned by the release list endpoint.
     """
     name = 'georgia_releases'
     data_type = 'release_package'
