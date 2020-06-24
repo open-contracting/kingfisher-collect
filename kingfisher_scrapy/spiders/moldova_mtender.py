@@ -25,7 +25,7 @@ class MoldovaMTender(SimpleSpider):
         if not data:
             return
         for item in data['data']:
-            yield self.build_request(base_url + item['ocid'], formatter=components(-2))
+            yield self.build_request(base_url + item['ocid'], formatter=components(-1))
 
         if self.sample:
             return
