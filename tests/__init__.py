@@ -7,8 +7,10 @@ from scrapy.http import TextResponse
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-def response_fixture(**kwargs):
-    request = Request('http://example.com', meta={'file_name': 'test', 'depth': 0})
+def response_fixture(meta=None, **kwargs):
+    if meta is None:
+        meta = {'file_name': 'test'}
+    request = Request('http://example.com', meta=meta)
     if 'status' not in kwargs:
         kwargs['status'] = 200
     if 'body' not in kwargs:

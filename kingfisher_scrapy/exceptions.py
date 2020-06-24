@@ -8,3 +8,7 @@ class AuthenticationError(KingfisherScrapyError):
 
 class SpiderArgumentError(KingfisherScrapyError):
     """Raised when a spider argument's value is invalid"""
+
+
+class MissingNextLinkError(KingfisherScrapyError):
+    """Raised when a next link is not found on the first page of results"""
