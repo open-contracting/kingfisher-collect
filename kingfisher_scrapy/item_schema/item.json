@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "KingfisherItem": {
+      "type": "object",
+      "properties": {
+        "file_name": {
+          "type": "string",
+          "pattern": "^[^/]+$"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "file_name",
+        "url"
+      ]
+    },
+    "KingfisherFileItem": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/KingfisherItem"
+        }
+      ],
+      "type": "object",
+      "properties": {
+        "data_type": {
+          "type": "string",
+          "enum": [
+            "record",
+            "release",
+            "record_list",
+            "release_list",
+            "compiled_release",
+            "record_package",
+            "release_package",
+            "record_package_list",
+            "release_package_list",
+            "record_package_list_in_results",
+            "release_package_list_in_results",
+            "release_package_json_lines",
+            "record_package_json_lines",
+            "release_package_in_ocdsReleasePackage_in_list_in_results",
+            "release_in_Release"
+          ]
+        },
+        "encoding": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "data",
+        "data_type"
+      ]
+    }
+  }
+}
