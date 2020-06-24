@@ -17,10 +17,10 @@ class Validate:
         self.files = set()
         self.file_items = set()
         schema_path = pathlib.Path(os.path.dirname(os.path.abspath(__file__)), 'item_schema')
-        for item in ['File', 'FileError', 'FileItem']:
+        for item in ('File', 'FileError', 'FileItem'):
             filename = os.path.join(schema_path, f'{item}.json')
             with open(filename) as f:
-                schema = jsonref.load(f, base_uri=pathlib.Path(schema_path, 'item_schema').as_uri())
+                schema = jsonref.load(f, base_uri=schema_path.as_uri() + '/')
             self.validators[item] = Draft4Validator(schema, format_checker=FormatChecker())
 
     def process_item(self, item, spider):
