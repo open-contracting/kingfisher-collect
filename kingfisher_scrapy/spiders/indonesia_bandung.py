@@ -6,6 +6,27 @@ from kingfisher_scrapy.util import components, date_range_by_year, handle_http_e
 
 
 class IndonesiaBandung(BaseSpider):
+    """
+    API endpoints
+      Get Birms Contract List by year
+        Link
+          https://birms.bandung.go.id/api/contracts/year/{year}?page={page}
+        Parameters
+          year
+            contract year number
+          page
+            page number
+      Get Birms Detail Contract by OCID
+        Link
+          https://birms.bandung.go.id/api/newcontract/ocds-afzrfb-{b/s}-{year}-{uniqid}
+        Parameters
+          b/s
+            birms or spse source database
+          year
+            contract year number
+          uniqid
+            id number
+    """
     name = 'indonesia_bandung'
 
     def start_requests(self):
