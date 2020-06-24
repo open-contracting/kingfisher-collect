@@ -2,8 +2,6 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "definitions": {
     "KingfisherItem": {
-      "title": "Kingfisher Item",
-      "description": "A generic item with file_name and url to be extended by other items",
       "type": "object",
       "properties": {
         "file_name": {
@@ -21,14 +19,12 @@
       ]
     },
     "KingfisherFileItem": {
-      "title": "Kingfisher Item",
-      "description": "A base object to be extended by other File type items",
-      "type": "object",
       "allOf": [
         {
           "$ref": "#/definitions/KingfisherItem"
         }
       ],
+      "type": "object",
       "properties": {
         "data_type": {
           "type": "string",
@@ -51,9 +47,7 @@
           ]
         },
         "encoding": {
-          "type": [
-            "string"
-          ]
+          "type": "string"
         },
         "data": {
           "type": "string",

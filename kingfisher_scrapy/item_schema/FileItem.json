@@ -5,7 +5,6 @@
       "$ref": "item.json#/definitions/KingfisherFileItem"
     }
   ],
-  "title": "File Item",
   "type": "object",
   "properties": {
     "number": {

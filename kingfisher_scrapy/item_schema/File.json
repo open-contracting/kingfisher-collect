@@ -5,23 +5,16 @@
       "$ref": "item.json#/definitions/KingfisherFileItem"
     }
   ],
-  "title": "File",
   "type": "object",
   "properties": {
     "post_to_api": {
-      "type": [
-        "boolean"
-      ]
+      "type": "boolean"
     },
     "path": {
-      "type": [
-        "string"
-      ]
+      "type": "string"
     },
     "files_store": {
-      "type": [
-        "string"
-      ]
+      "type": "string"
     }
   }
 }

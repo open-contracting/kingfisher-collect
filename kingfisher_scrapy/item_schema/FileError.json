@@ -1,12 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "File Error",
-  "type": "object",
   "allOf": [
     {
       "$ref": "item.json#/definitions/KingfisherItem"
     }
   ],
+  "type": "object",
   "properties": {
     "errors": {
       "type": "string",
