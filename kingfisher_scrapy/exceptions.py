@@ -12,3 +12,7 @@ class SpiderArgumentError(KingfisherScrapyError):
 
 class MissingRequiredFieldError(KingfisherScrapyError, KeyError):
     """Raised when an item is missing a required field"""
+
+
+class MissingNextLinkError(KingfisherScrapyError):
+    """Raised when a next link is not found on the first page of results"""
