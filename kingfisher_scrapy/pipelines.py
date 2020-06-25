@@ -19,16 +19,26 @@ class Validate:
 
 class LatestReleaseDate:
     def __init__(self):
-        self.processed = []
+        self.processed = set()
+
     def process_item(self, item, spider):
         if spider.latest and (isinstance(item, FileItem) or isinstance(item, File)):
             if spider.name in self.processed:
-                raise DropItem("Duplicate item found: %s" % spider.name)
-            if item['data_type'] == 'release_package'\
-                    or item['data_type'] == 'record_package':
-                self.processed.append(spider.name)
-                return LatestReleaseDateItem({
-                    'date': json.loads(item['data'])['releases'][0]['date']
-                })
+                spider.crawler.engine.close_spider(self, reason='proccesed')
+            date = None
+            data = json.loads(item['data'])
+            if item['data_type'] == 'release_package':
+                date = data['releases'][0]['date']
+            elif item['data_type'] == 'record_package':
+                if 'releases' in data:
+                    date = data['releases'][0]['date']
+                elif 'compiledRelease' in data:
+                    date = data['releases'][0]['date']
+            elif item['data_type'] == 'release':
+                date = data['date']
+            self.processed.add(spider.name)
+            return LatestReleaseDateItem({
+                'date': date
+            })
         else:
             return item
