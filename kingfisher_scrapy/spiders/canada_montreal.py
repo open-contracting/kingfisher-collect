@@ -7,6 +7,13 @@ from kingfisher_scrapy.util import handle_http_error, parameters, replace_parame
 
 
 class CanadaMontreal(SimpleSpider):
+    """
+    API documentation
+      http://donnees.ville.montreal.qc.ca/dataset/contrats-et-subventions-api
+    Spider arguments
+      sample
+        Downloads the first page of releases returned by the main endpoint.
+    """
     name = 'canada_montreal'
     data_type = 'release_package'
     step = 10000

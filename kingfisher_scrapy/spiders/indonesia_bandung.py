@@ -26,6 +26,9 @@ class IndonesiaBandung(BaseSpider):
             contract year number
           uniqid
             id number
+    Spider arguments
+      sample
+        Downloads the first release listed for 2013
     """
     name = 'indonesia_bandung'
 

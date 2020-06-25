@@ -9,6 +9,13 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class DominicanRepublic(BaseSpider):
+    """
+    Bulk download documentation
+      https://www.dgcp.gob.do/estandar-mundial-ocds/
+    Spider arguments
+      sample
+        Downloads a release package for the oldest year (2018, first link in the downloads page).
+    """
     name = 'dominican_republic'
 
     def start_requests(self):

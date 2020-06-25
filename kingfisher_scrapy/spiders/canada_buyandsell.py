@@ -3,6 +3,13 @@ from kingfisher_scrapy.util import components
 
 
 class CanadaBuyAndSell(SimpleSpider):
+    """
+    API documentation
+      https://buyandsell.gc.ca/procurement-data/open-contracting-data-standard-pilot/download-ocds-pilot-data
+    Spider arguments
+      sample
+        Downloads a release package with data for the oldest fiscal year available (2013-2014).
+    """
     name = 'canada_buyandsell'
     data_type = 'release_package'
 

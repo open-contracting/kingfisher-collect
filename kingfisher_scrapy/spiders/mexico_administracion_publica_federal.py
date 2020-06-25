@@ -9,7 +9,11 @@ from kingfisher_scrapy.util import handle_http_error, parameters, replace_parame
 
 class MexicoAdministracionPublicaFederal(SimpleSpider):
     """
-    Bulk downloads: https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
+    Bulk download documentation
+      https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
+    Spider arguments
+      sample
+        Downloads the records on the first page of the list endpoint.
     """
     name = 'mexico_administracion_publica_federal'
     data_type = 'record_package_list_in_results'

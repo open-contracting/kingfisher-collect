@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "allOf": [
+    {
+      "$ref": "item.json#/definitions/KingfisherFileItem"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "post_to_api": {
+      "type": "boolean"
+    },
+    "path": {
+      "type": "string"
+    },
+    "files_store": {
+      "type": "string"
+    }
+  }
+}

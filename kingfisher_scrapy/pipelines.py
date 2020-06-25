@@ -1,18 +1,31 @@
 # https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 # https://docs.scrapy.org/en/latest/topics/signals.html#item-signals
+
+import os
+import pathlib
+
+import jsonref as jsonref
+from jsonschema import FormatChecker
+from jsonschema.validators import Draft4Validator
+
 from kingfisher_scrapy.items import File, FileItem
 
 
 class Validate:
     def __init__(self):
+        self.validators = {}
         self.files = set()
         self.file_items = set()
+        schema_path = pathlib.Path(os.path.dirname(os.path.abspath(__file__)), 'item_schema')
+        for item in ('File', 'FileError', 'FileItem'):
+            filename = os.path.join(schema_path, f'{item}.json')
+            with open(filename) as f:
+                schema = jsonref.load(f, base_uri=schema_path.as_uri() + '/')
+            self.validators[item] = Draft4Validator(schema, format_checker=FormatChecker())
 
     def process_item(self, item, spider):
         if hasattr(item, 'validate'):
-            # We call this in the item pipeline to guarantee that all items are validated. However, its backtrace isn't
-            # as helpful for debugging, so we could also call it in ``BaseSpider`` if this becomes an issue.
-            item.validate()
+            self.validators.get(item.__class__.__name__).validate(dict(item))
 
         if isinstance(item, FileItem):
             key = (item['file_name'], item['number'])
