@@ -8,6 +8,10 @@ setup(
         'kingfisher_scrapy',
         'kingfisher_scrapy.spiders',
     ],
+    package_data={
+        'kingfisher_scrapy': ['item_schema/*.json'],
+    },
+    include_package_data=True,
     entry_points={
         'scrapy': [
             'settings = kingfisher_scrapy.settings',

@@ -1,3 +1,0 @@
-include scrapy.cfg
-recursive-include kingfisher_scrapy *.json
-recursive-include kingfisher_scrapy *.py
