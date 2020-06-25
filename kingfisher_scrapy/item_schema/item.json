@@ -49,8 +49,7 @@
         "encoding": {
           "type": "string"
         },
-        "data": {
-        }
+        "data": {}
       },
       "required": [
         "data",
