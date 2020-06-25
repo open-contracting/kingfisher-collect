@@ -25,7 +25,7 @@ class IndonesiaBandung(BaseSpider):
           year
             contract year number
           uniqid
-            id number
+            release id
     """
     name = 'indonesia_bandung'
 
