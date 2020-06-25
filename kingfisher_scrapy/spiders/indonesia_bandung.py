@@ -18,7 +18,7 @@ class IndonesiaBandung(BaseSpider):
             page number
       Get Birms Detail Contract by OCID
         Link
-          https://birms.bandung.go.id/api/newcontract/ocds-afzrfb-{b/s}-{year}-{uniqid}
+          https://birms.bandung.go.id/api/newcontract/ocds-afzrfb-{source-database}-{year}-{uniqid}
         Parameters
           b/s
             (b)irms or (s)pse
