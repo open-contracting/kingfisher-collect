@@ -6,6 +6,11 @@ from kingfisher_scrapy.util import components, date_range_by_year, handle_http_e
 
 
 class IndonesiaBandung(BaseSpider):
+    """
+    Spider arguments
+      sample
+        Downloads the first release listed for 2013
+    """
     name = 'indonesia_bandung'
 
     def start_requests(self):

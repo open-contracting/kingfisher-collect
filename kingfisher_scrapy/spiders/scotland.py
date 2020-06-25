@@ -5,6 +5,13 @@ from kingfisher_scrapy.util import parameters
 
 
 class Scotland(SimpleSpider):
+    """
+    API documentation
+      https://api.publiccontractsscotland.gov.uk/v1
+    Spider arguments
+      sample
+        Downloads packages for releases dated one year ago, for each notice type available.
+    """
     name = 'scotland'
     data_type = 'release_package'
 

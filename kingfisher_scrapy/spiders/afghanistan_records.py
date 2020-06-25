@@ -7,6 +7,13 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class AfghanistanRecords(SimpleSpider):
+    """
+    API documentation
+      https://ocds.ageops.net/
+    Spider arguments
+      sample
+        Downloads the first record returned by the record list endpoint.
+    """
     name = 'afghanistan_records'
     data_type = 'record'
 
