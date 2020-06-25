@@ -18,14 +18,14 @@ class IndonesiaBandung(BaseSpider):
             page number
       Get Birms Detail Contract by OCID
         Link
-          https://birms.bandung.go.id/api/newcontract/ocds-afzrfb-{b/s}-{year}-{uniqid}
+          https://birms.bandung.go.id/api/newcontract/ocds-afzrfb-{source-database}-{year}-{uniqid}
         Parameters
-          b/s
-            birms or spse source database
+          source-database
+            (b)irms or (s)pse
           year
             contract year number
           uniqid
-            id number
+            release id
     Spider arguments
       sample
         Downloads the first release listed for 2013
