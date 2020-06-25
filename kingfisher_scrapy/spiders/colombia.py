@@ -29,14 +29,21 @@ class Colombia(LinksSpider):
         If ``from_date`` is provided and ``until_date`` don't, defaults to today.
     """
     name = 'colombia'
-    next_page_formatter = staticmethod(parameters('page'))
+    next_page_formatter = staticmethod(parameters('_id'))
     default_from_date = '2011-01-01'
+
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(Colombia, cls).from_crawler(crawler, date_format='date', *args, **kwargs)
+        if (spider.from_date or spider.until_date) and hasattr(spider, 'year'):
+            raise scrapy.exceptions.CloseSpider('The use of from and/or until with year parameter is not supported')
+        return spider
 
     def start_requests(self):
         base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases'
         if hasattr(self, 'year'):
             base_url += f'/page/{int(self.year)}'
-        if self.from_date or self.until_date:
+        elif self.from_date or self.until_date:
             from_date = self.from_date.strftime(self.date_format)
             until_date = self.until_date.strftime(self.date_format)
             base_url += f'/dates/{from_date}/{until_date}'
