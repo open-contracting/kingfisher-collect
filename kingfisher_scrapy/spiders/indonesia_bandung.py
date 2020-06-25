@@ -20,7 +20,7 @@ class IndonesiaBandung(BaseSpider):
         Link
           https://birms.bandung.go.id/api/newcontract/ocds-afzrfb-{source-database}-{year}-{uniqid}
         Parameters
-          b/s
+          source-database
             (b)irms or (s)pse
           year
             contract year number
