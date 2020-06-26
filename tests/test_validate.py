@@ -17,6 +17,11 @@ def test_process_item():
 
     assert pipeline.process_item(item, None) == item
 
+    item['data'] = item['data'].encode('ascii')
+    item['file_name'] = 'test2'
+
+    assert pipeline.process_item(item, None) == item
+
 
 def test_process_item_error():
     pipeline = Validate()

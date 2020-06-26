@@ -1,4 +1,5 @@
 {
+  "$id": "item.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "definitions": {
     "KingfisherItem": {
@@ -51,7 +52,6 @@
           "type": "string"
         },
         "data": {
-          "type": "string",
           "minLength": 1
         }
       },
