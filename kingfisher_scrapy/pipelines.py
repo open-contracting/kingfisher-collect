@@ -1,14 +1,16 @@
 # https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 # https://docs.scrapy.org/en/latest/topics/signals.html#item-signals
+import json
+import pkgutil
 
-import os
-import pathlib
-
-import jsonref as jsonref
 from jsonschema import FormatChecker
-from jsonschema.validators import Draft4Validator
+from jsonschema.validators import Draft4Validator, RefResolver
 
 from kingfisher_scrapy.items import File, FileItem
+
+
+def _json_loads(basename):
+    return json.loads(pkgutil.get_data('kingfisher_scrapy', f'item_schema/{basename}.json'))
 
 
 class Validate:
@@ -16,12 +18,11 @@ class Validate:
         self.validators = {}
         self.files = set()
         self.file_items = set()
-        schema_path = pathlib.Path(os.path.dirname(os.path.abspath(__file__)), 'item_schema')
+
+        resolver = RefResolver.from_schema(_json_loads('item'))
+        checker = FormatChecker()
         for item in ('File', 'FileError', 'FileItem'):
-            filename = os.path.join(schema_path, f'{item}.json')
-            with open(filename) as f:
-                schema = jsonref.load(f, base_uri=schema_path.as_uri() + '/')
-            self.validators[item] = Draft4Validator(schema, format_checker=FormatChecker())
+            self.validators[item] = Draft4Validator(_json_loads(item), resolver=resolver, format_checker=checker)
 
     def process_item(self, item, spider):
         if hasattr(item, 'validate'):
