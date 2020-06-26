@@ -35,7 +35,7 @@ class DominicanRepublic(BaseSpider):
 
         for url in json_urls:
             if '/JSON_DGCP_' in url:
-                yield self.build_request('https:' + url, formatter=components(-1))
+                yield self.build_request(url, formatter=components(-1))
 
     @handle_http_error
     def parse(self, response):
