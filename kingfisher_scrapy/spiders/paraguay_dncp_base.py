@@ -50,14 +50,14 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
 
     def start_requests(self):
         if self.from_date:
-            from_date = self.from_date.strftime(self.date_format)
+            self.from_date = self.from_date.strftime(self.date_format)
             self.base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}'\
-                .format(self.base_url, from_date)
+                .format(self.base_url, self.from_date)
         yield self.build_request(
             self.base_page_url,
             formatter=parameters('fecha_desde'),
             meta={
-                'from_date': from_date,
+                'from_date': self.from_date,
             },
             # send duplicate requests when the token expired and in the continuation of last_request saved.
             dont_filter=True,
