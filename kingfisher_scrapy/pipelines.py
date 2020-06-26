@@ -9,20 +9,20 @@ from jsonschema.validators import Draft4Validator, RefResolver
 from kingfisher_scrapy.items import File, FileItem
 
 
+def _json_loads(basename):
+    return json.loads(pkgutil.get_data('kingfisher_scrapy', f'item_schema/{basename}.json'))
+
+
 class Validate:
     def __init__(self):
-        package_name = 'kingfisher_scrapy'
-        schema_dir = 'item_schema'
         self.validators = {}
         self.files = set()
         self.file_items = set()
-        base_json = json.loads(pkgutil.get_data(package_name, f'{schema_dir}/item.json'))
-        resolver = RefResolver.from_schema(base_json)
+
+        resolver = RefResolver.from_schema(_json_loads('item'))
+        checker = FormatChecker()
         for item in ('File', 'FileError', 'FileItem'):
-            f = pkgutil.get_data(package_name, f'{schema_dir}/{item}.json')
-            relative_schema = json.loads(f)
-            self.validators[item] = Draft4Validator(relative_schema,
-                                                    resolver=resolver, format_checker=FormatChecker())
+            self.validators[item] = Draft4Validator(_json_loads(item), resolver=resolver, format_checker=checker)
 
     def process_item(self, item, spider):
         if hasattr(item, 'validate'):
