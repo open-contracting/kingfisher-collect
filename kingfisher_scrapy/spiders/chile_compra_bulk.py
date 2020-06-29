@@ -1,3 +1,4 @@
+import json
 from datetime import date
 
 from kingfisher_scrapy.base_spider import ZipSpider
@@ -28,15 +29,20 @@ class ChileCompraBulk(ZipSpider):
         stop = date.today().replace(day=1)
         if self.sample:
             start = stop
-
         for d in date_range_by_month(start, stop):
             yield self.build_request(url.format(d), formatter=components(-1))
 
     def build_file(self, file_name=None, url=None, data=None, data_type=None, encoding='utf-8', post_to_api=True):
-        if 'status' in data and data['status'] != 200:
+        json_data = json.loads(data)
+        # some files contain invalid record packages, eg:
+        # {
+        #   "status": 500,
+        #   "detail": "error"
+        # }
+        if 'status' in json_data and json_data['status'] != 200:
             return FileError({
                 'url': url,
-                'errors': {'http_code': data['status']},
+                'errors': {'http_code': json_data['status']},
             })
         else:
             return super().build_file(data=data, file_name=file_name, url=url, data_type=data_type, encoding=encoding)
