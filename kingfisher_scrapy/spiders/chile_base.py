@@ -73,5 +73,6 @@ class ChileCompraBaseSpider(SimpleSpider):
                 meta={
                     'year': year,
                     'month': month,
-                }
+                },
+                callback=self.parse_list
             )
