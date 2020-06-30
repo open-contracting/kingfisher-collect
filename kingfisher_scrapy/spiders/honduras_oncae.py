@@ -5,6 +5,13 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class HondurasONCAE(ZipSpider):
+    """
+    Bulk download documentation
+      http://oncae.gob.hn/datosabiertos
+    Spider arguments
+      sample
+        Downloads the first package listed on the downloads page.
+    """
     name = 'honduras_oncae'
     data_type = 'release_package'
     skip_latest_release_date = 'Already covered by honduras_portal_releases'

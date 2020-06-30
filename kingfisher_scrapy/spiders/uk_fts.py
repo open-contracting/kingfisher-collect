@@ -5,6 +5,11 @@ from kingfisher_scrapy.util import parameters
 
 
 class UKContractsFinder(LinksSpider):
+    """
+    Spider arguments
+      sample
+        Downloads the first release package returned by the main endpoint.
+    """
     name = 'uk_fts'
     data_type = 'release_package_in_ocdsReleasePackage_in_list_in_results'
     next_page_formatter = staticmethod(parameters('cursor'))

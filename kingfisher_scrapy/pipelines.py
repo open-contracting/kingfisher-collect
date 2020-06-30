@@ -5,14 +5,43 @@ import json
 from scrapy.exceptions import DropItem
 
 from kingfisher_scrapy.items import FileItem, File, LatestReleaseDateItem
+import pkgutil
+
+from jsonschema import FormatChecker
+from jsonschema.validators import Draft4Validator, RefResolver
+
+from kingfisher_scrapy.items import File, FileItem
+
+
+def _json_loads(basename):
+    return json.loads(pkgutil.get_data('kingfisher_scrapy', f'item_schema/{basename}.json'))
 
 
 class Validate:
+    def __init__(self):
+        self.validators = {}
+        self.files = set()
+        self.file_items = set()
+
+        resolver = RefResolver.from_schema(_json_loads('item'))
+        checker = FormatChecker()
+        for item in ('File', 'FileError', 'FileItem'):
+            self.validators[item] = Draft4Validator(_json_loads(item), resolver=resolver, format_checker=checker)
+
     def process_item(self, item, spider):
         if hasattr(item, 'validate'):
-            # We call this in the item pipeline to guarantee that all items are validated. However, its backtrace isn't
-            # as helpful for debugging, so we could also call it in ``BaseSpider`` if this becomes an issue.
-            item.validate()
+            self.validators.get(item.__class__.__name__).validate(dict(item))
+
+        if isinstance(item, FileItem):
+            key = (item['file_name'], item['number'])
+            if key in self.file_items:
+                spider.logger.warning('Duplicate FileItem: {!r}'.format(key))
+            self.file_items.add(key)
+        elif isinstance(item, File):
+            key = item['file_name']
+            if key in self.files:
+                spider.logger.warning('Duplicate File: {!r}'.format(key))
+            self.files.add(key)
 
         return item
 
@@ -27,15 +56,34 @@ class LatestReleaseDate:
                 spider.crawler.engine.close_spider(self, reason='proccesed')
             date = None
             data = json.loads(item['data'])
-            if item['data_type'] == 'release_package':
-                date = data['releases'][0]['date']
-            elif item['data_type'] == 'record_package':
+            if item['data_type'] == 'release_package' or item['data_type'] == 'release' \
+                    or item['data_type'] == 'release_list' or item['data_type'] == 'compiled_release'\
+                    or item['data_type'] == 'release_package_list'\
+                    or item['data_type'] == 'release_package_list_in_results':
+                if item['data_type'] == 'release_list':
+                    data = data[0]
+                elif item['data_type'] == 'release_package':
+                    data = data['releases'][0]
+                elif item['data_type'] == 'release_package_list':
+                    data = data[0]['releases'][0]
+                elif item['data_type'] == 'release_package_list_in_results':
+                    data = data['results'][0]['releases'][0]
+                date = data['date']
+            elif item['data_type'] == 'record_package' or item['data_type'] == 'record' or \
+                    item['data_type'] == 'record_list' or item['data_type'] == 'record_package_list' \
+                    or item['data_type'] == 'record_package_list_in_results':
+                if item['data_type'] == 'record_package':
+                    data = data['records'][0]
+                elif item['data_type'] == 'record_package_list':
+                    data = data[0]['records'][0]
+                elif item['data_type'] == 'record_package_list_in_results':
+                    data = data['results'][0]['records'][0]
+                elif item['data_type'] == 'record_list':
+                    data = data[0]
                 if 'releases' in data:
                     date = data['releases'][0]['date']
                 elif 'compiledRelease' in data:
-                    date = data['releases'][0]['date']
-            elif item['data_type'] == 'release':
-                date = data['date']
+                    date = data['compiledRelease']['date']
             self.processed.add(spider.name)
             return LatestReleaseDateItem({
                 'date': date

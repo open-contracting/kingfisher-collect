@@ -7,6 +7,13 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class HondurasPortalBulkFiles(SimpleSpider):
+    """
+    Bulk download documentation
+      http://www.contratacionesabiertas.gob.hn/descargas/
+    Spider arguments
+      sample
+        Downloads the first package listed in http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json.
+    """
     name = 'honduras_portal_bulk_files'
     data_type = 'release_package'
     skip_latest_release_date = 'Already covered by honduras_portal_releases'
