@@ -1,6 +1,8 @@
+import json
 from datetime import date
 
 from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.items import FileError
 from kingfisher_scrapy.util import components, date_range_by_month
 
 
@@ -10,7 +12,7 @@ class ChileCompraBulk(ZipSpider):
       https://desarrolladores.mercadopublico.cl/OCDS/DescargaMasiva
     Spider arguments
       sample
-        Download only data released on February 2017.
+        Download only data released this month.
     """
     name = 'chile_compra_bulk'
     data_type = 'record_package'
@@ -27,6 +29,21 @@ class ChileCompraBulk(ZipSpider):
         stop = date.today().replace(day=1)
         if self.sample:
             start = stop
-
         for d in date_range_by_month(start, stop):
             yield self.build_request(url.format(d), formatter=components(-1))
+
+    def build_file(self, data=None, **kwargs):
+        json_data = json.loads(data)
+        # some files contain invalid record packages, eg:
+        # {
+        #   "status": 500,
+        #   "detail": "error"
+        # }
+        if 'status' in json_data and json_data['status'] != 200:
+            json_data['http_code'] = json_data['status']
+            return FileError({
+                'url': kwargs['url'],
+                'errors': json_data,
+            })
+        else:
+            return super().build_file(data=data, **kwargs)

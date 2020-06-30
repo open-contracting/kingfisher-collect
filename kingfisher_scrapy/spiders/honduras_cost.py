@@ -4,6 +4,11 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 
 
 class HondurasCoST(SimpleSpider):
+    """
+    Spider arguments
+      sample
+        Ignored, a single file is downloaded.
+    """
     name = 'honduras_cost'
     data_type = 'record_package'
 

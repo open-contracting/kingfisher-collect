@@ -42,8 +42,14 @@ class ChileCompraBaseSpider(SimpleSpider):
     @handle_http_error
     def parse_list(self, response):
         data = json.loads(response.text)
+        # some files contain invalid packages, eg:
+        # {
+        #   "status": 500,
+        #   "detail": "error"
+        # }
         if 'status' in data and data['status'] != 200:
-            yield self.build_file_error_from_response(response, errors={'http_code': data['status']})
+            data['http_code'] = data['status']
+            yield self.build_file_error_from_response(response, errors=data)
             return
 
         for item in data['data']:
@@ -67,5 +73,6 @@ class ChileCompraBaseSpider(SimpleSpider):
                 meta={
                     'year': year,
                     'month': month,
-                }
+                },
+                callback=self.parse_list
             )
