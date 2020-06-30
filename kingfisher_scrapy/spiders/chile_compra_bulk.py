@@ -32,7 +32,7 @@ class ChileCompraBulk(ZipSpider):
         for d in date_range_by_month(start, stop):
             yield self.build_request(url.format(d), formatter=components(-1))
 
-    def build_file(self, file_name=None, url=None, data=None, data_type=None, encoding='utf-8', post_to_api=True):
+    def build_file(self, data=None, **kwargs):
         json_data = json.loads(data)
         # some files contain invalid record packages, eg:
         # {
@@ -42,8 +42,8 @@ class ChileCompraBulk(ZipSpider):
         if 'status' in json_data and json_data['status'] != 200:
             json_data['http_code'] = json_data['status']
             return FileError({
-                'url': url,
+                'url': kwargs['url'],
                 'errors': json_data,
             })
         else:
-            return super().build_file(data=data, file_name=file_name, url=url, data_type=data_type, encoding=encoding)
+            return super().build_file(data=data, **kwargs)
