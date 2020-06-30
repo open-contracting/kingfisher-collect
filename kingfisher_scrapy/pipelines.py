@@ -61,14 +61,18 @@ class LatestReleaseDate:
                     or item['data_type'] == 'release_package_list'\
                     or item['data_type'] == 'release_package_list_in_results':
                 if item['data_type'] == 'release_list':
-                    data = data[0]
+                    data = data
                 elif item['data_type'] == 'release_package':
-                    data = data['releases'][0]
+                    data = data['releases']
                 elif item['data_type'] == 'release_package_list':
-                    data = data[0]['releases'][0]
+                    data = data[0]['releases']
                 elif item['data_type'] == 'release_package_list_in_results':
-                    data = data['results'][0]['releases'][0]
-                date = data['date']
+                    data = data['results'][0]['releases']
+                if data:
+                    if item['data_type'] == 'release':
+                        date = data['date']
+                    else:
+                        date = data[0]['date']
             elif item['data_type'] == 'record_package' or item['data_type'] == 'record' or \
                     item['data_type'] == 'record_list' or item['data_type'] == 'record_package_list' \
                     or item['data_type'] == 'record_package_list_in_results':

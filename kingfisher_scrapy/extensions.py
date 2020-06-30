@@ -25,6 +25,7 @@ class KingfisherLatestDate:
         filename = os.path.join(path, 'latest_dates.txt')
         extension = cls(filename=filename)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+        crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
         return extension
 
     def item_scraped(self, item, spider):
@@ -32,8 +33,13 @@ class KingfisherLatestDate:
             return
         self.written[spider.name] = True
         with open(self.filename, 'a+') as output:
-            output.write(spider.name + ': ' + item['date'] + '\n')
+            output.write(f"{spider.name} : {item['date']} \n")
         spider.crawler.engine.close_spider(self, reason='proccesed')
+    
+    def spider_closed(self, spider):
+        if spider.name not in self.written.keys():
+            with open(self.filename, 'a+') as output:
+                output.write(f"{spider.name} : error \n")
 
 
 class KingfisherFilesStore:

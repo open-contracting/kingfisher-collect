@@ -1,19 +1,10 @@
 import os
+import shutil
 from datetime import datetime
 
 from scrapy.commands import ScrapyCommand
-from scrapy.crawler import CrawlerProcess, CrawlerRunner
+from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-from kingfisher_scrapy.spiders.afghanistan_records import AfghanistanRecords
-from kingfisher_scrapy.spiders.argentina_vialidad import ArgentinaVialidad
-from kingfisher_scrapy.spiders.armenia import Armenia
-from kingfisher_scrapy.spiders.australia import Australia
-from kingfisher_scrapy.spiders.australia_nsw import AustraliaNSW
-from kingfisher_scrapy.spiders.canada_buyandsell import CanadaBuyAndSell
-from kingfisher_scrapy.spiders.canada_montreal import CanadaMontreal
-from kingfisher_scrapy.spiders.chile_compra_releases import ChileCompraReleases
-from kingfisher_scrapy.spiders.colombia import Colombia
-from kingfisher_scrapy.spiders.digiwhist_armenia import DigiwhistArmenia
 
 
 class LatestReleaseDatePerPublisher(ScrapyCommand):
@@ -24,19 +15,25 @@ class LatestReleaseDatePerPublisher(ScrapyCommand):
         settings = get_project_settings()
         settings.set('CLOSESPIDER_ITEMCOUNT', 1)
         settings.set('CONCURRENT_REQUESTS', 1)
+        settings.set('CLOSESPIDER_ERRORCOUNT', 1)
 
         process = CrawlerProcess(settings=settings)
         spiders = process.spider_loader.list()
-        path = settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH']
         current_year = datetime.today().year
-        if not os.path.exists(path):
-            os.makedirs(path)
-        filename = os.path.join(path, 'skipped_spiders.txt')
+        filename = get_skipped_output_file(settings)
         for spider in spiders:
-            spidercls = process.spider_loader.load(spider)
-            if hasattr(spidercls, 'skip_latest_release_date'):
+            spider_cls = process.spider_loader.load(spider)
+            if hasattr(spider_cls, 'skip_latest_release_date'):
                 with open(filename, 'a+') as output:
-                    output.write('Skipping {} because of {} \n'.format(spider, spidercls.skip_latest_release_date))
+                    output.write(f'Skipping {spider} because of {spider_cls.skip_latest_release_date} \n')
             else:
-                process.crawl(spider, latest='true', sample='true', year=current_year)
+                process.crawl(spider, latest='true', year=current_year)
         process.start()
+
+
+def get_skipped_output_file(settings):
+    path = settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH']
+    if os.path.exists(path) and os.path.isdir(path):
+        shutil.rmtree(path)
+    os.makedirs(path)
+    return os.path.join(path, 'skipped_spiders.txt')
