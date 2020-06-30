@@ -41,7 +41,6 @@ class ScotlandBase(SimpleSpider):
 
         while marker <= now:
             date_string = '{:04d}-{:02d}-{:02d}'.format(marker.year, marker.month, marker.day)
-            print("date_string", date_string)
             for notice_type in notice_types:
                 yield self.build_request(
                     pattern.format(date_string, notice_type),
