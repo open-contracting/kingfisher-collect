@@ -4,12 +4,8 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import parameters
 
 
-class Scotland(SimpleSpider):
-    name = 'scotland'
-    data_type = 'release_package'
-
-    def start_requests(self):
-        pattern = 'https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={}&outputType=1&noticeType={}'
+class ScotlandBase(SimpleSpider):
+    def parse_requests(self, pattern, from_date=None):
 
         notice_types = [
             1,  # OJEU - F1 - Prior Information Notice
@@ -37,13 +33,18 @@ class Scotland(SimpleSpider):
 
         now = date.today()
 
-        # It's meant to go back a year, but in testing it seemed to be year minus one day!
-        marker = now - timedelta(days=364)
+        if from_date:
+            marker = from_date.date()
+        else:
+            # It's meant to go back a year, but in testing it seemed to be year minus one day!
+            marker = now - timedelta(days=364)
+
         while marker <= now:
-            datestring = '{:04d}-{:02d}-{:02d}'.format(marker.year, marker.month, marker.day)
+            date_string = '{:04d}-{:02d}-{:02d}'.format(marker.year, marker.month, marker.day)
+            print("date_string", date_string)
             for notice_type in notice_types:
                 yield self.build_request(
-                    pattern.format(datestring, notice_type),
+                    pattern.format(date_string, notice_type),
                     formatter=parameters('noticeType', 'dateFrom')
                 )
             marker = marker + timedelta(days=14)
