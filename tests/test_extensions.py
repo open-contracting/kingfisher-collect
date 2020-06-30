@@ -115,7 +115,8 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
                 assert mocked.call_args[0] == ('http://httpbin.org/anything/api/v1/submit/file/',)
                 assert mocked.call_args[1]['headers'] == {'Authorization': 'ApiKey xxx'}
                 assert mocked.call_args[1]['data'] == expected
-                assert len(mocked.call_args[1]) == 3
+                assert mocked.call_args[1]['proxies'] == {'http': None, 'https': None}
+                assert len(mocked.call_args[1]) == 4
 
                 if directory:
                     assert mocked.call_args[1]['files'] == {}
@@ -184,6 +185,10 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
             headers={
                 'Authorization': 'ApiKey xxx',
             },
+            proxies={
+                'http': None,
+                'https': None,
+            },
             data=expected,
         )
 
@@ -232,6 +237,10 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
             headers={
                 'Authorization': 'ApiKey xxx',
             },
+            proxies={
+                'http': None,
+                'https': None,
+            },
             data=expected,
         )
 
@@ -255,6 +264,10 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
             'http://httpbin.org/anything/api/v1/submit/end_collection_store/',
             headers={
                 'Authorization': 'ApiKey xxx',
+            },
+            proxies={
+                'http': None,
+                'https': None,
             },
             data={
                 'collection_source': 'test',
