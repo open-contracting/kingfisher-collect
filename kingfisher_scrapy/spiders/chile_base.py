@@ -48,7 +48,8 @@ class ChileCompraBaseSpider(SimpleSpider):
         #   "detail": "error"
         # }
         if 'status' in data and data['status'] != 200:
-            yield self.build_file_error_from_response(response, errors={'http_code': data['status']})
+            data['http_code'] = data['status']
+            yield self.build_file_error_from_response(response, errors=data)
             return
 
         for item in data['data']:

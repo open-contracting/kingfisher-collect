@@ -40,9 +40,10 @@ class ChileCompraBulk(ZipSpider):
         #   "detail": "error"
         # }
         if 'status' in json_data and json_data['status'] != 200:
+            json_data['http_code'] = json_data['status']
             return FileError({
                 'url': url,
-                'errors': {'http_code': json_data['status']},
+                'errors': json_data,
             })
         else:
             return super().build_file(data=data, file_name=file_name, url=url, data_type=data_type, encoding=encoding)
