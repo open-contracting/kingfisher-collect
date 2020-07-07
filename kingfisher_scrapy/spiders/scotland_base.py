@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import parameters
 
 
 class ScotlandBase(SimpleSpider):
-    def parse_requests(self, pattern, from_date=None):
+    def parse_requests(self, pattern, search_range, increment, from_date=None):
 
         notice_types = [
             1,  # OJEU - F1 - Prior Information Notice
@@ -33,19 +33,18 @@ class ScotlandBase(SimpleSpider):
 
         now = date.today()
 
-        if from_date:
-            marker = from_date.date()
-        else:
-            # It's meant to go back a year, but in testing it seemed to be year minus one day!
-            marker = now - timedelta(days=364)
+        marker = (from_date.date() if from_date else now - timedelta(days=364))
 
         while marker <= now:
-            date_string = '{:04d}-{:02d}-{:02d}'.format(marker.year, marker.month, marker.day)
+            if search_range == 'daily':
+                date_string = '{:04d}-{:02d}-{:02d}'.format(marker.year, marker.month, marker.day)
+            else:
+                date_string = '{:02d}-{:04d}'.format(marker.month, marker.year)
             for notice_type in notice_types:
                 yield self.build_request(
                     pattern.format(date_string, notice_type),
                     formatter=parameters('noticeType', 'dateFrom')
                 )
-            marker = marker + timedelta(days=14)
+            marker = marker + timedelta(days=increment)
             if self.sample:
                 break

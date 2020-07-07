@@ -14,4 +14,6 @@ class ScotlandPublicContracts(ScotlandBase):
 
     def start_requests(self):
         pattern = 'https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={}&outputType=1&noticeType={}'
-        return self.parse_requests(pattern)
+        search_range = 'daily'
+        increment = 14
+        return self.parse_requests(pattern, search_range, increment)

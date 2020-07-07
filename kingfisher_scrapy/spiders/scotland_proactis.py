@@ -17,4 +17,6 @@ class ScotlandProactis(ScotlandBase):
     def start_requests(self):
         from_date = self.from_date if self.from_date else None
         pattern = 'https://sandbox4.proactislabs.com/v1/Notices?dateFrom={}&outputType=0&noticeType={}'
-        return self.parse_requests(pattern, from_date)
+        search_range = 'monthly'
+        increment = 1
+        return self.parse_requests(pattern, search_range, increment, from_date)
