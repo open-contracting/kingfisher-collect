@@ -10,7 +10,7 @@ class EcuadorEmergency(SimpleSpider):
       https://portal.compraspublicas.gob.ec/sercop/data-estandar-ocds/
     Spider arguments
       sample
-        Downloads a release package for the oldest year (first link in the downloads page).
+        Downloads one release package from the first link in the downloads page.
     """
     name = 'ecuador_emergency'
     data_type = 'release_package'
@@ -34,6 +34,8 @@ class EcuadorEmergency(SimpleSpider):
                 filename = 'ocds-' + filename + '.json'
                 url = f'{base_link.replace("sharing", "fsdownload")}/{filename}'
                 self.urls.append({'base': base_link, 'data': url})
+                if self.sample:
+                    break
         # request the same url again just for go request_cookie_save_data method
         yield self.build_request(response.request.url, callback=self.request_cookie_save_data,
                                  formatter=components(-1),
