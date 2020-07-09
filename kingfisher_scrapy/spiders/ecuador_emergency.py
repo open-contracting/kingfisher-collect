@@ -25,34 +25,32 @@ class EcuadorEmergency(SimpleSpider):
             meta={'file_name': 'list.html'},
             callback=self.parse_list)
 
-    @handle_http_error
     def parse_list(self, response):
         for row in response.xpath('//tr'):
             filename = row.xpath('td/p/strong/text()').extract_first()
             base_link = row.xpath('td/strong/a/@href').extract_first()
             if base_link:
-                filename = 'ocds-' + filename + '.json'
-                url = f'{base_link.replace("sharing", "fsdownload")}/{filename}'
+                url = f'{base_link.replace("sharing", "fsdownload")}/ocds-{filename}.json'
                 self.urls.append({'base': base_link, 'data': url})
                 if self.sample:
                     break
-        # request the same url again just for go request_cookie_save_data method
-        yield self.build_request(response.request.url, callback=self.request_cookie_save_data,
-                                 formatter=components(-1),
-                                 dont_filter=True)
+        yield self.request_cookie()
 
-    def request_cookie_save_data(self, response):
+    def request_cookie(self):
         if self.urls:
             # we process one url and its response with its cookie at a time
             url = self.urls.pop()
-            yield self.build_request(url['base'], meta={'next': url['data']},
-                                     formatter=components(-1), callback=self.with_cookie)
+            return self.build_request(url['base'], meta={'next': url['data']},
+                                      formatter=components(-1), callback=self.parse_page)
+
+    def parse_data(self, response):
+        yield self.request_cookie()
         if 'data' in response.meta:
             yield from self.parse(response)
 
-    def with_cookie(self, response):
+    def parse_page(self, response):
         return self.build_request(response.meta['next'], formatter=components(-1),
                                   meta={'data': True,
                                         # if we send the request with the cookie and still get a redirection
                                         # it is an error so we handle it on parse
-                                        'dont_redirect': True}, callback=self.request_cookie_save_data)
+                                        'dont_redirect': True}, callback=self.parse_data)
