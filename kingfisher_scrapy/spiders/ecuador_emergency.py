@@ -25,6 +25,7 @@ class EcuadorEmergency(SimpleSpider):
             meta={'file_name': 'list.html'},
             callback=self.parse_list)
 
+    @handle_http_error
     def parse_list(self, response):
         for row in response.xpath('//tr'):
             filename = row.xpath('td/p/strong/text()').extract_first()
@@ -43,14 +44,13 @@ class EcuadorEmergency(SimpleSpider):
             return self.build_request(url['base'], meta={'next': url['data']},
                                       formatter=components(-1), callback=self.parse_page)
 
-    def parse_data(self, response):
-        yield self.request_cookie()
-        if 'data' in response.meta:
-            yield from self.parse(response)
-
     def parse_page(self, response):
         return self.build_request(response.meta['next'], formatter=components(-1),
                                   meta={'data': True,
                                         # if we send the request with the cookie and still get a redirection
                                         # it is an error so we handle it on parse
                                         'dont_redirect': True}, callback=self.parse_data)
+
+    def parse_data(self, response):
+        yield self.request_cookie()
+        yield from self.parse(response)
