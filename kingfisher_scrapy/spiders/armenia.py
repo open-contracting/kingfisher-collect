@@ -1,10 +1,10 @@
+import math
+from urllib.parse import parse_qs, urlsplit
+
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
 from kingfisher_scrapy.util import parameters, replace_parameter
-
-from urllib.parse import parse_qs, urlsplit
-import math
 
 
 class Armenia(LinksSpider):
