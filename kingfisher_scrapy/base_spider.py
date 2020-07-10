@@ -42,7 +42,7 @@ class BaseSpider(scrapy.Spider):
 
     MAX_SAMPLE = 10
     MAX_RELEASES_PER_PACKAGE = 100
-    VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S', 'month': '%m-%Y'}
+    VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S', 'month-year': '%m-%Y'}
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None,
                  date_format='date', *args, **kwargs):
