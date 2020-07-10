@@ -58,7 +58,7 @@ class Armenia(LinksSpider):
     def binary_search(self, response, succeed=None, start=None):
         microseconds_per_day = 86400000
         if start:
-            if start is 'start':
+            if start == 'start':
                 # start with last number that worked as the minimum
                 minimum = self.get_offset(self.next_page_error)
             else:
