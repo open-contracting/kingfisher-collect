@@ -47,11 +47,10 @@ class EcuadorEmergency(SimpleSpider):
     def parse_page(self, response):
         # If there is an error, a request for the data URL redirects to the html URL. To treat this as an error, we set
         # `dont_redirect`.
-        yield self.build_request(response.meta['next'], meta={'dont_redirect': True}, formatter=components(-1),
-                                 callback=self.parse_data)
+        yield self.build_request(response.meta['next'], meta={'dont_redirect': True}, formatter=components(-1))
 
-    def parse_data(self, response):
+    def parse(self, response):
+        yield from super().parse(response)
+
         if self.urls:
             yield self.request_cookie()
-
-        yield from self.parse(response)
