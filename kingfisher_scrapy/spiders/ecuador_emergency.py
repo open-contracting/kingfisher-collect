@@ -15,43 +15,43 @@ class EcuadorEmergency(SimpleSpider):
     name = 'ecuador_emergency'
     data_type = 'release_package'
     custom_settings = {
-        'CONCURRENT_REQUESTS': 1
+        'CONCURRENT_REQUESTS': 1,
     }
     urls = []
 
     def start_requests(self):
-        yield scrapy.Request(
-            'https://portal.compraspublicas.gob.ec/sercop/data-estandar-ocds/',
-            meta={'file_name': 'list.html'},
-            callback=self.parse_list)
+        url = 'https://portal.compraspublicas.gob.ec/sercop/data-estandar-ocds/'
+        yield scrapy.Request(url, meta={'file_name': 'list.html'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
         for row in response.xpath('//tr'):
+            html_url = row.xpath('td/strong/a/@href').extract_first()
             filename = row.xpath('td/p/strong/text()').extract_first()
-            base_link = row.xpath('td/strong/a/@href').extract_first()
-            if base_link:
-                url = f'{base_link.replace("sharing", "fsdownload")}/ocds-{filename}.json'
-                self.urls.append({'base': base_link, 'data': url})
+            if html_url:
+                data_url = f'{html_url.replace("sharing", "fsdownload")}/ocds-{filename}.json'
+                self.urls.append((html_url, data_url))
                 if self.sample:
                     break
+
         yield self.request_cookie()
 
     def request_cookie(self):
-        if self.urls:
-            # we process one url and its response with its cookie at a time
-            url = self.urls.pop()
-            return self.build_request(url['base'], meta={'next': url['data']},
-                                      formatter=components(-1), callback=self.parse_page)
+        # This request sets a cookie, which must be used immediately to download the data. So, we set
+        # `CONCURRENT_REQUESTS` to 1, and yield the requests in order.
+        html_url, data_url = self.urls.pop()
+        return self.build_request(html_url, meta={'next': data_url}, formatter=components(-1),
+                                  callback=self.parse_page)
 
     @handle_http_error
     def parse_page(self, response):
-        yield self.build_request(response.meta['next'], formatter=components(-1),
-                                 meta={
-                                     # if we send the request with the cookie and still get a redirection
-                                     # it is an error so we handle it on parse
-                                     'dont_redirect': True}, callback=self.parse_data)
+        # If there is an error, a request for the data URL redirects to the html URL. To treat this as an error, we set
+        # `dont_redirect`.
+        yield self.build_request(response.meta['next'], meta={'dont_redirect': True}, formatter=components(-1),
+                                 callback=self.parse_data)
 
     def parse_data(self, response):
-        yield self.request_cookie()
+        if self.urls:
+            yield self.request_cookie()
+
         yield from self.parse(response)
