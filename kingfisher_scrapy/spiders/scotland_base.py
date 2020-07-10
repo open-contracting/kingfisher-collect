@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import parameters
 
 
 class ScotlandBase(SimpleSpider):
-    def parse_requests(self, pattern, search_range, increment, from_date=None):
+    def parse_requests(self, pattern, date_format, increment, from_date=None):
 
         notice_types = [
             1,  # OJEU - F1 - Prior Information Notice
@@ -36,7 +36,7 @@ class ScotlandBase(SimpleSpider):
         marker = (from_date.date() if from_date else now - timedelta(days=364))
 
         while marker <= now:
-            if search_range == 'daily':
+            if date_format == '%Y-%m-%d':
                 date_string = '{:04d}-{:02d}-{:02d}'.format(marker.year, marker.month, marker.day)
             else:
                 date_string = '{:02d}-{:04d}'.format(marker.month, marker.year)
