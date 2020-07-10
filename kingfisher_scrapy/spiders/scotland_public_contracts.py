@@ -8,12 +8,14 @@ class ScotlandPublicContracts(ScotlandBase):
     Spider arguments
       sample
         Downloads packages for releases dated one year ago, for each notice type available.
+      from_date
+        Download only data from this date onward (YYYY-MM-DD format). Defaults to one year back.
     """
     name = 'scotland_public_contracts'
     data_type = 'release_package'
 
     def start_requests(self):
+        from_date = self.from_date if self.from_date else None
         pattern = 'https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={}&outputType=1&noticeType={}'
-        search_range = 'daily'
         increment = 14
-        return self.parse_requests(pattern, search_range, increment)
+        return self.parse_requests(pattern, self.date_format, increment, from_date)
