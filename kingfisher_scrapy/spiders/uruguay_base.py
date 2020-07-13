@@ -1,5 +1,3 @@
-from datetime import date
-
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import components, date_range_by_month
 
