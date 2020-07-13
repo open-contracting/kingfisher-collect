@@ -6,11 +6,11 @@ from kingfisher_scrapy.util import components, date_range_by_month
 
 class UruguayBase(SimpleSpider):
     download_delay = 0.9
-    default_from_date = '11-2017'
+    default_from_date = '2017-11'
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
-        return super(UruguayBase, cls).from_crawler(crawler, date_format='month-year', *args, **kwargs)
+        return super(UruguayBase, cls).from_crawler(crawler, date_format='year-month', *args, **kwargs)
 
     def start_requests(self):
         url = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
