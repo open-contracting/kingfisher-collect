@@ -57,9 +57,6 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         yield self.build_request(
             self.base_page_url,
             formatter=parameters('fecha_desde'),
-            meta={
-                'from_date': self.from_date,
-            },
             # send duplicate requests when the token expired and in the continuation of last_request saved.
             dont_filter=True,
             callback=self.parse_pages
