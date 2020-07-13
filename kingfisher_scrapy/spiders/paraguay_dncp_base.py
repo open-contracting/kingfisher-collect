@@ -5,7 +5,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
-from kingfisher_scrapy.util import components, handle_http_error, parameters
+from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameter
 
 
 class ParaguayDNCPBaseSpider(SimpleSpider):
@@ -21,7 +21,6 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
     last_request = None
     request_time_limit = 13  # in minutes
     base_url = 'https://contrataciones.gov.py/datos/api/v3/doc'
-    base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}&fecha_hasta={}'
     auth_url = f'{base_url}/oauth/token'
     request_token = None
     max_attempts = 10
@@ -51,11 +50,12 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         return spider
 
     def start_requests(self):
-        self.base_page_url = self.base_page_url.format(self.base_url, self.from_date.strftime(self.date_format),
-                                                       self.until_date.strftime(self.date_format))
+        url = f'{self.base_url}/search/processes?tipo_fecha=fecha_release&' \
+              f'fecha_desde={self.from_date.strftime(self.date_format)}&' \
+              f'fecha_hasta={self.until_date.strftime(self.date_format)}'
 
         yield self.build_request(
-            self.base_page_url,
+            url,
             formatter=parameters('fecha_desde'),
             # send duplicate requests when the token expired and in the continuation of last_request saved.
             dont_filter=True,
@@ -119,7 +119,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         pagination = content['pagination']
         if pagination['current_page'] < pagination['total_pages'] and not self.sample:
             page = pagination['current_page'] + 1
-            url = f'{self.base_page_url}&page={page}'
+            url = replace_parameter(response.request.url, 'page', page)
             yield self.build_request(
                 url,
                 formatter=parameters('fecha_desde', 'page'),
