@@ -36,9 +36,12 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
     }
 
     @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(ParaguayDNCPBaseSpider, cls).from_crawler(crawler, date_format='datetime',
-                                                                 *args, **kwargs)
+    def from_crawler(cls, crawler, from_date=None, until_date=None, *args, **kwargs):
+        if not from_date:
+            from_date = cls.default_from_date
+
+        spider = super().from_crawler(crawler, date_format='datetime', from_date=from_date, until_date=until_date,
+                                      *args, **kwargs)
 
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
@@ -49,13 +52,9 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         return spider
 
     def start_requests(self):
-        if self.from_date or self.until_date:
-            self.from_date = self.from_date.strftime(self.date_format)
-            self.until_date = self.until_date.strftime(self.date_format)
-            self.base_page_url = self.base_page_url.format(self.base_url, self.from_date, self.until_date)
-        else:
-            self.base_page_url = self.base_page_url.format(self.base_url, self.default_from_date,
-                                                           datetime.now().strftime(self.date_format))
+        self.base_page_url = self.base_page_url.format(self.base_url, self.from_date.strftime(self.date_format),
+                                                       self.until_date.strftime(self.date_format))
+
         yield self.build_request(
             self.base_page_url,
             formatter=parameters('fecha_desde'),
