@@ -5,7 +5,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
-from kingfisher_scrapy.util import components, handle_http_error, parameters
+from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameter
 
 
 class ParaguayDNCPBaseSpider(SimpleSpider):
@@ -21,7 +21,6 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
     last_request = None
     request_time_limit = 13  # in minutes
     base_url = 'https://contrataciones.gov.py/datos/api/v3/doc'
-    base_page_url = f'{base_url}/search/processes?fecha_desde=2010-01-01'
     auth_url = f'{base_url}/oauth/token'
     request_token = None
     max_attempts = 10
@@ -36,9 +35,11 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
     }
 
     @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(ParaguayDNCPBaseSpider, cls).from_crawler(crawler, date_format='datetime',
-                                                                 *args, **kwargs)
+    def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
+        if not from_date:
+            from_date = cls.default_from_date
+
+        spider = super().from_crawler(crawler, date_format='datetime', from_date=from_date, *args, **kwargs)
 
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
@@ -49,16 +50,13 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         return spider
 
     def start_requests(self):
-        if self.from_date:
-            self.from_date = self.from_date.strftime(self.date_format)
-            self.base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}'\
-                .format(self.base_url, self.from_date)
+        url = f'{self.base_url}/search/processes?tipo_fecha=fecha_release&' \
+              f'fecha_desde={self.from_date.strftime(self.date_format)}&' \
+              f'fecha_hasta={self.until_date.strftime(self.date_format)}'
+
         yield self.build_request(
-            self.base_page_url,
+            url,
             formatter=parameters('fecha_desde'),
-            meta={
-                'from_date': self.from_date,
-            },
             # send duplicate requests when the token expired and in the continuation of last_request saved.
             dont_filter=True,
             callback=self.parse_pages
@@ -121,7 +119,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         pagination = content['pagination']
         if pagination['current_page'] < pagination['total_pages'] and not self.sample:
             page = pagination['current_page'] + 1
-            url = f'{self.base_page_url}&page={page}'
+            url = replace_parameter(response.request.url, 'page', page)
             yield self.build_request(
                 url,
                 formatter=parameters('fecha_desde', 'page'),
