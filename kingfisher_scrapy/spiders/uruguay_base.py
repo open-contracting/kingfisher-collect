@@ -9,12 +9,11 @@ class UruguayBase(SimpleSpider):
     default_from_date = '2017-11'
 
     @classmethod
-    def from_crawler(cls, crawler, sample=None, from_date=None, until_date=None, *args, **kwargs):
+    def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
         if not from_date:
             from_date = cls.default_from_date
 
-        return super().from_crawler(crawler, date_format='year-month', sample=sample, from_date=from_date,
-                                    until_date=until_date, *args, **kwargs)
+        return super().from_crawler(crawler, date_format='year-month', from_date=from_date, *args, **kwargs)
 
     def start_requests(self):
         url = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
