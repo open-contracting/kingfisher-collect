@@ -21,7 +21,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
     last_request = None
     request_time_limit = 13  # in minutes
     base_url = 'https://contrataciones.gov.py/datos/api/v3/doc'
-    base_page_url = f'{base_url}/search/processes?fecha_desde=2010-01-01'
+    base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}&fecha_hasta={}'
     auth_url = f'{base_url}/oauth/token'
     request_token = None
     max_attempts = 10
@@ -49,10 +49,13 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         return spider
 
     def start_requests(self):
-        if self.from_date:
+        if self.from_date or self.until_date:
             self.from_date = self.from_date.strftime(self.date_format)
-            self.base_page_url = '{}/search/processes?tipo_fecha=fecha_release&fecha_desde={}'\
-                .format(self.base_url, self.from_date)
+            self.until_date = self.until_date.strftime(self.date_format)
+            self.base_page_url = self.base_page_url.format(self.base_url, self.from_date, self.until_date)
+        else:
+            self.base_page_url = self.base_page_url.format(self.base_url, self.default_from_date,
+                                                           datetime.now().strftime(self.date_format))
         yield self.build_request(
             self.base_page_url,
             formatter=parameters('fecha_desde'),
