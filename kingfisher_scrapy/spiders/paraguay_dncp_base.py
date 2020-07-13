@@ -36,12 +36,11 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
     }
 
     @classmethod
-    def from_crawler(cls, crawler, from_date=None, until_date=None, *args, **kwargs):
+    def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
         if not from_date:
             from_date = cls.default_from_date
 
-        spider = super().from_crawler(crawler, date_format='datetime', from_date=from_date, until_date=until_date,
-                                      *args, **kwargs)
+        spider = super().from_crawler(crawler, date_format='datetime', from_date=from_date, *args, **kwargs)
 
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
