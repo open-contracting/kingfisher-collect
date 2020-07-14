@@ -377,4 +377,4 @@ def test_item_scraped_latest_date():
     latest_extension.item_scraped(item, spider)
 
     with open(os.path.join(path, 'latest_dates.txt')) as f:
-        assert 'test : 2020-10-01T00:00:00Z' in f.read()
+        assert 'test: 2020-10-01T00:00:00Z' in f.read()
