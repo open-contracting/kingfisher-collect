@@ -19,7 +19,6 @@ class DominicanRepublic(BaseSpider):
     name = 'dominican_republic'
     skip_latest_release_date = 'Rar file'
 
-
     def start_requests(self):
         yield scrapy.Request(
             'https://www.dgcp.gob.do/estandar-mundial-ocds/',

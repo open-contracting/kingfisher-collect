@@ -35,7 +35,7 @@ class KingfisherLatestDate:
         with open(self.filename, 'a+') as output:
             output.write(f"{spider.name} : {item['date']} \n")
         spider.crawler.engine.close_spider(self, reason='proccesed')
-    
+
     def spider_closed(self, spider):
         if spider.name not in self.written.keys():
             with open(self.filename, 'a+') as output:

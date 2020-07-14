@@ -1,16 +1,12 @@
 # https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 # https://docs.scrapy.org/en/latest/topics/signals.html#item-signals
 import json
-
-from scrapy.exceptions import DropItem
-
-from kingfisher_scrapy.items import FileItem, File, LatestReleaseDateItem
 import pkgutil
 
 from jsonschema import FormatChecker
 from jsonschema.validators import Draft4Validator, RefResolver
 
-from kingfisher_scrapy.items import File, FileItem
+from kingfisher_scrapy.items import File, FileItem, LatestReleaseDateItem
 
 
 def _json_loads(basename):
