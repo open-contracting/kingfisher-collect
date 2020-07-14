@@ -65,25 +65,29 @@ class LatestReleaseDate:
                 elif item['data_type'] == 'release_package_list_in_results':
                     data = data['results'][0]['releases']
                 if data:
-                    if item['data_type'] == 'release':
+                    if item['data_type'] == 'release' or item['data_type'] == 'compiled_release':
                         date = data['date']
                     else:
-                        date = data[0]['date']
+                        date = max(r['date'] for r in data)
             elif item['data_type'] == 'record_package' or item['data_type'] == 'record' or \
                     item['data_type'] == 'record_list' or item['data_type'] == 'record_package_list' \
                     or item['data_type'] == 'record_package_list_in_results':
                 if item['data_type'] == 'record_package':
-                    data = data['records'][0]
+                    data = data['records']
                 elif item['data_type'] == 'record_package_list':
-                    data = data[0]['records'][0]
+                    data = data[0]['records']
                 elif item['data_type'] == 'record_package_list_in_results':
-                    data = data['results'][0]['records'][0]
+                    data = data['results'][0]['records']
                 elif item['data_type'] == 'record_list':
+                    data = data
+                elif item['data_type'] == 'record':
+                    data = [data]
+                if data:
                     data = data[0]
-                if 'releases' in data:
-                    date = data['releases'][0]['date']
-                elif 'compiledRelease' in data:
-                    date = data['compiledRelease']['date']
+                    if 'releases' in data:
+                        date = max(r['date'] for r in data['releases'])
+                    elif 'compiledRelease' in data:
+                        date = data['compiledRelease']['date']
             self.processed.add(spider.name)
             return LatestReleaseDateItem({
                 'date': date
