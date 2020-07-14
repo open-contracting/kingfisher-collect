@@ -42,7 +42,7 @@ class ChileCompraBaseSpider(SimpleSpider):
     @handle_http_error
     def parse_list(self, response):
         data = json.loads(response.text)
-        # some files contain invalid packages, eg:
+        # Some files contain invalid packages, e.g.:
         # {
         #   "status": 500,
         #   "detail": "error"
