@@ -6,8 +6,8 @@ from unittest.mock import Mock, patch
 import pytest
 from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessAPI
-from kingfisher_scrapy.items import FileError
+from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessAPI, KingfisherLatestDate
+from kingfisher_scrapy.items import FileError, LatestReleaseDateItem
 from tests import spider_with_crawler
 
 
@@ -365,3 +365,16 @@ def test_build_file_with_existing_directory():
 
         # No FileExistsError exception.
         store_extension.item_scraped(spider.build_file(file_name='file.json', data=b'{"key": "value"}'), spider)
+
+
+def test_item_scraped_latest_date():
+    path = os.path.join('test', '20010203_040506')
+    spider = spider_with_files_store('tmp', latest=True)
+    spider.crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH'] = path
+
+    latest_extension = KingfisherLatestDate.from_crawler(spider.crawler)
+    item = LatestReleaseDateItem({'date': '2020-10-01T00:00:00Z'})
+    latest_extension.item_scraped(item, spider)
+
+    with open(os.path.join(path, 'latest_dates.txt')) as f:
+        assert 'test : 2020-10-01T00:00:00Z' in f.read()
