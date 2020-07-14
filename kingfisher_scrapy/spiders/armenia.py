@@ -56,6 +56,22 @@ class Armenia(LinksSpider):
         return self.binary_search(response, start='start')
 
     def binary_search(self, response, succeed=None, start=None):
+        """
+        Start:
+
+        1. Start with a maximum that is one day in the future.
+        2. If it succeeds, do a binary search to find the lowest offset that works.
+        3. If it errors, set the minimum to the maximum, and advance the maximum by one day.
+        4. If it errors for 10 consecutive days, don't send any more requests.
+
+        Find the lowest offset:
+
+        1. Set the last number that worked as minimum and one day later as maximum.
+        2. Took the midpoint between them.
+        3. If it succeeds, set the midpoint to the maximum; otherwise, set it to the minimum.
+        4. Took the midpoint between them and repeat process until the midpoint stopped moving.
+        5. If the last midpoint fails, use the last offset that works.
+        """
         microseconds_per_day = 86400000
         if start:
             if start == 'start':
