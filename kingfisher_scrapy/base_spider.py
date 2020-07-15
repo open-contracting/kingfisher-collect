@@ -1,5 +1,4 @@
 import json
-from abc import abstractmethod
 from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile
@@ -10,7 +9,8 @@ import scrapy
 from jsonpointer import resolve_pointer
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError
+from kingfisher_scrapy.exceptions import (MissingNextLinkError,
+                                          SpiderArgumentError)
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.util import handle_http_error
 
