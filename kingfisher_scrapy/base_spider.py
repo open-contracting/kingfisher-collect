@@ -275,8 +275,8 @@ class CompressedFileSpider(BaseSpider):
     1. Inherit from ``CompressedFileSpider``
     1. Set a ``data_type`` class attribute to the data type of the compressed files
     1. Optionally, set an ``encoding`` class attribute to the encoding of the compressed_files (default UTF-8)
-    1. Optionally, set a ``compression`` class attribute to the compression file format. Currently supported rar and zip
-    only
+    1. Optionally, set a ``compression`` class attribute to the compression file format.
+    Currently supported rar and zip formats only
     1. Optionally, set a ``zip_file_format`` class attribute to the format of the compressed files
 
        ``json_lines``

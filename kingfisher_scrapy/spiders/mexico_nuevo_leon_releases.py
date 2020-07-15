@@ -1,11 +1,5 @@
-import os
-import tempfile
-
-import rarfile
-import scrapy
-
-from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.spiders.mexico_nuevo_leon_base import MexicoNuevoLeonBase
+from kingfisher_scrapy.spiders.mexico_nuevo_leon_base import \
+    MexicoNuevoLeonBase
 
 
 class MexicoNuevoLeonReleases(MexicoNuevoLeonBase):
