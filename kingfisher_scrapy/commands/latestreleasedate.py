@@ -21,19 +21,17 @@ class LatestReleaseDatePerPublisher(ScrapyCommand):
         spiders = process.spider_loader.list()
         current_year = datetime.today().year
         filename = get_skipped_output_file(settings)
-        for spider in spiders:
-            spider_cls = process.spider_loader.load(spider)
-            if hasattr(spider_cls, 'skip_latest_release_date'):
-                with open(filename, 'a+') as output:
-                    output.write(f'Skipping {spider} because of {spider_cls.skip_latest_release_date} \n')
-            else:
-                process.crawl(spider, latest='true', year=current_year)
+        with open(filename, 'w') as output:
+            for spider in spiders:
+                spider_cls = process.spider_loader.load(spider)
+                if hasattr(spider_cls, 'skip_latest_release_date'):
+                    output.write(f'Skipping {spider}. Reason: {spider_cls.skip_latest_release_date}\n')
+                else:
+                    process.crawl(spider, latest='true', year=current_year)
         process.start()
 
 
 def get_skipped_output_file(settings):
     path = settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH']
-    if os.path.exists(path) and os.path.isdir(path):
-        shutil.rmtree(path)
-    os.makedirs(path)
+    os.makedirs(path, exist_ok=True)
     return os.path.join(path, 'skipped_spiders.txt')

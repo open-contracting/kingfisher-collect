@@ -368,13 +368,13 @@ def test_build_file_with_existing_directory():
 
 
 def test_item_scraped_latest_date():
-    path = os.path.join('test', '20010203_040506')
-    spider = spider_with_files_store('tmp', latest=True)
-    spider.crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH'] = path
+    with TemporaryDirectory() as tmpdirname:
+        spider = spider_with_files_store(tmpdirname, latest=True)
+        spider.crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH'] = tmpdirname
 
-    latest_extension = KingfisherLatestDate.from_crawler(spider.crawler)
-    item = LatestReleaseDateItem({'date': '2020-10-01T00:00:00Z'})
-    latest_extension.item_scraped(item, spider)
+        latest_extension = KingfisherLatestDate.from_crawler(spider.crawler)
+        item = LatestReleaseDateItem({'date': '2020-10-01T00:00:00Z'})
+        latest_extension.item_scraped(item, spider)
 
-    with open(os.path.join(path, 'latest_dates.txt')) as f:
-        assert 'test: 2020-10-01T00:00:00Z' in f.read()
+        with open(os.path.join(tmpdirname, 'latest_dates.txt')) as f:
+            assert 'test,2020-10-01T00:00:00Z\n' == f.read()

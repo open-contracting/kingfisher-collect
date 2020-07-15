@@ -17,7 +17,7 @@ class DominicanRepublic(BaseSpider):
         Downloads a release package for the oldest year (2018, first link in the downloads page).
     """
     name = 'dominican_republic'
-    skip_latest_release_date = 'Rar file'
+    skip_latest_release_date = "This command doesn't yet support identifying the latest release in a RAR file."
 
     def start_requests(self):
         yield scrapy.Request(
