@@ -1,10 +1,10 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class HondurasONCAE(ZipSpider):
+class HondurasONCAE(CompressedFileSpider):
     """
     Bulk download documentation
       http://oncae.gob.hn/datosabiertos

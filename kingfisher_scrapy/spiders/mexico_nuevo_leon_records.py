@@ -8,7 +8,7 @@ from kingfisher_scrapy.base_spider import BaseSpider
 from kingfisher_scrapy.spiders.mexico_nuevo_leon_base import MexicoNuevoLeonBase
 
 
-class MexicoNuevoLeon(MexicoNuevoLeonBase):
+class MexicoNuevoLeonRecords(MexicoNuevoLeonBase):
     """
     Bulk download documentation
       https://www.dgcp.gob.do/estandar-mundial-ocds/
@@ -17,4 +17,5 @@ class MexicoNuevoLeon(MexicoNuevoLeonBase):
         Downloads the co.
     """
     name = 'mexico_nuevo_leon_records'
-    ocds_type = 'RecordPackage'
+    file_name_contains = 'RecordPackage'
+    data_type = 'record_package'

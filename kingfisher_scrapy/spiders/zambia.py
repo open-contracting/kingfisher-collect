@@ -2,11 +2,11 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class Zambia(ZipSpider):
+class Zambia(CompressedFileSpider):
     """
     Spider arguments
       sample

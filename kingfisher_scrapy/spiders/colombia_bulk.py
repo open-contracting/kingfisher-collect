@@ -1,10 +1,10 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class ColombiaBulk(ZipSpider):
+class ColombiaBulk(CompressedFileSpider):
     """
     Bulk download documentation
       https://www.colombiacompra.gov.co/transparencia/datos-json
@@ -12,6 +12,7 @@ class ColombiaBulk(ZipSpider):
       sample
         Downloads the zip file and sends 10 releases to kingfisher process.
     """
+
     name = 'colombia_bulk'
     data_type = 'release_in_Release'
     encoding = 'iso-8859-1'

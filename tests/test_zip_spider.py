@@ -4,13 +4,13 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 import pytest
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.items import File, FileItem
 from tests import response_fixture, spider_with_crawler
 
 
 def test_parse():
-    spider = spider_with_crawler(spider_class=ZipSpider)
+    spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = 'release_package'
 
     io = BytesIO()
@@ -37,7 +37,7 @@ def test_parse():
 
 @pytest.mark.parametrize('sample,len_items', [(None, 20), ('true', 10)])
 def test_parse_json_lines(sample, len_items):
-    spider = spider_with_crawler(spider_class=ZipSpider, sample=sample)
+    spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.zip_file_format = 'json_lines'
 
@@ -78,7 +78,7 @@ def test_parse_json_lines(sample, len_items):
 
 @pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), ('true', 1, 10)])
 def test_parse_release_package(sample, len_items, len_releases):
-    spider = spider_with_crawler(spider_class=ZipSpider, sample=sample)
+    spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.zip_file_format = 'release_package'
 

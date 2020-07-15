@@ -1,4 +1,5 @@
 import json
+from abc import abstractmethod
 from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile
@@ -267,35 +268,37 @@ class SimpleSpider(BaseSpider):
         yield self.build_file_from_response(response, data_type=self.data_type, encoding=self.encoding, **kwargs)
 
 
-class ZipSpider(BaseSpider):
+class CompressedFileSpider(BaseSpider):
     """
-    This class makes it easy to collect data from ZIP files. It assumes all files have the same data type.
+    This class makes it easy to collect data from ZIP or RAR files. It assumes all files have the same data type.
 
-    1. Inherit from ``ZipSpider``
+    1. Inherit from ``CompressedFileSpider``
     1. Set a ``data_type`` class attribute to the data type of the compressed files
     1. Optionally, set an ``encoding`` class attribute to the encoding of the compressed_files (default UTF-8)
+    1. Optionally, set a ``compression`` class attribute to the compression file format. Currently supported rar and zip
+    only
     1. Optionally, set a ``zip_file_format`` class attribute to the format of the compressed files
 
        ``json_lines``
          Yields each line of the compressed files.
-         The ZIP file is saved to disk.
+         The compressed file is saved to disk.
        ``release_package``
          Re-packages the releases in the compressed files in groups of
          :const:`~kingfisher_scrapy.base_spider.BaseSpider.MAX_RELEASES_PER_PACKAGE`, and yields the packages.
-         The ZIP file is saved to disk.
+         The ZIP or RAR file is saved to disk.
        ``None``
          Yields each compressed file.
          Each compressed file is saved to disk.
 
-    1. Write a ``start_requests`` method to request the ZIP files
+    1. Write a ``start_requests`` method to request the compressed files
 
     .. code-block:: python
 
         import scrapy
 
-        from kingfisher_scrapy.base_spider import ZipSpider
+        from kingfisher_scrapy.base_spider import CompressedFileSpider
 
-        class MySpider(ZipSpider):
+        class MySpider(CompressedFileSpider):
             name = 'my_spider'
             data_type = 'release_package'
 
@@ -306,21 +309,28 @@ class ZipSpider(BaseSpider):
     encoding = 'utf-8'
     zip_file_format = None
     compression = 'zip'
+    file_name_contains = ''
 
     @handle_http_error
     def parse(self, response):
         if self.zip_file_format:
             yield self.build_file_from_response(response, data_type=self.compression, post_to_api=False)
         if self.compression == 'zip':
-            zip_file = ZipFile(BytesIO(response.body))
+            compressed_file = ZipFile(BytesIO(response.body))
         else:
-            zip_file = rarfile.RarFile(BytesIO(response.body))
-        for finfo in zip_file.infolist():
-            filename = finfo.filename
+            compressed_file = rarfile.RarFile(BytesIO(response.body))
+        for finfo in compressed_file.infolist():
+            filename = util.get_base_filename(finfo.filename)
+            if self.file_name_contains not in filename:
+                continue
+            if self.compression == 'rar':
+                file_info = compressed_file.getinfo(finfo)
+                if file_info.isdir():
+                    continue
             if not filename.endswith('.json'):
                 filename += '.json'
 
-            data = zip_file.open(finfo.filename)
+            data = compressed_file.open(finfo.filename)
 
             kwargs = {
                 'file_name': filename,
@@ -328,11 +338,10 @@ class ZipSpider(BaseSpider):
                 'data_type': self.data_type,
                 'encoding': self.encoding,
             }
-
             if self.zip_file_format == 'json_lines':
                 yield from self.parse_json_lines(data, **kwargs)
             elif self.zip_file_format == 'release_package':
-                package = zip_file.open(finfo.filename)
+                package = compressed_file.open(finfo.filename)
                 yield from self.parse_json_array(package, data, **kwargs)
             else:
                 yield self.build_file(data=data.read(), **kwargs)
