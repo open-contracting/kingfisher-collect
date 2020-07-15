@@ -1,4 +1,5 @@
 import os
+import shutil
 from datetime import datetime
 
 from scrapy.commands import ScrapyCommand
@@ -32,5 +33,6 @@ class LatestReleaseDatePerPublisher(ScrapyCommand):
 
 def get_skipped_output_file(settings):
     path = settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH']
+    shutil.rmtree(path, ignore_errors=True)
     os.makedirs(path, exist_ok=True)
     return os.path.join(path, 'skipped_spiders.txt')

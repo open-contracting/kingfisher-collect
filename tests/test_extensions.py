@@ -376,5 +376,19 @@ def test_item_scraped_latest_date():
         item = LatestReleaseDateItem({'date': '2020-10-01T00:00:00Z'})
         latest_extension.item_scraped(item, spider)
 
-        with open(os.path.join(tmpdirname, 'latest_dates.txt')) as f:
+        with open(os.path.join(tmpdirname, 'latest_dates.csv')) as f:
             assert 'test,2020-10-01T00:00:00Z\n' == f.read()
+
+        # the same item is processed just once
+        latest_extension.item_scraped(item, spider)
+
+        with open(os.path.join(tmpdirname, 'latest_dates.csv')) as f:
+            assert 'test,2020-10-01T00:00:00Z\n' == f.read()
+
+        # a non processed item is marked as an error
+        spider.name = 'no date'
+
+        latest_extension.spider_closed(spider)
+
+        with open(os.path.join(tmpdirname, 'latest_dates.csv')) as f:
+            assert 'test,2020-10-01T00:00:00Z\nno date,error\n' == f.read()

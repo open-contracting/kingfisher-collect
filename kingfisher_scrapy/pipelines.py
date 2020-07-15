@@ -50,6 +50,7 @@ class LatestReleaseDate:
         if spider.latest and (isinstance(item, FileItem) or isinstance(item, File)):
             if spider.name in self.processed:
                 spider.crawler.engine.close_spider(self, reason='proccesed')
+                return
             date = None
             data = json.loads(item['data'])
             if item['data_type'] == 'release_package' or item['data_type'] == 'release' \
