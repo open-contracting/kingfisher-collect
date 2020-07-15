@@ -19,6 +19,7 @@ class ArgentinaBuenosAires(CompressedFileSpider):
 
     name = 'argentina_buenos_aires'
     data_type = 'release_package'
+    zip_file_format = 'releases_package'
 
     # the data list service takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000

@@ -5,11 +5,7 @@ from kingfisher_scrapy.base_spider import CompressedFileSpider
 
 class MexicoNuevoLeonBase(CompressedFileSpider):
     """
-    Bulk download documentation
-      https://www.dgcp.gob.do/estandar-mundial-ocds/
-    Spider arguments
-      sample
-        Downloads the co.
+    Base class to download Mexico Nuevo Leon data
     """
     compression = 'rar'
 
