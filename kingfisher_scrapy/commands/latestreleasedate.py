@@ -1,5 +1,4 @@
 import os
-import shutil
 from datetime import datetime
 
 from scrapy.commands import ScrapyCommand
