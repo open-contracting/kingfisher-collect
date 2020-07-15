@@ -1,11 +1,16 @@
-from datetime import date, timedelta
+from datetime import date
 
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import parameters
 
 
 class ScotlandBase(SimpleSpider):
-    def parse_requests(self, pattern, increment):
+    @classmethod
+    def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
+        spider = super().from_crawler(crawler, date_format='month-year', from_date=from_date, *args, **kwargs)
+        return spider
+
+    def parse_requests(self, pattern):
 
         notice_types = [
             1,  # OJEU - F1 - Prior Information Notice
@@ -32,19 +37,16 @@ class ScotlandBase(SimpleSpider):
         ]
 
         now = date.today()
+        marker = (self.from_date.date().month, self.from_date.date().year) \
+            if self.from_date else (now.month, now.year - 1)
 
-        marker = (self.from_date.date() if self.from_date else now - timedelta(days=364))
-
-        while marker <= now:
-            if self.date_format == '%Y-%m-%d':
-                date_string = '{:04d}-{:02d}-{:02d}'.format(marker.year, marker.month, marker.day)
-            else:
-                date_string = '{:02d}-{:04d}'.format(marker.month, marker.year)
+        while marker[1] < now.year or marker[0] <= now.month:
+            date_string = '{:02d}-{:04d}'.format(marker[0], marker[1])
             for notice_type in notice_types:
                 yield self.build_request(
                     pattern.format(date_string, notice_type),
                     formatter=parameters('noticeType', 'dateFrom')
                 )
-            marker = marker + timedelta(days=increment)
+            marker = (1, marker[1] + 1) if marker[0] == 12 else (marker[0] + 1, marker[1])
             if self.sample:
                 break

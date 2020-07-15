@@ -14,12 +14,6 @@ class ScotlandProactis(ScotlandBase):
     name = 'scotland_proactis'
     data_type = 'release_package'
 
-    @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(ScotlandProactis, cls).from_crawler(crawler, date_format='month-year', *args, **kwargs)
-        return spider
-
     def start_requests(self):
         pattern = 'https://sandbox4.proactislabs.com/v1/Notices?dateFrom={}&outputType=0&noticeType={}'
-        increment = 1
-        return self.parse_requests(pattern, increment)
+        return self.parse_requests(pattern)
