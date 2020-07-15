@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import parameters
 class ScotlandBase(SimpleSpider):
     @classmethod
     def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
-        spider = super().from_crawler(crawler, date_format='month-year', from_date=from_date, *args, **kwargs)
+        spider = super().from_crawler(crawler, date_format='year-month', from_date=from_date, *args, **kwargs)
         return spider
 
     def parse_requests(self, pattern):
@@ -37,16 +37,16 @@ class ScotlandBase(SimpleSpider):
         ]
 
         now = date.today()
-        marker = (self.from_date.date().month, self.from_date.date().year) \
+        month, year = (self.from_date.date().month, self.from_date.date().year) \
             if self.from_date else (now.month, now.year - 1)
 
-        while marker[1] < now.year or marker[0] <= now.month:
-            date_string = '{:02d}-{:04d}'.format(marker[0], marker[1])
+        while year < now.year or month <= now.month:
+            date_string = '{:02d}-{:04d}'.format(month, year)
             for notice_type in notice_types:
                 yield self.build_request(
                     pattern.format(date_string, notice_type),
                     formatter=parameters('noticeType', 'dateFrom')
                 )
-            marker = (1, marker[1] + 1) if marker[0] == 12 else (marker[0] + 1, marker[1])
+            month, year = (1, year + 1) if month == 12 else (month + 1, year)
             if self.sample:
                 break
