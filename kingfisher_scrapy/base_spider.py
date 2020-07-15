@@ -4,6 +4,7 @@ from io import BytesIO
 from zipfile import ZipFile
 
 import ijson
+import rarfile
 import scrapy
 from jsonpointer import resolve_pointer
 
@@ -304,13 +305,16 @@ class ZipSpider(BaseSpider):
 
     encoding = 'utf-8'
     zip_file_format = None
+    compression = 'zip'
 
     @handle_http_error
     def parse(self, response):
         if self.zip_file_format:
-            yield self.build_file_from_response(response, data_type='zip', post_to_api=False)
-
-        zip_file = ZipFile(BytesIO(response.body))
+            yield self.build_file_from_response(response, data_type=self.compression, post_to_api=False)
+        if self.compression == 'zip':
+            zip_file = ZipFile(BytesIO(response.body))
+        else:
+            zip_file = rarfile.RarFile(BytesIO(response.body))
         for finfo in zip_file.infolist():
             filename = finfo.filename
             if not filename.endswith('.json'):
