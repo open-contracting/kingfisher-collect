@@ -306,7 +306,7 @@ class ZipSpider(BaseSpider):
 
     encoding = 'utf-8'
     zip_file_format = None
-    skip_latest_release_date = "This command doesn't yet support identifying the latest release in a ZIP file."
+    skip_latest_release_date = "Archive files are not supported"
 
     @handle_http_error
     def parse(self, response):

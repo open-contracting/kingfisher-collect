@@ -19,7 +19,7 @@ class HondurasPortalRecords(LinksSpider):
     data_pointer = '/recordPackage'
     next_pointer = '/next'
     next_page_formatter = staticmethod(parameters('page'))
-    skip_latest_release_date = 'Already covered by honduras_portal_releases'
+    skip_latest_release_date = 'Already covered (see code for details)'  # honduras_portal_releases
 
     download_delay = 0.9
 

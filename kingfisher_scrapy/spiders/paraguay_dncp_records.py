@@ -17,7 +17,7 @@ class ParaguayDNCPRecords(ParaguayDNCPBaseSpider):
     """
     name = 'paraguay_dncp_records'
     data_type = 'record_package'
-    skip_latest_release_date = 'Already covered by paraguay_dncp_releases'
+    skip_latest_release_date = 'Already covered (see code for details)'  # paraguay_dncp_releases
 
     def get_files_to_download(self, content):
         for record in content['records']:
