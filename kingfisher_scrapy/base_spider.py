@@ -293,16 +293,15 @@ class CompressedFileSpider(BaseSpider):
 
     .. code-block:: python
 
-        import scrapy
-
         from kingfisher_scrapy.base_spider import CompressedFileSpider
+        from kingfisher_scrapy.util import components
 
         class MySpider(CompressedFileSpider):
             name = 'my_spider'
             data_type = 'release_package'
 
             def start_requests(self):
-                yield scrapy.Request('https://example.com/api/packages.zip', meta={'file_name': 'all.json'})
+                yield self.build_request('https://example.com/api/packages.zip', formatter=components(-1))
     """
 
     encoding = 'utf-8'
