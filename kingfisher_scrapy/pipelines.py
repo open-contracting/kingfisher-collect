@@ -57,9 +57,9 @@ class LatestReleaseDate:
             spider.crawler.engine.close_spider(spider, reason='processed')
             raise DropItem()
 
-        # Let FileError items through.
+        # Drop FileError items, so that we keep trying to get data.
         if not isinstance(item, (File, FileItem)):
-            return item
+            raise DropItem()
 
         date = None
         data = json.loads(item['data'])
@@ -97,4 +97,4 @@ class LatestReleaseDate:
 
         self.processed.add(spider.name)
 
-        return LatestReleaseDateItem({'date': date})
+        return LatestReleaseDateItem({'date': date[:10]})
