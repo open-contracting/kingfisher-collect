@@ -10,8 +10,7 @@ from jsonpointer import resolve_pointer
 from rarfile import RarFile
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.exceptions import (MissingNextLinkError,
-                                          SpiderArgumentError)
+from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.util import handle_http_error
 
