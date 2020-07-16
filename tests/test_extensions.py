@@ -373,22 +373,22 @@ def test_item_scraped_latest_date():
         spider.crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH'] = tmpdirname
 
         latest_extension = KingfisherLatestDate.from_crawler(spider.crawler)
-        item = LatestReleaseDateItem({'date': '2020-10-01T00:00:00Z'})
+        item = LatestReleaseDateItem({'date': '2020-10-01'})
         latest_extension.item_scraped(item, spider)
 
-        with open(os.path.join(tmpdirname, 'latest_dates.csv')) as f:
-            assert 'test,2020-10-01T00:00:00Z\n' == f.read()
+        with open(os.path.join(tmpdirname, 'dates.csv')) as f:
+            assert '2020-10-01,test\n' == f.read()
 
         # the same item is processed just once
         latest_extension.item_scraped(item, spider)
 
-        with open(os.path.join(tmpdirname, 'latest_dates.csv')) as f:
-            assert 'test,2020-10-01T00:00:00Z\n' == f.read()
+        with open(os.path.join(tmpdirname, 'dates.csv')) as f:
+            assert '2020-10-01,test\n' == f.read()
 
         # a non processed item is marked as an error
-        spider.name = 'no date'
+        spider.name = 'dateless'
 
         latest_extension.spider_closed(spider, 'itemcount')
 
-        with open(os.path.join(tmpdirname, 'latest_dates.csv')) as f:
-            assert 'test,2020-10-01T00:00:00Z\nno date,itemcount\n' == f.read()
+        with open(os.path.join(tmpdirname, 'dates.csv')) as f:
+            assert '2020-10-01,test\nitemcount,dateless\n' == f.read()
