@@ -319,22 +319,22 @@ class CompressedFileSpider(BaseSpider):
         else:
             cls = RarFile
         archive_file = cls(BytesIO(response.body))
-        for fname in archive_file.namelist():
-            filename = os.path.basename(fname)
-            if self.file_name_must_contain not in filename:
+        for file_info in archive_file.infolist():
+            filename = file_info.filename
+            basename = os.path.basename(filename)
+            if self.file_name_must_contain not in basename:
                 continue
-            file_info = archive_file.getinfo(fname)
             if self.archive_format == 'rar' and file_info.isdir():
                 continue
             if self.archive_format == 'zip' and file_info.is_dir():
                 continue
-            if not filename.endswith('.json'):
-                filename += '.json'
+            if not basename.endswith('.json'):
+                basename += '.json'
 
-            data = archive_file.open(fname)
+            data = archive_file.open(filename)
 
             kwargs = {
-                'file_name': filename,
+                'file_name': basename,
                 'url': response.request.url,
                 'data_type': self.data_type,
                 'encoding': self.encoding,
@@ -342,7 +342,7 @@ class CompressedFileSpider(BaseSpider):
             if self.compressed_file_format == 'json_lines':
                 yield from self.parse_json_lines(data, **kwargs)
             elif self.compressed_file_format == 'release_package':
-                package = archive_file.open(fname)
+                package = archive_file.open(filename)
                 yield from self.parse_json_array(package, data, **kwargs)
             else:
                 yield self.build_file(data=data.read(), **kwargs)
