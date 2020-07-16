@@ -1,14 +1,10 @@
-import os
-import tempfile
-
-import rarfile
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class DominicanRepublic(BaseSpider):
+class DominicanRepublic(CompressedFileSpider):
     """
     Bulk download documentation
       https://www.dgcp.gob.do/estandar-mundial-ocds/
@@ -18,6 +14,9 @@ class DominicanRepublic(BaseSpider):
     """
     name = 'dominican_republic'
     skip_latest_release_date = "Archive files are not supported"
+    data_type = 'release_package'
+    compressed_file_format = 'release_package'
+    archive_format = 'rar'
 
     def start_requests(self):
         yield scrapy.Request(
@@ -37,15 +36,3 @@ class DominicanRepublic(BaseSpider):
         for url in json_urls:
             if '/JSON_DGCP_' in url:
                 yield self.build_request(url, formatter=components(-1))
-
-    @handle_http_error
-    def parse(self, response):
-        file = tempfile.NamedTemporaryFile(delete=False)
-        file.write(response.body)
-        file.close()
-        with rarfile.RarFile(file.name, charset='utf-8') as tmpfile:
-            for f in tmpfile.infolist():
-                with tmpfile.open(f) as jsonFile:
-                    yield self.build_file(file_name=f.filename, url=response.request.url, data=jsonFile.read(),
-                                          data_type='release_package')
-        os.remove(file.name)
