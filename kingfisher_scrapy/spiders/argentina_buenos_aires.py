@@ -2,11 +2,11 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class ArgentinaBuenosAires(ZipSpider):
+class ArgentinaBuenosAires(CompressedFileSpider):
     """
     API documentation
       https://data.buenosaires.gob.ar/acerca/ckan
@@ -16,9 +16,10 @@ class ArgentinaBuenosAires(ZipSpider):
       sample
         Downloads the zip file and sends 10 releases to kingfisher process.
     """
+
     name = 'argentina_buenos_aires'
     data_type = 'release_package'
-    zip_file_format = 'release_package'
+    compressed_file_format = 'release_package'
 
     # the data list service takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000

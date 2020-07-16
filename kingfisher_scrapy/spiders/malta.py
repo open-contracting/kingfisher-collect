@@ -3,11 +3,11 @@ from urllib.parse import urlsplit
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class Malta(ZipSpider):
+class Malta(CompressedFileSpider):
     """
     API documentation
       https://docs.google.com/document/d/1VnCEywKkkQ7BcVbT7HlW2s_N_QI8W0KE/edit

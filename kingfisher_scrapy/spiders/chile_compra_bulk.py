@@ -1,12 +1,12 @@
 import json
 from datetime import date
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.items import FileError
 from kingfisher_scrapy.util import components, date_range_by_month
 
 
-class ChileCompraBulk(ZipSpider):
+class ChileCompraBulk(CompressedFileSpider):
     """
     Bulk download documentation
       https://desarrolladores.mercadopublico.cl/OCDS/DescargaMasiva
@@ -14,6 +14,7 @@ class ChileCompraBulk(ZipSpider):
       sample
         Download only data released this month.
     """
+
     name = 'chile_compra_bulk'
     data_type = 'record_package'
 
