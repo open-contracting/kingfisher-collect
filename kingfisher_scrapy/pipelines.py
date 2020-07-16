@@ -78,7 +78,7 @@ class LatestReleaseDate:
                 else:
                     date = max(r['date'] for r in data)
         elif item['data_type'] in ('record_package', 'record_package_list', 'record_package_list_in_results',
-                                   'record', 'record_list'):
+                                   'record_list', 'record'):
             if item['data_type'] == 'record_package':
                 data = data['records']
             elif item['data_type'] == 'record_package_list':

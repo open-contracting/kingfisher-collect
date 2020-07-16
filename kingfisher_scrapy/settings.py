@@ -133,7 +133,7 @@ KINGFISHER_OPENOPPS_PASSWORD = os.getenv('KINGFISHER_OPENOPPS_PASSWORD')
 # https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std:setting-FILES_STORE
 FILES_STORE = os.getenv('FILES_STORE', 'data')
 
-KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH = os.getenv('KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH', 'latest_dates')
+KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH = os.getenv('KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH', 'latestreleasedate')
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
 HTTPERROR_ALLOW_ALL = True
 

@@ -21,7 +21,7 @@ class KingfisherLatestDate:
     def from_crawler(cls, crawler):
         path = crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH']
         os.makedirs(path, exist_ok=True)
-        filename = os.path.join(path, 'latest_dates.csv')
+        filename = os.path.join(path, 'dates.csv')
         extension = cls(filename=filename)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
