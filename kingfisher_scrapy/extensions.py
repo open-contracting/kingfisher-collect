@@ -32,12 +32,12 @@ class KingfisherLatestDate:
             return
         self.spiders_seen.add(spider.name)
         with open(self.filename, 'a+') as output:
-            output.write(f"{spider.name},{item['date']}\n")
+            output.write(f"{item['date']},{spider.name}\n")
 
     def spider_closed(self, spider, reason):
         if spider.name not in self.spiders_seen:
             with open(self.filename, 'a+') as output:
-                output.write(f"{spider.name},{reason}\n")
+                output.write(f"{reason},{spider.name}\n")
 
 
 class KingfisherFilesStore:
