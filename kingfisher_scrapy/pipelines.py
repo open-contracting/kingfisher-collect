@@ -5,6 +5,7 @@ import pkgutil
 
 from jsonschema import FormatChecker
 from jsonschema.validators import Draft4Validator, RefResolver
+from scrapy.exceptions import DropItem
 
 from kingfisher_scrapy.items import File, FileItem, LatestReleaseDateItem
 
@@ -47,10 +48,17 @@ class LatestReleaseDate:
         self.processed = set()
 
     def process_item(self, item, spider):
+        # Skip this pipeline stage unless the spider is explicitly configured to get the latest release date.
+        if not spider.latest:
+            return item
+
+        # Drop any extra items that are yielded before the spider closes.
         if spider.name in self.processed:
             spider.crawler.engine.close_spider(self, reason='processed')
             return
-        if not spider.latest or not isinstance(item, (File, FileItem)):
+
+        # Let FileError items through.
+        if not isinstance(item, (File, FileItem)):
             return item
 
         date = None
