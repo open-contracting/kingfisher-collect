@@ -1,10 +1,11 @@
 import json
+import os
 from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile
 
 import ijson
-import rarfile
+from rarfile import RarFile
 import scrapy
 from jsonpointer import resolve_pointer
 
@@ -309,28 +310,30 @@ class CompressedFileSpider(BaseSpider):
     encoding = 'utf-8'
     zip_file_format = None
     compression = 'zip'
-    file_name_contains = ''
+    file_name_must_contain = ''
 
     @handle_http_error
     def parse(self, response):
         if self.zip_file_format:
             yield self.build_file_from_response(response, data_type=self.compression, post_to_api=False)
         if self.compression == 'zip':
-            compressed_file = ZipFile(BytesIO(response.body))
+            cls = ZipFile
         else:
-            compressed_file = rarfile.RarFile(BytesIO(response.body))
-        for finfo in compressed_file.infolist():
-            filename = util.get_base_filename(finfo.filename)
-            if self.file_name_contains not in filename:
+            cls = RarFile
+        archive_file = cls(BytesIO(response.body))
+        for fname in archive_file.namelist():
+            filename = os.path.basename(fname)
+            if self.file_name_must_contain not in filename:
                 continue
-            if self.compression == 'rar':
-                file_info = compressed_file.getinfo(finfo)
-                if file_info.isdir():
-                    continue
+            file_info = archive_file.getinfo(fname)
+            if self.compression == 'rar' and file_info.isdir():
+                continue
+            if self.compression == 'zip' and file_info.is_dir():
+                continue
             if not filename.endswith('.json'):
                 filename += '.json'
 
-            data = compressed_file.open(finfo.filename)
+            data = archive_file.open(fname)
 
             kwargs = {
                 'file_name': filename,
@@ -341,7 +344,7 @@ class CompressedFileSpider(BaseSpider):
             if self.zip_file_format == 'json_lines':
                 yield from self.parse_json_lines(data, **kwargs)
             elif self.zip_file_format == 'release_package':
-                package = compressed_file.open(finfo.filename)
+                package = archive_file.open(fname)
                 yield from self.parse_json_array(package, data, **kwargs)
             else:
                 yield self.build_file(data=data.read(), **kwargs)

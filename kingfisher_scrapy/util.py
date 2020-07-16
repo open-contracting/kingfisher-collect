@@ -155,7 +155,3 @@ def default(obj):
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return itertools.zip_longest(*args, fillvalue=fillvalue)
-
-
-def get_base_filename(filename):
-    return os.path.basename(filename)

@@ -10,5 +10,5 @@ class MexicoNuevoLeonRecords(MexicoNuevoLeonBase):
         Downloads the rar file and sends 10 records to kingfisher process.
     """
     name = 'mexico_nuevo_leon_records'
-    file_name_contains = 'RecordPackage'
+    file_name_must_contain = 'RecordPackage'
     data_type = 'record_package'

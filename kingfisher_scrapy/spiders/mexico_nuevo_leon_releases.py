@@ -10,5 +10,5 @@ class MexicoNuevoLeonReleases(MexicoNuevoLeonBase):
         Downloads the rar file and sends 10 releases to kingfisher process.
     """
     name = 'mexico_nuevo_leon_releases'
-    file_name_contains = 'ReleasePackage'
+    file_name_must_contain = 'ReleasePackage'
     data_type = 'release_package'
