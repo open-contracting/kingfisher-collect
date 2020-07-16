@@ -15,7 +15,7 @@ from kingfisher_scrapy.kingfisher_process import Client
 class KingfisherLatestDate:
     def __init__(self, filename):
         self.filename = filename
-        self.written = {}
+        self.spiders_seen = set()
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -28,16 +28,16 @@ class KingfisherLatestDate:
         return extension
 
     def item_scraped(self, item, spider):
-        if not isinstance(item, LatestReleaseDateItem) or spider.name in self.written.keys():
+        if not isinstance(item, LatestReleaseDateItem) or spider.name in self.spiders_seen:
             return
-        self.written[spider.name] = True
+        self.spiders_seen.add(spider.name)
         with open(self.filename, 'a+') as output:
             output.write(f"{spider.name},{item['date']}\n")
 
-    def spider_closed(self, spider):
-        if spider.name not in self.written.keys():
+    def spider_closed(self, spider, reason):
+        if spider.name not in self.spiders_seen:
             with open(self.filename, 'a+') as output:
-                output.write(f"{spider.name},error\n")
+                output.write(f"{spider.name},{reason}\n")
 
 
 class KingfisherFilesStore:
@@ -130,7 +130,7 @@ class KingfisherProcessAPI:
         Sends an API request to end the collection's store step.
         """
         # https://docs.scrapy.org/en/latest/topics/signals.html#spider-closed
-        if reason != 'finished':
+        if reason != 'finished' or spider.latest:
             return
 
         response = self.client.end_collection_store({
