@@ -54,8 +54,8 @@ class LatestReleaseDate:
 
         # Drop any extra items that are yielded before the spider closes.
         if spider.name in self.processed:
-            spider.crawler.engine.close_spider(self, reason='processed')
-            return
+            spider.crawler.engine.close_spider(spider, reason='processed')
+            raise DropItem()
 
         # Let FileError items through.
         if not isinstance(item, (File, FileItem)):
