@@ -13,7 +13,6 @@ class DominicanRepublic(CompressedFileSpider):
         Downloads a release package for the oldest year (2018, first link in the downloads page).
     """
     name = 'dominican_republic'
-    skip_latest_release_date = "Archive files are not supported"
     data_type = 'release_package'
     compressed_file_format = 'release_package'
     archive_format = 'rar'
