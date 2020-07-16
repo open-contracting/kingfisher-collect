@@ -50,40 +50,43 @@ class LatestReleaseDate:
         if spider.name in self.processed:
             spider.crawler.engine.close_spider(self, reason='processed')
             return
-        if spider.latest and isinstance(item, (File, FileItem)):
-            date = None
-            data = json.loads(item['data'])
-            if item['data_type'] in ('release_package', 'release_package_list', 'release_package_list_in_results',
-                                     'release_list', 'release', 'compiled_release'):
-                if item['data_type'] == 'release_package':
-                    data = data['releases']
-                elif item['data_type'] == 'release_package_list':
-                    data = data[0]['releases']
-                elif item['data_type'] == 'release_package_list_in_results':
-                    data = data['results'][0]['releases']
-                if data:
-                    if item['data_type'] in ('release', 'compiled_release'):
-                        date = data['date']
-                    else:
-                        date = max(r['date'] for r in data)
-            elif item['data_type'] in ('record_package', 'record', 'record_list', 'record_package_list',
-                                       'record_package_list_in_results'):
-                if item['data_type'] == 'record_package':
-                    data = data['records']
-                elif item['data_type'] == 'record_package_list':
-                    data = data[0]['records']
-                elif item['data_type'] == 'record_package_list_in_results':
-                    data = data['results'][0]['records']
-                elif item['data_type'] == 'record':
-                    data = [data]
-                if data:
-                    # This assumes that the first record in the record package has the most recent date.
-                    data = data[0]
-                    if 'releases' in data:
-                        date = max(r['date'] for r in data['releases'])
-                    elif 'compiledRelease' in data:
-                        date = data['compiledRelease']['date']
-            self.processed.add(spider.name)
-            return LatestReleaseDateItem({'date': date})
-        else:
+        if not spider.latest or not isinstance(item, (File, FileItem)):
             return item
+
+        date = None
+        data = json.loads(item['data'])
+
+        if item['data_type'] in ('release_package', 'release_package_list', 'release_package_list_in_results',
+                                 'release_list', 'release', 'compiled_release'):
+            if item['data_type'] == 'release_package':
+                data = data['releases']
+            elif item['data_type'] == 'release_package_list':
+                data = data[0]['releases']
+            elif item['data_type'] == 'release_package_list_in_results':
+                data = data['results'][0]['releases']
+            if data:
+                if item['data_type'] in ('release', 'compiled_release'):
+                    date = data['date']
+                else:
+                    date = max(r['date'] for r in data)
+        elif item['data_type'] in ('record_package', 'record_package_list', 'record_package_list_in_results',
+                                   'record', 'record_list'):
+            if item['data_type'] == 'record_package':
+                data = data['records']
+            elif item['data_type'] == 'record_package_list':
+                data = data[0]['records']
+            elif item['data_type'] == 'record_package_list_in_results':
+                data = data['results'][0]['records']
+            elif item['data_type'] == 'record':
+                data = [data]
+            if data:
+                # This assumes that the first record in the record package has the most recent date.
+                data = data[0]
+                if 'releases' in data:
+                    date = max(r['date'] for r in data['releases'])
+                elif 'compiledRelease' in data:
+                    date = data['compiledRelease']['date']
+
+        self.processed.add(spider.name)
+
+        return LatestReleaseDateItem({'date': date})
