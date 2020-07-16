@@ -12,7 +12,6 @@ class MoldovaOld(SimpleSpider):
     """
     name = 'moldova_old'
     data_type = 'release_package'
-    skip_latest_release_date = 'Old endpoint'
 
     def start_requests(self):
         pattern = 'http://opencontracting.date.gov.md/ocds-api/year/{}'
