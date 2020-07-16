@@ -6,7 +6,7 @@ class MexicoNuevoLeonBase(CompressedFileSpider):
     """
     Base class to download Mexico Nuevo Leon data
     """
-    compression = 'rar'
+    archive_format = 'rar'
 
     def start_requests(self):
         yield self.build_request(

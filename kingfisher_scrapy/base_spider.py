@@ -274,23 +274,22 @@ class CompressedFileSpider(BaseSpider):
 
     1. Inherit from ``CompressedFileSpider``
     1. Set a ``data_type`` class attribute to the data type of the compressed files
-    1. Optionally, set an ``encoding`` class attribute to the encoding of the compressed_files (default UTF-8)
-    1. Optionally, set a ``compression`` class attribute to the compression file format.
-    Currently supported rar and zip formats only
-    1. Optionally, set a ``zip_file_format`` class attribute to the format of the compressed files
+    1. Optionally, set an ``encoding`` class attribute to the encoding of the compressed files (default UTF-8)
+    1. Optionally, set a ``archive_format`` class attribute to the archive file format ("zip" or "rar").
+    1. Optionally, set a ``compressed_file_format`` class attribute to the format of the compressed files
 
        ``json_lines``
          Yields each line of the compressed files.
-         The compressed file is saved to disk.
+         The archive file is saved to disk.
        ``release_package``
          Re-packages the releases in the compressed files in groups of
          :const:`~kingfisher_scrapy.base_spider.BaseSpider.MAX_RELEASES_PER_PACKAGE`, and yields the packages.
-         The ZIP or RAR file is saved to disk.
+         The archive file is saved to disk.
        ``None``
          Yields each compressed file.
          Each compressed file is saved to disk.
 
-    1. Write a ``start_requests`` method to request the compressed files
+    1. Write a ``start_requests`` method to request the archive files
 
     .. code-block:: python
 
@@ -307,15 +306,15 @@ class CompressedFileSpider(BaseSpider):
     """
 
     encoding = 'utf-8'
-    zip_file_format = None
-    compression = 'zip'
+    compressed_file_format = None
+    archive_format = 'zip'
     file_name_must_contain = ''
 
     @handle_http_error
     def parse(self, response):
-        if self.zip_file_format:
-            yield self.build_file_from_response(response, data_type=self.compression, post_to_api=False)
-        if self.compression == 'zip':
+        if self.compressed_file_format:
+            yield self.build_file_from_response(response, data_type=self.archive_format, post_to_api=False)
+        if self.archive_format == 'zip':
             cls = ZipFile
         else:
             cls = RarFile
@@ -325,9 +324,9 @@ class CompressedFileSpider(BaseSpider):
             if self.file_name_must_contain not in filename:
                 continue
             file_info = archive_file.getinfo(fname)
-            if self.compression == 'rar' and file_info.isdir():
+            if self.archive_format == 'rar' and file_info.isdir():
                 continue
-            if self.compression == 'zip' and file_info.is_dir():
+            if self.archive_format == 'zip' and file_info.is_dir():
                 continue
             if not filename.endswith('.json'):
                 filename += '.json'
@@ -340,9 +339,9 @@ class CompressedFileSpider(BaseSpider):
                 'data_type': self.data_type,
                 'encoding': self.encoding,
             }
-            if self.zip_file_format == 'json_lines':
+            if self.compressed_file_format == 'json_lines':
                 yield from self.parse_json_lines(data, **kwargs)
-            elif self.zip_file_format == 'release_package':
+            elif self.compressed_file_format == 'release_package':
                 package = archive_file.open(fname)
                 yield from self.parse_json_array(package, data, **kwargs)
             else:

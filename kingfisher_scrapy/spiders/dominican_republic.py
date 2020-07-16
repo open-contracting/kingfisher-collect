@@ -14,8 +14,8 @@ class DominicanRepublic(CompressedFileSpider):
     """
     name = 'dominican_republic'
     data_type = 'release_package'
-    zip_file_format = 'release_package'
-    compression = 'rar'
+    compressed_file_format = 'release_package'
+    archive_format = 'rar'
 
     def start_requests(self):
         yield scrapy.Request(
