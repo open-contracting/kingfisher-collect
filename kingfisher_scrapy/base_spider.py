@@ -5,9 +5,9 @@ from io import BytesIO
 from zipfile import ZipFile
 
 import ijson
-from rarfile import RarFile
 import scrapy
 from jsonpointer import resolve_pointer
+from rarfile import RarFile
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import (MissingNextLinkError,
