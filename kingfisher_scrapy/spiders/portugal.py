@@ -2,11 +2,11 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class Portugal(ZipSpider):
+class Portugal(CompressedFileSpider):
     """
     API documentation
       https://dados.gov.pt/pt/apidoc/
@@ -19,7 +19,7 @@ class Portugal(ZipSpider):
     name = 'portugal'
     data_type = 'record_package'
     encoding = 'iso-8859-1'
-    zip_file_format = 'json_lines'
+    compressed_file_format = 'json_lines'
 
     download_timeout = 9999
 

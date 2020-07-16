@@ -1,7 +1,7 @@
 from scrapy.commands import ScrapyCommand
 from scrapy.crawler import CrawlerProcess
 
-from kingfisher_scrapy.base_spider import BaseSpider, ZipSpider
+from kingfisher_scrapy.base_spider import BaseSpider, CompressedFileSpider
 
 
 def yield_nothing(*args, **kwargs):
@@ -14,7 +14,7 @@ class DryRun(ScrapyCommand):
 
     def run(self, args, opts):
         BaseSpider.parse_json_lines = yield_nothing
-        ZipSpider.parse = yield_nothing
+        CompressedFileSpider.parse = yield_nothing
 
         # Stop after one item or error.
         self.settings.set('CLOSESPIDER_ERRORCOUNT', 1)
