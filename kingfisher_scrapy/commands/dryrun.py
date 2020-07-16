@@ -20,7 +20,7 @@ class DryRun(ScrapyCommand):
         self.settings.set('CLOSESPIDER_ERRORCOUNT', 1)
         self.settings.set('CLOSESPIDER_ITEMCOUNT', 1)
 
-        # Disable Kingfisher, Telnet, LogStats extensions.
+        # Disable custom, Telnet and LogStats extensions.
         self.settings.set('EXTENSIONS', {
             'scrapy.extensions.telnet.TelnetConsole': None,
         })

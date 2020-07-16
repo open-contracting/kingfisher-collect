@@ -11,24 +11,31 @@ class LatestReleaseDatePerPublisher(ScrapyCommand):
         return 'Get the latest published release date per publisher'
 
     def run(self, args, opts):
-        settings = get_project_settings()
-        settings.set('CLOSESPIDER_ITEMCOUNT', 1)
-        settings.set('CONCURRENT_REQUESTS', 1)
-        settings.set('CLOSESPIDER_ERRORCOUNT', 1)
+        # Stop after one item or error.
+        self.settings.set('CLOSESPIDER_ERRORCOUNT', 1)
+        self.settings.set('CLOSESPIDER_ITEMCOUNT', 1)
+        # Limit concurrent requests, to download the minimum.
+        self.settings.set('CONCURRENT_REQUESTS', 1)
 
-        path = settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH']
+        # Disable LogStats extension.
+        self.settings.set('LOGSTATS_INTERVAL', None)
+
+        path = self.settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH']
         os.makedirs(path, exist_ok=True)
-        os.unlink(os.path.join(path, 'latest_dates.csv'))
+        filename = os.path.join(path, 'latest_dates.csv')
+        if os.path.isfile(filename):
+            os.unlink(filename)
         filename = os.path.join(path, 'skipped_spiders.txt')
 
-        process = CrawlerProcess(settings=settings)
-        spiders = process.spider_loader.list()
-        current_year = datetime.today().year
+        runner = CrawlerProcess(settings=self.settings)
+
+        year = datetime.today().year
         with open(filename, 'w') as output:
-            for spider in spiders:
-                spider_cls = process.spider_loader.load(spider)
-                if hasattr(spider_cls, 'skip_latest_release_date'):
-                    output.write(f'Skipping {spider}. Reason: {spider_cls.skip_latest_release_date}\n')
+            for spider_name in runner.spider_loader.list():
+                spidercls = runner.spider_loader.load(spider_name)
+                if hasattr(spidercls, 'skip_latest_release_date'):
+                    output.write(f'Skipping {spider_name}. Reason: {spidercls.skip_latest_release_date}\n')
                 else:
-                    process.crawl(spider, latest='true', year=current_year)
-        process.start()
+                    runner.crawl(spidercls, latest='true', year=year)
+
+        runner.start()
