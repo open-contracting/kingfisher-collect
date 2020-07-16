@@ -388,7 +388,7 @@ def test_item_scraped_latest_date():
         # a non processed item is marked as an error
         spider.name = 'no date'
 
-        latest_extension.spider_closed(spider)
+        latest_extension.spider_closed(spider, 'itemcount')
 
         with open(os.path.join(tmpdirname, 'latest_dates.csv')) as f:
-            assert 'test,2020-10-01T00:00:00Z\nno date,error\n' == f.read()
+            assert 'test,2020-10-01T00:00:00Z\nno date,itemcount\n' == f.read()

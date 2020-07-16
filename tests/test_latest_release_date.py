@@ -75,4 +75,5 @@ def test_process_item():
     assert pipeline.process_item(item, spider) == expected_item
 
     spider.latest = False
+    spider.name = 'other'
     assert pipeline.process_item(item, spider) == item
