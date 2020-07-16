@@ -97,4 +97,7 @@ class LatestReleaseDate:
 
         self.processed.add(spider.name)
 
-        return LatestReleaseDateItem({'date': date[:10]})
+        if date:
+            date = date[:10]
+
+        return LatestReleaseDateItem({'date': date})
