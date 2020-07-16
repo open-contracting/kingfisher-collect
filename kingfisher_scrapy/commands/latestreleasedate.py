@@ -1,4 +1,6 @@
+import json
 import os
+from collections import defaultdict
 from datetime import datetime
 
 from scrapy.commands import ScrapyCommand
@@ -25,17 +27,20 @@ class LatestReleaseDatePerPublisher(ScrapyCommand):
         filename = os.path.join(path, 'latest_dates.csv')
         if os.path.isfile(filename):
             os.unlink(filename)
-        filename = os.path.join(path, 'skipped_spiders.txt')
 
         runner = CrawlerProcess(settings=self.settings)
 
         year = datetime.today().year
-        with open(filename, 'w') as output:
-            for spider_name in runner.spider_loader.list():
-                spidercls = runner.spider_loader.load(spider_name)
-                if hasattr(spidercls, 'skip_latest_release_date'):
-                    output.write(f'Skipping {spider_name}. Reason: {spidercls.skip_latest_release_date}\n')
-                else:
-                    runner.crawl(spidercls, latest='true', year=year)
+        skipped = defaultdict(list)
+        for spider_name in runner.spider_loader.list():
+            spidercls = runner.spider_loader.load(spider_name)
+            if hasattr(spidercls, 'skip_latest_release_date'):
+                skipped[spidercls.skip_latest_release_date].append(spider_name)
+            else:
+                runner.crawl(spidercls, latest='true', year=year)
+
+        filename = os.path.join(path, 'skipped_spiders.json')
+        with open(filename, 'w') as f:
+            json.dump(skipped, f, indent=2)
 
         runner.start()
