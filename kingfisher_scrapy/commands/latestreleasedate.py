@@ -5,7 +5,6 @@ from datetime import datetime
 
 from scrapy.commands import ScrapyCommand
 from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
 
 
 class LatestReleaseDatePerPublisher(ScrapyCommand):
