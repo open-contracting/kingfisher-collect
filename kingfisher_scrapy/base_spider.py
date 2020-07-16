@@ -279,15 +279,15 @@ class CompressedFileSpider(BaseSpider):
     1. Optionally, set a ``compressed_file_format`` class attribute to the format of the compressed files
 
        ``json_lines``
-         Yields each line of the compressed files.
-         The archive file is saved to disk.
+         Yields each line of each compressed file.
+         The archive file is saved to disk. The compressed files are *not* saved to disk.
        ``release_package``
          Re-packages the releases in the compressed files in groups of
          :const:`~kingfisher_scrapy.base_spider.BaseSpider.MAX_RELEASES_PER_PACKAGE`, and yields the packages.
-         The archive file is saved to disk.
+         The archive file is saved to disk. The compressed files are *not* saved to disk.
        ``None``
          Yields each compressed file.
-         Each compressed file is saved to disk.
+         Each compressed file is saved to disk. The archive file is *not* saved to disk.
 
     1. Write a ``start_requests`` method to request the archive files
 
