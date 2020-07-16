@@ -1,5 +1,4 @@
-from kingfisher_scrapy.spiders.mexico_nuevo_leon_base import \
-    MexicoNuevoLeonBase
+from kingfisher_scrapy.spiders.mexico_nuevo_leon_base import MexicoNuevoLeonBase
 
 
 class MexicoNuevoLeonRecords(MexicoNuevoLeonBase):
