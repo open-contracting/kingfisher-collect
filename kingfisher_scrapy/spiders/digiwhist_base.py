@@ -8,6 +8,8 @@ from kingfisher_scrapy.util import handle_http_error
 
 
 class DigiwhistBase(BaseSpider):
+    skip_latest_release_date = 'JSON Lines is not supported'
+
     def start_requests(self):
         # See scrapy.spiders.Spider.start_requests
         for url in self.start_urls:

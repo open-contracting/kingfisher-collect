@@ -6,8 +6,8 @@ from unittest.mock import Mock, patch
 import pytest
 from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessAPI
-from kingfisher_scrapy.items import FileError
+from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherLatestDate, KingfisherProcessAPI
+from kingfisher_scrapy.items import FileError, LatestReleaseDateItem
 from tests import spider_with_crawler
 
 
@@ -365,3 +365,30 @@ def test_build_file_with_existing_directory():
 
         # No FileExistsError exception.
         store_extension.item_scraped(spider.build_file(file_name='file.json', data=b'{"key": "value"}'), spider)
+
+
+def test_item_scraped_latest_date():
+    with TemporaryDirectory() as tmpdirname:
+        spider = spider_with_files_store(tmpdirname, latest=True)
+        spider.crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH'] = tmpdirname
+
+        latest_extension = KingfisherLatestDate.from_crawler(spider.crawler)
+        item = LatestReleaseDateItem({'date': '2020-10-01'})
+        latest_extension.item_scraped(item, spider)
+
+        with open(os.path.join(tmpdirname, 'dates.csv')) as f:
+            assert '2020-10-01,test\n' == f.read()
+
+        # the same item is processed just once
+        latest_extension.item_scraped(item, spider)
+
+        with open(os.path.join(tmpdirname, 'dates.csv')) as f:
+            assert '2020-10-01,test\n' == f.read()
+
+        # a non processed item is marked as an error
+        spider.name = 'dateless'
+
+        latest_extension.spider_closed(spider, 'itemcount')
+
+        with open(os.path.join(tmpdirname, 'dates.csv')) as f:
+            assert '2020-10-01,test\nitemcount,dateless\n' == f.read()

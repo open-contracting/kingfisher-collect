@@ -71,6 +71,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #}
 EXTENSIONS = {
     'kingfisher_scrapy.extensions.SentryLogging': -1,
+    'kingfisher_scrapy.extensions.KingfisherLatestDate': 1,
     # `KingfisherFilesStore` must run before `KingfisherProcessAPI`, because the file needs to be written before the
     # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
@@ -81,6 +82,7 @@ EXTENSIONS = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    'kingfisher_scrapy.pipelines.Validate': 300,
+   'kingfisher_scrapy.pipelines.LatestReleaseDate': 301,
 }
 
 
@@ -131,6 +133,7 @@ KINGFISHER_OPENOPPS_PASSWORD = os.getenv('KINGFISHER_OPENOPPS_PASSWORD')
 # https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std:setting-FILES_STORE
 FILES_STORE = os.getenv('FILES_STORE', 'data')
 
+KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH = os.getenv('KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH', 'latestreleasedate')
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
 HTTPERROR_ALLOW_ALL = True
 

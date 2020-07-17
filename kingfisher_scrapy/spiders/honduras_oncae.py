@@ -14,6 +14,7 @@ class HondurasONCAE(CompressedFileSpider):
     """
     name = 'honduras_oncae'
     data_type = 'release_package'
+    skip_latest_release_date = 'Already covered (see code for details)'  # honduras_portal_releases
 
     # the files take too long to be downloaded, so we increase the download timeout
     download_timeout = 900

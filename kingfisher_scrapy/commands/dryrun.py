@@ -19,19 +19,15 @@ class DryRun(ScrapyCommand):
         # Stop after one item or error.
         self.settings.set('CLOSESPIDER_ERRORCOUNT', 1)
         self.settings.set('CLOSESPIDER_ITEMCOUNT', 1)
-
-        # Disable Kingfisher, Telnet, LogStats extensions.
-        self.settings.set('EXTENSIONS', {
-            'scrapy.extensions.telnet.TelnetConsole': None,
-        })
+        # Disable LogStats extension.
         self.settings.set('LOGSTATS_INTERVAL', None)
+        # Disable custom and Telnet extensions.
+        self.settings.set('EXTENSIONS', {'scrapy.extensions.telnet.TelnetConsole': None})
 
         runner = CrawlerProcess(settings=self.settings)
 
         exceptions = {
             'test_fail',
-            # Server unavailable
-            'mexico_cdmx',
             # Require authentication
             'openopps',
             'paraguay_dncp_records',
