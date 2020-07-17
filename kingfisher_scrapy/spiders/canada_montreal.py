@@ -17,6 +17,7 @@ class CanadaMontreal(SimpleSpider):
     name = 'canada_montreal'
     data_type = 'release_package'
     step = 10000
+    ocds_version = '1.0'
 
     def start_requests(self):
         url = 'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit={step}'.format(step=self.step)

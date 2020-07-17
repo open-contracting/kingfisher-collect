@@ -46,6 +46,8 @@ class BaseSpider(scrapy.Spider):
     MAX_RELEASES_PER_PACKAGE = 100
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S', 'year-month': '%Y-%m'}
 
+    ocds_version = '1.1'
+
     def __init__(self, sample=None, note=None, from_date=None, until_date=None,
                  date_format='date', latest=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
