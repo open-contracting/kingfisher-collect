@@ -36,7 +36,7 @@ class LatestReleaseDatePerPublisher(ScrapyCommand):
                 if hasattr(spidercls, 'skip_latest_release_date'):
                     skipped[spidercls.skip_latest_release_date].append(spider_name)
                 else:
-                    runner.crawl(spidercls)
+                    runner.crawl(spidercls, latest='true', year=year)
 
         filename = os.path.join(path, 'skipped.json')
         with open(filename, 'w') as f:
