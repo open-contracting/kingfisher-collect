@@ -1,8 +1,9 @@
 import json
 
 import pytest
+from scrapy.exceptions import DropItem
 
-from kingfisher_scrapy.items import File, LatestReleaseDateItem
+from kingfisher_scrapy.items import File, LatestReleaseDateItem, FileError
 from kingfisher_scrapy.pipelines import LatestReleaseDate
 from tests import spider_with_crawler
 
@@ -45,3 +46,18 @@ def test_process_item(data_type, data):
     spider.name = 'other'
 
     assert pipeline.process_item(item, spider) == item
+
+
+def test_file_error():
+    spider = spider_with_crawler()
+    spider.latest = True
+
+    pipeline = LatestReleaseDate()
+
+    item = FileError({
+        'file_name': 'test',
+        'url': 'http://test.com',
+        'errors': 'error'
+    })
+    with pytest.raises(DropItem):
+        pipeline.process_item(item, spider)
