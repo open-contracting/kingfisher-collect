@@ -3,7 +3,7 @@ import json
 import pytest
 from scrapy.exceptions import DropItem
 
-from kingfisher_scrapy.items import File, LatestReleaseDateItem, FileError
+from kingfisher_scrapy.items import File, FileError, LatestReleaseDateItem
 from kingfisher_scrapy.pipelines import LatestReleaseDate
 from tests import spider_with_crawler
 
