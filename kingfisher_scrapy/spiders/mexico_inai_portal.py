@@ -14,7 +14,7 @@ class MexicoINAIPortal(SimpleSpider):
     name = 'mexico_inai_portal'
     data_type = 'record'
 
-    def build_url(self, page):
+    def build_form_request(self, page):
         return scrapy.FormRequest(
             'http://contratacionesabiertas.inai.org.mx/contratacionesabiertas/pagination',
             meta={'file_name': f'{page}.html'},
@@ -29,7 +29,7 @@ class MexicoINAIPortal(SimpleSpider):
         )
 
     def start_requests(self):
-        yield self.build_url('1')
+        yield self.build_form_request('1')
 
     @handle_http_error
     def parse_list(self, response):
@@ -38,4 +38,4 @@ class MexicoINAIPortal(SimpleSpider):
             yield self.build_request(url, formatter=components(-1))
         next_page = response.xpath('//ul[@class="pagination"]/li/a[@aria-label="Next"]/@data-page').extract_first()
         if next_page and not self.sample:
-            yield self.build_url(next_page)
+            yield self.build_form_request(next_page)
