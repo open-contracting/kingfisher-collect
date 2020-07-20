@@ -1,7 +1,7 @@
 from datetime import date
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import parameters
+from kingfisher_scrapy.util import date_range_by_month, parameters
 
 
 class ScotlandBase(SimpleSpider):
@@ -37,16 +37,17 @@ class ScotlandBase(SimpleSpider):
         ]
 
         now = date.today()
-        month, year = (self.from_date.date().month, self.from_date.date().year) \
-            if self.from_date else (now.month, now.year - 1)
+        if self.from_date:
+            start = date(self.from_date.year, self.from_date.month, 1)
+        else:
+            start = date(now.year - 1, now.month, 1)
+        if self.sample:
+            start = now
 
-        while year < now.year or month <= now.month:
-            date_string = '{:02d}-{:04d}'.format(month, year)
+        for d in date_range_by_month(start, now):
+            date_string = '{:02d}-{:04d}'.format(d.month, d.year)
             for notice_type in notice_types:
                 yield self.build_request(
                     pattern.format(date_string, notice_type),
                     formatter=parameters('noticeType', 'dateFrom')
                 )
-            month, year = (1, year + 1) if month == 12 else (month + 1, year)
-            if self.sample:
-                break
