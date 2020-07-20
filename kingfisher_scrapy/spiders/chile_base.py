@@ -63,7 +63,8 @@ class ChileCompraBaseSpider(SimpleSpider):
             # }
             yield from self.handle_item(item)
 
-        if 'pagination' in data and (data['pagination']['offset'] + self.limit) < data['pagination']['total']:
+        if 'pagination' in data and (data['pagination']['offset'] + self.limit) < data['pagination']['total']\
+                and not self.sample:
             year = response.request.meta['year']
             month = response.request.meta['month']
             offset = data['pagination']['offset']

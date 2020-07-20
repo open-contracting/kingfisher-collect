@@ -11,7 +11,7 @@ class UKContractsFinder(LinksSpider):
         Downloads the first release package returned by the main endpoint.
     """
     name = 'uk_fts'
-    data_type = 'release_package_in_ocdsReleasePackage_in_list_in_results'
+    data_type = 'release_package'
     next_page_formatter = staticmethod(parameters('cursor'))
 
     def start_requests(self):

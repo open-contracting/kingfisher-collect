@@ -1,10 +1,10 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import ZipSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class HondurasONCAE(ZipSpider):
+class HondurasONCAE(CompressedFileSpider):
     """
     Bulk download documentation
       http://oncae.gob.hn/datosabiertos
@@ -14,6 +14,7 @@ class HondurasONCAE(ZipSpider):
     """
     name = 'honduras_oncae'
     data_type = 'release_package'
+    skip_latest_release_date = 'Already covered (see code for details)'  # honduras_portal_releases
 
     # the files take too long to be downloaded, so we increase the download timeout
     download_timeout = 900

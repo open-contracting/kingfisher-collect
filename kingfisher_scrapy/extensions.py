@@ -7,8 +7,37 @@ import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.items import File, FileError, FileItem
+from kingfisher_scrapy.items import File, FileError, FileItem, LatestReleaseDateItem
 from kingfisher_scrapy.kingfisher_process import Client
+
+
+# https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
+class KingfisherLatestDate:
+    def __init__(self, filename):
+        self.filename = filename
+        self.spiders_seen = set()
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        path = crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH']
+        os.makedirs(path, exist_ok=True)
+        filename = os.path.join(path, 'dates.csv')
+        extension = cls(filename=filename)
+        crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+        crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
+        return extension
+
+    def item_scraped(self, item, spider):
+        if not isinstance(item, LatestReleaseDateItem) or spider.name in self.spiders_seen:
+            return
+        self.spiders_seen.add(spider.name)
+        with open(self.filename, 'a+') as output:
+            output.write(f"{item['date']},{spider.name}\n")
+
+    def spider_closed(self, spider, reason):
+        if spider.name not in self.spiders_seen:
+            with open(self.filename, 'a+') as output:
+                output.write(f"{reason},{spider.name}\n")
 
 
 class KingfisherFilesStore:
@@ -101,7 +130,7 @@ class KingfisherProcessAPI:
         Sends an API request to end the collection's store step.
         """
         # https://docs.scrapy.org/en/latest/topics/signals.html#spider-closed
-        if reason != 'finished':
+        if reason != 'finished' or spider.latest:
             return
 
         response = self.client.end_collection_store({
@@ -118,9 +147,9 @@ class KingfisherProcessAPI:
         """
         Sends an API request to store the file, file item or file error in Kingfisher Process.
         """
-        if not item.get('post_to_api', True):
-            return
 
+        if not item.get('post_to_api', True) or isinstance(item, LatestReleaseDateItem):
+            return
         data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),

@@ -15,7 +15,7 @@ class UKContractsFinder(SimpleSpider):
     encoding = 'iso-8859-1'
 
     def start_requests(self):
-        url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=asc&page=1'
+        url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=desc&page=1'
         yield self.build_request(url, formatter=parameters('page'), callback=self.parse_list)
 
     @handle_http_error
