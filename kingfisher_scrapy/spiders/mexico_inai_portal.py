@@ -8,7 +8,8 @@ class MexicoINAIPortal(SimpleSpider):
     """
     Spider arguments
       sample
-        Downloads one page of records.
+        Downloads the records listed on the first page at
+        http://contratacionesabiertas.inai.org.mx/contratacionesabiertas/contratos/.
     """
     name = 'mexico_inai_portal'
     data_type = 'record'
