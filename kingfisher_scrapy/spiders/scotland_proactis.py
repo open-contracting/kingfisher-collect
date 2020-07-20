@@ -9,7 +9,7 @@ class ScotlandProactis(ScotlandBase):
       sample
         Downloads packages for releases dated one year ago, for each notice type available.
       from_date
-        Download only data from this month onward (MM-YYYY format). Defaults to one year back.
+        Download only data from this month onward (YYYY-MM format). Defaults to one year back.
     """
     name = 'scotland_proactis'
     data_type = 'release_package'
