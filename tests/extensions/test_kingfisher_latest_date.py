@@ -11,11 +11,11 @@ def test_disabled():
 
     with TemporaryDirectory() as tmpdirname:
         spider.crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_PATH'] = tmpdirname
-        latest_extension = KingfisherLatestDate.from_crawler(spider.crawler)
+        extension = KingfisherLatestDate.from_crawler(spider.crawler)
         item = LatestReleaseDateItem({'date': '2020-10-01'})
 
-        latest_extension.item_scraped(item, spider)
-        latest_extension.spider_closed(spider, 'itemcount')
+        extension.item_scraped(item, spider)
+        extension.spider_closed(spider, 'itemcount')
 
         assert not os.path.exists(os.path.join(tmpdirname, 'latestreleasedate.csv'))
 
@@ -25,16 +25,16 @@ def test_item_scraped():
 
     with TemporaryDirectory() as tmpdirname:
         spider.crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_PATH'] = tmpdirname
-        latest_extension = KingfisherLatestDate.from_crawler(spider.crawler)
+        extension = KingfisherLatestDate.from_crawler(spider.crawler)
         item = LatestReleaseDateItem({'date': '2020-10-01'})
 
-        latest_extension.item_scraped(item, spider)
+        extension.item_scraped(item, spider)
 
         with open(os.path.join(tmpdirname, 'latestreleasedate.csv')) as f:
             assert '2020-10-01,test\n' == f.read()
 
         # Only one item from the same spider is written.
-        latest_extension.item_scraped(item, spider)
+        extension.item_scraped(item, spider)
 
         with open(os.path.join(tmpdirname, 'latestreleasedate.csv')) as f:
             assert '2020-10-01,test\n' == f.read()
@@ -42,7 +42,7 @@ def test_item_scraped():
         # An item from another spider is appended.
         spider.name = 'other'
         item['date'] = '2020-10-02'
-        latest_extension.item_scraped(item, spider)
+        extension.item_scraped(item, spider)
 
         with open(os.path.join(tmpdirname, 'latestreleasedate.csv')) as f:
             assert '2020-10-01,test\n2020-10-02,other\n' == f.read()
@@ -53,11 +53,11 @@ def test_spider_closed_with_items():
 
     with TemporaryDirectory() as tmpdirname:
         spider.crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_PATH'] = tmpdirname
-        latest_extension = KingfisherLatestDate.from_crawler(spider.crawler)
+        extension = KingfisherLatestDate.from_crawler(spider.crawler)
         item = LatestReleaseDateItem({'date': '2020-10-01'})
 
-        latest_extension.item_scraped(item, spider)
-        latest_extension.spider_closed(spider, 'itemcount')
+        extension.item_scraped(item, spider)
+        extension.spider_closed(spider, 'itemcount')
 
         with open(os.path.join(tmpdirname, 'latestreleasedate.csv')) as f:
             assert '2020-10-01,test\n' == f.read()
@@ -68,9 +68,9 @@ def test_spider_closed_without_items():
 
     with TemporaryDirectory() as tmpdirname:
         spider.crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_PATH'] = tmpdirname
-        latest_extension = KingfisherLatestDate.from_crawler(spider.crawler)
+        extension = KingfisherLatestDate.from_crawler(spider.crawler)
 
-        latest_extension.spider_closed(spider, 'itemcount')
+        extension.spider_closed(spider, 'itemcount')
 
         with open(os.path.join(tmpdirname, 'latestreleasedate.csv')) as f:
             assert 'itemcount,test\n' == f.read()
