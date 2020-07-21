@@ -1,22 +1,16 @@
-from datetime import date, timedelta
+from datetime import date
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import parameters
+from kingfisher_scrapy.util import date_range_by_month, parameters
 
 
-class Scotland(SimpleSpider):
-    """
-    API documentation
-      https://api.publiccontractsscotland.gov.uk/v1
-    Spider arguments
-      sample
-        Downloads packages for releases dated one year ago, for each notice type available.
-    """
-    name = 'scotland'
-    data_type = 'release_package'
+class ScotlandBase(SimpleSpider):
+    @classmethod
+    def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
+        spider = super().from_crawler(crawler, date_format='year-month', from_date=from_date, *args, **kwargs)
+        return spider
 
-    def start_requests(self):
-        pattern = 'https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={}&outputType=1&noticeType={}'
+    def parse_requests(self, pattern):
 
         notice_types = [
             1,  # OJEU - F1 - Prior Information Notice
@@ -43,16 +37,17 @@ class Scotland(SimpleSpider):
         ]
 
         now = date.today()
+        if self.from_date:
+            start = date(self.from_date.year, self.from_date.month, 1)
+        else:
+            start = date(now.year - 1, now.month, 1)
+        if self.sample:
+            start = now
 
-        # It's meant to go back a year, but in testing it seemed to be year minus one day!
-        marker = now - timedelta(days=364)
-        while marker <= now:
-            datestring = '{:04d}-{:02d}-{:02d}'.format(marker.year, marker.month, marker.day)
+        for d in date_range_by_month(start, now):
+            date_string = '{:02d}-{:04d}'.format(d.month, d.year)
             for notice_type in notice_types:
                 yield self.build_request(
-                    pattern.format(datestring, notice_type),
+                    pattern.format(date_string, notice_type),
                     formatter=parameters('noticeType', 'dateFrom')
                 )
-            marker = marker + timedelta(days=14)
-            if self.sample:
-                break
