@@ -91,7 +91,7 @@ def test_process_file_item_error_error():
         pipeline.process_item(item, None)
 
 
-def test_duplicate_file(caplog):
+def test_process_item_duplicate_file(caplog):
     pipeline = Validate()
     spider = spider_with_crawler()
     item = File({
@@ -111,7 +111,7 @@ def test_duplicate_file(caplog):
     assert caplog.messages[0] == "Duplicate File: 'test1'"
 
 
-def test_duplicate_file_item(caplog):
+def test_process_item_duplicate_file_item(caplog):
     pipeline = Validate()
     spider = spider_with_crawler()
     item = FileItem({
