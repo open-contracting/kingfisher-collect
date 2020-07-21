@@ -14,6 +14,7 @@ class NepalPortal(SimpleSpider):
     """
     name = 'nepal_portal'
     data_type = 'release_package'
+    ocds_version = '1.0'
 
     def start_requests(self):
         pattern = 'http://ppip.gov.np/bulk-download/{}'

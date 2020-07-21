@@ -12,6 +12,7 @@ class CanadaBuyAndSell(SimpleSpider):
     """
     name = 'canada_buyandsell'
     data_type = 'release_package'
+    ocds_version = '1.0'
 
     def start_requests(self):
         urls = [

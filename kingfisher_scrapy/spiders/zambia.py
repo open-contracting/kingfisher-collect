@@ -14,6 +14,7 @@ class Zambia(CompressedFileSpider):
     """
     name = 'zambia'
     data_type = 'record_package'
+    ocds_version = '1.0'
 
     def start_requests(self):
         yield scrapy.Request(
