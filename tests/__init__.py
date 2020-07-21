@@ -27,3 +27,12 @@ def spider_with_crawler(spider_class=BaseSpider, **kwargs):
     spider = crawler.spidercls.from_crawler(crawler, name='test', **kwargs)
 
     return spider
+
+
+def spider_with_files_store(files_store, **kwargs):
+    spider = spider_with_crawler(**kwargs)
+    spider.crawler.settings['FILES_STORE'] = files_store
+    spider.crawler.settings['KINGFISHER_API_URI'] = 'http://httpbin.org/anything'
+    spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
+
+    return spider

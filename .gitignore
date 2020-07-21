@@ -9,4 +9,5 @@ venv/
 /data
 /docs/_build
 /htmlcov
-/latestreleasedate
+/latestreleasedate.csv
+/latestreleasedate_skipped.json
