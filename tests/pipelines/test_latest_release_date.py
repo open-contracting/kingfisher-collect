@@ -9,9 +9,7 @@ from tests import spider_with_crawler
 
 release_package = {"releases": [{"date": "2020-01-01T00:00:00Z"}, {"date": "2020-10-01T00:00:00Z"}]}
 record_package = {"records": [release_package]}
-
-
-@pytest.mark.parametrize('data_type,data', [
+parameters = [
     # Releases
     ('release_package', release_package),
     ('release_package_list', [release_package]),
@@ -26,11 +24,27 @@ record_package = {"records": [release_package]}
     ('record_list', record_package['records']),
     ('record', record_package['records'][0]),
     ('record', {'compiledRelease': release_package['releases'][1]}),
+]
 
-])
-def test_process_item(data_type, data):
+
+@pytest.mark.parametrize('data_type,data', parameters)
+def test_disabled(data_type, data):
     spider = spider_with_crawler()
-    spider.latest = True
+
+    pipeline = LatestReleaseDate()
+    item = File({
+        'file_name': 'test',
+        'data': json.dumps(data),
+        'data_type': data_type,
+        'url': 'http://test.com',
+    })
+
+    assert pipeline.process_item(item, spider) == item
+
+
+@pytest.mark.parametrize('data_type,data', parameters)
+def test_process_item(data_type, data):
+    spider = spider_with_crawler(latest='true')
 
     pipeline = LatestReleaseDate()
     item = File({
@@ -42,22 +56,16 @@ def test_process_item(data_type, data):
 
     assert pipeline.process_item(item, spider) == LatestReleaseDateItem({'date': '2020-10-01'})
 
-    spider.latest = False
-    spider.name = 'other'
 
-    assert pipeline.process_item(item, spider) == item
-
-
-def test_file_error():
-    spider = spider_with_crawler()
-    spider.latest = True
+def test_process_item_file_error():
+    spider = spider_with_crawler(latest='true')
 
     pipeline = LatestReleaseDate()
-
     item = FileError({
         'file_name': 'test',
         'url': 'http://test.com',
-        'errors': 'error'
+        'errors': 'error',
     })
+
     with pytest.raises(DropItem):
         pipeline.process_item(item, spider)

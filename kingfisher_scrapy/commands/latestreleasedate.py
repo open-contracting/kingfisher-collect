@@ -20,11 +20,8 @@ class LatestReleaseDatePerPublisher(ScrapyCommand):
         # Limit concurrent requests, to download the minimum.
         self.settings.set('CONCURRENT_REQUESTS', 1)
 
-        path = self.settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH']
-        os.makedirs(path, exist_ok=True)
-        filename = os.path.join(path, 'dates.csv')
-        if os.path.isfile(filename):
-            os.unlink(filename)
+        if os.path.isfile('latestreleasedate.csv'):
+            os.unlink('latestreleasedate.csv')
 
         runner = CrawlerProcess(settings=self.settings)
 
@@ -38,8 +35,7 @@ class LatestReleaseDatePerPublisher(ScrapyCommand):
                 else:
                     runner.crawl(spidercls, latest='true', year=year)
 
-        filename = os.path.join(path, 'skipped.json')
-        with open(filename, 'w') as f:
+        with open('latestreleasedate_skipped.json', 'w') as f:
             json.dump(skipped, f, indent=2)
 
         runner.start()
