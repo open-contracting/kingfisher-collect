@@ -26,6 +26,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
     max_attempts = 10
     data_type = None
     default_from_date = '2010-01-01T00:00:00'
+    date_format = 'datetime'
 
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
@@ -39,7 +40,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         if not from_date:
             from_date = cls.default_from_date
 
-        spider = super().from_crawler(crawler, date_format='datetime', from_date=from_date, *args, **kwargs)
+        spider = super().from_crawler(crawler, from_date=from_date, *args, **kwargs)
 
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
