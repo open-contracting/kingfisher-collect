@@ -5,10 +5,7 @@ from kingfisher_scrapy.util import date_range_by_month, parameters
 
 
 class ScotlandBase(SimpleSpider):
-    @classmethod
-    def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
-        spider = super().from_crawler(crawler, date_format='year-month', from_date=from_date, *args, **kwargs)
-        return spider
+    date_format = 'year-month'
 
     def parse_requests(self, pattern):
 
