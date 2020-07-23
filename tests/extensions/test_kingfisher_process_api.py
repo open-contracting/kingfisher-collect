@@ -45,11 +45,11 @@ def test_from_crawler_missing_arguments(api_url, api_key):
 @pytest.mark.parametrize('directory', [False, True])
 @pytest.mark.parametrize('ok', [True, False])
 @pytest.mark.parametrize('post_to_api', [True, False])
-@pytest.mark.parametrize('custom_collection_data_version', [None, '2020-01-01'])
+@pytest.mark.parametrize('crawl_time', [None, '2020-01-01T00:00:00'])
 def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, post_to_api,
-                           custom_collection_data_version, tmpdir, caplog):
+                           crawl_time, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, sample=sample, note=note,
-                                     custom_collection_data_version=custom_collection_data_version)
+                                     crawl_time=crawl_time)
 
     if directory:
         spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
@@ -96,10 +96,11 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
         }
         if note:
             expected['collection_note'] = note
+        if crawl_time:
+            expected['collection_data_version'] = '2020-01-01 00:00:00'
+            path = path.replace('20010203_040506', '20200101_000000')
         if directory:
             expected['local_file_name'] = tmpdir.join('xxx', path)
-        if custom_collection_data_version:
-            expected['collection_data_version'] = '2020-01-01 00:00:00'
         if not post_to_api:
             assert mocked.call_count == 0
         else:
