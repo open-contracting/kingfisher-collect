@@ -134,7 +134,7 @@ class KingfisherProcessAPI:
         Sends an API request to end the collection's store step.
         """
         # https://docs.scrapy.org/en/latest/topics/signals.html#spider-closed
-        if reason != 'finished' or spider.latest or spider.custom_collection_data_version:
+        if reason != 'finished' or spider.latest or spider.keep_collection_open:
             return
 
         response = self.client.end_collection_store({
@@ -154,13 +154,10 @@ class KingfisherProcessAPI:
 
         if not item.get('post_to_api', True) or isinstance(item, LatestReleaseDateItem):
             return
-        date_format = '%Y-%m-%d %H:%M:%S'
-        collection_data_version = spider.get_start_time(date_format)
-        if spider.custom_collection_data_version:
-            collection_data_version = spider.custom_collection_data_version.strftime(date_format)
+
         data = {
             'collection_source': spider.name,
-            'collection_data_version': collection_data_version,
+            'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
             'collection_sample': spider.sample,
             'file_name': item['file_name'],
             'url': item['url'],
