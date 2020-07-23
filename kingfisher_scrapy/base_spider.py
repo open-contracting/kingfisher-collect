@@ -40,6 +40,12 @@ class BaseSpider(scrapy.Spider):
     .. code:: bash
 
         scrapy crawl spider_name -a note='Started by NAME.'
+
+    Use the same collection_id in Kingfisher Process for a source_id:
+
+     .. code:: bash
+
+        scrapy crawl spider_name -a custom_collection_data_version=2020-01-01
     """
 
     MAX_SAMPLE = 10
@@ -49,7 +55,8 @@ class BaseSpider(scrapy.Spider):
     ocds_version = '1.1'
     date_format = 'date'
 
-    def __init__(self, sample=None, note=None, from_date=None, until_date=None, latest=None, *args,
+    def __init__(self, sample=None, note=None, from_date=None, until_date=None, latest=None,
+                 custom_collection_data_version=None, *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -60,6 +67,7 @@ class BaseSpider(scrapy.Spider):
         self.until_date = until_date
         self.date_format = self.VALID_DATE_FORMATS[self.date_format]
         self.latest = latest == 'true'
+        self.custom_collection_data_version = custom_collection_data_version
 
         spider_arguments = {
             'sample': sample,
@@ -67,6 +75,7 @@ class BaseSpider(scrapy.Spider):
             'from_date': from_date,
             'until_date': until_date,
             'latest': latest,
+            'custom_collection_data_version': custom_collection_data_version,
         }
         spider_arguments.update(kwargs)
         self.logger.info('Spider arguments: {!r}'.format(spider_arguments))
@@ -74,6 +83,14 @@ class BaseSpider(scrapy.Spider):
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
+
+        if spider.custom_collection_data_version:
+            try:
+                spider.custom_collection_data_version = datetime.strptime(spider.custom_collection_data_version,
+                                                                          '%Y-%m-%d')
+            except ValueError as e:
+                raise SpiderArgumentError('spider argument custom_collection_data_version: '
+                                          'invalid date value: {}'.format(e))
 
         # Checks Spider date ranges arguments
         if spider.from_date or spider.until_date:

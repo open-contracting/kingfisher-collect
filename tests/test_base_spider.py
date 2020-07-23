@@ -90,3 +90,13 @@ def test_date_arguments():
     with pytest.raises(SpiderArgumentError) as e:
         assert spider_with_crawler(until_date='test', default_from_date=test_date)
     assert str(e.value) == 'spider argument until_date: invalid date value: {}'.format(error_message)
+
+
+def test_custom_collection_data_version():
+    error_message = "time data '2020' does not match format '%Y-%m-%d'"
+
+    assert spider_with_crawler(custom_collection_data_version='2020-01-01')
+    with pytest.raises(SpiderArgumentError) as e:
+        assert spider_with_crawler(custom_collection_data_version='2020')
+    assert str(e.value) == 'spider argument custom_collection_data_version: invalid date value: {}'.format(
+        error_message)
