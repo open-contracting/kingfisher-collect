@@ -107,8 +107,6 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
                 assert mocked.call_count == 1
                 assert mocked.call_args[0] == ('http://httpbin.org/anything/api/v1/submit/file/',)
                 assert mocked.call_args[1]['headers'] == {'Authorization': 'ApiKey xxx'}
-                print(mocked.call_args[1]['data'])
-                print(expected)
                 assert mocked.call_args[1]['data'] == expected
                 assert mocked.call_args[1]['proxies'] == {'http': None, 'https': None}
                 assert len(mocked.call_args[1]) == 4
