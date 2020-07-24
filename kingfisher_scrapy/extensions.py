@@ -75,12 +75,12 @@ class KingfisherFilesStore:
             name += '_sample'
         path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), item['file_name'])
 
-        self._write_file(path, item['data'], spider)
+        self._write_file(path, item['data'])
 
         item['path'] = path
         item['files_store'] = self.directory
 
-    def _write_file(self, path, data, spider):
+    def _write_file(self, path, data):
         path = os.path.join(self.directory, path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
 

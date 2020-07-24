@@ -53,6 +53,15 @@ def test_item_scraped_with_build_file(sample, path, tmpdir):
     assert item['path'] == path
     assert item['files_store'] == tmpdir
 
+    # if data is a dict
+    data = {"key": "value"}
+    item = spider.build_file(file_name='file.json', url=url, data=data, data_type='release_package',
+                             encoding='iso-8859-1')
+    extension.item_scraped(item, spider)
+
+    with open(tmpdir.join(path)) as f:
+        assert f.read() == '{"key": "value"}'
+
 
 def test_item_scraped_with_build_file_and_existing_directory():
     spider = spider_with_crawler()
