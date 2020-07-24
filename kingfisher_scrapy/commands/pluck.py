@@ -22,7 +22,7 @@ class Pluck(ScrapyCommand):
         parser.add_option('-t', '--truncate', type=int, help='Truncate the value to this number of characters')
 
     def run(self, args, opts):
-        if not (opts.package_pointer ^ opts.release_pointer):
+        if not (bool(opts.package_pointer) ^ bool(opts.release_pointer)):
             raise UsageError('Exactly one of --package-pointer or --release-pointer must be set.')
 
         # Stop after one item or error.
