@@ -9,8 +9,8 @@ from kingfisher_scrapy.util import parameters, replace_parameter
 
 class Armenia(LinksSpider):
     """
-    If the API returns an error in ``next_page``, a binary search is performed to retrieve the success download cycle.
-    The search range extends for a maximum of 10 consecutive days from the last day of the successful download.
+    If the API returns an error in ``next_page``, a binary search is performed in an attempt to find the next working URL.
+    The search range extends for a maximum of 10 consecutive days from the timestamp in the ``offset``  parameter of the last successful URL.
     Spider arguments
       sample
         Download only the first release package in the dataset.
@@ -34,7 +34,7 @@ class Armenia(LinksSpider):
 
     def parse_next_link(self, response):
         # check if there is a search in process
-        binary_search = True if 'minimum' in response.request.meta else False
+        binary_search = 'minimum' in response.request.meta
 
         if self.is_http_success(response):
             # save this page for the lowest offset that works or the page with next_page error
