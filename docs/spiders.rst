@@ -177,6 +177,12 @@ Dominican
 .. autoclass:: kingfisher_scrapy.spiders.dominican_republic.DominicanRepublic
    :no-members:
 
+Ecuador
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.ecuador_emergency.EcuadorEmergency
+   :no-members:
+
 France
 ------
 
@@ -237,16 +243,22 @@ Mexico
 .. autoclass:: kingfisher_scrapy.spiders.mexico_administracion_publica_federal.MexicoAdministracionPublicaFederal
    :no-members:
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_cdmx.MexicoCDMXSource
-   :no-members:
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_grupo_aeroporto.MexicoGrupoAeroporto
    :no-members:
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_inai.MexicoINAI
    :no-members:
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_inai_portal.MexicoINAIPortal
+   :no-members:
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_jalisco.MexicoJalisco
+   :no-members:
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_records.MexicoNuevoLeonRecords
+   :no-members:
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_releases.MexicoNuevoLeonReleases
    :no-members:
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien.MexicoQuienEsQuien
@@ -306,7 +318,10 @@ Portugal
 Scotland
 --------
 
-.. autoclass:: kingfisher_scrapy.spiders.scotland.Scotland
+.. autoclass:: kingfisher_scrapy.spiders.scotland_proactis.ScotlandProactis
+   :no-members:
+
+.. autoclass:: kingfisher_scrapy.spiders.scotland_public_contracts.ScotlandPublicContracts
    :no-members:
 
 Uganda
