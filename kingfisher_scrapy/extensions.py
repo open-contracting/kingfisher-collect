@@ -64,7 +64,7 @@ class KingfisherFilesStore:
         """
         If the item is a file, writes its data to the filename in the crawl's directory.
 
-        Writes a ``<filename>.fileinfo`` metadata file in the crawl's directory, and returns a dict with the metadata.
+        Returns a dict with the metadata.
         """
         if not isinstance(item, File):
             return
@@ -76,12 +76,6 @@ class KingfisherFilesStore:
         path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), item['file_name'])
 
         self._write_file(path, item['data'], spider)
-        metadata = {
-            'url': item['url'],
-            'data_type': item['data_type'],
-            'encoding': item.get('encoding', 'utf-8'),
-        }
-        self._write_file(path + '.fileinfo', metadata, spider)
 
         item['path'] = path
         item['files_store'] = self.directory

@@ -1,4 +1,3 @@
-import json
 import os
 from tempfile import TemporaryDirectory
 from unittest.mock import Mock
@@ -29,13 +28,6 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
     with open(tmpdir.join(path)) as f:
         assert f.read() == '{"key": "value"}'
 
-    with open(tmpdir.join(path + '.fileinfo')) as f:
-        assert json.load(f) == {
-            'url': 'https://example.com/remote.json',
-            'data_type': 'release_package',
-            'encoding': 'iso-8859-1',
-        }
-
     assert item['path'] == path
     assert item['files_store'] == tmpdir
 
@@ -57,13 +49,6 @@ def test_item_scraped_with_build_file(sample, path, tmpdir):
 
     with open(tmpdir.join(path)) as f:
         assert f.read() == '{"key": "value"}'
-
-    with open(tmpdir.join(path + '.fileinfo')) as f:
-        assert json.load(f) == {
-            'url': 'https://example.com/remote.json',
-            'data_type': 'release_package',
-            'encoding': 'iso-8859-1',
-        }
 
     assert item['path'] == path
     assert item['files_store'] == tmpdir
