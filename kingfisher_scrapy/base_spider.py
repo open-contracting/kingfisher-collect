@@ -40,6 +40,20 @@ class BaseSpider(scrapy.Spider):
     .. code:: bash
 
         scrapy crawl spider_name -a note='Started by NAME.'
+
+    Each crawl writes data to its own directory. By default, this directory is named according to the time the crawl
+    started. To override the time (for example, to force a new crawl to write to the same directory as an earlier
+    crawl), you can set the crawl_time spider argument:
+
+     .. code:: bash
+
+        scrapy crawl spider_name -a crawl_time=2020-01-01T10:00:00
+
+    Don't close the Kingfisher Process collection when the crawl finishes:
+
+     .. code:: bash
+
+        scrapy crawl spider_name -a keep_collection_open=true
     """
 
     MAX_SAMPLE = 10
@@ -49,8 +63,8 @@ class BaseSpider(scrapy.Spider):
     ocds_version = '1.1'
     date_format = 'date'
 
-    def __init__(self, sample=None, note=None, from_date=None, until_date=None, latest=None, *args,
-                 **kwargs):
+    def __init__(self, sample=None, note=None, from_date=None, until_date=None, latest=None,
+                 crawl_time=None, keep_collection_open=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
@@ -60,6 +74,8 @@ class BaseSpider(scrapy.Spider):
         self.until_date = until_date
         self.date_format = self.VALID_DATE_FORMATS[self.date_format]
         self.latest = latest == 'true'
+        self.crawl_time = crawl_time
+        self.keep_collection_open = keep_collection_open == 'true'
 
         spider_arguments = {
             'sample': sample,
@@ -67,6 +83,8 @@ class BaseSpider(scrapy.Spider):
             'from_date': from_date,
             'until_date': until_date,
             'latest': latest,
+            'crawl_time': crawl_time,
+            'keep_collection_open': keep_collection_open,
         }
         spider_arguments.update(kwargs)
         self.logger.info('Spider arguments: {!r}'.format(spider_arguments))
@@ -74,6 +92,14 @@ class BaseSpider(scrapy.Spider):
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
+
+        if spider.crawl_time:
+            try:
+                spider.crawl_time = datetime.strptime(spider.crawl_time,
+                                                      '%Y-%m-%dT%H:%M:%S')
+            except ValueError as e:
+                raise SpiderArgumentError('spider argument crawl_time: '
+                                          'invalid date value: {}'.format(e))
 
         # Checks Spider date ranges arguments
         if spider.from_date or spider.until_date:
@@ -106,7 +132,11 @@ class BaseSpider(scrapy.Spider):
         """
         Returns the formatted start time of the crawl.
         """
-        return self.crawler.stats.get_value('start_time').strftime(format)
+        if self.crawl_time:
+            date = self.crawl_time
+        else:
+            date = self.crawler.stats.get_value('start_time')
+        return date.strftime(format)
 
     def build_request(self, url, formatter, **kwargs):
         """
