@@ -62,7 +62,7 @@ class Armenia(LinksSpider):
         This method search for a new ``next_page`` to continue the scraper if not http_success has reached.
         Is called to start (error in ``next_page``), continue (midpoint did not stop moving) or
         restart (first maximum did not work) a search.
-        Variables are defined for a minimum, a maximum and a midpoint for the binary search.
+        Variables are defined for a minimum, maximum, and midpoint used in binary search.
 
         Start:
 
