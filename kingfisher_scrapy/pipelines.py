@@ -3,11 +3,12 @@
 import json
 import pkgutil
 
+import jsonpointer
 from jsonschema import FormatChecker
 from jsonschema.validators import Draft4Validator, RefResolver
 from scrapy.exceptions import DropItem
 
-from kingfisher_scrapy.items import File, FileItem, LatestReleaseDateItem
+from kingfisher_scrapy.items import File, FileItem, PluckedItem
 
 
 def _json_loads(basename):
@@ -43,13 +44,13 @@ class Validate:
         return item
 
 
-class LatestReleaseDate:
+class Pluck:
     def __init__(self):
         self.processed = set()
 
     def process_item(self, item, spider):
-        # Skip this pipeline stage unless the spider is explicitly configured to get the latest release date.
-        if not spider.latest:
+        # Skip this pipeline stage unless explicitly requested.
+        if not spider.pluck:
             return item
 
         # Drop any extra items that are yielded before the spider closes.
@@ -61,43 +62,92 @@ class LatestReleaseDate:
         if not isinstance(item, (File, FileItem)):
             raise DropItem()
 
-        date = None
-        data = json.loads(item['data'])
+        value = None
 
-        if item['data_type'] in ('release_package', 'release_package_list', 'release_package_list_in_results',
-                                 'release_list', 'release', 'compiled_release'):
-            if item['data_type'] == 'release_package':
-                data = data['releases']
-            elif item['data_type'] == 'release_package_list':
-                data = data[0]['releases']
-            elif item['data_type'] == 'release_package_list_in_results':
-                data = data['results'][0]['releases']
-            if data:
-                if item['data_type'] in ('release', 'compiled_release'):
-                    date = data['date']
-                else:
-                    date = max(r['date'] for r in data)
-        elif item['data_type'] in ('record_package', 'record_package_list', 'record_package_list_in_results',
-                                   'record_list', 'record'):
-            if item['data_type'] == 'record_package':
-                data = data['records']
-            elif item['data_type'] == 'record_package_list':
-                data = data[0]['records']
-            elif item['data_type'] == 'record_package_list_in_results':
-                data = data['results'][0]['records']
-            elif item['data_type'] == 'record':
-                data = [data]
-            if data:
-                # This assumes that the first record in the record package has the most recent date.
-                data = data[0]
-                if 'releases' in data:
-                    date = max(r['date'] for r in data['releases'])
-                elif 'compiledRelease' in data:
-                    date = data['compiledRelease']['date']
+        if spider.package_pointer:
+            try:
+                package = _get_package(item)
+            except NotImplementedError as e:
+                value = f'error: {str(e)}'
+            else:
+                value = _resolve_pointer(package, spider.package_pointer)
+        else:  # spider.release_pointer
+            if item['data_type'] in ('release_package', 'release_package_list', 'release_package_list_in_results',
+                                     'release_list', 'release', 'compiled_release'):
+                data = _get_releases(item)
+                if data:
+                    value = max(_resolve_pointer(r, spider.release_pointer) for r in data)
+            elif item['data_type'] in ('record_package', 'record_package_list', 'record_package_list_in_results',
+                                       'record_list', 'record'):
+                data = _get_records(item)
+                if data:
+                    # This assumes that the first record in the record package has the desired value.
+                    data = data[0]
+                    if 'releases' in data:
+                        value = max(_resolve_pointer(r, spider.release_pointer) for r in data['releases'])
+                    elif 'compiledRelease' in data:
+                        value = _resolve_pointer(data['compiledRelease'], spider.release_pointer)
 
         self.processed.add(spider.name)
 
-        if date:
-            date = date[:10]
+        if value and spider.truncate:
+            value = value[:spider.truncate]
 
-        return LatestReleaseDateItem({'date': date})
+        return PluckedItem({'value': value})
+
+
+def _resolve_pointer(data, pointer):
+    try:
+        return jsonpointer.resolve_pointer(data, pointer)
+    except jsonpointer.JsonPointerException:
+        return f'error: {pointer} not found'
+
+
+def _get_package(item):
+    data = json.loads(item['data'])
+
+    if item['data_type'] in ('release_package', 'record_package'):
+        return data
+    # This assumes that the first package in the list has the desired value.
+    elif item['data_type'] in ('release_package_list', 'record_package_list'):
+        return data[0]
+    elif item['data_type'] in ('release_package_list_in_results', 'record_package_list_in_results'):
+        return data['results'][0]
+
+    raise NotImplementedError(f"no package for data_type: {item['data_type']}")
+
+
+def _get_releases(item):
+    data = json.loads(item['data'])
+
+    if item['data_type'] == 'release_package':
+        return data['releases']
+    # This assumes that the first package in the list has the desired value.
+    elif item['data_type'] == 'release_package_list':
+        return data[0]['releases']
+    elif item['data_type'] == 'release_package_list_in_results':
+        return data['results'][0]['releases']
+    elif item['data_type'] == 'release_list':
+        return data
+    elif item['data_type'] in ('release', 'compiled_release'):
+        return [data]
+
+    raise NotImplementedError(f"unhandled data_type: {item['data_type']}")
+
+
+def _get_records(item):
+    data = json.loads(item['data'])
+
+    if item['data_type'] == 'record_package':
+        return data['records']
+    # This assumes that the first package in the list has the desired value.
+    elif item['data_type'] == 'record_package_list':
+        return data[0]['records']
+    elif item['data_type'] == 'record_package_list_in_results':
+        return data['results'][0]['records']
+    elif item['data_type'] == 'record_list':
+        return data
+    elif item['data_type'] == 'record':
+        return [data]
+
+    raise NotImplementedError(f"unhandled data_type: {item['data_type']}")

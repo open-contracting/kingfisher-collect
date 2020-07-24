@@ -3,8 +3,8 @@ import json
 import pytest
 from scrapy.exceptions import DropItem
 
-from kingfisher_scrapy.items import File, FileError, LatestReleaseDateItem
-from kingfisher_scrapy.pipelines import LatestReleaseDate
+from kingfisher_scrapy.items import File, FileError, PluckedItem
+from kingfisher_scrapy.pipelines import Pluck
 from tests import spider_with_crawler
 
 release_package = {"releases": [{"date": "2020-01-01T00:00:00Z"}, {"date": "2020-10-01T00:00:00Z"}]}
@@ -14,14 +14,12 @@ parameters = [
     ('release_package', release_package),
     ('release_package_list', [release_package]),
     ('release_package_list_in_results', {'results': [release_package]}),
-    ('release_list', release_package['releases']),
     ('release', release_package['releases'][1]),
     ('compiled_release', release_package['releases'][1]),
     # Records
     ('record_package', record_package),
     ('record_package_list', [record_package]),
     ('record_package_list_in_results', {'results': [record_package]}),
-    ('record_list', record_package['records']),
     ('record', record_package['records'][0]),
     ('record', {'compiledRelease': release_package['releases'][1]}),
 ]
@@ -31,7 +29,7 @@ parameters = [
 def test_disabled(data_type, data):
     spider = spider_with_crawler()
 
-    pipeline = LatestReleaseDate()
+    pipeline = Pluck()
     item = File({
         'file_name': 'test',
         'data': json.dumps(data),
@@ -44,9 +42,9 @@ def test_disabled(data_type, data):
 
 @pytest.mark.parametrize('data_type,data', parameters)
 def test_process_item(data_type, data):
-    spider = spider_with_crawler(latest='true')
+    spider = spider_with_crawler(release_pointer='/date', truncate=10)
 
-    pipeline = LatestReleaseDate()
+    pipeline = Pluck()
     item = File({
         'file_name': 'test',
         'data': json.dumps(data),
@@ -54,13 +52,13 @@ def test_process_item(data_type, data):
         'url': 'http://test.com',
     })
 
-    assert pipeline.process_item(item, spider) == LatestReleaseDateItem({'date': '2020-10-01'})
+    assert pipeline.process_item(item, spider) == PluckedItem({'value': '2020-10-01'})
 
 
 def test_process_item_file_error():
-    spider = spider_with_crawler(latest='true')
+    spider = spider_with_crawler(release_pointer='/date', truncate=10)
 
-    pipeline = LatestReleaseDate()
+    pipeline = Pluck()
     item = FileError({
         'file_name': 'test',
         'url': 'http://test.com',

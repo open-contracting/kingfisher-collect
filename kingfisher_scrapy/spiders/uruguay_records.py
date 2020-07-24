@@ -12,7 +12,7 @@ class UruguayRecords(UruguayBase):
     """
     name = 'uruguay_records'
     data_type = 'record_package'
-    skip_latest_release_date = 'Already covered (see code for details)'  # uruguay_releases
+    skip_pluck = 'Already covered (see code for details)'  # uruguay_releases
 
     @handle_http_error
     def parse_list(self, response):
