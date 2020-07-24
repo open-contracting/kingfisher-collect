@@ -3,6 +3,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import Mock
 
 import pytest
+from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import KingfisherFilesStore
 from tests import spider_with_crawler, spider_with_files_store
@@ -74,3 +75,19 @@ def test_item_scraped_with_build_file_and_existing_directory():
 
         # No FileExistsError exception.
         extension.item_scraped(spider.build_file(file_name='file.json', data=b'{"key": "value"}'), spider)
+
+
+def test_item_scraped_with_no_file():
+    spider = spider_with_crawler()
+    with TemporaryDirectory() as tmpdirname:
+        files_store = os.path.join(tmpdirname, 'data')
+        spider.crawler.settings['FILES_STORE'] = files_store
+        extension = KingfisherFilesStore.from_crawler(spider.crawler)
+        assert extension.item_scraped(spider.build_file_item(), spider) is None
+
+
+def test_item_scraped_with_no_file_store():
+    spider = spider_with_crawler()
+    with pytest.raises(NotConfigured) as e:
+        KingfisherFilesStore.from_crawler(spider.crawler)
+    assert str(e.value) == 'FILES_STORE is not set.'
