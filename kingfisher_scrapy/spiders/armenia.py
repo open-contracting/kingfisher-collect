@@ -9,8 +9,10 @@ from kingfisher_scrapy.util import parameters, replace_parameter
 
 class Armenia(LinksSpider):
     """
-    If the API returns an error in ``next_page``, a binary search is performed in an attempt to find the next working URL.
-    The search range extends for a maximum of 10 consecutive days from the timestamp in the ``offset``  parameter of the last successful URL.
+    If the API returns an error in ``next_page``, a binary search is performed in an attempt to find the
+    next working URL.
+    The search range extends for a maximum of 10 consecutive days from the timestamp in the ``offset`` parameter
+    of the last successful URL.
     Spider arguments
       sample
         Download only the first release package in the dataset.
@@ -34,43 +36,49 @@ class Armenia(LinksSpider):
 
     def parse_next_link(self, response):
         # check if there is a search in process
-        binary_search = 'minimum' in response.request.meta
+        binary_search = True if 'minimum' in response.request.meta else False
 
         if self.is_http_success(response):
             # save this page for the lowest offset that works or the page with next_page error
             self.last_successful_page = response.request.url
             if binary_search:
                 # continue the search with http success
-                return self.search_next_working_link(response, succeed=True)
+                return self.search_next_working_page(response, succeed=True)
 
             # next_page works
             return self.build_request(response.request.url, dont_filter=True, formatter=parameters('offset'))
 
         if binary_search:
             # continue the search with http error
-            return self.search_next_working_link(response, succeed=False)
+            return self.search_next_working_page(response, succeed=False)
 
         # save the page with next_page error
         self.next_page_error = self.last_successful_page
         # start a binary search
-        return self.search_next_working_link(response, start='start')
+        return self.search_next_working_page(response, start='start')
 
-    def search_next_working_link(self, response, succeed=None, start=None):
+    def search_next_working_page(self, response, succeed=None, start=None):
         """
+        This method search for a new ``next_page`` to continue the scraper if not http_success has reached.
+        Is called to start (error in ``next_page``), continue (midpoint did not stop moving) or
+        restart (first maximum did not work) a search.
+        Variables are defined for a minimum, a maximum and a midpoint for the binary search.
+
         Start:
 
-        1. Start with a maximum that is one day in the future.
-        2. If it succeeds, do a binary search to find the lowest offset that works.
+        1. Start with a minimum that is the timestamp in the ``offset`` parameter of the last successful page and
+        with a maximum that is one day in the future from that timestamp.
+        2. If it succeeds, do a binary search to find the lowest ``offset`` that works.
         3. If it errors, set the minimum to the maximum, and advance the maximum by one day.
-        4. If it errors for 10 consecutive days, don't send any more requests.
+        4. If it errors for 10 consecutive days, don't send any more requests and finish the search.
 
-        Find the lowest offset:
+        Find the lowest ``offset`` that works:
 
-        1. Set the last number that worked as minimum and one day later as maximum.
+        1. Set the last timestamp in the ``offset`` that worked as minimum and one day later as maximum.
         2. Took the midpoint between them.
         3. If it succeeds, set the midpoint to the maximum; otherwise, set it to the minimum.
-        4. Took the midpoint between them and repeat process until the midpoint stopped moving.
-        5. If the last midpoint fails, use the last offset that works.
+        4. Took the midpoint between them and repeat process until the midpoint stopped moving (maximum-minimum=1).
+        5. If the last midpoint fails, use the ``offset`` parameter of the last successful page.
         """
         microseconds_per_day = 86400000
         if start:
@@ -102,7 +110,7 @@ class Armenia(LinksSpider):
                         return
                     # advance the maximum in one day and restart the search
                     self.days = self.days + 1
-                    return self.search_next_working_link(response, succeed, start='restart')
+                    return self.search_next_working_page(response, succeed, start='restart')
 
         if maximum - minimum != 1:
             # midpoint did not stop moving, continue binary search
