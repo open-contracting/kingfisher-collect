@@ -9,6 +9,15 @@ from kingfisher_scrapy.extensions import KingfisherFilesStore
 from tests import spider_with_crawler, spider_with_files_store
 
 
+def test_from_crawler_missing_arguments():
+    spider = spider_with_crawler()
+
+    with pytest.raises(NotConfigured) as excinfo:
+        KingfisherFilesStore.from_crawler(spider.crawler)
+
+    assert str(excinfo.value) == 'FILES_STORE is not set.'
+
+
 @pytest.mark.parametrize('sample,path', [
     (None, os.path.join('test', '20010203_040506', 'file.json')),
     ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
@@ -37,11 +46,11 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
     (None, os.path.join('test', '20010203_040506', 'file.json')),
     ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
 ])
-def test_item_scraped_with_build_file(sample, path, tmpdir):
+@pytest.mark.parametrize('data', [b'{"key": "value"}', {"key": "value"}])
+def test_item_scraped_with_build_file(sample, path, data, tmpdir):
     spider = spider_with_files_store(tmpdir, sample=sample)
     extension = KingfisherFilesStore.from_crawler(spider.crawler)
 
-    data = b'{"key": "value"}'
     url = 'https://example.com/remote.json'
 
     item = spider.build_file(file_name='file.json', url=url, data=data, data_type='release_package',
@@ -53,15 +62,6 @@ def test_item_scraped_with_build_file(sample, path, tmpdir):
 
     assert item['path'] == path
     assert item['files_store'] == tmpdir
-
-    # if data is a dict
-    data = {"key": "value"}
-    item = spider.build_file(file_name='file.json', url=url, data=data, data_type='release_package',
-                             encoding='iso-8859-1')
-    extension.item_scraped(item, spider)
-
-    with open(tmpdir.join(path)) as f:
-        assert f.read() == '{"key": "value"}'
 
 
 def test_item_scraped_with_build_file_and_existing_directory():
@@ -77,17 +77,12 @@ def test_item_scraped_with_build_file_and_existing_directory():
         extension.item_scraped(spider.build_file(file_name='file.json', data=b'{"key": "value"}'), spider)
 
 
-def test_item_scraped_with_no_file():
+def test_item_scraped_with_build_file_item():
     spider = spider_with_crawler()
+
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
         spider.crawler.settings['FILES_STORE'] = files_store
         extension = KingfisherFilesStore.from_crawler(spider.crawler)
+
         assert extension.item_scraped(spider.build_file_item(), spider) is None
-
-
-def test_item_scraped_with_no_file_store():
-    spider = spider_with_crawler()
-    with pytest.raises(NotConfigured) as e:
-        KingfisherFilesStore.from_crawler(spider.crawler)
-    assert str(e.value) == 'FILES_STORE is not set.'
