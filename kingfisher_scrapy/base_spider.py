@@ -343,8 +343,8 @@ class LinksSpider(SimpleSpider):
     1. Set a ``data_type`` class attribute to the data type of the API responses
     1. Set a ``next_page_formatter`` class attribute to set the file name as in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
-    1. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
     1. Write a ``start_requests`` method to request the first page of API results
+    1. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
     1. Optionally, write a ``parse_next_link`` method to parse and process the next link before save the file
 
     .. code-block:: python

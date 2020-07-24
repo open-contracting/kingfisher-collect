@@ -19,7 +19,7 @@ class Armenia(LinksSpider):
     data_type = 'release_package'
     next_pointer = '/next_page/uri'
     next_page_formatter = staticmethod(parameters('offset'))
-    last_page_success = None
+    last_successful_page = None
     next_page_error = None
     days = 1
 
@@ -38,24 +38,24 @@ class Armenia(LinksSpider):
 
         if self.is_http_success(response):
             # save this page for the lowest offset that works or the page with next_page error
-            self.last_page_success = response.request.url
+            self.last_successful_page = response.request.url
             if binary_search:
                 # continue the search with http success
-                return self.binary_search(response, succeed=True)
+                return self.search_next_working_link(response, succeed=True)
 
             # next_page works
             return self.build_request(response.request.url, dont_filter=True, formatter=parameters('offset'))
 
         if binary_search:
             # continue the search with http error
-            return self.binary_search(response, succeed=False)
+            return self.search_next_working_link(response, succeed=False)
 
         # save the page with next_page error
-        self.next_page_error = self.last_page_success
+        self.next_page_error = self.last_successful_page
         # start a binary search
-        return self.binary_search(response, start='start')
+        return self.search_next_working_link(response, start='start')
 
-    def binary_search(self, response, succeed=None, start=None):
+    def search_next_working_link(self, response, succeed=None, start=None):
         """
         Start:
 
@@ -102,7 +102,7 @@ class Armenia(LinksSpider):
                         return
                     # advance the maximum in one day and restart the search
                     self.days = self.days + 1
-                    return self.binary_search(response, succeed, start='restart')
+                    return self.search_next_working_link(response, succeed, start='restart')
 
         if maximum - minimum != 1:
             # midpoint did not stop moving, continue binary search
@@ -117,10 +117,11 @@ class Armenia(LinksSpider):
                                       callback=self.parse_next_link)
 
         # midpoint stop moving, binary search finished
-        self.logger.info(f'New next_page found for page: {self.next_page_error}, next_page: {self.last_page_success}')
+        self.logger.info(f'New next_page found for page: {self.next_page_error}, '
+                         f'next_page: {self.last_successful_page}')
         self.days = 1  # reset days for future searches
         # request the lowest offset that works
-        return self.build_request(self.last_page_success, dont_filter=True, formatter=parameters('offset'))
+        return self.build_request(self.last_successful_page, dont_filter=True, formatter=parameters('offset'))
 
     @staticmethod
     def get_offset(url):
