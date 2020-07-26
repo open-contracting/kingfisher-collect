@@ -13,7 +13,4 @@ class ScotlandProactis(ScotlandBase):
     """
     name = 'scotland_proactis'
     data_type = 'release_package'
-
-    def start_requests(self):
-        pattern = 'https://sandbox4.proactislabs.com/v1/Notices?dateFrom={}&outputType=0&noticeType={}'
-        return self.parse_requests(pattern)
+    pattern = 'https://sandbox4.proactislabs.com/v1/Notices?dateFrom={:%m-%Y}&outputType=0&noticeType={}'

@@ -1,5 +1,6 @@
 import json
 import os
+from abc import abstractmethod
 from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile
@@ -107,8 +108,7 @@ class BaseSpider(scrapy.Spider):
                 # Default to `default_from_date` class attribute.
                 spider.from_date = spider.default_from_date
             if not spider.until_date:
-                # Default to today.
-                spider.until_date = datetime.now().strftime(spider.date_format)
+                spider.until_date = cls.get_default_until_date(spider)
             try:
                 spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
             except ValueError as e:
@@ -265,6 +265,10 @@ class BaseSpider(scrapy.Spider):
                                        encoding=encoding)
             if self.sample:
                 break
+
+    @classmethod
+    def get_default_until_date(cls, spider):
+        return datetime.now().strftime(spider.date_format)
 
 
 class SimpleSpider(BaseSpider):
@@ -429,3 +433,73 @@ class LinksSpider(SimpleSpider):
 
         if response.meta['depth'] == 0:
             raise MissingNextLinkError('next link not found on the first page: {}'.format(response.url))
+
+
+class PeriodicalSpider(SimpleSpider):
+    """
+    This class helps to crawl urls that receive a year (YYYY) or a month and year (YYYY-mm) as parameters. To use it:
+
+    1. Extend from ``PeriodicalSpider``.
+    1. Set the ``date_format`` attribute if it's not defined already. Valid values are 'year' and 'year-month'.
+    1. Set a ``start`` year or month-year.
+    1. Optionally, set a ``stop`` year or month-year. If absent, ``stop`` defaults to the current year or month-year.
+    1. Set the ``pattern`` parameter with the url to retrieve.
+    1. Implement the `get_formatter` method.
+
+    The ``pattern`` should include a placeholder for a year or month-year parameter. With the year parameter, an int is
+    passed. If the year-month parameter is used, a ``Date`` instance is passed. Example:
+
+    .. code-block: python
+
+        url = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
+
+    When the ``sample`` option is used, the latest year or month of data is retrieved.
+    """
+    VALID_DATE_FORMATS = {'year': '%Y', 'year-month': '%Y-%m'}
+
+    def __init__(self, *args, **kwargs):
+        self.date_format_key = self.date_format
+        if hasattr(self, 'start_requests_callback'):
+            self.start_requests_callback = getattr(self, self.start_requests_callback)
+        else:
+            self.start_requests_callback = self.parse
+
+        super().__init__(*args, **kwargs)
+
+    @classmethod
+    def get_default_until_date(cls, spider):
+        try:
+            return str(spider.stop)
+        except AttributeError:
+            return super().get_default_until_date(spider)
+
+    def start_requests(self):
+
+        start = datetime.strptime(str(self.start), self.date_format) \
+            if not (hasattr(self, 'from_date') and self.from_date) else self.from_date
+
+        if hasattr(self, 'stop'):
+            self.stop = datetime.strptime(str(self.stop), self.date_format)
+        else:
+            self.stop = datetime.today()
+
+        stop = self.stop if not (hasattr(self, 'until_date') and self.until_date) else self.until_date
+
+        if self.sample:
+            start = stop
+
+        if self.date_format_key == 'year':
+            date_range = util.date_range_by_year(start.year, stop.year)
+        else:
+            date_range = util.date_range_by_month(start, stop)
+
+        for date in date_range:
+            for url in self.build_urls(self.pattern, date):
+                yield self.build_request(url, self.get_formatter(), callback=self.start_requests_callback)
+
+    @abstractmethod
+    def get_formatter(self):
+        pass
+
+    def build_urls(self, pattern, date):
+        yield pattern.format(date)

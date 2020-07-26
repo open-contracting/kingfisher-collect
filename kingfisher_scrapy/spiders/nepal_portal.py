@@ -1,10 +1,8 @@
-from datetime import date
-
-from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components, date_range_by_year
+from kingfisher_scrapy.base_spider import PeriodicalSpider
+from kingfisher_scrapy.util import components
 
 
-class NepalPortal(SimpleSpider):
+class NepalPortal(PeriodicalSpider):
     """
     Bulk download documentation
       http://ppip.gov.np/downloads
@@ -15,16 +13,10 @@ class NepalPortal(SimpleSpider):
     name = 'nepal_portal'
     data_type = 'release_package'
     ocds_version = '1.0'
+    start = 2012
+    stop = 2018
+    pattern = 'http://ppip.gov.np/bulk-download/{}'
+    date_format = 'year'
 
-    def start_requests(self):
-        pattern = 'http://ppip.gov.np/bulk-download/{}'
-
-        if self.sample:
-            start = 2018
-            stop = 2018
-        else:
-            start = 2012
-            stop = date.today().year  # HTTP 500 after 2018
-
-        for year in date_range_by_year(start, stop):
-            yield self.build_request(pattern.format(year), formatter=components(-1))
+    def get_formatter(self):
+        return components(-1)

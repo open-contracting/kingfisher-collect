@@ -1,8 +1,8 @@
-from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components, date_range_by_year
+from kingfisher_scrapy.base_spider import PeriodicalSpider
+from kingfisher_scrapy.util import components
 
 
-class MoldovaOld(SimpleSpider):
+class MoldovaOld(PeriodicalSpider):
     """
     Bulk download documentation
       http://opencontracting.date.gov.md/downloads
@@ -12,14 +12,10 @@ class MoldovaOld(SimpleSpider):
     """
     name = 'moldova_old'
     data_type = 'release_package'
+    start = 2012
+    stop = 2018
+    pattern = 'http://opencontracting.date.gov.md/ocds-api/year/{}'
+    date_format = 'year'
 
-    def start_requests(self):
-        pattern = 'http://opencontracting.date.gov.md/ocds-api/year/{}'
-
-        start = 2012
-        stop = 2018
-        if self.sample:
-            start = 2018
-
-        for year in date_range_by_year(start, stop):
-            yield self.build_request(pattern.format(year), formatter=components(-1))
+    def get_formatter(self):
+        return components(-1)
