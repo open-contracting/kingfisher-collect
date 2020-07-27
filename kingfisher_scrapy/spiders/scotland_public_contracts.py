@@ -15,5 +15,5 @@ class ScotlandPublicContracts(ScotlandBase):
     data_type = 'release_package'
 
     def start_requests(self):
-        pattern = 'https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={}&outputType=1&noticeType={}'
+        pattern = 'https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={}&outputType=0&noticeType={}'
         return self.parse_requests(pattern)
