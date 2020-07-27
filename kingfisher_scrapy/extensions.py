@@ -9,20 +9,20 @@ from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
+from kingfisher_scrapy.util import _pluck_filename
 
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 class KingfisherPluck:
-    def __init__(self, filename):
-        self.filename = filename
+    def __init__(self, directory):
+        self.directory = directory
         self.spiders_seen = set()
 
     @classmethod
     def from_crawler(cls, crawler):
-        path = crawler.settings['KINGFISHER_PLUCK_PATH']
-        filename = os.path.join(path, 'pluck.csv')
+        directory = crawler.settings['KINGFISHER_PLUCK_PATH']
 
-        extension = cls(filename=filename)
+        extension = cls(directory=directory)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
 
@@ -33,15 +33,18 @@ class KingfisherPluck:
             return
 
         self.spiders_seen.add(spider.name)
-        with open(self.filename, 'a+') as output:
-            output.write(f"{item['value']},{spider.name}\n")
+
+        self._write(spider, item['value'])
 
     def spider_closed(self, spider, reason):
         if not spider.pluck or spider.name in self.spiders_seen:
             return
 
-        with open(self.filename, 'a+') as output:
-            output.write(f"{reason},{spider.name}\n")
+        self._write(spider, reason)
+
+    def _write(self, spider, value):
+        with open(os.path.join(self.directory, _pluck_filename(spider)), 'a+') as f:
+            f.write(f'{value},{spider.name}\n')
 
 
 class KingfisherFilesStore:

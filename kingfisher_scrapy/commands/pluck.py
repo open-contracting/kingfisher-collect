@@ -8,6 +8,8 @@ from scrapy.commands import ScrapyCommand
 from scrapy.crawler import CrawlerProcess
 from scrapy.exceptions import UsageError
 
+from kingfisher_scrapy.util import _pluck_filename
+
 logger = logging.getLogger(__name__)
 
 
@@ -33,8 +35,9 @@ class Pluck(ScrapyCommand):
         # Limit concurrent requests, to download the minimum.
         self.settings.set('CONCURRENT_REQUESTS', 1)
 
-        if os.path.isfile('pluck.csv'):
-            os.unlink('pluck.csv')
+        filename = _pluck_filename(opts)
+        if os.path.isfile(filename):
+            os.unlink(filename)
 
         runner = CrawlerProcess(settings=self.settings)
 
