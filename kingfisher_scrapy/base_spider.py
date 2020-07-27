@@ -63,8 +63,9 @@ class BaseSpider(scrapy.Spider):
     ocds_version = '1.1'
     date_format = 'date'
 
-    def __init__(self, sample=None, note=None, from_date=None, until_date=None, latest=None,
-                 crawl_time=None, keep_collection_open=None, *args, **kwargs):
+    def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
+                 keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
+                 **kwargs):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
@@ -72,19 +73,26 @@ class BaseSpider(scrapy.Spider):
         self.note = note
         self.from_date = from_date
         self.until_date = until_date
-        self.date_format = self.VALID_DATE_FORMATS[self.date_format]
-        self.latest = latest == 'true'
         self.crawl_time = crawl_time
         self.keep_collection_open = keep_collection_open == 'true'
+        # Pluck-related arguments.
+        self.package_pointer = package_pointer
+        self.release_pointer = release_pointer
+        self.truncate = int(truncate) if truncate else None
+
+        self.date_format = self.VALID_DATE_FORMATS[self.date_format]
+        self.pluck = bool(package_pointer or release_pointer)
 
         spider_arguments = {
             'sample': sample,
             'note': note,
             'from_date': from_date,
             'until_date': until_date,
-            'latest': latest,
             'crawl_time': crawl_time,
             'keep_collection_open': keep_collection_open,
+            'package_pointer': package_pointer,
+            'release_pointer': release_pointer,
+            'truncate': truncate,
         }
         spider_arguments.update(kwargs)
         self.logger.info('Spider arguments: {!r}'.format(spider_arguments))
@@ -93,13 +101,14 @@ class BaseSpider(scrapy.Spider):
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
 
+        if spider.package_pointer and spider.release_pointer:
+            raise SpiderArgumentError('You cannot specify both package_pointer and release_pointer spider arguments.')
+
         if spider.crawl_time:
             try:
-                spider.crawl_time = datetime.strptime(spider.crawl_time,
-                                                      '%Y-%m-%dT%H:%M:%S')
+                spider.crawl_time = datetime.strptime(spider.crawl_time, '%Y-%m-%dT%H:%M:%S')
             except ValueError as e:
-                raise SpiderArgumentError('spider argument crawl_time: '
-                                          'invalid date value: {}'.format(e))
+                raise SpiderArgumentError('spider argument crawl_time: invalid date value: {}'.format(e))
 
         # Checks Spider date ranges arguments
         if spider.from_date or spider.until_date:
@@ -340,7 +349,7 @@ class CompressedFileSpider(BaseSpider):
     """
 
     encoding = 'utf-8'
-    skip_latest_release_date = "This command doesn't yet support identifying the latest release in a archive file."
+    skip_pluck = 'Archive files are not supported'
     compressed_file_format = None
     archive_format = 'zip'
     file_name_must_contain = ''

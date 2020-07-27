@@ -7,41 +7,44 @@ import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.items import File, FileError, FileItem, LatestReleaseDateItem
+from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
+from kingfisher_scrapy.util import _pluck_filename
 
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
-class KingfisherLatestDate:
-    def __init__(self, filename):
-        self.filename = filename
+class KingfisherPluck:
+    def __init__(self, directory):
+        self.directory = directory
         self.spiders_seen = set()
 
     @classmethod
     def from_crawler(cls, crawler):
-        path = crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_PATH']
-        filename = os.path.join(path, 'latestreleasedate.csv')
+        directory = crawler.settings['KINGFISHER_PLUCK_PATH']
 
-        extension = cls(filename=filename)
+        extension = cls(directory=directory)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
 
         return extension
 
     def item_scraped(self, item, spider):
-        if not spider.latest or spider.name in self.spiders_seen or not isinstance(item, LatestReleaseDateItem):
+        if not spider.pluck or spider.name in self.spiders_seen or not isinstance(item, PluckedItem):
             return
 
         self.spiders_seen.add(spider.name)
-        with open(self.filename, 'a+') as output:
-            output.write(f"{item['date']},{spider.name}\n")
+
+        self._write(spider, item['value'])
 
     def spider_closed(self, spider, reason):
-        if not spider.latest or spider.name in self.spiders_seen:
+        if not spider.pluck or spider.name in self.spiders_seen:
             return
 
-        with open(self.filename, 'a+') as output:
-            output.write(f"{reason},{spider.name}\n")
+        self._write(spider, reason)
+
+    def _write(self, spider, value):
+        with open(os.path.join(self.directory, _pluck_filename(spider)), 'a+') as f:
+            f.write(f'{value},{spider.name}\n')
 
 
 class KingfisherFilesStore:
@@ -128,7 +131,7 @@ class KingfisherProcessAPI:
         Sends an API request to end the collection's store step.
         """
         # https://docs.scrapy.org/en/latest/topics/signals.html#spider-closed
-        if reason != 'finished' or spider.latest or spider.keep_collection_open:
+        if reason != 'finished' or spider.pluck or spider.keep_collection_open:
             return
 
         response = self.client.end_collection_store({
@@ -146,7 +149,7 @@ class KingfisherProcessAPI:
         Sends an API request to store the file, file item or file error in Kingfisher Process.
         """
 
-        if not item.get('post_to_api', True) or isinstance(item, LatestReleaseDateItem):
+        if not item.get('post_to_api', True) or isinstance(item, PluckedItem):
             return
 
         data = {

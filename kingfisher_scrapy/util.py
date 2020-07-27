@@ -8,6 +8,15 @@ from urllib.parse import parse_qs, urlencode, urlsplit
 from ijson import ObjectBuilder, utils
 
 
+def _pluck_filename(opts):
+    if opts.package_pointer:
+        parts = ['pluck', 'package', opts.package_pointer[1:].replace('/', '-')]
+    else:
+        parts = ['pluck', 'release', opts.release_pointer[1:].replace('/', '-')]
+
+    return f"{'-'.join(parts)}.csv"
+
+
 def components(start, stop=None):
     """
     Returns a function that returns the selected non-empty path components, excluding the ``.json`` extension.

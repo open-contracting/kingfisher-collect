@@ -17,8 +17,8 @@ class DryRun(ScrapyCommand):
         CompressedFileSpider.parse = yield_nothing
 
         # Stop after one item or error.
-        self.settings.set('CLOSESPIDER_ERRORCOUNT', 1)
         self.settings.set('CLOSESPIDER_ITEMCOUNT', 1)
+        self.settings.set('CLOSESPIDER_ERRORCOUNT', 1)
         # Disable LogStats extension.
         self.settings.set('LOGSTATS_INTERVAL', None)
         # Disable custom and Telnet extensions.

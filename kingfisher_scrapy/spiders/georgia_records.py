@@ -15,6 +15,7 @@ class GeorgiaRecords(LinksSpider):
     name = 'georgia_records'
     data_type = 'record_package'
     next_page_formatter = staticmethod(parameters('page'))
+    skip_pluck = 'Already covered (see code for details)'  # georgia_releases
 
     def start_requests(self):
         url = 'https://odapi.spa.ge/api/records.json'

@@ -12,3 +12,4 @@ class MexicoNuevoLeonRecords(MexicoNuevoLeonBase):
     name = 'mexico_nuevo_leon_records'
     file_name_must_contain = 'RecordPackage'
     data_type = 'record_package'
+    skip_pluck = 'Already covered (see code for details)'  # mexico_nuevo_leon_releases

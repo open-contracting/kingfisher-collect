@@ -71,7 +71,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #}
 EXTENSIONS = {
     'kingfisher_scrapy.extensions.SentryLogging': -1,
-    'kingfisher_scrapy.extensions.KingfisherLatestDate': 1,
+    'kingfisher_scrapy.extensions.KingfisherPluck': 1,
     # `KingfisherFilesStore` must run before `KingfisherProcessAPI`, because the file needs to be written before the
     # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
@@ -82,7 +82,7 @@ EXTENSIONS = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    'kingfisher_scrapy.pipelines.Validate': 300,
-   'kingfisher_scrapy.pipelines.LatestReleaseDate': 301,
+   'kingfisher_scrapy.pipelines.Pluck': 301,
 }
 
 
@@ -109,7 +109,7 @@ KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_DNCP_REQ
 KINGFISHER_OPENOPPS_USERNAME = os.getenv('KINGFISHER_OPENOPPS_USERNAME')
 KINGFISHER_OPENOPPS_PASSWORD = os.getenv('KINGFISHER_OPENOPPS_PASSWORD')
 
-KINGFISHER_LATEST_RELEASE_DATE_PATH = os.getenv('KINGFISHER_LATEST_RELEASE_DATE_PATH', '')
+KINGFISHER_PLUCK_PATH = os.getenv('KINGFISHER_PLUCK_PATH', '')
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
