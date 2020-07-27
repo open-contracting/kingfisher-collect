@@ -461,6 +461,7 @@ class PeriodicalSpider(SimpleSpider):
     def __init__(self, *args, **kwargs):
         self.date_format_key = self.date_format
         super().__init__(*args, **kwargs)
+        self.default_from_date = datetime.strptime(str(self.start), self.date_format)
 
         if hasattr(self, 'start_requests_callback'):
             self.start_requests_callback = getattr(self, self.start_requests_callback)
@@ -469,6 +470,7 @@ class PeriodicalSpider(SimpleSpider):
 
         if not isinstance(self.start, DateClass):
             self.start = datetime.strptime(str(self.start), self.date_format)
+        self.default_from_date = self.start
 
         if hasattr(self, 'stop'):
             if not isinstance(self.stop, DateClass):
@@ -478,10 +480,7 @@ class PeriodicalSpider(SimpleSpider):
 
     @classmethod
     def get_default_until_date(cls, spider):
-        try:
-            return str(spider.stop)
-        except AttributeError:
-            return super().get_default_until_date(spider)
+        return spider.stop.strftime(spider.date_format)
 
     def start_requests(self):
 
