@@ -442,8 +442,8 @@ class PeriodicalSpider(SimpleSpider):
 
     1. Extend from ``PeriodicalSpider``.
     1. Set the ``date_format`` attribute if it's not defined already. Valid values are 'year' and 'year-month'.
-    1. Set a ``start`` year or month-year.
-    1. Optionally, set a ``stop`` year or month-year. If absent, ``stop`` defaults to the current year or month-year.
+    1. Set a ``start`` year or year-month.
+    1. Optionally, set a ``stop`` year or year-month. If absent, ``stop`` defaults to the current year or year-month.
     1. Set the ``pattern`` parameter with the url to retrieve.
     1. Implement the `get_formatter` method.
 
