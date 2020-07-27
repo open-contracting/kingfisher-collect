@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date
 
 from kingfisher_scrapy.base_spider import PeriodicalSpider
 from kingfisher_scrapy.util import parameters
@@ -6,7 +6,8 @@ from kingfisher_scrapy.util import parameters
 
 class ScotlandBase(PeriodicalSpider):
     date_format = 'year-month'
-    start = (date.today() - timedelta(days=1)).strftime("%Y-%m")
+    stop = date.today()
+    start = date(stop.year - 1, stop.month, 1)
 
     notice_types = [
         1,  # OJEU - F1 - Prior Information Notice

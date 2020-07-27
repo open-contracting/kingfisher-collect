@@ -1,6 +1,7 @@
 import json
 import os
 from abc import abstractmethod
+from datetime import date as DateClass
 from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile
@@ -459,12 +460,21 @@ class PeriodicalSpider(SimpleSpider):
 
     def __init__(self, *args, **kwargs):
         self.date_format_key = self.date_format
+        super().__init__(*args, **kwargs)
+
         if hasattr(self, 'start_requests_callback'):
             self.start_requests_callback = getattr(self, self.start_requests_callback)
         else:
             self.start_requests_callback = self.parse
 
-        super().__init__(*args, **kwargs)
+        if not isinstance(self.start, DateClass):
+            self.start = datetime.strptime(str(self.start), self.date_format)
+
+        if hasattr(self, 'stop'):
+            if not isinstance(self.stop, DateClass):
+                self.stop = datetime.strptime(str(self.stop), self.date_format)
+        else:
+            self.stop = datetime.today()
 
     @classmethod
     def get_default_until_date(cls, spider):
@@ -475,15 +485,9 @@ class PeriodicalSpider(SimpleSpider):
 
     def start_requests(self):
 
-        start = datetime.strptime(str(self.start), self.date_format) \
-            if not (hasattr(self, 'from_date') and self.from_date) else self.from_date
+        start = self.start if not self.exists('from_date') else self.from_date
 
-        if hasattr(self, 'stop'):
-            self.stop = datetime.strptime(str(self.stop), self.date_format)
-        else:
-            self.stop = datetime.today()
-
-        stop = self.stop if not (hasattr(self, 'until_date') and self.until_date) else self.until_date
+        stop = self.stop if not self.exists('until_date') else self.until_date
 
         if self.sample:
             start = stop
@@ -503,3 +507,6 @@ class PeriodicalSpider(SimpleSpider):
 
     def build_urls(self, pattern, date):
         yield pattern.format(date)
+
+    def exists(self, attr):
+        return hasattr(self, attr) and getattr(self, attr)
