@@ -108,4 +108,5 @@ class Armenia(LinksSpider):
 
     def get_offset(self, response):
         query = parse_qs(urlsplit(response.request.url).query)
-        return int(query['offset'][0])
+        if 'offset' in query:
+            return int(query['offset'][0])
