@@ -1,4 +1,3 @@
-import math
 from urllib.parse import parse_qs, urlsplit
 
 import scrapy
@@ -6,132 +5,107 @@ import scrapy
 from kingfisher_scrapy.base_spider import LinksSpider
 from kingfisher_scrapy.util import parameters, replace_parameter
 
+MILLISECONDS_PER_DAY = 86400000
+EXPONENT_LIMIT = 10  # 1024 days
+THRESHOLD = 2700000  # 45 minutes / 5 iterations within 1 day
+
 
 class Armenia(LinksSpider):
     """
-    If the API returns an error in ``next_page``, a binary search is performed in an attempt to find the
-    next working URL.
-    The search range extends for a maximum of 10 consecutive days from the timestamp in the ``offset`` parameter
-    of the last successful URL.
+    The API paginates results using an ``offset`` query string parameter, which is a timestamp. If a timestamp causes
+    an error, the spider will try to find the nearest timestamp within the following 10 days that succeeds.
+
     Spider arguments
       sample
         Download only the first release package in the dataset.
     """
     name = 'armenia'
-    data_type = 'release_package'
     next_pointer = '/next_page/uri'
     next_page_formatter = staticmethod(parameters('offset'))
-    last_successful_page = None
-    next_page_error = None
-    days = 1
-
-    custom_settings = {
-        'RETRY_TIMES': 1,
-        'CONCURRENT_REQUESTS': 1,
-    }
 
     def start_requests(self):
-        url = 'https://armeps.am/ocds/release'
+        url = 'https://armeps.am/ocds/release?limit=100&offset=1521734640143'
         yield scrapy.Request(url, meta={'file_name': 'offset-0.json'})
 
-    def parse_next_link(self, response):
-        # check if there is a search in process
-        binary_search = True if 'minimum' in response.request.meta else False
-
+    def parse(self, response):
+        # If the request was successful, parse the response as usual.
         if self.is_http_success(response):
-            # save this page for the lowest offset that works or the page with next_page error
-            self.last_successful_page = response.request.url
-            if binary_search:
-                # continue the search with http success
-                return self.search_next_working_page(response, succeed=True)
+            yield self.build_file_from_response(response, data_type='release_package')
 
-            # next_page works
-            return self.build_request(response.request.url, dont_filter=True, formatter=parameters('offset'))
-
-        if binary_search:
-            # continue the search with http error
-            return self.search_next_working_page(response, succeed=False)
-
-        # save the page with next_page error
-        self.next_page_error = self.last_successful_page
-        # start a binary search
-        return self.search_next_working_page(response, start='start')
-
-    def search_next_working_page(self, response, succeed=None, start=None):
-        """
-        This method search for a new ``next_page`` to continue the scraper if not http_success has reached.
-        Is called to start (error in ``next_page``), continue (midpoint did not stop moving) or
-        restart (first maximum did not work) a search.
-        Variables are defined for a minimum, maximum, and midpoint used in binary search.
-
-        Start:
-
-        1. Start with a minimum that is the timestamp in the ``offset`` parameter of the last successful page and
-        with a maximum that is one day in the future from that timestamp.
-        2. If it succeeds, do a binary search to find the lowest ``offset`` that works.
-        3. If it errors, set the minimum to the maximum, and advance the maximum by one day.
-        4. If it errors for 10 consecutive days, don't send any more requests and finish the search.
-
-        Find the lowest ``offset`` that works:
-
-        1. Set the last timestamp in the ``offset`` that worked as minimum and one day later as maximum.
-        2. Took the midpoint between them.
-        3. If it succeeds, set the midpoint to the maximum; otherwise, set it to the minimum.
-        4. Took the midpoint between them and repeat process until the midpoint stopped moving (maximum-minimum=1).
-        5. If the last midpoint fails, use the ``offset`` parameter of the last successful page.
-        """
-        microseconds_per_day = 86400000
-        if start:
-            if start == 'start':
-                # start with last number that worked as the minimum
-                minimum = self.get_offset(self.next_page_error)
-            else:
-                # set the minimum to the maximum
-                minimum = self.get_offset(response.request.url)
-            # start with one day in the future of the current minimum as the maximum
-            maximum = minimum + (microseconds_per_day * self.days)
+            # Use `dont_filter` in case the search for a successful timestamp used the same offset. Use `dont_retry`
+            # since errors are expected.
+            if not self.sample:
+                yield self.next_link(response, dont_filter=True, meta={'dont_retry': True})
+        # Otherwise, parse the response as usual, then (1) pick a date range and (2) do a binary search within it.
+        # This approach assumes that, if two offsets error, then intervening offsets error, too.
         else:
-            if succeed:
-                # if it succeeds, set the midpoint to the maximum
-                maximum = self.get_offset(response.request.url)
-                # keep the minimum
-                minimum = response.request.meta['minimum']
+            yield self.build_file_error_from_response(response)
+
+            # If the error occurs on the first request, we have no starting offset.
+            if self.get_offset(response):
+                yield from self.parse_date_range(response)
+
+    # Exponential search (https://en.wikipedia.org/wiki/Exponential_search). We can do an elaborate alternative
+    # (https://www.slac.stanford.edu/cgi-bin/getdoc/slac-pub-1679.pdf), but we keep it simpler for now.
+    def parse_date_range(self, response):
+        offset = self.get_offset(response)
+
+        # Scrapy uses `datetime.datetime.utcnow()`, so we don't need to worry about time zones.
+        start_time = int(self.crawler.stats.get_value('start_time').timestamp() * 1000)
+        # We use the first offset to calculate the new offset, and in log lessages.
+        first_offset = response.request.meta.get('first', offset)
+        # The exponent for the exponential search.
+        exponent = response.request.meta.get('exponent', -1) + 1
+
+        # If this offset succeeded, do a binary search from the previous offset to this offset.
+        if self.is_http_success(response):
+            yield from self.parse_binary_search(response, response.request.meta['prev'], offset)
+        # If this offset failed and reached a limit, stop.
+        elif offset >= start_time or exponent > EXPONENT_LIMIT:
+            self.logger.info(f'No offset found after {first_offset:,} within {2 ** EXPONENT_LIMIT} days.')
+            yield self.build_file_error_from_response(response)
+        # Otherwise, continue.
+        else:
+            new_offset = min(first_offset + MILLISECONDS_PER_DAY * 2 ** exponent, start_time)
+            url = replace_parameter(response.request.url, 'offset', new_offset)
+            yield self.build_search_request(url, self.parse_date_range, {'prev': offset, 'exponent': exponent,
+                                                                         'first': first_offset})
+
+    # We use one of the alternative binary search methods (https://en.wikipedia.org/wiki/Binary_search_algorithm),
+    # because we only know if an offset succeeds, not whether an offset is greater than the target value.
+    def parse_binary_search(self, response, minimum=None, maximum=None):
+        offset = self.get_offset(response)
+
+        first_offset = response.request.meta['first']
+
+        if minimum and maximum:
+            self.logger.info(f'Starting binary search for {first_offset:,} within [{minimum:,}, {maximum:,}]')
+        elif self.is_http_success(response):
+            minimum = response.request.meta['minimum']
+            maximum = offset
+        else:
+            minimum = offset + 1
+            maximum = response.request.meta['maximum']
+
+        # If the search succeeded, parse the response as usual. We use a threshold, because getting the exact
+        # millisecond requires 27 requests.
+        if minimum + THRESHOLD >= maximum:
+            self.logger.info(f'New offset found after {first_offset:,} at {maximum:,}!')
+            if offset == maximum:
+                # If the last request used the offset, we can reuse its response.
+                yield from self.parse(response)
             else:
-                # if it errors, assume that all intervening offsets would also error
-                minimum = self.get_offset(response.request.url)
-                # keep the maximum
-                maximum = response.request.meta['maximum']
+                url = replace_parameter(response.request.url, 'offset', maximum)
+                yield self.build_request(url, formatter=parameters('offset'))
+        else:
+            url = replace_parameter(response.request.url, 'offset', (minimum + maximum) // 2)
+            yield self.build_search_request(url, self.parse_binary_search, {'minimum': minimum, 'maximum': maximum,
+                                                                            'first': first_offset})
 
-                # check if start trying with the maximum
-                if maximum == minimum:
-                    if self.days == 10:
-                        # binary search finished, reached 10 consecutive days without response
-                        self.logger.info(f'No next_page found for page: {self.next_page_error}')
-                        return
-                    # advance the maximum in one day and restart the search
-                    self.days = self.days + 1
-                    return self.search_next_working_page(response, succeed, start='restart')
+    def build_search_request(self, url, callback, meta):
+        meta['dont_retry'] = True
+        return self.build_request(url, formatter=parameters('offset'), callback=callback, meta=meta, dont_filter=True)
 
-        if maximum - minimum != 1:
-            # midpoint did not stop moving, continue binary search
-            if start:
-                offset = maximum  # start trying with the maximum
-            else:
-                offset = math.floor((maximum + minimum) / 2)  # calculate midpoint
-            url = replace_parameter(response.request.url, 'offset', offset)
-            meta = {'minimum': minimum, 'maximum': maximum}
-            self.logger.info(f'Searching, minimum: {minimum}, midpoint: {offset}, maximum: {maximum}')
-            return self.build_request(url, dont_filter=True, meta=meta, formatter=parameters('offset'),
-                                      callback=self.parse_next_link)
-
-        # midpoint stop moving, binary search finished
-        self.logger.info(f'New next_page found for page: {self.next_page_error}, '
-                         f'next_page: {self.last_successful_page}')
-        self.days = 1  # reset days for future searches
-        # request the lowest offset that works
-        return self.build_request(self.last_successful_page, dont_filter=True, formatter=parameters('offset'))
-
-    @staticmethod
-    def get_offset(url):
-        query = parse_qs(urlsplit(url).query)
+    def get_offset(self, response):
+        query = parse_qs(urlsplit(response.request.url).query)
         return int(query['offset'][0])

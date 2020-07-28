@@ -345,7 +345,6 @@ class LinksSpider(SimpleSpider):
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
     1. Write a ``start_requests`` method to request the first page of API results
     1. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
-    1. Optionally, write a ``parse_next_link`` method to parse and process the next link before save the file
 
     .. code-block:: python
 
@@ -370,15 +369,14 @@ class LinksSpider(SimpleSpider):
         if not self.sample:
             yield self.next_link(response)
 
-    def next_link(self, response):
+    def next_link(self, response, **kwargs):
         """
         If the JSON response has a ``links.next`` key, returns a ``scrapy.Request`` for the URL.
         """
         data = json.loads(response.text)
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
-            callback = self.parse_next_link if 'parse_next_link' in dir(self) else None
-            return self.build_request(url, formatter=self.next_page_formatter, callback=callback)
+            return self.build_request(url, formatter=self.next_page_formatter, **kwargs)
 
         if response.meta['depth'] == 0:
             raise MissingNextLinkError('next link not found on the first page: {}'.format(response.url))
