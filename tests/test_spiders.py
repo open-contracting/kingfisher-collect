@@ -1,4 +1,5 @@
 import warnings
+from datetime import datetime
 
 import pytest
 from scrapy.crawler import Crawler, CrawlerRunner
@@ -19,6 +20,8 @@ def test_start_requests_http_error(spider_name):
     # See scrapy.crawler.CrawlerRunner._create_crawler
     spidercls = runner.spider_loader.load(spider_name)
     crawler = Crawler(spidercls, runner.settings)
+    start_time = datetime(2001, 2, 3, 4, 5, 6)
+    crawler.stats.set_value('start_time', start_time)
 
     try:
         # See scrapy.crawler.Crawler._create_spider
