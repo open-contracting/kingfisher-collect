@@ -68,8 +68,8 @@ class Armenia(LinksSpider):
         else:
             new_offset = min(first_offset + MILLISECONDS_PER_DAY * 2 ** exponent, start_time)
             url = replace_parameter(response.request.url, 'offset', new_offset)
-            yield self.build_search_request(url, self.parse_date_range, {'prev': offset, 'exponent': exponent,
-                                                                         'first': first_offset})
+            yield self._build_request(url, self.parse_date_range, {'prev': offset, 'exponent': exponent,
+                                                                   'first': first_offset})
 
     # We use one of the alternative binary search methods (https://en.wikipedia.org/wiki/Binary_search_algorithm),
     # because we only know if an offset succeeds, not whether an offset is greater than the target value.
@@ -96,15 +96,16 @@ class Armenia(LinksSpider):
                 yield from self.parse(response)
             else:
                 url = replace_parameter(response.request.url, 'offset', maximum)
-                yield self.build_request(url, formatter=parameters('offset'))
+                yield self._build_request(url, self.parse, {})
         else:
             url = replace_parameter(response.request.url, 'offset', (minimum + maximum) // 2)
-            yield self.build_search_request(url, self.parse_binary_search, {'minimum': minimum, 'maximum': maximum,
-                                                                            'first': first_offset})
+            yield self._build_request(url, self.parse_binary_search, {'minimum': minimum, 'maximum': maximum,
+                                                                      'first': first_offset})
 
-    def build_search_request(self, url, callback, meta):
+    def _build_request(self, url, callback, meta):
         meta['dont_retry'] = True
-        return self.build_request(url, formatter=parameters('offset'), callback=callback, meta=meta, dont_filter=True)
+        # We need to set `formatter` in case we want to re-use the response to build a file or file error.
+        return self.build_request(url, formatter=parameters('offset'), dont_filter=True, meta=meta, callback=callback)
 
     def get_offset(self, response):
         query = parse_qs(urlsplit(response.request.url).query)
