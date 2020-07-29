@@ -13,7 +13,7 @@ THRESHOLD = 2700000  # 45 minutes / 5 iterations within 1 day
 class Armenia(LinksSpider):
     """
     The API paginates results using an ``offset`` query string parameter, which is a timestamp. If a timestamp causes
-    an error, the spider will try to find the nearest timestamp within the following 10 days that succeeds.
+    an error, the spider will try to find the nearest timestamp within the following 1024 days that succeeds.
 
     Spider arguments
       sample
