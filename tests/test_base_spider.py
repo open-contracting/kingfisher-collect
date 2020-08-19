@@ -44,6 +44,7 @@ def test_build_file_from_response():
     response.body = b'{"key": "value"}'
     response.request = Mock()
     response.request.url = 'https://example.com/remote.json'
+    response.request.meta = {'file_name': 'file.json'}
 
     actual = spider.build_file_from_response(response, file_name='file.json', data_type='release_package',
                                              encoding='iso-8859-1')
