@@ -9,7 +9,7 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 class TestFail(SimpleSpider):
     name = 'test_fail'
     data_type = 'release_package'
-    skip_latest_release_date = 'Not a real spider'
+    skip_pluck = 'Not a real spider'
 
     def start_requests(self):
         # Fine

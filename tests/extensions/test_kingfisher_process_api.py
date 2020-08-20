@@ -1,23 +1,12 @@
-import json
 import os
-from tempfile import TemporaryDirectory
 from unittest.mock import Mock, patch
 
 import pytest
 from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherLatestDate, KingfisherProcessAPI
-from kingfisher_scrapy.items import FileError, LatestReleaseDateItem
-from tests import spider_with_crawler
-
-
-def spider_with_files_store(files_store, **kwargs):
-    spider = spider_with_crawler(**kwargs)
-    spider.crawler.settings['FILES_STORE'] = files_store
-    spider.crawler.settings['KINGFISHER_API_URI'] = 'http://httpbin.org/anything'
-    spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
-
-    return spider
+from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessAPI
+from kingfisher_scrapy.items import FileError
+from tests import spider_with_crawler, spider_with_files_store
 
 
 def test_from_crawler():
@@ -26,9 +15,9 @@ def test_from_crawler():
     spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
     spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = 'localdir'
 
-    api_extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+    extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    assert api_extension.directory == 'localdir'
+    assert extension.directory == 'localdir'
 
 
 @pytest.mark.parametrize('api_url,api_key', [
@@ -56,9 +45,11 @@ def test_from_crawler_missing_arguments(api_url, api_key):
 @pytest.mark.parametrize('directory', [False, True])
 @pytest.mark.parametrize('ok', [True, False])
 @pytest.mark.parametrize('post_to_api', [True, False])
-def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, post_to_api, tmpdir,
-                           caplog):
-    spider = spider_with_files_store(tmpdir, sample=sample, note=note)
+@pytest.mark.parametrize('crawl_time', [None, '2020-01-01T00:00:00'])
+def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, post_to_api,
+                           crawl_time, tmpdir, caplog):
+    spider = spider_with_files_store(tmpdir, sample=sample, note=note,
+                                     crawl_time=crawl_time)
 
     if directory:
         spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
@@ -105,6 +96,9 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
         }
         if note:
             expected['collection_note'] = note
+        if crawl_time:
+            expected['collection_data_version'] = '2020-01-01 00:00:00'
+            path = path.replace('20010203_040506', '20200101_000000')
         if directory:
             expected['local_file_name'] = tmpdir.join('xxx', path)
         if not post_to_api:
@@ -135,7 +129,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
 def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, sample=sample, note=note)
 
-    api_extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+    extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
     with patch('requests.post') as mocked:
         response = Mock()
@@ -155,7 +149,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
             encoding=encoding2,
         )
 
-        api_extension.item_scraped(item, spider)
+        extension.item_scraped(item, spider)
 
         if not ok:
             message = 'Failed to post [https://example.com/remote.json]. API status code: 400'
@@ -198,7 +192,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
 def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, sample=sample)
 
-    api_extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+    extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
     with patch('requests.post') as mocked:
         response = Mock()
@@ -212,7 +206,7 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
             'errors': {'http_code': 500},
         })
 
-        api_extension.item_scraped(data, spider)
+        extension.item_scraped(data, spider)
 
         if not ok:
             message = 'Failed to post [https://example.com/remote.json]. File Errors API status code: 400'
@@ -250,7 +244,7 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
 def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, sample=sample)
 
-    api_extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+    extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
     with patch('requests.post') as mocked:
         response = Mock()
@@ -258,7 +252,7 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
         response.status_code = 400
         mocked.return_value = response
 
-        api_extension.spider_closed(spider, 'finished')
+        extension.spider_closed(spider, 'finished')
 
         mocked.assert_called_once_with(
             'http://httpbin.org/anything/api/v1/submit/end_collection_store/',
@@ -286,109 +280,9 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
 def test_spider_closed_other_reason(tmpdir):
     spider = spider_with_files_store(tmpdir)
 
-    api_extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+    extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
     with patch('requests.post') as mocked:
-        api_extension.spider_closed(spider, 'xxx')
+        extension.spider_closed(spider, 'xxx')
 
         mocked.assert_not_called()
-
-
-@pytest.mark.parametrize('sample,path', [
-    (None, os.path.join('test', '20010203_040506', 'file.json')),
-    ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
-])
-def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
-    spider = spider_with_files_store(tmpdir, sample=sample)
-    store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
-
-    response = Mock()
-    response.body = b'{"key": "value"}'
-    response.request = Mock()
-    response.request.url = 'https://example.com/remote.json'
-
-    item = spider.build_file_from_response(response, file_name='file.json', data_type='release_package',
-                                           encoding='iso-8859-1')
-    store_extension.item_scraped(item, spider)
-
-    with open(tmpdir.join(path)) as f:
-        assert f.read() == '{"key": "value"}'
-
-    with open(tmpdir.join(path + '.fileinfo')) as f:
-        assert json.load(f) == {
-            'url': 'https://example.com/remote.json',
-            'data_type': 'release_package',
-            'encoding': 'iso-8859-1',
-        }
-
-    assert item['path'] == path
-    assert item['files_store'] == tmpdir
-
-
-@pytest.mark.parametrize('sample,path', [
-    (None, os.path.join('test', '20010203_040506', 'file.json')),
-    ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
-])
-def test_item_scraped_with_build_file(sample, path, tmpdir):
-    spider = spider_with_files_store(tmpdir, sample=sample)
-    store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
-
-    data = b'{"key": "value"}'
-    url = 'https://example.com/remote.json'
-
-    item = spider.build_file(file_name='file.json', url=url, data=data, data_type='release_package',
-                             encoding='iso-8859-1')
-    store_extension.item_scraped(item, spider)
-
-    with open(tmpdir.join(path)) as f:
-        assert f.read() == '{"key": "value"}'
-
-    with open(tmpdir.join(path + '.fileinfo')) as f:
-        assert json.load(f) == {
-            'url': 'https://example.com/remote.json',
-            'data_type': 'release_package',
-            'encoding': 'iso-8859-1',
-        }
-
-    assert item['path'] == path
-    assert item['files_store'] == tmpdir
-
-
-def test_build_file_with_existing_directory():
-    spider = spider_with_crawler()
-
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
-        store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
-        os.makedirs(os.path.join(files_store, 'test', '20010203_040506'))
-
-        # No FileExistsError exception.
-        store_extension.item_scraped(spider.build_file(file_name='file.json', data=b'{"key": "value"}'), spider)
-
-
-def test_item_scraped_latest_date():
-    with TemporaryDirectory() as tmpdirname:
-        spider = spider_with_files_store(tmpdirname, latest=True)
-        spider.crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH'] = tmpdirname
-
-        latest_extension = KingfisherLatestDate.from_crawler(spider.crawler)
-        item = LatestReleaseDateItem({'date': '2020-10-01'})
-        latest_extension.item_scraped(item, spider)
-
-        with open(os.path.join(tmpdirname, 'dates.csv')) as f:
-            assert '2020-10-01,test\n' == f.read()
-
-        # the same item is processed just once
-        latest_extension.item_scraped(item, spider)
-
-        with open(os.path.join(tmpdirname, 'dates.csv')) as f:
-            assert '2020-10-01,test\n' == f.read()
-
-        # a non processed item is marked as an error
-        spider.name = 'dateless'
-
-        latest_extension.spider_closed(spider, 'itemcount')
-
-        with open(os.path.join(tmpdirname, 'dates.csv')) as f:
-            assert '2020-10-01,test\nitemcount,dateless\n' == f.read()

@@ -7,37 +7,44 @@ import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
-from kingfisher_scrapy.items import File, FileError, FileItem, LatestReleaseDateItem
+from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
+from kingfisher_scrapy.util import _pluck_filename
 
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
-class KingfisherLatestDate:
-    def __init__(self, filename):
-        self.filename = filename
+class KingfisherPluck:
+    def __init__(self, directory):
+        self.directory = directory
         self.spiders_seen = set()
 
     @classmethod
     def from_crawler(cls, crawler):
-        path = crawler.settings['KINGFISHER_LATEST_RELEASE_DATE_FILE_PATH']
-        os.makedirs(path, exist_ok=True)
-        filename = os.path.join(path, 'dates.csv')
-        extension = cls(filename=filename)
+        directory = crawler.settings['KINGFISHER_PLUCK_PATH']
+
+        extension = cls(directory=directory)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
+
         return extension
 
     def item_scraped(self, item, spider):
-        if not isinstance(item, LatestReleaseDateItem) or spider.name in self.spiders_seen:
+        if not spider.pluck or spider.name in self.spiders_seen or not isinstance(item, PluckedItem):
             return
+
         self.spiders_seen.add(spider.name)
-        with open(self.filename, 'a+') as output:
-            output.write(f"{item['date']},{spider.name}\n")
+
+        self._write(spider, item['value'])
 
     def spider_closed(self, spider, reason):
-        if spider.name not in self.spiders_seen:
-            with open(self.filename, 'a+') as output:
-                output.write(f"{reason},{spider.name}\n")
+        if not spider.pluck or spider.name in self.spiders_seen:
+            return
+
+        self._write(spider, reason)
+
+    def _write(self, spider, value):
+        with open(os.path.join(self.directory, _pluck_filename(spider)), 'a+') as f:
+            f.write(f'{value},{spider.name}\n')
 
 
 class KingfisherFilesStore:
@@ -60,7 +67,7 @@ class KingfisherFilesStore:
         """
         If the item is a file, writes its data to the filename in the crawl's directory.
 
-        Writes a ``<filename>.fileinfo`` metadata file in the crawl's directory, and returns a dict with the metadata.
+        Returns a dict with the metadata.
         """
         if not isinstance(item, File):
             return
@@ -71,18 +78,12 @@ class KingfisherFilesStore:
             name += '_sample'
         path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), item['file_name'])
 
-        self._write_file(path, item['data'], spider)
-        metadata = {
-            'url': item['url'],
-            'data_type': item['data_type'],
-            'encoding': item.get('encoding', 'utf-8'),
-        }
-        self._write_file(path + '.fileinfo', metadata, spider)
+        self._write_file(path, item['data'])
 
         item['path'] = path
         item['files_store'] = self.directory
 
-    def _write_file(self, path, data, spider):
+    def _write_file(self, path, data):
         path = os.path.join(self.directory, path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
@@ -130,7 +131,7 @@ class KingfisherProcessAPI:
         Sends an API request to end the collection's store step.
         """
         # https://docs.scrapy.org/en/latest/topics/signals.html#spider-closed
-        if reason != 'finished' or spider.latest:
+        if reason != 'finished' or spider.pluck or spider.keep_collection_open:
             return
 
         response = self.client.end_collection_store({
@@ -148,8 +149,9 @@ class KingfisherProcessAPI:
         Sends an API request to store the file, file item or file error in Kingfisher Process.
         """
 
-        if not item.get('post_to_api', True) or isinstance(item, LatestReleaseDateItem):
+        if not item.get('post_to_api', True) or isinstance(item, PluckedItem):
             return
+
         data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),

@@ -9,4 +9,5 @@ venv/
 /data
 /docs/_build
 /htmlcov
-/latestreleasedate
+/pluck-*.csv
+/pluck_skipped.json

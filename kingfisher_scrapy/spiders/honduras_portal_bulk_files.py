@@ -16,7 +16,7 @@ class HondurasPortalBulkFiles(SimpleSpider):
     """
     name = 'honduras_portal_bulk_files'
     data_type = 'release_package'
-    skip_latest_release_date = 'Already covered (see code for details)'  # honduras_portal_releases
+    skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
 
     def start_requests(self):
         yield scrapy.Request(
