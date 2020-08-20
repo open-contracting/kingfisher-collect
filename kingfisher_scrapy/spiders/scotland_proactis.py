@@ -7,13 +7,10 @@ class ScotlandProactis(ScotlandBase):
       https://sandbox4.proactislabs.com/v1
     Spider arguments
       sample
-        Downloads packages for releases dated one year ago, for each notice type available.
+        Download this month's release packages for each notice type available.
       from_date
-        Download only data from this month onward (YYYY-MM format). Defaults to one year back.
+        Download only data from this month onward (YYYY-MM format). Defaults to '2019-01'.
     """
     name = 'scotland_proactis'
     data_type = 'release_package'
-
-    def start_requests(self):
-        pattern = 'https://sandbox4.proactislabs.com/v1/Notices?dateFrom={}&outputType=0&noticeType={}'
-        return self.parse_requests(pattern)
+    url = 'https://sandbox4.proactislabs.com/v1/Notices?dateFrom={}&outputType=0&noticeType={}'
