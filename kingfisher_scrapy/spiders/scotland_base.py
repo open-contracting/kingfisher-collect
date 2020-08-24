@@ -1,12 +1,19 @@
-from datetime import date, datetime
+from datetime import date
 
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import date_range_by_month, parameters
 
 
 class ScotlandBase(SimpleSpider):
-    default_from_date = '2019-01-01'
+    default_from_date = '2019-01'
     date_format = 'year-month'
+
+    @classmethod
+    def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
+        if not from_date:
+            from_date = cls.default_from_date
+
+        return super().from_crawler(crawler, from_date=from_date, *args, **kwargs)
 
     def start_requests(self):
         notice_types = [
@@ -33,11 +40,8 @@ class ScotlandBase(SimpleSpider):
             104,  # Site Notice - Quick Quote Award
         ]
 
-        from_date = self.from_date if self.from_date else datetime.strptime(self.default_from_date, '%Y-%m-%d')
-        until_date = date.today()
-
-        for d in date_range_by_month(from_date, until_date):
-            date_string = d.strftime('%m-%Y')
+        for year_month in date_range_by_month(self.from_date, date.today()):
+            date_string = year_month.strftime('%m-%Y')
             for notice_type in notice_types:
                 yield self.build_request(
                     self.url.format(date_string, notice_type),
