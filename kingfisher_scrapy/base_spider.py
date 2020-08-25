@@ -194,12 +194,9 @@ class BaseSpider(scrapy.Spider):
         """
         Returns an item to yield, based on the response to a request.
         """
-        if 'file_name' not in kwargs:
-            kwargs['file_name'] = response.request.meta['file_name']
-        if 'url' not in kwargs:
-            kwargs['url'] = response.request.url
-        if 'data' not in kwargs:
-            kwargs['data'] = response.body
+        kwargs.setdefault('file_name', response.request.meta['file_name'])
+        kwargs.setdefault('url', response.request.url)
+        kwargs.setdefault('data', response.body)
         return self.build_file(**kwargs)
 
     def build_file(self, *, file_name=None, url=None, data=None, data_type=None, encoding='utf-8', post_to_api=True):

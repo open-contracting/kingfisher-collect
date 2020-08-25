@@ -11,10 +11,8 @@ def response_fixture(meta=None, **kwargs):
     if meta is None:
         meta = {'file_name': 'test'}
     request = Request('http://example.com', meta=meta)
-    if 'status' not in kwargs:
-        kwargs['status'] = 200
-    if 'body' not in kwargs:
-        kwargs['body'] = b'{"links": {"next": "http://example.com/next"}}'
+    kwargs.setdefault('status', 200)
+    kwargs.setdefault('body', b'{"links": {"next": "http://example.com/next"}}')
     return TextResponse(request.url, encoding='utf-8', request=request, **kwargs)
 
 
