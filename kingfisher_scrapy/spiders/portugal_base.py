@@ -1,5 +1,8 @@
-import scrapy
+from io import BytesIO
 from urllib.parse import parse_qs, urlsplit
+
+import ijson
+import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_http_error, parameters, replace_parameter
@@ -17,7 +20,10 @@ class PortugalBase(SimpleSpider):
 
     @handle_http_error
     def parse_data(self, response):
-        yield from self.parse(response)
+        json_array = []
+        for data in ijson.items(BytesIO(response.body), '', multiple_values=True, use_float=True):
+            json_array.append(data)
+        yield self.build_file_from_response(response, data=json_array, data_type=self.data_type)
 
         if not self.sample:
             next_url = response.request.url
