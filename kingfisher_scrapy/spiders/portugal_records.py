@@ -9,10 +9,10 @@ class PortugalRecords(PortugalBase):
       sample
         Download one list of 100 record packages.
       from_date
-        Download only the data with the contract signing start date from this date onward (YYYY-MM-DD format).
+        Download only the data with the contract signing date from this date onward (YYYY-MM-DD format).
         If ``until_date`` is provided, defaults to '2010-01-01'.
       until_date
-        Download only the data with the contract signing end date until this date (YYYY-MM-DD format).
+        Download only the data with the contract signing date until this date (YYYY-MM-DD format).
         If ``from_date`` is provided, defaults to today.
     """
     name = 'portugal_records'
