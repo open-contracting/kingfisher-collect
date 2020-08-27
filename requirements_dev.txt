@@ -4,65 +4,65 @@
 #
 #    pip-compile requirements_dev.in
 #
-attrs==19.3.0
-automat==0.8.0
-certifi==2019.11.28
-cffi==1.13.2
-chardet==3.0.4
+attrs==19.3.0             # via -r requirements.txt, automat, jsonschema, pytest, service-identity, twisted
+automat==0.8.0            # via -r requirements.txt, twisted
+certifi==2019.11.28       # via -r requirements.txt, requests, sentry-sdk
+cffi==1.13.2              # via -r requirements.txt, cryptography
+chardet==3.0.4            # via -r requirements.txt, requests
 click==7.1.2              # via pip-tools
-constantly==15.1.0
+constantly==15.1.0        # via -r requirements.txt, twisted
 coverage==5.0.3           # via coveralls, pytest-cov
-coveralls==2.0.0
-cryptography==2.8
-cssselect==1.1.0
+coveralls==2.0.0          # via -r requirements_dev.in
+cryptography==2.8         # via -r requirements.txt, pyopenssl, scrapy, service-identity
+cssselect==1.1.0          # via -r requirements.txt, parsel, scrapy
 docopt==0.6.2             # via coveralls
 entrypoints==0.3          # via flake8
-flake8==3.7.9
-hyperlink==19.0.0
-idna==2.8
-ijson==3.0.3
-importlib-metadata==1.6.1
-incremental==17.5.0
-isort==4.3.21
-jsonpointer==2.0
-jsonref==0.2
-jsonschema==3.2.0
-lxml==4.4.2
+flake8==3.7.9             # via -r requirements_dev.in
+hyperlink==19.0.0         # via -r requirements.txt, twisted
+idna==2.8                 # via -r requirements.txt, hyperlink, requests
+ijson==3.1.1              # via -r requirements.txt
+importlib-metadata==1.6.1  # via -r requirements.txt, jsonschema, pluggy, pytest
+incremental==17.5.0       # via -r requirements.txt, twisted
+isort==4.3.21             # via -r requirements_dev.in
+jsonpointer==2.0          # via -r requirements.txt
+jsonref==0.2              # via -r requirements.txt
+jsonschema==3.2.0         # via -r requirements.txt
+lxml==4.4.2               # via -r requirements.txt, parsel, scrapy
 mccabe==0.6.1             # via flake8
 more-itertools==8.0.2     # via pytest
 packaging==19.2           # via pytest
-parsel==1.5.2
-pip-tools==5.1.0
+parsel==1.5.2             # via -r requirements.txt, scrapy
+pip-tools==5.1.0          # via -r requirements_dev.in
 pluggy==0.13.1            # via pytest
-protego==0.1.16
+protego==0.1.16           # via -r requirements.txt, scrapy
 py==1.8.0                 # via pytest
-pyasn1-modules==0.2.7
-pyasn1==0.4.8
+pyasn1-modules==0.2.7     # via -r requirements.txt, service-identity
+pyasn1==0.4.8             # via -r requirements.txt, pyasn1-modules, service-identity
 pycodestyle==2.5.0        # via flake8
-pycparser==2.19
-pydispatcher==2.0.5
+pycparser==2.19           # via -r requirements.txt, cffi
+pydispatcher==2.0.5       # via -r requirements.txt, scrapy
 pyflakes==2.1.1           # via flake8
-pyhamcrest==1.9.0
-pyopenssl==19.1.0
+pyhamcrest==1.9.0         # via -r requirements.txt, twisted
+pyopenssl==19.1.0         # via -r requirements.txt, scrapy
 pyparsing==2.4.5          # via packaging
-pyrsistent==0.16.0
-pytest-cov==2.8.1
-pytest==5.3.2
-queuelib==1.5.0
-rarfile==3.1
-requests==2.22.0
-rfc3987==1.3.8
-scrapy==1.8.0
-scrapyd-client==1.1.0
-sentry-sdk==0.14.4
-service-identity==18.1.0
-six==1.13.0
-twisted==20.3.0
-urllib3==1.25.7
-w3lib==1.21.0
+pyrsistent==0.16.0        # via -r requirements.txt, jsonschema
+pytest-cov==2.8.1         # via -r requirements_dev.in
+pytest==5.3.2             # via -r requirements_dev.in, pytest-cov
+queuelib==1.5.0           # via -r requirements.txt, scrapy
+rarfile==3.1              # via -r requirements.txt
+requests==2.22.0          # via -r requirements.txt, coveralls
+rfc3987==1.3.8            # via -r requirements.txt
+scrapy==1.8.0             # via -r requirements.txt, scrapyd-client
+scrapyd-client==1.1.0     # via -r requirements.txt
+sentry-sdk==0.14.4        # via -r requirements.txt
+service-identity==18.1.0  # via -r requirements.txt, scrapy
+six==1.13.0               # via -r requirements.txt, automat, cryptography, jsonschema, packaging, parsel, pip-tools, protego, pyhamcrest, pyopenssl, pyrsistent, scrapy, scrapyd-client, w3lib
+twisted==20.3.0           # via -r requirements.txt, scrapy
+urllib3==1.25.7           # via -r requirements.txt, requests, sentry-sdk
+w3lib==1.21.0             # via -r requirements.txt, parsel, scrapy
 wcwidth==0.1.7            # via pytest
-zipp==3.1.0
-zope.interface==4.7.1
+zipp==3.1.0               # via -r requirements.txt, importlib-metadata
+zope.interface==4.7.1     # via -r requirements.txt, scrapy, twisted
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
