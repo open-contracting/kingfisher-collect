@@ -1,9 +1,11 @@
-import pytest
 from datetime import datetime
 
-from . import spider_with_crawler
+import pytest
+
 from kingfisher_scrapy.base_spider import PeriodicalSpider
-from kingfisher_scrapy.util import components, date_range_by_year, date_range_by_month
+from kingfisher_scrapy.util import components, date_range_by_month, date_range_by_year
+
+from . import spider_with_crawler
 
 
 def _format_urls(arg_type, pattern, arg_start, arg_end):

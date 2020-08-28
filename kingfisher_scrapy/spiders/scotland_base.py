@@ -40,4 +40,3 @@ class ScotlandBase(PeriodicalSpider):
 
     def get_formatter(self):
         return parameters('noticeType', 'dateFrom')
-

@@ -14,4 +14,3 @@ class ScotlandPublicContracts(ScotlandBase):
     name = 'scotland_public_contracts'
     data_type = 'release_package'
     pattern = 'https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={:%m-%Y}&outputType=0&noticeType={}'
-
