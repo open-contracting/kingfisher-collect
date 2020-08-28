@@ -33,5 +33,5 @@ class FileError(KingfisherItem):
     errors = scrapy.Field()
 
 
-class LatestReleaseDateItem(scrapy.Item):
-    date = scrapy.Field()
+class PluckedItem(scrapy.Item):
+    value = scrapy.Field()

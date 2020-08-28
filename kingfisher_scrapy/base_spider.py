@@ -65,8 +65,9 @@ class BaseSpider(scrapy.Spider):
     ocds_version = '1.1'
     date_format = 'date'
 
-    def __init__(self, sample=None, note=None, from_date=None, until_date=None, latest=None,
-                 crawl_time=None, keep_collection_open=None, *args, **kwargs):
+    def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
+                 keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
+                 **kwargs):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
@@ -74,19 +75,26 @@ class BaseSpider(scrapy.Spider):
         self.note = note
         self.from_date = from_date
         self.until_date = until_date
-        self.date_format = self.VALID_DATE_FORMATS[self.date_format]
-        self.latest = latest == 'true'
         self.crawl_time = crawl_time
         self.keep_collection_open = keep_collection_open == 'true'
+        # Pluck-related arguments.
+        self.package_pointer = package_pointer
+        self.release_pointer = release_pointer
+        self.truncate = int(truncate) if truncate else None
+
+        self.date_format = self.VALID_DATE_FORMATS[self.date_format]
+        self.pluck = bool(package_pointer or release_pointer)
 
         spider_arguments = {
             'sample': sample,
             'note': note,
             'from_date': from_date,
             'until_date': until_date,
-            'latest': latest,
             'crawl_time': crawl_time,
             'keep_collection_open': keep_collection_open,
+            'package_pointer': package_pointer,
+            'release_pointer': release_pointer,
+            'truncate': truncate,
         }
         spider_arguments.update(kwargs)
         self.logger.info('Spider arguments: {!r}'.format(spider_arguments))
@@ -95,13 +103,14 @@ class BaseSpider(scrapy.Spider):
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
 
+        if spider.package_pointer and spider.release_pointer:
+            raise SpiderArgumentError('You cannot specify both package_pointer and release_pointer spider arguments.')
+
         if spider.crawl_time:
             try:
-                spider.crawl_time = datetime.strptime(spider.crawl_time,
-                                                      '%Y-%m-%dT%H:%M:%S')
+                spider.crawl_time = datetime.strptime(spider.crawl_time, '%Y-%m-%dT%H:%M:%S')
             except ValueError as e:
-                raise SpiderArgumentError('spider argument crawl_time: '
-                                          'invalid date value: {}'.format(e))
+                raise SpiderArgumentError('spider argument crawl_time: invalid date value: {}'.format(e))
 
         # Checks Spider date ranges arguments
         if spider.from_date or spider.until_date:
@@ -186,12 +195,9 @@ class BaseSpider(scrapy.Spider):
         """
         Returns an item to yield, based on the response to a request.
         """
-        if 'file_name' not in kwargs:
-            kwargs['file_name'] = response.request.meta['file_name']
-        if 'url' not in kwargs:
-            kwargs['url'] = response.request.url
-        if 'data' not in kwargs:
-            kwargs['data'] = response.body
+        kwargs.setdefault('file_name', response.request.meta['file_name'])
+        kwargs.setdefault('url', response.request.url)
+        kwargs.setdefault('data', response.body)
         return self.build_file(**kwargs)
 
     def build_file(self, *, file_name=None, url=None, data=None, data_type=None, encoding='utf-8', post_to_api=True):
@@ -345,7 +351,7 @@ class CompressedFileSpider(BaseSpider):
     """
 
     encoding = 'utf-8'
-    skip_latest_release_date = "This command doesn't yet support identifying the latest release in a archive file."
+    skip_pluck = 'Archive files are not supported'
     compressed_file_format = None
     archive_format = 'zip'
     file_name_must_contain = ''
@@ -397,8 +403,8 @@ class LinksSpider(SimpleSpider):
     1. Set a ``data_type`` class attribute to the data type of the API responses
     1. Set a ``next_page_formatter`` class attribute to set the file name as in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
-    1. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
     1. Write a ``start_requests`` method to request the first page of API results
+    1. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
 
     .. code-block:: python
 
@@ -423,14 +429,14 @@ class LinksSpider(SimpleSpider):
         if not self.sample:
             yield self.next_link(response)
 
-    def next_link(self, response):
+    def next_link(self, response, **kwargs):
         """
         If the JSON response has a ``links.next`` key, returns a ``scrapy.Request`` for the URL.
         """
         data = json.loads(response.text)
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
-            return self.build_request(url, formatter=self.next_page_formatter)
+            return self.build_request(url, formatter=self.next_page_formatter, **kwargs)
 
         if response.meta['depth'] == 0:
             raise MissingNextLinkError('next link not found on the first page: {}'.format(response.url))

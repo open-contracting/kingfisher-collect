@@ -5,6 +5,7 @@ from kingfisher_scrapy.util import parameters
 
 
 class ScotlandBase(PeriodicalSpider):
+    default_from_date = '2019-01'
     date_format = 'year-month'
     stop = date.today()
     start = date(stop.year - 1, stop.month, 1)
@@ -39,3 +40,4 @@ class ScotlandBase(PeriodicalSpider):
 
     def get_formatter(self):
         return parameters('noticeType', 'dateFrom')
+
