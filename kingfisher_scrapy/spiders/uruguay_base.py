@@ -6,7 +6,7 @@ from kingfisher_scrapy.util import components
 
 class UruguayBase(PeriodicalSpider):
     download_delay = 0.9
-    start = '2017-11'
+    default_from_date = '2017-11'
     date_format = 'year-month'
     pattern = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
     start_requests_callback = 'parse_list'

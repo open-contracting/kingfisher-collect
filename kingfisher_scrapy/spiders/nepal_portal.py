@@ -13,8 +13,8 @@ class NepalPortal(PeriodicalSpider):
     name = 'nepal_portal'
     data_type = 'release_package'
     ocds_version = '1.0'
-    start = 2012
-    stop = 2018
+    default_from_date = '2012'
+    default_until_date = '2018'
     pattern = 'http://ppip.gov.np/bulk-download/{}'
     date_format = 'year'
 

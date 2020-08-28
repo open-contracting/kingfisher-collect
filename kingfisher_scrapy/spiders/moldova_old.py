@@ -12,8 +12,8 @@ class MoldovaOld(PeriodicalSpider):
     """
     name = 'moldova_old'
     data_type = 'release_package'
-    start = 2012
-    stop = 2018
+    default_from_date = '2012'
+    default_until_date = '2018'
     pattern = 'http://opencontracting.date.gov.md/ocds-api/year/{}'
     date_format = 'year'
 

@@ -1,45 +1,89 @@
 import pytest
-from datetime import date, datetime
+from datetime import datetime
 
 from . import spider_with_crawler
 from kingfisher_scrapy.base_spider import PeriodicalSpider
 from kingfisher_scrapy.util import components, date_range_by_year, date_range_by_month
 
 
-def _get_urls(type, pattern, arg_start, arg_end=datetime.now()):
-    if type == 'year':
+def _format_urls(arg_type, pattern, arg_start, arg_end):
+    if arg_type == 'year':
         date_range = date_range_by_year
         start = arg_start.year
         end = arg_end.year
     else:
         date_range = date_range_by_month
-        start = datetime.strptime(arg_start, '%Y-%m')
-        end = datetime.strptime(arg_end, '%Y-%m')
+        start = arg_start
+        end = arg_end
 
     return [pattern.format(x) for x in date_range(start, end)]
 
 
-@pytest.mark.parametrize('date,date_format,expected', [
-    (2008, 'year', '2008'),
-    ('2007-10', 'year-month', '2007-10')
-])
-def test_default_from_date(date, date_format, expected):
-    spider = PeriodicalSpider(name='test', start=date, date_format=date_format)
-    assert spider.default_from_date == expected
+TEST_CASES = [
+    # default from date
+    ('year', 'http://example.com/{}', '2012', datetime.today().year, {'default_from_date': '2012'}, {}),
+    ('year-month', 'http://example.com/{:%Y-%m}', '2010-06', datetime.today().strftime('%Y-%m'), {
+        'default_from_date': '2010-06'
+    }, {}),
+    # default from & end dates
+    ('year', 'http://example.com/{}', '2012', '2016', {
+        'default_from_date': '2012',
+        'default_until_date': '2016'
+    }, {}),
+    ('year-month', 'http://example.com/{:%Y-%m}', '2010-06', '2019-12', {
+        'default_from_date': '2010-06',
+        'default_until_date': '2019-12'
+    }, {}),
+    # from_date specified by the user
+    ('year', 'http://example.com/{}', '2017', datetime.today().year, {
+        'default_from_date': '2008'
+    }, {
+        'from_date': '2017'
+    }),
+    ('year-month', 'http://example.com/{:%Y-%m}', '2018-01', datetime.today().strftime('%Y-%m'), {
+        'default_from_date': '2011-01'
+    }, {
+        'from_date': '2018-01'
+    }),
+    # until_date specified by the user
+    ('year', 'http://example.com/{}', '2008', '2010', {
+        'default_from_date': '2008',
+        'default_until_date': '2017'
+    }, {
+        'until_date': '2010'
+    }),
+    ('year-month', 'http://example.com/{:%Y-%m}', '2011-01', '2019-06', {
+        'default_from_date': '2011-01'
+    }, {
+        'until_date': '2019-06'
+    }),
+    # pass the 'sample' parameter
+    ('year', 'http://example.com/{}', datetime.today().year, datetime.today().year, {
+        'default_from_date': '2008',
+    }, {
+        'sample': 'true'
+    }),
+]
 
 
-@pytest.mark.parametrize('start,from_date,date_format,pattern,expected_start', [
-    (2008, 2017, 'year', 'http://example.com/{}', 2017),
-    ('2011-01', '2018-01', 'year-month', 'http://example.com/{%Y-%m}', '2018-01')
-])
-def test_start(start, from_date, date_format, pattern, expected_start):
-    expected = _get_urls(date_format, pattern, datetime.strptime(str(expected_start), date_format))
+@pytest.mark.parametrize(
+    'date_format,pattern,expected_start,expected_end,class_args,user_args',
+    TEST_CASES)
+def test_urls(date_format, pattern, expected_start, expected_end, class_args, user_args):
+    expected = _format_urls(
+        date_format,
+        pattern,
+        datetime.strptime(str(expected_start), PeriodicalSpider.VALID_DATE_FORMATS[date_format]),
+        datetime.strptime(str(expected_end), PeriodicalSpider.VALID_DATE_FORMATS[date_format])
+    )
 
-    TestSpider = type('TestSpider', (PeriodicalSpider,), dict(start=start, date_format=date_format,
-                                                              get_formatter=lambda x: components(-1), pattern=pattern))
-
-    spider = spider_with_crawler(spider_class=TestSpider, from_date=str(from_date))
+    test_spider = type('TestSpider', (PeriodicalSpider,), dict(date_format=date_format,
+                                                               get_formatter=lambda x: components(-1),
+                                                               pattern=pattern,
+                                                               **class_args))
+    spider = spider_with_crawler(spider_class=test_spider, **user_args)
 
     requests = [x for x in spider.start_requests()]
 
-    assert len(requests) == len(expected)
+    for request, expected_url in zip(requests, expected):
+        assert request.url == expected_url

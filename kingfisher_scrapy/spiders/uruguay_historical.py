@@ -15,8 +15,8 @@ class UruguayHistorical(CompressedFileSpider, PeriodicalSpider):
 
     # the files takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000
-    start = 2002
-    stop = 2017
+    default_from_date = '2002'
+    default_until_date = '2017'
     date_format = 'year'
     custom_settings = {
         # It seems some websites don't like it and block when your user agent is not a browser.
