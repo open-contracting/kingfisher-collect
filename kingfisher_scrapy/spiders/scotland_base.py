@@ -5,10 +5,8 @@ from kingfisher_scrapy.util import parameters
 
 
 class ScotlandBase(PeriodicalSpider):
-    default_from_date = '2019-01'
     date_format = 'year-month'
-    default_until_date = date.today()
-    default_from_date = date(default_until_date.year - 1, default_until_date.month, 1)
+    default_from_date = date(date.today().year - 1, date.today().month, 1)
 
     notice_types = [
         1,  # OJEU - F1 - Prior Information Notice
