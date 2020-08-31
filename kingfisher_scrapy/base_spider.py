@@ -121,7 +121,8 @@ class BaseSpider(scrapy.Spider):
                     spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
             else:
                 try:
-                    spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
+                    if isinstance(spider.from_date, str):
+                        spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
                 except ValueError as e:
                     raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
 
@@ -483,16 +484,11 @@ class PeriodicalSpider(SimpleSpider):
             self.start_requests_callback = self.parse
 
     @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(SimpleSpider, cls).from_crawler(crawler, *args, **kwargs)
+    def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
+        if not from_date:
+            from_date = cls.default_from_date
 
-        if not spider.from_date:
-            spider.from_date = spider.default_from_date
-            if isinstance(spider.from_date, str):
-                spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
-            spider.until_date = cls.get_default_until_date(spider)
-            if isinstance(spider.until_date, str):
-                spider.until_date = datetime.strptime(spider.until_date, spider.date_format)
+        spider = super(SimpleSpider, cls).from_crawler(crawler, from_date=from_date, *args, **kwargs)
 
         return spider
 
