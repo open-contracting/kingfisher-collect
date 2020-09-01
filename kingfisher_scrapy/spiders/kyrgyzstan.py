@@ -12,7 +12,6 @@ class Kyrgyzstan(LinksSpider):
     """
     name = 'kyrgyzstan'
     data_type = 'release_package'
-    download_delay = 1
     next_page_formatter = staticmethod(parameters('offset'))
 
     def start_requests(self):
