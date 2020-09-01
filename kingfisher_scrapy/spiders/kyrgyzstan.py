@@ -15,5 +15,4 @@ class Kyrgyzstan(LinksSpider):
     next_page_formatter = staticmethod(parameters('offset'))
 
     def start_requests(self):
-        url = 'http://ocds.zakupki.gov.kg/api/tendering'
-        yield scrapy.Request(url, meta={'file_name': 'offset-0.json'})
+        yield scrapy.Request('http://ocds.zakupki.gov.kg/api/tendering', meta={'file_name': 'offset-0.json'})
