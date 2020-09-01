@@ -1,5 +1,4 @@
 from io import BytesIO
-from urllib.parse import parse_qs, urlsplit
 
 import ijson
 import scrapy
