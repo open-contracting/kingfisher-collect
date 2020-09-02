@@ -18,7 +18,7 @@ class DominicanRepublicPortal(LinksSpider):
         Download only data until this date (YYYY-MM-DD format).
         If ``from_date`` is provided, defaults to today.
     """
-    name = 'dominican_republic_portal'
+    name = 'dominican_republic_api'
     data_type = 'release_package'
     default_from_date = '2018-01-01'
     next_page_formatter = staticmethod(parameters('page'))
@@ -30,11 +30,4 @@ class DominicanRepublicPortal(LinksSpider):
                 self.from_date.strftime('%Y-%m-%d'),
                 self.until_date.strftime('%Y-%m-%d')
             )
-        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_response)
-
-    def parse_response(self, response):
-        if not self.is_http_success(response) and response.body == b'{"detail":"Not Found"}':
-            self.logger.info(
-                f'No data found for url: {response.request.url}. '
-                f'Date range: {self.from_date.strftime("%Y-%m-%d")} to {self.until_date.strftime("%Y-%m-%d")}.'
-            )
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'})
