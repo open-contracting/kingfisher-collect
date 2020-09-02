@@ -165,7 +165,10 @@ def grouper(iterable, n, fillvalue=None):
     return itertools.zip_longest(*args, fillvalue=fillvalue)
 
 
-def get_parameter_value(url, parameter_name):
+def get_parameter_value(url, key):
+    """
+    Returns the value of the given ``key`` in ``url``.
+    """
     query = parse_qs(urlsplit(url).query)
-    if parameter_name in query:
-        return int(query[parameter_name][0])
+    if key in query:
+        return int(query[key][0])
