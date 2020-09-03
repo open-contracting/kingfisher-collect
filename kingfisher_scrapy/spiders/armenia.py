@@ -46,7 +46,7 @@ class Armenia(LinksSpider):
     # Exponential search (https://en.wikipedia.org/wiki/Exponential_search). We can do an elaborate alternative
     # (https://www.slac.stanford.edu/cgi-bin/getdoc/slac-pub-1679.pdf), but we keep it simpler for now.
     def parse_date_range(self, response):
-        offset = get_parameter_value(response.request.url, 'offset')
+        offset = int(get_parameter_value(response.request.url, 'offset'))
 
         # Scrapy uses `datetime.datetime.utcnow()`, so we don't need to worry about time zones.
         start_time = int(self.crawler.stats.get_value('start_time').timestamp() * 1000)
@@ -72,7 +72,7 @@ class Armenia(LinksSpider):
     # We use one of the alternative binary search methods (https://en.wikipedia.org/wiki/Binary_search_algorithm),
     # because we only know if an offset succeeds, not whether an offset is greater than the target value.
     def parse_binary_search(self, response, minimum=None, maximum=None):
-        offset = get_parameter_value(response.request.url, 'offset')
+        offset = int(get_parameter_value(response.request.url, 'offset'))
 
         first_offset = response.request.meta['first']
 

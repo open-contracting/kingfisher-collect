@@ -12,10 +12,11 @@ def test_replace_parameter(url, value, expected):
     assert replace_parameter(url, 'page', value) == expected
 
 
-@pytest.mark.parametrize('url,parameter_name,expected', [
-    ('http://example.com/?page=1', 'page', 1),
-    ('http://example.com/?page=1', None, 1),
-    ('http://example.com/?page', None, None),
+@pytest.mark.parametrize('url,expected', [
+    ('http://example.com/?page=1', '1'),
+    ('http://example.com/?page=1&page=2', '1'),
+    ('http://example.com/?page=', None),
+    ('http://example.com/?page', None),
 ])
-def test_get_parameter_value(url, parameter_name, expected):
+def test_get_parameter_value(url, expected):
     assert get_parameter_value(url, 'page') == expected

@@ -26,6 +26,6 @@ class PortugalBase(SimpleSpider):
 
         if not self.sample:
             next_url = response.request.url
-            offset = get_parameter_value(next_url, 'offset')
+            offset = int(get_parameter_value(next_url, 'offset'))
             url = replace_parameter(next_url, 'offset', offset + 1)
             yield self.build_request(url, formatter=parameters('offset'), callback=self.parse_data)

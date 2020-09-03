@@ -98,9 +98,18 @@ def date_range_by_year(start, stop):
     return reversed(range(start, stop + 1))
 
 
+def get_parameter_value(url, key):
+    """
+    Returns the first value of the query string parameter.
+    """
+    query = parse_qs(urlsplit(url).query)
+    if key in query:
+        return query[key][0]
+
+
 def replace_parameter(url, key, value):
     """
-    Returns a URL after updating the query string parameter.
+    Returns a URL after updating the query string parameter's value.
     """
     parsed = urlsplit(url)
     query = parse_qs(parsed.query)
@@ -163,12 +172,3 @@ def default(obj):
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return itertools.zip_longest(*args, fillvalue=fillvalue)
-
-
-def get_parameter_value(url, key):
-    """
-    Returns the value of the given ``key`` in ``url``.
-    """
-    query = parse_qs(urlsplit(url).query)
-    if key in query:
-        return int(query[key][0])
