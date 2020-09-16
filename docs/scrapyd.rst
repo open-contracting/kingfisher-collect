@@ -15,11 +15,12 @@ Scrapyd also makes it possible for many users to schedule crawls on the same mac
 Install Scrapyd
 ---------------
 
-On the remote server, follow Scrapyd's `installation instructions <https://scrapyd.readthedocs.io/en/stable/install.html>`__, then install the ``requests`` package in the same environment as Scrapyd:
+On the remote server, follow Scrapyd's `installation instructions <https://scrapyd.readthedocs.io/en/stable/install.html>`__, then install Kingfisher Collect's requirements in the same environment as Scrapyd:
 
 .. code-block:: bash
 
-   pip install requests
+   curl -O https://raw.githubusercontent.com/open-contracting/kingfisher-collect/master/requirements.txt
+   pip install -r requirements.txt
 
 Start Scrapyd
 -------------
