@@ -8,6 +8,7 @@ jsonschema
 rarfile
 requests
 rfc3987
+scrapyd
 Scrapy
 scrapyd-client
 sentry-sdk
