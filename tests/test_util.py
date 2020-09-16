@@ -1,6 +1,6 @@
 import pytest
 
-from kingfisher_scrapy.util import replace_parameter
+from kingfisher_scrapy.util import replace_parameters
 
 
 @pytest.mark.parametrize('url,value,expected', [
@@ -9,4 +9,4 @@ from kingfisher_scrapy.util import replace_parameter
     ('http://example.com/', None, 'http://example.com/'),
 ])
 def test_replace_parameter(url, value, expected):
-    assert replace_parameter(url, 'page', value) == expected
+    assert replace_parameters(url, page=value) == expected

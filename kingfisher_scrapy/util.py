@@ -70,9 +70,9 @@ def handle_http_error(decorated):
     Yields a :class:`~kingfisher_scrapy.items.FileError` for successful HTTP status codes.
     """
     @wraps(decorated)
-    def wrapper(self, response):
+    def wrapper(self, response, **kwargs):
         if self.is_http_success(response):
-            yield from decorated(self, response)
+            yield from decorated(self, response, **kwargs)
         else:
             yield self.build_file_error_from_response(response)
     return wrapper
@@ -98,16 +98,17 @@ def date_range_by_year(start, stop):
     return reversed(range(start, stop + 1))
 
 
-def replace_parameter(url, key, value):
+def replace_parameters(url, **kwargs):
     """
     Returns a URL after updating the query string parameter.
     """
     parsed = urlsplit(url)
     query = parse_qs(parsed.query)
-    if value is None:
-        query.pop(key, None)
-    else:
-        query[key] = [value]
+    for key, value in kwargs.items():
+        if value is None:
+            query.pop(key, None)
+        else:
+            query[key] = [value]
     return parsed._replace(query=urlencode(query, doseq=True)).geturl()
 
 

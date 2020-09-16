@@ -3,7 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameter
+from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameters
 
 
 class MoldovaMTender(SimpleSpider):
@@ -32,5 +32,5 @@ class MoldovaMTender(SimpleSpider):
         if self.sample:
             return
 
-        url = replace_parameter(response.request.url, 'offset', data['offset'])
+        url = replace_parameters(response.request.url, offset=data['offset'])
         yield self.build_request(url, formatter=parameters('offset'), callback=self.parse_list)

@@ -5,7 +5,7 @@ import ijson
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_http_error, parameters, replace_parameter
+from kingfisher_scrapy.util import handle_http_error, parameters, replace_parameters
 
 
 class PortugalBase(SimpleSpider):
@@ -29,5 +29,5 @@ class PortugalBase(SimpleSpider):
             next_url = response.request.url
             query = parse_qs(urlsplit(next_url).query)
             offset = int(query['offset'][0])
-            url = replace_parameter(next_url, 'offset', offset + 1)
+            url = replace_parameters(next_url, offset=offset + 1)
             yield self.build_request(url, formatter=parameters('offset'), callback=self.parse_data)

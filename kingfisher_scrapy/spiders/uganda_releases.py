@@ -2,11 +2,11 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.util import components, handle_http_error, join, parameters
 
 
-class Uganda(SimpleSpider):
+class Uganda(IndexSpider):
     """
     API documentation
         https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
@@ -16,6 +16,10 @@ class Uganda(SimpleSpider):
     """
     name = 'uganda_releases'
     data_type = 'release_package'
+    total_pages_pointer = '/data/last_page'
+    yield_list_results = False
+    formatter = staticmethod(parameters('page'))
+    base_url = 'https://gpp.ppda.go.ug/adminapi/public/api/pdes'
 
     download_delay = 0.9
 
@@ -23,21 +27,9 @@ class Uganda(SimpleSpider):
         yield scrapy.Request(
             'https://gpp.ppda.go.ug/adminapi/public/api/pdes',
             meta={'file_name': 'page-1.json'},
-            callback=self.parse_list
+            callback=self.parse_list,
+            cb_kwargs={'callback': self.parse_data}
         )
-
-    @handle_http_error
-    def parse_list(self, response):
-        pattern = 'https://gpp.ppda.go.ug/adminapi/public/api/pdes?page={}'
-
-        if self.sample:
-            total = 1
-        else:
-            data = json.loads(response.text)
-            total = data['data']['last_page']
-
-        for page in range(2, total + 1):
-            yield self.build_request(pattern.format(page), formatter=parameters('page'), callback=self.parse_data)
 
     @handle_http_error
     def parse_data(self, response):
