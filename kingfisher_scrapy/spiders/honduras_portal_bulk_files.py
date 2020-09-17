@@ -22,18 +22,15 @@ class HondurasPortalBulkFiles(SimpleSpider):
     name = 'honduras_portal_bulk_files'
     data_type = 'release_package'
     skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
-    publishers = ['oncae', 'sefin']
+    publishers = {'oncae': 'ONCAE', 'sefin': 'Secretaria de Finanzas'}
 
     @classmethod
     def from_crawler(cls, crawler, publisher=None, *args, **kwargs):
         spider = super().from_crawler(crawler, publisher=publisher, *args, **kwargs)
-        if publisher and publisher not in spider.publishers:
+        if publisher and publisher not in spider.publishers.keys():
             raise scrapy.exceptions.CloseSpider('Specified publisher is not recognized')
 
-        if publisher == 'oncae':
-            spider.publisher_filter = 'ONCAE'
-        elif publisher == 'sefin':
-            spider.publisher_filter = 'Secretaria de Finanzas'
+        spider.publisher_filter = spider.publishers.get(publisher)
 
         return spider
 
