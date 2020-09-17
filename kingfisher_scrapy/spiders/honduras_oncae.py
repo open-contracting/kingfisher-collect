@@ -30,9 +30,9 @@ class HondurasONCAE(CompressedFileSpider):
     download_timeout = 900
 
     @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super().from_crawler(crawler, *args, **kwargs)
-        if hasattr(spider, 'system') and spider.system not in spider.systems:
+    def from_crawler(cls, crawler, system=None, *args, **kwargs):
+        spider = super().from_crawler(crawler, system=system, *args, **kwargs)
+        if system and spider.system not in spider.systems:
             raise scrapy.exceptions.CloseSpider('Specified system is not recognized')
         return spider
 
@@ -50,7 +50,7 @@ class HondurasONCAE(CompressedFileSpider):
         for url in urls:
             path, file = split(urlparse(url).path)
             current_system = path.replace('/datosabiertos/', "")
-            if hasattr(self, 'system') and current_system != self.system:
+            if self.system and current_system != self.system:
                 continue
             if self.sample:
                 if systems_flags[current_system]:
