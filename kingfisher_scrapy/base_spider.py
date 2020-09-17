@@ -116,26 +116,20 @@ class BaseSpider(scrapy.Spider):
             if not spider.from_date:
                 # Default to `default_from_date` class attribute.
                 spider.from_date = spider.default_from_date
+            try:
                 if isinstance(spider.from_date, str):
                     # convert to date format, if needed
                     spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
-            else:
-                try:
-                    if isinstance(spider.from_date, str):
-                        spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
-                except ValueError as e:
-                    raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
+            except ValueError as e:
+                raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
 
             if not spider.until_date:
                 spider.until_date = cls.get_default_until_date(spider)
+            try:
                 if isinstance(spider.until_date, str):
-                    # convert to date format, if needed
                     spider.until_date = datetime.strptime(spider.until_date, spider.date_format)
-            else:
-                try:
-                    spider.until_date = datetime.strptime(spider.until_date, spider.date_format)
-                except ValueError as e:
-                    raise SpiderArgumentError('spider argument until_date: invalid date value: {}'.format(e))
+            except ValueError as e:
+                raise SpiderArgumentError('spider argument until_date: invalid date value: {}'.format(e))
 
         return spider
 
