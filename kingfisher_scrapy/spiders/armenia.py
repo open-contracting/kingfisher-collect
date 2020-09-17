@@ -1,9 +1,7 @@
-from urllib.parse import parse_qs, urlsplit
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
-from kingfisher_scrapy.util import parameters, replace_parameters
+from kingfisher_scrapy.util import get_parameter_value, parameters, replace_parameters
 
 MILLISECONDS_PER_DAY = 86400000
 EXPONENT_LIMIT = 10  # 1024 days
@@ -42,13 +40,13 @@ class Armenia(LinksSpider):
             yield self.build_file_error_from_response(response)
 
             # If the error occurs on the first request, we have no starting offset.
-            if self.get_offset(response):
+            if get_parameter_value(response.request.url, 'offset'):
                 yield from self.parse_date_range(response)
 
     # Exponential search (https://en.wikipedia.org/wiki/Exponential_search). We can do an elaborate alternative
     # (https://www.slac.stanford.edu/cgi-bin/getdoc/slac-pub-1679.pdf), but we keep it simpler for now.
     def parse_date_range(self, response):
-        offset = self.get_offset(response)
+        offset = int(get_parameter_value(response.request.url, 'offset'))
 
         # Scrapy uses `datetime.datetime.utcnow()`, so we don't need to worry about time zones.
         start_time = int(self.crawler.stats.get_value('start_time').timestamp() * 1000)
@@ -74,7 +72,7 @@ class Armenia(LinksSpider):
     # We use one of the alternative binary search methods (https://en.wikipedia.org/wiki/Binary_search_algorithm),
     # because we only know if an offset succeeds, not whether an offset is greater than the target value.
     def parse_binary_search(self, response, minimum=None, maximum=None):
-        offset = self.get_offset(response)
+        offset = int(get_parameter_value(response.request.url, 'offset'))
 
         first_offset = response.request.meta['first']
 
@@ -106,8 +104,3 @@ class Armenia(LinksSpider):
         meta['dont_retry'] = True
         # We need to set `formatter` in case we want to re-use the response to build a file or file error.
         return self.build_request(url, formatter=parameters('offset'), dont_filter=True, meta=meta, callback=callback)
-
-    def get_offset(self, response):
-        query = parse_qs(urlsplit(response.request.url).query)
-        if 'offset' in query:
-            return int(query['offset'][0])

@@ -98,9 +98,18 @@ def date_range_by_year(start, stop):
     return reversed(range(start, stop + 1))
 
 
+def get_parameter_value(url, key):
+    """
+    Returns the first value of the query string parameter.
+    """
+    query = parse_qs(urlsplit(url).query)
+    if key in query:
+        return query[key][0]
+
+
 def replace_parameters(url, **kwargs):
     """
-    Returns a URL after updating the query string parameter.
+    Returns a URL after updating the query string parameter's value.
     """
     parsed = urlsplit(url)
     query = parse_qs(parsed.query)

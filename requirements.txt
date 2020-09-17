@@ -34,12 +34,13 @@ queuelib==1.5.0           # via scrapy
 rarfile==3.1              # via -r requirements.in
 requests==2.22.0          # via -r requirements.in
 rfc3987==1.3.8            # via -r requirements.in
-scrapy==1.8.0             # via -r requirements.in, scrapyd-client
+scrapy==1.8.0             # via -r requirements.in, scrapyd, scrapyd-client
 scrapyd-client==1.1.0     # via -r requirements.in
+scrapyd==1.2.1            # via -r requirements.in
 sentry-sdk==0.14.4        # via -r requirements.in
 service-identity==18.1.0  # via scrapy
-six==1.13.0               # via automat, cryptography, jsonschema, parsel, protego, pyhamcrest, pyopenssl, pyrsistent, scrapy, scrapyd-client, w3lib
-twisted==20.3.0           # via scrapy
+six==1.13.0               # via automat, cryptography, jsonschema, parsel, protego, pyhamcrest, pyopenssl, pyrsistent, scrapy, scrapyd, scrapyd-client, w3lib
+twisted==20.3.0           # via scrapy, scrapyd
 urllib3==1.25.7           # via requests, sentry-sdk
 w3lib==1.21.0             # via parsel, scrapy
 zipp==3.1.0               # via importlib-metadata

@@ -69,6 +69,8 @@ To download only a sample of the available data, add the ``sample=true`` spider 
 
 Scrapy will then output a log of its activity.
 
+Note that ``_sample`` will be added to the directory for the spider, e.g. ``kingfisher-collect/data/zambia_sample``
+
 .. _proxy:
 
 Use a proxy
