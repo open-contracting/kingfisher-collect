@@ -19,6 +19,7 @@ class HondurasONCAE(CompressedFileSpider):
         ``DDC`` for "Catálogo Electrónico" system.
       sample
         Downloads the first package listed on the downloads page for each system.
+        If ``system'' is also provided, a single package is downloaded from that system.
     """
     name = 'honduras_oncae'
     data_type = 'release_package'
