@@ -1,10 +1,10 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import LinksSpider
+from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.util import parameters
 
 
-class HondurasPortalRecords(LinksSpider):
+class HondurasPortalRecords(IndexSpider):
     """
     API documentation
       http://www.contratacionesabiertas.gob.hn/manual_api/
@@ -17,12 +17,12 @@ class HondurasPortalRecords(LinksSpider):
     name = 'honduras_portal_records'
     data_type = 'record_package'
     data_pointer = '/recordPackage'
-    next_pointer = '/next'
-    next_page_formatter = staticmethod(parameters('page'))
+    total_pages_pointer = '/pages'
+    formatter = staticmethod(parameters('page'))
     skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
 
     download_delay = 0.9
 
     def start_requests(self):
         url = 'http://www.contratacionesabiertas.gob.hn/api/v1/record/?format=json'
-        yield scrapy.Request(url, meta={'file_name': 'page-1.json'})
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)

@@ -402,6 +402,8 @@ class LinksSpider(SimpleSpider):
     1. Write a ``start_requests`` method to request the first page of API results
     1. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
 
+    If the API returns the number of total pages or results in the response, consider using ``IndexSpider`` instead.
+
     .. code-block:: python
 
         import scrapy
@@ -441,12 +443,14 @@ class LinksSpider(SimpleSpider):
 class IndexSpider(SimpleSpider):
     """
     This class can be used to collect data from an API which includes the total number of results or pages in their
-    response data, and receives pagination parameters like ``page``, ``limit`` and ``offset``. To create a spider that
-    inherits from ``IndexSpider``:
+    response data, and receives pagination parameters like ``page``, ``limit`` and ``offset``. The values for the
+    parameters are calculated and the requests are sent to the Scrapy's pipeline at the same time. To create a spider
+    that inherits from ``IndexSpider``:
 
-    1. Set a pointer to the attribute that contains the total number of pages or elements:
+    1. Set a pointer to the attribute that contains the total number of pages or elements in the response data for the
+    first request to the API:
         1. Set ``total_pages_pointer`` to point to the JSON element that contains the total number of pages in the
-        response data. The API will add the 'page' GET parameter to the URL.
+        response data. The API will add the 'page' GET parameter to the URL in the subsequent requests.
         1. Set ``count_pointer`` to point to the JSON element with the total number of results. If you use
         ``count_pointer``, you must set ``limit`` to indicate the number of results to return for each page. The
         ``limit`` attribute can either a number or a JSON pointer. Optionally, set ``use_page`` to ``True``
