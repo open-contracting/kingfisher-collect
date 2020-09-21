@@ -13,7 +13,7 @@ from rarfile import RarFile
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError
 from kingfisher_scrapy.items import File, FileError, FileItem
-from kingfisher_scrapy.util import handle_http_error
+from kingfisher_scrapy.util import handle_http_error, request_add_qs
 
 
 class BaseSpider(scrapy.Spider):
@@ -65,7 +65,7 @@ class BaseSpider(scrapy.Spider):
     date_format = 'date'
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
-                 keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
+                 keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, qs=None, *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -80,9 +80,13 @@ class BaseSpider(scrapy.Spider):
         self.package_pointer = package_pointer
         self.release_pointer = release_pointer
         self.truncate = int(truncate) if truncate else None
+        self.qs = qs
 
         self.date_format = self.VALID_DATE_FORMATS[self.date_format]
         self.pluck = bool(package_pointer or release_pointer)
+
+        if self.qs and hasattr(self, 'start_requests'):
+            self.start_requests = request_add_qs(self.start_requests, qs)
 
         spider_arguments = {
             'sample': sample,

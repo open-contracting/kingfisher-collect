@@ -173,3 +173,14 @@ def default(obj):
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return itertools.zip_longest(*args, fillvalue=fillvalue)
+
+
+def request_add_qs(func, qs):
+    params = [item.split(':') for item in qs.split(',')]
+    params = {key: value for (key, value) in params}
+
+    def wrapper(*args, **kwargs):
+        for request in func(*args, **kwargs):
+            url = replace_parameters(request.url, **params)
+            yield request.replace(url=url)
+    return wrapper
