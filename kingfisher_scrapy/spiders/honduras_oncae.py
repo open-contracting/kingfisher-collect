@@ -24,7 +24,7 @@ class HondurasONCAE(CompressedFileSpider):
     name = 'honduras_oncae'
     data_type = 'release_package'
     skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
-    systems = ['HC1', 'CE', 'DDC']
+    available_systems = ['HC1', 'CE', 'DDC']
 
     # the files take too long to be downloaded, so we increase the download timeout
     download_timeout = 900
@@ -32,7 +32,7 @@ class HondurasONCAE(CompressedFileSpider):
     @classmethod
     def from_crawler(cls, crawler, system=None, *args, **kwargs):
         spider = super().from_crawler(crawler, system=system, *args, **kwargs)
-        if system and spider.system not in spider.systems:
+        if system and spider.system not in spider.available_systems:
             raise scrapy.exceptions.CloseSpider('Specified system is not recognized')
         return spider
 
@@ -45,6 +45,7 @@ class HondurasONCAE(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
+        downloaded_systems = set()
         urls = response.xpath('//a[contains(., "[json]")]/@href').getall()
         for url in urls:
             path, file = split(urlparse(url).path)
@@ -53,11 +54,12 @@ class HondurasONCAE(CompressedFileSpider):
                 continue
             if self.sample:
                 # if we already downloaded a package for all the available systems
-                if not self.systems:
+                if downloaded_systems == self.available_systems:
                     return
                 # if we already processed a file for the current system
-                if current_system not in self.systems:
+                if current_system in downloaded_systems:
                     continue
-                self.systems.remove(current_system)
+                # add the current system to the set of downloaded_systems
+                downloaded_systems.add(current_system)
             # URL looks like http://200.13.162.79/datosabiertos/HC1/HC1_datos_2020_json.zip
             yield self.build_request(url, formatter=components(-1))
