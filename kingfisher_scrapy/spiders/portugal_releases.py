@@ -7,7 +7,7 @@ class PortugalReleases(PortugalBase):
       http://www.base.gov.pt/swagger/index.html
     Spider arguments
       sample
-        Download one list of 100 release packages.
+        Download 10 release packages.
       from_date
         Download only the data with the contract signing date from this date onward (YYYY-MM-DD format).
         If ``until_date`` is provided, defaults to '2010-01-01'.
