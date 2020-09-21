@@ -1,3 +1,4 @@
+import json
 from io import BytesIO
 
 import ijson
@@ -20,9 +21,19 @@ class PortugalBase(SimpleSpider):
     @handle_http_error
     def parse_data(self, response):
         json_array = []
-        for data in ijson.items(BytesIO(response.body), '', multiple_values=True, use_float=True):
-            json_array.append(data)
-        yield self.build_file_from_response(response, data=json_array, data_type=self.data_type)
+        for number, data in enumerate(ijson.items(BytesIO(response.body), '', multiple_values=True, use_float=True)):
+            if number == 10 and self.sample:
+                break
+            # get records service returns release packages
+            if self.data_type == 'record_package':
+                # the service returns one release per package
+                ocid = data['releases'][0]['ocid']
+                url = f'http://www.base.gov.pt/api/Record/GetRecordByOCID?ocid={ocid}'
+                yield self.build_request(url, formatter=parameters('ocid'))
+            else:
+                json_array.append(data)
+        if json_array:
+            yield self.build_file_from_response(response, data=json.dumps(json_array), data_type=self.data_type)
 
         if not self.sample:
             next_url = response.request.url
