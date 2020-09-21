@@ -1,5 +1,6 @@
 import json
 import os
+from abc import abstractmethod
 from datetime import datetime
 from io import BytesIO
 from zipfile import ZipFile
@@ -58,7 +59,7 @@ class BaseSpider(scrapy.Spider):
 
     MAX_SAMPLE = 10
     MAX_RELEASES_PER_PACKAGE = 100
-    VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S', 'year-month': '%Y-%m'}
+    VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
     ocds_version = '1.1'
     date_format = 'date'
@@ -115,15 +116,18 @@ class BaseSpider(scrapy.Spider):
             if not spider.from_date:
                 # Default to `default_from_date` class attribute.
                 spider.from_date = spider.default_from_date
-            if not spider.until_date:
-                # Default to today.
-                spider.until_date = datetime.now().strftime(spider.date_format)
             try:
-                spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
+                if isinstance(spider.from_date, str):
+                    # convert to date format, if needed
+                    spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
             except ValueError as e:
                 raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
+
+            if not spider.until_date:
+                spider.until_date = cls.get_default_until_date(spider)
             try:
-                spider.until_date = datetime.strptime(spider.until_date, spider.date_format)
+                if isinstance(spider.until_date, str):
+                    spider.until_date = datetime.strptime(spider.until_date, spider.date_format)
             except ValueError as e:
                 raise SpiderArgumentError('spider argument until_date: invalid date value: {}'.format(e))
 
@@ -271,6 +275,10 @@ class BaseSpider(scrapy.Spider):
                                        encoding=encoding)
             if self.sample:
                 break
+
+    @classmethod
+    def get_default_until_date(cls, spider):
+        return datetime.now()
 
 
 class SimpleSpider(BaseSpider):
@@ -435,3 +443,77 @@ class LinksSpider(SimpleSpider):
 
         if response.meta['depth'] == 0:
             raise MissingNextLinkError('next link not found on the first page: {}'.format(response.url))
+
+
+class PeriodicalSpider(SimpleSpider):
+    """
+    This class helps to crawl urls that receive a year (YYYY) or a month and year (YYYY-mm) as parameters. To use it:
+
+    1. Extend from ``PeriodicalSpider``.
+    1. Set the ``date_format`` attribute if it's not defined already. Valid values are 'year' and 'year-month'.
+    1. Set a ``default_from_date`` year or month-year.
+    1. Optionally, set a ``default_until_date`` year or month-year. If absent, ``default_until_date`` defaults to the
+    current year or month-year.
+    1. Set the ``pattern`` parameter with the url to retrieve.
+    1. Implement the `get_formatter` method.
+
+    The ``pattern`` should include a placeholder for a year or month-year parameter. With the year parameter, an int is
+    passed. If the year-month parameter is used, a ``Date`` instance is passed. Example:
+
+    .. code-block: python
+
+        url = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
+
+    When the ``sample`` option is used, the latest year or month of data is retrieved.
+    """
+    VALID_DATE_FORMATS = {'year': '%Y', 'year-month': '%Y-%m'}
+
+    def __init__(self, *args, **kwargs):
+        self.date_format_key = self.date_format
+        super().__init__(*args, **kwargs)
+
+        if hasattr(self, 'start_requests_callback'):
+            self.start_requests_callback = getattr(self, self.start_requests_callback)
+        else:
+            self.start_requests_callback = self.parse
+
+    @classmethod
+    def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
+        if not from_date:
+            from_date = cls.default_from_date
+
+        spider = super(SimpleSpider, cls).from_crawler(crawler, from_date=from_date, *args, **kwargs)
+
+        return spider
+
+    @classmethod
+    def get_default_until_date(cls, spider):
+        if hasattr(spider, 'default_until_date') and spider.default_until_date:
+            return spider.default_until_date
+        else:
+            return datetime.today()
+
+    def start_requests(self):
+
+        start = self.from_date
+
+        stop = self.until_date
+
+        if self.sample:
+            start = stop
+
+        if self.date_format_key == 'year':
+            date_range = util.date_range_by_year(start.year, stop.year)
+        else:
+            date_range = util.date_range_by_month(start, stop)
+
+        for date in date_range:
+            for url in self.build_urls(self.pattern, date):
+                yield self.build_request(url, self.get_formatter(), callback=self.start_requests_callback)
+
+    @abstractmethod
+    def get_formatter(self):
+        pass
+
+    def build_urls(self, pattern, date):
+        yield pattern.format(date)
