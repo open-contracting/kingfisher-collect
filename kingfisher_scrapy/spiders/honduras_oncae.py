@@ -45,7 +45,6 @@ class HondurasONCAE(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        systems_flags = {system: False for system in self.systems}
         urls = response.xpath('//a[contains(., "[json]")]/@href').getall()
         for url in urls:
             path, file = split(urlparse(url).path)
@@ -53,10 +52,12 @@ class HondurasONCAE(CompressedFileSpider):
             if self.system and current_system != self.system:
                 continue
             if self.sample:
-                if systems_flags[current_system]:
-                    continue
-                if next((system for system in systems_flags if not system), False):
+                # if we already downloaded a package for all the available systems
+                if not self.systems:
                     return
-                systems_flags[current_system] = True
+                # if we already processed a file for the current system
+                if current_system not in self.systems:
+                    continue
+                self.systems.remove(current_system)
             # URL looks like http://200.13.162.79/datosabiertos/HC1/HC1_datos_2020_json.zip
             yield self.build_request(url, formatter=components(-1))
