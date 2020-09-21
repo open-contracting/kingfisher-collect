@@ -1,17 +1,20 @@
 import json
 from datetime import date
 
-from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.util import components, date_range_by_month, handle_http_error
 
 
-class ChileCompraBaseSpider(SimpleSpider):
+class ChileCompraBaseSpider(IndexSpider):
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
 
     limit = 100
     base_list_url = 'https://apis.mercadopublico.cl/OCDS/data/listaA%C3%B1oMes/{0.year:d}/{0.month:02d}/{1}/{2}'
+    formatter = staticmethod(components(-4, -1))
+    count_pointer = '/pagination/total'
+    yield_list_results = False
 
     def start_requests(self):
         today = date.today()
@@ -40,7 +43,7 @@ class ChileCompraBaseSpider(SimpleSpider):
             )
 
     @handle_http_error
-    def parse_list(self, response):
+    def parse_list(self, response, **kwargs):
         data = json.loads(response.text)
         # Some files contain invalid packages, e.g.:
         # {
@@ -52,6 +55,12 @@ class ChileCompraBaseSpider(SimpleSpider):
             yield self.build_file_error_from_response(response, errors=data)
             return
 
+        kwargs['callback'] = self.parse_items
+        yield from super().parse_list(response, **kwargs)
+        yield from self.parse_items(response)
+
+    def parse_items(self, response):
+        data = json.loads(response.text)
         for item in data['data']:
             # An item looks like:
             #
@@ -63,17 +72,8 @@ class ChileCompraBaseSpider(SimpleSpider):
             # }
             yield from self.handle_item(item)
 
-        if 'pagination' in data and (data['pagination']['offset'] + self.limit) < data['pagination']['total']\
-                and not self.sample:
-            year = response.request.meta['year']
-            month = response.request.meta['month']
-            offset = data['pagination']['offset']
-            yield self.build_request(
-                self.base_list_url.format(date(year, month, 1), offset + self.limit, self.limit),
-                formatter=components(-4, -1),
-                meta={
-                    'year': year,
-                    'month': month,
-                },
-                callback=self.parse_list
-            )
+    def url_builder(self, params, data, response):
+        year = response.request.meta['year']
+        month = response.request.meta['month']
+
+        return self.base_list_url.format(date(year, month, 1), params, self.limit)

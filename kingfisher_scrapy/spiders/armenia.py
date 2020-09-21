@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
-from kingfisher_scrapy.util import get_parameter_value, parameters, replace_parameter
+from kingfisher_scrapy.util import get_parameter_value, parameters, replace_parameters
 
 MILLISECONDS_PER_DAY = 86400000
 EXPONENT_LIMIT = 10  # 1024 days
@@ -65,7 +65,7 @@ class Armenia(LinksSpider):
         # Otherwise, continue.
         else:
             new_offset = min(first_offset + MILLISECONDS_PER_DAY * 2 ** exponent, start_time)
-            url = replace_parameter(response.request.url, 'offset', new_offset)
+            url = replace_parameters(response.request.url, offset=new_offset)
             yield self._build_request(url, self.parse_date_range, {'prev': offset, 'exponent': exponent,
                                                                    'first': first_offset})
 
@@ -93,10 +93,10 @@ class Armenia(LinksSpider):
                 # If the last request used the offset, we can reuse its response.
                 yield from self.parse(response)
             else:
-                url = replace_parameter(response.request.url, 'offset', maximum)
+                url = replace_parameters(response.request.url, offset=maximum)
                 yield self._build_request(url, self.parse, {})
         else:
-            url = replace_parameter(response.request.url, 'offset', (minimum + maximum) // 2)
+            url = replace_parameters(response.request.url, offset=(minimum + maximum) // 2)
             yield self._build_request(url, self.parse_binary_search, {'minimum': minimum, 'maximum': maximum,
                                                                       'first': first_offset})
 

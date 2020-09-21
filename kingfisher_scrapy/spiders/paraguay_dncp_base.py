@@ -5,7 +5,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.exceptions import AuthenticationError
-from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameter
+from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameters
 
 
 class ParaguayDNCPBaseSpider(SimpleSpider):
@@ -120,7 +120,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         pagination = content['pagination']
         if pagination['current_page'] < pagination['total_pages'] and not self.sample:
             page = pagination['current_page'] + 1
-            url = replace_parameter(response.request.url, 'page', page)
+            url = replace_parameters(response.request.url, page=page)
             yield self.build_request(
                 url,
                 formatter=parameters('fecha_desde', 'page'),
