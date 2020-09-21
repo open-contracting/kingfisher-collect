@@ -1,12 +1,13 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import LinksSpider
+from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.util import parameters
 
 
-class HondurasPortalBase(LinksSpider):
+class HondurasPortalBase(IndexSpider):
     next_pointer = '/next'
-    next_page_formatter = staticmethod(parameters('page'))
+    formatter = staticmethod(parameters('page'))
+    total_pages_pointer = '/pages'
     publishers = ['oncae', 'sefin']
 
     download_delay = 0.9
@@ -23,4 +24,4 @@ class HondurasPortalBase(LinksSpider):
         url = self.url
         if self.publisher:
             url = url + '&publisher=' + self.publisher
-        yield scrapy.Request(url, meta={'file_name': 'page-1.json'})
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
