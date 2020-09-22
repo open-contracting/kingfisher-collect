@@ -99,6 +99,7 @@ class BaseSpider(scrapy.Spider):
             'package_pointer': package_pointer,
             'release_pointer': release_pointer,
             'truncate': truncate,
+            'qs': qs
         }
         spider_arguments.update(kwargs)
         self.logger.info('Spider arguments: {!r}'.format(spider_arguments))

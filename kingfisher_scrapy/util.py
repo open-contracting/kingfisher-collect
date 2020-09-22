@@ -1,5 +1,6 @@
 import itertools
 import json
+import re
 from datetime import date
 from decimal import Decimal
 from functools import wraps
@@ -176,8 +177,8 @@ def grouper(iterable, n, fillvalue=None):
 
 
 def request_add_qs(func, qs):
-    params = [item.split(':') for item in qs.split(',')]
-    params = {key: value for (key, value) in params}
+    pattern = re.compile(r',?(?:([^:,]+):((?:"[^"]+")|[^:,]+))')
+    params = {key: value.replace('"', '') for (key, value) in pattern.findall(qs)}
 
     def wrapper(*args, **kwargs):
         for request in func(*args, **kwargs):
