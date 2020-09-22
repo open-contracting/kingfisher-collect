@@ -177,8 +177,8 @@ def grouper(iterable, n, fillvalue=None):
 
 
 def request_add_qs(func, qs):
-    pattern = re.compile(r',?(?:([^:,]+):((?:"[^"]+")|[^:,]+))')
-    params = {key: value.replace('"', '') for (key, value) in pattern.findall(qs)}
+    pattern = re.compile(r',?([^:,]+):((?:[^:,]+?(?:\\\,)?)+)')
+    params = {key: value.replace('\\', '') for (key, value) in pattern.findall(qs)}
 
     def wrapper(*args, **kwargs):
         for request in func(*args, **kwargs):

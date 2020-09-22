@@ -102,7 +102,7 @@ LOG_FORMATTER = 'kingfisher_scrapy.log_formatter.KingfisherLogFormatter'
 KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
 KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
 
-# To get an API account, visit https://contrataciones.gov.py/datos/signup
+# To get an API account, visit https://www.contrataciones.gov.py/datos/adm/signup
 KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
 # To get an API account, contact contact@openopps.com.

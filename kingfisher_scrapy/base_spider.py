@@ -56,6 +56,18 @@ class BaseSpider(scrapy.Spider):
      .. code:: bash
 
         scrapy crawl spider_name -a keep_collection_open=true
+
+    Add a GET parameter to the start URLs (returned by `start_requests`):
+
+    .. code:: bash
+
+        scrapy crawl spider_name -a qs=param1:value,param2:value2
+
+    If the parameter value contains a comma, use a backslash to escape it:
+
+    .. code:: bash
+
+        scrapy crawl spider_name -a qs=param:value\\,value2
     """
 
     MAX_SAMPLE = 10

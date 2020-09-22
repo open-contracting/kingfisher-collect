@@ -107,7 +107,8 @@ def test_custom_collection_data_version():
 @pytest.mark.parametrize('arguments,expected',
                          (['param1:val1', '?param1=val1'],
                           ['param1:val1,param2:val2', '?param1=val1&param2=val2'],
-                          ['param1:val1,param2:"val,2"', '?param1=val1&param2=val%2C2']))
+                          ['param1:val1,param2:Ministerio de Urbanismo\\, Vivienda y Habitat',
+                           '?param1=val1&param2=Ministerio+de+Urbanismo%2C+Vivienda+y+Habitat']))
 def test_qs_parameters(arguments, expected):
     test_spider = type('TestSpider', (BaseSpider,), {
         'start_requests': lambda _self: [scrapy.Request('http://example.com')]
