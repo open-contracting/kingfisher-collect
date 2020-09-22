@@ -1,28 +1,23 @@
-import scrapy
-
-from kingfisher_scrapy.base_spider import IndexSpider
-from kingfisher_scrapy.util import parameters
+from kingfisher_scrapy.spiders.honduras_portal_base import HondurasPortalBase
 
 
-class HondurasPortalRecords(IndexSpider):
+class HondurasPortalRecords(HondurasPortalBase):
     """
     API documentation
       http://www.contratacionesabiertas.gob.hn/manual_api/
     Swagger API documentation
       http://www.contratacionesabiertas.gob.hn/servicio/
     Spider arguments
+      publisher
+        Filter the data by a specific publisher.
+        ``oncae`` for "Oficina Normativa de Contratación y Adquisiciones del Estado" publisher.
+        ``sefin`` for "Secretaria de Finanzas de Honduras" publisher.
       sample
         Download only the first record package in the dataset.
+        If ``publisher'' is also provided, a single package is downloaded from that publisher.
     """
     name = 'honduras_portal_records'
     data_type = 'record_package'
     data_pointer = '/recordPackage'
-    total_pages_pointer = '/pages'
-    formatter = staticmethod(parameters('page'))
     skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
-
-    download_delay = 0.9
-
-    def start_requests(self):
-        url = 'http://www.contratacionesabiertas.gob.hn/api/v1/record/?format=json'
-        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
+    url = 'http://www.contratacionesabiertas.gob.hn/api/v1/record/?format=json'

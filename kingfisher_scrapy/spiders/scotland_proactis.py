@@ -13,4 +13,4 @@ class ScotlandProactis(ScotlandBase):
     """
     name = 'scotland_proactis'
     data_type = 'release_package'
-    url = 'https://sandbox4.proactislabs.com/v1/Notices?dateFrom={}&outputType=0&noticeType={}'
+    pattern = 'https://sandbox4.proactislabs.com/v1/Notices?dateFrom={:%m-%Y}&outputType=0&noticeType={}'
