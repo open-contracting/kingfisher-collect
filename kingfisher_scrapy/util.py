@@ -1,5 +1,6 @@
 import itertools
 import json
+import re
 from datetime import date
 from decimal import Decimal
 from functools import wraps
@@ -173,3 +174,14 @@ def default(obj):
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return itertools.zip_longest(*args, fillvalue=fillvalue)
+
+
+def request_add_qs(func, qs):
+    pattern = re.compile(r',?([^:,]+):((?:[^:,]+?(?:\\\,)?)+)')
+    params = {key: value.replace('\\', '') for (key, value) in pattern.findall(qs)}
+
+    def wrapper(*args, **kwargs):
+        for request in func(*args, **kwargs):
+            url = replace_parameters(request.url, **params)
+            yield request.replace(url=url)
+    return wrapper

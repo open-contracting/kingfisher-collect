@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 
 import pytest
+import scrapy
 from scrapy.http import TextResponse
 
 from kingfisher_scrapy.base_spider import BaseSpider
@@ -101,3 +102,18 @@ def test_custom_collection_data_version():
         assert spider_with_crawler(crawl_time='2020')
     assert str(e.value) == 'spider argument crawl_time: invalid date value: {}'.format(
         error_message)
+
+
+@pytest.mark.parametrize('arguments,expected',
+                         (['param1:val1', '?param1=val1'],
+                          ['param1:val1,param2:val2', '?param1=val1&param2=val2'],
+                          ['param1:val1,param2:Ministerio de Urbanismo\\, Vivienda y Habitat',
+                           '?param1=val1&param2=Ministerio+de+Urbanismo%2C+Vivienda+y+Habitat']))
+def test_qs_parameters(arguments, expected):
+    test_spider = type('TestSpider', (BaseSpider,), {
+        'start_requests': lambda _self: [scrapy.Request('http://example.com')]
+    })
+    spider = spider_with_crawler(test_spider, qs=arguments)
+
+    for request in spider.start_requests():
+        assert expected in request.url
