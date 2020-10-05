@@ -76,7 +76,8 @@ class BaseSpider(scrapy.Spider):
 
     ocds_version = '1.1'
     date_format = 'date'
-    date_required = None
+    # Set `date_required` to True in class attribute to always set the `from` and `until` date parameters.
+    date_required = False
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, qs=None, *args,
@@ -131,14 +132,14 @@ class BaseSpider(scrapy.Spider):
             except ValueError as e:
                 raise SpiderArgumentError('spider argument crawl_time: invalid date value: {}'.format(e))
 
-        # Checks Spider date ranges arguments
+        # Checks Spider date ranges arguments and `date_required` class attribute.
         if spider.from_date or spider.until_date or spider.date_required:
             if not spider.from_date:
                 # Default to `default_from_date` class attribute.
                 spider.from_date = spider.default_from_date
             try:
                 if isinstance(spider.from_date, str):
-                    # convert to date format, if needed
+                    # Convert to date format, if needed.
                     spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
             except ValueError as e:
                 raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))

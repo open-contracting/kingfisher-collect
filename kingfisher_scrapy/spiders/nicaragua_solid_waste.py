@@ -26,9 +26,7 @@ class NicaraguaSolidWaste(SimpleSpider):
             # date parameter setting to get one release from 2013
             url = url.format('20130123', '20130123')
         else:
-            if self.from_date and self.until_date:
-                # date parameter obtained
-                url = url.format(self.from_date.strftime("%Y%m%d"), self.until_date.strftime("%Y%m%d"))
-
+            # date parameter obtained
+            url = url.format(self.from_date.strftime("%Y%m%d"), self.until_date.strftime("%Y%m%d"))
         # url looks like http://www.gekoware.com/swmp/api/ocds/20190101/20201005
         yield self.build_request(url, formatter=components(-2))
