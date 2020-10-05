@@ -76,6 +76,7 @@ class BaseSpider(scrapy.Spider):
 
     ocds_version = '1.1'
     date_format = 'date'
+    date_required = None
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, qs=None, *args,
@@ -96,6 +97,7 @@ class BaseSpider(scrapy.Spider):
         self.qs = qs
 
         self.date_format = self.VALID_DATE_FORMATS[self.date_format]
+        self.date_required = self.date_required
         self.pluck = bool(package_pointer or release_pointer)
 
         if self.qs and hasattr(self, 'start_requests'):
