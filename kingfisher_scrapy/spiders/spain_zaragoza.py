@@ -8,21 +8,22 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class SpainZaragoza(SimpleSpider):
     """
-    API documentation
+    Swagger API documentation
       https://www.zaragoza.es/docs-api_sede/
     Spider arguments
       sample
         Downloads the first release returned by the API release endpoint.
       from_date
-        Download only data from this date onward (YYYY-MM-DD format).
-        If ``until_date`` is provided, defaults to '2000-01-01'.
+        Download only data from this date onward (YYYY-MM-DDTHH:mm:ss format).
+        If ``until_date`` is provided, defaults to '2000-01-01T00:00:00'.
       until_date
-        Download only data until this date (YYYY-MM-DD format).
+        Download only data until this date (YYYY-MM-DDTHH:mm:ss format).
         If ``from_date`` is provided, defaults to today.
     """
     name = 'spain_zaragoza'
     data_type = 'release_list'
-    default_from_date = '2000-01-01'
+    date_format = 'datetime'
+    default_from_date = '2000-01-01T00:00:00'
     url = 'https://www.zaragoza.es/sede/servicio/contratacion-publica/ocds/contracting-process/'
 
     def start_requests(self):
@@ -31,8 +32,8 @@ class SpainZaragoza(SimpleSpider):
 
         # check date parameters and set "yyyy-MM-dd'T'HH:mm:ss'Z'" format
         if self.from_date and self.until_date:
-            before = self.from_date.strftime("%Y-%m-%d") + 'T00:00:00Z'
-            after = self.until_date.strftime("%Y-%m-%d") + 'T00:00:00Z'
+            after = self.until_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+            before = self.from_date.strftime("%Y-%m-%dT%H:%M:%SZ")
             url = url + '&before={}&after={}'.format(before, after)
 
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
