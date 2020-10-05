@@ -130,7 +130,7 @@ class BaseSpider(scrapy.Spider):
                 raise SpiderArgumentError('spider argument crawl_time: invalid date value: {}'.format(e))
 
         # Checks Spider date ranges arguments
-        if spider.from_date or spider.until_date:
+        if spider.from_date or spider.until_date or spider.date_required:
             if not spider.from_date:
                 # Default to `default_from_date` class attribute.
                 spider.from_date = spider.default_from_date
