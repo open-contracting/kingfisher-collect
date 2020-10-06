@@ -27,7 +27,7 @@ class DryRun(ScrapyCommand):
         runner = CrawlerProcess(settings=self.settings)
 
         exceptions = {
-            'test_fail',
+            'fail',
             # Require authentication
             'openopps',
             'paraguay_dncp_records',
