@@ -80,9 +80,9 @@ def test_urls(date_format, pattern, expected_start, expected_end, class_args, us
     )
 
     test_spider = type('TestSpider', (PeriodicSpider,), dict(date_format=date_format,
-                                                               get_formatter=lambda x: components(-1),
-                                                               pattern=pattern,
-                                                               **class_args))
+                                                             get_formatter=lambda x: components(-1),
+                                                             pattern=pattern,
+                                                             **class_args))
     spider = spider_with_crawler(spider_class=test_spider, **user_args)
 
     requests = [x for x in spider.start_requests()]
