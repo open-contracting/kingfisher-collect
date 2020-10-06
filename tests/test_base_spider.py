@@ -104,16 +104,17 @@ def test_custom_collection_data_version():
         error_message)
 
 
-@pytest.mark.parametrize('arguments,expected',
-                         (['param1:val1', '?param1=val1'],
-                          ['param1:val1,param2:val2', '?param1=val1&param2=val2'],
-                          ['param1:val1,param2:Ministerio de Urbanismo\\, Vivienda y Habitat',
-                           '?param1=val1&param2=Ministerio+de+Urbanismo%2C+Vivienda+y+Habitat']))
-def test_qs_parameters(arguments, expected):
+@pytest.mark.parametrize('kwargs,expected', [
+    ({'qs:param1': 'val1'}, '?param1=val1'),
+    ({'qs:param1': 'val1', 'qs:param2': 'val2'}, '?param1=val1&param2=val2'),
+    ({'qs:param1': 'val1', 'qs:param2': 'Ministerio de Urbanismo, Vivienda y Habitat'},
+     '?param1=val1&param2=Ministerio+de+Urbanismo%2C+Vivienda+y+Habitat')
+])
+def test_qs_parameters(kwargs, expected):
     test_spider = type('TestSpider', (BaseSpider,), {
         'start_requests': lambda _self: [scrapy.Request('http://example.com')]
     })
-    spider = spider_with_crawler(test_spider, qs=arguments)
+    spider = spider_with_crawler(test_spider, **kwargs)
 
     for request in spider.start_requests():
         assert expected in request.url
