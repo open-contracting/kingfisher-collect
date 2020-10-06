@@ -6,8 +6,8 @@ import scrapy
 from kingfisher_scrapy.base_spider import SimpleSpider
 
 
-class TestFail(SimpleSpider):
-    name = 'test_fail'
+class Fail(SimpleSpider):
+    name = 'fail'
     data_type = 'release_package'
     skip_pluck = 'Not a real spider'
 
