@@ -481,9 +481,9 @@ class PeriodicSpider(SimpleSpider):
 
     1. Implement a ``get_formatter`` method to return the formatter to use in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls
-    1. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM")
-    1. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM"), if the
-       source is known to have stopped publishing - otherwise, it defaults to today
+    1. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a string
+    1. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a
+       string, if the source is known to have stopped publishing - otherwise, it defaults to today
     1. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
        :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
 
