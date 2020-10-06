@@ -32,6 +32,7 @@ class SpainZaragoza(SimpleSpider):
 
         # check date parameters and set "yyyy-MM-dd'T'HH:mm:ss'Z'" format
         if self.from_date and self.until_date:
+            # `before` and `after` query string parameters behave opposite in API
             after = self.until_date.strftime("%Y-%m-%dT%H:%M:%SZ")
             before = self.from_date.strftime("%Y-%m-%dT%H:%M:%SZ")
             url = url + '&before={}&after={}'.format(before, after)
@@ -42,9 +43,7 @@ class SpainZaragoza(SimpleSpider):
     def parse_list(self, response):
         ids = json.loads(response.text)
         for contracting_process_id in ids:
-
-            # A JSON array of ids strings
-            url = self.url + contracting_process_id.get('id')
+            url = self.url + contracting_process_id['id']
             yield self.build_request(url, formatter=components(-1))
 
             if self.sample:
