@@ -76,7 +76,9 @@ class BaseSpider(scrapy.Spider):
 
     ocds_version = '1.1'
     date_format = 'date'
+
     # Set `date_required` to True in class attribute to always set the `from` and `until` date parameters.
+    # If `date_required` is true the attribute `default_from_date` should be set too.
     date_required = False
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
@@ -98,7 +100,6 @@ class BaseSpider(scrapy.Spider):
         self.qs = qs
 
         self.date_format = self.VALID_DATE_FORMATS[self.date_format]
-        self.date_required = self.date_required
         self.pluck = bool(package_pointer or release_pointer)
 
         if self.qs and hasattr(self, 'start_requests'):
