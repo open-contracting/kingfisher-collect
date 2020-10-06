@@ -14,7 +14,7 @@ from rarfile import RarFile
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError
 from kingfisher_scrapy.items import File, FileError, FileItem
-from kingfisher_scrapy.util import handle_http_error, request_add_qs
+from kingfisher_scrapy.util import handle_http_error, add_query_string
 
 
 class BaseSpider(scrapy.Spider):
@@ -57,17 +57,11 @@ class BaseSpider(scrapy.Spider):
 
         scrapy crawl spider_name -a keep_collection_open=true
 
-    Add a GET parameter to the start URLs (returned by `start_requests`):
+    Add GET parameters to the start URLs (returned by ``start_requests``):
 
     .. code:: bash
 
-        scrapy crawl spider_name -a qs=param1:value,param2:value2
-
-    If the parameter value contains a comma, use a backslash to escape it:
-
-    .. code:: bash
-
-        scrapy crawl spider_name -a qs=param:value\\,value2
+        scrapy crawl spider_name -a qs:param1=value -a qs:param2=value2
     """
 
     MAX_SAMPLE = 10
@@ -78,7 +72,7 @@ class BaseSpider(scrapy.Spider):
     date_format = 'date'
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
-                 keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, qs=None, *args,
+                 keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -93,13 +87,17 @@ class BaseSpider(scrapy.Spider):
         self.package_pointer = package_pointer
         self.release_pointer = release_pointer
         self.truncate = int(truncate) if truncate else None
-        self.qs = qs
+
+        self.query_string_parameters = {}
+        for key, value in kwargs.items():
+            if key.startswith('qs:'):
+                self.query_string_parameters[key[3:]] = value
 
         self.date_format = self.VALID_DATE_FORMATS[self.date_format]
         self.pluck = bool(package_pointer or release_pointer)
 
-        if self.qs and hasattr(self, 'start_requests'):
-            self.start_requests = request_add_qs(self.start_requests, qs)
+        if self.query_string_parameters and hasattr(self, 'start_requests'):
+            self.start_requests = add_query_string(self.start_requests, self.query_string_parameters)
 
         spider_arguments = {
             'sample': sample,
@@ -111,7 +109,6 @@ class BaseSpider(scrapy.Spider):
             'package_pointer': package_pointer,
             'release_pointer': release_pointer,
             'truncate': truncate,
-            'qs': qs
         }
         spider_arguments.update(kwargs)
         self.logger.info('Spider arguments: {!r}'.format(spider_arguments))

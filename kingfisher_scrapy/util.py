@@ -1,6 +1,5 @@
 import itertools
 import json
-import re
 from datetime import date
 from decimal import Decimal
 from functools import wraps
@@ -111,7 +110,7 @@ def get_parameter_value(url, key):
 
 def replace_parameters(url, **kwargs):
     """
-    Returns a URL after updating the query string parameter's value.
+    Returns a URL after updating the query string parameters' values.
     """
     parsed = urlsplit(url)
     query = parse_qs(parsed.query)
@@ -121,6 +120,18 @@ def replace_parameters(url, **kwargs):
         else:
             query[key] = [value]
     return parsed._replace(query=urlencode(query, doseq=True)).geturl()
+
+
+def add_query_string(method, params):
+    """
+    Returns a function that yields the requests yielded by the wrapped method, after updating their query string
+    parameters' values.
+    """
+    def wrapper(*args, **kwargs):
+        for request in method(*args, **kwargs):
+            url = replace_parameters(request.url, **params)
+            yield request.replace(url=url)
+    return wrapper
 
 
 @utils.coroutine
@@ -175,14 +186,3 @@ def default(obj):
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return itertools.zip_longest(*args, fillvalue=fillvalue)
-
-
-def request_add_qs(func, qs):
-    pattern = re.compile(r',?([^:,]+):((?:[^:,]+?(?:\\\,)?)+)')
-    params = {key: value.replace('\\', '') for (key, value) in pattern.findall(qs)}
-
-    def wrapper(*args, **kwargs):
-        for request in func(*args, **kwargs):
-            url = replace_parameters(request.url, **params)
-            yield request.replace(url=url)
-    return wrapper
