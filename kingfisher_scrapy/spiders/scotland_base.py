@@ -1,10 +1,10 @@
 from datetime import date
 
-from kingfisher_scrapy.base_spider import PeriodicalSpider
+from kingfisher_scrapy.base_spider import PeriodicSpider
 from kingfisher_scrapy.util import parameters
 
 
-class ScotlandBase(PeriodicalSpider):
+class ScotlandBase(PeriodicSpider):
     date_format = 'year-month'
     default_from_date = date(date.today().year - 1, date.today().month, 1)
 

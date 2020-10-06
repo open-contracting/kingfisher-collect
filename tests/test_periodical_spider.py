@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from kingfisher_scrapy.base_spider import PeriodicalSpider
+from kingfisher_scrapy.base_spider import PeriodicSpider
 from kingfisher_scrapy.util import components, date_range_by_month, date_range_by_year
 
 from . import spider_with_crawler
@@ -75,11 +75,11 @@ def test_urls(date_format, pattern, expected_start, expected_end, class_args, us
     expected = _format_urls(
         date_format,
         pattern,
-        datetime.strptime(str(expected_start), PeriodicalSpider.VALID_DATE_FORMATS[date_format]),
-        datetime.strptime(str(expected_end), PeriodicalSpider.VALID_DATE_FORMATS[date_format])
+        datetime.strptime(str(expected_start), PeriodicSpider.VALID_DATE_FORMATS[date_format]),
+        datetime.strptime(str(expected_end), PeriodicSpider.VALID_DATE_FORMATS[date_format])
     )
 
-    test_spider = type('TestSpider', (PeriodicalSpider,), dict(date_format=date_format,
+    test_spider = type('TestSpider', (PeriodicSpider,), dict(date_format=date_format,
                                                                get_formatter=lambda x: components(-1),
                                                                pattern=pattern,
                                                                **class_args))

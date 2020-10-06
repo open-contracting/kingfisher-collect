@@ -1,8 +1,8 @@
-from kingfisher_scrapy.base_spider import PeriodicalSpider
+from kingfisher_scrapy.base_spider import PeriodicSpider
 from kingfisher_scrapy.util import components
 
 
-class NepalPortal(PeriodicalSpider):
+class NepalPortal(PeriodicSpider):
     """
     Bulk download documentation
       http://ppip.gov.np/downloads

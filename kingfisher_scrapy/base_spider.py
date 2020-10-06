@@ -465,11 +465,11 @@ class LinksSpider(SimpleSpider):
             raise MissingNextLinkError('next link not found on the first page: {}'.format(response.url))
 
 
-class PeriodicalSpider(SimpleSpider):
+class PeriodicSpider(SimpleSpider):
     """
     This class helps to crawl urls that receive a year (YYYY) or a month and year (YYYY-mm) as parameters. To use it:
 
-    1. Extend from ``PeriodicalSpider``.
+    1. Extend from ``PeriodicSpider``.
     1. Set the ``date_format`` attribute if it's not defined already. Valid values are 'year' and 'year-month'.
     1. Set a ``default_from_date`` year or month-year.
     1. Optionally, set a ``default_until_date`` year or month-year. If absent, ``default_until_date`` defaults to the

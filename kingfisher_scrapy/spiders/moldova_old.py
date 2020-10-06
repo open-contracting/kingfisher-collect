@@ -1,8 +1,8 @@
-from kingfisher_scrapy.base_spider import PeriodicalSpider
+from kingfisher_scrapy.base_spider import PeriodicSpider
 from kingfisher_scrapy.util import components
 
 
-class MoldovaOld(PeriodicalSpider):
+class MoldovaOld(PeriodicSpider):
     """
     Bulk download documentation
       http://opencontracting.date.gov.md/downloads

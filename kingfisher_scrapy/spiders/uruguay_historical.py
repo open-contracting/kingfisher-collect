@@ -1,8 +1,8 @@
-from kingfisher_scrapy.base_spider import CompressedFileSpider, PeriodicalSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider, PeriodicSpider
 from kingfisher_scrapy.util import components
 
 
-class UruguayHistorical(CompressedFileSpider, PeriodicalSpider):
+class UruguayHistorical(CompressedFileSpider, PeriodicSpider):
     """
     Bulk download documentation
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
