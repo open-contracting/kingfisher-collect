@@ -467,29 +467,31 @@ class LinksSpider(SimpleSpider):
 
 class PeriodicSpider(SimpleSpider):
     """
-    This class helps to crawl urls that receive a year (YYYY) or a month and year (YYYY-mm) as parameters. To use it:
+    This class makes it easy to collect data from an API that takes a year or a year and month as parameters.
 
-    1. Extend from ``PeriodicSpider``.
-    1. Set the ``date_format`` attribute if it's not defined already. Valid values are 'year' and 'year-month'.
-    1. Set a ``default_from_date`` year or month-year.
-    1. Optionally, set a ``default_until_date`` year or month-year. If absent, ``default_until_date`` defaults to the
-    current year or month-year.
-    1. Set the ``pattern`` parameter with the url to retrieve.
-    1. Implement the `get_formatter` method.
+    1. Inherit from ``PeriodicSpider``
+    1. Set a ``date_format`` class attribute to "year" or "year-month"
+    1. Set a ``pattern`` class attribute to a URL pattern, with placeholders. If the ``date_format`` is "year", then a
+       year is passed to the placeholder as an ``int``. If the ``date_format`` is "year-month", then the first day of
+       the month is passed to the placeholder as a ``date``, which you can format as, for example:
 
-    The ``pattern`` should include a placeholder for a year or month-year parameter. With the year parameter, an int is
-    passed. If the year-month parameter is used, a ``Date`` instance is passed. Example:
+       .. code-block: python
 
-    .. code-block: python
+          pattern = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
 
-        url = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
+    1. Implement a ``get_formatter`` method to return the formatter to use in
+       :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls
+    1. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM")
+    1. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM"), if the
+       source is known to have stopped publishing - otherwise, it defaults to today
+    1. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
+       :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
 
-    When the ``sample`` option is used, the latest year or month of data is retrieved.
+    If ``sample`` is set, the data from the most recent year or month is retrieved.
     """
     VALID_DATE_FORMATS = {'year': '%Y', 'year-month': '%Y-%m'}
 
     def __init__(self, *args, **kwargs):
-        self.date_format_key = self.date_format
         super().__init__(*args, **kwargs)
 
         if hasattr(self, 'start_requests_callback'):
@@ -499,44 +501,51 @@ class PeriodicSpider(SimpleSpider):
 
     @classmethod
     def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
+        # BaseSpider will only set `from_date` to its default value if `until_date` is set.
         if not from_date:
             from_date = cls.default_from_date
 
-        spider = super(SimpleSpider, cls).from_crawler(crawler, from_date=from_date, *args, **kwargs)
+        spider = super().from_crawler(crawler, from_date=from_date, *args, **kwargs)
 
         return spider
 
     @classmethod
     def get_default_until_date(cls, spider):
-        if hasattr(spider, 'default_until_date') and spider.default_until_date:
+        """
+        Returns the ``default_until_date`` class attribute if truthy. Otherwise, returns today's date.
+        """
+        if getattr(spider, 'default_until_date', None):
             return spider.default_until_date
-        else:
-            return datetime.today()
+        return datetime.today()
 
     def start_requests(self):
-
         start = self.from_date
-
         stop = self.until_date
 
         if self.sample:
             start = stop
 
-        if self.date_format_key == 'year':
+        if self.date_format == '%Y':
             date_range = util.date_range_by_year(start.year, stop.year)
         else:
             date_range = util.date_range_by_month(start, stop)
 
         for date in date_range:
-            for url in self.build_urls(self.pattern, date):
+            for url in self.build_urls(date):
                 yield self.build_request(url, self.get_formatter(), callback=self.start_requests_callback)
+
+    def build_urls(self, date):
+        """
+        Yields one or more URLs for the given date.
+        """
+        yield self.pattern.format(date)
 
     @abstractmethod
     def get_formatter(self):
+        """
+        Returns the formatter to use in :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls.
+        """
         pass
-
-    def build_urls(self, pattern, date):
-        yield pattern.format(date)
 
 
 class IndexSpider(SimpleSpider):

@@ -32,9 +32,9 @@ class ScotlandBase(PeriodicSpider):
         104,  # Site Notice - Quick Quote Award
     ]
 
-    def build_urls(self, pattern, date):
+    def build_urls(self, date):
         for notice_type in self.notice_types:
-            yield pattern.format(date, notice_type)
+            yield self.pattern.format(date, notice_type)
 
     def get_formatter(self):
         return parameters('noticeType', 'dateFrom')
