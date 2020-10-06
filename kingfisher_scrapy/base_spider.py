@@ -505,9 +505,7 @@ class PeriodicSpider(SimpleSpider):
         if not from_date:
             from_date = cls.default_from_date
 
-        spider = super().from_crawler(crawler, from_date=from_date, *args, **kwargs)
-
-        return spider
+        return super().from_crawler(crawler, from_date=from_date, *args, **kwargs)
 
     @classmethod
     def get_default_until_date(cls, spider):
