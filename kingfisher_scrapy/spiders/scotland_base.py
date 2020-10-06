@@ -1,10 +1,11 @@
 from datetime import date
 
-from kingfisher_scrapy.base_spider import PeriodicalSpider
+from kingfisher_scrapy.base_spider import PeriodicSpider
 from kingfisher_scrapy.util import parameters
 
 
-class ScotlandBase(PeriodicalSpider):
+class ScotlandBase(PeriodicSpider):
+    # PeriodicSpider variables
     date_format = 'year-month'
     default_from_date = date(date.today().year - 1, date.today().month, 1)
 
@@ -32,9 +33,9 @@ class ScotlandBase(PeriodicalSpider):
         104,  # Site Notice - Quick Quote Award
     ]
 
-    def build_urls(self, pattern, date):
+    def build_urls(self, date):
         for notice_type in self.notice_types:
-            yield pattern.format(date, notice_type)
+            yield self.pattern.format(date, notice_type)
 
     def get_formatter(self):
         return parameters('noticeType', 'dateFrom')

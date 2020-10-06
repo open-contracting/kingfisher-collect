@@ -82,7 +82,8 @@ def handle_http_error(decorated):
 # https://stackoverflow.com/questions/34898525/generate-list-of-months-between-interval-in-python
 def date_range_by_month(start, stop):
     """
-    Yields the first day of the month from the ``start`` to the ``stop`` dates, in reverse chronological order.
+    Yields the first day of the month as a ``date`` from the ``start`` to the ``stop`` dates, in reverse chronological
+    order.
     """
     def number_of_months(d):
         return 12 * d.year + d.month
@@ -94,7 +95,7 @@ def date_range_by_month(start, stop):
 
 def date_range_by_year(start, stop):
     """
-    Returns the year from the ``start`` to the ``stop`` years, in reverse chronological order.
+    Returns the year as an ``int`` from the ``start`` to the ``stop`` years, in reverse chronological order.
     """
     return reversed(range(start, stop + 1))
 
