@@ -129,14 +129,14 @@ class BaseSpider(scrapy.Spider):
             except ValueError as e:
                 raise SpiderArgumentError('spider argument crawl_time: invalid date value: {}'.format(e))
 
-        # Checks Spider date ranges arguments
         if spider.from_date or spider.until_date:
+            # If either `from_date` or `until_date` is set, then `from_date` defaults to the `default_from_date` class
+            # attribute and `until_date` defaults to the `get_default_until_date()` return value (now, by default). In
+            # other words, spiders that support `from_date` and `until_date` filters need to set `default_from_date`.
             if not spider.from_date:
-                # Default to `default_from_date` class attribute.
                 spider.from_date = spider.default_from_date
             try:
                 if isinstance(spider.from_date, str):
-                    # convert to date format, if needed
                     spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
             except ValueError as e:
                 raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
@@ -296,7 +296,7 @@ class BaseSpider(scrapy.Spider):
 
     @classmethod
     def get_default_until_date(cls, spider):
-        return datetime.now()
+        return datetime.utcnow()
 
 
 class SimpleSpider(BaseSpider):
