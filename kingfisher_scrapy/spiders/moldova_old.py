@@ -12,10 +12,12 @@ class MoldovaOld(PeriodicSpider):
     """
     name = 'moldova_old'
     data_type = 'release_package'
+
+    # PeriodicSpider variables
+    date_format = 'year'
     default_from_date = '2012'
     default_until_date = '2018'
     pattern = 'http://opencontracting.date.gov.md/ocds-api/year/{}'
-    date_format = 'year'
 
     def get_formatter(self):
         return components(-1)
