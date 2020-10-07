@@ -39,8 +39,8 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
     }
 
     @classmethod
-    def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
-        spider = super().from_crawler(crawler, from_date=from_date, *args, **kwargs)
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super().from_crawler(crawler, *args, **kwargs)
 
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
