@@ -71,6 +71,10 @@ class BaseSpider(scrapy.Spider):
     ocds_version = '1.1'
     date_format = 'date'
 
+    # Set `date_required` to True in class attribute to always set the `from` and `until` date parameters.
+    # If `date_required` is true the attribute `default_from_date` should be set too.
+    date_required = False
+
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
                  **kwargs):
@@ -126,10 +130,11 @@ class BaseSpider(scrapy.Spider):
             except ValueError as e:
                 raise SpiderArgumentError('spider argument crawl_time: invalid date value: {}'.format(e))
 
-        if spider.from_date or spider.until_date:
-            # If either `from_date` or `until_date` is set, then `from_date` defaults to the `default_from_date` class
-            # attribute and `until_date` defaults to the `get_default_until_date()` return value (now, by default). In
-            # other words, spiders that support `from_date` and `until_date` filters need to set `default_from_date`.
+        if spider.from_date or spider.until_date or spider.date_required:
+            # If either `from_date`, `until_date` or `date_required` is set, then `from_date` defaults to the
+            # `default_from_date` class attribute and `until_date` defaults to the `get_default_until_date()` return
+            # value (now, by default). In other words, spiders that support `from_date` and `until_date` filters need
+            # to set `default_from_date`.
             if not spider.from_date:
                 spider.from_date = spider.default_from_date
             try:
