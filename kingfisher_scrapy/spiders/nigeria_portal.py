@@ -1,6 +1,6 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.base_spider import SimpleSpider, browser_user_agent
 from kingfisher_scrapy.util import handle_http_error
 
 
@@ -14,7 +14,7 @@ class NigeriaPortal(SimpleSpider):
     data_type = 'release_package'
 
     download_delay = 0.9
-    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
+    user_agent = browser_user_agent
 
     def start_requests(self):
         yield scrapy.Request(

@@ -1,4 +1,4 @@
-from kingfisher_scrapy.base_spider import CompressedFileSpider, PeriodicSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider, PeriodicSpider, browser_user_agent
 from kingfisher_scrapy.util import components
 
 
@@ -15,12 +15,7 @@ class UruguayHistorical(CompressedFileSpider, PeriodicSpider):
 
     # the files takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000
-    custom_settings = {
-        # It seems some websites don't like it and block when your user agent is not a browser.
-        # see https://github.com/scrapy/scrapy/issues/3103
-        'USER_AGENT': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                      'Chrome/37.0.2049.0 Safari/537.36',
-    }
+    user_agent = browser_user_agent
 
     # PeriodicSpider variables
     date_format = 'year'
