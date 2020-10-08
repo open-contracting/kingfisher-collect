@@ -41,7 +41,8 @@
             "release_package_list_in_results",
             "release_in_Release",
             "zip",
-            "rar"
+            "rar",
+            "tar.gz"
           ]
         },
         "encoding": {
