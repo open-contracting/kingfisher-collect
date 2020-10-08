@@ -73,12 +73,12 @@ class Pluck:
                 value = _resolve_pointer(package, spider.package_pointer)
         else:  # spider.release_pointer
             if item['data_type'] in ('release_package', 'release_package_list', 'release_package_list_in_results',
-                                     'release_list', 'release', 'compiled_release'):
+                                     'release_list', 'release'):
                 data = _get_releases(item)
                 if data:
                     value = max(_resolve_pointer(r, spider.release_pointer) for r in data)
             elif item['data_type'] in ('record_package', 'record_package_list', 'record_package_list_in_results',
-                                       'record_list', 'record'):
+                                       'record'):
                 data = _get_records(item)
                 if data:
                     # This assumes that the first record in the record package has the desired value.
@@ -129,7 +129,7 @@ def _get_releases(item):
         return data['results'][0]['releases']
     elif item['data_type'] == 'release_list':
         return data
-    elif item['data_type'] in ('release', 'compiled_release'):
+    elif item['data_type'] == 'release':
         return [data]
 
     raise NotImplementedError(f"unhandled data_type: {item['data_type']}")
@@ -145,8 +145,6 @@ def _get_records(item):
         return data[0]['records']
     elif item['data_type'] == 'record_package_list_in_results':
         return data['results'][0]['records']
-    elif item['data_type'] == 'record_list':
-        return data
     elif item['data_type'] == 'record':
         return [data]
 

@@ -33,7 +33,6 @@ package_parameters = [
 release_parameters = package_parameters + [
     # Releases
     ('release', release_package['releases'][1]),
-    ('compiled_release', release_package['releases'][1]),
     # Records
     ('record', record_package['records'][0]),
     ('record', {'compiledRelease': release_package['releases'][1]}),

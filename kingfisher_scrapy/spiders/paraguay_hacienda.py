@@ -31,6 +31,7 @@ class ParaguayHacienda(BaseSpider):
     base_list_url = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/pagos/cdp?page={}'
     release_ids = []
     request_time_limit = 14.0
+    data_type = 'release_package'
 
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
@@ -105,7 +106,7 @@ class ParaguayHacienda(BaseSpider):
                         dont_filter=True
                     )
         else:
-            yield self.build_file_from_response(response, data_type='release_package')
+            yield self.build_file_from_response(response, data_type=self.data_type)
 
     def request_access_token(self):
         """ Requests a new access token """

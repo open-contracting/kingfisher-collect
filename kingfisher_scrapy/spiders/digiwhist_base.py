@@ -9,6 +9,7 @@ from kingfisher_scrapy.util import handle_http_error
 
 class DigiwhistBase(BaseSpider):
     skip_pluck = 'JSON Lines is not supported'
+    data_type = 'release_package'
 
     def start_requests(self):
         # See scrapy.spiders.Spider.start_requests
@@ -22,4 +23,4 @@ class DigiwhistBase(BaseSpider):
         # Load a line at the time, pass it to API
         with tarfile.open(fileobj=BytesIO(response.body), mode="r:gz") as tar:
             with tar.extractfile(tar.getnames()[0]) as readfp:
-                yield from self.parse_json_lines(readfp, url=self.start_urls[0], data_type='release_package')
+                yield from self.parse_json_lines(readfp, url=self.start_urls[0], data_type=self.data_type)
