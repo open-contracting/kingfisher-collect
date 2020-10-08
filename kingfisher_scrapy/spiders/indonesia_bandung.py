@@ -31,6 +31,7 @@ class IndonesiaBandung(BaseSpider):
         Downloads the first release listed for 2013
     """
     name = 'indonesia_bandung'
+    data_type = 'release'
 
     def start_requests(self):
         pattern = 'https://birms.bandung.go.id/api/packages/year/{}'
@@ -61,4 +62,4 @@ class IndonesiaBandung(BaseSpider):
         data = json.loads(response.text)
         if len(data) == 0:
             return
-        yield self.build_file_from_response(response, data_type='release')
+        yield self.build_file_from_response(response, data_type=self.data_type)

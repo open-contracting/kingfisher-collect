@@ -31,6 +31,7 @@ class Colombia(LinksSpider):
     name = 'colombia'
     next_page_formatter = staticmethod(parameters('_id'))
     default_from_date = '2011-01-01'
+    data_type = 'release_package'
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -70,7 +71,7 @@ class Colombia(LinksSpider):
         # status or invalid json) we wait 120 minutes and then continue
         try:
             if self.is_http_success(response):
-                yield self.build_file_from_response(response, data_type='release_package')
+                yield self.build_file_from_response(response, data_type=self.data_type)
                 if not self.sample:
                     yield self.next_link(response)
             elif response.status == 503:

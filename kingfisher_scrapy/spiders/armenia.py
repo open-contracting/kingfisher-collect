@@ -20,6 +20,7 @@ class Armenia(LinksSpider):
     name = 'armenia'
     next_pointer = '/next_page/uri'
     next_page_formatter = staticmethod(parameters('offset'))
+    data_type = 'release_package'
 
     def start_requests(self):
         url = 'https://armeps.am/ocds/release'
@@ -28,7 +29,7 @@ class Armenia(LinksSpider):
     def parse(self, response):
         # If the request was successful, parse the response as usual.
         if self.is_http_success(response):
-            yield self.build_file_from_response(response, data_type='release_package')
+            yield self.build_file_from_response(response, data_type=self.data_type)
 
             # Use `dont_filter` in case the search for a successful timestamp used the same offset. Use `dont_retry`
             # since errors are expected.

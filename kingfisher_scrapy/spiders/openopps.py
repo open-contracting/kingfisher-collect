@@ -39,6 +39,7 @@ class OpenOpps(BaseSpider):
     request_time_limit = 60  # in minutes
     reauthenticating = False  # flag for request a new token
     start_time = None
+    data_type = 'release_package_list'
 
     base_page_url = 'https://api.openopps.com/api/ocds/?format=json&ordering=releasedate&page_size=1000&' \
                     'releasedate__gte={}&releasedate__lte={}'
@@ -158,7 +159,7 @@ class OpenOpps(BaseSpider):
                         all_data.append(json_data)
 
                 if all_data:
-                    yield self.build_file_from_response(data=all_data, data_type='release_package_list')
+                    yield self.build_file_from_response(response, data=all_data, data_type=self.data_type)
                     if self.sample:
                         return
 
