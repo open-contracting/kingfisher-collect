@@ -72,7 +72,7 @@ class BaseSpider(scrapy.Spider):
     date_format = 'date'
 
     # Set `date_required` to True in class attribute to always set the `from` and `until` date parameters.
-    # If `date_required` is true the attribute `default_from_date` should be set too.
+    # If `date_required` is True, the attribute `default_from_date` should be set too.
     date_required = False
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
@@ -493,6 +493,9 @@ class PeriodicSpider(SimpleSpider):
     """
     VALID_DATE_FORMATS = {'year': '%Y', 'year-month': '%Y-%m'}
 
+    # PeriodicSpider requires date parameters to be always set.
+    date_required = True
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -500,14 +503,6 @@ class PeriodicSpider(SimpleSpider):
             self.start_requests_callback = getattr(self, self.start_requests_callback)
         else:
             self.start_requests_callback = self.parse
-
-    @classmethod
-    def from_crawler(cls, crawler, from_date=None, *args, **kwargs):
-        # BaseSpider will only set `from_date` to its default value if `until_date` is set.
-        if not from_date:
-            from_date = cls.default_from_date
-
-        return super().from_crawler(crawler, from_date=from_date, *args, **kwargs)
 
     @classmethod
     def get_default_until_date(cls, spider):
