@@ -24,6 +24,9 @@ ijson==3.1.1              # via -r requirements.txt
 importlib-metadata==1.6.1  # via -r requirements.txt, jsonschema, pluggy, pytest
 incremental==17.5.0       # via -r requirements.txt, twisted
 isort==4.3.21             # via -r requirements_dev.in
+itemadapter==0.1.1        # via -r requirements.txt, itemloaders, scrapy
+itemloaders==1.0.3        # via -r requirements.txt, scrapy
+jmespath==0.10.0          # via -r requirements.txt, itemloaders
 jsonpointer==2.0          # via -r requirements.txt
 jsonref==0.2              # via -r requirements.txt
 jsonschema==3.2.0         # via -r requirements.txt
@@ -31,7 +34,7 @@ lxml==4.4.2               # via -r requirements.txt, parsel, scrapy
 mccabe==0.6.1             # via flake8
 more-itertools==8.0.2     # via pytest
 packaging==19.2           # via pytest
-parsel==1.5.2             # via -r requirements.txt, scrapy
+parsel==1.5.2             # via -r requirements.txt, itemloaders, scrapy
 pip-tools==5.1.0          # via -r requirements_dev.in
 pluggy==0.13.1            # via pytest
 protego==0.1.16           # via -r requirements.txt, scrapy
@@ -52,15 +55,15 @@ queuelib==1.5.0           # via -r requirements.txt, scrapy
 rarfile==3.1              # via -r requirements.txt
 requests==2.22.0          # via -r requirements.txt, coveralls
 rfc3987==1.3.8            # via -r requirements.txt
-scrapy==1.8.0             # via -r requirements.txt, scrapyd, scrapyd-client
+scrapy==2.3.0             # via -r requirements.txt, scrapyd, scrapyd-client
 scrapyd-client==1.1.0     # via -r requirements.txt
 scrapyd==1.2.1            # via -r requirements.txt
 sentry-sdk==0.14.4        # via -r requirements.txt
 service-identity==18.1.0  # via -r requirements.txt, scrapy
-six==1.13.0               # via -r requirements.txt, automat, cryptography, jsonschema, packaging, parsel, pip-tools, protego, pyhamcrest, pyopenssl, pyrsistent, scrapy, scrapyd, scrapyd-client, w3lib
+six==1.13.0               # via -r requirements.txt, automat, cryptography, jsonschema, packaging, parsel, pip-tools, protego, pyhamcrest, pyopenssl, pyrsistent, scrapyd, scrapyd-client, w3lib
 twisted==20.3.0           # via -r requirements.txt, scrapy, scrapyd
 urllib3==1.25.7           # via -r requirements.txt, requests, sentry-sdk
-w3lib==1.21.0             # via -r requirements.txt, parsel, scrapy
+w3lib==1.21.0             # via -r requirements.txt, itemloaders, parsel, scrapy
 wcwidth==0.1.7            # via pytest
 zipp==3.1.0               # via -r requirements.txt, importlib-metadata
 zope.interface==4.7.1     # via -r requirements.txt, scrapy, twisted
