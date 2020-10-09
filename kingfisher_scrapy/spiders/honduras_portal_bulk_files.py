@@ -17,7 +17,7 @@ class HondurasPortalBulkFiles(SimpleSpider):
         ``sefin`` for "Secretaria de Finanzas de Honduras" publisher.
       sample
         Downloads the first package listed in http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json.
-        If ``publisher'' is also provided, a single package is downloaded from that publisher.
+        If ``publisher`` is also provided, a single package is downloaded from that publisher.
     """
     name = 'honduras_portal_bulk_files'
     data_type = 'release_package'

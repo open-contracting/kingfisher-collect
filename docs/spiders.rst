@@ -177,6 +177,9 @@ Dominican
 .. autoclass:: kingfisher_scrapy.spiders.dominican_republic.DominicanRepublic
    :no-members:
 
+.. autoclass:: kingfisher_scrapy.spiders.dominican_republic_api.DominicanRepublicPortal
+   :no-members:
+
 Ecuador
 -------
 
@@ -231,6 +234,12 @@ Kenya
 .. autoclass:: kingfisher_scrapy.spiders.kenya_makueni.KenyaMakueni
    :no-members:
 
+Kyrgyzstan
+----------
+
+.. autoclass:: kingfisher_scrapy.spiders.kyrgyzstan.Kyrgyzstan
+   :no-members:
+
 Malta
 -----
 
@@ -250,9 +259,6 @@ Mexico
    :no-members:
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_inai_portal.MexicoINAIPortal
-   :no-members:
-
-.. autoclass:: kingfisher_scrapy.spiders.mexico_jalisco.MexicoJalisco
    :no-members:
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_records.MexicoNuevoLeonRecords
@@ -285,8 +291,20 @@ Nepal
 .. autoclass:: kingfisher_scrapy.spiders.nepal_portal.NepalPortal
    :no-members:
 
+Nicaragua
+---------
+
+.. autoclass:: kingfisher_scrapy.spiders.nicaragua_solid_waste.NicaraguaSolidWaste
+   :no-members:
+
 Nigeria
 -------
+
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_budeshi_records.NigeriaBudeshiRecords
+   :no-members:
+
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_budeshi_releases.NigeriaBudeshiReleases
+   :no-members:
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_portal.NigeriaPortal
    :no-members:
@@ -315,6 +333,12 @@ Portugal
 .. autoclass:: kingfisher_scrapy.spiders.portugal.Portugal
    :no-members:
 
+.. autoclass:: kingfisher_scrapy.spiders.portugal_records.PortugalRecords
+   :no-members:
+
+.. autoclass:: kingfisher_scrapy.spiders.portugal_releases.PortugalReleases
+   :no-members:
+
 Scotland
 --------
 
@@ -322,6 +346,12 @@ Scotland
    :no-members:
 
 .. autoclass:: kingfisher_scrapy.spiders.scotland_public_contracts.ScotlandPublicContracts
+   :no-members:
+
+Spain
+-----
+
+.. autoclass:: kingfisher_scrapy.spiders.spain_zaragoza.SpainZaragoza
    :no-members:
 
 Uganda

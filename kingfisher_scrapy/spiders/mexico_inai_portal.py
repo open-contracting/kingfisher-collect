@@ -6,10 +6,12 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class MexicoINAIPortal(SimpleSpider):
     """
+    Download records from 2017 to 2019
+
     Spider arguments
       sample
         Downloads the records listed on the first page at
-        http://contratacionesabiertas.inai.org.mx/contratacionesabiertas/contratos/.
+        http://contratacionesabiertas.inai.org.mx/contratacionesabiertas/contratos/
     """
     name = 'mexico_inai_portal'
     data_type = 'record'

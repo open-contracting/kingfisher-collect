@@ -14,7 +14,7 @@ class HondurasPortalReleases(HondurasPortalBase):
         ``sefin`` for "Secretaria de Finanzas de Honduras" publisher.
       sample
         Download only the first release package in the dataset.
-        If ``publisher'' is also provided, a single package is downloaded from that publisher.
+        If ``publisher`` is also provided, a single package is downloaded from that publisher.
     """
     name = 'honduras_portal_releases'
     data_type = 'release_package'
