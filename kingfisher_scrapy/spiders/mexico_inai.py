@@ -7,6 +7,13 @@ from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 
 class MexicoINAI(SimpleSpider):
+    """
+    Download a bulk release package with data of 2017
+
+    Bulk download documentation
+      https://datos.gob.mx/busca/dataset/contrataciones-abiertas-del-inai
+    """
+
     name = 'mexico_inai'
     data_type = 'release_package'
     encoding = 'utf-8-sig'
