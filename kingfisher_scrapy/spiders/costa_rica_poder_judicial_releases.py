@@ -11,7 +11,7 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
     API documentation
         https://docs.ckan.org/en/2.8/api/
     Bulk download documentation
-      http://datosabiertospj.eastus.cloudapp.azure.com/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
+      http://datosabiertospj.eastus.cloudapp.azure.com/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds/resource/d3aa2ffb-06f1-42c5-958a-9f3ba5130e6f
     Spider arguments
       sample
         Downloads the zip file and sends 10 releases to kingfisher process.
