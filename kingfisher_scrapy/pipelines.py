@@ -44,6 +44,29 @@ class Validate:
         return item
 
 
+class Sample:
+    """
+    Drop items when a CLOSESPIDER_ITEMCOUNT number of items is reached
+    """
+    def __init__(self, spider_max_items):
+        self.item_count = 0
+        self.spider_max_items = spider_max_items
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+            spider_max_items=int(crawler.settings.get('CLOSESPIDER_ITEMCOUNT'))
+        )
+
+    def process_item(self, item, spider):
+        if not self.spider_max_items:
+            return item
+        if self.item_count >= self.spider_max_items:
+            raise DropItem
+        self.item_count += 1
+        return item
+
+
 class Pluck:
     def __init__(self):
         self.processed = set()
