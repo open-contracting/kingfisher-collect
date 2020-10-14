@@ -18,14 +18,13 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
     """
     name = 'costa_rica_poder_judicial_releases'
     data_type = 'release_package'
-    """ 
-    ZIP file contains records and releases 
-    the releases contains a "-" in their names so we use that character to filter them
-    """
+    # ZIP file contains records and releases
+    # the releases contains a "-" in their names so we use that character to filter them
     file_name_must_contain = '-'
 
     def start_requests(self):
-        url = 'http://datosabiertospj.eastus.cloudapp.azure.com/api/3/action/package_show?id=estandar-de-datos-de-contrataciones-abiertas-ocds'
+        url = 'http://datosabiertospj.eastus.cloudapp.azure.com/api/3/action/package_show?id=estandar-de-datos-de' \
+              '-contrataciones-abiertas-ocds'
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
