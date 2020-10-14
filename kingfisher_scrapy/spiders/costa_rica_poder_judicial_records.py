@@ -22,7 +22,7 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
 
     def start_requests(self):
         url = 'http://datosabiertospj.eastus.cloudapp.azure.com/api/3/action/package_show?id=estandar-de-datos-de' \
-              '-contrataciones-abiertas-ocds '
+              '-contrataciones-abiertas-ocds'
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
