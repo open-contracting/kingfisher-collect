@@ -46,25 +46,23 @@ class Validate:
 
 class Sample:
     """
-    Drop items when a CLOSESPIDER_ITEMCOUNT number of items is reached
+    Drop items and close the spider when more than 1 item is scraped
     """
-    def __init__(self, spider_max_items):
+    def __init__(self):
         self.item_count = 0
-        self.spider_max_items = spider_max_items
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls(
-            spider_max_items=int(crawler.settings.get('CLOSESPIDER_ITEMCOUNT'))
-        )
 
     def process_item(self, item, spider):
-        if not self.spider_max_items:
+        if not spider.sample:
             return item
-        if self.item_count >= self.spider_max_items:
+        if self.item_count >= 1:
+            spider.crawler.engine.close_spider(spider, 'closespider_itemcount')
             raise DropItem
         self.item_count += 1
         return item
+
+    def open_spider(self, spider):
+        if spider.sample:
+            spider.crawler.engine.downloader.total_concurrency = 1
 
 
 class Pluck:
