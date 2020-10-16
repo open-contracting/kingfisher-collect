@@ -5,11 +5,6 @@ from kingfisher_scrapy.util import parameters
 
 
 class UKContractsFinder(LinksSpider):
-    """
-    Spider arguments
-      sample
-        Sets the number of release packages to download.
-    """
     name = 'uk_fts'
     data_type = 'release_package'
     next_page_formatter = staticmethod(parameters('cursor'))

@@ -9,8 +9,6 @@ class DominicanRepublicPortal(LinksSpider):
     API documentation
       http://148.101.176.123:48080/ocdsdr/docs
     Spider arguments
-      sample
-        Sets the number of release packages to download.
       from_date
         Download only data from this date onward (YYYY-MM-DD format).
         If ``until_date`` is provided, defaults to '2018-01-01'.

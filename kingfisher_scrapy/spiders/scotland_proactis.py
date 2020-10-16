@@ -6,8 +6,6 @@ class ScotlandProactis(ScotlandBase):
     API documentation
       https://sandbox4.proactislabs.com/v1
     Spider arguments
-      sample
-        Sets the number of release packages to download.
       from_date
         Download only data from this month onward (YYYY-MM format). Defaults to '2019-01'.
     """

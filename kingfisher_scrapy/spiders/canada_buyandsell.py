@@ -6,9 +6,6 @@ class CanadaBuyAndSell(SimpleSpider):
     """
     API documentation
       https://buyandsell.gc.ca/procurement-data/open-contracting-data-standard-pilot/download-ocds-pilot-data
-    Spider arguments
-      sample
-        Set the number of files to download
     """
     name = 'canada_buyandsell'
     data_type = 'release_package'

@@ -12,10 +12,6 @@ class Armenia(LinksSpider):
     """
     The API paginates results using an ``offset`` query string parameter, which is a timestamp. If a timestamp causes
     an error, the spider will try to find the nearest timestamp within the following 1024 days that succeeds.
-
-    Spider arguments
-      sample
-        Sets the number of releases package to download.
     """
     name = 'armenia'
     next_pointer = '/next_page/uri'

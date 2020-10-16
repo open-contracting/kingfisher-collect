@@ -3,11 +3,6 @@ from kingfisher_scrapy.util import parameters
 
 
 class UKContractsFinder(IndexSpider):
-    """
-    Spider arguments
-      sample
-        Sets the number of pages to download.
-    """
     name = 'uk_contracts_finder'
     data_type = 'release_package_list_in_results'
     encoding = 'iso-8859-1'

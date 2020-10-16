@@ -7,11 +7,6 @@ from kingfisher_scrapy.util import components, handle_http_error, parameters, re
 
 
 class MoldovaMTender(SimpleSpider):
-    """
-    Spider arguments
-      sample
-        Sets the number of packages to download.
-    """
     name = 'moldova_mtender'
     data_type = 'release_package'
 

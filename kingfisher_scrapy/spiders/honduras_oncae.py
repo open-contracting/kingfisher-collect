@@ -18,7 +18,6 @@ class HondurasONCAE(CompressedFileSpider):
         ``CE`` for "Módulo de Difusión Directa de Contratos" system.
         ``DDC`` for "Catálogo Electrónico" system.
       sample
-        Sets the number of release packages to download.
         If ``system`` is also provided, the set number of release packages is downloaded from that system.
     """
     name = 'honduras_oncae'

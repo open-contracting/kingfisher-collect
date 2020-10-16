@@ -5,9 +5,6 @@ class NigeriaBudeshiRecords(NigeriaBudeshiBase):
     """
     API documentation
       https://budeshi.ng/Api
-    Spider arguments
-      sample
-        Sets the number of record packages to download.
     """
     name = 'nigeria_budeshi_records'
     data_type = 'record_package'

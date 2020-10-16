@@ -15,8 +15,6 @@ class Colombia(LinksSpider):
     Swagger API documentation
       https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/
     Spider arguments
-      sample
-        Sets the number of pages to download.
       page
         The page number from which to start crawling.
       year

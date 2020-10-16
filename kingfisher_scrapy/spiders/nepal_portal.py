@@ -6,9 +6,6 @@ class NepalPortal(PeriodicSpider):
     """
     Bulk download documentation
       http://ppip.gov.np/downloads
-    Spider arguments
-      sample
-        Sets the number of years to download.
     """
     name = 'nepal_portal'
     data_type = 'release_package'

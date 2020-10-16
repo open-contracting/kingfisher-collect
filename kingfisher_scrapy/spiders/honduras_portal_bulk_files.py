@@ -16,8 +16,6 @@ class HondurasPortalBulkFiles(SimpleSpider):
         ``oncae`` for "Oficina Normativa de Contratación y Adquisiciones del Estado" publisher.
         ``sefin`` for "Secretaria de Finanzas de Honduras" publisher.
       sample
-        Sets th number of release packages to download from http://www.contratacionesabiertas.gob.hn/api/v1/descargas/
-        ?format=json.
         If ``publisher`` is also provided, the set number of release packages is downloaded from that publisher.
     """
     name = 'honduras_portal_bulk_files'

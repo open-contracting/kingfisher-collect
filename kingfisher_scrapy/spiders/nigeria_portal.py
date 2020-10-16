@@ -5,11 +5,6 @@ from kingfisher_scrapy.util import handle_http_error
 
 
 class NigeriaPortal(SimpleSpider):
-    """
-    Spider arguments
-      sample
-        Sets the number of release packages to download.
-    """
     name = 'nigeria_portal'
     data_type = 'release_package'
 

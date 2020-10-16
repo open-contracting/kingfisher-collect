@@ -10,9 +10,6 @@ class France(SimpleSpider):
     """
     Swagger API documentation
       https://doc.data.gouv.fr/api/reference/
-    Spider arguments
-      sample
-        Set the number of release packages to download found using the CKAN API.
     """
     name = 'france'
     data_type = 'release_package'

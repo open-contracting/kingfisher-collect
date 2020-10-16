@@ -8,9 +8,6 @@ class AustraliaNSW(SimpleSpider):
     """
     API documentation
       https://github.com/NSW-eTendering/NSW-eTendering-API/blob/master/README.md
-    Spider arguments
-      sample
-        Set the number of pages to download.
     """
     name = 'australia_nsw'
     data_type = 'release_package'

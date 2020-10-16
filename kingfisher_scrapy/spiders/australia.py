@@ -12,9 +12,6 @@ class Australia(LinksSpider):
       https://data.gov.au/dataset/ds-dga-5c7fa69b-b0e9-4553-b8df-2a022dd2e982/distribution/dist-dga-a7f471ad-e085-49b5-bd6b-1b270ea46e99/details?q=
     Swagger API documentation
       https://app.swaggerhub.com/apis/austender/ocds-api/1.1#/
-    Spider arguments
-      sample
-        Sets the number of pages to download.
     """
     name = 'australia'
     data_type = 'release_package'

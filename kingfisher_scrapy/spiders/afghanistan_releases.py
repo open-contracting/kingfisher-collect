@@ -10,9 +10,6 @@ class AfghanistanReleases(SimpleSpider):
     """
     API documentation
       https://ocds.ageops.net/
-    Spider arguments
-      sample
-        Sets the number of releases to download.
     """
     name = 'afghanistan_releases'
     data_type = 'release'

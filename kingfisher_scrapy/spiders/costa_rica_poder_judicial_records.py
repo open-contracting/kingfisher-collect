@@ -12,9 +12,6 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
       https://docs.ckan.org/en/2.8/api/
     Bulk download documentation
       http://datosabiertospj.eastus.cloudapp.azure.com/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
-    Spider arguments
-      sample
-        Sets the number of record packages to download.
     """
 
     name = 'costa_rica_poder_judicial_records'

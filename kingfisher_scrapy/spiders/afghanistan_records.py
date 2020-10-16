@@ -10,9 +10,6 @@ class AfghanistanRecords(SimpleSpider):
     """
     API documentation
       https://ocds.ageops.net/
-    Spider arguments
-      sample
-        Sets the number of records to download.
     """
     name = 'afghanistan_records'
     data_type = 'record'

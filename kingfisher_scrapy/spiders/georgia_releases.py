@@ -8,9 +8,6 @@ class GeorgiaReleases(LinksSpider):
     """
     Swagger API documentation
       https://odapi.spa.ge/api/swagger.ui
-    Spider arguments
-      sample
-        Sets the number of pages to download.
     """
     name = 'georgia_releases'
     data_type = 'release_package'

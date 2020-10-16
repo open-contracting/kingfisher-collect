@@ -5,13 +5,6 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class DominicanRepublic(CompressedFileSpider):
-    """
-    Bulk download documentation
-      https://www.dgcp.gob.do/estandar-mundial-ocds/
-    Spider arguments
-      sample
-        Sets the number of release packages to download.
-    """
     name = 'dominican_republic'
     data_type = 'release_package'
     compressed_file_format = 'release_package'

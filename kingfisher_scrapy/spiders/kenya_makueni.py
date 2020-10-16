@@ -10,9 +10,6 @@ class KenyaMakueni(IndexSpider):
     """
     Swagger API documentation
         https://opencontracting.makueni.go.ke/swagger-ui.html#/ocds-controller
-    Spider arguments
-      sample
-        Sets the number of pages to download.
     """
     name = 'kenya_makueni'
     data_type = 'release_package_list'

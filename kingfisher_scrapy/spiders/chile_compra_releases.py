@@ -6,9 +6,6 @@ class ChileCompraReleases(ChileCompraBaseSpider):
     """
     Swagger API documentation
       https://desarrolladores.mercadopublico.cl/docs/services/5a9ed02f718ed712f4403e75/operations/data-listaa-omes-agno-mes?
-    Spider arguments
-      sample
-        Sets the number of release packages to download.
     """
     name = 'chile_compra_releases'
     data_type = 'release_package'

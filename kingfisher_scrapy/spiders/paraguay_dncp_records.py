@@ -6,8 +6,6 @@ class ParaguayDNCPRecords(ParaguayDNCPBaseSpider):
     Swagger API documentation
       https://contrataciones.gov.py/datos/api/v3/doc
     Spider arguments
-      sample
-        Sets the number of record packages to download.
       from_date
         Download only records from this date onward (YYYY-MM-DDTHH:mm:ss format).
         If `from_date` is not provided, defaults to '2010-01-01T00:00:00'.

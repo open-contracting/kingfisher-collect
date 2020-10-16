@@ -11,8 +11,6 @@ class SpainZaragoza(SimpleSpider):
     Swagger API documentation
       https://www.zaragoza.es/docs-api_sede/
     Spider arguments
-      sample
-        Sets the number of releases to download.
       from_date
         Download only data from this date onward (YYYY-MM-DDTHH:mm:ss format).
         If ``until_date`` is provided, defaults to '2000-01-01T00:00:00'.

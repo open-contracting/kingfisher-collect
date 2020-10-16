@@ -10,9 +10,6 @@ class Uganda(IndexSpider):
     """
     API documentation
         https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
-    Spider arguments
-      sample
-        Sets the number of pages to download.
     """
     name = 'uganda_releases'
     data_type = 'release_package'

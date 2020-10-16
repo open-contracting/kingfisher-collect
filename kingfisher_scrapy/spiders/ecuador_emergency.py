@@ -8,9 +8,6 @@ class EcuadorEmergency(SimpleSpider):
     """
     Bulk download documentation
       https://portal.compraspublicas.gob.ec/sercop/data-estandar-ocds/
-    Spider arguments
-      sample
-        Sets the number of files to download.
     """
     name = 'ecuador_emergency'
     data_type = 'release_package'

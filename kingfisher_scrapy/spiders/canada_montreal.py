@@ -8,9 +8,6 @@ class CanadaMontreal(IndexSpider):
     """
     API documentation
       http://donnees.ville.montreal.qc.ca/dataset/contrats-et-subventions-api
-    Spider arguments
-      sample
-        Sets the number of pages to download.
     """
     name = 'canada_montreal'
     data_type = 'release_package'

@@ -12,9 +12,6 @@ class ParaguayHacienda(BaseSpider):
     """
     Swagger API documentation
       https://datos.hacienda.gov.py/odmh-api-v1/api-docs/
-    Spider arguments
-      sample
-        Sets the number of release packages to download.
     Environment variables
       KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN
         To get an API account and request token go to https://datos.hacienda.gov.py/aplicaciones/new.

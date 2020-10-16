@@ -10,9 +10,6 @@ class NepalDhangadhi(SimpleSpider):
     """
     Bulk download documentation
       https://ims.susasan.org/dhangadhi/about
-    Spider arguments
-      sample
-        Sets the number of release packages to download.
     """
     name = 'nepal_dhangadhi'
     data_type = 'release_package'

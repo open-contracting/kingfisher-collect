@@ -26,9 +26,6 @@ class IndonesiaBandung(BaseSpider):
             contract year number
           uniqid
             release id
-    Spider arguments
-      sample
-        Sets the number of releases to download.
     """
     name = 'indonesia_bandung'
     data_type = 'release'

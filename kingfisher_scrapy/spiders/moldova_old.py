@@ -6,9 +6,6 @@ class MoldovaOld(PeriodicSpider):
     """
     Bulk download documentation
       http://opencontracting.date.gov.md/downloads
-    Spider arguments
-      sample
-        Sets the number of files to download.
     """
     name = 'moldova_old'
     data_type = 'release_package'

@@ -5,11 +5,6 @@ from kingfisher_scrapy.util import parameters
 
 
 class Kyrgyzstan(LinksSpider):
-    """
-    Spider arguments
-      sample
-        Sets the number of pages to download.
-    """
     name = 'kyrgyzstan'
     data_type = 'release_package'
     next_page_formatter = staticmethod(parameters('offset'))

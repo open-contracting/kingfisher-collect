@@ -7,11 +7,6 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class Zambia(CompressedFileSpider):
-    """
-    Spider arguments
-      sample
-        Sets the number of release packages to download.
-    """
     name = 'zambia'
     data_type = 'record_package'
     ocds_version = '1.0'

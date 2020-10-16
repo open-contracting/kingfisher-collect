@@ -10,9 +10,6 @@ class ChileCompraBulk(CompressedFileSpider):
     """
     Bulk download documentation
       https://desarrolladores.mercadopublico.cl/OCDS/DescargaMasiva
-    Spider arguments
-      sample
-        Sets the number of files to download.
     """
 
     name = 'chile_compra_bulk'

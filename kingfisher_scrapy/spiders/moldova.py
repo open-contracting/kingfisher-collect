@@ -5,11 +5,6 @@ from kingfisher_scrapy.util import components, handle_http_error, join, paramete
 
 
 class Moldova(SimpleSpider):
-    """
-    Spider arguments
-      sample
-        Sets the number of records to download for each available endpoint (budgets, tenders).
-    """
     name = 'moldova'
     data_type = 'record_package'
 
