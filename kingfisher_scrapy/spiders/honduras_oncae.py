@@ -1,4 +1,3 @@
-from os.path import split
 from urllib.parse import urlparse
 
 import scrapy
@@ -48,7 +47,7 @@ class HondurasONCAE(CompressedFileSpider):
         downloaded_systems = set()
         urls = response.xpath('//a[contains(., "[json]")]/@href').getall()
         for url in urls:
-            path, file = split(urlparse(url).path)
+            path, file = urlparse(url).path.rsplit('/', 1)
             current_system = path.replace('/datosabiertos/', "")
             if self.system and current_system != self.system:
                 continue
