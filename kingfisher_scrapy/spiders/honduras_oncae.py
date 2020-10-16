@@ -45,7 +45,6 @@ class HondurasONCAE(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        downloaded_systems = set()
         urls = response.xpath('//a[contains(., "[json]")]/@href').getall()
         for url in urls:
             path, file = split(urlparse(url).path)

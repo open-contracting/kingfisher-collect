@@ -1,10 +1,9 @@
 import json
 
 import pytest
-from scrapy.exceptions import DropItem
 
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.items import File, FileError, PluckedItem
+from kingfisher_scrapy.items import File, PluckedItem
 from kingfisher_scrapy.pipelines import Pluck
 from tests import spider_with_crawler
 
