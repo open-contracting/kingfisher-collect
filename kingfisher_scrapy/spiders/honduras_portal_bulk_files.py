@@ -30,7 +30,7 @@ class HondurasPortalBulkFiles(SimpleSpider):
         if publisher and publisher not in spider.publishers:
             raise scrapy.exceptions.CloseSpider('Specified publisher is not recognized')
 
-        spider.publisher_name = spider.publishers[publisher]
+        spider.publisher_name = spider.publishers.get(publisher)
 
         return spider
 
