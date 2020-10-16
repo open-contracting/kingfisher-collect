@@ -7,7 +7,7 @@ class NigeriaBudeshiReleases(NigeriaBudeshiBase):
       https://budeshi.ng/Api
     Spider arguments
       sample
-       Download only the first record package from https://budeshi.ng/api/project_list.
+       Sets the number of record packages to download.
     """
     name = 'nigeria_budeshi_releases'
     data_type = 'release_package'

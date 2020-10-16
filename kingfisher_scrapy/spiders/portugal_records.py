@@ -7,7 +7,7 @@ class PortugalRecords(PortugalBase):
       http://www.base.gov.pt/swagger/index.html
     Spider arguments
       sample
-        Download 10 record packages.
+        Sets the number of record packages to download.
       from_date
         Download only the data with the contract signing date from this date onward (YYYY-MM-DD format).
         If ``until_date`` is provided, defaults to '2010-01-01'.

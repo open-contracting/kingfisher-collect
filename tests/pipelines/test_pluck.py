@@ -118,17 +118,3 @@ def test_process_item_non_package_data_type():
     })
 
     assert pipeline.process_item(item, spider) == PluckedItem({'value': 'error: no package for data_type: release'})
-
-
-def test_process_item_file_error():
-    spider = spider_with_crawler(release_pointer='/date', truncate=10)
-
-    pipeline = Pluck()
-    item = FileError({
-        'file_name': 'test',
-        'url': 'http://test.com',
-        'errors': 'error',
-    })
-
-    with pytest.raises(DropItem):
-        pipeline.process_item(item, spider)

@@ -14,7 +14,7 @@ class Australia(LinksSpider):
       https://app.swaggerhub.com/apis/austender/ocds-api/1.1#/
     Spider arguments
       sample
-        Download only data released on 2018.
+        Sets the number of pages to download.
     """
     name = 'australia'
     data_type = 'release_package'

@@ -14,7 +14,7 @@ class MexicoQuienEsQuien(IndexSpider):
       https://api.quienesquien.wiki/v2/docs/
     Spider arguments
       sample
-        Download a single record package with 10 records.
+        Sets the number of record packages to download.
     """
     name = 'mexico_quien_es_quien'
     download_delay = 0.9

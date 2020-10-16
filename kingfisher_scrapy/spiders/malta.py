@@ -13,7 +13,7 @@ class Malta(CompressedFileSpider):
       https://docs.google.com/document/d/1VnCEywKkkQ7BcVbT7HlW2s_N_QI8W0KE/edit
     Spider arguments
       sample
-        Download only data released on October 2019.
+        Sets the number of record packages to download.
     """
     name = 'malta'
     data_type = 'record_package'
@@ -28,8 +28,6 @@ class Malta(CompressedFileSpider):
     @handle_http_error
     def parse_list(self, response):
         urls = json.loads(response.text)['packagesPerMonth']
-        if self.sample:
-            urls = [urls[0]]
 
         netloc = urlsplit(response.request.url).netloc
         for url in urls:

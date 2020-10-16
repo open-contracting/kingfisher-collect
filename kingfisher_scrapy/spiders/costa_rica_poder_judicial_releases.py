@@ -14,7 +14,7 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
       http://datosabiertospj.eastus.cloudapp.azure.com/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
     Spider arguments
       sample
-        Downloads the zip file and sends 10 releases to kingfisher process.
+        Downloads the zip file and set the number of releases to sent to kingfisher process.
     """
     name = 'costa_rica_poder_judicial_releases'
     data_type = 'release_package'
@@ -34,5 +34,3 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
             if resource['format'].upper() == 'ZIP':
                 # Presently, only one URL matches.
                 yield self.build_request(resource['url'], formatter=components(-1))
-                if self.sample:
-                    return

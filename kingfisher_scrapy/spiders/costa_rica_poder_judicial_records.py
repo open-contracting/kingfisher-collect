@@ -14,7 +14,7 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
       http://datosabiertospj.eastus.cloudapp.azure.com/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
     Spider arguments
       sample
-        Downloads 1 record package.
+        Sets the number of record packages to download.
     """
 
     name = 'costa_rica_poder_judicial_records'
@@ -31,5 +31,3 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
         for resource in data['result']['resources']:
             if resource['format'].upper() == 'JSON':
                 yield self.build_request(resource['url'], formatter=components(-1))
-                if self.sample:
-                    return

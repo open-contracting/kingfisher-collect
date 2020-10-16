@@ -12,7 +12,7 @@ class AfghanistanRecords(SimpleSpider):
       https://ocds.ageops.net/
     Spider arguments
       sample
-        Downloads the first record returned by the record list endpoint.
+        Sets the number of records to download.
     """
     name = 'afghanistan_records'
     data_type = 'record'
@@ -28,8 +28,6 @@ class AfghanistanRecords(SimpleSpider):
     @handle_http_error
     def parse_list(self, response):
         urls = json.loads(response.text)
-        if self.sample:
-            urls = [urls[0]]
         for url in urls:
             # URL looks like https://ocds.ageops.net/api/record/5ed2a62c4192f32c8c74a4e5
             yield self.build_request(url, formatter=components(-1))

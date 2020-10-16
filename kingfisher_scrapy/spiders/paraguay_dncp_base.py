@@ -118,7 +118,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         for url in self.get_files_to_download(content):
             yield self.build_request(url, formatter=components(-1), dont_filter=True)
         pagination = content['pagination']
-        if pagination['current_page'] < pagination['total_pages'] and not self.sample:
+        if pagination['current_page'] < pagination['total_pages']:
             page = pagination['current_page'] + 1
             url = replace_parameters(response.request.url, page=page)
             yield self.build_request(

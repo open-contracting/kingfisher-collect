@@ -10,7 +10,7 @@ class Zambia(CompressedFileSpider):
     """
     Spider arguments
       sample
-        Download only data released on July 2016.
+        Sets the number of release packages to download.
     """
     name = 'zambia'
     data_type = 'record_package'
@@ -26,8 +26,6 @@ class Zambia(CompressedFileSpider):
     @handle_http_error
     def parse_list(self, response):
         urls = json.loads(response.text)['packagesPerMonth']
-        if self.sample:
-            urls = [urls[0]]
 
         for url in urls:
             # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7

@@ -8,7 +8,7 @@ class MoldovaOld(PeriodicSpider):
       http://opencontracting.date.gov.md/downloads
     Spider arguments
       sample
-        Downloads a single JSON file containing data for 2017.
+        Sets the number of files to download.
     """
     name = 'moldova_old'
     data_type = 'release_package'

@@ -19,5 +19,3 @@ class NigeriaBudeshiBase(SimpleSpider):
         project_list = json.loads(response.text)
         for project in project_list:
             yield self.build_request(self.url.format(project['id']), formatter=components(-2))
-            if self.sample:
-                return

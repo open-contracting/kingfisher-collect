@@ -28,9 +28,6 @@ class ChileCompraBaseSpider(IndexSpider):
             start = date(2008, 1, 1)
             stop = today
 
-        if self.sample:
-            start = stop
-
         for d in date_range_by_month(start, stop):
             yield self.build_request(
                 self.base_list_url.format(d, 0, self.limit),

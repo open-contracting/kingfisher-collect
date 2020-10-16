@@ -126,6 +126,12 @@ class KingfisherProcessAPI:
 
         return extension
 
+    def _is_sample(self, spider):
+        sample = False
+        if spider.sample:
+            sample = True
+        return sample
+
     def spider_closed(self, spider, reason):
         """
         Sends an API request to end the collection's store step.
@@ -137,7 +143,7 @@ class KingfisherProcessAPI:
         response = self.client.end_collection_store({
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': spider.sample,
+            'collection_sample': self._is_sample(spider),
         })
 
         if not response.ok:
@@ -155,7 +161,7 @@ class KingfisherProcessAPI:
         data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': spider.sample,
+            'collection_sample': self._is_sample(spider),
             'file_name': item['file_name'],
             'url': item['url'],
         }

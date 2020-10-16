@@ -8,7 +8,7 @@ class UruguayRecords(UruguayBase):
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
     Spider arguments
       sample
-        Download only 1 record.
+        Sets the number of record packages to download.
     """
     name = 'uruguay_records'
     data_type = 'record_package'

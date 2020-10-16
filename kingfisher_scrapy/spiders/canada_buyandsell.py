@@ -8,7 +8,7 @@ class CanadaBuyAndSell(SimpleSpider):
       https://buyandsell.gc.ca/procurement-data/open-contracting-data-standard-pilot/download-ocds-pilot-data
     Spider arguments
       sample
-        Downloads a release package with data for the oldest fiscal year available (2013-2014).
+        Set the number of files to download
     """
     name = 'canada_buyandsell'
     data_type = 'release_package'
@@ -21,8 +21,6 @@ class CanadaBuyAndSell(SimpleSpider):
             'https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-14-15.json',
             'https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-13-14.json',
         ]
-        if self.sample:
-            urls = [urls[0]]
 
         for url in urls:
             yield self.build_request(url, formatter=components(-1))

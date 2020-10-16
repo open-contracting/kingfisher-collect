@@ -6,7 +6,7 @@ class UKContractsFinder(IndexSpider):
     """
     Spider arguments
       sample
-        Downloads the first page of release packages returned by the main endpoint.
+        Sets the number of pages to download.
     """
     name = 'uk_contracts_finder'
     data_type = 'release_package_list_in_results'

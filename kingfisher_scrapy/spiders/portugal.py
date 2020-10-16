@@ -14,7 +14,7 @@ class Portugal(CompressedFileSpider):
       https://dados.gov.pt/pt/apidoc/#/datasets
     Spider arguments
       sample
-        Download only the first file in the dataset.
+        Sets the number of files to download.
     """
     name = 'portugal'
     data_type = 'record_package'

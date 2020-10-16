@@ -8,7 +8,7 @@ class UruguayHistorical(CompressedFileSpider, PeriodicSpider):
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
     Spider arguments
       sample
-        Download only data released on 2002.
+        Sets the number of years to download.
     """
     name = 'uruguay_historical'
     data_type = 'release_package'

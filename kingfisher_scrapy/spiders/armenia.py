@@ -15,7 +15,7 @@ class Armenia(LinksSpider):
 
     Spider arguments
       sample
-        Download only the first release package in the dataset.
+        Sets the number of releases package to download.
     """
     name = 'armenia'
     next_pointer = '/next_page/uri'
@@ -33,8 +33,7 @@ class Armenia(LinksSpider):
 
             # Use `dont_filter` in case the search for a successful timestamp used the same offset. Use `dont_retry`
             # since errors are expected.
-            if not self.sample:
-                yield self.next_link(response, dont_filter=True, meta={'dont_retry': True})
+            yield self.next_link(response, dont_filter=True, meta={'dont_retry': True})
         # Otherwise, parse the response as usual, then (1) pick a date range and (2) do a binary search within it.
         # This approach assumes that, if two offsets error, then intervening offsets error, too.
         else:

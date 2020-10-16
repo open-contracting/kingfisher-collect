@@ -13,8 +13,8 @@ class HondurasPortalRecords(HondurasPortalBase):
         ``oncae`` for "Oficina Normativa de Contratación y Adquisiciones del Estado" publisher.
         ``sefin`` for "Secretaria de Finanzas de Honduras" publisher.
       sample
-        Download only the first record package in the dataset.
-        If ``publisher`` is also provided, a single package is downloaded from that publisher.
+        Sets the number of record packages to download.
+        If ``publisher`` is also provided, the set number of packages is downloaded from that publisher.
     """
     name = 'honduras_portal_records'
     data_type = 'record_package'

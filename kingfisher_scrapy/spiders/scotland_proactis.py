@@ -7,7 +7,7 @@ class ScotlandProactis(ScotlandBase):
       https://sandbox4.proactislabs.com/v1
     Spider arguments
       sample
-        Download this month's release packages for each notice type available.
+        Sets the number of release packages to download.
       from_date
         Download only data from this month onward (YYYY-MM format). Defaults to '2019-01'.
     """

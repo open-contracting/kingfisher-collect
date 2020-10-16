@@ -12,7 +12,7 @@ class SpainZaragoza(SimpleSpider):
       https://www.zaragoza.es/docs-api_sede/
     Spider arguments
       sample
-        Downloads the first release returned by the API release endpoint.
+        Sets the number of releases to download.
       from_date
         Download only data from this date onward (YYYY-MM-DDTHH:mm:ss format).
         If ``until_date`` is provided, defaults to '2000-01-01T00:00:00'.
@@ -45,6 +45,3 @@ class SpainZaragoza(SimpleSpider):
         for contracting_process_id in ids:
             url = self.url + contracting_process_id['id']
             yield self.build_request(url, formatter=components(-1))
-
-            if self.sample:
-                return

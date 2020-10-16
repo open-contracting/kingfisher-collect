@@ -18,8 +18,8 @@ class HondurasONCAE(CompressedFileSpider):
         ``CE`` for "Módulo de Difusión Directa de Contratos" system.
         ``DDC`` for "Catálogo Electrónico" system.
       sample
-        Downloads the first package listed on the downloads page for each system.
-        If ``system`` is also provided, a single package is downloaded from that system.
+        Sets the number of release packages to download.
+        If ``system`` is also provided, the set number of release packages is downloaded from that system.
     """
     name = 'honduras_oncae'
     data_type = 'release_package'
@@ -52,14 +52,5 @@ class HondurasONCAE(CompressedFileSpider):
             current_system = path.replace('/datosabiertos/', "")
             if self.system and current_system != self.system:
                 continue
-            if self.sample:
-                # if we already downloaded a package for all the available systems
-                if downloaded_systems == self.available_systems:
-                    return
-                # if we already processed a file for the current system
-                if current_system in downloaded_systems:
-                    continue
-                # add the current system to the set of downloaded_systems
-                downloaded_systems.add(current_system)
             # URL looks like http://200.13.162.79/datosabiertos/HC1/HC1_datos_2020_json.zip
             yield self.build_request(url, formatter=components(-1))

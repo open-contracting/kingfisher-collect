@@ -10,7 +10,7 @@ class AustraliaNSW(SimpleSpider):
       https://github.com/NSW-eTendering/NSW-eTendering-API/blob/master/README.md
     Spider arguments
       sample
-        Download only 30 releases.
+        Set the number of pages to download.
     """
     name = 'australia_nsw'
     data_type = 'release_package'
@@ -30,7 +30,7 @@ class AustraliaNSW(SimpleSpider):
         data = json.loads(response.text)
         release_type = response.request.meta['release_type']
 
-        if 'links' in data and isinstance(data['links'], dict) and 'next' in data['links'] and not self.sample:
+        if 'links' in data and isinstance(data['links'], dict) and 'next' in data['links']:
             yield self.build_request(
                 data['links']['next'],
                 formatter=parameters('event', 'startRow'),
