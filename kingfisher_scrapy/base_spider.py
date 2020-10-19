@@ -1,18 +1,20 @@
 import json
 import os
+import shutil
 from abc import abstractmethod
 from datetime import datetime
 from io import BytesIO
 from math import ceil
 from zipfile import ZipFile
 
+import flattentool
 import ijson
 import scrapy
 from jsonpointer import resolve_pointer
 from rarfile import RarFile
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError
+from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, SpreadsheetExtensionError
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.util import add_query_string, handle_http_error
 
@@ -658,3 +660,66 @@ class IndexSpider(SimpleSpider):
         url_params = params.copy()
         url_params.update(self.additional_params)
         return util.replace_parameters(self.base_url, **url_params)
+
+
+class FlattenSpider(SimpleSpider):
+    """
+    This class makes it easy to collect data from CSV or XLSX files. Uses the ``unflatten`` command in Flatten Tool
+    for OCDS to convert a populated spreadsheet to JSON.
+
+    1. Inherit from ``FlattenSpider``
+    1. Set a ``data_type`` class attribute to the data type of the API responses
+    1. Set a ``ocds_version`` class attribute to the relevant schema version, '1.0' or '1.1' (default).
+    1. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
+
+    .. code-block:: python
+
+        import scrapy
+
+        from kingfisher_scrapy.base_spider import FlattenSpider
+
+        class MySpider(FlattenSpider):
+            name = 'my_spider'
+            data_type = 'release_list'
+
+            def start_requests(self):
+                yield scrapy.Request('https://example.com/api/releases.csv', meta={'file_name': 'all.json'})
+    """
+
+    schema_version_choices = {
+        '1.0': 'https://standard.open-contracting.org/schema/1__0__3/release-schema.json',
+        '1.1': 'https://standard.open-contracting.org/schema/1__1__5/release-schema.json',
+    }
+
+    @handle_http_error
+    def parse(self, response):
+        basename, extension = os.path.splitext(response.request.url)
+        directory = 'tmp'
+        os.mkdir(directory)
+        file_path = directory + '/tmp_file' + extension
+        with open(file_path, 'w') as f:
+            f.write(response.text)
+        input_format = extension.replace('.', '')
+
+        try:
+            if input_format == 'csv':
+                input_name = directory
+            else:
+                if input_format == 'xlsx':
+                    input_name = file_path
+                else:
+                    raise SpreadsheetExtensionError('The file has no extension or is not CSV or XLSX.')
+
+            flattentool.unflatten(
+                input_name,
+                root_list_path='releases',
+                root_id='ocid',
+                schema=self.schema_version_choices.get(self.ocds_version),
+                input_format=input_format,
+                output_name=file_path
+            )
+            with open(file_path, 'r') as f:
+                yield self.build_file_from_response(response, data=f.read(), data_type=self.data_type)
+
+        finally:
+            shutil.rmtree(directory)

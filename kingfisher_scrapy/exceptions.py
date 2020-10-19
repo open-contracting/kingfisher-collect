@@ -12,3 +12,7 @@ class SpiderArgumentError(KingfisherScrapyError):
 
 class MissingNextLinkError(KingfisherScrapyError):
     """Raised when a next link is not found on the first page of results"""
+
+
+class SpreadsheetExtensionError(KingfisherScrapyError):
+    """Raised when a file does not have an extension or is not CSV or XLSX"""
