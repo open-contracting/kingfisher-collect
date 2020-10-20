@@ -7,10 +7,10 @@ from scrapy.http import TextResponse
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
-def response_fixture(meta=None, **kwargs):
+def response_fixture(meta=None, url_path='', **kwargs):
     if meta is None:
         meta = {'file_name': 'test'}
-    request = Request('http://example.com', meta=meta)
+    request = Request('http://example.com' + url_path, meta=meta)
     kwargs.setdefault('status', 200)
     kwargs.setdefault('body', b'{"links": {"next": "http://example.com/next"}}')
     return TextResponse(request.url, encoding='utf-8', request=request, **kwargs)
