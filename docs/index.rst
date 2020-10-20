@@ -27,12 +27,9 @@ By default, these files are written to a ``data`` directory (you can :ref:`chang
        └── zambia
            └── 20200102_030405
                ├── <...>.json
-               ├── <...>.fileinfo
                └── <...>
 
-As you can see, the ``data`` directory contains a ``zambia`` spider directory (matching the spider's name), which in turn contains a ``20200102_030405`` crawl directory (matching the time at which you started the crawl – in this case, 2020-01-02 03:04:05).
-
-The crawl's directory will contain ``.json`` and ``.fileinfo`` files. The JSON files are the OCDS data. Each ``.fileinfo`` file contains metadata about a corresponding JSON file: the URL at which the JSON file was retrieved, along with other details.
+As you can see, the ``data`` directory contains a ``zambia`` spider directory (matching the spider's name), which in turn contains a ``20200102_030405`` crawl directory (matching the time at which you started the crawl – in this case, 2020-01-02 03:04:05). The crawl directory contains ``.json`` files – the OCDS data.
 
 .. toctree::
    :caption: Contents

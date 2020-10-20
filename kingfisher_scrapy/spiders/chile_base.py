@@ -69,8 +69,8 @@ class ChileCompraBaseSpider(IndexSpider):
             # }
             yield from self.handle_item(item)
 
-    def url_builder(self, params, data, response):
+    def url_builder(self, value, data, response):
         year = response.request.meta['year']
         month = response.request.meta['month']
 
-        return self.base_list_url.format(date(year, month, 1), params, self.limit)
+        return self.base_list_url.format(date(year, month, 1), value, self.limit)

@@ -23,5 +23,5 @@ class HondurasPortalBase(IndexSpider):
     def start_requests(self):
         url = self.url
         if self.publisher:
-            url = url + '&publisher=' + self.publisher
+            url = f'{url}&publisher={self.publisher}'
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
