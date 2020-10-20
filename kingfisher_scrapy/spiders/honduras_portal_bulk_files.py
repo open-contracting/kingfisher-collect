@@ -27,10 +27,10 @@ class HondurasPortalBulkFiles(SimpleSpider):
     @classmethod
     def from_crawler(cls, crawler, publisher=None, *args, **kwargs):
         spider = super().from_crawler(crawler, publisher=publisher, *args, **kwargs)
-        if publisher and publisher not in spider.publishers.keys():
+        if publisher and publisher not in spider.publishers:
             raise scrapy.exceptions.CloseSpider('Specified publisher is not recognized')
 
-        spider.publisher_filter = spider.publishers.get(publisher)
+        spider.publisher_name = spider.publishers.get(publisher)
 
         return spider
 
@@ -45,7 +45,7 @@ class HondurasPortalBulkFiles(SimpleSpider):
     def parse_list(self, response):
         items = json.loads(response.text)
         for item in items:
-            if self.publisher and self.publisher_filter not in item['publicador']:
+            if self.publisher and self.publisher_name not in item['publicador']:
                 continue
             url = item['urls']['json']
             yield self.build_request(url, formatter=components(-1))
