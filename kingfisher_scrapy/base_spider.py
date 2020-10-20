@@ -645,7 +645,7 @@ class IndexSpider(SimpleSpider):
         })
 
     def page_size_range_generator(self, data, response):
-        limit = self._resolve_limit(d>
+        limit = self._resolve_limit(data)
         count = resolve_pointer(data, self.count_pointer)
         # Assumes the first page is page 1, not page 0.
         return range(2, ceil(count / limit) + 1)
