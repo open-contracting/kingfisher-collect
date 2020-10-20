@@ -1,3 +1,4 @@
+flattentool<=0.14
 ijson>=3.1.1
 jsonpointer
 jsonref
