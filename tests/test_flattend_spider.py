@@ -1,5 +1,4 @@
 import pytest
-from click import File
 from flattentool.input import BadXLSXZipFile
 
 from kingfisher_scrapy.base_spider import FlattenSpider
