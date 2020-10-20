@@ -1,15 +1,16 @@
 import json
 import os
-import shutil
+import tempfile
 from abc import abstractmethod
 from datetime import datetime
 from io import BytesIO
 from math import ceil
+from urllib.parse import urlsplit
 from zipfile import ZipFile
 
-import flattentool
 import ijson
 import scrapy
+from flattentool import unflatten
 from jsonpointer import resolve_pointer
 from rarfile import RarFile
 
@@ -692,24 +693,21 @@ class FlattenSpider(SimpleSpider):
 
     @handle_http_error
     def parse(self, response):
-        basename, extension = os.path.splitext(response.request.url)
-        directory = 'tmp'
-        os.mkdir(directory)
-        file_path = directory + '/tmp_file' + extension
-        with open(file_path, 'w') as f:
-            f.write(response.text)
-        input_format = extension.replace('.', '')
-
-        try:
-            if input_format == 'csv':
+        file_name = urlsplit(response.request.url).path.split('/')[-1:][0]
+        with tempfile.TemporaryDirectory() as directory:
+            file_path = directory + '/' + file_name
+            if file_path.endswith('.csv'):
                 input_name = directory
+                input_format = 'csv'
+            elif file_path.endswith('.xlsx'):
+                input_name = file_path
+                input_format = 'xlsx'
             else:
-                if input_format == 'xlsx':
-                    input_name = file_path
-                else:
-                    raise SpreadsheetExtensionError('The file has no extension or is not CSV or XLSX.')
+                raise SpreadsheetExtensionError('The file has no extension or is not CSV or XLSX.')
+            with open(file_path, 'w') as f:
+                f.write(response.text)
 
-            flattentool.unflatten(
+            unflatten(
                 input_name,
                 root_list_path='releases',
                 root_id='ocid',
@@ -719,6 +717,3 @@ class FlattenSpider(SimpleSpider):
             )
             with open(file_path, 'r') as f:
                 yield self.build_file_from_response(response, data=f.read(), data_type=self.data_type)
-
-        finally:
-            shutil.rmtree(directory)
