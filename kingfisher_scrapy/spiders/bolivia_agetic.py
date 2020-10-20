@@ -1,3 +1,5 @@
+import json
+
 import scrapy
 
 from kingfisher_scrapy.base_spider import FlattenSpider
@@ -16,15 +18,17 @@ class BoliviaAgetic(FlattenSpider):
     data_type = 'release_list'
 
     def start_requests(self):
-        url = 'https://datos.gob.bo/id/dataset/contrataciones-agetic-2019-estandar-ocp'
-        yield scrapy.Request(url, meta={'file_name': 'list.html'}, callback=self.parse_list)
+        # A CKAN API JSON response.
+        url = 'https://datos.gob.bo/api/3/action/package_show?id=contrataciones-agetic-2019-estandar-ocp'
+        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
-        html_urls = response.xpath('//li[@class="resource-item"]//a/@href').getall()
-        for html_url in html_urls:
-            if 'ocds' in html_url:
-                yield self.build_request(html_url, formatter=components(-1))
+        data = json.loads(response.text)
+        for resource in data['result']['resources']:
+            if 'ocds' in resource['description']:
+                # Presently, only one URL matches.
+                yield self.build_request(resource['url'], formatter=components(-1))
 
             if self.sample:
                 break
