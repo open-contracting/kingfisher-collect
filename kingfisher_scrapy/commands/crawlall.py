@@ -36,13 +36,13 @@ class CrawlAll(ScrapyCommand):
         kwargs = {}
         extensions = {'scrapy.extensions.telnet.TelnetConsole': None}
 
-        if opts.sample:
-            kwargs['sample'] = opts.sample
-
         if opts.dry_run:
             kwargs['sample'] = 1
         else:
             extensions['kingfisher_scrapy.extensions.KingfisherFilesStore'] = 100
+
+        if opts.sample:
+            kwargs['sample'] = opts.sample
 
         BaseSpider.parse_json_lines = yield_nothing
         CompressedFileSpider.parse = yield_nothing
