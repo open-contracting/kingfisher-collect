@@ -31,7 +31,7 @@ class UpdateDocs(ScrapyCommand):
             """))
 
             for key, group in groupby(walk_modules('kingfisher_scrapy.spiders'), _keyfunc):
-                if key in ('spiders', 'test', 'fail'):
+                if key in ('spiders', 'fail'):
                     continue
 
                 f.write('\n{}\n{}\n'.format(key.capitalize(), '-' * len(key)))
