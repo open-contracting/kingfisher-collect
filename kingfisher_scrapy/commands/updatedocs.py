@@ -15,7 +15,10 @@ class UpdateDocs(ScrapyCommand):
         basedir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
         def _keyfunc(module):
-            return module.__name__.rsplit('.', 1)[-1].split('_', 1)[0]
+            module_name = module.__name__.rsplit('.', 1)[-1]
+            if module_name.startswith(('costa_rica', 'dominican_republic')):
+                return '_'.join(module_name.split('_', 2)[:2])
+            return module_name.split('_', 1)[0]
 
         with open(os.path.join(basedir, 'docs', 'spiders.rst'), 'w') as f:
             f.write(dedent("""\
@@ -34,7 +37,7 @@ class UpdateDocs(ScrapyCommand):
                 if key in ('spiders', 'fail'):
                     continue
 
-                f.write('\n{}\n{}\n'.format(key.capitalize(), '-' * len(key)))
+                f.write('\n{}\n{}\n'.format(key.replace('_', ' ').title(), '-' * len(key)))
 
                 for module in group:
                     for cls in iter_spider_classes(module):
