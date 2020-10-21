@@ -17,5 +17,5 @@ class CanadaMontreal(IndexSpider):
     formatter = staticmethod(parameters('offset'))
 
     def start_requests(self):
-        url = 'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit={step}'.format(step=self.limit)
+        url = f'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit={self.limit}'
         yield scrapy.Request(url, meta={'file_name': 'offset-0.json'}, callback=self.parse_list)
