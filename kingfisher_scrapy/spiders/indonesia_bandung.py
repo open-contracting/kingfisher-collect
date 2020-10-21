@@ -12,7 +12,7 @@ class IndonesiaBandung(BaseSpider):
     API endpoints
       Get contract list by year
         Link
-          https://birms.bandung.go.id/api/contracts/year/{year}?page={page}
+          ``https://birms.bandung.go.id/api/contracts/year/{year}?page={page}``
         Parameters
           year
             contract year number
@@ -20,7 +20,7 @@ class IndonesiaBandung(BaseSpider):
             page number
       Get contract detail by OCID
         Link
-          https://birms.bandung.go.id/api/newcontract/ocds-afzrfb-{source-database}-{year}-{uniqid}
+          ``https://birms.bandung.go.id/api/newcontract/ocds-afzrfb-{source-database}-{year}-{uniqid}``
         Parameters
           source-database
             (b)irms or (s)pse
