@@ -16,8 +16,6 @@ class OpenOpps(BaseSpider):
     Swagger API documentation
       https://api.openopps.com/api/schema/
     Spider arguments
-      sample
-        Download only data released on 2011-01-01.
       from_date
         Download only data from this date onward (YYYY-MM-DD format).
         If ``until_date`` is provided, defaults to '2011-01-01'.
@@ -101,28 +99,23 @@ class OpenOpps(BaseSpider):
     def start_requests_pages(self):
         search_h = 24  # start splitting one day search
 
-        # Case if we want to download a sample
-        if self.sample:
-            date = datetime(2011, 1, 1)
-            yield from self.request_range_per_day(date, date, search_h)
+        # Case if we have date range parameters
+        if self.from_date and self.until_date:
+            yield from self.request_range_per_day(self.from_date, self.until_date, search_h)
         else:
-            # Case if we have date range parameters
-            if self.from_date and self.until_date:
-                yield from self.request_range_per_day(self.from_date, self.until_date, search_h)
-            else:
-                # Use larger ranges for filters with less than (api_limit) search results
-                release_date_gte_list = ['', '2009-01-01', '2010-01-01', '2010-07-01']
-                release_date_lte_list = ['2008-12-31', '2009-12-31', '2010-06-30', '2010-12-31']
+            # Use larger ranges for filters with less than (api_limit) search results
+            release_date_gte_list = ['', '2009-01-01', '2010-01-01', '2010-07-01']
+            release_date_lte_list = ['2008-12-31', '2009-12-31', '2010-06-30', '2010-12-31']
 
-                for i in range(len(release_date_gte_list)):
-                    yield self.request_range(release_date_gte_list[i], release_date_lte_list[i], search_h)
+            for i in range(len(release_date_gte_list)):
+                yield self.request_range(release_date_gte_list[i], release_date_lte_list[i], search_h)
 
-                # Use smaller ranges (day by day) for filters with more than (api_limit) search results
-                for year in range(2011, datetime.now().year + 1):
-                    start_date = datetime(year, 1, 1)
-                    end_date = datetime(year, datetime.now().month, datetime.now().day) \
-                        if year == datetime.now().year else datetime(year, 12, 31)
-                    yield from self.request_range_per_day(start_date, end_date, search_h)
+            # Use smaller ranges (day by day) for filters with more than (api_limit) search results
+            for year in range(2011, datetime.now().year + 1):
+                start_date = datetime(year, 1, 1)
+                end_date = datetime(year, datetime.now().month, datetime.now().day) \
+                    if year == datetime.now().year else datetime(year, 12, 31)
+                yield from self.request_range_per_day(start_date, end_date, search_h)
 
     def request_range(self, start_date, end_date, search_h):
         return self.build_request(
@@ -160,8 +153,6 @@ class OpenOpps(BaseSpider):
 
                 if all_data:
                     yield self.build_file_from_response(response, data=all_data, data_type=self.data_type)
-                    if self.sample:
-                        return
 
                 next_url = results.get('next')
                 if next_url:

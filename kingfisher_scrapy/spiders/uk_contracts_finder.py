@@ -3,11 +3,6 @@ from kingfisher_scrapy.util import parameters
 
 
 class UKContractsFinder(IndexSpider):
-    """
-    Spider arguments
-      sample
-        Downloads the first page of release packages returned by the main endpoint.
-    """
     name = 'uk_contracts_finder'
     data_type = 'release_package_list_in_results'
     encoding = 'iso-8859-1'

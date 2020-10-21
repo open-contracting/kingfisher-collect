@@ -10,9 +10,6 @@ class NepalDhangadhi(SimpleSpider):
     """
     Bulk download documentation
       https://ims.susasan.org/dhangadhi/about
-    Spider arguments
-      sample
-        Download only the first release package in the dataset.
     """
     name = 'nepal_dhangadhi'
     data_type = 'release_package'
@@ -30,5 +27,3 @@ class NepalDhangadhi(SimpleSpider):
         data = json.loads(response.text)
         for item in data['data']['fiscal_years']:
             yield self.build_request(pattern.format(item['name']), formatter=components(-1))
-            if self.sample:
-                break

@@ -10,7 +10,7 @@ class ColombiaBulk(CompressedFileSpider):
       https://www.colombiacompra.gov.co/transparencia/datos-json
     Spider arguments
       sample
-        Downloads the zip file and sends 10 releases to kingfisher process.
+        Sets the number of zip files to download and sets the number of releases to sent to kingfisher process.
     """
 
     name = 'colombia_bulk'
@@ -33,8 +33,6 @@ class ColombiaBulk(CompressedFileSpider):
     @handle_http_error
     def parse_list(self, response):
         urls = response.xpath('//a[@class="enlaces_contenido"]/@href').getall()
-        if self.sample:
-            urls = [urls[0]]
         for url in urls:
             # URL looks like https://apiocds.colombiacompra.gov.co:8443/ArchivosSECOP/Archivos/SI2011.zip
             yield self.build_request(url, formatter=components(-1))

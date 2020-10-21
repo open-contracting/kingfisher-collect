@@ -10,9 +10,6 @@ class KenyaMakueni(IndexSpider):
     """
     Swagger API documentation
         https://opencontracting.makueni.go.ke/swagger-ui.html#/ocds-controller
-    Spider arguments
-      sample
-        Download only the first 10 release packages in the dataset.
     """
     name = 'kenya_makueni'
     data_type = 'release_package_list'
@@ -25,15 +22,11 @@ class KenyaMakueni(IndexSpider):
     base_url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={limit}&pageNumber={page}'
 
     def start_requests(self):
-        if self.sample:
-            url = self.url.format(limit=self.limit, page=0)
-            yield self.build_request(url, formatter=parameters('pageNumber'))
-        else:
-            yield scrapy.Request(
-                'https://opencontracting.makueni.go.ke/api/ocds/release/count',
-                meta={'file_name': 'count.json'},
-                callback=self.parse_list
-            )
+        yield scrapy.Request(
+            'https://opencontracting.makueni.go.ke/api/ocds/release/count',
+            meta={'file_name': 'count.json'},
+            callback=self.parse_list
+        )
 
     def range_generator(self, data, response):
         return range(ceil(int(response.text) / self.limit))

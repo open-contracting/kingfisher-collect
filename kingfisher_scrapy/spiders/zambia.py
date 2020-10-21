@@ -7,11 +7,6 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class Zambia(CompressedFileSpider):
-    """
-    Spider arguments
-      sample
-        Download only data released on July 2016.
-    """
     name = 'zambia'
     data_type = 'record_package'
     ocds_version = '1.0'
@@ -26,8 +21,6 @@ class Zambia(CompressedFileSpider):
     @handle_http_error
     def parse_list(self, response):
         urls = json.loads(response.text)['packagesPerMonth']
-        if self.sample:
-            urls = [urls[0]]
 
         for url in urls:
             # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7

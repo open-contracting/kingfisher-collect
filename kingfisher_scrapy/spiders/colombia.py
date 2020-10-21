@@ -15,8 +15,6 @@ class Colombia(LinksSpider):
     Swagger API documentation
       https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/
     Spider arguments
-      sample
-        Download only the first page of results.
       page
         The page number from which to start crawling.
       year
@@ -72,8 +70,7 @@ class Colombia(LinksSpider):
         try:
             if self.is_http_success(response):
                 yield self.build_file_from_response(response, data_type=self.data_type)
-                if not self.sample:
-                    yield self.next_link(response)
+                yield self.next_link(response)
             elif response.status == 503:
                 self.retry(response, 'Sleeping due to HTTP error {status} from {url}')
             else:

@@ -44,26 +44,37 @@ class Validate:
         return item
 
 
-class Pluck:
+class Sample:
+    """
+    Drop items and close the spider when more than 1 item is scraped
+    """
     def __init__(self):
-        self.processed = set()
+        self.item_count = 0
+
+    def process_item(self, item, spider):
+        if not spider.sample:
+            return item
+        # Drop FileError items, so that we keep trying to get data.
+        if not isinstance(item, (File, FileItem)):
+            raise DropItem()
+        if self.item_count >= spider.sample:
+            spider.crawler.engine.close_spider(spider, 'closespider_sample')
+            raise DropItem
+        self.item_count += 1
+        return item
+
+    def open_spider(self, spider):
+        if spider.sample:
+            spider.crawler.engine.downloader.total_concurrency = 1
+
+
+class Pluck:
 
     def process_item(self, item, spider):
         # Skip this pipeline stage unless explicitly requested.
         if not spider.pluck:
             return item
-
-        # Drop any extra items that are yielded before the spider closes.
-        if spider.name in self.processed:
-            spider.crawler.engine.close_spider(spider, reason='processed')
-            raise DropItem()
-
-        # Drop FileError items, so that we keep trying to get data.
-        if not isinstance(item, (File, FileItem)):
-            raise DropItem()
-
         value = None
-
         if spider.package_pointer:
             try:
                 package = _get_package(item)
@@ -87,8 +98,6 @@ class Pluck:
                         value = max(_resolve_pointer(r, spider.release_pointer) for r in data['releases'])
                     elif 'compiledRelease' in data:
                         value = _resolve_pointer(data['compiledRelease'], spider.release_pointer)
-
-        self.processed.add(spider.name)
 
         if value and spider.truncate:
             value = value[:spider.truncate]

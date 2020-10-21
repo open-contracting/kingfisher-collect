@@ -78,7 +78,7 @@ def test_parse_json_lines(sample, len_items):
         }
 
 
-@pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), ('true', 1, 10)])
+@pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), (1, 1, 10)])
 def test_parse_release_package(sample, len_items, len_releases):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
@@ -105,7 +105,10 @@ def test_parse_release_package(sample, len_items, len_releases):
     assert item['encoding'] == 'utf-8'
     assert item['post_to_api'] is False
 
-    assert len(items) == len_items
+    if not sample:
+        assert len(items) == len_items
+    if sample:
+        assert sample == len_items
 
     for i, item in enumerate(items, 1):
         assert type(item) is FileItem

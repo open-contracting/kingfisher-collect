@@ -5,11 +5,6 @@ from kingfisher_scrapy.util import handle_http_error
 
 
 class NigeriaPortal(SimpleSpider):
-    """
-    Spider arguments
-      sample
-        Download only the first release package in the dataset.
-    """
     name = 'nigeria_portal'
     data_type = 'release_package'
 
@@ -36,7 +31,5 @@ class NigeriaPortal(SimpleSpider):
         for item in checks:
             if 'dnn$ctr' in item and 'chbIsDoing' in item:
                 formdata.update({item: 'on'})
-                if self.sample:
-                    break
 
         yield scrapy.FormRequest.from_response(response, formdata=formdata, meta={'file_name': 'all.json'})

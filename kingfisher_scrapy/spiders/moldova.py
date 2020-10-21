@@ -5,11 +5,6 @@ from kingfisher_scrapy.util import components, handle_http_error, join, paramete
 
 
 class Moldova(SimpleSpider):
-    """
-    Spider arguments
-      sample
-        Downloads the first page of records for each available endpoint (budgets, tenders).
-    """
     name = 'moldova'
     data_type = 'record_package'
 
@@ -37,9 +32,6 @@ class Moldova(SimpleSpider):
         for item in data['data']:
             url = replace_parameters(response.request.url, offset=None) + item['ocid']
             yield self.build_request(url, formatter=components(-2))
-
-        if self.sample:
-            return
 
         url = replace_parameters(response.request.url, offset=data['offset'])
         yield self.build_request(url, formatter=join(components(-1), parameters('offset')), callback=self.parse_list)

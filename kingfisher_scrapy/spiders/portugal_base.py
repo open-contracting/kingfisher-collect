@@ -22,7 +22,7 @@ class PortugalBase(SimpleSpider):
     def parse_data(self, response):
         json_array = []
         for number, data in enumerate(ijson.items(BytesIO(response.body), '', multiple_values=True, use_float=True)):
-            if number == 10 and self.sample:
+            if number == 10:
                 break
             # get records service returns release packages
             if self.data_type == 'record_package':
@@ -35,8 +35,7 @@ class PortugalBase(SimpleSpider):
         if json_array:
             yield self.build_file_from_response(response, data=json.dumps(json_array), data_type=self.data_type)
 
-        if not self.sample:
-            next_url = response.request.url
-            offset = int(get_parameter_value(next_url, 'offset'))
-            url = replace_parameters(next_url, offset=offset + 1)
-            yield self.build_request(url, formatter=parameters('offset'), callback=self.parse_data)
+        next_url = response.request.url
+        offset = int(get_parameter_value(next_url, 'offset'))
+        url = replace_parameters(next_url, offset=offset + 1)
+        yield self.build_request(url, formatter=parameters('offset'), callback=self.parse_data)

@@ -12,9 +12,6 @@ class Portugal(CompressedFileSpider):
       https://dados.gov.pt/pt/apidoc/
     Swagger API documentation
       https://dados.gov.pt/pt/apidoc/#/datasets
-    Spider arguments
-      sample
-        Download only the first file in the dataset.
     """
     name = 'portugal'
     data_type = 'record_package'

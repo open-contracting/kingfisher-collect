@@ -8,9 +8,6 @@ class GeorgiaRecords(LinksSpider):
     """
     Swagger API documentation
       https://odapi.spa.ge/api/swagger.ui
-    Spider arguments
-      sample
-        Downloads the first page of packages returned by the record list endpoint.
     """
     name = 'georgia_records'
     data_type = 'record_package'

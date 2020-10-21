@@ -7,11 +7,6 @@ from kingfisher_scrapy.util import components, handle_http_error, parameters, re
 
 
 class MoldovaMTender(SimpleSpider):
-    """
-    Spider arguments
-      sample
-        Download only one set of releases.
-    """
     name = 'moldova_mtender'
     data_type = 'release_package'
 
@@ -28,9 +23,6 @@ class MoldovaMTender(SimpleSpider):
             return
         for item in data['data']:
             yield self.build_request(base_url + item['ocid'], formatter=components(-1))
-
-        if self.sample:
-            return
 
         url = replace_parameters(response.request.url, offset=data['offset'])
         yield self.build_request(url, formatter=parameters('offset'), callback=self.parse_list)

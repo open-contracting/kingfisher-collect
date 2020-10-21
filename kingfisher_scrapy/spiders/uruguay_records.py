@@ -6,9 +6,6 @@ class UruguayRecords(UruguayBase):
     """
     API documentation
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
-    Spider arguments
-      sample
-        Download only 1 record.
     """
     name = 'uruguay_records'
     data_type = 'record_package'

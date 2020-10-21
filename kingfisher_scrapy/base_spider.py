@@ -25,7 +25,7 @@ class BaseSpider(scrapy.Spider):
 
     .. code:: bash
 
-        scrapy crawl spider_name -a sample=true
+        scrapy crawl spider_name -a sample=10
 
     Set the start date for range to download:
 
@@ -83,7 +83,12 @@ class BaseSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
-        self.sample = sample == 'true'
+        if sample == 'true' or sample is True:
+            self.sample = 1
+        elif sample == 'false' or sample is False:
+            self.sample = None
+        else:
+            self.sample = sample
         self.note = note
         self.from_date = from_date
         self.until_date = until_date
@@ -125,6 +130,12 @@ class BaseSpider(scrapy.Spider):
 
         if spider.package_pointer and spider.release_pointer:
             raise SpiderArgumentError('You cannot specify both package_pointer and release_pointer spider arguments.')
+
+        if spider.sample:
+            try:
+                spider.sample = int(spider.sample)
+            except ValueError:
+                raise SpiderArgumentError('spider argument sample: invalid integer value: {}'.format(spider.sample))
 
         if spider.crawl_time:
             try:
@@ -453,8 +464,7 @@ class LinksSpider(SimpleSpider):
     def parse(self, response):
         yield from super().parse(response)
 
-        if not self.sample:
-            yield self.next_link(response)
+        yield self.next_link(response)
 
     def next_link(self, response, **kwargs):
         """
@@ -518,9 +528,6 @@ class PeriodicSpider(SimpleSpider):
     def start_requests(self):
         start = self.from_date
         stop = self.until_date
-
-        if self.sample:
-            start = stop
 
         if self.date_format == '%Y':
             date_range = util.date_range_by_year(start.year, stop.year)
@@ -614,8 +621,6 @@ class IndexSpider(SimpleSpider):
             data = json.loads(response.text)
         except json.JSONDecodeError:
             data = None
-        if self.sample:
-            return
         for value in self.range_generator(data, response):
             yield self.build_request(self.url_builder(value, data, response), formatter=self.formatter, **kwargs)
 

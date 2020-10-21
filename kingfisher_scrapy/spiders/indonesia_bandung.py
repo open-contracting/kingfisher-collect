@@ -26,9 +26,6 @@ class IndonesiaBandung(BaseSpider):
             contract year number
           uniqid
             release id
-    Spider arguments
-      sample
-        Downloads the first release listed for 2013
     """
     name = 'indonesia_bandung'
     data_type = 'release'
@@ -49,8 +46,6 @@ class IndonesiaBandung(BaseSpider):
             url = item['uri']
             if url:
                 yield self.build_request(url, formatter=components(-1))
-                if self.sample:
-                    break
         else:
             next_page_url = data.get('next_page_url')
             if next_page_url:

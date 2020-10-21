@@ -14,7 +14,7 @@ class ArgentinaBuenosAires(CompressedFileSpider):
       https://data.buenosaires.gob.ar/dataset/buenos-aires-compras/archivo/2a3d077c-71b6-4ba7-8924-f3e38cf1b8fc
     Spider arguments
       sample
-        Downloads the zip file and sends 10 releases to kingfisher process.
+        Downloads the zip file and set the number of releases to sent to kingfisher process.
     """
 
     name = 'argentina_buenos_aires'

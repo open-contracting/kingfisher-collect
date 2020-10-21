@@ -137,7 +137,7 @@ class KingfisherProcessAPI:
         response = self.client.end_collection_store({
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': spider.sample,
+            'collection_sample': bool(spider.sample),
         })
 
         if not response.ok:
@@ -155,7 +155,7 @@ class KingfisherProcessAPI:
         data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': spider.sample,
+            'collection_sample': bool(spider.sample),
             'file_name': item['file_name'],
             'url': item['url'],
         }

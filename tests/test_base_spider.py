@@ -11,11 +11,12 @@ from tests import spider_with_crawler
 
 
 @pytest.mark.parametrize('sample,expected', [
-    ('true', True),
-    ('false', False),
-    (True, False),
-    (False, False),
-    (None, False),
+    ('true', 1),
+    ('false', None),
+    (True, 1),
+    (False, None),
+    (None, None),
+    (3, 3)
 ])
 def test_sample(sample, expected):
     spider = BaseSpider(name='test', sample=sample)
@@ -26,7 +27,7 @@ def test_sample(sample, expected):
 def test_sample_no_kwarg():
     spider = BaseSpider(name='test')
 
-    assert spider.sample is False
+    assert spider.sample is None
 
 
 @pytest.mark.parametrize('status,expected', [(100, False), (200, True), (204, True), (300, False), (500, False)])

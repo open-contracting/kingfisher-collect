@@ -10,9 +10,6 @@ class ChileCompraBulk(CompressedFileSpider):
     """
     Bulk download documentation
       https://desarrolladores.mercadopublico.cl/OCDS/DescargaMasiva
-    Spider arguments
-      sample
-        Download only data released this month.
     """
 
     name = 'chile_compra_bulk'
@@ -28,8 +25,7 @@ class ChileCompraBulk(CompressedFileSpider):
 
         start = date(2009, 1, 1)
         stop = date.today().replace(day=1)
-        if self.sample:
-            start = stop
+
         for d in date_range_by_month(start, stop):
             yield self.build_request(url.format(d), formatter=components(-1))
 

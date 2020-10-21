@@ -6,8 +6,6 @@ class ParaguayDNCPReleases(ParaguayDNCPBaseSpider):
     Swagger API documentation
       https://contrataciones.gov.py/datos/api/v3/doc
     Spider arguments
-      sample
-        Download only 10 releases.
       from_date
         Download only releases from this release.date onward (YYYY-MM-DDTHH:mm:ss format).
         If `from_date` is not provided, defaults to '2010-01-01T00:00:00'.
