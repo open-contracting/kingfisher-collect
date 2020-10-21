@@ -707,6 +707,13 @@ class FlattenSpider(SimpleSpider):
             with open(file_path, 'w') as f:
                 f.write(response.text)
 
+            yield self.build_file_from_response(
+                response,
+                data_type=self.data_type,
+                post_to_api=False,
+                file_name=file_name
+            )
+
             unflatten(
                 input_name,
                 root_list_path='releases',
