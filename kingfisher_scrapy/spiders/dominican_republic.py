@@ -5,6 +5,10 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class DominicanRepublic(CompressedFileSpider):
+    """
+    Bulk download documentation
+      https://www.dgcp.gob.do/estandar-mundial-ocds/
+    """
     name = 'dominican_republic'
     data_type = 'release_package'
     compressed_file_format = 'release_package'
