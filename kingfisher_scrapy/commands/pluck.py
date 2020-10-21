@@ -47,7 +47,7 @@ class Pluck(ScrapyCommand):
                     skipped[spidercls.skip_pluck].append(spider_name)
                 else:
                     running.append(spider_name)
-                    runner.crawl(spidercls, year=year, package_pointer=opts.package_pointer, sample=1,
+                    runner.crawl(spidercls, year=year, sample=1, package_pointer=opts.package_pointer,
                                  release_pointer=opts.release_pointer, truncate=opts.truncate)
 
         with open('pluck_skipped.json', 'w') as f:

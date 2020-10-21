@@ -40,7 +40,7 @@ class KingfisherPluck:
         if not spider.pluck or spider.name in self.spiders_seen:
             return
 
-        self._write(spider, reason)
+        self._write(spider, f'closed: {reason}')
 
     def _write(self, spider, value):
         with open(os.path.join(self.directory, _pluck_filename(spider)), 'a+') as f:

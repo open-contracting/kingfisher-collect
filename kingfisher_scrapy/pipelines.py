@@ -54,6 +54,7 @@ class Sample:
     def process_item(self, item, spider):
         if not spider.sample:
             return item
+
         # Drop FileError items, so that we keep trying to get data.
         if not isinstance(item, (File, FileItem)):
             raise DropItem()
@@ -69,17 +70,16 @@ class Sample:
 
 
 class Pluck:
-
     def process_item(self, item, spider):
-        # Skip this pipeline stage unless explicitly requested.
         if not spider.pluck:
             return item
+
         value = None
         if spider.package_pointer:
             try:
                 package = _get_package(item)
             except NotImplementedError as e:
-                value = f'error: {str(e)}'
+                value = f'error: {e}'
             else:
                 value = _resolve_pointer(package, spider.package_pointer)
         else:  # spider.release_pointer
