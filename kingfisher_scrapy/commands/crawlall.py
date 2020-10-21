@@ -28,8 +28,9 @@ class CrawlAll(ScrapyCommand):
         parser.add_option('--sample', type=int, help='The number of files to write')
 
     def run(self, args, opts):
-        if opts.sample and opts.dry_run:
-            raise UsageError('You cannot specify both --dry-run and --sample.')
+        if not (bool(opts.dry_run) ^ bool(opts.sample)):
+            raise UsageError('Exactly one of --dry-run or --sample must be set.')
+
         if opts.sample is not None and opts.sample <= 0:
             raise UsageError('--sample must be a positive integer.')
 
