@@ -58,7 +58,7 @@ class Sample:
         if not isinstance(item, (File, FileItem)):
             raise DropItem()
         if self.item_count >= spider.sample:
-            spider.crawler.engine.close_spider(spider, 'closespider_sample')
+            spider.crawler.engine.close_spider(spider, 'sample')
             raise DropItem
         self.item_count += 1
         return item
