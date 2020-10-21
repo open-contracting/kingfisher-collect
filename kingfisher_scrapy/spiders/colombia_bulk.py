@@ -6,11 +6,10 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class ColombiaBulk(CompressedFileSpider):
     """
+    Domain
+      Colombia Compra Eficiente (CCE)
     Bulk download documentation
       https://www.colombiacompra.gov.co/transparencia/datos-json
-    Spider arguments
-      sample
-        Sets the number of zip files to download and sets the number of releases to sent to kingfisher process.
     """
 
     name = 'colombia_bulk'

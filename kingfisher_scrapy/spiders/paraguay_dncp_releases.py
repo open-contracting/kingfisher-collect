@@ -3,6 +3,8 @@ from kingfisher_scrapy.spiders.paraguay_dncp_base import ParaguayDNCPBaseSpider
 
 class ParaguayDNCPReleases(ParaguayDNCPBaseSpider):
     """
+    Domain
+      Dirección Nacional de Contrataciones Públicas (DNCP)
     Swagger API documentation
       https://contrataciones.gov.py/datos/api/v3/doc
     Spider arguments

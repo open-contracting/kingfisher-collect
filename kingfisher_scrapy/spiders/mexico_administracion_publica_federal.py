@@ -6,6 +6,8 @@ from kingfisher_scrapy.util import parameters
 
 class MexicoAdministracionPublicaFederal(IndexSpider):
     """
+    Domain
+      Administración Pública Federal (APF)
     Bulk download documentation
       https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
     """

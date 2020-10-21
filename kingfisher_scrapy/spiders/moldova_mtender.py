@@ -7,6 +7,10 @@ from kingfisher_scrapy.util import components, handle_http_error, parameters, re
 
 
 class MoldovaMTender(SimpleSpider):
+    """
+    Domain
+      MTender
+    """
     name = 'moldova_mtender'
     data_type = 'release_package'
 

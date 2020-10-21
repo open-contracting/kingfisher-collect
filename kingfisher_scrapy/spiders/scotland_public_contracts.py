@@ -3,6 +3,8 @@ from kingfisher_scrapy.spiders.scotland_base import ScotlandBase
 
 class ScotlandPublicContracts(ScotlandBase):
     """
+    Domain
+      Public Contracts Scotland
     API documentation
       https://api.publiccontractsscotland.gov.uk/v1
     Spider arguments

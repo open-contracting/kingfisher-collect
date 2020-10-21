@@ -8,6 +8,8 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class AfghanistanReleases(SimpleSpider):
     """
+    Domain
+      Afghanistan Government Electronic & Open Procurement System (AGEOPS)
     API documentation
       https://ocds.ageops.net/
     """

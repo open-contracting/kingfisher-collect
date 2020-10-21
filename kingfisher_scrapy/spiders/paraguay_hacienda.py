@@ -10,6 +10,8 @@ from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 class ParaguayHacienda(BaseSpider):
     """
+    Domain
+      Ministerio de Hacienda
     Swagger API documentation
       https://datos.hacienda.gov.py/odmh-api-v1/api-docs/
     Environment variables

@@ -5,6 +5,8 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 
 class ArgentinaVialidad(SimpleSpider):
     """
+    Coverage
+      Ministerio de Obras Públicas: Vialidad Nacional
     API documentation
       https://datosabiertos.vialidad.gob.ar/ui/index.html#!/datos_abiertos
     """

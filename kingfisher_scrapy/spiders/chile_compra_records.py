@@ -4,6 +4,8 @@ from kingfisher_scrapy.util import components
 
 class ChileCompraRecords(ChileCompraBaseSpider):
     """
+    Domain
+      ChileCompra
     Swagger API documentation
       https://desarrolladores.mercadopublico.cl/docs/services/5a9ed02f718ed712f4403e75/operations/data-listaa-omes-agno-mes?
     """

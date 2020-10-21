@@ -9,10 +9,6 @@ from kingfisher_scrapy.util import components, handle_http_error, parameters, re
 
 
 class ParaguayDNCPBaseSpider(SimpleSpider):
-    """ This base class contains methods used for Paraguay DNCP's
-    authentication protocol.
-    """
-
     # request limits: since we can't control when Scrapy decides to send a
     # request, values here are slighly less than real limits.
     start_time = None

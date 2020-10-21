@@ -4,6 +4,10 @@ from kingfisher_scrapy.base_spider import CompressedFileSpider
 
 
 class GeorgiaOpenData(CompressedFileSpider):
+    """
+    Domain
+      State Procurement Agency (SPA)
+    """
     name = 'georgia_opendata'
     data_type = 'release_package'
     compressed_file_format = 'release_package'

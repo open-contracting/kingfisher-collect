@@ -3,6 +3,10 @@ from kingfisher_scrapy.util import parameters
 
 
 class UKContractsFinder(IndexSpider):
+    """
+    Domain
+      Contracts Finder
+    """
     name = 'uk_contracts_finder'
     data_type = 'release_package_list_in_results'
     encoding = 'iso-8859-1'

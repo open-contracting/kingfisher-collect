@@ -6,6 +6,8 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class EcuadorEmergency(SimpleSpider):
     """
+    Domain
+      Servicio Nacional de Contratación Pública
     Bulk download documentation
       https://portal.compraspublicas.gob.ec/sercop/data-estandar-ocds/
     """

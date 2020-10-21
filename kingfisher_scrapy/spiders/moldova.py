@@ -5,6 +5,10 @@ from kingfisher_scrapy.util import components, handle_http_error, join, paramete
 
 
 class Moldova(SimpleSpider):
+    """
+    Domain
+      MTender
+    """
     name = 'moldova'
     data_type = 'record_package'
 

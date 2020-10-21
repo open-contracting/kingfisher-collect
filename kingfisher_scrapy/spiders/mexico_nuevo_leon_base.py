@@ -3,9 +3,6 @@ from kingfisher_scrapy.util import components
 
 
 class MexicoNuevoLeonBase(CompressedFileSpider):
-    """
-    Base class to download Mexico Nuevo Leon data
-    """
     archive_format = 'rar'
 
     def start_requests(self):

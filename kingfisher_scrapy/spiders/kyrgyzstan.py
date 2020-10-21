@@ -5,6 +5,10 @@ from kingfisher_scrapy.util import parameters
 
 
 class Kyrgyzstan(LinksSpider):
+    """
+    Domain
+      Ministry of Finance
+    """
     name = 'kyrgyzstan'
     data_type = 'release_package'
     next_page_formatter = staticmethod(parameters('offset'))

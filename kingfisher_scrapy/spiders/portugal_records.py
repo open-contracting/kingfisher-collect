@@ -3,6 +3,8 @@ from kingfisher_scrapy.spiders.portugal_base import PortugalBase
 
 class PortugalRecords(PortugalBase):
     """
+    Domain
+      Instituto dos Mercados Públicos, do Imobiliário e da Construção (IMPIC)
     Swagger API documentation
       http://www.base.gov.pt/swagger/index.html
     Spider arguments

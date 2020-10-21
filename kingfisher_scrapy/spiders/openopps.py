@@ -11,6 +11,8 @@ from kingfisher_scrapy.util import parameters
 
 class OpenOpps(BaseSpider):
     """
+    Domain
+      OpenOpps
     API documentation
       https://docs.google.com/document/d/1u0da3BTU7fBFjX6i7j_tKXa1YwdXL7hY4Kw9GdsaAr0/edit
     Swagger API documentation

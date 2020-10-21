@@ -8,10 +8,11 @@ from kingfisher_scrapy.util import components, date_range_by_month
 
 class ChileCompraBulk(CompressedFileSpider):
     """
+    Domain
+      ChileCompra
     Bulk download documentation
       https://desarrolladores.mercadopublico.cl/OCDS/DescargaMasiva
     """
-
     name = 'chile_compra_bulk'
     data_type = 'record_package'
 

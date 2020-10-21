@@ -8,6 +8,8 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class NepalDhangadhi(SimpleSpider):
     """
+    Domain
+      Dhangadhi Infrastructure Management System (IMS)
     Bulk download documentation
       https://ims.susasan.org/dhangadhi/about
     """

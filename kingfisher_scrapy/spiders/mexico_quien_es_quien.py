@@ -8,6 +8,8 @@ from kingfisher_scrapy.util import handle_http_error, parameters
 
 class MexicoQuienEsQuien(IndexSpider):
     """
+    Domain
+      QuiénEsQuién.Wiki
     API documentation
       https://quienesquienapi.readthedocs.io/es/latest/
     Swagger API documentation

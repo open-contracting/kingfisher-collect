@@ -8,16 +8,20 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class HondurasONCAE(CompressedFileSpider):
     """
+    Domain
+      Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE)
     Bulk download documentation
       http://oncae.gob.hn/datosabiertos
     Spider arguments
       system
-        Download only data from the provided system.
-        ``HC1`` for "HonduCompras 1.0 - Módulo de Difusión de Compras y Contrataciones" system.
-        ``CE`` for "Módulo de Difusión Directa de Contratos" system.
-        ``DDC`` for "Catálogo Electrónico" system.
-      sample
-        If ``system`` is also provided, the set number of release packages is downloaded from that system.
+        Filter by system:
+
+        CE
+          Catálogo Electrónico
+        DDC
+          Módulo de Difusión Directa de Contratos
+        HC1
+          HonduCompras 1.0 (Módulo de Difusión de Compras y Contrataciones)
     """
     name = 'honduras_oncae'
     data_type = 'release_package'

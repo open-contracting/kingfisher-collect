@@ -8,6 +8,8 @@ from kingfisher_scrapy.util import parameters
 
 class KenyaMakueni(IndexSpider):
     """
+    Domain
+      Makueni County
     Swagger API documentation
         https://opencontracting.makueni.go.ke/swagger-ui.html#/ocds-controller
     """

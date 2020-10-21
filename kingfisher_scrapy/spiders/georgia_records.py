@@ -6,6 +6,8 @@ from kingfisher_scrapy.util import parameters
 
 class GeorgiaRecords(LinksSpider):
     """
+    Domain
+      State Procurement Agency (SPA)
     Swagger API documentation
       https://odapi.spa.ge/api/swagger.ui
     """

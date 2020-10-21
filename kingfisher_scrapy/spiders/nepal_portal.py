@@ -4,6 +4,8 @@ from kingfisher_scrapy.util import components
 
 class NepalPortal(PeriodicSpider):
     """
+    Domain
+      Public Procurement Monitoring Office (PPMO)
     Bulk download documentation
       http://ppip.gov.np/downloads
     """

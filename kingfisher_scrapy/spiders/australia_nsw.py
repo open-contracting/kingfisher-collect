@@ -6,6 +6,8 @@ from kingfisher_scrapy.util import handle_http_error, parameters
 
 class AustraliaNSW(SimpleSpider):
     """
+    Domain
+      New South Wales (NSW)
     API documentation
       https://github.com/NSW-eTendering/NSW-eTendering-API/blob/master/README.md
     """

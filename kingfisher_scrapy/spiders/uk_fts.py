@@ -4,7 +4,11 @@ from kingfisher_scrapy.base_spider import LinksSpider
 from kingfisher_scrapy.util import parameters
 
 
-class UKContractsFinder(LinksSpider):
+class UKFTS(LinksSpider):
+    """
+    Domain
+      Find a Tender Service (FTS)
+    """
     name = 'uk_fts'
     data_type = 'release_package'
     next_page_formatter = staticmethod(parameters('cursor'))

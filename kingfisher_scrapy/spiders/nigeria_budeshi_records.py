@@ -3,6 +3,8 @@ from kingfisher_scrapy.spiders.nigeria_budeshi_base import NigeriaBudeshiBase
 
 class NigeriaBudeshiRecords(NigeriaBudeshiBase):
     """
+    Domain
+      Budeshi Nigeria
     API documentation
       https://budeshi.ng/Api
     """

@@ -4,6 +4,10 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 
 
 class HondurasCoST(SimpleSpider):
+    """
+    Domain
+      Systema de Información y Seguimiento de Obras y Contratos (SISOCS)
+    """
     name = 'honduras_cost'
     data_type = 'record_package'
 

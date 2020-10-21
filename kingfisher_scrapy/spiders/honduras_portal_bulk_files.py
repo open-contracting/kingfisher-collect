@@ -8,15 +8,18 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class HondurasPortalBulkFiles(SimpleSpider):
     """
+    Domain
+      Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Secretaria de Finanzas de Honduras (SEFIN)
     Bulk download documentation
       http://www.contratacionesabiertas.gob.hn/descargas/
     Spider arguments
       publisher
-        Filter the data by a specific publisher.
-        ``oncae`` for "Oficina Normativa de Contratación y Adquisiciones del Estado" publisher.
-        ``sefin`` for "Secretaria de Finanzas de Honduras" publisher.
-      sample
-        If ``publisher`` is also provided, the set number of release packages is downloaded from that publisher.
+        Filter by publisher:
+
+        oncae
+          Oficina Normativa de Contratación y Adquisiciones del Estado
+        sefin
+          Secretaria de Finanzas de Honduras
     """
     name = 'honduras_portal_bulk_files'
     data_type = 'release_package'

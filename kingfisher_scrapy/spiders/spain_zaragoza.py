@@ -8,6 +8,8 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class SpainZaragoza(SimpleSpider):
     """
+    Domain
+      Ayuntamiento de Zaragoza
     Swagger API documentation
       https://www.zaragoza.es/docs-api_sede/
     Spider arguments

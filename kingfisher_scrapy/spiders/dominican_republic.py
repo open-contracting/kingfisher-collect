@@ -6,6 +6,8 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class DominicanRepublic(CompressedFileSpider):
     """
+    Domain
+      Dirección General de Contrataciones Públicas (DGCP)
     Bulk download documentation
       https://www.dgcp.gob.do/estandar-mundial-ocds/
     """

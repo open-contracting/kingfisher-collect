@@ -8,6 +8,8 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class Portugal(CompressedFileSpider):
     """
+    Domain
+      Instituto dos Mercados Públicos, do Imobiliário e da Construção (IMPIC)
     API documentation
       https://dados.gov.pt/pt/apidoc/
     Swagger API documentation

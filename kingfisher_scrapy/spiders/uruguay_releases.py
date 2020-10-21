@@ -4,6 +4,8 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class UruguayReleases(UruguayBase):
     """
+    Domain
+      Agencia Reguladora de Compras Estatales (ARCE)
     API documentation
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
     """

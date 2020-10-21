@@ -6,6 +6,8 @@ from kingfisher_scrapy.util import parameters
 
 class CanadaMontreal(IndexSpider):
     """
+    Domain
+      Montréal, Québec
     API documentation
       http://donnees.ville.montreal.qc.ca/dataset/contrats-et-subventions-api
     """

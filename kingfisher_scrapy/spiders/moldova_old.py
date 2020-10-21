@@ -4,6 +4,8 @@ from kingfisher_scrapy.util import components
 
 class MoldovaOld(PeriodicSpider):
     """
+    Domain
+      Public Procurement Agency (PPA)
     Bulk download documentation
       http://opencontracting.date.gov.md/downloads
     """

@@ -4,6 +4,8 @@ from kingfisher_scrapy.util import components
 
 class NicaraguaSolidWaste(SimpleSpider):
     """
+    Domain
+      Solid Waste Mitigation Platform (SWMP)
     Spider arguments
       from_date
         Download only data from this date onward (YYYY-MM-DD format).

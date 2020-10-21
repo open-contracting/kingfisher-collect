@@ -6,6 +6,8 @@ from kingfisher_scrapy.util import parameters
 
 class DominicanRepublicPortal(LinksSpider):
     """
+    Domain
+      Dirección General de Contrataciones Públicas (DGCP)
     API documentation
       http://148.101.176.123:48080/ocdsdr/docs
     Spider arguments

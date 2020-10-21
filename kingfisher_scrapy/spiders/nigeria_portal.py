@@ -5,6 +5,10 @@ from kingfisher_scrapy.util import handle_http_error
 
 
 class NigeriaPortal(SimpleSpider):
+    """
+    Domain
+      Nigeria Open Contracting Portal (NOCOPO) of Bureau of Public Procurement (BPP)
+    """
     name = 'nigeria_portal'
     data_type = 'release_package'
 

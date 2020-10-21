@@ -10,6 +10,8 @@ from kingfisher_scrapy.util import parameters
 
 class Colombia(LinksSpider):
     """
+    Domain
+      Colombia Compra Eficiente (CCE)
     API documentation
       https://www.colombiacompra.gov.co/transparencia/api
     Swagger API documentation

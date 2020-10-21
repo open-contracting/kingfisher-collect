@@ -8,6 +8,8 @@ from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 class France(SimpleSpider):
     """
+    Domain
+      France
     Swagger API documentation
       https://doc.data.gouv.fr/api/reference/
     """

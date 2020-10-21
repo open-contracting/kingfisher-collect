@@ -7,6 +7,10 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class Zambia(CompressedFileSpider):
+    """
+    Domain
+      Zambia Public Procurement Authority
+    """
     name = 'zambia'
     data_type = 'record_package'
     ocds_version = '1.0'
