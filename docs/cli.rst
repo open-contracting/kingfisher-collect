@@ -1,7 +1,7 @@
 Command-line interface
 ======================
 
-Most subcommands of the ``scrapy`` command are defined by `Scrapy <https://docs.scrapy.org/en/latest/topics/commands.html>`__. Kingfisher Collect adds a few more:
+Most subcommands of the ``scrapy`` command are defined by `Scrapy <https://docs.scrapy.org/en/latest/topics/commands.html>`__. You were already :ref:`introduced<collect-data>` to ``scrapy list`` and ``scrapy crawl``. Kingfisher Collect adds a few more:
 
 pluck
 -----
