@@ -96,9 +96,9 @@ class Checker:
             self.warn('missing term: "Domain"')
         self.check_list(terms, self.known_terms, 'terms')
 
-        definition = re.search(r'^Spider arguments\n(.+?)(?:^\S|\Z)', docstring, re.MULTILINE | re.DOTALL)
-        if definition:
-            spider_arguments = re.findall(r'^(\S.+)\n  ', dedent(definition[1]), re.MULTILINE)
+        section = re.search(r'^Spider arguments\n(.+?)(?:^\S|\Z)', docstring, re.MULTILINE | re.DOTALL)
+        if section:
+            spider_arguments = re.findall(r'^(\S.+)\n  ', dedent(section[1]), re.MULTILINE)
             if 'sample' in spider_arguments:
                 self.warn('unexpected "sample" spider argument (document it globally)')
             for spider_argument in self.expected_spider_arguments:
