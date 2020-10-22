@@ -20,6 +20,7 @@ class CheckAll(ScrapyCommand):
 
 
 class Checker:
+    # Add more terms as needed.
     known_terms = [
         'Domain',
         'API documentation',
@@ -31,6 +32,7 @@ class Checker:
         'Environment variables',
     ]
 
+    # Add more spider arguments as needed.
     known_spider_arguments = [
         'page',
         'year',
@@ -41,6 +43,7 @@ class Checker:
         'sample',
     ]
 
+    # Add more expected arguments as needed.
     expected_spider_arguments = [
         'from_date',
         'until_date',
