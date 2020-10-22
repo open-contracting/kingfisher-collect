@@ -64,6 +64,9 @@ class Checker:
     def warn(self, message):
         logger.warning('%s.%s: %s', self.module_name, self.class_name, message)
 
+    def error(self, message):
+        logger.error('%s.%s: %s', self.module_name, self.class_name, message)
+
     def check_list(self, items, known_items, name):
         for i, item in enumerate(known_items):
             if items and items[0] == known_items[i]:
@@ -71,20 +74,20 @@ class Checker:
 
         unexpected = set(items) - set(known_items)
         if unexpected:
-            self.warn(f"unexpected {name}: {', '.join(unexpected)}")
+            self.error(f"unexpected {name}: {', '.join(unexpected)}")
 
         disordered = set(items) & set(known_items)
         if disordered:
-            self.warn(f"out-of-order {name}: {', '.join(disordered)}")
+            self.error(f"out-of-order {name}: {', '.join(disordered)}")
 
     def check(self):
         if self.class_name.endswith('Base') or self.class_name.startswith('Digiwhist') or self.class_name in ('Fail',):
             if self.docstring:
-                self.warn('unexpected docstring')
+                self.error('unexpected docstring')
             return
 
         if not self.docstring:
-            self.warn('missing docstring')
+            self.error('missing docstring')
             return
 
         # docutils doesn't provide a Document Object Model (DOM) for navigating nodes in reStructured Text, so we use
@@ -93,14 +96,14 @@ class Checker:
 
         terms = re.findall(r'^(\S.+)\n  ', docstring, re.MULTILINE)
         if 'Domain' not in terms:
-            self.warn('missing term: "Domain"')
+            self.error('missing term: "Domain"')
         self.check_list(terms, self.known_terms, 'terms')
 
         section = re.search(r'^Spider arguments\n(.+?)(?:^\S|\Z)', docstring, re.MULTILINE | re.DOTALL)
         if section:
             spider_arguments = re.findall(r'^(\S.+)\n  ', dedent(section[1]), re.MULTILINE)
             if 'sample' in spider_arguments:
-                self.warn('unexpected "sample" spider argument (document it globally)')
+                self.error('unexpected "sample" spider argument (document it globally)')
             for spider_argument in self.expected_spider_arguments:
                 if spider_argument not in spider_arguments:
                     self.warn(f'missing "{spider_argument}" spider argument')
