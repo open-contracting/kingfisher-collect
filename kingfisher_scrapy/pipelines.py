@@ -46,7 +46,7 @@ class Validate:
 
 class Sample:
     """
-    Drop items and close the spider when more than 1 item is scraped
+    Drop items and close the spider once the sample size is reached.
     """
     def __init__(self):
         self.item_count = 0
@@ -57,10 +57,11 @@ class Sample:
 
         # Drop FileError items, so that we keep trying to get data.
         if not isinstance(item, (File, FileItem)):
-            raise DropItem()
+            raise DropItem('Item is not a File or FileItem')
         if self.item_count >= spider.sample:
             spider.crawler.engine.close_spider(spider, 'sample')
-            raise DropItem
+            raise DropItem('Maximum sample size reached')
+
         self.item_count += 1
         return item
 
