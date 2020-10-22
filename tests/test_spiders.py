@@ -41,7 +41,7 @@ def test_start_requests_http_error(spider_name):
                 assert item['file_name']
                 assert item['url']
     except CloseSpider as e:
-        warnings.warn('{}: {}'.format(spidercls.name, e.reason))
+        warnings.warn(f'{spidercls.name}: {e.reason}')
 
 
 @pytest.mark.parametrize('spider_name', runner.spider_loader.list())
