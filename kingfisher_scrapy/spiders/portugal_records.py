@@ -5,8 +5,6 @@ class PortugalRecords(PortugalBase):
     """
     Domain
       Instituto dos Mercados Públicos, do Imobiliário e da Construção (IMPIC)
-    Swagger API documentation
-      http://www.base.gov.pt/swagger/index.html
     Spider arguments
       from_date
         Download only the data with the contract signing date from this date onward (YYYY-MM-DD format).
@@ -14,6 +12,8 @@ class PortugalRecords(PortugalBase):
       until_date
         Download only the data with the contract signing date until this date (YYYY-MM-DD format).
         If ``from_date`` is provided, defaults to today.
+    Swagger API documentation
+      http://www.base.gov.pt/swagger/index.html
     """
     name = 'portugal_records'
     data_type = 'record_package'

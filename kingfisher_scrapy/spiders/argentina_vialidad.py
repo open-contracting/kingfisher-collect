@@ -6,7 +6,7 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 class ArgentinaVialidad(SimpleSpider):
     """
     Domain
-      Ministerio de Obras Públicas: Vialidad Nacional
+      Vialidad Nacional of Ministerio de Obras Públicas
     API documentation
       https://datosabiertos.vialidad.gob.ar/ui/index.html#!/datos_abiertos
     """

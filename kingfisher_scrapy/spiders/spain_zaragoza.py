@@ -10,8 +10,6 @@ class SpainZaragoza(SimpleSpider):
     """
     Domain
       Ayuntamiento de Zaragoza
-    Swagger API documentation
-      https://www.zaragoza.es/docs-api_sede/
     Spider arguments
       from_date
         Download only data from this date onward (YYYY-MM-DDTHH:mm:ss format).
@@ -19,6 +17,8 @@ class SpainZaragoza(SimpleSpider):
       until_date
         Download only data until this date (YYYY-MM-DDTHH:mm:ss format).
         If ``from_date`` is provided, defaults to today.
+    Swagger API documentation
+      https://www.zaragoza.es/docs-api_sede/
     """
     name = 'spain_zaragoza'
     data_type = 'release_list'

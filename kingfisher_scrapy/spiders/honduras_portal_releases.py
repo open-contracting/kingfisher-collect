@@ -5,10 +5,6 @@ class HondurasPortalReleases(HondurasPortalBase):
     """
     Domain
       Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Secretaria de Finanzas de Honduras (SEFIN)
-    API documentation
-      http://www.contratacionesabiertas.gob.hn/manual_api/
-    Swagger API documentation
-      http://www.contratacionesabiertas.gob.hn/servicio/
     Spider arguments
       publisher
         Filter by publisher:
@@ -17,6 +13,10 @@ class HondurasPortalReleases(HondurasPortalBase):
           Oficina Normativa de Contratación y Adquisiciones del Estado
         sefin
           Secretaria de Finanzas de Honduras
+    API documentation
+      http://www.contratacionesabiertas.gob.hn/manual_api/
+    Swagger API documentation
+      http://www.contratacionesabiertas.gob.hn/servicio/
     """
     name = 'honduras_portal_releases'
     data_type = 'release_package'

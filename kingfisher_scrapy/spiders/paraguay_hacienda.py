@@ -12,13 +12,13 @@ class ParaguayHacienda(BaseSpider):
     """
     Domain
       Ministerio de Hacienda
-    Swagger API documentation
-      https://datos.hacienda.gov.py/odmh-api-v1/api-docs/
     Environment variables
       KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN
         To get an API account and request token go to https://datos.hacienda.gov.py/aplicaciones/new.
       KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET
         Your client secret generated.
+    Swagger API documentation
+      https://datos.hacienda.gov.py/odmh-api-v1/api-docs/
     """
     name = 'paraguay_hacienda'
 

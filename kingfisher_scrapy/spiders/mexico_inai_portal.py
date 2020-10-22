@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class MexicoINAIPortal(SimpleSpider):
     """
     Domain
-      Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales
+      Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI)
     """
     name = 'mexico_inai_portal'
     data_type = 'record'

@@ -5,8 +5,6 @@ class ParaguayDNCPReleases(ParaguayDNCPBaseSpider):
     """
     Domain
       Dirección Nacional de Contrataciones Públicas (DNCP)
-    Swagger API documentation
-      https://contrataciones.gov.py/datos/api/v3/doc
     Spider arguments
       from_date
         Download only releases from this release.date onward (YYYY-MM-DDTHH:mm:ss format).
@@ -14,6 +12,8 @@ class ParaguayDNCPReleases(ParaguayDNCPBaseSpider):
     Environment variables
       KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN
         To get an API account and request token go to https://contrataciones.gov.py/datos/adm/login.
+    Swagger API documentation
+      https://contrataciones.gov.py/datos/api/v3/doc
     """
     name = 'paraguay_dncp_releases'
     data_type = 'release_package'

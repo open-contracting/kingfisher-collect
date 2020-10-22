@@ -13,10 +13,6 @@ class OpenOpps(BaseSpider):
     """
     Domain
       OpenOpps
-    API documentation
-      https://docs.google.com/document/d/1u0da3BTU7fBFjX6i7j_tKXa1YwdXL7hY4Kw9GdsaAr0/edit
-    Swagger API documentation
-      https://api.openopps.com/api/schema/
     Spider arguments
       from_date
         Download only data from this date onward (YYYY-MM-DD format).
@@ -29,6 +25,10 @@ class OpenOpps(BaseSpider):
         To get an API account, contact contact@openopps.com.
       KINGFISHER_OPENOPPS_PASSWORD
         Your API account password.
+    API documentation
+      https://docs.google.com/document/d/1u0da3BTU7fBFjX6i7j_tKXa1YwdXL7hY4Kw9GdsaAr0/edit
+    Swagger API documentation
+      https://api.openopps.com/api/schema/
     """
     name = 'openopps'
 

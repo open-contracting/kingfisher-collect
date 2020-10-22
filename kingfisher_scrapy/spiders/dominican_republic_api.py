@@ -8,8 +8,6 @@ class DominicanRepublicPortal(LinksSpider):
     """
     Domain
       Dirección General de Contrataciones Públicas (DGCP)
-    API documentation
-      http://148.101.176.123:48080/ocdsdr/docs
     Spider arguments
       from_date
         Download only data from this date onward (YYYY-MM-DD format).
@@ -17,6 +15,8 @@ class DominicanRepublicPortal(LinksSpider):
       until_date
         Download only data until this date (YYYY-MM-DD format).
         If ``from_date`` is provided, defaults to today.
+    API documentation
+      http://148.101.176.123:48080/ocdsdr/docs
     """
     name = 'dominican_republic_api'
     data_type = 'release_package'

@@ -23,13 +23,13 @@ class Checker:
     # Add more terms as needed.
     known_terms = [
         'Domain',
+        'Caveats',
+        'Spider arguments',
+        'Environment variables',
         'API documentation',
         'Bulk download documentation',
         'Swagger API documentation',
         'API endpoints',
-        'Caveats',
-        'Spider arguments',
-        'Environment variables',
     ]
 
     ########

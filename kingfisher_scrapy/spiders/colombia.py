@@ -11,10 +11,6 @@ class Colombia(LinksSpider):
     """
     Domain
       Colombia Compra Eficiente (CCE)
-    API documentation
-      https://www.colombiacompra.gov.co/transparencia/api
-    Swagger API documentation
-      https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/
     Spider arguments
       from_date
         Download only releases from this release.date onward (YYYY-MM-DD format).
@@ -26,6 +22,10 @@ class Colombia(LinksSpider):
         The year to crawl. See API documentation for valid values.
       start_page
         The page number from which to start crawling.
+    API documentation
+      https://www.colombiacompra.gov.co/transparencia/api
+    Swagger API documentation
+      https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/
     """
     name = 'colombia'
     next_page_formatter = staticmethod(parameters('_id'))

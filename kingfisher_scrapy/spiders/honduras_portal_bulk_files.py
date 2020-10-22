@@ -10,8 +10,6 @@ class HondurasPortalBulkFiles(SimpleSpider):
     """
     Domain
       Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Secretaria de Finanzas de Honduras (SEFIN)
-    Bulk download documentation
-      http://www.contratacionesabiertas.gob.hn/descargas/
     Spider arguments
       publisher
         Filter by publisher:
@@ -20,6 +18,8 @@ class HondurasPortalBulkFiles(SimpleSpider):
           Oficina Normativa de Contratación y Adquisiciones del Estado
         sefin
           Secretaria de Finanzas de Honduras
+    Bulk download documentation
+      http://www.contratacionesabiertas.gob.hn/descargas/
     """
     name = 'honduras_portal_bulk_files'
     data_type = 'release_package'

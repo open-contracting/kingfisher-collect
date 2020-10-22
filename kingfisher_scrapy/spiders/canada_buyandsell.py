@@ -6,10 +6,10 @@ class CanadaBuyAndSell(SimpleSpider):
     """
     Domain
       Public Works and Government Services Canada
-    API documentation
-      https://buyandsell.gc.ca/procurement-data/open-contracting-data-standard-pilot/download-ocds-pilot-data
     Caveats
       The dataset is a pilot.
+    API documentation
+      https://buyandsell.gc.ca/procurement-data/open-contracting-data-standard-pilot/download-ocds-pilot-data
     """
     name = 'canada_buyandsell'
     data_type = 'release_package'

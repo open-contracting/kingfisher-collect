@@ -5,11 +5,11 @@ class ScotlandPublicContracts(ScotlandBase):
     """
     Domain
       Public Contracts Scotland
-    API documentation
-      https://api.publiccontractsscotland.gov.uk/v1
     Spider arguments
       from_date
         Download only data from this month onward (YYYY-MM format). Defaults to '2019-01'.
+    API documentation
+      https://api.publiccontractsscotland.gov.uk/v1
     """
     name = 'scotland_public_contracts'
     data_type = 'release_package'

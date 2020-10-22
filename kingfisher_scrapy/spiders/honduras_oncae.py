@@ -10,8 +10,6 @@ class HondurasONCAE(CompressedFileSpider):
     """
     Domain
       Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE)
-    Bulk download documentation
-      http://oncae.gob.hn/datosabiertos
     Spider arguments
       system
         Filter by system:
@@ -22,6 +20,8 @@ class HondurasONCAE(CompressedFileSpider):
           Módulo de Difusión Directa de Contratos
         HC1
           HonduCompras 1.0 (Módulo de Difusión de Compras y Contrataciones)
+    Bulk download documentation
+      http://oncae.gob.hn/datosabiertos
     """
     name = 'honduras_oncae'
     data_type = 'release_package'
