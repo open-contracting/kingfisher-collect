@@ -11,7 +11,7 @@ class KenyaMakueni(IndexSpider):
     Domain
       Makueni County
     Swagger API documentation
-        https://opencontracting.makueni.go.ke/swagger-ui.html#/ocds-controller
+      https://opencontracting.makueni.go.ke/swagger-ui.html#/ocds-controller
     """
     name = 'kenya_makueni'
     data_type = 'release_package_list'

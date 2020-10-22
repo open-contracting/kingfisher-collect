@@ -11,7 +11,7 @@ class Uganda(IndexSpider):
     Domain
       Government Procurement Portal (GPP) of Public Procurement and Disposal of Public Assets Authority (PPDA)
     API documentation
-        https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
+      https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
     """
     name = 'uganda_releases'
     data_type = 'release_package'

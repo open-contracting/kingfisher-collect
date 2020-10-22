@@ -7,9 +7,6 @@ class MexicoNuevoLeonRecords(MexicoNuevoLeonBase):
       Secretaría de Infraestructura del Gobierno del Estado de Nuevo León
     Bulk download documentation
       http://si.nl.gob.mx/transparencia/acerca-del-proyecto
-    Spider arguments
-      sample
-        Downloads the rar file and send the set number of records to kingfisher process.
     """
     name = 'mexico_nuevo_leon_records'
     file_name_must_contain = 'RecordPackage'
