@@ -1,5 +1,7 @@
 import os
+import re
 from itertools import groupby
+from textwrap import dedent
 
 from scrapy.commands import ScrapyCommand
 from scrapy.utils.misc import walk_modules
@@ -39,3 +41,14 @@ class UpdateDocs(ScrapyCommand):
                 for module in group:
                     for cls in iter_spider_classes(module):
                         f.write(f'\n.. autoclass:: {module.__name__}.{cls.__name__}\n   :no-members:\n')
+
+                        infix = ''
+                        if cls.__doc__:
+                            section = re.search(r'^Environment variables\n(.+?)(?:^\S|\Z)', dedent(cls.__doc__),
+                                                re.MULTILINE | re.DOTALL)
+                            if section:
+                                environment_variables = re.findall(r'^(\S.+)\n  ', dedent(section[1]), re.MULTILINE)
+                                infix = f"env {' '.join([f'{variable}=...' for variable in environment_variables])} "
+
+                        f.write(f'\n.. code-block:: shell-session\n')
+                        f.write(f"\n   {infix}scrapy crawl {module.__name__.rsplit('.')[-1]}\n")
