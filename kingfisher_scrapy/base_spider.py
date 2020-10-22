@@ -436,10 +436,14 @@ class LinksSpider(SimpleSpider):
     <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__ pattern:
 
     1. Inherit from ``LinksSpider``
+
     1. Set a ``data_type`` class attribute to the data type of the API responses
+
     1. Set a ``next_page_formatter`` class attribute to set the file name as in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
+
     1. Write a ``start_requests`` method to request the first page of API results
+
     1. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
 
     If the API returns the number of total pages or results in the response, consider using ``IndexSpider`` instead.
@@ -456,6 +460,7 @@ class LinksSpider(SimpleSpider):
 
             def start_requests(self):
                 yield scrapy.Request('https://example.com/api/packages.json', meta={'file_name': 'page1.json'})
+
     """
 
     next_pointer = '/links/next'
@@ -484,7 +489,9 @@ class PeriodicSpider(SimpleSpider):
     This class makes it easy to collect data from an API that takes a year or a year and month as parameters.
 
     1. Inherit from ``PeriodicSpider``
+
     1. Set a ``date_format`` class attribute to "year" or "year-month"
+
     1. Set a ``pattern`` class attribute to a URL pattern, with placeholders. If the ``date_format`` is "year", then a
        year is passed to the placeholder as an ``int``. If the ``date_format`` is "year-month", then the first day of
        the month is passed to the placeholder as a ``date``, which you can format as, for example:
@@ -495,9 +502,12 @@ class PeriodicSpider(SimpleSpider):
 
     1. Implement a ``get_formatter`` method to return the formatter to use in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls
+
     1. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a string
+
     1. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a
        string, if the source is known to have stopped publishing - otherwise, it defaults to today
+
     1. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
        :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
 
@@ -561,12 +571,14 @@ class IndexSpider(SimpleSpider):
 
     1. Set a pointer to the attribute that contains the total number of pages or elements in the response data for the
     first request to the API:
+
         1. Set ``total_pages_pointer`` to point to the JSON element that contains the total number of pages in the
         response data. The API will add the 'page' GET parameter to the URL in the subsequent requests.
         1. Set ``count_pointer`` to point to the JSON element with the total number of results. If you use
         ``count_pointer``, you must set ``limit`` to indicate the number of results to return for each page. The
         ``limit`` attribute can be either a number or a JSON pointer. Optionally, set ``use_page`` to ``True`` to
         calculate a 'page' parameter instead of the 'limit' and 'offset'.
+
     1. Write a ``start_request`` method with a request to the initial URL. The request's callback should be set to
     ``self.parse_list``.
 
