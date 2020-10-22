@@ -35,7 +35,7 @@ class SpainZaragoza(SimpleSpider):
             # `before` and `after` query string parameters behave opposite in API
             after = self.until_date.strftime("%Y-%m-%dT%H:%M:%SZ")
             before = self.from_date.strftime("%Y-%m-%dT%H:%M:%SZ")
-            url = url + '&before={}&after={}'.format(before, after)
+            url = f'{url}&before={before}&after={after}'
 
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 

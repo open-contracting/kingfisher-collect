@@ -15,7 +15,7 @@ class PortugalBase(SimpleSpider):
     def start_requests(self):
         url = self.url
         if self.from_date and self.until_date:
-            url = url + '&contractStartDate={}&contractEndDate={}'.format(self.from_date, self.until_date)
+            url = f'{url}&contractStartDate={self.from_date}&contractEndDate={self.until_date}'
         yield scrapy.Request(url, meta={'file_name': 'offset-1.json'}, callback=self.parse_data)
 
     @handle_http_error

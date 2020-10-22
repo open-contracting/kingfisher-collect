@@ -81,7 +81,7 @@ class OpenOpps(BaseSpider):
             r = json.loads(response.text)
             token = r.get('token')
             if token:
-                self.logger.info(f'New access token: {token}')
+                self.logger.info('New access token: %s', token)
                 self.access_token = 'JWT ' + token
                 self.start_time = datetime.now()
                 # If the request is initial authentication, start requests
@@ -171,7 +171,7 @@ class OpenOpps(BaseSpider):
                 # Tells if we have to re-authenticate before the token expires
                 time_diff = datetime.now() - self.start_time
                 if not self.reauthenticating and time_diff.total_seconds() > self.request_time_limit * 60:
-                    self.logger.info(f'Time_diff: {time_diff.total_seconds()}')
+                    self.logger.info('Time_diff: %s', time_diff.total_seconds())
                     self.reauthenticating = True
                     yield scrapy.Request(
                         'https://api.openopps.com/api/api-token-auth/',
@@ -207,7 +207,7 @@ class OpenOpps(BaseSpider):
                 if len(start_hour_list) != len(end_hour_list):
                     end_hour_list.append(last_hour)
 
-                self.logger.info(f'Changing filters, split in {parts}: {response.request.url}.')
+                self.logger.info('Changing filters, split in %s: %s.', parts, response.request.url)
                 for i in range(len(start_hour_list)):
                     yield self.build_request(
                         self.base_page_url.format(start_hour_list[i], end_hour_list[i]),
@@ -223,7 +223,7 @@ class OpenOpps(BaseSpider):
             # Message for pages that exceed the 10,000 search results in the range of one hour
             # These are pages with status 500 and 'page=11' in the URL request
             if response.status == 500 and response.request.url.count("page=11"):
-                self.logger.info(f'Status: {response.status}. Results exceeded in a range of one hour, we save the '
-                                 f'first 10,000 data for: {response.request.url}')
+                self.logger.info('Status: %s. Results exceeded in a range of one hour, we save the first 10,000 data '
+                                 'for: %s', response.status, response.request.url)
             else:
                 yield self.build_file_error_from_response(response)

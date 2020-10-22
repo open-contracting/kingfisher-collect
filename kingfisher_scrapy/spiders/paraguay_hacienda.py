@@ -108,7 +108,7 @@ class ParaguayHacienda(BaseSpider):
         """ Requests a new access token """
         attempt = 0
         self.start_time = datetime.now()
-        self.logger.info(f'Requesting access token, attempt {attempt + 1} of {self.max_attempts}')
+        self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
         payload = {"clientSecret": self.client_secret}
 
         return scrapy.Request(
@@ -127,7 +127,7 @@ class ParaguayHacienda(BaseSpider):
             r = json.loads(response.text)
             token = r.get('accessToken')
             if token:
-                self.logger.info(f'New access token: {token}')
+                self.logger.info('New access token: %s', token)
                 self.access_token = 'Bearer ' + token
                 # continue scraping where it stopped after getting the token
                 yield self.last_request
@@ -138,7 +138,7 @@ class ParaguayHacienda(BaseSpider):
                     self.auth_failed = True
                     raise AuthenticationError()
                 else:
-                    self.logger.info(f'Requesting access token, attempt {attempt + 1} of {self.max_attempts}')
+                    self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
                     return scrapy.Request(
                         "https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
                         method='POST',
@@ -150,7 +150,7 @@ class ParaguayHacienda(BaseSpider):
                         priority=1000
                     )
         else:
-            self.logger.error(f'Authentication failed. Status code: {response.status}')
+            self.logger.error('Authentication failed. Status code: %s', response.status)
             self.auth_failed = True
             raise AuthenticationError()
 
@@ -160,5 +160,5 @@ class ParaguayHacienda(BaseSpider):
         """
         if time_diff.total_seconds() < ParaguayHacienda.request_time_limit * 60:
             return False
-        self.logger.info(f'Time_diff: {time_diff.total_seconds()}')
+        self.logger.info('Time_diff: %s', time_diff.total_seconds())
         return True

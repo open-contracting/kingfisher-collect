@@ -63,7 +63,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         """ Requests a new access token """
         attempt = 0
         self.start_time = datetime.now()
-        self.logger.info(f'Requesting access token, attempt {attempt + 1} of {self.max_attempts}')
+        self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
 
         return scrapy.Request(
             self.auth_url,
@@ -81,7 +81,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
             r = json.loads(response.text)
             token = r.get('access_token')
             if token:
-                self.logger.info(f'New access token: {token}')
+                self.logger.info('New access token: %s', token)
                 self.access_token = token
                 # continue scraping where it stopped after getting the token
                 yield self.last_request
@@ -92,7 +92,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
                     self.auth_failed = True
                     raise AuthenticationError()
                 else:
-                    self.logger.info(f'Requesting access token, attempt {attempt + 1} of {self.max_attempts}')
+                    self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
                     return scrapy.Request(
                         self.auth_url,
                         method='POST',
@@ -104,7 +104,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
                         priority=1000
                     )
         else:
-            self.logger.error(f'Authentication failed. Status code: {response.status}')
+            self.logger.error('Authentication failed. Status code: %s', response.status)
             self.auth_failed = True
             raise AuthenticationError()
 
@@ -135,5 +135,5 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         """
         if time_diff.total_seconds() < ParaguayDNCPBaseSpider.request_time_limit * 60:
             return False
-        self.logger.info(f'Time_diff: {time_diff.total_seconds()}')
+        self.logger.info('Time_diff: %s', time_diff.total_seconds())
         return True

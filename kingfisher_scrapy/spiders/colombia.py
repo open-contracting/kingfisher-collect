@@ -1,4 +1,3 @@
-import logging
 import time
 from json import JSONDecodeError
 
@@ -59,7 +58,7 @@ class Colombia(LinksSpider):
 
     def retry(self, response, reason):
         url = response.request.url
-        logging.info(reason.format(url=url, status=response.status))
+        self.logger.info(reason.format(url=url, status=response.status))
         time.sleep(120 * 60)
         yield scrapy.Request(url, dont_filter=True, meta=response.request.meta)
 

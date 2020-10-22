@@ -122,7 +122,7 @@ class BaseSpider(scrapy.Spider):
             'truncate': truncate,
         }
         spider_arguments.update(kwargs)
-        self.logger.info('Spider arguments: {!r}'.format(spider_arguments))
+        self.logger.info('Spider arguments: %r', spider_arguments)
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -135,13 +135,13 @@ class BaseSpider(scrapy.Spider):
             try:
                 spider.sample = int(spider.sample)
             except ValueError:
-                raise SpiderArgumentError('spider argument sample: invalid integer value: {}'.format(spider.sample))
+                raise SpiderArgumentError(f'spider argument sample: invalid integer value: {spider.sample}')
 
         if spider.crawl_time:
             try:
                 spider.crawl_time = datetime.strptime(spider.crawl_time, '%Y-%m-%dT%H:%M:%S')
             except ValueError as e:
-                raise SpiderArgumentError('spider argument crawl_time: invalid date value: {}'.format(e))
+                raise SpiderArgumentError(f'spider argument crawl_time: invalid date value: {e}')
 
         if spider.from_date or spider.until_date or spider.date_required:
             # If either `from_date`, `until_date` or `date_required` is set, then `from_date` defaults to the
@@ -154,7 +154,7 @@ class BaseSpider(scrapy.Spider):
                 if isinstance(spider.from_date, str):
                     spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
             except ValueError as e:
-                raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
+                raise SpiderArgumentError(f'spider argument from_date: invalid date value: {e}')
 
             if not spider.until_date:
                 spider.until_date = cls.get_default_until_date(spider)
@@ -162,7 +162,7 @@ class BaseSpider(scrapy.Spider):
                 if isinstance(spider.until_date, str):
                     spider.until_date = datetime.strptime(spider.until_date, spider.date_format)
             except ValueError as e:
-                raise SpiderArgumentError('spider argument until_date: invalid date value: {}'.format(e))
+                raise SpiderArgumentError(f'spider argument until_date: invalid date value: {e}')
 
         return spider
 
@@ -301,7 +301,7 @@ class BaseSpider(scrapy.Spider):
 
         package = self._get_package_metadata(f_package, array_field_name)
 
-        for number, items in enumerate(util.grouper(ijson.items(f_list, '{}.item'.format(array_field_name)), size), 1):
+        for number, items in enumerate(util.grouper(ijson.items(f_list, f'{array_field_name}.item'), size), 1):
             package[array_field_name] = filter(None, items)
             data = json.dumps(package, default=util.default)
             yield self.build_file_item(number=number, file_name=file_name, url=url, data=data, data_type=data_type,
@@ -476,7 +476,7 @@ class LinksSpider(SimpleSpider):
             return self.build_request(url, formatter=self.next_page_formatter, **kwargs)
 
         if response.meta['depth'] == 0:
-            raise MissingNextLinkError('next link not found on the first page: {}'.format(response.url))
+            raise MissingNextLinkError(f'next link not found on the first page: {response.url}')
 
 
 class PeriodicSpider(SimpleSpider):

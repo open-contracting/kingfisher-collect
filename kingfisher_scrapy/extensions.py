@@ -141,8 +141,7 @@ class KingfisherProcessAPI:
         })
 
         if not response.ok:
-            spider.logger.warning(
-                'Failed to post End Collection Store. API status code: {}'.format(response.status_code))
+            spider.logger.warning('Failed to post End Collection Store. API status code: %s', response.status_code)
 
     def item_scraped(self, item, spider):
         """
@@ -192,8 +191,7 @@ class KingfisherProcessAPI:
     def _request(self, item, spider, method, *args, name='API'):
         response = getattr(self.client, method)(*args)
         if not response.ok:
-            spider.logger.warning(
-                'Failed to post [{}]. {} status code: {}'.format(item['url'], name, response.status_code))
+            spider.logger.warning('Failed to post [%s]. %s status code: %s', item['url'], name, response.status_code)
 
 
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry

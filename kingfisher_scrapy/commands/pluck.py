@@ -53,5 +53,5 @@ class Pluck(ScrapyCommand):
         with open('pluck_skipped.json', 'w') as f:
             json.dump(skipped, f, indent=2)
 
-        logger.info(f"Running {len(running)} spiders: {', '.join(sorted(running))}")
+        logger.info('Running %s spiders: %s', len(running), ', '.join(sorted(running)))
         runner.start()
