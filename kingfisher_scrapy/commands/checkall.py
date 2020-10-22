@@ -34,10 +34,10 @@ class Checker:
 
     # Add more spider arguments as needed.
     known_spider_arguments = [
-        'page',
-        'year',
         'from_date',
         'until_date',
+        'year',
+        'start_page',
         'publisher',
         'system',
         'sample',

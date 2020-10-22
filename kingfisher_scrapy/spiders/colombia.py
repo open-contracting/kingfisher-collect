@@ -16,16 +16,16 @@ class Colombia(LinksSpider):
     Swagger API documentation
       https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/
     Spider arguments
-      page
-        The page number from which to start crawling.
-      year
-        The year to crawl. See API documentation for valid values.
       from_date
         Download only releases from this release.date onward (YYYY-MM-DD format).
         If ``until_date`` is provided and ``from_date`` don't, defaults to '2011-01-01'.
       until_date
         Download only releases until this release.date (YYYY-MM-DD format).
         If ``from_date`` is provided and ``until_date`` don't, defaults to today.
+      year
+        The year to crawl. See API documentation for valid values.
+      start_page
+        The page number from which to start crawling.
     """
     name = 'colombia'
     next_page_formatter = staticmethod(parameters('_id'))
@@ -51,10 +51,10 @@ class Colombia(LinksSpider):
 
         base_url += '?page={}'
 
-        page = 1
-        if hasattr(self, 'page'):
-            page = int(self.page)
-        yield self.build_request(base_url.format(page), formatter=parameters('page'))
+        start_page = 1
+        if hasattr(self, 'start_page'):
+            start_page = int(self.start_page)
+        yield self.build_request(base_url.format(start_page), formatter=parameters('page'))
 
     def retry(self, response, reason):
         url = response.request.url

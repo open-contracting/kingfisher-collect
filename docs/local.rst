@@ -69,7 +69,22 @@ To download only a sample of the available data, add the ``sample=true`` spider 
 
 Scrapy will then output a log of its activity.
 
-Note that ``_sample`` will be added to the directory for the spider, e.g. ``kingfisher-collect/data/zambia_sample``
+.. note::
+
+   ``_sample`` will be added to the directory for the spider, e.g. ``kingfisher-collect/data/zambia_sample``.
+
+.. _filter:
+
+Filter the data
+~~~~~~~~~~~~~~~
+
+Each spider supports different filters, which you can set as spider arguments. For example:
+
+.. code-block:: bash
+
+   scrapy crawl colombia -a from_date=2015-01-01
+
+You can find which filters a spider supports on the :doc:`spiders` page.
 
 .. _proxy:
 
