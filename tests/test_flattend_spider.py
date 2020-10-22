@@ -72,3 +72,6 @@ def test_extension_error():
         'file_name': 'file',
         'url': 'http://example.com/example/file'
     }
+
+    with pytest.raises(StopIteration):
+        next(generator)
