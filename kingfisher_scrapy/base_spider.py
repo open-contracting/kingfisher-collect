@@ -15,7 +15,7 @@ from jsonpointer import resolve_pointer
 from rarfile import RarFile
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, SpreadsheetExtensionError
+from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.util import add_query_string, handle_http_error
 
@@ -694,19 +694,19 @@ class FlattenSpider(SimpleSpider):
     @handle_http_error
     def parse(self, response):
         file_name = urlsplit(response.request.url).path.split('/')[-1:][0]
+        if file_name.endswith('.csv'):
+            input_format = 'csv'
+        elif file_name.endswith('.xlsx'):
+            input_format = 'xlsx'
+        else:
+            errors = {'http_code': 400, 'detail': 'The file has no extension or is not CSV or XLSX'}
+            yield self.build_file_error_from_response(response, errors=errors, file_name=file_name)
+            return
+
         with tempfile.TemporaryDirectory() as directory:
-            file_path = directory + '/' + file_name
-            if file_path.endswith('.csv'):
-                input_name = directory
-                input_format = 'csv'
-            elif file_path.endswith('.xlsx'):
-                input_name = file_path
-                input_format = 'xlsx'
-            else:
-                raise SpreadsheetExtensionError('The file has no extension or is not CSV or XLSX.')
+            file_path = os.path.join(directory, file_name)
             with open(file_path, 'w') as f:
                 f.write(response.text)
-
             yield self.build_file_from_response(
                 response,
                 data_type=self.data_type,
@@ -714,6 +714,10 @@ class FlattenSpider(SimpleSpider):
                 file_name=file_name
             )
 
+            if input_format == 'csv':
+                input_name = directory
+            elif input_format == 'xlsx':
+                input_name = file_path
             unflatten(
                 input_name,
                 root_list_path='releases',

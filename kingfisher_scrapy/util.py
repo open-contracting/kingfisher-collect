@@ -30,7 +30,7 @@ def components(start, stop=None):
     """
     def wrapper(url):
         value = '-'.join(list(filter(None, urlsplit(url).path.split('/')))[start:stop])
-        if value.endswith('.json') or value.endswith('.xlsx'):
+        if value.endswith(('.json', '.xlsx')):
             return value[:-5]
         if value.endswith('.csv'):
             return value[:-4]
