@@ -4,6 +4,7 @@ from json import JSONDecodeError
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
+from kingfisher_scrapy.exceptions import SpiderArgumentError
 from kingfisher_scrapy.util import parameters
 
 
