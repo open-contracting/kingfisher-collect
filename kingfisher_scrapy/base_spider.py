@@ -20,7 +20,6 @@ browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,
 
 
 class BaseSpider(scrapy.Spider):
-    MAX_SAMPLE = 10
     MAX_RELEASES_PER_PACKAGE = 100
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
@@ -239,7 +238,7 @@ class BaseSpider(scrapy.Spider):
 
     def parse_json_lines(self, f, *, file_name='data.json', url=None, data_type=None, encoding='utf-8'):
         for number, line in enumerate(f, 1):
-            if self.sample and number > self.MAX_SAMPLE:
+            if self.sample and number > self.sample:
                 break
             if isinstance(line, bytes):
                 line = line.decode(encoding=encoding)
@@ -249,7 +248,7 @@ class BaseSpider(scrapy.Spider):
     def parse_json_array(self, f_package, f_list, *, file_name='data.json', url=None, data_type=None, encoding='utf-8',
                          array_field_name='releases'):
         if self.sample:
-            size = self.MAX_SAMPLE
+            size = self.sample
         else:
             size = self.MAX_RELEASES_PER_PACKAGE
 
