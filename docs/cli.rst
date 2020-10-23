@@ -53,10 +53,18 @@ Runs all spiders.
 -  ``--dry-run``: Runs the spiders without writing any files. It stops after collecting one file or file item from each spider. This can be used to test whether any spiders are broken. Add the ``--logfile debug.log`` option to write the output to a log file for easier review.
 -  ``--sample=NUM``: The number of files to write. This can be used to collect a sample from each spider.
 
+.. code-block:: bash
+
+   scrapy crawlall --dry-run
+
 checkall
 --------
 
 Checks that spiders are documented and well-implemented. It reports whether information is missing, out-of-order, or unexpected in the docstring, and if an expected spider argument isn't implemented.
+
+.. code-block:: bash
+
+   scrapy checkall
 
 updatedocs
 ----------
