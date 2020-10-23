@@ -57,6 +57,10 @@ Runs all spiders.
 
    scrapy crawlall --dry-run
 
+.. note::
+
+   One of ``--dry-run`` or ``--sample`` must be set. If you want to run all spiders to completion, use :doc:`Scrapyd<../scrapyd>`, which has better scheduling control and process management.
+
 checkall
 --------
 
