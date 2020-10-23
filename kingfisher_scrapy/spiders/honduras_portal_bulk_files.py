@@ -29,8 +29,8 @@ class HondurasPortalBulkFiles(SimpleSpider):
     @classmethod
     def from_crawler(cls, crawler, publisher=None, *args, **kwargs):
         spider = super().from_crawler(crawler, publisher=publisher, *args, **kwargs)
-        if publisher and publisher not in spider.publishers:
-            raise scrapy.exceptions.CloseSpider('Specified publisher is not recognized')
+        if publisher and spider.publisher not in spider.publishers:
+            raise SpiderArgumentError(f'spider argument `publisher`: {spider.publisher!r} not recognized')
 
         spider.publisher_name = spider.publishers.get(publisher)
 

@@ -4,7 +4,7 @@ from datetime import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.exceptions import AuthenticationError
+from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
 from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 
@@ -46,9 +46,8 @@ class ParaguayHacienda(BaseSpider):
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
         spider.client_secret = crawler.settings.get('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
         if spider.request_token is None or spider.client_secret is None:
-            spider.logger.error('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN and/or '
-                                'KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET is not set.')
-            raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
+            raise MissingEnvVarError('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN and/or '
+                                     'KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET is not set.')
 
         return spider
 
@@ -136,7 +135,7 @@ class ParaguayHacienda(BaseSpider):
                 if attempt == self.max_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.auth_failed = True
-                    raise AuthenticationError()
+                    raise AccessTokenError()
                 else:
                     self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
                     return scrapy.Request(
@@ -152,7 +151,7 @@ class ParaguayHacienda(BaseSpider):
         else:
             self.logger.error('Authentication failed. Status code: %s', response.status)
             self.auth_failed = True
-            raise AuthenticationError()
+            raise AccessTokenError()
 
     def expires_soon(self, time_diff):
         """ Tells if the access token will expire soon (required by

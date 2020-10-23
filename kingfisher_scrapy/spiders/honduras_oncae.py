@@ -3,6 +3,7 @@ from urllib.parse import urlparse
 import scrapy
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
+from kingfisher_scrapy.exceptions import SpiderArgumentError
 from kingfisher_scrapy.util import components, handle_http_error
 
 
@@ -35,7 +36,7 @@ class HondurasONCAE(CompressedFileSpider):
     def from_crawler(cls, crawler, system=None, *args, **kwargs):
         spider = super().from_crawler(crawler, system=system, *args, **kwargs)
         if system and spider.system not in spider.available_systems:
-            raise scrapy.exceptions.CloseSpider('Specified system is not recognized')
+            raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
         return spider
 
     def start_requests(self):

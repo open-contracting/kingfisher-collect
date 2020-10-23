@@ -36,8 +36,7 @@ class Colombia(LinksSpider):
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super().from_crawler(crawler, *args, **kwargs)
         if (spider.from_date or spider.until_date) and hasattr(spider, 'year'):
-            raise scrapy.exceptions.CloseSpider('You cannot specify both a year spider argument and '
-                                                'from_date/until_date spider argument(s).')
+            raise SpiderArgumentError('You cannot specify both year and from_date/until_date spider argument(s).')
         return spider
 
     def start_requests(self):

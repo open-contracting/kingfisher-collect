@@ -4,7 +4,7 @@ from datetime import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.exceptions import AuthenticationError
+from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
 from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameters
 
 
@@ -41,8 +41,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
         if spider.request_token is None:
-            spider.logger.error('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN is not set.')
-            raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
+            raise MissingEnvVarError('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN is not set.')
 
         return spider
 
@@ -90,7 +89,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
                 if attempt == self.max_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.auth_failed = True
-                    raise AuthenticationError()
+                    raise AccessTokenError()
                 else:
                     self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
                     return scrapy.Request(
@@ -106,7 +105,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         else:
             self.logger.error('Authentication failed. Status code: %s', response.status)
             self.auth_failed = True
-            raise AuthenticationError()
+            raise AccessTokenError()
 
     @handle_http_error
     def parse_pages(self, response):

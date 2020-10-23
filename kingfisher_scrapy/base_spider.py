@@ -98,13 +98,13 @@ class BaseSpider(scrapy.Spider):
             try:
                 spider.sample = int(spider.sample)
             except ValueError:
-                raise SpiderArgumentError(f'spider argument sample: invalid integer value: {spider.sample}')
+                raise SpiderArgumentError(f'spider argument `sample`: invalid integer value: {spider.sample!r}')
 
         if spider.crawl_time:
             try:
                 spider.crawl_time = datetime.strptime(spider.crawl_time, '%Y-%m-%dT%H:%M:%S')
             except ValueError as e:
-                raise SpiderArgumentError(f'spider argument crawl_time: invalid date value: {e}')
+                raise SpiderArgumentError(f'spider argument `crawl_time`: invalid date value: {e}')
 
         if spider.from_date or spider.until_date or spider.date_required:
             if not spider.from_date:
@@ -113,7 +113,7 @@ class BaseSpider(scrapy.Spider):
                 if isinstance(spider.from_date, str):
                     spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
             except ValueError as e:
-                raise SpiderArgumentError(f'spider argument from_date: invalid date value: {e}')
+                raise SpiderArgumentError(f'spider argument `from_date`: invalid date value: {e}')
 
             if not spider.until_date:
                 spider.until_date = cls.get_default_until_date(spider)
@@ -121,7 +121,7 @@ class BaseSpider(scrapy.Spider):
                 if isinstance(spider.until_date, str):
                     spider.until_date = datetime.strptime(spider.until_date, spider.date_format)
             except ValueError as e:
-                raise SpiderArgumentError(f'spider argument until_date: invalid date value: {e}')
+                raise SpiderArgumentError(f'spider argument `until_date`: invalid date value: {e}')
 
         return spider
 
