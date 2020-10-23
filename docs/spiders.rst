@@ -1,6 +1,8 @@
 Spiders
 =======
 
+.. _spider-metadata:
+
 Spider metadata
 ---------------
 

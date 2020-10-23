@@ -20,52 +20,6 @@ browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,
 
 
 class BaseSpider(scrapy.Spider):
-    """
-    Download a sample:
-
-    .. code:: bash
-
-        scrapy crawl spider_name -a sample=10
-
-    Set the start date for range to download:
-
-    .. code:: bash
-
-        scrapy crawl spider_name -a from_date=2010-01-01
-
-    Set the end date for range to download:
-
-    .. code:: bash
-
-        scrapy crawl spider_name -a until_date=2020-01-01
-
-    Add a note to the collection:
-
-    .. code:: bash
-
-        scrapy crawl spider_name -a note='Started by NAME.'
-
-    Each crawl writes data to its own directory. By default, this directory is named according to the time the crawl
-    started. To override the time (for example, to force a new crawl to write to the same directory as an earlier
-    crawl), you can set the crawl_time spider argument:
-
-     .. code:: bash
-
-        scrapy crawl spider_name -a crawl_time=2020-01-01T10:00:00
-
-    Don't close the Kingfisher Process collection when the crawl finishes:
-
-     .. code:: bash
-
-        scrapy crawl spider_name -a keep_collection_open=true
-
-    Add GET parameters to the start URLs (returned by ``start_requests``):
-
-    .. code:: bash
-
-        scrapy crawl spider_name -a qs:param1=value -a qs:param2=value2
-    """
-
     MAX_SAMPLE = 10
     MAX_RELEASES_PER_PACKAGE = 100
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
