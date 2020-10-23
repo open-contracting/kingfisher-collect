@@ -15,7 +15,7 @@ Plucks one data value per publisher. It writes a CSV file with the results, and 
 Get each publisher's publication policy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: shell-session
+.. code-block:: bash
 
    scrapy pluck --package-pointer /publicationPolicy
 
@@ -30,7 +30,7 @@ Get the latest release date
 
 And truncate to the date component of the datetime:
 
-.. code-block:: shell-session
+.. code-block:: bash
 
    scrapy pluck --release-pointer /date --truncate 10
 
@@ -39,7 +39,7 @@ This writes a ``pluck-release-date.csv`` file.
 Get the publisher's name
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: shell-session
+.. code-block:: bash
 
    scrapy pluck --package-pointer /publisher/name
 
@@ -63,6 +63,6 @@ updatedocs
 
 This command is for developers of Kingfisher Collect. When a new spider is added, or when a spider's class-level docstring is updated, the developer should run this command to update ``docs/spiders.rst``:
 
-.. code-block:: shell-session
+.. code-block:: bash
 
    scrapy updatedocs
