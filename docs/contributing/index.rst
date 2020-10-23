@@ -3,14 +3,6 @@ Contributing
 
 There are mainly two types of contributions: **spiders** and **features**.
 
-.. toctree::
-   :caption: API reference
-
-   base_spider.rst
-   extensions.rst
-   util.rst
-   exceptions.rst
-
 Write a spider
 --------------
 
@@ -38,7 +30,7 @@ After choosing a base class, read its documentation, as well as its parent class
 
 -  Write different callback methods for different response types. Writing a single callback with many if-else branches to handle different response types is very hard to reason about.
 -  The default ``parse`` callback method should be for "leaf" responses: that is, responses that cause no further requests to be yielded, besides pagination requests.
--  Have a look at the :module:`~kingfisher_scrapy.util` module, which contains useful functions, notably :func:`~kingfisher_scrapy.util.handle_http_error`.
+-  Have a look at the :mod:`~kingfisher_scrapy.util` module, which contains useful functions, notably :func:`~kingfisher_scrapy.util.handle_http_error`.
 
 After writing the spider, add a docstring for :ref:`spider metadata<spider-metadata>`.
 
@@ -83,3 +75,13 @@ The Scrapy framework is very flexible. To maintain a good separation of concerns
 -  Extensions should only connect signals, typically `item signals <https://docs.scrapy.org/en/latest/topics/signals.html#item-signals>`__ and `spider signals <https://docs.scrapy.org/en/latest/topics/signals.html#spider-signals>`__, in order to write files or send requests to external services like Kingfisher Process.
 
 When using the `Request.meta attribute <https://docs.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request.meta>`__, avoid re-using `its special keys <https://docs.scrapy.org/en/latest/topics/request-response.html#topics-request-meta>`__.
+
+API reference
+-------------
+
+.. toctree::
+
+   base_spider.rst
+   extensions.rst
+   util.rst
+   exceptions.rst

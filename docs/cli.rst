@@ -22,8 +22,8 @@ Get each publisher's publication policy
 This writes a ``pluck-package-publicationPolicy.csv`` file, in which the second column is the spider's name, and the first column is either:
 
 -  The value of the ``publicationPolicy`` field in the package
--  An error message, prefixed by ``error: ``
--  The reason for which the spider was closed, prefixed by ``closed: ``
+-  An error message, prefixed by ``error:``
+-  The reason for which the spider was closed, prefixed by ``closed:``
 
 Get the latest release date
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
