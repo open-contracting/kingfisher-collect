@@ -20,14 +20,24 @@ browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,
 
 
 class BaseSpider(scrapy.Spider):
+    """
+    #. If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for `Kingfisher
+       Process integration <https://github.com/open-contracting/kingfisher-collect/issues/411>`__.
+    #. If the spider supports ``from_date`` and ``until_date`` spider arguments, set the ``default_from_date`` class
+       attribute to a date string.
+    #. If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
+       ``default_from_date`` class attribute to a date string.
+    #. If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
+
+    If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
+    ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
+    ``get_default_until_date()`` return value (which is the current time, by default).
+    """
     MAX_RELEASES_PER_PACKAGE = 100
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
     ocds_version = '1.1'
     date_format = 'date'
-
-    # Set `date_required` to True in class attribute to always set the `from` and `until` date parameters.
-    # If `date_required` is True, the attribute `default_from_date` should be set too.
     date_required = False
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
@@ -97,10 +107,6 @@ class BaseSpider(scrapy.Spider):
                 raise SpiderArgumentError(f'spider argument crawl_time: invalid date value: {e}')
 
         if spider.from_date or spider.until_date or spider.date_required:
-            # If either `from_date`, `until_date` or `date_required` is set, then `from_date` defaults to the
-            # `default_from_date` class attribute and `until_date` defaults to the `get_default_until_date()` return
-            # value (now, by default). In other words, spiders that support `from_date` and `until_date` filters need
-            # to set `default_from_date`.
             if not spider.from_date:
                 spider.from_date = spider.default_from_date
             try:
@@ -159,7 +165,7 @@ class BaseSpider(scrapy.Spider):
         >>> BaseSpider(name='my_spider').build_request(url, formatter=formatter).meta
         {'file_name': 'page-1.json'}
 
-        To add a query string parameter to the file name:
+        To use a URL path component *and* a query string parameter as the file name:
 
         >>> from kingfisher_scrapy.util import join
         >>> url = 'https://example.com/packages?page=1&per_page=100'
@@ -182,7 +188,7 @@ class BaseSpider(scrapy.Spider):
 
     def build_file_from_response(self, response, **kwargs):
         """
-        Returns an item to yield, based on the response to a request.
+        Returns a File item to yield, based on the response to a request.
         """
         kwargs.setdefault('file_name', response.request.meta['file_name'])
         kwargs.setdefault('url', response.request.url)
@@ -191,7 +197,7 @@ class BaseSpider(scrapy.Spider):
 
     def build_file(self, *, file_name=None, url=None, data=None, data_type=None, encoding='utf-8', post_to_api=True):
         """
-        Returns an item to yield.
+        Returns a File item to yield.
         """
         return File({
             'file_name': file_name,
@@ -203,6 +209,9 @@ class BaseSpider(scrapy.Spider):
         })
 
     def build_file_item(self, *, number=None, file_name=None, url=None, data=None, data_type=None, encoding='utf-8'):
+        """
+        Returns a FileItem item to yield.
+        """
         return FileItem({
             'number': number,
             'file_name': file_name,
@@ -213,6 +222,9 @@ class BaseSpider(scrapy.Spider):
         })
 
     def build_file_error_from_response(self, response, **kwargs):
+        """
+        Returns a FileError item to yield, based on the response to a request.
+        """
         item = FileError({
             'url': response.request.url,
             'errors': {'http_code': response.status},
@@ -264,6 +276,9 @@ class BaseSpider(scrapy.Spider):
 
     @classmethod
     def get_default_until_date(cls, spider):
+        """
+        Returns the default value of the ``until_date`` spider argument.
+        """
         return datetime.utcnow()
 
 
