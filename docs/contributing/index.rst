@@ -70,7 +70,7 @@ Use Scrapy
 
 The Scrapy framework is very flexible. To maintain a good separation of concerns:
 
--  A spider should only:
+-  A spider shouldn't perform any slow, blocking operations like writing files. It should only:
 
    -  Yield requests, to be scheduled by Scrapy's engine
    -  Yield items, to be sent to the item pipeline
