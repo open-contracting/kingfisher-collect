@@ -67,7 +67,10 @@ def handle_http_error(decorated):
     """
     A decorator for spider parse methods.
 
-    Yields a :class:`~kingfisher_scrapy.items.FileError` for successful HTTP status codes.
+    Yields a :class:`~kingfisher_scrapy.items.FileError` using
+    :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_file_error_from_response`
+    for unsuccessful HTTP status codes, determined using
+    :meth:`~kingfisher_scrapy.base_spider.BaseSpider.is_http_success`.
     """
     @wraps(decorated)
     def wrapper(self, response, **kwargs):
