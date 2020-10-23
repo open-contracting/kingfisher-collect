@@ -70,11 +70,27 @@ Use Scrapy
 
 The Scrapy framework is very flexible. To maintain a good separation of concerns:
 
--  Spiders should only yield requests and items, or raise exceptions in `from_crawler <https://docs.scrapy.org/en/latest/topics/spiders.html#scrapy.spiders.Spider.from_crawler>`__.
--  Item pipelines should only modify items, return items, or raise a `DropItem <https://docs.scrapy.org/en/latest/topics/exceptions.html#scrapy.exceptions.DropItem>`__ extension or another exception, in order to clean, validate and filter items.
--  Extensions should only connect signals, typically `item signals <https://docs.scrapy.org/en/latest/topics/signals.html#item-signals>`__ and `spider signals <https://docs.scrapy.org/en/latest/topics/signals.html#spider-signals>`__, in order to write files or send requests to external services like Kingfisher Process.
+-  A spider should only:
 
-When using the `Request.meta attribute <https://docs.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request.meta>`__, avoid re-using `its special keys <https://docs.scrapy.org/en/latest/topics/request-response.html#topics-request-meta>`__.
+   -  Yield requests, to be scheduled by Scrapy's engine
+   -  Yield items, to be sent to the item pipeline
+   -  Raise a :class:`~kingfisher_scrapy.exceptions.SpiderArgumentError` exception in its `from_crawler <https://docs.scrapy.org/en/latest/topics/spiders.html#scrapy.spiders.Spider.from_crawler>`__ method, if a spider argument is invalid
+   -  Raise a :class:`~kingfisher_scrapy.exceptions.MissingEnvVarError` exception in its `from_crawler <https://docs.scrapy.org/en/latest/topics/spiders.html#scrapy.spiders.Spider.from_crawler>`__ method, if a required environment variable isn't set
+   -  Raise a :class:`~kingfisher_scrapy.exceptions.AccessTokenError` exception in a request's callback, if the maximum number of attempts to retrieve an access token is reached
+   -  Raise any other exception, to be caught by a `spider_error <https://docs.scrapy.org/en/latest/topics/signals.html#spider-error>`__ handler in an extension
+
+-  An item pipeline can be used to clean, validate and filter items. It should only modify the item and/or:
+
+   -  Return the item
+   -  Raise a `DropItem <https://docs.scrapy.org/en/latest/topics/exceptions.html#scrapy.exceptions.DropItem>`__ exception, to stop the processing of the item
+   -  Raise any other exception, to be caught by an `item_error <https://docs.scrapy.org/en/latest/topics/signals.html#item-error>`__ handler in an extension
+
+-  An extension can be used to write files or send requests to external services like Kingfisher Process. It should only:
+
+   -  Connect signals, typically `item signals <https://docs.scrapy.org/en/latest/topics/signals.html#item-signals>`__ and `spider signals <https://docs.scrapy.org/en/latest/topics/signals.html#spider-signals>`__
+   -  Raise a `NotConfigured <https://docs.scrapy.org/en/latest/topics/exceptions.html#notconfigured>`__ exception in its `from_crawler <https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension>`__ method, if a required `setting <https://docs.scrapy.org/en/latest/topics/settings.html>`__ isn't set
+
+When setting a custom `Request.meta attribute <https://docs.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request.meta>`__, check that the attribute name isn't `already in use <https://docs.scrapy.org/en/latest/topics/request-response.html#topics-request-meta>`__ by Scrapy.
 
 API reference
 -------------
