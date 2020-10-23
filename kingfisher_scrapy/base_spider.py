@@ -272,11 +272,11 @@ class SimpleSpider(BaseSpider):
     """
     Most spiders can inherit from this class. It assumes all responses have the same data type.
 
-    1. Inherit from ``SimpleSpider``
-    1. Set a ``data_type`` class attribute to the data type of the responses
-    1. Optionally, set an ``encoding`` class attribute to the encoding of the responses (default UTF-8)
-    1. Optionally, set a ``data_pointer`` class attribute to the JSON Pointer for OCDS data (default "")
-    1. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
+    #. Inherit from ``SimpleSpider``
+    #. Set a ``data_type`` class attribute to the data type of the responses
+    #. Optionally, set an ``encoding`` class attribute to the encoding of the responses (default UTF-8)
+    #. Optionally, set a ``data_pointer`` class attribute to the JSON Pointer for OCDS data (default "")
+    #. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
 
     .. code-block:: python
 
@@ -308,11 +308,11 @@ class CompressedFileSpider(BaseSpider):
     """
     This class makes it easy to collect data from ZIP or RAR files. It assumes all files have the same data type.
 
-    1. Inherit from ``CompressedFileSpider``
-    1. Set a ``data_type`` class attribute to the data type of the compressed files
-    1. Optionally, set an ``encoding`` class attribute to the encoding of the compressed files (default UTF-8)
-    1. Optionally, set a ``archive_format`` class attribute to the archive file format ("zip" or "rar").
-    1. Optionally, set a ``compressed_file_format`` class attribute to the format of the compressed files
+    #. Inherit from ``CompressedFileSpider``
+    #. Set a ``data_type`` class attribute to the data type of the compressed files
+    #. Optionally, set an ``encoding`` class attribute to the encoding of the compressed files (default UTF-8)
+    #. Optionally, set a ``archive_format`` class attribute to the archive file format ("zip" or "rar").
+    #. Optionally, set a ``compressed_file_format`` class attribute to the format of the compressed files
 
        ``json_lines``
          Yields each line of each compressed file.
@@ -325,7 +325,7 @@ class CompressedFileSpider(BaseSpider):
          Yields each compressed file.
          Each compressed file is saved to disk. The archive file is *not* saved to disk.
 
-    1. Write a ``start_requests`` method to request the archive files
+    #. Write a ``start_requests`` method to request the archive files
 
     .. code-block:: python
 
@@ -389,16 +389,16 @@ class LinksSpider(SimpleSpider):
     This class makes it easy to collect data from an API that implements the `pagination
     <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__ pattern:
 
-    1. Inherit from ``LinksSpider``
+    #. Inherit from ``LinksSpider``
 
-    1. Set a ``data_type`` class attribute to the data type of the API responses
+    #. Set a ``data_type`` class attribute to the data type of the API responses
 
-    1. Set a ``next_page_formatter`` class attribute to set the file name as in
+    #. Set a ``next_page_formatter`` class attribute to set the file name as in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
 
-    1. Write a ``start_requests`` method to request the first page of API results
+    #. Write a ``start_requests`` method to request the first page of API results
 
-    1. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
+    #. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
 
     If the API returns the number of total pages or results in the response, consider using ``IndexSpider`` instead.
 
@@ -442,11 +442,11 @@ class PeriodicSpider(SimpleSpider):
     """
     This class makes it easy to collect data from an API that takes a year or a year and month as parameters.
 
-    1. Inherit from ``PeriodicSpider``
+    #. Inherit from ``PeriodicSpider``
 
-    1. Set a ``date_format`` class attribute to "year" or "year-month"
+    #. Set a ``date_format`` class attribute to "year" or "year-month"
 
-    1. Set a ``pattern`` class attribute to a URL pattern, with placeholders. If the ``date_format`` is "year", then a
+    #. Set a ``pattern`` class attribute to a URL pattern, with placeholders. If the ``date_format`` is "year", then a
        year is passed to the placeholder as an ``int``. If the ``date_format`` is "year-month", then the first day of
        the month is passed to the placeholder as a ``date``, which you can format as, for example:
 
@@ -454,15 +454,15 @@ class PeriodicSpider(SimpleSpider):
 
           pattern = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
 
-    1. Implement a ``get_formatter`` method to return the formatter to use in
+    #. Implement a ``get_formatter`` method to return the formatter to use in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls
 
-    1. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a string
+    #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a string
 
-    1. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a
+    #. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a
        string, if the source is known to have stopped publishing - otherwise, it defaults to today
 
-    1. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
+    #. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
        :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
 
     If ``sample`` is set, the data from the most recent year or month is retrieved.
@@ -523,17 +523,17 @@ class IndexSpider(SimpleSpider):
     parameters are calculated and the requests are sent to the Scrapy's pipeline at the same time. To create a spider
     that inherits from ``IndexSpider``:
 
-    1. Set a pointer to the attribute that contains the total number of pages or elements in the response data for the
+    #. Set a pointer to the attribute that contains the total number of pages or elements in the response data for the
     first request to the API:
 
-        1. Set ``total_pages_pointer`` to point to the JSON element that contains the total number of pages in the
+        #. Set ``total_pages_pointer`` to point to the JSON element that contains the total number of pages in the
         response data. The API will add the 'page' GET parameter to the URL in the subsequent requests.
-        1. Set ``count_pointer`` to point to the JSON element with the total number of results. If you use
+        #. Set ``count_pointer`` to point to the JSON element with the total number of results. If you use
         ``count_pointer``, you must set ``limit`` to indicate the number of results to return for each page. The
         ``limit`` attribute can be either a number or a JSON pointer. Optionally, set ``use_page`` to ``True`` to
         calculate a 'page' parameter instead of the 'limit' and 'offset'.
 
-    1. Write a ``start_request`` method with a request to the initial URL. The request's callback should be set to
+    #. Write a ``start_request`` method with a request to the initial URL. The request's callback should be set to
     ``self.parse_list``.
 
     If neither ``total_pages_pointer`` nor ``count_pointer`` can be used to create the URLs (e.g. if you need to query
