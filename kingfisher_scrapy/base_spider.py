@@ -21,13 +21,13 @@ browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,
 
 class BaseSpider(scrapy.Spider):
     """
-    #. If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for `Kingfisher
+    -  If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for `Kingfisher
        Process integration <https://github.com/open-contracting/kingfisher-collect/issues/411>`__.
-    #. If the spider supports ``from_date`` and ``until_date`` spider arguments, set the ``default_from_date`` class
+    -  If the spider supports ``from_date`` and ``until_date`` spider arguments, set the ``default_from_date`` class
        attribute to a date string.
-    #. If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
+    -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
        ``default_from_date`` class attribute to a date string.
-    #. If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
+    -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
 
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
