@@ -92,6 +92,8 @@ Not all of an API's features are exposed by Kingfisher Collect. Each spider link
 
     scrapy crawl spider_name -a qs:parameter1=value1 -a qs:parameter2=value2
 
+.. _increment:
+
 Collect data incrementally
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
