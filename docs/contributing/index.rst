@@ -54,7 +54,7 @@ Scrapy offers some debugging features that we haven't used yet:
 -  `Debugging spiders <https://docs.scrapy.org/en/latest/topics/debug.html>`__
 -  `Debugging extensions <https://docs.scrapy.org/en/latest/topics/extensions.html#debugging-extensions>`__
 -  `Scrapy shell <https://docs.scrapy.org/en/latest/topics/shell.html>`__
--  `Telnet console <https://docs.scrapy.org/en/latest/topics/telnetconsole.html>`__
+-  `Telnet console <https://docs.scrapy.org/en/latest/topics/telnetconsole.html>`__ for in-progress crawls
 
 Write a feature
 ---------------
