@@ -390,14 +390,10 @@ class LinksSpider(SimpleSpider):
     <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__ pattern:
 
     #. Inherit from ``LinksSpider``
-
     #. Set a ``data_type`` class attribute to the data type of the API responses
-
     #. Set a ``next_page_formatter`` class attribute to set the file name as in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
-
     #. Write a ``start_requests`` method to request the first page of API results
-
     #. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
 
     If the API returns the number of total pages or results in the response, consider using ``IndexSpider`` instead.
@@ -440,12 +436,10 @@ class LinksSpider(SimpleSpider):
 
 class PeriodicSpider(SimpleSpider):
     """
-    This class makes it easy to collect data from an API that takes a year or a year and month as parameters.
+    This class makes it easy to collect data from an API that accepts a year or a year and month as parameters.
 
     #. Inherit from ``PeriodicSpider``
-
     #. Set a ``date_format`` class attribute to "year" or "year-month"
-
     #. Set a ``pattern`` class attribute to a URL pattern, with placeholders. If the ``date_format`` is "year", then a
        year is passed to the placeholder as an ``int``. If the ``date_format`` is "year-month", then the first day of
        the month is passed to the placeholder as a ``date``, which you can format as, for example:
@@ -456,12 +450,9 @@ class PeriodicSpider(SimpleSpider):
 
     #. Implement a ``get_formatter`` method to return the formatter to use in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls
-
     #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a string
-
     #. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a
        string, if the source is known to have stopped publishing - otherwise, it defaults to today
-
     #. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
        :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
 
@@ -518,39 +509,36 @@ class PeriodicSpider(SimpleSpider):
 
 class IndexSpider(SimpleSpider):
     """
-    This class can be used to collect data from an API which includes the total number of results or pages in their
-    response data, and receives pagination parameters like ``page``, ``limit`` and ``offset``. The values for the
-    parameters are calculated and the requests are sent to the Scrapy's pipeline at the same time. To create a spider
-    that inherits from ``IndexSpider``:
+    This class can be used to collect data from an API that includes the total number of results or pages in its
+    response, and receives pagination parameters like ``page`` or ``limit`` and ``offset``. To create a spider that
+    inherits from ``IndexSpider``:
 
-    #. Set a pointer to the attribute that contains the total number of pages or elements in the response data for the
-    first request to the API:
+    #. Set class attributes. Either:
 
-        #. Set ``total_pages_pointer`` to point to the JSON element that contains the total number of pages in the
-        response data. The API will add the 'page' GET parameter to the URL in the subsequent requests.
-        #. Set ``count_pointer`` to point to the JSON element with the total number of results. If you use
-        ``count_pointer``, you must set ``limit`` to indicate the number of results to return for each page. The
-        ``limit`` attribute can be either a number or a JSON pointer. Optionally, set ``use_page`` to ``True`` to
-        calculate a 'page' parameter instead of the 'limit' and 'offset'.
+        #. Set ``total_pages_pointer`` to the JSON Pointer for the total number of pages in the first response. The
+           spider then yields a request for each page, incrementing a ``page`` query string parameter in each request.
+        #. Set ``count_pointer`` to the JSON pointer for the total number of results, and set ``limit`` to the number
+           of results to return per page, or to the JSON pointer for it. Optionally, set ``use_page`` to ``True`` to
+           configure the spider to send a ``page`` query string parameter instead of a pair of ``limit`` and ``offset``
+           query string parameters. The spider then yields a request for each offset/page.
 
-    #. Write a ``start_request`` method with a request to the initial URL. The request's callback should be set to
-    ``self.parse_list``.
+    #. Write a ``start_requests`` method to yield the initial URL. The request's ``callback`` parameter should be set
+       to ``self.parse_list``.
 
     If neither ``total_pages_pointer`` nor ``count_pointer`` can be used to create the URLs (e.g. if you need to query
-    a separate URL that does not return JSON), you can provide a custom range of parameters defining the
-    ``range_generator`` method. This method should return page or offset numbers. You also need to define a
-    ``url_builder`` method, that receives the pages/offset generated by ``range_generator``. See the ``kenya_makueni``
-    spider for an example.
+    a separate URL that does not return JSON), you need to define ``range_generator`` and ``url_builder`` methods.
+    ``range_generator`` should return page numbers or offset numbers. ``url_builder`` receives a page or offset from
+    ``range_generator``, and returns a URL to request. See the ``kenya_makueni`` spider for an example.
 
-    The names of the GET parameters 'page', 'limit' and 'offset' to include in the URLS are customizable. Define the
-    ``param_page``, ``param_limit`` and ``param_offset`` class members to set the custom names. Any additional GET
-    parameters can be added by defining ``additional_params``, which should be a dictionary.
+    The names of the query string parameters 'page', 'limit' and 'offset' are customizable. Define the ``param_page``,
+    ``param_limit`` and ``param_offset`` class attributes to set the custom names. Additional query string parameters
+    can be added by defining ``additional_params``, which should be a dict.
 
-    Th base URL is taken from the first URL yielded by ``start_requests``. If you need a different URL for the pages,
-    define the ``base_url`` class member.
+    Th base URL is calculated from the initial URL yielded by ``start_requests``. If you need a different base URL for
+    subsequent requests, define the ``base_url`` class attribute.
 
-    By default the content received in ``parse_list`` is yielded. If you want to avoid this, set ``yield_list_results``
-    to ``False``.
+    By default, responses passed to ``parse_list`` are passed to the ``parse`` method from which items are yielded. If
+    the responses passed to ``parse_list`` contain no OCDS data, set ``yield_list_results`` to ``False``.
     """
 
     def __init__(self, *args, **kwargs):

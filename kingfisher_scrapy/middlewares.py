@@ -65,8 +65,9 @@ class ParaguayAuthMiddleware:
 
 
 class OpenOppsAuthMiddleware:
-    """Downloader middleware that intercepts requests and adds the token
-    for OpenOpps scraper."""
+    """
+    Downloader middleware that intercepts requests and adds the token for OpenOpps scraper.
+    """
 
     @staticmethod
     def process_request(request, spider):

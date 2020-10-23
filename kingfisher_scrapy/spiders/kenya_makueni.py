@@ -33,5 +33,5 @@ class KenyaMakueni(IndexSpider):
     def range_generator(self, data, response):
         return range(ceil(int(response.text) / self.limit))
 
-    def url_builder(self, params, data, response):
-        return self.pages_url_builder(params, data, response)
+    def url_builder(self, value, data, response):
+        return self.pages_url_builder(value, data, response)
