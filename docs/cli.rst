@@ -3,6 +3,8 @@ Command-line interface
 
 Most subcommands of the ``scrapy`` command are defined by `Scrapy <https://docs.scrapy.org/en/latest/topics/commands.html>`__. You were already :ref:`introduced<collect-data>` to ``scrapy list`` and ``scrapy crawl``. Kingfisher Collect adds a few more:
 
+.. _pluck:
+
 pluck
 -----
 
@@ -45,6 +47,8 @@ Get the publisher's name
 
 This writes a ``pluck-package-publisher-name.csv`` file.
 
+.. _crawlall:
+
 crawlall
 --------
 
@@ -61,6 +65,8 @@ Runs all spiders.
 
    One of ``--dry-run`` or ``--sample`` must be set. If you want to run all spiders to completion, use :doc:`Scrapyd<../scrapyd>`, which has better scheduling control and process management.
 
+.. _checkall:
+
 checkall
 --------
 
@@ -69,6 +75,8 @@ Checks that spiders are documented and well-implemented. It reports whether info
 .. code-block:: bash
 
    scrapy checkall
+
+.. _updatedocs:
 
 updatedocs
 ----------

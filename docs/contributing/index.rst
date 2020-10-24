@@ -37,8 +37,19 @@ After writing the spider, add a docstring for :ref:`spider metadata<spider-metad
 Test the spider
 ~~~~~~~~~~~~~~~
 
-#. Run the spider with ``scrapy crawl``
-#. Check the log for errors and warnings
+#. Run the spider:
+
+   .. code-block:: bash
+
+      scrapy crawl spider_name
+
+   It can be helpful to write the log to a file:
+
+   .. code-block:: bash
+
+      scrapy crawl spider_name --logfile=debug.log
+
+#. :doc:`Check the log for errors and warnings<../logs>`
 #. Check whether the data is as expected, in format and number
 
 Scrapy offers some debugging features that we haven't used yet:
@@ -47,6 +58,23 @@ Scrapy offers some debugging features that we haven't used yet:
 -  `Debugging extensions <https://docs.scrapy.org/en/latest/topics/extensions.html#debugging-extensions>`__
 -  `Scrapy shell <https://docs.scrapy.org/en/latest/topics/shell.html>`__
 -  `Telnet console <https://docs.scrapy.org/en/latest/topics/telnetconsole.html>`__ for in-progress crawls
+
+Commit the spider
+~~~~~~~~~~~~~~~~~
+
+#. Update ``docs/spiders.rst`` with the :ref:`updatedocs` command:
+
+   .. code-block:: bash
+
+      scrapy updatedocs
+
+#. Check the metadata of all spiders,  with the :ref:`checkall` command:
+
+   .. code-block:: bash
+
+      scrapy checkall
+
+After reviewing the output, you can commit your changes to a branch and make a pull request.
 
 Write a feature
 ---------------
