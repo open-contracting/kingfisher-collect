@@ -40,7 +40,7 @@ As you can see, the ``data`` directory contains a ``zambia`` spider directory (m
    local.rst
    scrapyd.rst
    spiders.rst
-   crawl-report-guide.rst
+   logs.rst
    cli.rst
    kingfisher_process.rst
    contributing/index.rst
