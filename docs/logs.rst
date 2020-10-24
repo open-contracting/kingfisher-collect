@@ -67,80 +67,76 @@ sample
 3. Check the crawl statistics
 -----------------------------
 
-#. Extract the crawl statistics:
+Extract the crawl statistics:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-      tac logfile.log | grep -B99 statscollectors | tac
+   tac logfile.log | grep -B99 statscollectors | tac
 
-#. Check the number of error messages:
+Read the number of error messages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   -  ``log_count/CRITICAL``
-   -  ``log_count/ERROR``
-   -  ``log_count/WARNING``
+-  ``log_count/CRITICAL``
+-  ``log_count/ERROR``
+-  ``log_count/WARNING``
 
-   If there are any, filter for and read the messages, for example:
+If there are any, filter for and read the messages, for example:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-      grep WARNING logfile.log
+   grep WARNING logfile.log
 
-#. Check the number of successful response status codes, following ``downloader/response_status_count/``:
+Read the number of successful response status codes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   .. code-block:: bash
+-  ``downloader/response_status_count/2...``
 
-      grep 'downloader/response_status_count/2' logfile.log
+Decide whether the number is as expected. If no lines are returned, there were no successful responses.
 
-   Decide whether the number is as expected. If no lines are returned, there were no successful responses.
+Read the number of error response status codes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#. Check for error response `status codes <https://httpstatuses.com/>`__, following ``downloader/response_status_count/``:
+-  ``downloader/response_status_count/[4-5]...``
 
-   .. code-block:: bash
+Some spiders can recover from errors: for example, 401 Unauthorized or 429 Too Many Requests. You can refer to the semantics of `status codes <https://httpstatuses.com/>`__. Decide whether the numbers are elevated.
 
-      grep 'downloader/response_status_count/[4-5]' logfile.log
+Read the number of spider exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   Some spiders can recover from errors: for example, 401 Unauthorized or 429 Too Many Requests. Decide whether the numbers are elevated.
+-  ``spider_exceptions/...``
 
-#. Check for spider exceptions, following ``spider_exceptions/``:
+If there are any, filter for and read the message(s) in which the exception is logged.
 
-   .. code-block:: bash
+Read the number of downloader exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      grep 'spider_exceptions/' logfile.log
+-  ``downloader/exception_type_count/...``
 
-   If there are any, filter for and read the message(s) in which the exception is logged.
+If there are any, filter for and read the message(s) in which the exception is logged.
 
-#. Check for downloader exceptions, following ``downloader/exception_type_count/``:
+The ``downloader/exception_count`` statistic is the total number of all types of exceptions.
 
-   .. code-block:: bash
+Read the number of requests for which the maximum number of retries was reached
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      grep 'downloader/exception_type_count/' logfile.log
-
-   If there are any, filter for and read the message(s) in which the exception is logged.
-
-   The ``downloader/exception_count`` statistic is the total number of all types of exceptions.
-
-#. Check the total number of requests for which the maximum number of retries was reached:
-
-   .. code-block:: bash
-
-      grep 'retry/max_reached' logfile.log
+-  ``retry/max_reached``
    
-   The number is set by the `max_retry_times <https://docs.scrapy.org/en/latest/topics/request-response.html#std-reqmeta-max_retry_times>`__ Request.meta attribute or the `RETRY_TIMES <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#std-setting-RETRY_TIMES>`__ setting.
+The maximum is set by the `max_retry_times <https://docs.scrapy.org/en/latest/topics/request-response.html#std-reqmeta-max_retry_times>`__ Request.meta attribute or the `RETRY_TIMES <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#std-setting-RETRY_TIMES>`__ setting.
 
-   If the maximum is reached, get the exceptions causing retries:
+If the maximum is reached, read the exceptions causing retries:
 
-   .. code-block:: bash
+-  ``retry/reason_count/...``
 
-      grep 'retry/reason_count/' logfile.log
+Then, filter for and read the message(s) in which the exception is logged.
 
-   Then, filter for and read the message(s) in which the exception is logged.
+.. note::
 
-The following statistics are not presently collected:
+   The following statistics are not presently collected:
 
-httperror/response_ignored_count
-  Collected if the `HTTPERROR_ALLOW_ALL <https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all>` setting is ``False``.
-scheduler/unserializable
-  Collected if the `SCHEDULER_DEBUG <https://docs.scrapy.org/en/latest/topics/settings.html#scheduler-debug>`__ setting is ``True``.
+   httperror/response_ignored_count
+     Collected if the `HTTPERROR_ALLOW_ALL <https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all>` setting is ``False``.
+   scheduler/unserializable
+     Collected if the `SCHEDULER_DEBUG <https://docs.scrapy.org/en/latest/topics/settings.html#scheduler-debug>`__ setting is ``True``.
 
 4. Check for FileError items
 ----------------------------
