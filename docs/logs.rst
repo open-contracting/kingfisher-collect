@@ -114,7 +114,7 @@ Read the number of downloader exceptions
 
 If there are any, filter for and read the message(s) in which the exception is logged.
 
-The ``downloader/exception_count`` statistic is the total number of all types of exceptions.
+The ``downloader/exception_count`` statistic is the total number of all types of downloader exceptions.
 
 Read the number of requests for which the maximum number of retries was reached
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -134,7 +134,7 @@ Then, filter for and read the message(s) in which the exception is logged.
    The following statistics are not presently collected:
 
    httperror/response_ignored_count
-     Collected if the `HTTPERROR_ALLOW_ALL <https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all>` setting is ``False``.
+     Collected if the `HTTPERROR_ALLOW_ALL <https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all>`__ setting is ``False``.
    scheduler/unserializable
      Collected if the `SCHEDULER_DEBUG <https://docs.scrapy.org/en/latest/topics/settings.html#scheduler-debug>`__ setting is ``True``.
 
