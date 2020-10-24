@@ -1,14 +1,14 @@
 Log files
 =========
 
-Scrapy log files contain a wealth of information. This page offers ways to quickly extract information from them.
+You can use Scrapy's log files to identify and debug issues in data collection.
 
 If you can't debug an issue on your own, create an issue on `GitHub <https://github.com/open-contracting/kingfisher-collect/issues>`__.
 
 1. Check for unhandled errors
 -----------------------------
 
-Kingfisher Collect can handle errors and continue crawling. This step is to check whether any errors were unhandled.
+Kingfisher Collect can handle errors and continue crawling. This step is to check whether any errors were *unhandled*.
 
 Read the last line of the log file:
 
@@ -22,7 +22,7 @@ If the line looks like:
 
    2020-01-10 12:34:56 [scrapy.core.engine] INFO: Spider closed (REASON)
 
-Then all errors were handled. Otherwise, either a shutdown was forced (e.g. pressing ``Ctrl-C`` twice), or an error wasn't handled. You can read the lines at the end of the file for context:
+Then all errors were handled. Otherwise, either a shutdown was forced (e.g. pressing ``Ctrl-C`` twice), or an error was unhandled. You can read the lines at the end of the file for context:
 
 .. code-block:: shell
 
@@ -42,9 +42,9 @@ Reasons implemented by Scrapy's core are:
 cancelled
   The spider closed for an unknown reason
 finished
-  The crawl finished successfully, but not necessarily without errors
+  The crawl finished, and any errors were handled
 shutdown
-  The crawl was shutdown gracefully (e.g. pressing ``Ctrl-C`` once)
+  The crawl shutdown gracefully (e.g. pressing ``Ctrl-C`` once)
 
 Reasons implemented by Scrapy's extensions are:
 
@@ -73,8 +73,8 @@ Extract the crawl statistics:
 
    tac logfile.log | grep -B99 statscollectors | tac
 
-Read the number of error messages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Read the numbers of error messages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``log_count/CRITICAL``
 -  ``log_count/ERROR``
@@ -86,29 +86,36 @@ If there are any, filter for and read the messages, for example:
 
    grep WARNING logfile.log
 
-Read the number of successful response status codes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Read the numbers of successful response status codes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``downloader/response_status_count/2...``
 
-Decide whether the number is as expected. If no lines are returned, there were no successful responses.
+Decide whether the number is as expected. If the statistic isn't present, there were no successful responses.
 
-Read the number of error response status codes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Read the numbers of error response status codes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``downloader/response_status_count/[4-5]...``
 
-Some spiders can recover from errors: for example, 401 Unauthorized or 429 Too Many Requests. You can refer to the semantics of `status codes <https://httpstatuses.com/>`__. Decide whether the numbers are elevated.
+You can look up a `status code's semantics <https://httpstatuses.com/>`__. Decide whether the numbers are elevated.
 
-Read the number of spider exceptions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Some spiders can recover from errors, for example:
+
+-  401 Unauthorized: request a new access token
+-  429 Too Many Requests: back off and retry
+-  503 Service Unavailable: back off and retry
+-  or try different parameters until a request succeeds
+
+Read the numbers of spider exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``spider_exceptions/...``
 
 If there are any, filter for and read the message(s) in which the exception is logged.
 
-Read the number of downloader exceptions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Read the numbers of downloader exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``downloader/exception_type_count/...``
 
@@ -142,3 +149,5 @@ Then, filter for and read the message(s) in which the exception is logged.
 ----------------------------
 
 Kingfisher Collect yields some errors as FileError items. You can open the log file and search for ``'errors':`` to get more context on each error.
+
+Presently, FileError items are created for error response status codes from which the spider can't recover.
