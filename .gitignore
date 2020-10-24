@@ -7,6 +7,7 @@ venv/
 /.coverage
 /build
 /data
+/debug.log
 /docs/_build
 /htmlcov
 /pluck-*.csv
