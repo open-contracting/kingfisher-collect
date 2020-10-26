@@ -3,6 +3,7 @@
 import json
 import os
 
+import requests
 import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
@@ -192,7 +193,8 @@ class KingfisherProcessAPI:
         try:
             response = getattr(self.client, method)(*args)
             if not response.ok:
-                spider.logger.warning('Failed to post [%s]. %s status code: %s', item['url'], name, response.status_code)
+                spider.logger.warning('Failed to post [%s]. %s status code: %s', item['url'], name,
+                                      response.status_code)
         except (requests.exceptions.ConnectionError, requests.exceptions.ProxyError) as e:
             spider.logger.warning('Failed to post [%s]. %s exception: %s', item['url'], name, e)
 
