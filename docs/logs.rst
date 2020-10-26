@@ -101,19 +101,13 @@ Some messages mean that action is needed. The action might be to fix a bug, or t
 CRITICAL: Unhandled error in Deferred:
   An exception was raised before the spider was opened, like ``kingfisher_scrapy.exceptions.SpiderArgumentError``, in which case the problem is in the user's input.
 ERROR: Spider error processing <GET https://…> (referer: None)
-  An exception was raised in the spider's code. **Action needed.**
+  An exception was raised in the spider's code. (See the ``spider_exceptions`` crawl statistics below.) **Action needed.**
 ERROR: Error processing {…}
   An exception was raised in an item pipeline, like ``jsonschema.exceptions.ValidationError``. **Action needed.**
 ERROR: Error caught on signal handler: …
   An exception was raised in an extension. **Action needed.**
 ERROR: Error downloading <GET https://…>
-  An exception was raised by the downloader, typically after failed retries by the `RetryMiddleware <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#module-scrapy.downloadermiddlewares.retry>`__ downloader middleware. Exceptions include:
-
-  -  ``twisted.internet.error.DNSLookupError``
-  -  ``twisted.internet.error.TCPTimedOutError``
-  -  ``twisted.web._newclient.ResponseFailed``
-  -  ``twisted.web._newclient.ResponseNeverReceived``
-
+  An exception was raised by the downloader, typically after failed retries by the `RetryMiddleware <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#module-scrapy.downloadermiddlewares.retry>`__ downloader middleware. (See the ``downloader/exception_type_count`` crawl statistics below.)
 WARNING: Failed to post [https://…]. File API status code: 500
   Issued by the :class:`~kingfisher_scrapy.extensions.KingfisherProcessAPI` extension. **If you need the collection in Kingfisher Process to be complete, re-run the spider.**
 WARNING: Duplicate File: '….json'
@@ -148,19 +142,21 @@ Some spiders can recover from errors, for example:
 -  503 Service Unavailable: back off and retry
 -  or try different parameters until a request succeeds
 
+Unrecoverable errors are yielded as FileError items (see :ref:`log-file-error-items`).
+
 Read the numbers of spider exceptions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``spider_exceptions/...``
 
-If there are any, filter for and read the message(s) in which the exception is logged.
+If there are any, filter for and read the message(s) in which the exception is logged. (See the ``ERROR: Spider error processing`` error message above.)
 
 Read the numbers of downloader exceptions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``downloader/exception_type_count/...``
 
-If there are any, filter for and read the message(s) in which the exception is logged.
+If there are any, filter for and read the message(s) in which the exception is logged. (See the ``ERROR: Error downloading`` error message above.)
 
 The ``downloader/exception_count`` statistic is the total number of all types of downloader exceptions.
 
@@ -168,7 +164,7 @@ Read the number of requests for which the maximum number of retries was reached
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``retry/max_reached``
-   
+
 The maximum is set by the `RETRY_TIMES <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#std-setting-RETRY_TIMES>`__ setting or the `max_retry_times <https://docs.scrapy.org/en/latest/topics/request-response.html#std-reqmeta-max_retry_times>`__ Request.meta key.
 
 If the maximum is reached, read the exceptions causing retries:
@@ -186,9 +182,9 @@ Then, filter for and read the message(s) in which the exception is logged.
    scheduler/unserializable
      Collected if the `SCHEDULER_DEBUG <https://docs.scrapy.org/en/latest/topics/settings.html#scheduler-debug>`__ setting is ``True``.
 
+.. _log-file-error-items:
+
 4. Check for FileError items
 ----------------------------
 
 Kingfisher Collect yields some errors as FileError items. You can open the log file and search for ``'errors':`` to get more context on each error.
-
-Presently, FileError items are created for error response status codes from which the spider can't recover.
