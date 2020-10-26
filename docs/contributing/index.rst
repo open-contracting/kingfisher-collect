@@ -118,7 +118,7 @@ The Scrapy framework is very flexible. To maintain a good separation of concerns
    -  Connect signals, typically `item signals <https://docs.scrapy.org/en/latest/topics/signals.html#item-signals>`__ and `spider signals <https://docs.scrapy.org/en/latest/topics/signals.html#spider-signals>`__
    -  Raise a `NotConfigured <https://docs.scrapy.org/en/latest/topics/exceptions.html#notconfigured>`__ exception in its `from_crawler <https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension>`__ method, if a required `setting <https://docs.scrapy.org/en/latest/topics/settings.html>`__ isn't set
 
-When setting a custom `Request.meta attribute <https://docs.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request.meta>`__, check that the attribute name isn't `already in use <https://docs.scrapy.org/en/latest/topics/request-response.html#topics-request-meta>`__ by Scrapy.
+When setting a custom `Request.meta key <https://docs.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request.meta>`__, check that the attribute name isn't `already in use <https://docs.scrapy.org/en/latest/topics/request-response.html#topics-request-meta>`__ by Scrapy.
 
 API reference
 -------------

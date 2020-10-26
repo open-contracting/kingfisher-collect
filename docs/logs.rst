@@ -86,6 +86,47 @@ If there are any, filter for and read the messages, for example:
 
    grep WARNING logfile.log
 
+..
+   Possible messages are found with, for example:
+   grep -r ERROR scrapyd/logs/kingfisher | cut -d' ' -f 4-9999 | sort | uniq
+
+   Example exceptions are found with, for example:
+   grep -rA30 'ERROR: Spider error processing' scrapyd/logs/kingfisher | grep "log-[A-Za-z]" | grep -v Traceback | cut -d'-' -f 2- | sort | uniq
+
+   Specific examples can be viewed with, for example:
+   grep -rA30 'ERROR: Spider error processing' scrapyd/logs/kingfisher | less
+
+Some messages mean that action is needed. The action might be to fix a bug, or to add a try-statement to catch an exception. If you don't know what action is needed, `create an issue <https://github.com/open-contracting/kingfisher-collect/issues>`__ with the name of the spider and an excerpt of the log, including the log message and the full traceback.
+
+CRITICAL: Unhandled error in Deferred:
+  An exception was raised before the spider was opened, like ``kingfisher_scrapy.exceptions.SpiderArgumentError``, in which case the problem is in the user's input.
+ERROR: Spider error processing <GET https://…> (referer: None)
+  An exception was raised in the spider's code. **Action needed.**
+ERROR: Error processing {…}
+  An exception was raised in an item pipeline, like ``jsonschema.exceptions.ValidationError``. **Action needed.**
+ERROR: Error caught on signal handler: …
+  An exception was raised in an extension. **Action needed.**
+ERROR: Error downloading <GET https://…>
+  An exception was raised by the downloader, typically after failed retries by the `RetryMiddleware <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#module-scrapy.downloadermiddlewares.retry>`__ downloader middleware. Exceptions include:
+
+  -  ``twisted.internet.error.DNSLookupError``
+  -  ``twisted.internet.error.TCPTimedOutError``
+  -  ``twisted.web._newclient.ResponseFailed``
+  -  ``twisted.web._newclient.ResponseNeverReceived``
+
+WARNING: Failed to post [https://…]. File API status code: 500
+  Issued by the :class:`~kingfisher_scrapy.extensions.KingfisherProcessAPI` extension. **If you need the collection in Kingfisher Process to be complete, re-run the spider.**
+WARNING: Duplicate File: '….json'
+  Issued by the :class:`~kingfisher_scrapy.pipelines.Validate` pipeline. **Check whether the key collisions are caused by identical items, or by different items. If by different items, the spider needs to be updated to assign keys without collisions.**
+WARNING: Got data loss in https://…. If you want to process broken responses set the setting DOWNLOAD_FAIL_ON_DATALOSS = False -- This message won't be shown in further requests
+ Issued by Scrapy if the ``Content-Length`` header doesn't match the bytes received, after which Scrapy retries the request. If you don't trust the ``Content-Length`` header, set to ``False`` either the `DOWNLOAD_FAIL_ON_DATALOSS <https://docs.scrapy.org/en/latest/topics/settings.html#download-fail-on-dataloss>`__ key of the spider's `custom_settings <https://docs.scrapy.org/en/latest/topics/settings.html#settings-per-spider>`__ attribute, or the `download_fail_on_dataloss <https://docs.scrapy.org/en/latest/topics/request-response.html#std-reqmeta-download_fail_on_dataloss>`__ key of the request's ``meta`` attribute.
+WARNING: Expected response size (56585019) larger than download warn size (33554432) in request <GET https://…>.
+  Issued based on the `DOWNLOAD_WARNSIZE <https://docs.scrapy.org/en/latest/topics/settings.html#download-warnsize>`__ setting, ``download_warnsize`` spider attribute or ``download_warnsize`` Request.meta key. Can be ignored.
+WARNING: Received more bytes than download warn size (33554432) in request <GET https://…>.
+  Issued based on the `DOWNLOAD_WARNSIZE <https://docs.scrapy.org/en/latest/topics/settings.html#download-warnsize>`__ setting, ``download_warnsize`` spider attribute or ``download_warnsize`` Request.meta key. Can be ignored.
+WARNING: Retrying (Retry(total=…, connect=None, read=None, redirect=None, status=None)) after connection broken by '…': …
+ Issued by Scrapy's `RetryMiddleware <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#module-scrapy.downloadermiddlewares.retry>`__ downloader middleware. Can be ignored.
+
 Read the numbers of successful response status codes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -128,7 +169,7 @@ Read the number of requests for which the maximum number of retries was reached
 
 -  ``retry/max_reached``
    
-The maximum is set by the `max_retry_times <https://docs.scrapy.org/en/latest/topics/request-response.html#std-reqmeta-max_retry_times>`__ Request.meta attribute or the `RETRY_TIMES <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#std-setting-RETRY_TIMES>`__ setting.
+The maximum is set by the `RETRY_TIMES <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#std-setting-RETRY_TIMES>`__ setting or the `max_retry_times <https://docs.scrapy.org/en/latest/topics/request-response.html#std-reqmeta-max_retry_times>`__ Request.meta key.
 
 If the maximum is reached, read the exceptions causing retries:
 
