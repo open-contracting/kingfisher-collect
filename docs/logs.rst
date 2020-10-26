@@ -62,7 +62,7 @@ memusage_exceeded
 Reasons implemented by Kingfisher Collect are:
 
 sample
-  The crawl reached the maximum sample size, when using the ``sample`` :ref:`spider argument<spider-argument>`
+  The crawl reached the maximum sample size, when using the ``sample`` :ref:`spider argument<spider-arguments>`
 
 3. Check the crawl statistics
 -----------------------------
@@ -99,26 +99,45 @@ If there are any, filter for and read the messages, for example:
 Some messages mean that action is needed. The action might be to fix a bug, or to add a try-statement to catch an exception. If you don't know what action is needed, `create an issue <https://github.com/open-contracting/kingfisher-collect/issues>`__ with the name of the spider and an excerpt of the log, including the log message and the full traceback.
 
 CRITICAL: Unhandled error in Deferred:
-  An exception was raised before the spider was opened, like ``kingfisher_scrapy.exceptions.SpiderArgumentError``, in which case the problem is in the user's input.
-ERROR: Spider error processing <GET https://…> (referer: None)
-  An exception was raised in the spider's code. (See the ``spider_exceptions`` crawl statistics below.) **Action needed.**
+  An exception was raised before the spider was opened, like :class:`~kingfisher_scrapy.exceptions.SpiderArgumentError`, in which case the problem is in the user's input.
+ERROR: Spider error processing <GET https:…> (referer: None)
+  An exception was raised in the spider's code. (See the ``spider_exceptions/…`` statistics below.)
+
+  .. attention:: Action needed.
+
 ERROR: Error processing {…}
-  An exception was raised in an item pipeline, like ``jsonschema.exceptions.ValidationError``. **Action needed.**
+  An exception was raised in an item pipeline, like ``jsonschema.exceptions.ValidationError``.
+
+  .. attention:: Action needed.
+
 ERROR: Error caught on signal handler: …
-  An exception was raised in an extension. **Action needed.**
-ERROR: Error downloading <GET https://…>
-  An exception was raised by the downloader, typically after failed retries by the `RetryMiddleware <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#module-scrapy.downloadermiddlewares.retry>`__ downloader middleware. (See the ``downloader/exception_type_count`` crawl statistics below.)
-WARNING: Failed to post [https://…]. File API status code: 500
-  Issued by the :class:`~kingfisher_scrapy.extensions.KingfisherProcessAPI` extension. **If you need the collection in Kingfisher Process to be complete, re-run the spider.**
+  An exception was raised in an extension.
+
+  .. attention:: Action needed.
+
+ERROR: Error downloading <GET https:…>
+  An exception was raised by the downloader, typically after failed retries by the `RetryMiddleware <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#module-scrapy.downloadermiddlewares.retry>`__ downloader middleware. (See the ``downloader/exception_type_count/…`` statistics below.)
+WARNING: Failed to post [https:…]. File API status code: 500
+  Issued by the :class:`~kingfisher_scrapy.extensions.KingfisherProcessAPI` extension.
+
+  .. admonition:: Potential action
+
+     If you need the collection in Kingfisher Process to be complete, re-run the spider.
+
 WARNING: Duplicate File: '….json'
-  Issued by the :class:`~kingfisher_scrapy.pipelines.Validate` pipeline. **Check whether the key collisions are caused by identical items, or by different items. If by different items, the spider needs to be updated to assign keys without collisions.**
-WARNING: Got data loss in https://…. If you want to process broken responses set the setting DOWNLOAD_FAIL_ON_DATALOSS = False -- This message won't be shown in further requests
+  Issued by the :class:`~kingfisher_scrapy.pipelines.Validate` pipeline.
+
+  .. admonition:: Potential action
+
+     Check whether the key collisions are caused by identical items, or by different items. If by different items, the spider needs to be updated to assign keys without collisions.
+
+WARNING: Got data loss in https:…. If you want to process broken responses set the setting DOWNLOAD_FAIL_ON_DATALOSS = False -- This message won't be shown in further requests
  Issued by Scrapy if the ``Content-Length`` header doesn't match the bytes received, after which Scrapy retries the request. If you don't trust the ``Content-Length`` header, set to ``False`` either the `DOWNLOAD_FAIL_ON_DATALOSS <https://docs.scrapy.org/en/latest/topics/settings.html#download-fail-on-dataloss>`__ key of the spider's `custom_settings <https://docs.scrapy.org/en/latest/topics/settings.html#settings-per-spider>`__ attribute, or the `download_fail_on_dataloss <https://docs.scrapy.org/en/latest/topics/request-response.html#std-reqmeta-download_fail_on_dataloss>`__ key of the request's ``meta`` attribute.
-WARNING: Expected response size (56585019) larger than download warn size (33554432) in request <GET https://…>.
+WARNING: Expected response size (987654321) larger than download warn size (123456789) in request <GET https:…>.
   Issued based on the `DOWNLOAD_WARNSIZE <https://docs.scrapy.org/en/latest/topics/settings.html#download-warnsize>`__ setting, ``download_warnsize`` spider attribute or ``download_warnsize`` Request.meta key. Can be ignored.
-WARNING: Received more bytes than download warn size (33554432) in request <GET https://…>.
+WARNING: Received more bytes than download warn size (123456789) in request <GET https:…>.
   Issued based on the `DOWNLOAD_WARNSIZE <https://docs.scrapy.org/en/latest/topics/settings.html#download-warnsize>`__ setting, ``download_warnsize`` spider attribute or ``download_warnsize`` Request.meta key. Can be ignored.
-WARNING: Retrying (Retry(total=…, connect=None, read=None, redirect=None, status=None)) after connection broken by '…': …
+WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by '…': …
  Issued by Scrapy's `RetryMiddleware <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#module-scrapy.downloadermiddlewares.retry>`__ downloader middleware. Can be ignored.
 
 Read the numbers of successful response status codes
@@ -137,10 +156,10 @@ You can look up a `status code's semantics <https://httpstatuses.com/>`__. Decid
 
 Some spiders can recover from errors, for example:
 
--  401 Unauthorized: request a new access token
--  429 Too Many Requests: back off and retry
--  503 Service Unavailable: back off and retry
--  or try different parameters until a request succeeds
+-  *401 Unauthorized*: request a new access token
+-  *429 Too Many Requests*: back off and retry
+-  *503 Service Unavailable*: back off and retry
+-  … or try different parameters until a request succeeds
 
 Unrecoverable errors are yielded as FileError items (see :ref:`log-file-error-items`).
 
