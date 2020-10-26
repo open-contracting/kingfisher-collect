@@ -77,7 +77,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
             if not post_to_api:
                 assert len(caplog.records) == 0
             else:
-                message = 'Failed to post [https://example.com/remote.json]. API status code: 400'
+                message = 'Failed to post [https://example.com/remote.json]. File API status code: 400'
 
                 assert len(caplog.records) == 1
                 assert caplog.records[0].name == 'test'
@@ -152,7 +152,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
         extension.item_scraped(item, spider)
 
         if not ok:
-            message = 'Failed to post [https://example.com/remote.json]. API status code: 400'
+            message = 'Failed to post [https://example.com/remote.json]. File Item API status code: 400'
 
             assert len(caplog.records) == 1
             assert caplog.records[0].name == 'test'
@@ -209,7 +209,7 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
         extension.item_scraped(data, spider)
 
         if not ok:
-            message = 'Failed to post [https://example.com/remote.json]. File Errors API status code: 400'
+            message = 'Failed to post [https://example.com/remote.json]. File Error API status code: 400'
 
             assert len(caplog.records) == 1
             assert caplog.records[0].name == 'test'

@@ -162,7 +162,7 @@ class KingfisherProcessAPI:
         if isinstance(item, FileError):
             data['errors'] = json.dumps(item['errors'])
 
-            self._request(item, spider, 'create_file_error', data, name='File Errors API')
+            self._request(item, spider, 'create_file_error', 'File Error API', data)
         else:
             data['data_type'] = item['data_type']
             data['encoding'] = item.get('encoding', 'utf-8')
@@ -173,7 +173,7 @@ class KingfisherProcessAPI:
                 data['number'] = item['number']
                 data['data'] = item['data']
 
-                self._request(item, spider, 'create_file_item', data)
+                self._request(item, spider, 'create_file_item', 'File Item API', data)
 
             # File
             else:
@@ -186,12 +186,15 @@ class KingfisherProcessAPI:
                     f = open(path, 'rb')
                     files = {'file': (item['file_name'], f, 'application/json')}
 
-                self._request(item, spider, 'create_file', data, files)
+                self._request(item, spider, 'create_file', 'File API', data, files)
 
-    def _request(self, item, spider, method, *args, name='API'):
-        response = getattr(self.client, method)(*args)
-        if not response.ok:
-            spider.logger.warning('Failed to post [%s]. %s status code: %s', item['url'], name, response.status_code)
+    def _request(self, item, spider, method, name, *args):
+        try:
+            response = getattr(self.client, method)(*args)
+            if not response.ok:
+                spider.logger.warning('Failed to post [%s]. %s status code: %s', item['url'], name, response.status_code)
+        except (requests.exceptions.ConnectionError, requests.exceptions.ProxyError) as e:
+            spider.logger.warning('Failed to post [%s]. %s exception: %s', item['url'], name, e)
 
 
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry
