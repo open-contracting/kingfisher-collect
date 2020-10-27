@@ -8,7 +8,7 @@ from kingfisher_scrapy.util import components, date_range_by_year, handle_http_e
 class IndonesiaBandung(BaseSpider):
     """
     Domain
-      Bandung Integrated Resouces Management System (BIRMS)
+      Bandung Integrated Resource Management System (BIRMS)
     API endpoints
       Get contract list by year
         Link
