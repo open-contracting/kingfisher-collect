@@ -98,7 +98,7 @@ Use Scrapy
 
 The Scrapy framework is very flexible. To maintain a good separation of concerns:
 
--  A spider shouldn't perform any slow, blocking operations like writing files. It should only:
+-  A spider's responsibility is to collect *inputs*. It shouldn't perform any slow, blocking operations like writing files. It should only:
 
    -  Yield requests, to be scheduled by Scrapy's engine
    -  Yield items, to be sent to the item pipeline
@@ -107,13 +107,13 @@ The Scrapy framework is very flexible. To maintain a good separation of concerns
    -  Raise a :class:`~kingfisher_scrapy.exceptions.AccessTokenError` exception in a request's callback, if the maximum number of attempts to retrieve an access token is reached
    -  Raise any other exception, to be caught by a `spider_error <https://docs.scrapy.org/en/latest/topics/signals.html#spider-error>`__ handler in an extension
 
--  An item pipeline can be used to clean, validate and filter items. It should only modify the item and/or:
+-  An item pipeline's responsibility is to clean, validate, filter, modify or substitute items. It should only:
 
-   -  Return the item
+   -  Return an item
    -  Raise a `DropItem <https://docs.scrapy.org/en/latest/topics/exceptions.html#scrapy.exceptions.DropItem>`__ exception, to stop the processing of the item
    -  Raise any other exception, to be caught by an `item_error <https://docs.scrapy.org/en/latest/topics/signals.html#item-error>`__ handler in an extension
 
--  An extension can be used to write files or send requests to external services like Kingfisher Process. It should only:
+-  An extension's responsibility is to write *outputs*: for example, writing files or sending requests to external services like Kingfisher Process. It should only:
 
    -  Connect signals, typically `item signals <https://docs.scrapy.org/en/latest/topics/signals.html#item-signals>`__ and `spider signals <https://docs.scrapy.org/en/latest/topics/signals.html#spider-signals>`__
    -  Raise a `NotConfigured <https://docs.scrapy.org/en/latest/topics/exceptions.html#notconfigured>`__ exception in its `from_crawler <https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension>`__ method, if a required `setting <https://docs.scrapy.org/en/latest/topics/settings.html>`__ isn't set
