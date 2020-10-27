@@ -11,7 +11,8 @@ class Kosovo(SimpleSpider):
     """
     name = 'kosovo'
     data_type = 'release_list'
-    default_from_date = '2000-01-01'
+    date_format = 'datetime'
+    default_from_date = '2000-01-01T00:00:00'
 
     def start_requests(self):
         stages = ['Award', 'Tender', 'Bid']
@@ -19,9 +20,9 @@ class Kosovo(SimpleSpider):
         headers = {'accept': 'application/json', 'Content-Type': 'application/json'}
 
         if self.from_date and self.until_date:
-            after = self.until_date.strftime("%Y-%m-%dT%H:%M:%SZ")
-            before = self.from_date.strftime("%Y-%m-%dT%H:%M:%SZ")
-            url = url + '?endDateFrom={}&endDateEnd={}'.format(after, before)
+            from_date = self.from_date.strftime("%Y-%m-%dT%H:%M:%S")
+            until_date = self.until_date.strftime("%Y-%m-%dT%H:%M:%S")
+            url = url + '?endDateFrom={}&endDateEnd={}'.format(from_date, until_date)
 
         for stage in stages:
             yield self.build_request(
