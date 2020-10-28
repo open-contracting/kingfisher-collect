@@ -607,6 +607,16 @@ Kenya
 
    scrapy crawl kenya_makueni
 
+Kosovo
+------
+
+.. autoclass:: kingfisher_scrapy.spiders.kosovo.Kosovo
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl kosovo
+
 Kyrgyzstan
 ----------
 
