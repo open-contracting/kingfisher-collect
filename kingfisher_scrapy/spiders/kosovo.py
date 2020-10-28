@@ -20,13 +20,13 @@ class Kosovo(SimpleSpider):
         headers = {'accept': 'application/json', 'Content-Type': 'application/json'}
 
         if self.from_date and self.until_date:
-            from_date = self.from_date.strftime("%Y-%m-%dT%H:%M:%S")
-            until_date = self.until_date.strftime("%Y-%m-%dT%H:%M:%S")
-            url = url + '?endDateFrom={}&endDateEnd={}'.format(from_date, until_date)
+            from_date = self.from_date.strftime(self.date_format)
+            until_date = self.until_date.strftime(self.date_format)
+            url = f'{url}?endDateFrom={from_date}&endDateEnd={until_date}'
 
         for stage in stages:
             yield self.build_request(
-                url.format(stage, self.from_date, self.until_date),
+                url.format(stage),
                 headers=headers,
                 formatter=components(-1)
             )
