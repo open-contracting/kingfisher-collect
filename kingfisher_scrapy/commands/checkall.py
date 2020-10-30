@@ -36,7 +36,7 @@ class Checker:
     # NOTE #
     ########
     #
-    # If you need to change this list, remember to update `ScrapyLogFile.is_subset()` in:
+    # If you need to change this list, remember to update `ScrapyLogFile.is_complete()` in:
     # https://github.com/open-contracting/kingfisher-archive/blob/master/ocdskingfisherarchive/scrapy_log_file.py
     #
     # Add more spider arguments as needed.
