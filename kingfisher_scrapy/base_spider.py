@@ -1,16 +1,13 @@
 import json
 import os
-import tempfile
 from abc import abstractmethod
 from datetime import datetime
 from io import BytesIO
 from math import ceil
-from urllib.parse import urlsplit
 from zipfile import ZipFile
 
 import ijson
 import scrapy
-from flattentool import unflatten
 from jsonpointer import resolve_pointer
 from rarfile import RarFile
 
@@ -31,7 +28,8 @@ class BaseSpider(scrapy.Spider):
     -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
        ``default_from_date`` class attribute to a date string.
     -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
-
+    -  If a spider collect data from CSV or XLSX files, add a ``unflatten = True`` class attribute to process each item
+       in the Unflatten pipeline class using the  ``unflatten`` command from Flatten Tool.
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
     ``get_default_until_date()`` return value (which is the current time, by default).
@@ -42,6 +40,7 @@ class BaseSpider(scrapy.Spider):
     ocds_version = '1.1'
     date_format = 'date'
     date_required = False
+    unflatten = False
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
@@ -633,71 +632,3 @@ class IndexSpider(SimpleSpider):
         url_params = params.copy()
         url_params.update(self.additional_params)
         return util.replace_parameters(self.base_url, **url_params)
-
-
-class FlattenSpider(SimpleSpider):
-    """
-    This class makes it easy to collect data from CSV or XLSX files. Uses the ``unflatten`` command in Flatten Tool
-    for OCDS to convert a populated spreadsheet to JSON.
-
-    1. Inherit from ``FlattenSpider``
-    1. Set a ``data_type`` class attribute to the data type of the API responses
-    1. Set a ``ocds_version`` class attribute to the relevant schema version, '1.0' or '1.1' (default).
-    1. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
-
-    .. code-block:: python
-
-        import scrapy
-
-        from kingfisher_scrapy.base_spider import FlattenSpider
-
-        class MySpider(FlattenSpider):
-            name = 'my_spider'
-            data_type = 'release_list'
-
-            def start_requests(self):
-                yield scrapy.Request('https://example.com/api/releases.csv', meta={'file_name': 'all.json'})
-    """
-
-    schema_version_choices = {
-        '1.0': 'https://standard.open-contracting.org/schema/1__0__3/release-schema.json',
-        '1.1': 'https://standard.open-contracting.org/schema/1__1__5/release-schema.json',
-    }
-
-    @handle_http_error
-    def parse(self, response):
-        file_name = urlsplit(response.request.url).path.split('/')[-1:][0]
-        if file_name.endswith('.csv'):
-            input_format = 'csv'
-        elif file_name.endswith('.xlsx'):
-            input_format = 'xlsx'
-        else:
-            errors = {'http_code': 400, 'detail': 'The file has no extension or is not CSV or XLSX'}
-            yield self.build_file_error_from_response(response, errors=errors, file_name=file_name)
-            return
-
-        with tempfile.TemporaryDirectory() as directory:
-            file_path = os.path.join(directory, file_name)
-            with open(file_path, 'w') as f:
-                f.write(response.text)
-            yield self.build_file_from_response(
-                response,
-                data_type=self.data_type,
-                post_to_api=False,
-                file_name=file_name
-            )
-
-            if input_format == 'csv':
-                input_name = directory
-            elif input_format == 'xlsx':
-                input_name = file_path
-            unflatten(
-                input_name,
-                root_list_path='releases',
-                root_id='ocid',
-                schema=self.schema_version_choices.get(self.ocds_version),
-                input_format=input_format,
-                output_name=file_path
-            )
-            with open(file_path, 'r') as f:
-                yield self.build_file_from_response(response, data=f.read(), data_type=self.data_type)
