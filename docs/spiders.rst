@@ -176,6 +176,16 @@ Australia
 
    scrapy crawl australia_nsw
 
+Bolivia
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.bolivia_agetic.BoliviaAgetic
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl bolivia_agetic
+
 Canada
 ------
 
