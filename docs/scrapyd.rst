@@ -33,7 +33,7 @@ Using the Scrapyd web interface
 -  To see the scheduled, running and finished crawls, click "Jobs"
 -  To browse the crawls' log files, click "Logs"
 
-For help understanding the log files, read :doc:`crawl-report-guide`.
+For help understanding the log files, read :doc:`logs`.
 
 .. note::
 
@@ -105,11 +105,11 @@ If successful, you'll see something like:
 
    {"status": "ok", "jobid": "6487ec79947edab326d6db28a2d86511e8247444"}
 
-To :ref:`download only a sample of the available data<sample>`, use ``-d`` instead of ``-a`` before each spider argument:
+To :ref:`download only a sample of the available data<sample>`, :ref:`filter data<filter>` or :ref:`collect data incrementally<increment>`, use ``-d`` instead of ``-a`` before each spider argument:
 
 .. code-block:: bash
 
-   curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d sample=true
+   curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d sample=10
 
 To :ref:`use an HTTP and/or HTTPS proxy<proxy>`, `use <https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__ ``-d setting=`` instead of ``-s`` before each overridden setting:
 

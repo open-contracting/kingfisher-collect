@@ -18,3 +18,6 @@ https://crm.open-contracting.org/issues/9999
 
 **Priority**
 e.g. as soon as possible, this week, next week, anytime
+
+**Data Structure**
+Check if the data is at least close to be structurally valid against OCDS

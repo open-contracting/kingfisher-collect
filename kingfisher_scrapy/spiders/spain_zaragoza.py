@@ -8,17 +8,17 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class SpainZaragoza(SimpleSpider):
     """
-    Swagger API documentation
-      https://www.zaragoza.es/docs-api_sede/
+    Domain
+      Ayuntamiento de Zaragoza
     Spider arguments
-      sample
-        Downloads the first release returned by the API release endpoint.
       from_date
         Download only data from this date onward (YYYY-MM-DDTHH:mm:ss format).
         If ``until_date`` is provided, defaults to '2000-01-01T00:00:00'.
       until_date
         Download only data until this date (YYYY-MM-DDTHH:mm:ss format).
         If ``from_date`` is provided, defaults to today.
+    Swagger API documentation
+      https://www.zaragoza.es/docs-api_sede/
     """
     name = 'spain_zaragoza'
     data_type = 'release_list'
@@ -35,7 +35,7 @@ class SpainZaragoza(SimpleSpider):
             # `before` and `after` query string parameters behave opposite in API
             after = self.until_date.strftime("%Y-%m-%dT%H:%M:%SZ")
             before = self.from_date.strftime("%Y-%m-%dT%H:%M:%SZ")
-            url = url + '&before={}&after={}'.format(before, after)
+            url = f'{url}&before={before}&after={after}'
 
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
@@ -45,6 +45,3 @@ class SpainZaragoza(SimpleSpider):
         for contracting_process_id in ids:
             url = self.url + contracting_process_id['id']
             yield self.build_request(url, formatter=components(-1))
-
-            if self.sample:
-                return

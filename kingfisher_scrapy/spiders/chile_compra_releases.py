@@ -4,11 +4,10 @@ from kingfisher_scrapy.util import components
 
 class ChileCompraReleases(ChileCompraBaseSpider):
     """
+    Domain
+      ChileCompra
     Swagger API documentation
-      https://desarrolladores.mercadopublico.cl/docs/services/5a9ed02f718ed712f4403e75/operations/data-listaa-omes-agno-mes?
-    Spider arguments
-      sample
-        Download only data released on October 2017.
+      https://desarrolladores.mercadopublico.cl/docs/services/5a9ed02f718ed712f4403e75/operations/data-listaa-omes-agno-mes
     """
     name = 'chile_compra_releases'
     data_type = 'release_package'

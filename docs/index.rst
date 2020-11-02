@@ -11,6 +11,8 @@ You can:
 
 You can also try using Kingfisher Collect with `Scrapy Cloud <https://scrapinghub.com/scrapy-cloud>`_.
 
+.. _how-it-works:
+
 How it works
 ------------
 
@@ -37,8 +39,8 @@ As you can see, the ``data`` directory contains a ``zambia`` spider directory (m
 
    local.rst
    scrapyd.rst
-   kingfisher_process.rst
    spiders.rst
-   crawl-report-guide.rst
-   writing-spiders.rst
-   api/index.rst
+   logs.rst
+   cli.rst
+   kingfisher_process.rst
+   contributing/index.rst

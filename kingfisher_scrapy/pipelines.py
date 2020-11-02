@@ -33,42 +33,54 @@ class Validate:
         if isinstance(item, FileItem):
             key = (item['file_name'], item['number'])
             if key in self.file_items:
-                spider.logger.warning('Duplicate FileItem: {!r}'.format(key))
+                spider.logger.warning('Duplicate FileItem: %r', key)
             self.file_items.add(key)
         elif isinstance(item, File):
             key = item['file_name']
             if key in self.files:
-                spider.logger.warning('Duplicate File: {!r}'.format(key))
+                spider.logger.warning('Duplicate File: %r', key)
             self.files.add(key)
 
         return item
 
 
-class Pluck:
+class Sample:
+    """
+    Drop items and close the spider once the sample size is reached.
+    """
     def __init__(self):
-        self.processed = set()
+        self.item_count = 0
 
     def process_item(self, item, spider):
-        # Skip this pipeline stage unless explicitly requested.
-        if not spider.pluck:
+        if not spider.sample:
             return item
-
-        # Drop any extra items that are yielded before the spider closes.
-        if spider.name in self.processed:
-            spider.crawler.engine.close_spider(spider, reason='processed')
-            raise DropItem()
 
         # Drop FileError items, so that we keep trying to get data.
         if not isinstance(item, (File, FileItem)):
-            raise DropItem()
+            raise DropItem('Item is not a File or FileItem')
+        if self.item_count >= spider.sample:
+            spider.crawler.engine.close_spider(spider, 'sample')
+            raise DropItem('Maximum sample size reached')
+
+        self.item_count += 1
+        return item
+
+    def open_spider(self, spider):
+        if spider.sample:
+            spider.crawler.engine.downloader.total_concurrency = 1
+
+
+class Pluck:
+    def process_item(self, item, spider):
+        if not spider.pluck:
+            return item
 
         value = None
-
         if spider.package_pointer:
             try:
                 package = _get_package(item)
             except NotImplementedError as e:
-                value = f'error: {str(e)}'
+                value = f'error: {e}'
             else:
                 value = _resolve_pointer(package, spider.package_pointer)
         else:  # spider.release_pointer
@@ -87,8 +99,6 @@ class Pluck:
                         value = max(_resolve_pointer(r, spider.release_pointer) for r in data['releases'])
                     elif 'compiledRelease' in data:
                         value = _resolve_pointer(data['compiledRelease'], spider.release_pointer)
-
-        self.processed.add(spider.name)
 
         if value and spider.truncate:
             value = value[:spider.truncate]

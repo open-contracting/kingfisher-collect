@@ -3,10 +3,10 @@ from datetime import datetime
 
 import pytest
 from scrapy.crawler import Crawler, CrawlerRunner
-from scrapy.exceptions import CloseSpider
 from scrapy.http import Response
 from scrapy.utils.project import get_project_settings
 
+from kingfisher_scrapy.exceptions import MissingEnvVarError
 from kingfisher_scrapy.items import FileError
 
 # See scrapy.cmdline.execute
@@ -40,8 +40,8 @@ def test_start_requests_http_error(spider_name):
                 assert item['errors'] == {'http_code': 555}
                 assert item['file_name']
                 assert item['url']
-    except CloseSpider as e:
-        warnings.warn('{}: {}'.format(spidercls.name, e.reason))
+    except MissingEnvVarError as e:
+        warnings.warn(f'{spidercls.name}: {e}')
 
 
 @pytest.mark.parametrize('spider_name', runner.spider_loader.list())

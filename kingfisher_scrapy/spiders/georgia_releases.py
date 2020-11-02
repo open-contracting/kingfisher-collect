@@ -6,11 +6,10 @@ from kingfisher_scrapy.util import parameters
 
 class GeorgiaReleases(LinksSpider):
     """
+    Domain
+      State Procurement Agency (SPA)
     Swagger API documentation
       https://odapi.spa.ge/api/swagger.ui
-    Spider arguments
-      sample
-        Downloads the first page of packages returned by the release list endpoint.
     """
     name = 'georgia_releases'
     data_type = 'release_package'

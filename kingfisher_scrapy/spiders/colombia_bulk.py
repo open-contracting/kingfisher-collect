@@ -6,11 +6,10 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class ColombiaBulk(CompressedFileSpider):
     """
+    Domain
+      Colombia Compra Eficiente (CCE)
     Bulk download documentation
       https://www.colombiacompra.gov.co/transparencia/datos-json
-    Spider arguments
-      sample
-        Downloads the zip file and sends 10 releases to kingfisher process.
     """
 
     name = 'colombia_bulk'
@@ -33,8 +32,6 @@ class ColombiaBulk(CompressedFileSpider):
     @handle_http_error
     def parse_list(self, response):
         urls = response.xpath('//a[@class="enlaces_contenido"]/@href').getall()
-        if self.sample:
-            urls = [urls[0]]
         for url in urls:
             # URL looks like https://apiocds.colombiacompra.gov.co:8443/ArchivosSECOP/Archivos/SI2011.zip
             yield self.build_request(url, formatter=components(-1))

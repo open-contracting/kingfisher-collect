@@ -5,19 +5,15 @@ from math import ceil
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.exceptions import AuthenticationError
+from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
 from kingfisher_scrapy.util import parameters
 
 
 class OpenOpps(BaseSpider):
     """
-    API documentation
-      https://docs.google.com/document/d/1u0da3BTU7fBFjX6i7j_tKXa1YwdXL7hY4Kw9GdsaAr0/edit
-    Swagger API documentation
-      https://api.openopps.com/api/schema/
+    Domain
+      OpenOpps
     Spider arguments
-      sample
-        Download only data released on 2011-01-01.
       from_date
         Download only data from this date onward (YYYY-MM-DD format).
         If ``until_date`` is provided, defaults to '2011-01-01'.
@@ -29,6 +25,10 @@ class OpenOpps(BaseSpider):
         To get an API account, contact contact@openopps.com.
       KINGFISHER_OPENOPPS_PASSWORD
         Your API account password.
+    API documentation
+      https://docs.google.com/document/d/1u0da3BTU7fBFjX6i7j_tKXa1YwdXL7hY4Kw9GdsaAr0/edit
+    Swagger API documentation
+      https://api.openopps.com/api/schema/
     """
     name = 'openopps'
 
@@ -57,8 +57,7 @@ class OpenOpps(BaseSpider):
         spider.username = crawler.settings.get('KINGFISHER_OPENOPPS_USERNAME')
         spider.password = crawler.settings.get('KINGFISHER_OPENOPPS_PASSWORD')
         if spider.username is None or spider.password is None:
-            spider.logger.error('KINGFISHER_OPENOPPS_USERNAME and/or KINGFISHER_OPENOPPS_PASSWORD is not set.')
-            raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
+            raise MissingEnvVarError('KINGFISHER_OPENOPPS_USERNAME and/or KINGFISHER_OPENOPPS_PASSWORD is not set.')
 
         return spider
 
@@ -81,7 +80,7 @@ class OpenOpps(BaseSpider):
             r = json.loads(response.text)
             token = r.get('token')
             if token:
-                self.logger.info(f'New access token: {token}')
+                self.logger.info('New access token: %s', token)
                 self.access_token = 'JWT ' + token
                 self.start_time = datetime.now()
                 # If the request is initial authentication, start requests
@@ -92,37 +91,32 @@ class OpenOpps(BaseSpider):
             else:
                 self.logger.error(
                     f'Authentication failed. Status code: {response.status}. {response.text}')
-                raise AuthenticationError()
+                raise AccessTokenError()
         else:
             self.logger.error(
                 f'Authentication failed. Status code: {response.status}. {response.text}')
-            raise AuthenticationError()
+            raise AccessTokenError()
 
     def start_requests_pages(self):
         search_h = 24  # start splitting one day search
 
-        # Case if we want to download a sample
-        if self.sample:
-            date = datetime(2011, 1, 1)
-            yield from self.request_range_per_day(date, date, search_h)
+        # Case if we have date range parameters
+        if self.from_date and self.until_date:
+            yield from self.request_range_per_day(self.from_date, self.until_date, search_h)
         else:
-            # Case if we have date range parameters
-            if self.from_date and self.until_date:
-                yield from self.request_range_per_day(self.from_date, self.until_date, search_h)
-            else:
-                # Use larger ranges for filters with less than (api_limit) search results
-                release_date_gte_list = ['', '2009-01-01', '2010-01-01', '2010-07-01']
-                release_date_lte_list = ['2008-12-31', '2009-12-31', '2010-06-30', '2010-12-31']
+            # Use larger ranges for filters with less than (api_limit) search results
+            release_date_gte_list = ['', '2009-01-01', '2010-01-01', '2010-07-01']
+            release_date_lte_list = ['2008-12-31', '2009-12-31', '2010-06-30', '2010-12-31']
 
-                for i in range(len(release_date_gte_list)):
-                    yield self.request_range(release_date_gte_list[i], release_date_lte_list[i], search_h)
+            for i in range(len(release_date_gte_list)):
+                yield self.request_range(release_date_gte_list[i], release_date_lte_list[i], search_h)
 
-                # Use smaller ranges (day by day) for filters with more than (api_limit) search results
-                for year in range(2011, datetime.now().year + 1):
-                    start_date = datetime(year, 1, 1)
-                    end_date = datetime(year, datetime.now().month, datetime.now().day) \
-                        if year == datetime.now().year else datetime(year, 12, 31)
-                    yield from self.request_range_per_day(start_date, end_date, search_h)
+            # Use smaller ranges (day by day) for filters with more than (api_limit) search results
+            for year in range(2011, datetime.now().year + 1):
+                start_date = datetime(year, 1, 1)
+                end_date = datetime(year, datetime.now().month, datetime.now().day) \
+                    if year == datetime.now().year else datetime(year, 12, 31)
+                yield from self.request_range_per_day(start_date, end_date, search_h)
 
     def request_range(self, start_date, end_date, search_h):
         return self.build_request(
@@ -160,8 +154,6 @@ class OpenOpps(BaseSpider):
 
                 if all_data:
                     yield self.build_file_from_response(response, data=all_data, data_type=self.data_type)
-                    if self.sample:
-                        return
 
                 next_url = results.get('next')
                 if next_url:
@@ -178,7 +170,7 @@ class OpenOpps(BaseSpider):
                 # Tells if we have to re-authenticate before the token expires
                 time_diff = datetime.now() - self.start_time
                 if not self.reauthenticating and time_diff.total_seconds() > self.request_time_limit * 60:
-                    self.logger.info(f'Time_diff: {time_diff.total_seconds()}')
+                    self.logger.info('Time_diff: %s', time_diff.total_seconds())
                     self.reauthenticating = True
                     yield scrapy.Request(
                         'https://api.openopps.com/api/api-token-auth/',
@@ -214,7 +206,7 @@ class OpenOpps(BaseSpider):
                 if len(start_hour_list) != len(end_hour_list):
                     end_hour_list.append(last_hour)
 
-                self.logger.info(f'Changing filters, split in {parts}: {response.request.url}.')
+                self.logger.info('Changing filters, split in %s: %s.', parts, response.request.url)
                 for i in range(len(start_hour_list)):
                     yield self.build_request(
                         self.base_page_url.format(start_hour_list[i], end_hour_list[i]),
@@ -230,7 +222,7 @@ class OpenOpps(BaseSpider):
             # Message for pages that exceed the 10,000 search results in the range of one hour
             # These are pages with status 500 and 'page=11' in the URL request
             if response.status == 500 and response.request.url.count("page=11"):
-                self.logger.info(f'Status: {response.status}. Results exceeded in a range of one hour, we save the '
-                                 f'first 10,000 data for: {response.request.url}')
+                self.logger.error('Status: %s. Results exceeded in a range of one hour, we save the first 10,000 data '
+                                  'for: %s', response.status, response.request.url)
             else:
                 yield self.build_file_error_from_response(response)

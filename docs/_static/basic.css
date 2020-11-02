@@ -1,0 +1,12 @@
+.rst-content table.docutils:not(.field-list) tr:nth-child(2n-1) td {
+  background-color: transparent;
+}
+.wy-table-responsive table td {
+  white-space: normal;
+}
+.rst-content table.docutils td {
+  vertical-align: top;
+}
+html.writer-html5 .rst-content table.docutils td>p+div {
+  margin-top: 24px;
+}

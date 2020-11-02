@@ -3,18 +3,20 @@ from kingfisher_scrapy.spiders.honduras_portal_base import HondurasPortalBase
 
 class HondurasPortalRecords(HondurasPortalBase):
     """
+    Domain
+      Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Secretaria de Finanzas de Honduras (SEFIN)
+    Spider arguments
+      publisher
+        Filter by publisher:
+
+        oncae
+          Oficina Normativa de Contratación y Adquisiciones del Estado
+        sefin
+          Secretaria de Finanzas de Honduras
     API documentation
       http://www.contratacionesabiertas.gob.hn/manual_api/
     Swagger API documentation
       http://www.contratacionesabiertas.gob.hn/servicio/
-    Spider arguments
-      publisher
-        Filter the data by a specific publisher.
-        ``oncae`` for "Oficina Normativa de Contratación y Adquisiciones del Estado" publisher.
-        ``sefin`` for "Secretaria de Finanzas de Honduras" publisher.
-      sample
-        Download only the first record package in the dataset.
-        If ``publisher`` is also provided, a single package is downloaded from that publisher.
     """
     name = 'honduras_portal_records'
     data_type = 'record_package'

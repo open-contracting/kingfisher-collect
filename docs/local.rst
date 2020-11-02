@@ -61,15 +61,65 @@ To run a spider (that is, to start a "crawl"), replace ``spider_name`` below wit
 Download a sample
 ~~~~~~~~~~~~~~~~~
 
-To download only a sample of the available data, add the ``sample=true`` spider argument:
+To download only a sample of the available data, set the sample size with the ``sample`` spider argument:
 
 .. code-block:: bash
 
-    scrapy crawl spider_name -a sample=true
+    scrapy crawl spider_name -a sample=10
 
 Scrapy will then output a log of its activity.
 
-Note that ``_sample`` will be added to the directory for the spider, e.g. ``kingfisher-collect/data/zambia_sample``
+.. note::
+
+   ``_sample`` will be added to the spider's directory, e.g. ``kingfisher-collect/data/zambia_sample``.
+
+.. _filter:
+
+Filter the data
+~~~~~~~~~~~~~~~
+
+Each spider supports different filters, which you can set as spider arguments. For example:
+
+.. code-block:: bash
+
+   scrapy crawl colombia -a from_date=2015-01-01
+
+You can find which filters a spider supports on the :doc:`spiders` page.
+
+Not all of an API's features are exposed by Kingfisher Collect. Each spider links to its API documentation in its :ref:`metadata<spider-metadata>`, where you can learn what filters the API supports. If the filters are implemented as query string parameters, you can apply multiple filters with, for example:
+
+.. code:: bash
+
+    scrapy crawl spider_name -a qs:parameter1=value1 -a qs:parameter2=value2
+
+.. _increment:
+
+Collect data incrementally
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default, ``scrapy crawl`` downloads all the data from the source. You can use :ref:`spider arguments<spider-arguments>` to :ref:`filter the data<filter>`, in order to only collect new data. For example, you might run a first crawl to collect data until yesterday:
+
+.. code-block:: bash
+
+   scrapy crawl spider_name -a until_date=2020-10-14
+
+Then, at a later date, run a second crawl to collect data from the day after until yesterday:
+
+.. code-block:: bash
+
+   scrapy crawl spider_name -a from_date=2020-10-15 -a until_date=2020-10-31
+
+And so on. However, as you learned in :ref:`how-it-works`, each crawl writes data to a separate directory. By default, this directory is named according to the time at which you started the crawl. To collect the incremental data into the same directory, you can take the time from the first crawl's directory name, then override the time of subsequent crawls with the ``crawl_time`` spider argument:
+
+.. code:: bash
+
+    scrapy crawl spider_name -a from_date=2020-10-15 -a until_date=2020-10-31 -a crawl_time=2020-10-14T12:34:56
+
+If you are integrating with :doc:`Kingfisher Process<kingfisher_process>`, remember to set the ``keep_collection_open`` spider argument, in order to not close the collection when the crawl is finished:
+
+.. code:: bash
+
+    scrapy crawl spider_name -a keep_collection_open=true
 
 .. _proxy:
 

@@ -24,60 +24,23 @@ browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,
 
 class BaseSpider(scrapy.Spider):
     """
-    Download a sample:
+    -  If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for `Kingfisher
+       Process integration <https://github.com/open-contracting/kingfisher-collect/issues/411>`__.
+    -  If the spider supports ``from_date`` and ``until_date`` spider arguments, set the ``default_from_date`` class
+       attribute to a date string.
+    -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
+       ``default_from_date`` class attribute to a date string.
+    -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
 
-    .. code:: bash
-
-        scrapy crawl spider_name -a sample=true
-
-    Set the start date for range to download:
-
-    .. code:: bash
-
-        scrapy crawl spider_name -a from_date=2010-01-01
-
-    Set the end date for range to download:
-
-    .. code:: bash
-
-        scrapy crawl spider_name -a until_date=2020-01-01
-
-    Add a note to the collection:
-
-    .. code:: bash
-
-        scrapy crawl spider_name -a note='Started by NAME.'
-
-    Each crawl writes data to its own directory. By default, this directory is named according to the time the crawl
-    started. To override the time (for example, to force a new crawl to write to the same directory as an earlier
-    crawl), you can set the crawl_time spider argument:
-
-     .. code:: bash
-
-        scrapy crawl spider_name -a crawl_time=2020-01-01T10:00:00
-
-    Don't close the Kingfisher Process collection when the crawl finishes:
-
-     .. code:: bash
-
-        scrapy crawl spider_name -a keep_collection_open=true
-
-    Add GET parameters to the start URLs (returned by ``start_requests``):
-
-    .. code:: bash
-
-        scrapy crawl spider_name -a qs:param1=value -a qs:param2=value2
+    If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
+    ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
+    ``get_default_until_date()`` return value (which is the current time, by default).
     """
-
-    MAX_SAMPLE = 10
     MAX_RELEASES_PER_PACKAGE = 100
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
     ocds_version = '1.1'
     date_format = 'date'
-
-    # Set `date_required` to True in class attribute to always set the `from` and `until` date parameters.
-    # If `date_required` is True, the attribute `default_from_date` should be set too.
     date_required = False
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
@@ -86,7 +49,12 @@ class BaseSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
-        self.sample = sample == 'true'
+        if sample == 'true' or sample is True:
+            self.sample = 1
+        elif sample == 'false' or sample is False:
+            self.sample = None
+        else:
+            self.sample = sample
         self.note = note
         self.from_date = from_date
         self.until_date = until_date
@@ -120,7 +88,7 @@ class BaseSpider(scrapy.Spider):
             'truncate': truncate,
         }
         spider_arguments.update(kwargs)
-        self.logger.info('Spider arguments: {!r}'.format(spider_arguments))
+        self.logger.info('Spider arguments: %r', spider_arguments)
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -129,24 +97,26 @@ class BaseSpider(scrapy.Spider):
         if spider.package_pointer and spider.release_pointer:
             raise SpiderArgumentError('You cannot specify both package_pointer and release_pointer spider arguments.')
 
+        if spider.sample:
+            try:
+                spider.sample = int(spider.sample)
+            except ValueError:
+                raise SpiderArgumentError(f'spider argument `sample`: invalid integer value: {spider.sample!r}')
+
         if spider.crawl_time:
             try:
                 spider.crawl_time = datetime.strptime(spider.crawl_time, '%Y-%m-%dT%H:%M:%S')
             except ValueError as e:
-                raise SpiderArgumentError('spider argument crawl_time: invalid date value: {}'.format(e))
+                raise SpiderArgumentError(f'spider argument `crawl_time`: invalid date value: {e}')
 
         if spider.from_date or spider.until_date or spider.date_required:
-            # If either `from_date`, `until_date` or `date_required` is set, then `from_date` defaults to the
-            # `default_from_date` class attribute and `until_date` defaults to the `get_default_until_date()` return
-            # value (now, by default). In other words, spiders that support `from_date` and `until_date` filters need
-            # to set `default_from_date`.
             if not spider.from_date:
                 spider.from_date = spider.default_from_date
             try:
                 if isinstance(spider.from_date, str):
                     spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
             except ValueError as e:
-                raise SpiderArgumentError('spider argument from_date: invalid date value: {}'.format(e))
+                raise SpiderArgumentError(f'spider argument `from_date`: invalid date value: {e}')
 
             if not spider.until_date:
                 spider.until_date = cls.get_default_until_date(spider)
@@ -154,7 +124,7 @@ class BaseSpider(scrapy.Spider):
                 if isinstance(spider.until_date, str):
                     spider.until_date = datetime.strptime(spider.until_date, spider.date_format)
             except ValueError as e:
-                raise SpiderArgumentError('spider argument until_date: invalid date value: {}'.format(e))
+                raise SpiderArgumentError(f'spider argument `until_date`: invalid date value: {e}')
 
         return spider
 
@@ -198,7 +168,7 @@ class BaseSpider(scrapy.Spider):
         >>> BaseSpider(name='my_spider').build_request(url, formatter=formatter).meta
         {'file_name': 'page-1.json'}
 
-        To add a query string parameter to the file name:
+        To use a URL path component *and* a query string parameter as the file name:
 
         >>> from kingfisher_scrapy.util import join
         >>> url = 'https://example.com/packages?page=1&per_page=100'
@@ -221,7 +191,7 @@ class BaseSpider(scrapy.Spider):
 
     def build_file_from_response(self, response, **kwargs):
         """
-        Returns an item to yield, based on the response to a request.
+        Returns a File item to yield, based on the response to a request.
         """
         kwargs.setdefault('file_name', response.request.meta['file_name'])
         kwargs.setdefault('url', response.request.url)
@@ -230,7 +200,7 @@ class BaseSpider(scrapy.Spider):
 
     def build_file(self, *, file_name=None, url=None, data=None, data_type=None, encoding='utf-8', post_to_api=True):
         """
-        Returns an item to yield.
+        Returns a File item to yield.
         """
         return File({
             'file_name': file_name,
@@ -242,6 +212,9 @@ class BaseSpider(scrapy.Spider):
         })
 
     def build_file_item(self, *, number=None, file_name=None, url=None, data=None, data_type=None, encoding='utf-8'):
+        """
+        Returns a FileItem item to yield.
+        """
         return FileItem({
             'number': number,
             'file_name': file_name,
@@ -252,6 +225,9 @@ class BaseSpider(scrapy.Spider):
         })
 
     def build_file_error_from_response(self, response, **kwargs):
+        """
+        Returns a FileError item to yield, based on the response to a request.
+        """
         item = FileError({
             'url': response.request.url,
             'errors': {'http_code': response.status},
@@ -277,7 +253,7 @@ class BaseSpider(scrapy.Spider):
 
     def parse_json_lines(self, f, *, file_name='data.json', url=None, data_type=None, encoding='utf-8'):
         for number, line in enumerate(f, 1):
-            if self.sample and number > self.MAX_SAMPLE:
+            if self.sample and number > self.sample:
                 break
             if isinstance(line, bytes):
                 line = line.decode(encoding=encoding)
@@ -287,13 +263,13 @@ class BaseSpider(scrapy.Spider):
     def parse_json_array(self, f_package, f_list, *, file_name='data.json', url=None, data_type=None, encoding='utf-8',
                          array_field_name='releases'):
         if self.sample:
-            size = self.MAX_SAMPLE
+            size = self.sample
         else:
             size = self.MAX_RELEASES_PER_PACKAGE
 
         package = self._get_package_metadata(f_package, array_field_name)
 
-        for number, items in enumerate(util.grouper(ijson.items(f_list, '{}.item'.format(array_field_name)), size), 1):
+        for number, items in enumerate(util.grouper(ijson.items(f_list, f'{array_field_name}.item'), size), 1):
             package[array_field_name] = filter(None, items)
             data = json.dumps(package, default=util.default)
             yield self.build_file_item(number=number, file_name=file_name, url=url, data=data, data_type=data_type,
@@ -303,6 +279,9 @@ class BaseSpider(scrapy.Spider):
 
     @classmethod
     def get_default_until_date(cls, spider):
+        """
+        Returns the default value of the ``until_date`` spider argument.
+        """
         return datetime.utcnow()
 
 
@@ -310,11 +289,11 @@ class SimpleSpider(BaseSpider):
     """
     Most spiders can inherit from this class. It assumes all responses have the same data type.
 
-    1. Inherit from ``SimpleSpider``
-    1. Set a ``data_type`` class attribute to the data type of the responses
-    1. Optionally, set an ``encoding`` class attribute to the encoding of the responses (default UTF-8)
-    1. Optionally, set a ``data_pointer`` class attribute to the JSON Pointer for OCDS data (default "")
-    1. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
+    #. Inherit from ``SimpleSpider``
+    #. Set a ``data_type`` class attribute to the data type of the responses
+    #. Optionally, set an ``encoding`` class attribute to the encoding of the responses (default UTF-8)
+    #. Optionally, set a ``data_pointer`` class attribute to the JSON Pointer for OCDS data (default "")
+    #. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
 
     .. code-block:: python
 
@@ -346,11 +325,11 @@ class CompressedFileSpider(BaseSpider):
     """
     This class makes it easy to collect data from ZIP or RAR files. It assumes all files have the same data type.
 
-    1. Inherit from ``CompressedFileSpider``
-    1. Set a ``data_type`` class attribute to the data type of the compressed files
-    1. Optionally, set an ``encoding`` class attribute to the encoding of the compressed files (default UTF-8)
-    1. Optionally, set a ``archive_format`` class attribute to the archive file format ("zip" or "rar").
-    1. Optionally, set a ``compressed_file_format`` class attribute to the format of the compressed files
+    #. Inherit from ``CompressedFileSpider``
+    #. Set a ``data_type`` class attribute to the data type of the compressed files
+    #. Optionally, set an ``encoding`` class attribute to the encoding of the compressed files (default UTF-8)
+    #. Optionally, set a ``archive_format`` class attribute to the archive file format ("zip" or "rar").
+    #. Optionally, set a ``compressed_file_format`` class attribute to the format of the compressed files
 
        ``json_lines``
          Yields each line of each compressed file.
@@ -363,7 +342,7 @@ class CompressedFileSpider(BaseSpider):
          Yields each compressed file.
          Each compressed file is saved to disk. The archive file is *not* saved to disk.
 
-    1. Write a ``start_requests`` method to request the archive files
+    #. Write a ``start_requests`` method to request the archive files
 
     .. code-block:: python
 
@@ -427,12 +406,12 @@ class LinksSpider(SimpleSpider):
     This class makes it easy to collect data from an API that implements the `pagination
     <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__ pattern:
 
-    1. Inherit from ``LinksSpider``
-    1. Set a ``data_type`` class attribute to the data type of the API responses
-    1. Set a ``next_page_formatter`` class attribute to set the file name as in
+    #. Inherit from ``LinksSpider``
+    #. Set a ``data_type`` class attribute to the data type of the API responses
+    #. Set a ``next_page_formatter`` class attribute to set the file name as in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
-    1. Write a ``start_requests`` method to request the first page of API results
-    1. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
+    #. Write a ``start_requests`` method to request the first page of API results
+    #. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
 
     If the API returns the number of total pages or results in the response, consider using ``IndexSpider`` instead.
 
@@ -448,6 +427,7 @@ class LinksSpider(SimpleSpider):
 
             def start_requests(self):
                 yield scrapy.Request('https://example.com/api/packages.json', meta={'file_name': 'page1.json'})
+
     """
 
     next_pointer = '/links/next'
@@ -456,8 +436,7 @@ class LinksSpider(SimpleSpider):
     def parse(self, response):
         yield from super().parse(response)
 
-        if not self.sample:
-            yield self.next_link(response)
+        yield self.next_link(response)
 
     def next_link(self, response, **kwargs):
         """
@@ -469,16 +448,16 @@ class LinksSpider(SimpleSpider):
             return self.build_request(url, formatter=self.next_page_formatter, **kwargs)
 
         if response.meta['depth'] == 0:
-            raise MissingNextLinkError('next link not found on the first page: {}'.format(response.url))
+            raise MissingNextLinkError(f'next link not found on the first page: {response.url}')
 
 
 class PeriodicSpider(SimpleSpider):
     """
-    This class makes it easy to collect data from an API that takes a year or a year and month as parameters.
+    This class makes it easy to collect data from an API that accepts a year or a year and month as parameters.
 
-    1. Inherit from ``PeriodicSpider``
-    1. Set a ``date_format`` class attribute to "year" or "year-month"
-    1. Set a ``pattern`` class attribute to a URL pattern, with placeholders. If the ``date_format`` is "year", then a
+    #. Inherit from ``PeriodicSpider``
+    #. Set a ``date_format`` class attribute to "year" or "year-month"
+    #. Set a ``pattern`` class attribute to a URL pattern, with placeholders. If the ``date_format`` is "year", then a
        year is passed to the placeholder as an ``int``. If the ``date_format`` is "year-month", then the first day of
        the month is passed to the placeholder as a ``date``, which you can format as, for example:
 
@@ -486,12 +465,12 @@ class PeriodicSpider(SimpleSpider):
 
           pattern = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
 
-    1. Implement a ``get_formatter`` method to return the formatter to use in
+    #. Implement a ``get_formatter`` method to return the formatter to use in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls
-    1. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a string
-    1. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a
+    #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a string
+    #. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a
        string, if the source is known to have stopped publishing - otherwise, it defaults to today
-    1. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
+    #. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
        :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
 
     If ``sample`` is set, the data from the most recent year or month is retrieved.
@@ -522,9 +501,6 @@ class PeriodicSpider(SimpleSpider):
         start = self.from_date
         stop = self.until_date
 
-        if self.sample:
-            start = stop
-
         if self.date_format == '%Y':
             date_range = util.date_range_by_year(start.year, stop.year)
         else:
@@ -550,37 +526,36 @@ class PeriodicSpider(SimpleSpider):
 
 class IndexSpider(SimpleSpider):
     """
-    This class can be used to collect data from an API which includes the total number of results or pages in their
-    response data, and receives pagination parameters like ``page``, ``limit`` and ``offset``. The values for the
-    parameters are calculated and the requests are sent to the Scrapy's pipeline at the same time. To create a spider
-    that inherits from ``IndexSpider``:
+    This class can be used to collect data from an API that includes the total number of results or pages in its
+    response, and receives pagination parameters like ``page`` or ``limit`` and ``offset``. To create a spider that
+    inherits from ``IndexSpider``:
 
-    1. Set a pointer to the attribute that contains the total number of pages or elements in the response data for the
-    first request to the API:
-        1. Set ``total_pages_pointer`` to point to the JSON element that contains the total number of pages in the
-        response data. The API will add the 'page' GET parameter to the URL in the subsequent requests.
-        1. Set ``count_pointer`` to point to the JSON element with the total number of results. If you use
-        ``count_pointer``, you must set ``limit`` to indicate the number of results to return for each page. The
-        ``limit`` attribute can be either a number or a JSON pointer. Optionally, set ``use_page`` to ``True`` to
-        calculate a 'page' parameter instead of the 'limit' and 'offset'.
-    1. Write a ``start_request`` method with a request to the initial URL. The request's callback should be set to
-    ``self.parse_list``.
+    #. Set class attributes. Either:
+
+        #. Set ``total_pages_pointer`` to the JSON Pointer for the total number of pages in the first response. The
+           spider then yields a request for each page, incrementing a ``page`` query string parameter in each request.
+        #. Set ``count_pointer`` to the JSON pointer for the total number of results, and set ``limit`` to the number
+           of results to return per page, or to the JSON pointer for it. Optionally, set ``use_page`` to ``True`` to
+           configure the spider to send a ``page`` query string parameter instead of a pair of ``limit`` and ``offset``
+           query string parameters. The spider then yields a request for each offset/page.
+
+    #. Write a ``start_requests`` method to yield the initial URL. The request's ``callback`` parameter should be set
+       to ``self.parse_list``.
 
     If neither ``total_pages_pointer`` nor ``count_pointer`` can be used to create the URLs (e.g. if you need to query
-    a separate URL that does not return JSON), you can provide a custom range of parameters defining the
-    ``range_generator`` method. This method should return page or offset numbers. You also need to define a
-    ``url_builder`` method, that receives the pages/offset generated by ``range_generator``. See the ``kenya_makueni``
-    spider for an example.
+    a separate URL that does not return JSON), you need to define ``range_generator`` and ``url_builder`` methods.
+    ``range_generator`` should return page numbers or offset numbers. ``url_builder`` receives a page or offset from
+    ``range_generator``, and returns a URL to request. See the ``kenya_makueni`` spider for an example.
 
-    The names of the GET parameters 'page', 'limit' and 'offset' to include in the URLS are customizable. Define the
-    ``param_page``, ``param_limit`` and ``param_offset`` class members to set the custom names. Any additional GET
-    parameters can be added by defining ``additional_params``, which should be a dictionary.
+    The names of the query string parameters 'page', 'limit' and 'offset' are customizable. Define the ``param_page``,
+    ``param_limit`` and ``param_offset`` class attributes to set the custom names. Additional query string parameters
+    can be added by defining ``additional_params``, which should be a dict.
 
-    Th base URL is taken from the first URL yielded by ``start_requests``. If you need a different URL for the pages,
-    define the ``base_url`` class member.
+    Th base URL is calculated from the initial URL yielded by ``start_requests``. If you need a different base URL for
+    subsequent requests, define the ``base_url`` class attribute.
 
-    By default the content received in ``parse_list`` is yielded. If you want to avoid this, set ``yield_list_results``
-    to ``False``.
+    By default, responses passed to ``parse_list`` are passed to the ``parse`` method from which items are yielded. If
+    the responses passed to ``parse_list`` contain no OCDS data, set ``yield_list_results`` to ``False``.
     """
 
     def __init__(self, *args, **kwargs):
@@ -617,8 +592,6 @@ class IndexSpider(SimpleSpider):
             data = json.loads(response.text)
         except json.JSONDecodeError:
             data = None
-        if self.sample:
-            return
         for value in self.range_generator(data, response):
             yield self.build_request(self.url_builder(value, data, response), formatter=self.formatter, **kwargs)
 

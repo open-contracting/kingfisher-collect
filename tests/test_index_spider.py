@@ -45,7 +45,7 @@ TEST_CASES = [
     ({
         'yield_list_results': False,
         'range_generator': lambda _self, data, response: range(ceil(int(response.text) / 10)),
-        'url_builder': lambda _self, params, data, response: _self.pages_url_builder(params, data, response),
+        'url_builder': lambda _self, value, data, response: _self.pages_url_builder(value, data, response),
         'additional_params': {'step': 10},
         'param_page': 'pageNumber',
         'data_type': 'release_package_list',

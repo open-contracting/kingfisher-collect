@@ -11,11 +11,12 @@ from tests import spider_with_crawler
 
 
 @pytest.mark.parametrize('sample,expected', [
-    ('true', True),
-    ('false', False),
-    (True, False),
-    (False, False),
-    (None, False),
+    ('true', 1),
+    ('false', None),
+    (True, 1),
+    (False, None),
+    (None, None),
+    (3, 3)
 ])
 def test_sample(sample, expected):
     spider = BaseSpider(name='test', sample=sample)
@@ -26,7 +27,7 @@ def test_sample(sample, expected):
 def test_sample_no_kwarg():
     spider = BaseSpider(name='test')
 
-    assert spider.sample is False
+    assert spider.sample is None
 
 
 @pytest.mark.parametrize('status,expected', [(100, False), (200, True), (204, True), (300, False), (500, False)])
@@ -86,12 +87,12 @@ def test_date_arguments():
     assert spider_with_crawler(from_date=test_date)
     with pytest.raises(SpiderArgumentError) as e:
         assert spider_with_crawler(from_date='test')
-    assert str(e.value) == 'spider argument from_date: invalid date value: {}'.format(error_message)
+    assert str(e.value) == f'spider argument `from_date`: invalid date value: {error_message}'
 
     assert spider_with_crawler(until_date=test_date, default_from_date=test_date)
     with pytest.raises(SpiderArgumentError) as e:
         assert spider_with_crawler(until_date='test', default_from_date=test_date)
-    assert str(e.value) == 'spider argument until_date: invalid date value: {}'.format(error_message)
+    assert str(e.value) == f'spider argument `until_date`: invalid date value: {error_message}'
 
 
 def test_custom_collection_data_version():
@@ -100,8 +101,7 @@ def test_custom_collection_data_version():
     assert spider_with_crawler(crawl_time='2020-01-01T00:00:00')
     with pytest.raises(SpiderArgumentError) as e:
         assert spider_with_crawler(crawl_time='2020')
-    assert str(e.value) == 'spider argument crawl_time: invalid date value: {}'.format(
-        error_message)
+    assert str(e.value) == f'spider argument `crawl_time`: invalid date value: {error_message}'
 
 
 @pytest.mark.parametrize('kwargs,expected', [

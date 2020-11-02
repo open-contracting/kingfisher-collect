@@ -7,18 +7,20 @@ from kingfisher_scrapy.util import components, date_range_by_year, handle_http_e
 
 class IndonesiaBandung(BaseSpider):
     """
+    Domain
+      Bandung Integrated Resource Management System (BIRMS)
     API endpoints
-      Get Birms Contract List by year
+      Get contract list by year
         Link
-          https://birms.bandung.go.id/api/contracts/year/{year}?page={page}
+          ``https://birms.bandung.go.id/api/contracts/year/{year}?page={page}``
         Parameters
           year
             contract year number
           page
             page number
-      Get Birms Detail Contract by OCID
+      Get contract detail by OCID
         Link
-          https://birms.bandung.go.id/api/newcontract/ocds-afzrfb-{source-database}-{year}-{uniqid}
+          ``https://birms.bandung.go.id/api/newcontract/ocds-afzrfb-{source-database}-{year}-{uniqid}``
         Parameters
           source-database
             (b)irms or (s)pse
@@ -26,9 +28,6 @@ class IndonesiaBandung(BaseSpider):
             contract year number
           uniqid
             release id
-    Spider arguments
-      sample
-        Downloads the first release listed for 2013
     """
     name = 'indonesia_bandung'
     data_type = 'release'
@@ -49,8 +48,6 @@ class IndonesiaBandung(BaseSpider):
             url = item['uri']
             if url:
                 yield self.build_request(url, formatter=components(-1))
-                if self.sample:
-                    break
         else:
             next_page_url = data.get('next_page_url')
             if next_page_url:

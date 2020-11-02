@@ -8,11 +8,10 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class NepalDhangadhi(SimpleSpider):
     """
+    Domain
+      Dhangadhi Infrastructure Management System (IMS)
     Bulk download documentation
       https://ims.susasan.org/dhangadhi/about
-    Spider arguments
-      sample
-        Download only the first release package in the dataset.
     """
     name = 'nepal_dhangadhi'
     data_type = 'release_package'
@@ -30,5 +29,3 @@ class NepalDhangadhi(SimpleSpider):
         data = json.loads(response.text)
         for item in data['data']['fiscal_years']:
             yield self.build_request(pattern.format(item['name']), formatter=components(-1))
-            if self.sample:
-                break

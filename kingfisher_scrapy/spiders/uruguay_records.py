@@ -4,11 +4,10 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class UruguayRecords(UruguayBase):
     """
+    Domain
+      Agencia Reguladora de Compras Estatales (ARCE)
     API documentation
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
-    Spider arguments
-      sample
-        Download only 1 record.
     """
     name = 'uruguay_records'
     data_type = 'record_package'

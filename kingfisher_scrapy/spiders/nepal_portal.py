@@ -4,11 +4,10 @@ from kingfisher_scrapy.util import components
 
 class NepalPortal(PeriodicSpider):
     """
+    Domain
+      Public Procurement Monitoring Office (PPMO)
     Bulk download documentation
       http://ppip.gov.np/downloads
-    Spider arguments
-      sample
-        Download only data released on 2018.
     """
     name = 'nepal_portal'
     data_type = 'release_package'

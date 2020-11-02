@@ -5,9 +5,8 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 
 class HondurasCoST(SimpleSpider):
     """
-    Spider arguments
-      sample
-        Ignored, a single file is downloaded.
+    Domain
+      Systema de Información y Seguimiento de Obras y Contratos (SISOCS)
     """
     name = 'honduras_cost'
     data_type = 'record_package'

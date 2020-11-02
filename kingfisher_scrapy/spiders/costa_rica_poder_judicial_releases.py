@@ -3,18 +3,15 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
-from kingfisher_scrapy.util import handle_http_error, components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class CostaRicaPoderJudicialReleases(CompressedFileSpider):
     """
-    API documentation
-      https://docs.ckan.org/en/2.8/api/
+    Domain
+      Poder Judicial de Costa Rica
     Bulk download documentation
       http://datosabiertospj.eastus.cloudapp.azure.com/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
-    Spider arguments
-      sample
-        Downloads the zip file and sends 10 releases to kingfisher process.
     """
     name = 'costa_rica_poder_judicial_releases'
     data_type = 'release_package'
@@ -34,5 +31,3 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
             if resource['format'].upper() == 'ZIP':
                 # Presently, only one URL matches.
                 yield self.build_request(resource['url'], formatter=components(-1))
-                if self.sample:
-                    return

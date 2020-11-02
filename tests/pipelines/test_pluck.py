@@ -1,10 +1,9 @@
 import json
 
 import pytest
-from scrapy.exceptions import DropItem
 
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.items import File, FileError, PluckedItem
+from kingfisher_scrapy.items import File, PluckedItem
 from kingfisher_scrapy.pipelines import Pluck
 from tests import spider_with_crawler
 
@@ -118,17 +117,3 @@ def test_process_item_non_package_data_type():
     })
 
     assert pipeline.process_item(item, spider) == PluckedItem({'value': 'error: no package for data_type: release'})
-
-
-def test_process_item_file_error():
-    spider = spider_with_crawler(release_pointer='/date', truncate=10)
-
-    pipeline = Pluck()
-    item = FileError({
-        'file_name': 'test',
-        'url': 'http://test.com',
-        'errors': 'error',
-    })
-
-    with pytest.raises(DropItem):
-        pipeline.process_item(item, spider)

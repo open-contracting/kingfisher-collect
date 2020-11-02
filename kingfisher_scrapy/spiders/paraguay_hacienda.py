@@ -4,22 +4,21 @@ from datetime import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spider import BaseSpider
-from kingfisher_scrapy.exceptions import AuthenticationError
+from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
 from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 
 class ParaguayHacienda(BaseSpider):
     """
-    Swagger API documentation
-      https://datos.hacienda.gov.py/odmh-api-v1/api-docs/
-    Spider arguments
-      sample
-        Download only 11 releases.
+    Domain
+      Ministerio de Hacienda
     Environment variables
       KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN
         To get an API account and request token go to https://datos.hacienda.gov.py/aplicaciones/new.
       KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET
         Your client secret generated.
+    Swagger API documentation
+      https://datos.hacienda.gov.py/odmh-api-v1/api-docs/
     """
     name = 'paraguay_hacienda'
 
@@ -47,9 +46,8 @@ class ParaguayHacienda(BaseSpider):
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
         spider.client_secret = crawler.settings.get('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
         if spider.request_token is None or spider.client_secret is None:
-            spider.logger.error('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN and/or '
-                                'KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET is not set.')
-            raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
+            raise MissingEnvVarError('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN and/or '
+                                     'KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET is not set.')
 
         return spider
 
@@ -73,7 +71,7 @@ class ParaguayHacienda(BaseSpider):
         pattern = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/ocds/release-package/{}'
 
         # If is the first URL, we need to iterate over all the pages to get all the process ids to query
-        if response.request.meta['first'] and not self.sample:
+        if response.request.meta['first']:
             total = data['meta']['totalPages']
             for page in range(2,  total + 1):
                 yield self.build_request(
@@ -88,9 +86,6 @@ class ParaguayHacienda(BaseSpider):
 
         # if is a meta request it means that is the page that have the process ids to query
         if response.request.meta['meta']:
-            if self.sample:
-                data['results'] = data['results'][:50]
-
             # Now that we have the ids we iterate over them, without duplicate them, and make the
             # final requests for the release_package this time
             for row in data['results']:
@@ -112,7 +107,7 @@ class ParaguayHacienda(BaseSpider):
         """ Requests a new access token """
         attempt = 0
         self.start_time = datetime.now()
-        self.logger.info(f'Requesting access token, attempt {attempt + 1} of {self.max_attempts}')
+        self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
         payload = {"clientSecret": self.client_secret}
 
         return scrapy.Request(
@@ -131,7 +126,7 @@ class ParaguayHacienda(BaseSpider):
             r = json.loads(response.text)
             token = r.get('accessToken')
             if token:
-                self.logger.info(f'New access token: {token}')
+                self.logger.info('New access token: %s', token)
                 self.access_token = 'Bearer ' + token
                 # continue scraping where it stopped after getting the token
                 yield self.last_request
@@ -140,9 +135,9 @@ class ParaguayHacienda(BaseSpider):
                 if attempt == self.max_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.auth_failed = True
-                    raise AuthenticationError()
+                    raise AccessTokenError()
                 else:
-                    self.logger.info(f'Requesting access token, attempt {attempt + 1} of {self.max_attempts}')
+                    self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
                     return scrapy.Request(
                         "https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/auth/token",
                         method='POST',
@@ -154,9 +149,9 @@ class ParaguayHacienda(BaseSpider):
                         priority=1000
                     )
         else:
-            self.logger.error(f'Authentication failed. Status code: {response.status}')
+            self.logger.error('Authentication failed. Status code: %s', response.status)
             self.auth_failed = True
-            raise AuthenticationError()
+            raise AccessTokenError()
 
     def expires_soon(self, time_diff):
         """ Tells if the access token will expire soon (required by
@@ -164,5 +159,5 @@ class ParaguayHacienda(BaseSpider):
         """
         if time_diff.total_seconds() < ParaguayHacienda.request_time_limit * 60:
             return False
-        self.logger.info(f'Time_diff: {time_diff.total_seconds()}')
+        self.logger.info('Time_diff: %s', time_diff.total_seconds())
         return True

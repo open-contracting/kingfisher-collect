@@ -4,15 +4,11 @@ from datetime import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.exceptions import AuthenticationError
+from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
 from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameters
 
 
 class ParaguayDNCPBaseSpider(SimpleSpider):
-    """ This base class contains methods used for Paraguay DNCP's
-    authentication protocol.
-    """
-
     # request limits: since we can't control when Scrapy decides to send a
     # request, values here are slighly less than real limits.
     start_time = None
@@ -45,8 +41,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
 
         if spider.request_token is None:
-            spider.logger.error('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN is not set.')
-            raise scrapy.exceptions.CloseSpider('authentication_credentials_missing')
+            raise MissingEnvVarError('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN is not set.')
 
         return spider
 
@@ -67,7 +62,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         """ Requests a new access token """
         attempt = 0
         self.start_time = datetime.now()
-        self.logger.info(f'Requesting access token, attempt {attempt + 1} of {self.max_attempts}')
+        self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
 
         return scrapy.Request(
             self.auth_url,
@@ -85,7 +80,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
             r = json.loads(response.text)
             token = r.get('access_token')
             if token:
-                self.logger.info(f'New access token: {token}')
+                self.logger.info('New access token: %s', token)
                 self.access_token = token
                 # continue scraping where it stopped after getting the token
                 yield self.last_request
@@ -94,9 +89,9 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
                 if attempt == self.max_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.auth_failed = True
-                    raise AuthenticationError()
+                    raise AccessTokenError()
                 else:
-                    self.logger.info(f'Requesting access token, attempt {attempt + 1} of {self.max_attempts}')
+                    self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
                     return scrapy.Request(
                         self.auth_url,
                         method='POST',
@@ -108,9 +103,9 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
                         priority=1000
                     )
         else:
-            self.logger.error(f'Authentication failed. Status code: {response.status}')
+            self.logger.error('Authentication failed. Status code: %s', response.status)
             self.auth_failed = True
-            raise AuthenticationError()
+            raise AccessTokenError()
 
     @handle_http_error
     def parse_pages(self, response):
@@ -118,7 +113,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         for url in self.get_files_to_download(content):
             yield self.build_request(url, formatter=components(-1), dont_filter=True)
         pagination = content['pagination']
-        if pagination['current_page'] < pagination['total_pages'] and not self.sample:
+        if pagination['current_page'] < pagination['total_pages']:
             page = pagination['current_page'] + 1
             url = replace_parameters(response.request.url, page=page)
             yield self.build_request(
@@ -139,5 +134,5 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         """
         if time_diff.total_seconds() < ParaguayDNCPBaseSpider.request_time_limit * 60:
             return False
-        self.logger.info(f'Time_diff: {time_diff.total_seconds()}')
+        self.logger.info('Time_diff: %s', time_diff.total_seconds())
         return True

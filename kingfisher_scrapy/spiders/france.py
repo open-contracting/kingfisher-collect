@@ -8,11 +8,10 @@ from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 class France(SimpleSpider):
     """
+    Domain
+      France
     Swagger API documentation
       https://doc.data.gouv.fr/api/reference/
-    Spider arguments
-      sample
-        Downloads the first OCDS package found using the CKAN API.
     """
     name = 'france'
     data_type = 'release_package'
@@ -30,11 +29,8 @@ class France(SimpleSpider):
                 description = resource['description']
                 if description and 'ocds' in description.lower():
                     yield self.build_request(resource['url'], formatter=components(-2))
-                    if self.sample:
-                        break
             else:
                 continue
-            break
         else:
             next_page = data.get('next_page')
             if next_page:

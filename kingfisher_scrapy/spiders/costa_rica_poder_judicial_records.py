@@ -3,18 +3,15 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_http_error, components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class CostaRicaPoderJudicialRecords(SimpleSpider):
     """
-    API documentation
-      https://docs.ckan.org/en/2.8/api/
+    Domain
+      Poder Judicial de Costa Rica
     Bulk download documentation
       http://datosabiertospj.eastus.cloudapp.azure.com/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
-    Spider arguments
-      sample
-        Downloads 1 record package.
     """
 
     name = 'costa_rica_poder_judicial_records'
@@ -31,5 +28,3 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
         for resource in data['result']['resources']:
             if resource['format'].upper() == 'JSON':
                 yield self.build_request(resource['url'], formatter=components(-1))
-                if self.sample:
-                    return

@@ -2,12 +2,16 @@ class KingfisherScrapyError(Exception):
     """Base class for exceptions from within this application"""
 
 
-class AuthenticationError(KingfisherScrapyError):
-    """Raised when the maximum number of attempts to retrieve an access token is reached"""
-
-
 class SpiderArgumentError(KingfisherScrapyError):
     """Raised when a spider argument's value is invalid"""
+
+
+class MissingEnvVarError(KingfisherScrapyError):
+    """Raised when a required environment variable is missing"""
+
+
+class AccessTokenError(KingfisherScrapyError):
+    """Raised when the maximum number of attempts to retrieve an access token is reached"""
 
 
 class MissingNextLinkError(KingfisherScrapyError):

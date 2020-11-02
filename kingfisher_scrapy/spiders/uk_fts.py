@@ -4,11 +4,10 @@ from kingfisher_scrapy.base_spider import LinksSpider
 from kingfisher_scrapy.util import parameters
 
 
-class UKContractsFinder(LinksSpider):
+class UKFTS(LinksSpider):
     """
-    Spider arguments
-      sample
-        Downloads the first release package returned by the main endpoint.
+    Domain
+      Find a Tender Service (FTS)
     """
     name = 'uk_fts'
     data_type = 'release_package'

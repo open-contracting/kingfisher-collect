@@ -8,6 +8,12 @@ from kingfisher_scrapy.util import handle_http_error
 
 
 class DigiwhistBase(BaseSpider):
+    """
+    Domain
+      Digiwhist
+    Bulk download documentation
+      https://opentender.eu/download
+    """
     skip_pluck = 'JSON Lines is not supported'
     data_type = 'release_package'
 

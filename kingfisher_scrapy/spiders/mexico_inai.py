@@ -8,8 +8,10 @@ from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 class MexicoINAI(SimpleSpider):
     """
-    Download a bulk release package with data of 2017
-
+    Domain
+      Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI)
+    Caveats
+      Contains data from 2017 only.
     Bulk download documentation
       https://datos.gob.mx/busca/dataset/contrataciones-abiertas-del-inai
     """

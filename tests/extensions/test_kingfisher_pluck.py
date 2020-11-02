@@ -74,4 +74,4 @@ def test_spider_closed_without_items():
         extension.spider_closed(spider, 'itemcount')
 
         with open(os.path.join(tmpdirname, 'pluck-release-date.csv')) as f:
-            assert 'itemcount,test\n' == f.read()
+            assert 'closed: itemcount,test\n' == f.read()

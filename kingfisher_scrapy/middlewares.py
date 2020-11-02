@@ -1,6 +1,5 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-import logging
 from datetime import datetime
 
 import scrapy
@@ -24,7 +23,7 @@ class ParaguayAuthMiddleware:
     """
 
     def __init__(self, spider):
-        logging.info('Initialized authentication middleware with spider: {}.'.format(spider.name))
+        spider.logger.info('Initialized authentication middleware with spider: %s.', spider.name)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -34,7 +33,7 @@ class ParaguayAuthMiddleware:
         if 'auth' in request.meta and request.meta['auth'] is False:
             return
         if spider.auth_failed:
-            logging.error('Fatal: no authentication token, stopping now...')
+            spider.logger.error('Fatal: no authentication token, stopping now...')
             spider.crawler.stop()
             raise scrapy.exceptions.IgnoreRequest()
         request.headers['Authorization'] = spider.access_token
@@ -46,8 +45,8 @@ class ParaguayAuthMiddleware:
 
     def process_response(self, request, response, spider):
         if response.status == 401 or response.status == 429:
-            spider.logger.info('Time transcurred: {}'.format((datetime.now() - spider.start_time).total_seconds()))
-            logging.info('{} returned for request to {}'.format(response.status, request.url))
+            spider.logger.info('Time transcurred: %s', (datetime.now() - spider.start_time).total_seconds())
+            spider.logger.info('%s returned for request to %s', response.status, request.url)
             if not spider.access_token == request.headers['Authorization'] and self._expires_soon(spider):
                 # SAVE the last request to continue after getting the token
                 spider.last_request = request
@@ -66,8 +65,9 @@ class ParaguayAuthMiddleware:
 
 
 class OpenOppsAuthMiddleware:
-    """Downloader middleware that intercepts requests and adds the token
-    for OpenOpps scraper."""
+    """
+    Downloader middleware that intercepts requests and adds the token for OpenOpps scraper.
+    """
 
     @staticmethod
     def process_request(request, spider):

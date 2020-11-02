@@ -28,13 +28,9 @@ class Pluck(ScrapyCommand):
             raise UsageError('Exactly one of --package-pointer or --release-pointer must be set.')
 
         # Stop after one item or error.
-        self.settings.set('CLOSESPIDER_ITEMCOUNT', 1)
         self.settings.set('CLOSESPIDER_ERRORCOUNT', 1)
         # Disable LogStats extension.
         self.settings.set('LOGSTATS_INTERVAL', None)
-        # Limit concurrent requests, to download the minimum.
-        self.settings.set('CONCURRENT_REQUESTS', 1)
-
         filename = _pluck_filename(opts)
         if os.path.isfile(filename):
             os.unlink(filename)
@@ -51,11 +47,11 @@ class Pluck(ScrapyCommand):
                     skipped[spidercls.skip_pluck].append(spider_name)
                 else:
                     running.append(spider_name)
-                    runner.crawl(spidercls, year=year, package_pointer=opts.package_pointer,
+                    runner.crawl(spidercls, year=year, sample=1, package_pointer=opts.package_pointer,
                                  release_pointer=opts.release_pointer, truncate=opts.truncate)
 
         with open('pluck_skipped.json', 'w') as f:
             json.dump(skipped, f, indent=2)
 
-        logger.info(f"Running {len(running)} spiders: {', '.join(sorted(running))}")
+        logger.info('Running %s spiders: %s', len(running), ', '.join(sorted(running)))
         runner.start()

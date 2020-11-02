@@ -8,11 +8,10 @@ from kingfisher_scrapy.util import components, handle_http_error, join, paramete
 
 class Uganda(IndexSpider):
     """
+    Domain
+      Government Procurement Portal (GPP) of Public Procurement and Disposal of Public Assets Authority (PPDA)
     API documentation
-        https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
-    Spider arguments
-      sample
-        Download only 19 releases.
+      https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
     """
     name = 'uganda_releases'
     data_type = 'release_package'
@@ -43,7 +42,3 @@ class Uganda(IndexSpider):
                         pattern.format(tag, plans['financial_year'], plans['pde_id']),
                         formatter=join(components(-1), parameters('fy', 'pde'))
                     )
-                    if self.sample:
-                        break
-                if self.sample:
-                    break

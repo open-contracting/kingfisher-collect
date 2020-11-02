@@ -4,9 +4,9 @@ from kingfisher_scrapy.util import components
 
 class NicaraguaSolidWaste(SimpleSpider):
     """
+    Domain
+      Solid Waste Mitigation Platform (SWMP)
     Spider arguments
-      sample
-        Download only data released on 2013-01-23
       from_date
         Download only data from this date onward (YYYY-MM-DD format).
         If ``until_date`` is provided, defaults to '2000-01-01'.
@@ -22,11 +22,7 @@ class NicaraguaSolidWaste(SimpleSpider):
 
     def start_requests(self):
         url = self.url
-        if self.sample:
-            # date parameter setting to get one release from 2013
-            url = url.format('20130123', '20130123')
-        else:
-            # date parameter obtained
-            url = url.format(self.from_date.strftime("%Y%m%d"), self.until_date.strftime("%Y%m%d"))
+        # date parameter obtained
+        url = url.format(self.from_date.strftime("%Y%m%d"), self.until_date.strftime("%Y%m%d"))
         # url looks like http://www.gekoware.com/swmp/api/ocds/20190101/20201005
         yield self.build_request(url, formatter=components(-2))

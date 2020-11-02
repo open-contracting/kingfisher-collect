@@ -3,21 +3,24 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.exceptions import SpiderArgumentError
 from kingfisher_scrapy.util import components, handle_http_error
 
 
 class HondurasPortalBulkFiles(SimpleSpider):
     """
-    Bulk download documentation
-      http://www.contratacionesabiertas.gob.hn/descargas/
+    Domain
+      Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Secretaria de Finanzas de Honduras (SEFIN)
     Spider arguments
       publisher
-        Filter the data by a specific publisher.
-        ``oncae`` for "Oficina Normativa de Contratación y Adquisiciones del Estado" publisher.
-        ``sefin`` for "Secretaria de Finanzas de Honduras" publisher.
-      sample
-        Downloads the first package listed in http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json.
-        If ``publisher`` is also provided, a single package is downloaded from that publisher.
+        Filter by publisher:
+
+        oncae
+          Oficina Normativa de Contratación y Adquisiciones del Estado
+        sefin
+          Secretaria de Finanzas de Honduras
+    Bulk download documentation
+      http://www.contratacionesabiertas.gob.hn/descargas/
     """
     name = 'honduras_portal_bulk_files'
     data_type = 'release_package'
@@ -27,8 +30,8 @@ class HondurasPortalBulkFiles(SimpleSpider):
     @classmethod
     def from_crawler(cls, crawler, publisher=None, *args, **kwargs):
         spider = super().from_crawler(crawler, publisher=publisher, *args, **kwargs)
-        if publisher and publisher not in spider.publishers:
-            raise scrapy.exceptions.CloseSpider('Specified publisher is not recognized')
+        if publisher and spider.publisher not in spider.publishers:
+            raise SpiderArgumentError(f'spider argument `publisher`: {spider.publisher!r} not recognized')
 
         spider.publisher_name = spider.publishers.get(publisher)
 
@@ -49,6 +52,3 @@ class HondurasPortalBulkFiles(SimpleSpider):
                 continue
             url = item['urls']['json']
             yield self.build_request(url, formatter=components(-1))
-
-            if self.sample:
-                return

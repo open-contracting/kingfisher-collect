@@ -6,11 +6,10 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class EcuadorEmergency(SimpleSpider):
     """
+    Domain
+      Servicio Nacional de Contratación Pública
     Bulk download documentation
       https://portal.compraspublicas.gob.ec/sercop/data-estandar-ocds/
-    Spider arguments
-      sample
-        Downloads one release package from the first link in the downloads page.
     """
     name = 'ecuador_emergency'
     data_type = 'release_package'
@@ -24,6 +23,3 @@ class EcuadorEmergency(SimpleSpider):
         html_urls = response.xpath('//a/@href').getall()
         for html_url in html_urls:
             yield self.build_request(response.request.url + html_url, formatter=components(-1))
-
-            if self.sample:
-                break

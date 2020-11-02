@@ -4,11 +4,10 @@ from kingfisher_scrapy.util import components
 
 class MoldovaOld(PeriodicSpider):
     """
+    Domain
+      Public Procurement Agency (PPA)
     Bulk download documentation
       http://opencontracting.date.gov.md/downloads
-    Spider arguments
-      sample
-        Downloads a single JSON file containing data for 2017.
     """
     name = 'moldova_old'
     data_type = 'release_package'
