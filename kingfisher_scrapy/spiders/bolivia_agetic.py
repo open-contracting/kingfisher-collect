@@ -2,20 +2,23 @@ import json
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import FlattenSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import handle_http_error
 
 
-class BoliviaAgetic(FlattenSpider):
+class BoliviaAgetic(SimpleSpider):
     """
-    Bulk download documentation
-      https://datos.gob.bo/id/dataset/contrataciones-agetic-2019-estandar-ocp
+    Domain
+      Agencia de Gobierno Electrónico y Tecnologías de Información y Comunicación (AGETIC)
     Spider arguments
       sample
         Downloads the first file in the downloads page.
+    Bulk download documentation
+      https://datos.gob.bo/id/dataset/contrataciones-agetic-2019-estandar-ocp
     """
     name = 'bolivia_agetic'
     data_type = 'release_list'
+    unflatten = True
 
     def start_requests(self):
         # A CKAN API JSON response.
@@ -28,7 +31,8 @@ class BoliviaAgetic(FlattenSpider):
         for resource in data['result']['resources']:
             if 'ocds' in resource['description']:
                 # Presently, only one URL matches.
-                yield self.build_request(resource['url'], formatter=components(-1))
+                yield scrapy.Request(resource['url'], meta={'file_name': resource['url']}, callback=self.parse_data)
 
-            if self.sample:
-                break
+    @handle_http_error
+    def parse_data(self, response):
+        yield self.build_file(url=response.request.url, data_type=self.data_type, data=response.body)
