@@ -1,14 +1,20 @@
 # https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 # https://docs.scrapy.org/en/latest/topics/signals.html#item-signals
 import json
+import os
 import pkgutil
+import tempfile
+from urllib.parse import urlsplit
 
 import jsonpointer
+from flattentool import unflatten
 from jsonschema import FormatChecker
 from jsonschema.validators import Draft4Validator, RefResolver
+from ocdsmerge.util import get_release_schema_url, get_tags
 from scrapy.exceptions import DropItem
 
 from kingfisher_scrapy.items import File, FileItem, PluckedItem
+from kingfisher_scrapy.util import components
 
 
 def _json_loads(basename):
@@ -104,6 +110,55 @@ class Pluck:
             value = value[:spider.truncate]
 
         return PluckedItem({'value': value})
+
+
+class Unflatten:
+    def process_item(self, item, spider):
+        if not spider.unflatten:
+            return item
+
+        if not item['file_name']:
+            item['file_name'] = urlsplit(item['url']).path.rsplit('/', 1)[-1]
+
+        if item['file_name'].endswith('.csv'):
+            input_format = 'csv'
+        elif item['file_name'].endswith('.xlsx'):
+            input_format = 'xlsx'
+        else:
+            raise NotImplementedError(f"the file '{item['file_name']}' has no extension or is not CSV or XLSX, "
+                                      f"obteined from: {item['url']}")
+
+        with tempfile.TemporaryDirectory() as directory:
+            file_path = os.path.join(directory, item['file_name'])
+            with open(file_path, 'wb') as f:
+                f.write(item['data'])
+
+            if input_format == 'csv':
+                input_name = directory
+            elif input_format == 'xlsx':
+                input_name = file_path
+
+            tags = get_tags()
+            for i in range(1, len(tags)):
+                tag = tags[-i].replace('__', '.')
+                if spider.ocds_version in tag:
+                    schema = get_release_schema_url(tags[-i])
+                    break
+
+            unflatten(
+                input_name,
+                root_list_path='releases',
+                root_id='ocid',
+                schema=schema,
+                input_format=input_format,
+                output_name=file_path
+            )
+
+            with open(file_path, 'r') as f:
+                item['data'] = f.read()
+                item['file_name'] = components(-1)(item['file_name']) + '.json'
+
+                return item
 
 
 def _resolve_pointer(data, pointer):

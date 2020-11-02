@@ -82,8 +82,9 @@ EXTENSIONS = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    'kingfisher_scrapy.pipelines.Sample': 200,
-   'kingfisher_scrapy.pipelines.Validate': 300,
-   'kingfisher_scrapy.pipelines.Pluck': 301,
+   'kingfisher_scrapy.pipelines.Unflatten': 300,
+   'kingfisher_scrapy.pipelines.Validate': 301,
+   'kingfisher_scrapy.pipelines.Pluck': 302,
 }
 
 
