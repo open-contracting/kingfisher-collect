@@ -1,5 +1,4 @@
 import json
-from os.path import join as join_path
 
 import scrapy
 
@@ -33,6 +32,6 @@ class TanzaniaZabuni(SimpleSpider):
         releases = json.loads(response.text)['releases']
         for release in releases:
             yield self.build_request(
-                self.url.format(join_path(release['ocid'], response.request.meta['stage'])),
+                self.url.format(release['ocid'] + '/' + response.request.meta['stage']),
                 formatter=join(components(-1), components(-2, -1))
             )
