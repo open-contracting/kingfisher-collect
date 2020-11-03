@@ -444,6 +444,9 @@ class LinksSpider(SimpleSpider):
         if url:
             return self.build_request(url, formatter=self.next_page_formatter, **kwargs)
 
+        if self.from_date and self.until_date and (self.until_date - self.from_date).days <= 1:
+            return
+
         if response.meta['depth'] == 0:
             raise MissingNextLinkError(f'next link not found on the first page: {response.url}')
 
