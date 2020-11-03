@@ -3,7 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error, join
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class TanzaniaZabuni(SimpleSpider):
@@ -33,5 +33,5 @@ class TanzaniaZabuni(SimpleSpider):
         for release in releases:
             yield self.build_request(
                 self.url.format(release['ocid'] + '/' + response.request.meta['stage']),
-                formatter=join(components(-1), components(-2, -1))
+                formatter=components(-2)
             )
