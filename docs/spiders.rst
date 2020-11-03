@@ -846,6 +846,16 @@ Spain
 
    scrapy crawl spain_zaragoza
 
+Tanzania
+--------
+
+.. autoclass:: kingfisher_scrapy.spiders.tanzania_zabuni.TanzaniaZabuni
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl tanzania_zabuni
+
 Uganda
 ------
 
