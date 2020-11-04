@@ -18,7 +18,8 @@ class France(SimpleSpider):
 
     def start_requests(self):
         # A CKAN API JSON response.
-        url = 'https://www.data.gouv.fr/api/1/datasets/?organization=534fff75a3a7292c64a77de4'
+        # Ministère de l'économie, des finances et de la relance
+        url = 'https://www.data.gouv.fr/api/1/datasets/?organization=534fff8ea3a7292c64a77f02'
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
     @handle_http_error
@@ -29,9 +30,7 @@ class France(SimpleSpider):
                 description = resource['description']
                 if description and 'ocds' in description.lower():
                     yield self.build_request(resource['url'], formatter=components(-2))
-            else:
-                continue
-        else:
-            next_page = data.get('next_page')
-            if next_page:
-                yield self.build_request(next_page, formatter=parameters('page'), callback=self.parse_list)
+
+        next_page = data.get('next_page')
+        if next_page:
+            yield self.build_request(next_page, formatter=parameters('page'), callback=self.parse_list)
