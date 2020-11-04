@@ -10,7 +10,7 @@ certifi==2019.11.28       # via requests, sentry-sdk
 cffi==1.13.2              # via cryptography
 chardet==3.0.4            # via requests
 constantly==15.1.0        # via twisted
-cryptography==2.8         # via pyopenssl, scrapy, service-identity
+cryptography==3.2.1       # via pyopenssl, scrapy, service-identity
 cssselect==1.1.0          # via parsel, scrapy
 hyperlink==19.0.0         # via twisted
 idna==2.8                 # via hyperlink, requests
