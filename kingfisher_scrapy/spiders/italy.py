@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error, join
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class Italy(SimpleSpider):
@@ -26,4 +26,4 @@ class Italy(SimpleSpider):
         html_urls = response.xpath('//a/@href').getall()
         for html_url in html_urls:
             if '.json' in html_url:
-                yield self.build_request(html_url, formatter=join(components(-2, -1), components(-1)))
+                yield self.build_request(html_url, formatter=components(-2))
