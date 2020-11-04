@@ -16,7 +16,7 @@ class TanzaniaZabuni(SimpleSpider):
     name = 'tanzania_zabuni'
     data_type = 'release_package'
     url = 'https://app.zabuni.co.tz/api/releases/{}'
-    download_delay = 1
+    download_delay = 1  # to avoid API 429 error "too many request"
 
     def start_requests(self):
         stages = ['tender', 'award', 'contract']
@@ -32,6 +32,6 @@ class TanzaniaZabuni(SimpleSpider):
         releases = json.loads(response.text)['releases']
         for release in releases:
             yield self.build_request(
-                self.url.format(release['ocid'] + '/' + response.request.meta['stage']),
+                self.url.format(f"{release['ocid']}/{response.request.meta['stage']}"),
                 formatter=components(-2)
             )
