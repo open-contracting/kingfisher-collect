@@ -19,8 +19,7 @@ def _pluck_filename(opts):
 
 def components(start, stop=None):
     """
-    Returns a function that returns the selected non-empty path components, excluding the ``.json``, ``.csv`` or
-    ``.xlsx`` extension.
+    Returns a function that returns the selected non-empty path components, excluding the ``.json`` extension.
 
     >>> components(-1)('http://example.com/api/planning.json')
     'planning'
@@ -30,10 +29,8 @@ def components(start, stop=None):
     """
     def wrapper(url):
         value = '-'.join(list(filter(None, urlsplit(url).path.split('/')))[start:stop])
-        if value.endswith(('.json', '.xlsx')):
+        if value.endswith('.json'):
             return value[:-5]
-        if value.endswith('.csv'):
-            return value[:-4]
         return value
     return wrapper
 

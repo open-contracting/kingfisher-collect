@@ -3,7 +3,7 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_http_error
+from kingfisher_scrapy.util import handle_http_error, components
 
 
 class BoliviaAgetic(SimpleSpider):
@@ -31,8 +31,12 @@ class BoliviaAgetic(SimpleSpider):
         for resource in data['result']['resources']:
             if 'ocds' in resource['description']:
                 # Presently, only one URL matches.
-                yield scrapy.Request(resource['url'], meta={'file_name': resource['url']}, callback=self.parse_data)
+                yield scrapy.Request(
+                    resource['url'],
+                    meta={'file_name': components(-1)(resource['url'])},
+                    callback=self.parse_data
+                )
 
     @handle_http_error
     def parse_data(self, response):
-        yield self.build_file(url=response.request.url, data_type=self.data_type, data=response.body)
+        yield self.build_file_from_response(response, data_type=self.data_type)
