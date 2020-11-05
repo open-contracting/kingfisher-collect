@@ -601,6 +601,16 @@ Indonesia
 
    scrapy crawl indonesia_bandung
 
+Italy
+-----
+
+.. autoclass:: kingfisher_scrapy.spiders.italy.Italy
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl italy
+
 Kenya
 -----
 
