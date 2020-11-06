@@ -83,6 +83,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
                 assert caplog.records[0].name == 'test'
                 assert caplog.records[0].levelname == 'WARNING'
                 assert caplog.records[0].message == message
+                assert api_extension.stats.get_value('file_sent_to_kingfisher_count') == 0
 
         expected = {
             'collection_source': 'test',
@@ -111,6 +112,8 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
                 assert mocked.call_args[1]['data'] == expected
                 assert mocked.call_args[1]['proxies'] == {'http': None, 'https': None}
                 assert len(mocked.call_args[1]) == 4
+                if ok:
+                    assert api_extension.stats.get_value('file_sent_to_kingfisher_count') == 1
 
                 if directory:
                     assert mocked.call_args[1]['files'] == {}
@@ -158,6 +161,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
             assert caplog.records[0].name == 'test'
             assert caplog.records[0].levelname == 'WARNING'
             assert caplog.records[0].message == message
+            assert extension.stats.get_value('fileitem_sent_to_kingfisher_count') == 0
 
         expected = {
             'collection_source': 'test',
@@ -185,6 +189,8 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
             },
             data=expected,
         )
+        if ok:
+            assert extension.stats.get_value('fileitem_sent_to_kingfisher_count') == 1
 
 
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
@@ -215,6 +221,7 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
             assert caplog.records[0].name == 'test'
             assert caplog.records[0].levelname == 'WARNING'
             assert caplog.records[0].message == message
+            assert extension.stats.get_value('fileerror_sent_to_kingfisher_count') == 0
 
         expected = {
             'collection_source': 'test',
@@ -237,6 +244,8 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
             },
             data=expected,
         )
+        if ok:
+            assert extension.stats.get_value('fileerror_sent_to_kingfisher_count') == 1
 
 
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])

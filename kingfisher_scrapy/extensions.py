@@ -7,8 +7,9 @@ import requests
 import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
+from scrapy.item import ItemMeta
 
-from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
+from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem, KingfisherItem
 from kingfisher_scrapy.kingfisher_process import Client
 from kingfisher_scrapy.util import _pluck_filename
 
@@ -105,12 +106,15 @@ class KingfisherProcessAPI:
     If the ``KINGFISHER_API_URI`` and ``KINGFISHER_API_KEY`` environment variables or configuration settings are set,
     then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
     """
-    def __init__(self, url, key, directory=None):
+    def __init__(self, url, key, stats, directory=None):
         """
         Initializes a Kingfisher Process API client.
         """
         self.client = Client(url, key)
         self.directory = directory
+        self.stats = stats
+        for item_type in KingfisherItem.__subclasses__():
+            self.stats.set_value(self._get_count_type_name(item_type), 0)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -121,7 +125,7 @@ class KingfisherProcessAPI:
         if not url or not key:
             raise NotConfigured('KINGFISHER_API_URI and/or KINGFISHER_API_KEY is not set.')
 
-        extension = cls(url, key, directory=directory)
+        extension = cls(url, key, crawler.stats, directory=directory)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
 
@@ -195,8 +199,17 @@ class KingfisherProcessAPI:
             if not response.ok:
                 spider.logger.warning('Failed to post [%s]. %s status code: %s', item['url'], name,
                                       response.status_code)
+            else:
+                self.stats.inc_value(self._get_count_type_name(item))
         except (requests.exceptions.ConnectionError, requests.exceptions.ProxyError) as e:
             spider.logger.warning('Failed to post [%s]. %s exception: %s', item['url'], name, e)
+
+    def _get_count_type_name(self, item):
+        class_ = type(item)
+        # the item can be a class or an object, if it is already a class we dont need its type()
+        if isinstance(item, ItemMeta):
+            class_ = item
+        return f'{class_.__name__.lower()}_sent_to_kingfisher_count'
 
 
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry
