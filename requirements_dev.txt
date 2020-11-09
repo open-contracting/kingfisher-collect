@@ -14,7 +14,7 @@ constantly==15.1.0        # via -r requirements.txt, twisted
 contextlib2==0.6.0.post1  # via -r requirements.txt, schema
 coverage==5.0.3           # via coveralls, pytest-cov
 coveralls==2.0.0          # via -r requirements_dev.in
-cryptography==2.8         # via -r requirements.txt, pyopenssl, scrapy, service-identity
+cryptography==3.2.1       # via -r requirements.txt, pyopenssl, scrapy, service-identity
 cssselect==1.1.0          # via -r requirements.txt, parsel, scrapy
 defusedxml==0.6.0         # via -r requirements.txt, odfpy
 docopt==0.6.2             # via coveralls

@@ -14,10 +14,10 @@ http://example.com/api/docs
 http://example.com/api/v1/releases
 
 **Link to CRM issue**
-https://crm.open-contracting.org/issues/9999
+CRM-9999
 
 **Priority**
 e.g. as soon as possible, this week, next week, anytime
 
-**Data Structure**
+**Data structure**
 Check if the data is at least close to be structurally valid against OCDS

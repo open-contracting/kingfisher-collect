@@ -611,6 +611,16 @@ Indonesia
 
    scrapy crawl indonesia_bandung
 
+Italy
+-----
+
+.. autoclass:: kingfisher_scrapy.spiders.italy.Italy
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl italy
+
 Kenya
 -----
 
@@ -855,6 +865,16 @@ Spain
 .. code-block:: bash
 
    scrapy crawl spain_zaragoza
+
+Tanzania
+--------
+
+.. autoclass:: kingfisher_scrapy.spiders.tanzania_zabuni.TanzaniaZabuni
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl tanzania_zabuni
 
 Uganda
 ------
