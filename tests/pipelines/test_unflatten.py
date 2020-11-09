@@ -1,3 +1,6 @@
+from openpyxl import Workbook
+from openpyxl.writer.excel import save_virtual_workbook
+
 import pytest
 from flattentool.input import BadXLSXZipFile
 
@@ -6,7 +9,7 @@ from kingfisher_scrapy.pipelines import Unflatten
 from tests import spider_with_crawler
 
 
-def test_process_item():
+def test_process_item_csv():
     spider = spider_with_crawler(unflatten=True)
     pipeline = Unflatten()
     item = File({
@@ -19,7 +22,20 @@ def test_process_item():
     assert pipeline.process_item(item, spider) == item
 
 
-def test_process_item_error():
+def test_process_item_xlsx():
+    spider = spider_with_crawler(unflatten=True)
+    pipeline = Unflatten()
+    item = File({
+        'file_name': 'test.xlsx',
+        'data': save_virtual_workbook(Workbook()),
+        'data_type': 'release_list',
+        'url': 'http://test.com/test.xlsx',
+    })
+
+    assert pipeline.process_item(item, spider) == item
+
+
+def test_process_item_extension_error():
     spider = spider_with_crawler(unflatten=True)
     pipeline = Unflatten()
     item = File({
