@@ -13,7 +13,7 @@ click==7.1.2              # via pip-tools
 constantly==15.1.0        # via -r requirements.txt, twisted
 coverage==5.0.3           # via coveralls, pytest-cov
 coveralls==2.0.0          # via -r requirements_dev.in
-cryptography==2.8         # via -r requirements.txt, pyopenssl, scrapy, service-identity
+cryptography==3.2.1       # via -r requirements.txt, pyopenssl, scrapy, service-identity
 cssselect==1.1.0          # via -r requirements.txt, parsel, scrapy
 docopt==0.6.2             # via coveralls
 entrypoints==0.3          # via flake8
