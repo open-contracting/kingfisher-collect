@@ -77,6 +77,7 @@ def test_parse_200():
 
 def test_next_link_not_found():
     spider = spider_with_crawler(spider_class=LinksSpider)
+    spider.filter_arguments = []
     body = '{"links": {"next": ""}}'
 
     with pytest.raises(MissingNextLinkError) as e:
