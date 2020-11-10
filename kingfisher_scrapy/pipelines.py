@@ -112,7 +112,7 @@ class Pluck:
 
 class Unflatten:
     def process_item(self, item, spider):
-        if not spider.unflatten:
+        if not spider.unflatten or not isinstance(item, (File, FileItem)):
             return item
 
         input_name = item['file_name']
