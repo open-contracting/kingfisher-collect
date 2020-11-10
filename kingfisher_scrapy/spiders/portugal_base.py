@@ -6,7 +6,6 @@ from kingfisher_scrapy.util import parameters
 
 class PortugalBase(LinksSpider):
     default_from_date = '2010-01-01'
-    download_delay = 1
     next_page_formatter = staticmethod(parameters('offset'))
 
     def start_requests(self):
