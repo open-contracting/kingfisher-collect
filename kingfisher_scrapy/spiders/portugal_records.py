@@ -17,4 +17,4 @@ class PortugalRecords(PortugalBase):
     """
     name = 'portugal_records'
     data_type = 'record_package'
-    url = 'http://www.base.gov.pt/api/Record/GetRecords?offset=1'
+    url = 'http://www.base.gov.pt/api/Record/GetRecords'

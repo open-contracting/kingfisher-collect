@@ -16,5 +16,5 @@ class PortugalReleases(PortugalBase):
       http://www.base.gov.pt/swagger/index.html
     """
     name = 'portugal_releases'
-    data_type = 'release_package_list'
-    url = 'http://www.base.gov.pt/api/Release/GetReleases?offset=1'
+    data_type = 'release_package'
+    url = 'http://www.base.gov.pt/api/Release/GetReleases'
