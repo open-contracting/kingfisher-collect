@@ -1,17 +1,19 @@
-from urllib.parse import urlparse
-
-import scrapy
-
-from kingfisher_scrapy.base_spider import CompressedFileSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider, PeriodicSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
-class HondurasONCAE(CompressedFileSpider):
+class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
     """
     Domain
       Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE)
     Spider arguments
+      from_date
+        Download only releases from this year onward (YYYY format).
+        If ``until_date`` is provided and ``from_date`` don't, defaults to '2000'.
+      until_date
+        Download only releases until this year (YYYY format).
+        If ``from_date`` is provided and ``until_date`` don't, defaults to current year.
       system
         Filter by system:
 
@@ -32,6 +34,11 @@ class HondurasONCAE(CompressedFileSpider):
     # the files take too long to be downloaded, so we increase the download timeout
     download_timeout = 900
 
+    # PeriodicSpider variables
+    date_format = 'year'
+    default_from_date = '2005'
+    pattern = 'http://200.13.162.79/datosabiertos/{}'
+
     @classmethod
     def from_crawler(cls, crawler, system=None, *args, **kwargs):
         spider = super().from_crawler(crawler, system=system, *args, **kwargs)
@@ -39,20 +46,11 @@ class HondurasONCAE(CompressedFileSpider):
             raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
         return spider
 
-    def start_requests(self):
-        yield scrapy.Request(
-            'http://oncae.gob.hn/datosabiertos',
-            meta={'file_name': 'list.html'},
-            callback=self.parse_list
-        )
-
-    @handle_http_error
-    def parse_list(self, response):
-        urls = response.xpath('//a[contains(., "[json]")]/@href').getall()
-        for url in urls:
-            path, file = urlparse(url).path.rsplit('/', 1)
-            current_system = path.replace('/datosabiertos/', "")
-            if self.system and current_system != self.system:
+    def build_urls(self, date):
+        for system in self.available_systems:
+            if self.system and system != self.system:
                 continue
-            # URL looks like http://200.13.162.79/datosabiertos/HC1/HC1_datos_2020_json.zip
-            yield self.build_request(url, formatter=components(-1))
+            yield self.pattern.format(f"{system}/{system}_datos_{date}_json.zip")
+
+    def get_formatter(self):
+        return components(-1)
