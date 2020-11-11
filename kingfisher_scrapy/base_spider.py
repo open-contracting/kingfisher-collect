@@ -73,6 +73,12 @@ class BaseSpider(scrapy.Spider):
         if self.query_string_parameters and hasattr(self, 'start_requests'):
             self.start_requests = add_query_string(self.start_requests, self.query_string_parameters)
 
+        self.filter_arguments = {
+            'from_date': from_date,
+            'until_date': until_date,
+        }
+        self.filter_arguments.update(kwargs)
+
         spider_arguments = {
             'sample': sample,
             'note': note,
@@ -443,6 +449,10 @@ class LinksSpider(SimpleSpider):
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
             return self.build_request(url, formatter=self.next_page_formatter, **kwargs)
+
+        for filter_argument in self.filter_arguments:
+            if getattr(self, filter_argument, None):
+                return
 
         if response.meta['depth'] == 0:
             raise MissingNextLinkError(f'next link not found on the first page: {response.url}')
