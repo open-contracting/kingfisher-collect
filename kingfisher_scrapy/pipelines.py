@@ -1,11 +1,15 @@
 # https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 # https://docs.scrapy.org/en/latest/topics/signals.html#item-signals
 import json
+import os
 import pkgutil
+import tempfile
 
 import jsonpointer
+from flattentool import unflatten
 from jsonschema import FormatChecker
 from jsonschema.validators import Draft4Validator, RefResolver
+from ocdsmerge.util import get_release_schema_url, get_tags
 from scrapy.exceptions import DropItem
 
 from kingfisher_scrapy.items import File, FileItem, PluckedItem
@@ -104,6 +108,56 @@ class Pluck:
             value = value[:spider.truncate]
 
         return PluckedItem({'value': value})
+
+
+class Unflatten:
+    def process_item(self, item, spider):
+        if not spider.unflatten or not isinstance(item, (File, FileItem)):
+            return item
+
+        input_name = item['file_name']
+        if input_name.endswith('.csv'):
+            item['file_name'] = item['file_name'][:-4] + '.json'
+            input_format = 'csv'
+        elif input_name.endswith('.xlsx'):
+            item['file_name'] = item['file_name'][:-5] + '.json'
+            input_format = 'xlsx'
+        else:
+            raise NotImplementedError(f"the file '{input_name}' has no extension or is not CSV or XLSX, "
+                                      f"obtained from: {item['url']}")
+
+        spider_ocds_version = spider.ocds_version.replace('.', '__')
+        for tag in reversed(get_tags()):
+            if tag.startswith(spider_ocds_version):
+                schema = get_release_schema_url(tag)
+                break
+        else:
+            raise NotImplementedError(f"no schema found for '{spider_ocds_version}'")
+
+        with tempfile.TemporaryDirectory() as directory:
+            input_path = os.path.join(directory, input_name)
+            output_name = os.path.join(directory, item['file_name'])
+            if input_format == 'csv':
+                input_name = directory
+            elif input_format == 'xlsx':
+                input_name = input_path
+
+            with open(input_path, 'wb') as f:
+                f.write(item['data'])
+
+            unflatten(
+                input_name,
+                root_list_path='releases',
+                root_id='ocid',
+                schema=schema,
+                input_format=input_format,
+                output_name=output_name
+            )
+
+            with open(output_name, 'r') as f:
+                item['data'] = f.read()
+
+        return item
 
 
 def _resolve_pointer(data, pointer):
