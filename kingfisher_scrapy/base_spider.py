@@ -28,7 +28,8 @@ class BaseSpider(scrapy.Spider):
     -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
        ``default_from_date`` class attribute to a date string.
     -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
-
+    -  If a spider collect data from CSV or XLSX files, add a ``unflatten = True`` class attribute to process each item
+       in the Unflatten pipeline class using the ``unflatten`` command from Flatten Tool.
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
     ``get_default_until_date()`` return value (which is the current time, by default).
@@ -39,6 +40,7 @@ class BaseSpider(scrapy.Spider):
     ocds_version = '1.1'
     date_format = 'date'
     date_required = False
+    unflatten = False
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
@@ -72,6 +74,12 @@ class BaseSpider(scrapy.Spider):
 
         if self.query_string_parameters and hasattr(self, 'start_requests'):
             self.start_requests = add_query_string(self.start_requests, self.query_string_parameters)
+
+        self.filter_arguments = {
+            'from_date': from_date,
+            'until_date': until_date,
+        }
+        self.filter_arguments.update(kwargs)
 
         spider_arguments = {
             'sample': sample,
@@ -443,6 +451,10 @@ class LinksSpider(SimpleSpider):
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
             return self.build_request(url, formatter=self.next_page_formatter, **kwargs)
+
+        for filter_argument in self.filter_arguments:
+            if getattr(self, filter_argument, None):
+                return
 
         if response.meta['depth'] == 0:
             raise MissingNextLinkError(f'next link not found on the first page: {response.url}')
