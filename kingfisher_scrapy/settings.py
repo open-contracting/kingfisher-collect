@@ -76,6 +76,7 @@ EXTENSIONS = {
     # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
     'kingfisher_scrapy.extensions.KingfisherProcessAPI': 500,
+    'kingfisher_scrapy.extensions.KingfisherItemCount': 600,
 }
 
 # Configure item pipelines
