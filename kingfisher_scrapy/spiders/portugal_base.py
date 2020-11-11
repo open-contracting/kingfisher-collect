@@ -7,6 +7,12 @@ from kingfisher_scrapy.util import parameters
 class PortugalBase(LinksSpider):
     default_from_date = '2010-01-01'
     next_page_formatter = staticmethod(parameters('offset'))
+    # The API return 429 error after a certain number of requests
+    download_delay = 1
+    # The API returns 503 error sometimes
+    custom_settings = {
+        'RETRY_TIMES': 10
+    }
 
     def start_requests(self):
         url = self.url
