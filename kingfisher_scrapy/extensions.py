@@ -111,11 +111,7 @@ class KingfisherItemCount:
         return extension
 
     def item_scraped(self, item, spider):
-        self.stats.inc_value(self._get_count_type_name(item))
-
-    def _get_count_type_name(self, item):
-        class_ = type(item)
-        return f'{class_.__name__.lower()}_count'
+        self.stats.inc_value(f'{type(item).__name__.lower()}_count')
 
 
 class KingfisherProcessAPI:
