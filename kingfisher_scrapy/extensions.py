@@ -7,9 +7,8 @@ import requests
 import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
-from scrapy.item import ItemMeta
 
-from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem, KingfisherItem
+from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
 from kingfisher_scrapy.util import _pluck_filename
 
