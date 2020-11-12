@@ -104,8 +104,6 @@ class KingfisherFilesStore:
 class KingfisherItemCount:
     def __init__(self, stats):
         self.stats = stats
-        for item_type in KingfisherItem.__subclasses__():
-            self.stats.set_value(self._get_count_type_name(item_type), 0)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -118,10 +116,7 @@ class KingfisherItemCount:
 
     def _get_count_type_name(self, item):
         class_ = type(item)
-        # the item can be a class or an object, if it is already a class we dont need its type()
-        if isinstance(item, ItemMeta):
-            class_ = item
-        return f'kingfisher_{class_.__name__.lower()}_count'
+        return f'{class_.__name__.lower()}_count'
 
 
 class KingfisherProcessAPI:
