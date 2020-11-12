@@ -1,3 +1,5 @@
+import re
+
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider, browser_user_agent
@@ -18,46 +20,38 @@ class NigeriaPortal(SimpleSpider):
     def start_requests(self):
         yield scrapy.Request(
             'http://nocopo.bpp.gov.ng/OpenData.aspx',
-            meta={'file_name': 'form.html', 'page': 0},
-            callback=self.parse_list
+            meta={'file_name': 'page-0.html', 'page': 0},
+            callback=self.parse_list,
         )
 
     @handle_http_error
     def parse_list(self, response):
+        self.logger.debug('Crawled page {}'.format(response.xpath('//td[@colspan="8"]/span/text()').get()))
+
         page = response.request.meta['page']
-        data = {
-            'dnn$ctr561$no_JsonReport$lbtnExportAll': 'Export Checked to JSON',
-        }
 
-        checks = response.css('input').xpath('@name').getall()
-        for item in checks:
-            if 'dnn$ctr' in item and 'chbIsDoing' in item:
-                data.update({item: 'on'})
+        formdata = {}
+        for item in response.xpath('//input/@name').getall():
+            if re.search(r'^dnn\$ctr561\$no_JsonReport\$DGno_Proc_PlanningPublished\$ctl\d+\$chbIsDoing$', item):
+                formdata.update({item: 'on'})
 
-        # '__VIEWSTATE', '__EVENTVALIDATION' and others fields are required in order to scrape ASP.net webpages
-        # scrapy.FormRequest.from_response() will autofill a form based on the response data of the previous request.
-        # We can then override or add fields because it stores the formdata as a dict.
         yield scrapy.FormRequest.from_response(
             response,
-            formdata=data,
-            meta={'file_name': 'page{}.json'.format(page)}
+            formdata=formdata,
+            clickdata={'name': 'dnn$ctr561$no_JsonReport$lbtnExportAll'},
+            meta={'file_name': f'page-{page}.json'},
         )
 
-        # We only try with the first 20 pages, later we will have another problem because the numbers at the end of the
-        # values in '__EVENTTARGET': '{:02d}' are in a cycle, so the button that takes us to page 2 and page 21, passes
-        # the same parameters to the JS function __doPostBack().
-        if page == 20:
-            # page = 00 restart the cycle
-            return
-
-        # __doPostBack() JS function sets the values for '__EVENTTARGET' and '__EVENTARGUMENT' when clicking other pages
-        yield scrapy.FormRequest.from_response(
-            response,
-            formdata={
-                '__EVENTTARGET':
-                    'dnn$ctr561$no_JsonReport$DGno_Proc_PlanningPublished$ctl104$ctl{:02d}'.format(page + 1),
-                '__EVENTARGUMENT': '',
-            },
-            meta={'file_name': 'page{}.json', 'page': page + 1},
-            callback=self.parse_list
-        )
+        # Get the next pagination link, and simulate clicking on it.
+        href = response.xpath('//td[@colspan="8"]/span/following-sibling::a[1]/@href').get()
+        if href:
+            yield scrapy.FormRequest.from_response(
+                response,
+                formdata={
+                    '__EVENTTARGET': re.search(r"'(.+?)'", href)[1],
+                    '__EVENTARGUMENT': '',
+                },
+                dont_click=True,
+                meta={'file_name': f'page-{page}.html', 'page': page + 1},
+                callback=self.parse_list,
+            )
