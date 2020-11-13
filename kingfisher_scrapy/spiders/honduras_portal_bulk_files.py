@@ -51,9 +51,11 @@ class HondurasPortalBulkFiles(PeriodicSpider):
             raise SpiderArgumentError(f'spider argument `publisher`: {spider.publisher!r} not recognized')
 
         if system:
+            if spider.publisher != 'oncae':
+                raise SpiderArgumentError(f'spider argument `system` is not supported for publisher: '
+                                          f'{spider.publisher!r}')
             if spider.system not in spider.oncae_systems:
                 raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
-            spider.publisher = 'oncae'
 
         return spider
 
