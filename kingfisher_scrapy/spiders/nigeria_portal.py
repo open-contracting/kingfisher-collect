@@ -33,7 +33,7 @@ class NigeriaPortal(SimpleSpider):
         formdata = {}
         for item in response.xpath('//input/@name').getall():
             if re.search(r'^dnn\$ctr561\$no_JsonReport\$DGno_Proc_PlanningPublished\$ctl\d+\$chbIsDoing$', item):
-                formdata.update({item: 'on'})
+                formdata[item] = 'on'
 
         yield scrapy.FormRequest.from_response(
             response,
