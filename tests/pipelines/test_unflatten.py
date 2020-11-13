@@ -1,8 +1,7 @@
-from openpyxl import Workbook
-from openpyxl.writer.excel import save_virtual_workbook
-
 import pytest
 from flattentool.input import BadXLSXZipFile
+from openpyxl import Workbook
+from openpyxl.writer.excel import save_virtual_workbook
 
 from kingfisher_scrapy.items import File
 from kingfisher_scrapy.pipelines import Unflatten

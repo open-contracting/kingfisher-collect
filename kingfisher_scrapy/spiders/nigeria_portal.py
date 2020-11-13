@@ -1,3 +1,5 @@
+import re
+
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider, browser_user_agent
@@ -18,22 +20,38 @@ class NigeriaPortal(SimpleSpider):
     def start_requests(self):
         yield scrapy.Request(
             'http://nocopo.bpp.gov.ng/OpenData.aspx',
-            meta={'file_name': 'form.html'},
-            callback=self.parse_list
+            meta={'file_name': 'page-0.html', 'page': 0},
+            callback=self.parse_list,
         )
 
     @handle_http_error
     def parse_list(self, response):
-        formdata = {
-            '__VIEWSTATE': response.css('input#__VIEWSTATE::attr(value)').extract_first(),
-            '__VIEWSTATEGENERATOR': 'CA0B0334',
-            '__EVENTVALIDATION': response.css('input#__EVENTVALIDATION::attr(value)').extract_first(),
-            'dnn$ctr561$no_JsonReport$lbtnExportAll': 'Export Checked to JSON',
-        }
+        self.logger.debug('Crawled page {}'.format(response.xpath('//td[@colspan="8"]/span/text()').get()))
 
-        checks = response.css('input').xpath('@name').getall()
-        for item in checks:
-            if 'dnn$ctr' in item and 'chbIsDoing' in item:
-                formdata.update({item: 'on'})
+        page = response.request.meta['page']
 
-        yield scrapy.FormRequest.from_response(response, formdata=formdata, meta={'file_name': 'all.json'})
+        formdata = {}
+        for item in response.xpath('//input/@name').getall():
+            if re.search(r'^dnn\$ctr561\$no_JsonReport\$DGno_Proc_PlanningPublished\$ctl\d+\$chbIsDoing$', item):
+                formdata[item] = 'on'
+
+        yield scrapy.FormRequest.from_response(
+            response,
+            formdata=formdata,
+            clickdata={'name': 'dnn$ctr561$no_JsonReport$lbtnExportAll'},
+            meta={'file_name': f'page-{page}.json'},
+        )
+
+        # Get the next pagination link, and simulate clicking on it.
+        href = response.xpath('//td[@colspan="8"]/span/following-sibling::a[1]/@href').get()
+        if href:
+            yield scrapy.FormRequest.from_response(
+                response,
+                formdata={
+                    '__EVENTTARGET': re.search(r"'(.+?)'", href)[1],
+                    '__EVENTARGUMENT': '',
+                },
+                dont_click=True,
+                meta={'file_name': f'page-{page}.html', 'page': page + 1},
+                callback=self.parse_list,
+            )
