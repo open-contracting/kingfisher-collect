@@ -68,10 +68,10 @@ class HondurasPortalBulkFiles(PeriodicSpider):
                 for system in self.oncae_systems:
                     if self.system and system != self.system:
                         continue
-                    yield self.pattern.format(f"{self.available_publishers.get(publisher)}_"
-                                              f"{self.oncae_systems.get(system)}_{date.year}_{date.month:02d}.json")
+                    yield self.pattern.format(f"{self.available_publishers[publisher]}_"
+                                              f"{self.oncae_systems[system]}_{date.year}_{date.month:02d}.json")
             else:
-                yield self.pattern.format(f"{self.available_publishers.get(publisher)}_"
+                yield self.pattern.format(f"{self.available_publishers[publisher]}_"
                                           f"{date.year}_{date.month:02d}.json")
 
     def get_formatter(self):
