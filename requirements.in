@@ -11,3 +11,4 @@ scrapyd
 Scrapy>=2
 scrapyd-client
 sentry-sdk
+treq

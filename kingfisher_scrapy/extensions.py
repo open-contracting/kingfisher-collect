@@ -5,6 +5,7 @@ import os
 
 import requests
 import sentry_sdk
+import treq
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
@@ -146,17 +147,16 @@ class KingfisherProcessAPI:
         Sends an API request to end the collection's store step.
         """
         # https://docs.scrapy.org/en/latest/topics/signals.html#spider-closed
-        if reason != 'finished' or spider.pluck or spider.keep_collection_open:
+        if reason not in ('finished', 'sample') or spider.pluck or spider.keep_collection_open:
             return
 
-        response = self.client.end_collection_store({
+        deferred = self.client.end_collection_store({
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': bool(spider.sample),
+            'collection_sample': str(bool(spider.sample)),
         })
 
-        if not response.ok:
-            spider.logger.warning('Failed to post End Collection Store. API status code: %s', response.status_code)
+        deferred.addCallback(self.kingfisher_process_response, spider, 'Failed to post End Collection Store.')
 
     def item_scraped(self, item, spider):
         """
@@ -169,7 +169,7 @@ class KingfisherProcessAPI:
         data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': bool(spider.sample),
+            'collection_sample': str(bool(spider.sample)),
             'file_name': item['file_name'],
             'url': item['url'],
         }
@@ -199,18 +199,17 @@ class KingfisherProcessAPI:
                 else:
                     path = os.path.join(item['files_store'], item['path'])
                     f = open(path, 'rb')
-                    files = {'file': (item['file_name'], f, 'application/json')}
+                    files = {'file': (item['file_name'], 'application/json', f)}
 
                 self._request(item, spider, 'create_file', 'File API', data, files)
 
     def _request(self, item, spider, method, name, *args):
-        try:
-            response = getattr(self.client, method)(*args)
-            if not response.ok:
-                spider.logger.warning('Failed to post [%s]. %s status code: %s', item['url'], name,
-                                      response.status_code)
-        except (requests.exceptions.ConnectionError, requests.exceptions.ProxyError) as e:
-            spider.logger.warning('Failed to post [%s]. %s exception: %s', item['url'], name, e)
+        deferred = getattr(self.client, method)(*args)
+        deferred.addCallback(self.kingfisher_process_response, spider, f'Failed to post [{item["url"]}]. {name}')
+
+    def kingfisher_process_response(self, response, spider, message):
+        if response.code != 200:
+            spider.logger.warning(f'{message} status code: {response.code}')
 
 
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry

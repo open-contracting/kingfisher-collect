@@ -1,4 +1,4 @@
-import requests
+import treq as treq
 
 
 class Client:
@@ -19,5 +19,4 @@ class Client:
         return self._post('/api/v1/submit/end_collection_store/', data)
 
     def _post(self, path, data, **kwargs):
-        return requests.post(self.url + path, headers={'Authorization': 'ApiKey ' + self.key}, data=data,
-                             proxies={'http': None, 'https': None}, **kwargs)
+        return treq.post(url=self.url + path, headers={'Authorization': 'ApiKey ' + self.key}, data=data, **kwargs)
