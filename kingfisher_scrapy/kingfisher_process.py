@@ -1,10 +1,11 @@
 import treq as treq
+from twisted.internet.defer import inlineCallbacks, returnValue
 
 
 class Client:
     def __init__(self, url, key):
         self.url = url
-        self.key = key
+        self.headers = {'Authorization': f'ApiKey {key}'}
 
     def create_file(self, data, files):
         return self._post('/api/v1/submit/file/', data, files=files)
@@ -18,5 +19,7 @@ class Client:
     def end_collection_store(self, data):
         return self._post('/api/v1/submit/end_collection_store/', data)
 
+    @inlineCallbacks
     def _post(self, path, data, **kwargs):
-        return treq.post(self.url + path, headers={'Authorization': 'ApiKey ' + self.key}, data=data, **kwargs)
+        response = yield treq.post(f'{self.url}{path}', headers=self.headers, data=data, **kwargs)
+        returnValue(response)

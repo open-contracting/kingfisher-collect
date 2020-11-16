@@ -6,6 +6,7 @@ import os
 import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
+from twisted.internet.defer import inlineCallbacks, returnValue
 
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
@@ -200,18 +201,14 @@ class KingfisherProcessAPI:
 
         return self._request(spider, 'create_file', item['url'], data, files)
 
+    @inlineCallbacks
     def _request(self, spider, method, infix, *args):
-        deferred = getattr(self.client, method)(*args)
+        response = yield getattr(self.client, method)(*args)
 
-        deferred.addCallback(self._callback, spider, f'{method} failed ({infix})')
-
-        return deferred
-
-    def _callback(self, response, spider, message):
         # Same condition as `Response.request_for_status` in requests module.
         # https://github.com/psf/requests/blob/28cc1d237b8922a2dcbd1ed95782a7f1751f475b/requests/models.py#L920
         if 400 <= response.code < 600:
-            spider.logger.warning(f'{message} with status code {response.code}')
+            spider.logger.warning(f'{method} failed ({infix}) with status code: {response.code}')
 
 
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry
