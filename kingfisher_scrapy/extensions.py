@@ -3,9 +3,7 @@
 import json
 import os
 
-import requests
 import sentry_sdk
-import treq
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
