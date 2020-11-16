@@ -6,7 +6,7 @@ import os
 import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
-from twisted.internet.defer import inlineCallbacks, returnValue
+from twisted.internet.defer import inlineCallbacks
 
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
