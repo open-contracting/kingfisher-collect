@@ -46,10 +46,9 @@ def test_from_crawler_missing_arguments(api_url, api_key):
 @pytest.mark.parametrize('ok', [True, False])
 @pytest.mark.parametrize('post_to_api', [True, False])
 @pytest.mark.parametrize('crawl_time', [None, '2020-01-01T00:00:00'])
-def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, post_to_api,
-                           crawl_time, tmpdir, caplog):
-    spider = spider_with_files_store(tmpdir, sample=sample, note=note,
-                                     crawl_time=crawl_time)
+def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, post_to_api, crawl_time,
+                           tmpdir, caplog):
+    spider = spider_with_files_store(tmpdir, sample=sample, note=note, crawl_time=crawl_time)
 
     if directory:
         spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
