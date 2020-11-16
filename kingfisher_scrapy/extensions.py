@@ -148,13 +148,13 @@ class KingfisherProcessAPI:
         if reason not in ('finished', 'sample') or spider.pluck or spider.keep_collection_open:
             return
 
-        deferred = self.client.end_collection_store({
+        data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
             'collection_sample': str(bool(spider.sample)),
-        })
+        }
 
-        deferred.addCallback(self.kingfisher_process_response, spider, 'Failed to post End Collection Store.')
+        return self._request(spider, 'end_collection_store', data['collection_source'], data)
 
     def item_scraped(self, item, spider):
         """
@@ -175,7 +175,7 @@ class KingfisherProcessAPI:
         if isinstance(item, FileError):
             data['errors'] = json.dumps(item['errors'])
 
-            self._request(item, spider, 'create_file_error', 'File Error API', data)
+            return self._request(spider, 'create_file_error', item['url'], data)
         else:
             data['data_type'] = item['data_type']
             data['encoding'] = item.get('encoding', 'utf-8')
@@ -186,7 +186,7 @@ class KingfisherProcessAPI:
                 data['number'] = item['number']
                 data['data'] = item['data']
 
-                self._request(item, spider, 'create_file_item', 'File Item API', data)
+                return self._request(spider, 'create_file_item', item['url'], data)
 
             # File
             else:
@@ -199,15 +199,20 @@ class KingfisherProcessAPI:
                     f = open(path, 'rb')
                     files = {'file': (item['file_name'], 'application/json', f)}
 
-                self._request(item, spider, 'create_file', 'File API', data, files)
+                return self._request(spider, 'create_file', item['url'], data, files)
 
-    def _request(self, item, spider, method, name, *args):
+    def _request(self, spider, method, infix, *args):
         deferred = getattr(self.client, method)(*args)
-        deferred.addCallback(self.kingfisher_process_response, spider, f'Failed to post [{item["url"]}]. {name}')
 
-    def kingfisher_process_response(self, response, spider, message):
-        if response.code != 200:
-            spider.logger.warning(f'{message} status code: {response.code}')
+        deferred.addCallback(self._callback, spider, f'{method} failed ({infix})')
+
+        return deferred
+
+    def _callback(self, response, spider, message):
+        # Same condition as `Response.request_for_status` in requests module.
+        # https://github.com/psf/requests/blob/28cc1d237b8922a2dcbd1ed95782a7f1751f475b/requests/models.py#L920
+        if 400 <= response.code < 600:
+            spider.logger.warning(f'{message} with status code {response.code}')
 
 
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry

@@ -19,4 +19,4 @@ class Client:
         return self._post('/api/v1/submit/end_collection_store/', data)
 
     def _post(self, path, data, **kwargs):
-        return treq.post(url=self.url + path, headers={'Authorization': 'ApiKey ' + self.key}, data=data, **kwargs)
+        return treq.post(self.url + path, headers={'Authorization': 'ApiKey ' + self.key}, data=data, **kwargs)

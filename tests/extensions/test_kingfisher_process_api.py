@@ -65,10 +65,9 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
 
     store_extension.item_scraped(item, spider)
 
-    with patch('requests.post') as mocked:
+    with patch('treq.post') as mocked:
         response = Mock()
-        response.ok = ok
-        response.status_code = 400
+        response.code = 400
         mocked.return_value = response
 
         api_extension.item_scraped(item, spider)
@@ -77,7 +76,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
             if not post_to_api:
                 assert len(caplog.records) == 0
             else:
-                message = 'Failed to post [https://example.com/remote.json]. File API status code: 400'
+                message = 'create_file failed (https://example.com/remote.json) with status code: 400'
 
                 assert len(caplog.records) == 1
                 assert caplog.records[0].name == 'test'
@@ -87,7 +86,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
         expected = {
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
-            'collection_sample': is_sample,
+            'collection_sample': str(is_sample),
             'file_name': 'file.json',
             'url': 'https://example.com/remote.json',
             # Specific to this test case.
@@ -109,8 +108,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
                 assert mocked.call_args[0] == ('http://httpbin.org/anything/api/v1/submit/file/',)
                 assert mocked.call_args[1]['headers'] == {'Authorization': 'ApiKey xxx'}
                 assert mocked.call_args[1]['data'] == expected
-                assert mocked.call_args[1]['proxies'] == {'http': None, 'https': None}
-                assert len(mocked.call_args[1]) == 4
+                assert len(mocked.call_args[1]) == 3
 
                 if directory:
                     assert mocked.call_args[1]['files'] == {}
@@ -118,8 +116,8 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
                     assert len(mocked.call_args[1]['files']) == 1
                     assert len(mocked.call_args[1]['files']['file']) == 3
                     assert mocked.call_args[1]['files']['file'][0] == 'file.json'
-                    assert mocked.call_args[1]['files']['file'][1].read() == f.read()
-                    assert mocked.call_args[1]['files']['file'][2] == 'application/json'
+                    assert mocked.call_args[1]['files']['file'][1] == 'application/json'
+                    assert mocked.call_args[1]['files']['file'][2].read() == f.read()
 
 
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
@@ -131,10 +129,9 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
 
     extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    with patch('requests.post') as mocked:
+    with patch('treq.post') as mocked:
         response = Mock()
-        response.ok = ok
-        response.status_code = 400
+        response.code = 400
         mocked.return_value = response
 
         kwargs = {}
@@ -152,7 +149,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
         extension.item_scraped(item, spider)
 
         if not ok:
-            message = 'Failed to post [https://example.com/remote.json]. File Item API status code: 400'
+            message = 'create_file_item failed (https://example.com/remote.json) with status code: 400'
 
             assert len(caplog.records) == 1
             assert caplog.records[0].name == 'test'
@@ -162,7 +159,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
         expected = {
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
-            'collection_sample': is_sample,
+            'collection_sample': str(is_sample),
             'file_name': 'data.json',
             'url': 'https://example.com/remote.json',
             # Specific to this test case.
@@ -179,10 +176,6 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
             headers={
                 'Authorization': 'ApiKey xxx',
             },
-            proxies={
-                'http': None,
-                'https': None,
-            },
             data=expected,
         )
 
@@ -194,10 +187,9 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
 
     extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    with patch('requests.post') as mocked:
+    with patch('treq.post') as mocked:
         response = Mock()
-        response.ok = ok
-        response.status_code = 400
+        response.code = 400
         mocked.return_value = response
 
         data = FileError({
@@ -209,7 +201,7 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
         extension.item_scraped(data, spider)
 
         if not ok:
-            message = 'Failed to post [https://example.com/remote.json]. File Error API status code: 400'
+            message = 'create_file_error failed (https://example.com/remote.json) with status code: 400'
 
             assert len(caplog.records) == 1
             assert caplog.records[0].name == 'test'
@@ -219,7 +211,7 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
         expected = {
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
-            'collection_sample': is_sample,
+            'collection_sample': str(is_sample),
             'file_name': 'file.json',
             'url': 'https://example.com/remote.json',
             # Specific to this test case.
@@ -230,10 +222,6 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
             'http://httpbin.org/anything/api/v1/submit/file_errors/',
             headers={
                 'Authorization': 'ApiKey xxx',
-            },
-            proxies={
-                'http': None,
-                'https': None,
             },
             data=expected,
         )
@@ -246,10 +234,9 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
 
     extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    with patch('requests.post') as mocked:
+    with patch('treq.post') as mocked:
         response = Mock()
-        response.ok = ok
-        response.status_code = 400
+        response.code = 400
         mocked.return_value = response
 
         extension.spider_closed(spider, 'finished')
@@ -259,14 +246,10 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
             headers={
                 'Authorization': 'ApiKey xxx',
             },
-            proxies={
-                'http': None,
-                'https': None,
-            },
             data={
                 'collection_source': 'test',
                 'collection_data_version': '2001-02-03 04:05:06',
-                'collection_sample': is_sample,
+                'collection_sample': str(is_sample),
             },
         )
 
@@ -274,7 +257,7 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
             assert len(caplog.records) == 1
             assert caplog.records[0].name == 'test'
             assert caplog.records[0].levelname == 'WARNING'
-            assert caplog.records[0].message == 'Failed to post End Collection Store. API status code: 400'
+            assert caplog.records[0].message == 'end_collection_store failed (test) with status code: 400'
 
 
 def test_spider_closed_other_reason(tmpdir):
@@ -282,7 +265,7 @@ def test_spider_closed_other_reason(tmpdir):
 
     extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    with patch('requests.post') as mocked:
+    with patch('treq.post') as mocked:
         extension.spider_closed(spider, 'xxx')
 
         mocked.assert_not_called()
