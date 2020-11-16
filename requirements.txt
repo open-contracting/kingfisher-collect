@@ -54,7 +54,7 @@ sentry-sdk==0.14.4        # via -r requirements.in
 service-identity==18.1.0  # via scrapy, twisted
 six==1.13.0               # via automat, cryptography, jsonschema, parsel, protego, pyhamcrest, pyopenssl, pyrsistent, scrapyd, scrapyd-client, treq, w3lib
 treq==20.9.0              # via -r requirements.in
-twisted[tls]==20.3.0      # via scrapy, scrapyd, treq
+twisted[tls]==20.3.0      # via -r requirements.in, scrapy, scrapyd, treq
 urllib3==1.25.7           # via requests, sentry-sdk
 w3lib==1.21.0             # via itemloaders, parsel, scrapy
 xmltodict==0.12.0         # via flattentool
