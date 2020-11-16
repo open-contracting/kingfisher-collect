@@ -176,30 +176,29 @@ class KingfisherProcessAPI:
             data['errors'] = json.dumps(item['errors'])
 
             return self._request(spider, 'create_file_error', item['url'], data)
+
+        data['data_type'] = item['data_type']
+        data['encoding'] = item.get('encoding', 'utf-8')
+        if spider.note:
+            data['collection_note'] = spider.note
+
+        if isinstance(item, FileItem):
+            data['number'] = item['number']
+            data['data'] = item['data']
+
+            return self._request(spider, 'create_file_item', item['url'], data)
+
+        # File
+        if self.directory:
+            path = item['path']
+            data['local_file_name'] = os.path.join(self.directory, path)
+            files = {}
         else:
-            data['data_type'] = item['data_type']
-            data['encoding'] = item.get('encoding', 'utf-8')
-            if spider.note:
-                data['collection_note'] = spider.note
+            path = os.path.join(item['files_store'], item['path'])
+            f = open(path, 'rb')
+            files = {'file': (item['file_name'], 'application/json', f)}
 
-            if isinstance(item, FileItem):
-                data['number'] = item['number']
-                data['data'] = item['data']
-
-                return self._request(spider, 'create_file_item', item['url'], data)
-
-            # File
-            else:
-                if self.directory:
-                    path = item['path']
-                    data['local_file_name'] = os.path.join(self.directory, path)
-                    files = {}
-                else:
-                    path = os.path.join(item['files_store'], item['path'])
-                    f = open(path, 'rb')
-                    files = {'file': (item['file_name'], 'application/json', f)}
-
-                return self._request(spider, 'create_file', item['url'], data, files)
+        return self._request(spider, 'create_file', item['url'], data, files)
 
     def _request(self, spider, method, infix, *args):
         deferred = getattr(self.client, method)(*args)
