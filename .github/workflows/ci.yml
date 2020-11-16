@@ -20,6 +20,7 @@ jobs:
     - run: pip install -r requirements_dev.txt
     - run: curl -s -S --retry 3 $BASEDIR/tests/script.sh | bash -
     - run: python -m pytest --cov kingfisher_scrapy tests
+      if: always()
     - env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: coveralls
