@@ -1,7 +1,8 @@
 import os
-from unittest.mock import Mock, patch
+from unittest.mock import PropertyMock, patch
 
 import pytest
+import pytest_twisted
 from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessAPI
@@ -9,11 +10,16 @@ from kingfisher_scrapy.items import FileError
 from tests import spider_with_crawler, spider_with_files_store
 
 
+class TestError(Exception):
+    pass
+
+
 def test_from_crawler():
-    spider = spider_with_crawler()
-    spider.crawler.settings['KINGFISHER_API_URI'] = 'http://httpbin.org/anything'
-    spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
-    spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = 'localdir'
+    spider = spider_with_crawler(settings={
+        'KINGFISHER_API_URI': 'http://httpbin.org/anything',
+        'KINGFISHER_API_KEY': 'xxx',
+        'KINGFISHER_API_LOCAL_DIRECTORY': 'localdir',
+    })
 
     extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
@@ -26,9 +32,10 @@ def test_from_crawler():
     (None, 'xxx'),
 ])
 def test_from_crawler_missing_arguments(api_url, api_key):
-    spider = spider_with_crawler()
-    spider.crawler.settings['KINGFISHER_API_URI'] = api_url
-    spider.crawler.settings['KINGFISHER_API_KEY'] = api_key
+    spider = spider_with_crawler(settings={
+        'KINGFISHER_API_URI': api_url,
+        'KINGFISHER_API_KEY': api_key,
+    })
 
     with pytest.raises(NotConfigured) as excinfo:
         KingfisherProcessAPI.from_crawler(spider.crawler)
@@ -36,106 +43,103 @@ def test_from_crawler_missing_arguments(api_url, api_key):
     assert str(excinfo.value) == 'KINGFISHER_API_URI and/or KINGFISHER_API_KEY is not set.'
 
 
+@pytest_twisted.inlineCallbacks
 @pytest.mark.parametrize('sample,is_sample,path', [
     (None, False, os.path.join('test', '20010203_040506', 'file.json')),
     ('true', True, os.path.join('test_sample', '20010203_040506', 'file.json')),
 ])
 @pytest.mark.parametrize('note', ['', 'Started by NAME.'])
 @pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
-@pytest.mark.parametrize('directory', [False, True])
 @pytest.mark.parametrize('ok', [True, False])
+@pytest.mark.parametrize('directory', [True, False])
 @pytest.mark.parametrize('post_to_api', [True, False])
 @pytest.mark.parametrize('crawl_time', [None, '2020-01-01T00:00:00'])
-def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, post_to_api,
-                           crawl_time, tmpdir, caplog):
-    spider = spider_with_files_store(tmpdir, sample=sample, note=note,
-                                     crawl_time=crawl_time)
+def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, post_to_api, crawl_time,
+                           tmpdir, caplog):
+    with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
+        mocked.return_value = 200 if ok else 400
 
-    if directory:
-        spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
+        settings = {}
+        if directory:
+            settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
+        spider = spider_with_files_store(tmpdir, settings=settings, sample=sample, note=note, crawl_time=crawl_time)
+        extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
-    api_extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+        kwargs = {}
+        if encoding:
+            kwargs['encoding'] = encoding
+        item = spider.build_file(
+            file_name='file.json',
+            url='https://example.com/remote.json',
+            data=b'{"key": "value"}',
+            data_type='release_package',
+            post_to_api=post_to_api,
+            **kwargs,
+        )
 
-    kwargs = {}
-    if encoding:
-        kwargs['encoding'] = encoding
-    item = spider.build_file(file_name='file.json', url='https://example.com/remote.json', data=b'{"key": "value"}',
-                             data_type='release_package', post_to_api=post_to_api, **kwargs)
+        store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
+        store_extension.item_scraped(item, spider)
 
-    store_extension.item_scraped(item, spider)
+        response = yield extension.item_scraped(item, spider)
 
-    with patch('requests.post') as mocked:
-        response = Mock()
-        response.ok = ok
-        response.status_code = 400
-        mocked.return_value = response
+        if post_to_api:
+            data = yield response.json()
 
-        api_extension.item_scraped(item, spider)
+            form = {
+                'collection_source': 'test',
+                'collection_data_version': '2001-02-03 04:05:06',
+                'collection_sample': str(is_sample),
+                'file_name': 'file.json',
+                'url': 'https://example.com/remote.json',
+                # Specific to File.
+                'data_type': 'release_package',
+                'encoding': encoding2,
+            }
+            if note:
+                form['collection_note'] = note
+            if crawl_time:
+                form['collection_data_version'] = '2020-01-01 00:00:00'
+                path = path.replace('20010203_040506', '20200101_000000')
+            if directory:
+                form['local_file_name'] = tmpdir.join('xxx', path)
+
+            with open(tmpdir.join(path)) as f:
+                assert data['method'] == 'POST'
+                assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/file/'
+                assert data['headers']['Authorization'] == 'ApiKey xxx'
+                assert data['form'] == form
+                assert data['args'] == {}
+                assert data['data'] == ''
+                if directory:
+                    assert data['files'] == {}
+                else:
+                    assert data['files'] == {'file': f.read()}
+        else:
+            assert response is None
 
         if not ok:
-            if not post_to_api:
-                assert len(caplog.records) == 0
-            else:
-                message = 'Failed to post [https://example.com/remote.json]. File API status code: 400'
+            if post_to_api:
+                message = 'create_file failed (https://example.com/remote.json) with status code: 400'
 
                 assert len(caplog.records) == 1
                 assert caplog.records[0].name == 'test'
                 assert caplog.records[0].levelname == 'WARNING'
                 assert caplog.records[0].message == message
-
-        expected = {
-            'collection_source': 'test',
-            'collection_data_version': '2001-02-03 04:05:06',
-            'collection_sample': is_sample,
-            'file_name': 'file.json',
-            'url': 'https://example.com/remote.json',
-            # Specific to this test case.
-            'data_type': 'release_package',
-            'encoding': encoding2,
-        }
-        if note:
-            expected['collection_note'] = note
-        if crawl_time:
-            expected['collection_data_version'] = '2020-01-01 00:00:00'
-            path = path.replace('20010203_040506', '20200101_000000')
-        if directory:
-            expected['local_file_name'] = tmpdir.join('xxx', path)
-        if not post_to_api:
-            assert mocked.call_count == 0
-        else:
-            with open(tmpdir.join(path), 'rb') as f:
-                assert mocked.call_count == 1
-                assert mocked.call_args[0] == ('http://httpbin.org/anything/api/v1/submit/file/',)
-                assert mocked.call_args[1]['headers'] == {'Authorization': 'ApiKey xxx'}
-                assert mocked.call_args[1]['data'] == expected
-                assert mocked.call_args[1]['proxies'] == {'http': None, 'https': None}
-                assert len(mocked.call_args[1]) == 4
-
-                if directory:
-                    assert mocked.call_args[1]['files'] == {}
-                else:
-                    assert len(mocked.call_args[1]['files']) == 1
-                    assert len(mocked.call_args[1]['files']['file']) == 3
-                    assert mocked.call_args[1]['files']['file'][0] == 'file.json'
-                    assert mocked.call_args[1]['files']['file'][1].read() == f.read()
-                    assert mocked.call_args[1]['files']['file'][2] == 'application/json'
+            else:
+                assert len(caplog.records) == 0
 
 
+@pytest_twisted.inlineCallbacks
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('note', ['', 'Started by NAME.'])
 @pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
 @pytest.mark.parametrize('ok', [True, False])
 def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok, tmpdir, caplog):
-    spider = spider_with_files_store(tmpdir, sample=sample, note=note)
+    with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
+        mocked.return_value = 200 if ok else 400
 
-    extension = KingfisherProcessAPI.from_crawler(spider.crawler)
-
-    with patch('requests.post') as mocked:
-        response = Mock()
-        response.ok = ok
-        response.status_code = 400
-        mocked.return_value = response
+        spider = spider_with_files_store(tmpdir, sample=sample, note=note)
+        extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
         kwargs = {}
         if encoding:
@@ -146,143 +150,143 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
             url='https://example.com/remote.json',
             data=b'{"key": "value"}',
             data_type='release_package',
-            encoding=encoding2,
+            **kwargs
         )
 
-        extension.item_scraped(item, spider)
+        response = yield extension.item_scraped(item, spider)
+        data = yield response.json()
+
+        form = {
+            'collection_source': 'test',
+            'collection_data_version': '2001-02-03 04:05:06',
+            'collection_sample': str(is_sample),
+            'file_name': 'data.json',
+            'url': 'https://example.com/remote.json',
+            # Specific to FileItem.
+            'data_type': 'release_package',
+            'encoding': encoding2,
+            'number': '1',
+            'data': '{"key": "value"}',
+        }
+        if note:
+            form['collection_note'] = note
+
+        assert data['method'] == 'POST'
+        assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/item/'
+        assert data['headers']['Authorization'] == 'ApiKey xxx'
+        assert data['form'] == form
+        assert data['args'] == {}
+        assert data['data'] == ''
+        assert data['files'] == {}
 
         if not ok:
-            message = 'Failed to post [https://example.com/remote.json]. File Item API status code: 400'
+            message = 'create_file_item failed (https://example.com/remote.json) with status code: 400'
 
             assert len(caplog.records) == 1
             assert caplog.records[0].name == 'test'
             assert caplog.records[0].levelname == 'WARNING'
             assert caplog.records[0].message == message
 
-        expected = {
-            'collection_source': 'test',
-            'collection_data_version': '2001-02-03 04:05:06',
-            'collection_sample': is_sample,
-            'file_name': 'data.json',
-            'url': 'https://example.com/remote.json',
-            # Specific to this test case.
-            'data_type': 'release_package',
-            'encoding': encoding2,
-            'number': 1,
-            'data': b'{"key": "value"}',
-        }
-        if note:
-            expected['collection_note'] = note
 
-        mocked.assert_called_once_with(
-            'http://httpbin.org/anything/api/v1/submit/item/',
-            headers={
-                'Authorization': 'ApiKey xxx',
-            },
-            proxies={
-                'http': None,
-                'https': None,
-            },
-            data=expected,
-        )
-
-
+@pytest_twisted.inlineCallbacks
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
 def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
-    spider = spider_with_files_store(tmpdir, sample=sample)
+    with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
+        mocked.return_value = 200 if ok else 400
 
-    extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+        spider = spider_with_files_store(tmpdir, sample=sample)
+        extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    with patch('requests.post') as mocked:
-        response = Mock()
-        response.ok = ok
-        response.status_code = 400
-        mocked.return_value = response
-
-        data = FileError({
+        item = FileError({
             'file_name': 'file.json',
             'url': 'https://example.com/remote.json',
             'errors': {'http_code': 500},
         })
 
-        extension.item_scraped(data, spider)
+        response = yield extension.item_scraped(item, spider)
+        data = yield response.json()
+
+        form = {
+            'collection_source': 'test',
+            'collection_data_version': '2001-02-03 04:05:06',
+            'collection_sample': str(is_sample),
+            'file_name': 'file.json',
+            'url': 'https://example.com/remote.json',
+            # Specific to FileError.
+            'errors': '{"http_code": 500}',
+        }
+
+        assert data['method'] == 'POST'
+        assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/file_errors/'
+        assert data['headers']['Authorization'] == 'ApiKey xxx'
+        assert data['form'] == form
+        assert data['args'] == {}
+        assert data['data'] == ''
+        assert data['files'] == {}
 
         if not ok:
-            message = 'Failed to post [https://example.com/remote.json]. File Error API status code: 400'
+            message = 'create_file_error failed (https://example.com/remote.json) with status code: 400'
 
             assert len(caplog.records) == 1
             assert caplog.records[0].name == 'test'
             assert caplog.records[0].levelname == 'WARNING'
             assert caplog.records[0].message == message
 
-        expected = {
-            'collection_source': 'test',
-            'collection_data_version': '2001-02-03 04:05:06',
-            'collection_sample': is_sample,
-            'file_name': 'file.json',
-            'url': 'https://example.com/remote.json',
-            # Specific to this test case.
-            'errors': '{"http_code": 500}',
-        }
 
-        mocked.assert_called_once_with(
-            'http://httpbin.org/anything/api/v1/submit/file_errors/',
-            headers={
-                'Authorization': 'ApiKey xxx',
-            },
-            proxies={
-                'http': None,
-                'https': None,
-            },
-            data=expected,
-        )
-
-
+@pytest_twisted.inlineCallbacks
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
 def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
-    spider = spider_with_files_store(tmpdir, sample=sample)
+    with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
+        mocked.return_value = 200 if ok else 400
 
-    extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+        spider = spider_with_files_store(tmpdir, sample=sample)
+        extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    with patch('requests.post') as mocked:
-        response = Mock()
-        response.ok = ok
-        response.status_code = 400
-        mocked.return_value = response
+        response = yield extension.spider_closed(spider, 'sample' if is_sample else 'finished')
+        data = yield response.json()
 
-        extension.spider_closed(spider, 'finished')
+        form = {
+            'collection_source': 'test',
+            'collection_data_version': '2001-02-03 04:05:06',
+            'collection_sample': str(is_sample),
+        }
 
-        mocked.assert_called_once_with(
-            'http://httpbin.org/anything/api/v1/submit/end_collection_store/',
-            headers={
-                'Authorization': 'ApiKey xxx',
-            },
-            proxies={
-                'http': None,
-                'https': None,
-            },
-            data={
-                'collection_source': 'test',
-                'collection_data_version': '2001-02-03 04:05:06',
-                'collection_sample': is_sample,
-            },
-        )
+        assert data['method'] == 'POST'
+        assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/end_collection_store/'
+        assert data['headers']['Authorization'] == 'ApiKey xxx'
+        assert data['form'] == form
+        assert data['args'] == {}
+        assert data['data'] == ''
+        assert data['files'] == {}
 
         if not ok:
+            message = 'end_collection_store failed (test) with status code: 400'
+
             assert len(caplog.records) == 1
             assert caplog.records[0].name == 'test'
             assert caplog.records[0].levelname == 'WARNING'
-            assert caplog.records[0].message == 'Failed to post End Collection Store. API status code: 400'
+            assert caplog.records[0].message == message
 
 
+@pytest_twisted.inlineCallbacks
+def test_spider_closed_exception(tmpdir, caplog):
+    with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
+        mocked.side_effect = TestError
+
+        spider = spider_with_files_store(tmpdir)
+        extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+
+        with pytest.raises(TestError):
+            yield extension.spider_closed(spider, 'finished')
+
+
+@pytest_twisted.inlineCallbacks
 def test_spider_closed_other_reason(tmpdir):
     spider = spider_with_files_store(tmpdir)
-
     extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    with patch('requests.post') as mocked:
-        extension.spider_closed(spider, 'xxx')
+    response = yield extension.spider_closed(spider, 'xxx')
 
-        mocked.assert_not_called()
+    assert response is None

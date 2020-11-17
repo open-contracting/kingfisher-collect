@@ -8,10 +8,8 @@ from tests import spider_with_crawler
 
 
 def test_disabled():
-    spider = spider_with_crawler()
-
     with TemporaryDirectory() as tmpdirname:
-        spider.crawler.settings['KINGFISHER_PLUCK_PATH'] = tmpdirname
+        spider = spider_with_crawler(settings={'KINGFISHER_PLUCK_PATH': tmpdirname})
         extension = KingfisherPluck.from_crawler(spider.crawler)
         item = PluckedItem({'value': '2020-10-01'})
 
@@ -22,10 +20,8 @@ def test_disabled():
 
 
 def test_item_scraped():
-    spider = spider_with_crawler(release_pointer='/date')
-
     with TemporaryDirectory() as tmpdirname:
-        spider.crawler.settings['KINGFISHER_PLUCK_PATH'] = tmpdirname
+        spider = spider_with_crawler(settings={'KINGFISHER_PLUCK_PATH': tmpdirname}, release_pointer='/date')
         extension = KingfisherPluck.from_crawler(spider.crawler)
         item = PluckedItem({'value': '2020-10-01'})
 
@@ -50,10 +46,8 @@ def test_item_scraped():
 
 
 def test_spider_closed_with_items():
-    spider = spider_with_crawler(release_pointer='/date')
-
     with TemporaryDirectory() as tmpdirname:
-        spider.crawler.settings['KINGFISHER_PLUCK_PATH'] = tmpdirname
+        spider = spider_with_crawler(settings={'KINGFISHER_PLUCK_PATH': tmpdirname}, release_pointer='/date')
         extension = KingfisherPluck.from_crawler(spider.crawler)
         item = PluckedItem({'value': '2020-10-01'})
 
@@ -65,10 +59,8 @@ def test_spider_closed_with_items():
 
 
 def test_spider_closed_without_items():
-    spider = spider_with_crawler(release_pointer='/date')
-
     with TemporaryDirectory() as tmpdirname:
-        spider.crawler.settings['KINGFISHER_PLUCK_PATH'] = tmpdirname
+        spider = spider_with_crawler(settings={'KINGFISHER_PLUCK_PATH': tmpdirname}, release_pointer='/date')
         extension = KingfisherPluck.from_crawler(spider.crawler)
 
         extension.spider_closed(spider, 'itemcount')

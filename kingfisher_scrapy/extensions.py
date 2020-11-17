@@ -3,7 +3,6 @@
 import json
 import os
 
-import requests
 import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
@@ -146,17 +145,16 @@ class KingfisherProcessAPI:
         Sends an API request to end the collection's store step.
         """
         # https://docs.scrapy.org/en/latest/topics/signals.html#spider-closed
-        if reason != 'finished' or spider.pluck or spider.keep_collection_open:
+        if reason not in ('finished', 'sample') or spider.pluck or spider.keep_collection_open:
             return
 
-        response = self.client.end_collection_store({
+        data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': bool(spider.sample),
-        })
+            'collection_sample': str(bool(spider.sample)),
+        }
 
-        if not response.ok:
-            spider.logger.warning('Failed to post End Collection Store. API status code: %s', response.status_code)
+        return self._request(spider, 'end_collection_store', data['collection_source'], data)
 
     def item_scraped(self, item, spider):
         """
@@ -169,7 +167,7 @@ class KingfisherProcessAPI:
         data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': bool(spider.sample),
+            'collection_sample': str(bool(spider.sample)),
             'file_name': item['file_name'],
             'url': item['url'],
         }
@@ -177,40 +175,43 @@ class KingfisherProcessAPI:
         if isinstance(item, FileError):
             data['errors'] = json.dumps(item['errors'])
 
-            self._request(item, spider, 'create_file_error', 'File Error API', data)
+            return self._request(spider, 'create_file_error', item['url'], data)
+
+        data['data_type'] = item['data_type']
+        data['encoding'] = item.get('encoding', 'utf-8')
+        if spider.note:
+            data['collection_note'] = spider.note
+
+        if isinstance(item, FileItem):
+            data['number'] = item['number']
+            data['data'] = item['data']
+
+            return self._request(spider, 'create_file_item', item['url'], data)
+
+        # File
+        if self.directory:
+            path = item['path']
+            data['local_file_name'] = os.path.join(self.directory, path)
+            files = {}
         else:
-            data['data_type'] = item['data_type']
-            data['encoding'] = item.get('encoding', 'utf-8')
-            if spider.note:
-                data['collection_note'] = spider.note
+            path = os.path.join(item['files_store'], item['path'])
+            f = open(path, 'rb')
+            files = {'file': (item['file_name'], 'application/json', f)}
 
-            if isinstance(item, FileItem):
-                data['number'] = item['number']
-                data['data'] = item['data']
+        return self._request(spider, 'create_file', item['url'], data, files)
 
-                self._request(item, spider, 'create_file_item', 'File Item API', data)
+    def _request(self, spider, method, infix, *args):
+        def log_for_status(response):
+            # Same condition as `Response.raise_for_status` in requests module.
+            # https://github.com/psf/requests/blob/28cc1d237b8922a2dcbd1ed95782a7f1751f475b/requests/models.py#L920
+            if 400 <= response.code < 600:
+                spider.logger.warning(f'{method} failed ({infix}) with status code: {response.code}')
+            # A return value is provided to ease testing.
+            return response
 
-            # File
-            else:
-                if self.directory:
-                    path = item['path']
-                    data['local_file_name'] = os.path.join(self.directory, path)
-                    files = {}
-                else:
-                    path = os.path.join(item['files_store'], item['path'])
-                    f = open(path, 'rb')
-                    files = {'file': (item['file_name'], f, 'application/json')}
-
-                self._request(item, spider, 'create_file', 'File API', data, files)
-
-    def _request(self, item, spider, method, name, *args):
-        try:
-            response = getattr(self.client, method)(*args)
-            if not response.ok:
-                spider.logger.warning('Failed to post [%s]. %s status code: %s', item['url'], name,
-                                      response.status_code)
-        except (requests.exceptions.ConnectionError, requests.exceptions.ProxyError) as e:
-            spider.logger.warning('Failed to post [%s]. %s exception: %s', item['url'], name, e)
+        d = getattr(self.client, method)(*args)
+        d.addCallback(log_for_status)
+        return d
 
 
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry

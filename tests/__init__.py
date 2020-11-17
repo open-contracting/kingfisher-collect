@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from scrapy import Request
-from scrapy.crawler import Crawler
 from scrapy.http import TextResponse
+from scrapy.utils.test import get_crawler
 
 from kingfisher_scrapy.base_spider import BaseSpider
 
@@ -15,9 +15,8 @@ def response_fixture(meta=None, url_path='', **kwargs):
     return TextResponse(request.url, encoding='utf-8', request=request, **kwargs)
 
 
-def spider_with_crawler(spider_class=BaseSpider, **kwargs):
-    crawler = Crawler(spidercls=spider_class)
-    crawler.settings.frozen = False  # otherwise, changes to settings with error
+def spider_with_crawler(spider_class=BaseSpider, *, settings=None, **kwargs):
+    crawler = get_crawler(spider_class, settings)
     start_time = datetime(2001, 2, 3, 4, 5, 6)
     crawler.stats.set_value('start_time', start_time)
 
@@ -26,10 +25,15 @@ def spider_with_crawler(spider_class=BaseSpider, **kwargs):
     return spider
 
 
-def spider_with_files_store(files_store, **kwargs):
-    spider = spider_with_crawler(**kwargs)
-    spider.crawler.settings['FILES_STORE'] = files_store
-    spider.crawler.settings['KINGFISHER_API_URI'] = 'http://httpbin.org/anything'
-    spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
+def spider_with_files_store(files_store, settings=None, **kwargs):
+    crawler_settings = {
+        'FILES_STORE': files_store,
+        'KINGFISHER_API_URI': 'http://httpbin.org/anything',
+        'KINGFISHER_API_KEY': 'xxx',
+    }
+    if settings:
+        crawler_settings.update(settings)
+
+    spider = spider_with_crawler(settings=crawler_settings, **kwargs)
 
     return spider

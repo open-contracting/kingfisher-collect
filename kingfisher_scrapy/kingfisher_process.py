@@ -1,10 +1,10 @@
-import requests
+import treq
 
 
 class Client:
     def __init__(self, url, key):
         self.url = url
-        self.key = key
+        self.headers = {'Authorization': f'ApiKey {key}'}
 
     def create_file(self, data, files):
         return self._post('/api/v1/submit/file/', data, files=files)
@@ -19,5 +19,4 @@ class Client:
         return self._post('/api/v1/submit/end_collection_store/', data)
 
     def _post(self, path, data, **kwargs):
-        return requests.post(self.url + path, headers={'Authorization': 'ApiKey ' + self.key}, data=data,
-                             proxies={'http': None, 'https': None}, **kwargs)
+        return treq.post(f'{self.url}{path}', headers=self.headers, data=data, **kwargs)

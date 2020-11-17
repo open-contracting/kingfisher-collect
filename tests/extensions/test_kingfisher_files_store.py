@@ -52,10 +52,8 @@ def test_item_scraped_with_build_file(sample, path, data, tmpdir):
     spider = spider_with_files_store(tmpdir, sample=sample)
     extension = KingfisherFilesStore.from_crawler(spider.crawler)
 
-    url = 'https://example.com/remote.json'
-
-    item = spider.build_file(file_name='file.json', url=url, data=data, data_type='release_package',
-                             encoding='iso-8859-1')
+    item = spider.build_file(file_name='file.json', url='https://example.com/remote.json', data=data,
+                             data_type='release_package', encoding='iso-8859-1')
     extension.item_scraped(item, spider)
 
     with open(tmpdir.join(path)) as f:
@@ -66,12 +64,11 @@ def test_item_scraped_with_build_file(sample, path, data, tmpdir):
 
 
 def test_item_scraped_with_build_file_and_existing_directory():
-    spider = spider_with_crawler()
-
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
+        spider = spider_with_crawler(settings={'FILES_STORE': files_store})
         extension = KingfisherFilesStore.from_crawler(spider.crawler)
+
         os.makedirs(os.path.join(files_store, 'test', '20010203_040506'))
 
         # No FileExistsError exception.
@@ -79,11 +76,9 @@ def test_item_scraped_with_build_file_and_existing_directory():
 
 
 def test_item_scraped_with_build_file_item():
-    spider = spider_with_crawler()
-
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
-        spider.crawler.settings['FILES_STORE'] = files_store
+        spider = spider_with_crawler(settings={'FILES_STORE': files_store})
         extension = KingfisherFilesStore.from_crawler(spider.crawler)
 
         assert extension.item_scraped(spider.build_file_item(), spider) is None
