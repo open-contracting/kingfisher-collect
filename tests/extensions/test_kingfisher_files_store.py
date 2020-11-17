@@ -52,10 +52,8 @@ def test_item_scraped_with_build_file(sample, path, data, tmpdir):
     spider = spider_with_files_store(tmpdir, sample=sample)
     extension = KingfisherFilesStore.from_crawler(spider.crawler)
 
-    url = 'https://example.com/remote.json'
-
-    item = spider.build_file(file_name='file.json', url=url, data=data, data_type='release_package',
-                             encoding='iso-8859-1')
+    item = spider.build_file(file_name='file.json', url='https://example.com/remote.json', data=data,
+                             data_type='release_package', encoding='iso-8859-1')
     extension.item_scraped(item, spider)
 
     with open(tmpdir.join(path)) as f:
