@@ -5,7 +5,6 @@ jsonref
 jsonschema
 ocdsmerge
 rarfile
-requests
 rfc3987
 scrapyd
 Scrapy>=2

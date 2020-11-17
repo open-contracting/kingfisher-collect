@@ -16,12 +16,14 @@ coverage==5.0.3           # via coveralls, pytest-cov
 coveralls==2.0.0          # via -r requirements_dev.in
 cryptography==3.2.1       # via -r requirements.txt, pyopenssl, scrapy, service-identity
 cssselect==1.1.0          # via -r requirements.txt, parsel, scrapy
+decorator==4.4.2          # via pytest-twisted
 defusedxml==0.6.0         # via -r requirements.txt, odfpy
 docopt==0.6.2             # via coveralls
 entrypoints==0.3          # via flake8
 et-xmlfile==1.0.1         # via -r requirements.txt, openpyxl
 flake8==3.7.9             # via -r requirements_dev.in
 flattentool==0.14.0       # via -r requirements.txt
+greenlet==0.4.17          # via pytest-twisted
 hyperlink==19.0.0         # via -r requirements.txt, treq, twisted
 idna==2.8                 # via -r requirements.txt, hyperlink, requests, twisted
 ijson==3.1.1              # via -r requirements.txt
@@ -58,7 +60,8 @@ pyopenssl==19.1.0         # via -r requirements.txt, scrapy, twisted
 pyparsing==2.4.5          # via packaging
 pyrsistent==0.16.0        # via -r requirements.txt, jsonschema
 pytest-cov==2.8.1         # via -r requirements_dev.in
-pytest==5.3.2             # via -r requirements_dev.in, pytest-cov
+pytest-twisted==1.13.2    # via -r requirements_dev.in
+pytest==5.3.2             # via -r requirements_dev.in, pytest-cov, pytest-twisted
 pytz==2020.1              # via -r requirements.txt, flattentool
 queuelib==1.5.0           # via -r requirements.txt, scrapy
 rarfile==3.1              # via -r requirements.txt

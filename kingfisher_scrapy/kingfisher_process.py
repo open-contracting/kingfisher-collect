@@ -1,5 +1,4 @@
 import treq as treq
-from twisted.internet.defer import inlineCallbacks, returnValue
 
 
 class Client:
@@ -19,7 +18,5 @@ class Client:
     def end_collection_store(self, data):
         return self._post('/api/v1/submit/end_collection_store/', data)
 
-    @inlineCallbacks
     def _post(self, path, data, **kwargs):
-        response = yield treq.post(f'{self.url}{path}', headers=self.headers, data=data, **kwargs)
-        returnValue(response)
+        return treq.post(f'{self.url}{path}', headers=self.headers, data=data, **kwargs)
