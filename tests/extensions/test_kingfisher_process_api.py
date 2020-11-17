@@ -11,10 +11,11 @@ from tests import spider_with_crawler, spider_with_files_store
 
 
 def test_from_crawler():
-    spider = spider_with_crawler()
-    spider.crawler.settings['KINGFISHER_API_URI'] = 'http://httpbin.org/anything'
-    spider.crawler.settings['KINGFISHER_API_KEY'] = 'xxx'
-    spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = 'localdir'
+    spider = spider_with_crawler(settings={
+        'KINGFISHER_API_URI': 'http://httpbin.org/anything',
+        'KINGFISHER_API_KEY': 'xxx',
+        'KINGFISHER_API_LOCAL_DIRECTORY': 'localdir',
+    })
 
     extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
@@ -27,9 +28,10 @@ def test_from_crawler():
     (None, 'xxx'),
 ])
 def test_from_crawler_missing_arguments(api_url, api_key):
-    spider = spider_with_crawler()
-    spider.crawler.settings['KINGFISHER_API_URI'] = api_url
-    spider.crawler.settings['KINGFISHER_API_KEY'] = api_key
+    spider = spider_with_crawler(settings={
+        'KINGFISHER_API_URI': api_url,
+        'KINGFISHER_API_KEY': api_key,
+    })
 
     with pytest.raises(NotConfigured) as excinfo:
         KingfisherProcessAPI.from_crawler(spider.crawler)
@@ -53,9 +55,10 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
     with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
         mocked.return_value = 200 if ok else 400
 
-        spider = spider_with_files_store(tmpdir, sample=sample, note=note, crawl_time=crawl_time)
+        settings = {}
         if directory:
-            spider.crawler.settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
+            settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
+        spider = spider_with_files_store(tmpdir, settings=settings, sample=sample, note=note, crawl_time=crawl_time)
         extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
         kwargs = {}
