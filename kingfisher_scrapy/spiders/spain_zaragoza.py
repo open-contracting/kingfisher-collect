@@ -8,6 +8,8 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class SpainZaragoza(SimpleSpider):
     """
+    Caveats
+      The API before and after query string parameters have no effect and are therefore not implemented.
     Domain
       Ayuntamiento de Zaragoza
     Swagger API documentation
