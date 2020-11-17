@@ -1,4 +1,4 @@
-import treq as treq
+import treq
 
 
 class Client:
