@@ -21,21 +21,12 @@ class SpainZaragoza(SimpleSpider):
       https://www.zaragoza.es/docs-api_sede/
     """
     name = 'spain_zaragoza'
-    data_type = 'release_list'
-    date_format = 'datetime'
-    default_from_date = '2000-01-01T00:00:00'
+    data_type = 'release_package'
     url = 'https://www.zaragoza.es/sede/servicio/contratacion-publica/ocds/contracting-process/'
 
     def start_requests(self):
         # row parameter setting to 100000 to get all releases
-        url = self.url + '?rf=html&rows=100000'
-
-        # check date parameters and set "yyyy-MM-dd'T'HH:mm:ss'Z'" format
-        if self.from_date and self.until_date:
-            # `before` and `after` query string parameters behave opposite in API
-            after = self.until_date.strftime("%Y-%m-%dT%H:%M:%SZ")
-            before = self.from_date.strftime("%Y-%m-%dT%H:%M:%SZ")
-            url = f'{url}&before={before}&after={after}'
+        url = f'{self.url}?rf=html&rows=100000'
 
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
