@@ -43,5 +43,5 @@ class SpainZaragoza(SimpleSpider):
     def parse_list(self, response):
         ids = json.loads(response.text)
         for contracting_process_id in ids:
-            url = self.url + contracting_process_id['id']
+            url = self.url + contracting_process_id['ocid']
             yield self.build_request(url, formatter=components(-1))
