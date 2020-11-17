@@ -10,6 +10,10 @@ from kingfisher_scrapy.items import FileError
 from tests import spider_with_crawler, spider_with_files_store
 
 
+class TestError(Exception):
+    pass
+
+
 def test_from_crawler():
     spider = spider_with_crawler(settings={
         'KINGFISHER_API_URI': 'http://httpbin.org/anything',
@@ -264,6 +268,18 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
             assert caplog.records[0].name == 'test'
             assert caplog.records[0].levelname == 'WARNING'
             assert caplog.records[0].message == message
+
+
+@pytest_twisted.inlineCallbacks
+def test_spider_closed_exception(tmpdir, caplog):
+    with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
+        mocked.side_effect = TestError
+
+        spider = spider_with_files_store(tmpdir)
+        extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+
+        with pytest.raises(TestError):
+            yield extension.spider_closed(spider, 'finished')
 
 
 @pytest_twisted.inlineCallbacks
