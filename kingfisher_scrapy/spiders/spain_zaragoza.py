@@ -10,13 +10,6 @@ class SpainZaragoza(SimpleSpider):
     """
     Domain
       Ayuntamiento de Zaragoza
-    Spider arguments
-      from_date
-        Download only data from this date onward (YYYY-MM-DDTHH:mm:ss format).
-        If ``until_date`` is provided, defaults to '2000-01-01T00:00:00'.
-      until_date
-        Download only data until this date (YYYY-MM-DDTHH:mm:ss format).
-        If ``from_date`` is provided, defaults to today.
     Swagger API documentation
       https://www.zaragoza.es/docs-api_sede/
     """
@@ -34,5 +27,6 @@ class SpainZaragoza(SimpleSpider):
     def parse_list(self, response):
         ids = json.loads(response.text)
         for contracting_process_id in ids:
-            url = self.url + contracting_process_id['ocid']
+            ocid = contracting_process_id['ocid']
+            url = f'{self.url}{ocid}'
             yield self.build_request(url, formatter=components(-1))
