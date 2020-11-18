@@ -85,7 +85,8 @@ ITEM_PIPELINES = {
    'kingfisher_scrapy.pipelines.Sample': 200,
    'kingfisher_scrapy.pipelines.Unflatten': 300,
    'kingfisher_scrapy.pipelines.Validate': 301,
-   'kingfisher_scrapy.pipelines.Pluck': 302,
+   'kingfisher_scrapy.pipelines.Filter': 302,
+   'kingfisher_scrapy.pipelines.Pluck': 303,
 }
 
 
