@@ -6,6 +6,8 @@ from kingfisher_scrapy.util import parameters
 
 
 class HondurasPortalBase(IndexSpider):
+    date_format = 'datetime'
+    default_from_date = '2000-01-01T00:00:00'
     next_pointer = '/next'
     formatter = staticmethod(parameters('page'))
     total_pages_pointer = '/pages'
