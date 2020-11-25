@@ -3,7 +3,7 @@ import scrapy
 from kingfisher_scrapy.spiders.honduras_portal_base import HondurasPortalBase
 
 
-class HondurasPortalReleases(HondurasPortalBase):
+class PackistanPPRAReleases(SimpleSpider)::
     """
     Domain
       Pakistan Public Procurement Regulatory Authority (PPRA)
