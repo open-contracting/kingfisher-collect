@@ -798,6 +798,23 @@ Openopps
 
    env KINGFISHER_OPENOPPS_USERNAME=... KINGFISHER_OPENOPPS_PASSWORD=... scrapy crawl openopps
 
+Pakistan
+--------
+
+.. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_records.HondurasPortalRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl pakistan_ppra_records
+
+.. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_releases.HondurasPortalReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl pakistan_ppra_releases
+
 Paraguay
 --------
 
