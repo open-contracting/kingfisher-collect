@@ -9,6 +9,9 @@ class ParaguayDNCPReleases(ParaguayDNCPBaseSpider):
       from_date
         Download only releases from this release.date onward (YYYY-MM-DDTHH:mm:ss format).
         If ``from_date`` is not provided, defaults to '2010-01-01T00:00:00'.
+      until_date
+        Download only releases until this date (YYYY-MM-DDTHH:mm:ss format).
+        If ``until_date`` is not provided, defaults to today.
     Environment variables
       KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN
         To get an API account and request token go to https://contrataciones.gov.py/datos/adm/login.

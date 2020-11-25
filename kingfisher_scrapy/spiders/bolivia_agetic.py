@@ -10,9 +10,6 @@ class BoliviaAgetic(SimpleSpider):
     """
     Domain
       Agencia de Gobierno Electrónico y Tecnologías de Información y Comunicación (AGETIC)
-    Spider arguments
-      sample
-        Downloads the first file in the downloads page.
     Bulk download documentation
       https://datos.gob.bo/id/dataset/contrataciones-agetic-2019-estandar-ocp
     """
