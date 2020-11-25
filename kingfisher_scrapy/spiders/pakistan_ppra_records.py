@@ -6,7 +6,7 @@ from kingfisher_scrapy.spiders.honduras_portal_base import HondurasPortalBase
 from kingfisher_scrapy.util import handle_http_error, components
 
 
-class HondurasPortalRecords(HondurasPortalBase):
+class PackistanPPRARecords(SimpleSpider):
     """
     Domain
       Pakistan Public Procurement Regulatory Authority (PPRA)
