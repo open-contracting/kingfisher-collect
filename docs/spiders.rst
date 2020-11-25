@@ -801,14 +801,14 @@ Openopps
 Pakistan
 --------
 
-.. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_records.HondurasPortalRecords
+.. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_records.PackistanPPRARecords
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl pakistan_ppra_records
 
-.. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_releases.HondurasPortalReleases
+.. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_releases.PackistanPPRAReleases
    :no-members:
 
 .. code-block:: bash
