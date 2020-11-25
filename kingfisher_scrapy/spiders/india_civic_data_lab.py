@@ -22,7 +22,7 @@ class IndiaCivicDataLab(SimpleSpider):
     @handle_http_error
     def parse_list(self, response):
         for path in response.xpath('//div[@role="rowheader"]/span/a/@href').getall():
-            if 'xlsx' in path:
+            if path.endswith('.xlsx'):
                 yield scrapy.Request(
                     'https://github.com{}?raw=true'.format(path),
                     meta={'file_name': components(-1)(path).replace('%', '_')},
