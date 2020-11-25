@@ -88,7 +88,7 @@ You can find which filters a spider supports on the :doc:`spiders` page.
 
 Not all of an API's features are exposed by Kingfisher Collect. Each spider links to its API documentation in its :ref:`metadata<spider-metadata>`, where you can learn what filters the API supports. If the filters are implemented as query string parameters, you can apply multiple filters with, for example:
 
-.. code:: bash
+.. code-block:: bash
 
     scrapy crawl spider_name -a qs:parameter1=value1 -a qs:parameter2=value2
 
@@ -111,13 +111,13 @@ Then, at a later date, run a second crawl to collect data from the day after unt
 
 And so on. However, as you learned in :ref:`how-it-works`, each crawl writes data to a separate directory. By default, this directory is named according to the time at which you started the crawl. To collect the incremental data into the same directory, you can take the time from the first crawl's directory name, then override the time of subsequent crawls with the ``crawl_time`` spider argument:
 
-.. code:: bash
+.. code-block:: bash
 
     scrapy crawl spider_name -a from_date=2020-10-15 -a until_date=2020-10-31 -a crawl_time=2020-10-14T12:34:56
 
 If you are integrating with :doc:`Kingfisher Process<kingfisher_process>`, remember to set the ``keep_collection_open`` spider argument, in order to not close the collection when the crawl is finished:
 
-.. code:: bash
+.. code-block:: bash
 
     scrapy crawl spider_name -a keep_collection_open=true
 
