@@ -1,9 +1,9 @@
 import scrapy
 
-from kingfisher_scrapy.spiders.honduras_portal_base import HondurasPortalBase
+from kingfisher_scrapy.base_spider import SimpleSpider
 
 
-class PackistanPPRAReleases(SimpleSpider)::
+class PackistanPPRAReleases(SimpleSpider):
     """
     Domain
       Pakistan Public Procurement Regulatory Authority (PPRA)
