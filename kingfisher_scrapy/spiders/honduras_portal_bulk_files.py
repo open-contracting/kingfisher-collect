@@ -9,11 +9,9 @@ class HondurasPortalBulkFiles(PeriodicSpider):
       Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Secretaria de Finanzas de Honduras (SEFIN)
     Spider arguments
       from_date
-        Download only releases from this date onward (YYYY-MM format).
-        If ``until_date`` is provided and ``from_date`` don't, defaults to '2005-11'.
+        Download only data from this month onward (YYYY-MM format). Defaults to '2005-11'.
       until_date
-        Download only releases until this date (YYYY-MM format).
-        If ``from_date`` is provided and ``until_date`` don't, defaults to current year-month.
+        Download only data until this month (YYYY-MM format). Defaults to current month.
       publisher
         Filter by publisher:
 
@@ -37,7 +35,7 @@ class HondurasPortalBulkFiles(PeriodicSpider):
     data_type = 'release_package'
     skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
     available_publishers = {'oncae': 'oficina_normativa', 'sefin': 'secretaria_de_fin_HN.SIAFI2'}
-    oncae_systems = {'HC1': 'honducompras-1', 'CE': 'catalogo-electronico', 'DDC': 'difusion-directa-contrato'}
+    available_systems = {'HC1': 'honducompras-1', 'CE': 'catalogo-electronico', 'DDC': 'difusion-directa-contrato'}
 
     # PeriodicSpider variables
     date_format = 'year-month'
@@ -54,7 +52,7 @@ class HondurasPortalBulkFiles(PeriodicSpider):
             if spider.publisher != 'oncae':
                 raise SpiderArgumentError(f'spider argument `system` is not supported for publisher: '
                                           f'{spider.publisher!r}')
-            if spider.system not in spider.oncae_systems:
+            if spider.system not in spider.available_systems:
                 raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
 
         return spider
@@ -65,11 +63,11 @@ class HondurasPortalBulkFiles(PeriodicSpider):
                 continue
 
             if publisher == 'oncae':
-                for system in self.oncae_systems:
+                for system in self.available_systems:
                     if self.system and system != self.system:
                         continue
                     yield self.pattern.format(f"{self.available_publishers[publisher]}_"
-                                              f"{self.oncae_systems[system]}_{date.year}_{date.month:02d}.json")
+                                              f"{self.available_systems[system]}_{date.year}_{date.month:02d}.json")
             else:
                 yield self.pattern.format(f"{self.available_publishers[publisher]}_"
                                           f"{date.year}_{date.month:02d}.json")

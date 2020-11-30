@@ -72,7 +72,7 @@ Commit the spider
 
    .. code-block:: bash
 
-      scrapy checkall
+      scrapy checkall --loglevel=WARNING
 
 After reviewing the output, you can commit your changes to a branch and make a pull request.
 

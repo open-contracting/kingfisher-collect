@@ -95,10 +95,10 @@ Some spiders support these arguments:
      - Description
      - Format
    * - ``from_date``
-     - Download data from this date onward. The spider might describe specific semantics (e.g. the relevant date is the date the contract was signed).
+     - Download data from this date onward. The spider might describe specific semantics (e.g. the relevant date is the date the contract was signed). Otherwise, the relevant date is the release date.
      - See spider
    * - ``until_date``
-     - Download data until this date. The spider might describe specific semantics (e.g. the relevant date is the date the contract was signed).
+     - Download data until this date. The spider might describe specific semantics (e.g. the relevant date is the date the contract was signed). Otherwise, the relevant date is the release date.
      - See spider
    * - ``year``
      - Download data from this year.

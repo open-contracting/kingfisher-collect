@@ -9,11 +9,9 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
       Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE)
     Spider arguments
       from_date
-        Download only releases from this year onward (YYYY format).
-        If ``until_date`` is provided and ``from_date`` don't, defaults to '2000'.
+        Download only data from this year onward (YYYY format). Defaults to '2005'.
       until_date
-        Download only releases until this year (YYYY format).
-        If ``from_date`` is provided and ``until_date`` don't, defaults to current year.
+        Download only data until this year (YYYY format). Defaults to current year.
       system
         Filter by system:
 

@@ -14,11 +14,11 @@ class Colombia(LinksSpider):
       Colombia Compra Eficiente (CCE)
     Spider arguments
       from_date
-        Download only releases from this release.date onward (YYYY-MM-DD format).
-        If ``until_date`` is provided and ``from_date`` don't, defaults to '2011-01-01'.
+        Download only data from this date onward (YYYY-MM-DD format).
+        If ``until_date`` is provided, defaults to '2011-01-01'.
       until_date
-        Download only releases until this release.date (YYYY-MM-DD format).
-        If ``from_date`` is provided and ``until_date`` don't, defaults to today.
+        Download only data until this date (YYYY-MM-DD format).
+        If ``from_date`` is provided, defaults to today.
       year
         The year to crawl. See API documentation for valid values.
       start_page
