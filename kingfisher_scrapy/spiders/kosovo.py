@@ -12,7 +12,7 @@ class Kosovo(SimpleSpider):
         If ``until_date`` is provided, defaults to '2000-01-01T00:00:00'.
       until_date
         Download only data until this time (YYYY-MM-DDThh:mm:ss format).
-        If ``from_date`` is provided, defaults to today.
+        If ``from_date`` is provided, defaults to now.
     API documentation
       https://ocdskrpp-test.rks-gov.net/Help
     """

@@ -9,7 +9,7 @@ class ParaguayDNCPRecords(ParaguayDNCPBaseSpider):
       from_date
         Download only data from this time onward (YYYY-MM-DDThh:mm:ss format). Defaults to '2010-01-01T00:00:00'.
       until_date
-        Download only data until this time (YYYY-MM-DDThh:mm:ss format). Defaults to today.
+        Download only data until this time (YYYY-MM-DDThh:mm:ss format). Defaults to now.
     Environment variables
       KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN
         To get an API account and request token go to https://contrataciones.gov.py/datos/adm/login.

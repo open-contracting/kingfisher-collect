@@ -64,21 +64,6 @@ class Checker:
     def log(self, level, message):
         getattr(logger, level)('%s.%s: %s', self.module.__name__, self.cls.__name__, message)
 
-    def check_list(self, items, known_items, name):
-        items = list(items)
-
-        for i, item in enumerate(known_items):
-            if items and items[0] == known_items[i]:
-                items.pop(0)
-
-        unexpected = set(items) - set(known_items)
-        if unexpected:
-            self.log('error', f"unexpected {name}: {', '.join(unexpected)}")
-
-        disordered = set(items) & set(known_items)
-        if disordered:
-            self.log('error', f"out-of-order {name}: {', '.join(disordered)}")
-
     def check(self):
         class_name = self.cls.__name__
         docstring = self.cls.__doc__
@@ -133,18 +118,51 @@ class Checker:
             if not hasattr(self.cls, class_attribute) and spider_argument in spider_arguments:
                 self.log('warning', f'unexpected "{spider_argument}" spider argument ({class_attribute} is not set)')
 
-        if 'from_date' in spider_arguments:
+        self.check_date_spider_argument('from_date', spider_arguments, lambda cls: repr(cls.default_from_date),
+                                        'Download only data from this {period} onward ({format} format).')
+
+        def default(cls):
+            if cls.date_format == 'datetime':
+                return 'now'
+            elif cls.date_format == 'date':
+                return 'today'
+            elif cls.date_format == 'year-month':
+                return 'the current month'
+            elif cls.date_format == 'year':
+                return 'the current year'
+
+        self.check_date_spider_argument('until_date', spider_arguments, default,
+                                        'Download only data until this {period} ({format} format).')
+
+    def check_list(self, items, known_items, name):
+        items = list(items)
+
+        for i, item in enumerate(known_items):
+            if items and items[0] == known_items[i]:
+                items.pop(0)
+
+        unexpected = set(items) - set(known_items)
+        if unexpected:
+            self.log('error', f"unexpected {name}: {', '.join(unexpected)}")
+
+        disordered = set(items) & set(known_items)
+        if disordered:
+            self.log('error', f"out-of-order {name}: {', '.join(disordered)}")
+
+    def check_date_spider_argument(self, spider_argument, spider_arguments, default, format_string):
+        if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
-            if class_name in ('PortugalRecords', 'PortugalReleases', 'ScotlandPublicContracts'):
+            if self.cls.__name__ in ('PortugalRecords', 'PortugalReleases', 'ScotlandPublicContracts'):
                 level = 'info'
             else:
                 level = 'warning'
 
-            format_string = 'Download only data from this {period} onward ({format} format).'
             if self.cls.date_required:
-                format_string += " Defaults to '{default}'."
-            else:
-                format_string += "\n  If ``until_date`` is provided, defaults to '{default}'."
+                format_string += " Defaults to {default}."
+            elif spider_argument == 'from_date':
+                format_string += "\n  If ``until_date`` is provided, defaults to {default}."
+            elif spider_argument == 'until_date':
+                format_string += "\n  If ``from_date`` is provided, defaults to {default}."
 
             if self.cls.date_format == 'datetime':
                 period = 'time'
@@ -161,6 +179,6 @@ class Checker:
             else:
                 raise NotImplementedError(f'checkall: date_format "{self.cls.date_format}" not implemented')
 
-            expected = format_string.format(period=period, format=format_, default=self.cls.default_from_date)
-            if spider_arguments['from_date'] != expected:
-                self.log(level, f"\n{spider_arguments['from_date']!r} !=\n{expected!r}")
+            expected = format_string.format(period=period, format=format_, default=default(self.cls))
+            if spider_arguments[spider_argument] != expected:
+                self.log(level, f"\n{spider_arguments[spider_argument]!r} !=\n{expected!r}")

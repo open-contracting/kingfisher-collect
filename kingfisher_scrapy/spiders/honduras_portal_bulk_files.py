@@ -11,7 +11,7 @@ class HondurasPortalBulkFiles(PeriodicSpider):
       from_date
         Download only data from this month onward (YYYY-MM format). Defaults to '2005-11'.
       until_date
-        Download only data until this month (YYYY-MM format). Defaults to current month.
+        Download only data until this month (YYYY-MM format). Defaults to the current month.
       publisher
         Filter by publisher:
 
