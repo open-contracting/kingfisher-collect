@@ -9,10 +9,10 @@ class ChileCompraRecords(ChileCompraBaseSpider):
     Spider arguments
       from_date
         Download only records from this date onward (YYYY-MM format).
-        If from_date is not provided defaults to 2008-01
+        If ``from_date`` is not provided defaults to 2009-01
       until_date
         Download only records until this date (YYYY-MM format).
-        If from_date is not provided defaults to current year and month
+        If ``from_date`` is not provided defaults to current year and month
       system
         Filter by system, if not set gets all:
           convenio
