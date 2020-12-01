@@ -21,7 +21,7 @@ class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
 
     # from PeriodicSpider
     date_format = 'year-month'
-    default_from_date = '2008-01'
+    default_from_date = '2009-01'
     start_requests_callback = 'build_periodic_requests'
 
     # from IndexSpider
@@ -46,16 +46,12 @@ class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
     def get_formatter(self):
         return components(-4, -1)
 
+    @handle_http_error
     def parse(self, response):
         data = json.loads(response.text)
-        # Some files contain invalid packages, e.g.:
-        # {
-        #   "status": 500,
-        #   "detail": "error"
-        # }
-        if 'status' in data and data['status'] != 200:
-            data['http_code'] = data['status']
-            yield self.build_file_error_from_response(response, errors=data)
+        error = self._check_data_error(response, data)
+        if error:
+            yield error
             return
         yield from super().parse(response)
 
@@ -66,9 +62,23 @@ class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
         kwargs['callback'] = self.parse_page
         yield from self.parse_list(response, **kwargs)
 
+    def _check_data_error(self, response, data):
+        # Some files contain invalid packages, e.g.:
+        # {
+        #   "status": 500,
+        #   "detail": "error"
+        # }
+        if 'status' in data and data['status'] != 200:
+            data['http_code'] = data['status']
+            return self.build_file_error_from_response(response, errors=data)
+
     @handle_http_error
     def parse_page(self, response, **kwargs):
         data = json.loads(response.text)
+        error = self._check_data_error(response, data)
+        if error:
+            yield error
+            return
         for item in data['data']:
             # An item looks like:
             #
