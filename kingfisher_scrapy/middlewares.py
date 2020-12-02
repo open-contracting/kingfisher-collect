@@ -1,8 +1,13 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-
+import json
 from datetime import datetime
 
+import ijson
 import scrapy
+
+from kingfisher_scrapy import util
+from kingfisher_scrapy.base_spider import CompressedFileSpider
+from kingfisher_scrapy.items import File
 
 
 class ParaguayAuthMiddleware:
@@ -74,3 +79,82 @@ class OpenOppsAuthMiddleware:
         if 'token_request' in request.meta and request.meta['token_request']:
             return
         request.headers['Authorization'] = spider.access_token
+
+
+class KingfisherTransformMiddleware:
+    """
+    Middleware that checks for File items that comes from CompressedFileSpider or returns non-well-packaged OCDS
+    File item and transform them into a release or record package
+    """
+    MAX_RELEASES_PER_PACKAGE = 100
+
+    def process_spider_output(self, response, result, spider):
+        for item in result:
+
+            if isinstance(item, File) and (spider.root_path is not None or isinstance(spider, CompressedFileSpider)):
+                kwargs = {
+                    'file_name': item['file_name'],
+                    'url': response.request.url,
+                    'data_type': spider.data_type,
+                    'encoding': item['encoding'],
+                }
+                data = item['data']
+                package = item['data']
+                compressed_file = False
+                if isinstance(spider, CompressedFileSpider):
+                    data = item['data']['data']
+                    package = item['data']['package']
+                    compressed_file = True
+                # if it is a compressed file and the file dont need any transformations
+                if compressed_file and spider.compressed_file_format is None:
+                    yield spider.build_file(data=data.read(), **kwargs)
+                # if it is a compressed file or regular file but as json_lines
+                elif spider.file_format or (compressed_file and spider.compressed_file_format == 'json_lines'):
+                    yield from self._parse_json_lines(spider, data, **kwargs)
+                # otherwise is must be a release or record package or a list of them
+                else:
+                    yield from self._parse_json_array(spider, package, data, **kwargs)
+            else:
+                yield item
+
+    def _parse_json_array(self, spider, package_data, list_data, *, file_name='data.json', url=None, data_type=None,
+                          encoding='utf-8'):
+
+        list_type = 'releases'
+        if 'record' in data_type:
+            list_type = 'records'
+
+        package = self._get_package_metadata(package_data, list_type, data_type, spider.root_path)
+        # we change the data_type into a valid one:release_package or record_package
+        data_type = data_type if 'package' in data_type else f'{data_type}_package'
+
+        # we yield a release o record package with a maximum of self.MAX_RELEASES_PER_PACKAGE releases or records
+        for number, items in enumerate(util.grouper(ijson.items(list_data, spider.root_path),
+                                                    self.MAX_RELEASES_PER_PACKAGE), 1):
+            package[list_type] = filter(None, items)
+            data = json.dumps(package, default=util.default)
+            yield spider.build_file_item(number=number, file_name=file_name, url=url, data=data,
+                                         data_type=data_type, encoding=encoding)
+
+    def _parse_json_lines(self, spider, data, *, file_name='data.json', url=None, data_type=None, encoding='utf-8'):
+        for number, line in enumerate(data, 1):
+            if isinstance(line, bytes):
+                line = line.decode(encoding=encoding)
+            yield from self._parse_json_array(spider, line, line, file_name=file_name, url=url, data_type=data_type,
+                                              encoding=encoding)
+            return
+
+    def _get_package_metadata(self, data, skip_key, data_type, root_path):
+        """
+        Returns the package metadata from a file object.
+
+        :param data: a data object
+        :param str skip_key: the key to skip
+        :returns: the package metadata
+        :rtype: dict
+        """
+        package = {}
+        if 'package' in data_type:
+            for item in util.items(ijson.parse(data), root_path, skip_key=skip_key):
+                package.update(item)
+        return package

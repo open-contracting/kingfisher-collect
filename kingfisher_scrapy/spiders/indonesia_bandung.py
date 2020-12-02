@@ -31,6 +31,7 @@ class IndonesiaBandung(BaseSpider):
     """
     name = 'indonesia_bandung'
     data_type = 'release'
+    root_path = ''
 
     def start_requests(self):
         pattern = 'https://birms.bandung.go.id/api/packages/year/{}'

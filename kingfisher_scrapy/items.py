@@ -22,11 +22,8 @@ class File(KingfisherItem):
     files_store = scrapy.Field()
 
 
-class FileItem(KingfisherItem):
+class FileItem(File):
     number = scrapy.Field()
-    data = scrapy.Field()
-    data_type = scrapy.Field()
-    encoding = scrapy.Field()
 
 
 class FileError(KingfisherItem):

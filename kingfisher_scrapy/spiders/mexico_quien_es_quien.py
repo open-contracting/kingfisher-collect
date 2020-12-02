@@ -21,7 +21,8 @@ class MexicoQuienEsQuien(IndexSpider):
     limit = 1000
     base_url = 'https://api.quienesquien.wiki/v2/contracts'
     formatter = staticmethod(parameters('offset'))
-    data_type = 'record_package_list'
+    data_type = 'record_package'
+    root_path = 'item'
 
     def start_requests(self):
         yield scrapy.Request(

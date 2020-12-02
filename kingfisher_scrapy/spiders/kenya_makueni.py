@@ -14,7 +14,8 @@ class KenyaMakueni(IndexSpider):
       https://opencontracting.makueni.go.ke/swagger-ui.html#/ocds-controller
     """
     name = 'kenya_makueni'
-    data_type = 'release_package_list'
+    data_type = 'release_package'
+    root_path = 'item'
     limit = 10
     additional_params = {'pageSize': limit}
     yield_list_results = False

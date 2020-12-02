@@ -14,8 +14,9 @@ class DigiwhistBase(BaseSpider):
     Bulk download documentation
       https://opentender.eu/download
     """
-    skip_pluck = 'JSON Lines is not supported'
     data_type = 'release_package'
+    root_path = ''
+    file_format = 'json_lines'
 
     def start_requests(self):
         # See scrapy.spiders.Spider.start_requests
@@ -24,9 +25,8 @@ class DigiwhistBase(BaseSpider):
 
     @handle_http_error
     def parse(self, response):
-        yield self.build_file_from_response(response, data_type='tar.gz', post_to_api=False)
 
         # Load a line at the time, pass it to API
         with tarfile.open(fileobj=BytesIO(response.body), mode="r:gz") as tar:
             with tar.extractfile(tar.getnames()[0]) as readfp:
-                yield from self.parse_json_lines(readfp, url=self.start_urls[0], data_type=self.data_type)
+                yield self.build_file_from_response(data=readfp, response=response, file_name='data.json')

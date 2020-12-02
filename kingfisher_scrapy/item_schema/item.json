@@ -32,14 +32,8 @@
           "enum": [
             "record",
             "release",
-            "release_list",
             "record_package",
             "release_package",
-            "record_package_list",
-            "release_package_list",
-            "record_package_list_in_results",
-            "release_package_list_in_results",
-            "release_in_Release",
             "zip",
             "rar",
             "tar.gz"

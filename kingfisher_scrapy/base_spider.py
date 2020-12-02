@@ -6,7 +6,6 @@ from io import BytesIO
 from math import ceil
 from zipfile import ZipFile
 
-import ijson
 import scrapy
 from jsonpointer import resolve_pointer
 from rarfile import RarFile
@@ -34,13 +33,15 @@ class BaseSpider(scrapy.Spider):
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
     ``get_default_until_date()`` return value (which is the current time, by default).
     """
-    MAX_RELEASES_PER_PACKAGE = 100
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
     ocds_version = '1.1'
     date_format = 'date'
     date_required = False
     unflatten = False
+    root_path = None
+    # override this if the file is in json_line format
+    file_format = None
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
@@ -242,46 +243,6 @@ class BaseSpider(scrapy.Spider):
         item.update(kwargs)
         return item
 
-    def _get_package_metadata(self, f, skip_key):
-        """
-        Returns the package metadata from a file object.
-
-        :param f: a file object
-        :param str skip_key: the key to skip
-        :returns: the package metadata
-        :rtype: dict
-        """
-        package = {}
-        for item in util.items(ijson.parse(f), '', skip_key=skip_key):
-            package.update(item)
-        return package
-
-    def parse_json_lines(self, f, *, file_name='data.json', url=None, data_type=None, encoding='utf-8'):
-        for number, line in enumerate(f, 1):
-            if self.sample and number > self.sample:
-                break
-            if isinstance(line, bytes):
-                line = line.decode(encoding=encoding)
-            yield self.build_file_item(number=number, file_name=file_name, url=url, data=line, data_type=data_type,
-                                       encoding=encoding)
-
-    def parse_json_array(self, f_package, f_list, *, file_name='data.json', url=None, data_type=None, encoding='utf-8',
-                         array_field_name='releases'):
-        if self.sample:
-            size = self.sample
-        else:
-            size = self.MAX_RELEASES_PER_PACKAGE
-
-        package = self._get_package_metadata(f_package, array_field_name)
-
-        for number, items in enumerate(util.grouper(ijson.items(f_list, f'{array_field_name}.item'), size), 1):
-            package[array_field_name] = filter(None, items)
-            data = json.dumps(package, default=util.default)
-            yield self.build_file_item(number=number, file_name=file_name, url=url, data=data, data_type=data_type,
-                                       encoding=encoding)
-            if self.sample:
-                break
-
     @classmethod
     def get_default_until_date(cls, spider):
         """
@@ -338,11 +299,11 @@ class CompressedFileSpider(BaseSpider):
 
        ``json_lines``
          Yields each line of each compressed file.
-         The archive file is saved to disk. The compressed files are *not* saved to disk.
+         Each compressed file is saved to disk. The archive file is *not* saved to disk.
        ``release_package``
          Re-packages the releases in the compressed files in groups of
          :const:`~kingfisher_scrapy.base_spider.BaseSpider.MAX_RELEASES_PER_PACKAGE`, and yields the packages.
-         The archive file is saved to disk. The compressed files are *not* saved to disk.
+         Each compressed file is saved to disk. The archive file is *not* saved to disk.
        ``None``
          Yields each compressed file.
          Each compressed file is saved to disk. The archive file is *not* saved to disk.
@@ -363,15 +324,12 @@ class CompressedFileSpider(BaseSpider):
     """
 
     encoding = 'utf-8'
-    skip_pluck = 'Archive files are not supported'
     compressed_file_format = None
     archive_format = 'zip'
     file_name_must_contain = ''
 
     @handle_http_error
     def parse(self, response):
-        if self.compressed_file_format:
-            yield self.build_file_from_response(response, data_type=self.archive_format, post_to_api=False)
         if self.archive_format == 'zip':
             cls = ZipFile
         else:
@@ -390,20 +348,19 @@ class CompressedFileSpider(BaseSpider):
                 basename += '.json'
 
             data = archive_file.open(filename)
-
-            kwargs = {
-                'file_name': basename,
-                'url': response.request.url,
-                'data_type': self.data_type,
-                'encoding': self.encoding,
-            }
-            if self.compressed_file_format == 'json_lines':
-                yield from self.parse_json_lines(data, **kwargs)
-            elif self.compressed_file_format == 'release_package':
+            package = None
+            # for compressed_file_format == 'release_package' we need to read the file twice: once to extract the
+            # package metadata and then to extract the releases themselves
+            if self.compressed_file_format == 'release_package':
                 package = archive_file.open(filename)
-                yield from self.parse_json_array(package, data, **kwargs)
-            else:
-                yield self.build_file(data=data.read(), **kwargs)
+
+            yield File({
+                'file_name': basename,
+                'data': {'data': data, 'package': package},
+                'data_type': self.data_type,
+                'url': response.request.url,
+                'encoding': self.encoding
+            })
 
 
 class LinksSpider(SimpleSpider):

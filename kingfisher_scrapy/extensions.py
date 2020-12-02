@@ -69,14 +69,17 @@ class KingfisherFilesStore:
 
         Returns a dict with the metadata.
         """
-        if not isinstance(item, File):
+        if not isinstance(item, (File, FileItem)):
             return
 
         # The crawl's relative directory, in the format `<spider_name>[_sample]/<YYMMDD_HHMMSS>`.
         name = spider.name
         if spider.sample:
             name += '_sample'
-        path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), item['file_name'])
+        file_name = item['file_name']
+        if isinstance(item, FileItem):
+            file_name = f"{item['number']}-{item['file_name']}"
+        path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), file_name)
 
         self._write_file(path, item['data'])
 

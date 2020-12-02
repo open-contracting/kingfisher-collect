@@ -60,12 +60,15 @@ class Checker:
         self.module_name = module.__name__
         self.class_name = cls.__name__
         self.docstring = cls.__doc__
+        self.instance = cls.data_type
 
     def warn(self, message):
-        logger.warning('%s.%s: %s', self.module_name, self.class_name, message)
+        print('')
+        # logger.warning('%s.%s: %s', self.module_name, self.class_name, message)
 
     def error(self, message):
-        logger.error('%s.%s: %s', self.module_name, self.class_name, message)
+        print('')
+        # logger.error('%s.%s: %s', self.module_name, self.class_name, message)
 
     def check_list(self, items, known_items, name):
         for i, item in enumerate(known_items):
@@ -81,6 +84,9 @@ class Checker:
             self.error(f"out-of-order {name}: {', '.join(disordered)}")
 
     def check(self):
+
+        if 'package' not in self.instance:
+            print(self.class_name, self.instance)
         if self.class_name.endswith('Base') or self.class_name.startswith('Digiwhist') or self.class_name in ('Fail',):
             if self.docstring:
                 self.error('unexpected docstring')

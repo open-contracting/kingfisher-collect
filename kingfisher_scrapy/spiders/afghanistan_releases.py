@@ -15,6 +15,7 @@ class AfghanistanReleases(SimpleSpider):
     """
     name = 'afghanistan_releases'
     data_type = 'release'
+    root_path = ''
 
     download_delay = 1.5
 

@@ -39,7 +39,8 @@ class OpenOpps(BaseSpider):
     request_time_limit = 60  # in minutes
     reauthenticating = False  # flag for request a new token
     start_time = None
-    data_type = 'release_package_list'
+    data_type = 'release_package'
+    root_path = 'item'
 
     base_page_url = 'https://api.openopps.com/api/ocds/?format=json&ordering=releasedate&page_size=1000&' \
                     'releasedate__gte={}&releasedate__lte={}'
