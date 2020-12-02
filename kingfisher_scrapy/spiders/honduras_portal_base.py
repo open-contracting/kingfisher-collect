@@ -9,14 +9,14 @@ class HondurasPortalBase(IndexSpider):
     next_pointer = '/next'
     formatter = staticmethod(parameters('page'))
     total_pages_pointer = '/pages'
-    publishers = ['oncae', 'sefin']
+    available_publishers = ['oncae', 'sefin']
 
     download_delay = 0.9
 
     @classmethod
     def from_crawler(cls, crawler, publisher=None, *args, **kwargs):
         spider = super().from_crawler(crawler, publisher=publisher, *args, **kwargs)
-        if publisher and spider.publisher not in spider.publishers:
+        if publisher and spider.publisher not in spider.available_publishers:
             raise SpiderArgumentError(f'spider argument `publisher`: {spider.publisher!r} not recognized')
 
         return spider

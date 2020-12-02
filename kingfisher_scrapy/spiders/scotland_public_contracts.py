@@ -7,9 +7,9 @@ class ScotlandPublicContracts(ScotlandBase):
       Public Contracts Scotland
     Spider arguments
       from_date
-        Download only data from this month onward (YYYY-MM format). Defaults to '2019-01'.
+        Download only data from this month onward (YYYY-MM format). Defaults to a year ago.
       until_date
-        Download only data until this month (YYYY-MM format). Defaults to current month.
+        Download only data until this month (YYYY-MM format). Defaults to the current month.
     API documentation
       https://api.publiccontractsscotland.gov.uk/v1
     """

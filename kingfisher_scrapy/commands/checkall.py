@@ -6,6 +6,8 @@ from scrapy.commands import ScrapyCommand
 from scrapy.utils.misc import walk_modules
 from scrapy.utils.spider import iter_spider_classes
 
+from kingfisher_scrapy.base_spider import PeriodicSpider
+
 logger = logging.getLogger(__name__)
 
 
@@ -50,67 +52,133 @@ class Checker:
         'sample',
     ]
 
-    # Add more expected arguments as needed.
-    expected_spider_arguments = [
-        'from_date',
-        'until_date',
-    ]
+    conditional_spider_arguments = {
+        'available_publishers': 'publisher',
+        'available_systems': 'system',
+    }
 
     def __init__(self, module, cls):
-        self.module_name = module.__name__
-        self.class_name = cls.__name__
-        self.docstring = cls.__doc__
-        self.instance = cls.data_type
+        self.cls = cls
+        self.module = module
 
-    def warn(self, message):
-        print('')
-        # logger.warning('%s.%s: %s', self.module_name, self.class_name, message)
+    def log(self, level, message):
+        getattr(logger, level)('%s.%s: %s', self.module.__name__, self.cls.__name__, message)
 
-    def error(self, message):
-        print('')
-        # logger.error('%s.%s: %s', self.module_name, self.class_name, message)
+    def check(self):
+        class_name = self.cls.__name__
+        docstring = self.cls.__doc__
+
+        if class_name.endswith('Base') or class_name.startswith('Digiwhist') or class_name in ('Fail',):
+            if docstring:
+                self.log('error', 'unexpected docstring')
+            return
+
+        if not docstring:
+            self.log('error', 'missing docstring')
+            return
+
+        # docutils doesn't provide a Document Object Model (DOM) for navigating nodes in reStructured Text, so we use
+        # regular expressions instead.
+        docstring = dedent(docstring)
+
+        # Spider metadata.
+        terms = re.findall(r'^(\S.+)\n  ', docstring, re.MULTILINE)
+
+        self.check_list(terms, self.known_terms, 'terms')
+
+        if 'Domain' not in terms:
+            self.log('error', 'missing term: "Domain"')
+
+        # Spider arguments.
+        section = re.search(r'^Spider arguments\n(.+?)(?:^\S|\Z)', docstring, re.MULTILINE | re.DOTALL)
+        if section:
+            matches = re.findall(r'^(\S.+)((?:\n  .+)+)', dedent(section[1]), re.MULTILINE)
+            spider_arguments = {k: v.strip() for k, v in matches}
+        else:
+            spider_arguments = {}
+
+        self.check_list(spider_arguments, self.known_spider_arguments, 'spider arguments')
+
+        if 'sample' in spider_arguments:
+            self.log('error', 'unexpected "sample" spider argument (document it globally)')
+
+        expected_spider_arguments = set()
+        if PeriodicSpider in self.cls.__bases__:
+            expected_spider_arguments.update({'from_date', 'until_date'})
+        elif self.cls.date_required:
+            expected_spider_arguments.update({'from_date', 'until_date'})
+
+        for spider_argument in expected_spider_arguments:
+            if spider_argument not in spider_arguments:
+                self.log('warning', f'missing "{spider_argument}" spider argument documentation')
+
+        for class_attribute, spider_argument in self.conditional_spider_arguments.items():
+            if hasattr(self.cls, class_attribute) and spider_argument not in spider_arguments:
+                self.log('warning', f'missing "{spider_argument}" spider argument ({class_attribute} is set)')
+            if not hasattr(self.cls, class_attribute) and spider_argument in spider_arguments:
+                self.log('warning', f'unexpected "{spider_argument}" spider argument ({class_attribute} is not set)')
+
+        self.check_date_spider_argument('from_date', spider_arguments, lambda cls: repr(cls.default_from_date),
+                                        'Download only data from this {period} onward ({format} format).')
+
+        def default(cls):
+            if cls.date_format == 'datetime':
+                return 'now'
+            elif cls.date_format == 'date':
+                return 'today'
+            elif cls.date_format == 'year-month':
+                return 'the current month'
+            elif cls.date_format == 'year':
+                return 'the current year'
+
+        self.check_date_spider_argument('until_date', spider_arguments, default,
+                                        'Download only data until this {period} ({format} format).')
 
     def check_list(self, items, known_items, name):
+        items = list(items)
+
         for i, item in enumerate(known_items):
             if items and items[0] == known_items[i]:
                 items.pop(0)
 
         unexpected = set(items) - set(known_items)
         if unexpected:
-            self.error(f"unexpected {name}: {', '.join(unexpected)}")
+            self.log('error', f"unexpected {name}: {', '.join(unexpected)}")
 
         disordered = set(items) & set(known_items)
         if disordered:
-            self.error(f"out-of-order {name}: {', '.join(disordered)}")
+            self.log('error', f"out-of-order {name}: {', '.join(disordered)}")
 
-    def check(self):
+    def check_date_spider_argument(self, spider_argument, spider_arguments, default, format_string):
+        if spider_argument in spider_arguments:
+            # These classes are known to have more specific semantics.
+            if self.cls.__name__ in ('PortugalRecords', 'PortugalReleases', 'ScotlandPublicContracts'):
+                level = 'info'
+            else:
+                level = 'warning'
 
-        if 'package' not in self.instance:
-            print(self.class_name, self.instance)
-        if self.class_name.endswith('Base') or self.class_name.startswith('Digiwhist') or self.class_name in ('Fail',):
-            if self.docstring:
-                self.error('unexpected docstring')
-            return
+            if self.cls.date_required:
+                format_string += " Defaults to {default}."
+            elif spider_argument == 'from_date':
+                format_string += "\n  If ``until_date`` is provided, defaults to {default}."
+            elif spider_argument == 'until_date':
+                format_string += "\n  If ``from_date`` is provided, defaults to {default}."
 
-        if not self.docstring:
-            self.error('missing docstring')
-            return
+            if self.cls.date_format == 'datetime':
+                period = 'time'
+                format_ = 'YYYY-MM-DDThh:mm:ss'
+            elif self.cls.date_format == 'date':
+                period = 'date'
+                format_ = 'YYYY-MM-DD'
+            elif self.cls.date_format == 'year-month':
+                period = 'month'
+                format_ = 'YYYY-MM'
+            elif self.cls.date_format == 'year':
+                period = 'year'
+                format_ = 'YYYY'
+            else:
+                raise NotImplementedError(f'checkall: date_format "{self.cls.date_format}" not implemented')
 
-        # docutils doesn't provide a Document Object Model (DOM) for navigating nodes in reStructured Text, so we use
-        # regular expressions instead.
-        docstring = dedent(self.docstring)
-
-        terms = re.findall(r'^(\S.+)\n  ', docstring, re.MULTILINE)
-        if 'Domain' not in terms:
-            self.error('missing term: "Domain"')
-        self.check_list(terms, self.known_terms, 'terms')
-
-        section = re.search(r'^Spider arguments\n(.+?)(?:^\S|\Z)', docstring, re.MULTILINE | re.DOTALL)
-        if section:
-            spider_arguments = re.findall(r'^(\S.+)\n  ', dedent(section[1]), re.MULTILINE)
-            if 'sample' in spider_arguments:
-                self.error('unexpected "sample" spider argument (document it globally)')
-            for spider_argument in self.expected_spider_arguments:
-                if spider_argument not in spider_arguments:
-                    self.warn(f'missing "{spider_argument}" spider argument')
-            self.check_list(spider_arguments, self.known_spider_arguments, 'spider arguments')
+            expected = format_string.format(period=period, format=format_, default=default(self.cls))
+            if spider_arguments[spider_argument] != expected:
+                self.log(level, f"\n{spider_arguments[spider_argument]!r} !=\n{expected!r}")

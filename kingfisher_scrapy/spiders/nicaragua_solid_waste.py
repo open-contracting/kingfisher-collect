@@ -8,11 +8,9 @@ class NicaraguaSolidWaste(SimpleSpider):
       Solid Waste Mitigation Platform (SWMP)
     Spider arguments
       from_date
-        Download only data from this date onward (YYYY-MM-DD format).
-        If ``until_date`` is provided, defaults to '2000-01-01'.
+        Download only data from this date onward (YYYY-MM-DD format). Defaults to '2000-01-01'.
       until_date
-        Download only data until this date (YYYY-MM-DD format).
-        If ``from_date`` is provided, defaults to today.
+        Download only data until this date (YYYY-MM-DD format). Defaults to today.
     """
     name = 'nicaragua_solid_waste'
     data_type = 'release_package'
