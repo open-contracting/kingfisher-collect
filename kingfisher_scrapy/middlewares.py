@@ -91,42 +91,47 @@ class KingfisherTransformMiddleware:
     def process_spider_output(self, response, result, spider):
         for item in result:
 
-            if isinstance(item, File) and (spider.root_path is not None or isinstance(spider, CompressedFileSpider)):
-                kwargs = {
-                    'file_name': item['file_name'],
-                    'url': response.request.url,
-                    'data_type': spider.data_type,
-                    'encoding': item['encoding'],
-                }
+            if not(isinstance(item, File) and (spider.root_path is not None or isinstance(spider, CompressedFileSpider))):
+                yield item
+                continue
+            kwargs = {
+                'file_name': item['file_name'],
+                'url': response.request.url,
+                'data_type': item['data_type'],
+                'encoding': item['encoding'],
+            }
+
+            if isinstance(spider, CompressedFileSpider):
+                data = item['data']['data']
+                package = item['data']['package']
+                compressed_file = True
+            else:
                 data = item['data']
                 package = item['data']
                 compressed_file = False
-                if isinstance(spider, CompressedFileSpider):
-                    data = item['data']['data']
-                    package = item['data']['package']
-                    compressed_file = True
-                # if it is a compressed file and the file dont need any transformations
-                if compressed_file and spider.compressed_file_format is None:
-                    yield spider.build_file(data=data.read(), **kwargs)
-                # if it is a compressed file or regular file but as json_lines
-                elif spider.file_format or (compressed_file and spider.compressed_file_format == 'json_lines'):
-                    yield from self._parse_json_lines(spider, data, **kwargs)
-                # otherwise is must be a release or record package or a list of them
-                else:
-                    yield from self._parse_json_array(spider, package, data, **kwargs)
-            else:
+            # if it is a compressed file and the file does'nt need any transformation
+            if compressed_file and spider.compressed_file_format is None:
+                item['data'] = data.read()
                 yield item
+            # if it is a compressed file or regular file but as json_lines
+            elif spider.file_format or (compressed_file and spider.compressed_file_format == 'json_lines'):
+                yield from self._parse_json_lines(spider, data, **kwargs)
+            # otherwise is must be a release or record package or a list of them
+            else:
+                yield from self._parse_json_array(spider, package, data, **kwargs)
 
     def _parse_json_array(self, spider, package_data, list_data, *, file_name='data.json', url=None, data_type=None,
                           encoding='utf-8'):
 
-        list_type = 'releases'
         if 'record' in data_type:
             list_type = 'records'
+        else:
+            list_type = 'releases'
 
         package = self._get_package_metadata(package_data, list_type, data_type, spider.root_path)
         # we change the data_type into a valid one:release_package or record_package
-        data_type = data_type if 'package' in data_type else f'{data_type}_package'
+        if data_type in ('release', 'record'):
+            data_type = f'{data_type}_package'
 
         # we yield a release o record package with a maximum of self.MAX_RELEASES_PER_PACKAGE releases or records
         for number, items in enumerate(util.grouper(ijson.items(list_data, spider.root_path),

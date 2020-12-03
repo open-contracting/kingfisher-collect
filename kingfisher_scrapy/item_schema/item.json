@@ -33,10 +33,7 @@
             "record",
             "release",
             "record_package",
-            "release_package",
-            "zip",
-            "rar",
-            "tar.gz"
+            "release_package"
           ]
         },
         "encoding": {

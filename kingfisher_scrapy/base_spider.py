@@ -290,6 +290,7 @@ class SimpleSpider(BaseSpider):
 class CompressedFileSpider(BaseSpider):
     """
     This class makes it easy to collect data from ZIP or RAR files. It assumes all files have the same data type.
+    Each compressed file is saved to disk. The archive file is *not* saved to disk.
 
     #. Inherit from ``CompressedFileSpider``
     #. Set a ``data_type`` class attribute to the data type of the compressed files
@@ -299,14 +300,11 @@ class CompressedFileSpider(BaseSpider):
 
        ``json_lines``
          Yields each line of each compressed file.
-         Each compressed file is saved to disk. The archive file is *not* saved to disk.
        ``release_package``
          Re-packages the releases in the compressed files in groups of
          :const:`~kingfisher_scrapy.base_spider.BaseSpider.MAX_RELEASES_PER_PACKAGE`, and yields the packages.
-         Each compressed file is saved to disk. The archive file is *not* saved to disk.
        ``None``
          Yields each compressed file.
-         Each compressed file is saved to disk. The archive file is *not* saved to disk.
 
     #. Write a ``start_requests`` method to request the archive files
 
