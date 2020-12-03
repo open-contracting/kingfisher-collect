@@ -83,8 +83,7 @@ class OpenOppsAuthMiddleware:
 
 class KingfisherTransformMiddleware:
     """
-    Middleware that checks for File items that comes from CompressedFileSpider or returns non-well-packaged OCDS
-    File item and transform them into a release or record package
+    Middleware that corrects the packaging of OCDS data (whether the OCDS data is embedded, line-delimited JSON, etc.).
     """
     MAX_RELEASES_PER_PACKAGE = 100
 
