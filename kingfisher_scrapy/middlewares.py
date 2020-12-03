@@ -90,7 +90,8 @@ class KingfisherTransformMiddleware:
     def process_spider_output(self, response, result, spider):
         for item in result:
 
-            if not(isinstance(item, File) and (spider.root_path is not None or isinstance(spider, CompressedFileSpider))):
+            if not(isinstance(item, File) and (spider.data_type not in ('release_package', 'record_package') or
+                                               isinstance(spider, CompressedFileSpider)) or spider.file_format):
                 yield item
                 continue
             kwargs = {

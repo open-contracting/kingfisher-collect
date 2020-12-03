@@ -16,7 +16,6 @@ class AfghanistanRecords(SimpleSpider):
     name = 'afghanistan_records'
     data_type = 'record'
     skip_pluck = 'Already covered (see code for details)'  # afghanistan_releases
-    root_path = ''
 
     download_delay = 1
 

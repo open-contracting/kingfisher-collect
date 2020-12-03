@@ -39,7 +39,7 @@ class BaseSpider(scrapy.Spider):
     date_format = 'date'
     date_required = False
     unflatten = False
-    root_path = None
+    root_path = ''
     # override this if the file is in json_line format
     file_format = None
 

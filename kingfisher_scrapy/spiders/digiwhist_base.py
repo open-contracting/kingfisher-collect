@@ -15,7 +15,6 @@ class DigiwhistBase(BaseSpider):
       https://opentender.eu/download
     """
     data_type = 'release_package'
-    root_path = ''
     file_format = 'json_lines'
 
     def start_requests(self):

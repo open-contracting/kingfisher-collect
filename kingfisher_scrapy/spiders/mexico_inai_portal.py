@@ -11,7 +11,6 @@ class MexicoINAIPortal(SimpleSpider):
     """
     name = 'mexico_inai_portal'
     data_type = 'record'
-    root_path = ''
 
     def build_form_request(self, page):
         return scrapy.FormRequest(
