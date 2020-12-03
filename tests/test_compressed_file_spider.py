@@ -24,14 +24,13 @@ def test_parse():
     item = next(generator)
 
     assert type(item) is File
-    assert item == {
-        'file_name': 'test.json',
-        'url': 'http://example.com',
-        'data': b'{}',
-        'data_type': 'release_package',
-        'encoding': 'utf-8',
-        'post_to_api': True,
-    }
+    assert item['file_name'] == 'test.json'
+    assert item['url'] == 'http://example.com'
+    assert item['data_type'] == spider.data_type
+    assert item['encoding'] == 'utf-8'
+    assert item['data']['package'] is None
+    assert item['data']['data'] is not None
+
 
     with pytest.raises(StopIteration):
         next(generator)
@@ -54,28 +53,13 @@ def test_parse_json_lines(sample, len_items):
     response = response_fixture(body=io.getvalue())
     generator = spider.parse(response)
     item = next(generator)
-    items = list(generator)
 
     assert type(item) is File
-    assert len(item) == 6
-    assert item['file_name'] == 'test'
+    assert len(item) == 5
+    assert item['file_name'] == 'test.json'
     assert item['url'] == 'http://example.com'
-    assert item['data_type'] == 'zip'
+    assert item['data_type'] == spider.data_type
     assert item['encoding'] == 'utf-8'
-    assert item['post_to_api'] is False
-
-    assert len(items) == len_items
-
-    for i, item in enumerate(items, 1):
-        assert type(item) is FileItem
-        assert item == {
-            'file_name': 'test.json',
-            'url': 'http://example.com',
-            'number': i,
-            'data': '{"key": %s}\n' % i,
-            'data_type': 'release_package',
-            'encoding': 'utf-8',
-        }
 
 
 @pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), (5, 1, 5)])
@@ -98,23 +82,13 @@ def test_parse_release_package(sample, len_items, len_releases):
     items = list(generator)
 
     assert type(item) is File
-    assert len(item) == 6
-    assert item['file_name'] == 'test'
+    assert len(item) == 5
+    assert item['file_name'] == 'test.json'
     assert item['url'] == 'http://example.com'
-    assert item['data_type'] == 'zip'
+    assert item['data_type'] == spider.data_type
     assert item['encoding'] == 'utf-8'
-    assert item['post_to_api'] is False
-
-    assert len(items) == len_items
-    for i, item in enumerate(items, 1):
-        assert type(item) is FileItem
-        assert len(item) == 6
-        assert item['file_name'] == 'test.json'
-        assert item['url'] == 'http://example.com'
-        assert item['number'] == i
-        assert len(json.loads(item['data'])['releases']) == len_releases
-        assert item['data_type'] == 'release_package'
-        assert item['encoding'] == 'utf-8'
+    assert item['data']['package'] is not None
+    assert item['data']['data'] is not None
 
 
 def test_parse_zip_empty_dir():
@@ -145,14 +119,12 @@ def test_parse_rar_file():
     item = next(generator)
 
     assert type(item) is File
-    assert item == {
-        'file_name': 'test.json',
-        'url': 'http://example.com',
-        'data': b'',
-        'data_type': 'release_package',
-        'encoding': 'utf-8',
-        'post_to_api': True
-    }
+    assert item['file_name'] == 'test.json'
+    assert item['url'] == 'http://example.com'
+    assert item['data_type'] == spider.data_type
+    assert item['encoding'] == 'utf-8'
+    assert item['data']['package'] is None
+    assert item['data']['data'] is not None
 
     with pytest.raises(StopIteration):
         next(generator)
