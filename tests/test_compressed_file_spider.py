@@ -7,7 +7,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 import pytest
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
-from kingfisher_scrapy.items import File, FileItem
+from kingfisher_scrapy.items import File
 from tests import response_fixture, spider_with_crawler
 
 
@@ -30,7 +30,6 @@ def test_parse():
     assert item['encoding'] == 'utf-8'
     assert item['data']['package'] is None
     assert item['data']['data'] is not None
-
 
     with pytest.raises(StopIteration):
         next(generator)
@@ -79,7 +78,6 @@ def test_parse_release_package(sample, len_items, len_releases):
     response = response_fixture(body=io.getvalue())
     generator = spider.parse(response)
     item = next(generator)
-    items = list(generator)
 
     assert type(item) is File
     assert len(item) == 5
