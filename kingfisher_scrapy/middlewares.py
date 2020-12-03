@@ -90,8 +90,9 @@ class KingfisherTransformMiddleware:
     def process_spider_output(self, response, result, spider):
         for item in result:
 
-            if not(isinstance(item, File) and (spider.data_type not in ('release_package', 'record_package') or
-                                               isinstance(spider, CompressedFileSpider)) or spider.file_format):
+            if not(isinstance(item, File) and (item['data_type'] not in ('release_package', 'record_package') or
+                                               isinstance(spider, CompressedFileSpider) or spider.file_format or
+                                               spider.root_path)):
                 yield item
                 continue
             kwargs = {
@@ -132,10 +133,17 @@ class KingfisherTransformMiddleware:
         # we change the data_type into a valid one:release_package or record_package
         if data_type in ('release', 'record'):
             data_type = f'{data_type}_package'
+            key = spider.root_path
+        # if the array is a list of packages then we point to the releases or records items
+        else:
+            key = f'{spider.root_path}.{list_type}.item'
 
         # we yield a release o record package with a maximum of self.MAX_RELEASES_PER_PACKAGE releases or records
-        for number, items in enumerate(util.grouper(ijson.items(list_data, spider.root_path),
+        for number, items in enumerate(util.grouper(ijson.items(list_data, key),
                                                     self.MAX_RELEASES_PER_PACKAGE), 1):
+            # to avoid dropping items
+            if spider.sample and number > spider.sample:
+                return
             package[list_type] = filter(None, items)
             data = json.dumps(package, default=util.default)
             yield spider.build_file_item(number=number, file_name=file_name, url=url, data=data,
@@ -143,11 +151,13 @@ class KingfisherTransformMiddleware:
 
     def _parse_json_lines(self, spider, data, *, file_name='data.json', url=None, data_type=None, encoding='utf-8'):
         for number, line in enumerate(data, 1):
+            # to avoid dropping items
+            if spider.sample and number > spider.sample:
+                return
             if isinstance(line, bytes):
                 line = line.decode(encoding=encoding)
             yield from self._parse_json_array(spider, line, line, file_name=file_name, url=url, data_type=data_type,
                                               encoding=encoding)
-            return
 
     def _get_package_metadata(self, data, skip_key, data_type, root_path):
         """
