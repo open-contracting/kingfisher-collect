@@ -138,9 +138,14 @@ class KingfisherTransformMiddleware:
         else:
             key = '.'.join(list(filter(None, [spider.root_path, list_type, 'item'])))
 
+        if spider.sample:
+            size = spider.sample
+        else:
+            size = self.MAX_RELEASES_PER_PACKAGE
+
         # we yield a release o record package with a maximum of self.MAX_RELEASES_PER_PACKAGE releases or records
         for number, items in enumerate(util.grouper(ijson.items(list_data, key),
-                                                    self.MAX_RELEASES_PER_PACKAGE), 1):
+                                                    size), 1):
             # to avoid reading the rest of a large file, as the rest of the items will be dropped
             if spider.sample and number > spider.sample:
                 return
