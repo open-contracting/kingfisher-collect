@@ -97,7 +97,7 @@ class KingfisherTransformMiddleware:
                 continue
             kwargs = {
                 'file_name': item['file_name'],
-                'url': response.request.url,
+                'url': item['url'],
                 'data_type': item['data_type'],
                 'encoding': item['encoding'],
             }
@@ -136,12 +136,12 @@ class KingfisherTransformMiddleware:
             key = spider.root_path
         # if the array is a list of packages then we point to the releases or records items
         else:
-            key = f'{spider.root_path}.{list_type}.item'
+            key = '.'.join(list(filter(None, [spider.root_path, list_type, 'item'])))
 
         # we yield a release o record package with a maximum of self.MAX_RELEASES_PER_PACKAGE releases or records
         for number, items in enumerate(util.grouper(ijson.items(list_data, key),
                                                     self.MAX_RELEASES_PER_PACKAGE), 1):
-            # to avoid dropping items
+            # to avoid reading the rest of a large file, as the rest of the items will be dropped
             if spider.sample and number > spider.sample:
                 return
             package[list_type] = filter(None, items)
@@ -151,7 +151,7 @@ class KingfisherTransformMiddleware:
 
     def _parse_json_lines(self, spider, data, *, file_name='data.json', url=None, data_type=None, encoding='utf-8'):
         for number, line in enumerate(data, 1):
-            # to avoid dropping items
+            # to avoid reading the rest of a large file, as the rest of the items will be dropped
             if spider.sample and number > spider.sample:
                 return
             if isinstance(line, bytes):
