@@ -14,7 +14,7 @@ class BoliviaAgetic(SimpleSpider):
       https://datos.gob.bo/id/dataset/contrataciones-agetic-2019-estandar-ocp
     """
     name = 'bolivia_agetic'
-    data_type = 'release_list'
+    data_type = 'release_package'
     unflatten = True
 
     def start_requests(self):
