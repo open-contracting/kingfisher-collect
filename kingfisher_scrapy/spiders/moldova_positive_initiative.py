@@ -7,6 +7,8 @@ class MoldovaPositiveInitiative(SimpleSpider):
     """
        Domain
          Positive Initiative - Moldova
+    Bulk download documentation
+      https://www.tender.health/ocdsrelease
     """
     name = 'moldova_positive_initiative'
     data_type = 'release_package'
