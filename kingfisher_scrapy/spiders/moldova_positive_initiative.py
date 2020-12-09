@@ -5,8 +5,8 @@ from kingfisher_scrapy.util import components, get_parameter_value, handle_http_
 
 class MoldovaPositiveInitiative(SimpleSpider):
     """
-       Domain
-         Positive Initiative - Moldova
+    Domain
+      Positive Initiative - Moldova
     Bulk download documentation
       https://www.tender.health/ocdsrelease
     """
