@@ -110,7 +110,7 @@ class KingfisherTransformMiddleware:
                 data = item['data']
                 package = item['data']
                 compressed_file = False
-            # If the file is compressed, but its contents are in an OCDS format.
+            # If the file is compressed, but its contents are in an OCDS format, pass it through.
             if compressed_file and spider.compressed_file_format is None:
                 item['data'] = data.read()
                 yield item
@@ -145,8 +145,8 @@ class KingfisherTransformMiddleware:
 
         # Yield a release package or record package, with a maximum number of releases or records per package.
         #
-        # Once Kingfisher Process can handle large files, we can simplify this logic. Introduced to address:
-        # https://github.com/open-contracting/kingfisher-collect/issues/154
+        # Once Kingfisher Process can handle large files, we can remove this logic, which is only required for handling
+        # compressed_file_format = 'release_package'. https://github.com/open-contracting/kingfisher-collect/issues/154
         for number, items in enumerate(util.grouper(ijson.items(list_data, key),
                                                     size), 1):
             # Avoid reading the rest of a large file, since the rest of the items will be dropped.
