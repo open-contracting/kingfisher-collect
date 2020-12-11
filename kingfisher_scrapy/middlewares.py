@@ -110,11 +110,11 @@ class KingfisherTransformMiddleware:
                 data = item['data']
                 package = item['data']
                 compressed_file = False
-            # if it is a compressed file and the file does'nt need any transformation
+            # If the file is compressed, but its contents are in an OCDS format.
             if compressed_file and spider.compressed_file_format is None:
                 item['data'] = data.read()
                 yield item
-            # if it is a compressed file or regular file but as json_lines
+            # If the file format is JSON Lines (whether compressed or not).
             elif spider.file_format or (compressed_file and spider.compressed_file_format == 'json_lines'):
                 yield from self._parse_json_lines(spider, data, **kwargs)
             # otherwise is must be a release or record package or a list of them
@@ -130,11 +130,11 @@ class KingfisherTransformMiddleware:
             list_type = 'releases'
 
         package = self._get_package_metadata(package_data, list_type, data_type, spider.root_path)
-        # we change the data_type into a valid one:release_package or record_package
+        # Change the data_type to release_package or record_package.
         if data_type in ('release', 'record'):
             data_type = f'{data_type}_package'
             key = spider.root_path
-        # if the array is a list of packages then we point to the releases or records items
+        # If the array is a list of packages, then we point to the releases or records items.
         else:
             key = '.'.join(list(filter(None, [spider.root_path, list_type, 'item'])))
 
@@ -143,10 +143,13 @@ class KingfisherTransformMiddleware:
         else:
             size = self.MAX_RELEASES_PER_PACKAGE
 
-        # we yield a release o record package with a maximum of self.MAX_RELEASES_PER_PACKAGE releases or records
+        # Yield a release package or record package, with a maximum number of releases or records per package.
+        #
+        # Once Kingfisher Process can handle large files, we can simplify this logic. Introduced to address:
+        # https://github.com/open-contracting/kingfisher-collect/issues/154
         for number, items in enumerate(util.grouper(ijson.items(list_data, key),
                                                     size), 1):
-            # to avoid reading the rest of a large file, as the rest of the items will be dropped
+            # Avoid reading the rest of a large file, since the rest of the items will be dropped.
             if spider.sample and number > spider.sample:
                 return
             package[list_type] = filter(None, items)
@@ -156,7 +159,7 @@ class KingfisherTransformMiddleware:
 
     def _parse_json_lines(self, spider, data, *, file_name='data.json', url=None, data_type=None, encoding='utf-8'):
         for number, line in enumerate(data, 1):
-            # to avoid reading the rest of a large file, as the rest of the items will be dropped
+            # Avoid reading the rest of a large file, since the rest of the items will be dropped.
             if spider.sample and number > spider.sample:
                 return
             if isinstance(line, bytes):

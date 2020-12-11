@@ -29,8 +29,8 @@ class BaseSpider(scrapy.Spider):
     -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
     -  If a spider collect data from CSV or XLSX files, add a ``unflatten = True`` class attribute to process each item
        in the Unflatten pipeline class using the ``unflatten`` command from Flatten Tool.
-    -  If the data source is not packaged within a record or release package set ``root_path`` to point to where the
-       data ``data_type`` is.
+    -  If the data is not formatted as OCDS (record, release, record package or release package), set the ``root_path``
+       class attribute to the path to the OCDS data.
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
     ``get_default_until_date()`` return value (which is the current time, by default).
@@ -42,7 +42,7 @@ class BaseSpider(scrapy.Spider):
     date_required = False
     unflatten = False
     root_path = ''
-    # override this if the file is in json_line format
+    # Set this to 'json_lines' if the file format is JSON Lines.
     file_format = None
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
@@ -348,8 +348,8 @@ class CompressedFileSpider(BaseSpider):
                 basename += '.json'
 
             data = archive_file.open(filename)
-            # for compressed_file_format == 'release_package' we need to read the file twice: once to extract the
-            # package metadata and then to extract the releases themselves
+            # For compressed_file_format == 'release_package' we need to read the file twice: once to extract the
+            # package metadata and then to extract the releases themselves.
             if self.compressed_file_format == 'release_package':
                 package = archive_file.open(filename)
             else:
