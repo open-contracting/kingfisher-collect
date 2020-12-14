@@ -313,189 +313,189 @@ Digiwhist
 
    scrapy crawl digiwhist_czech_republic
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_denmark.DigiwhistDenmarkRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_denmark.DigiwhistDenmark
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_denmark
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_estonia.DigiwhistEstoniaRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_estonia.DigiwhistEstonia
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_estonia
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_finland.DigiwhistFinlandRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_finland.DigiwhistFinland
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_finland
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_france.DigiwhistFranceRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_france.DigiwhistFrance
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_france
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_georgia.DigiwhistGeorgiaRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_georgia.DigiwhistGeorgia
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_georgia
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_germany.DigiwhistGermanyRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_germany.DigiwhistGermany
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_germany
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_greece.DigiwhistGreeceRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_greece.DigiwhistGreece
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_greece
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_hungary.DigiwhistHungaryRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_hungary.DigiwhistHungary
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_hungary
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_iceland.DigiwhistIcelandRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_iceland.DigiwhistIceland
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_iceland
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_ireland.DigiwhistIrelandRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_ireland.DigiwhistIreland
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_ireland
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_italy.DigiwhistItalyRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_italy.DigiwhistItaly
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_italy
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_latvia.DigiwhistLatviaRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_latvia.DigiwhistLatvia
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_latvia
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_lithuania.DigiwhistLithuaniaRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_lithuania.DigiwhistLithuania
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_lithuania
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_luxembourg.DigiwhistLuxembourgRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_luxembourg.DigiwhistLuxembourg
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_luxembourg
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_malta.DigiwhistMaltaRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_malta.DigiwhistMalta
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_malta
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_netherlands.DigiwhistNetherlandsRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_netherlands.DigiwhistNetherlands
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_netherlands
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_norway.DigiwhistNorwayRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_norway.DigiwhistNorway
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_norway
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_poland.DigiwhistPolandRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_poland.DigiwhistPoland
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_poland
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_portugal.DigiwhistPortugalRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_portugal.DigiwhistPortugal
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_portugal
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_romania.DigiwhistRomaniaRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_romania.DigiwhistRomania
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_romania
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_serbia.DigiwhistSerbiaRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_serbia.DigiwhistSerbia
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_serbia
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_slovakia.DigiwhistSlovakiaRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_slovakia.DigiwhistSlovakia
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_slovakia
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_slovenia.DigiwhistSloveniaRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_slovenia.DigiwhistSlovenia
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_slovenia
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_spain.DigiwhistSpainRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_spain.DigiwhistSpain
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_spain
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_sweden.DigiwhistSwedenRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_sweden.DigiwhistSweden
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_sweden
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_switzerland.DigiwhistSwitzerlandRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_switzerland.DigiwhistSwitzerland
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl digiwhist_switzerland
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_united_kingdom.DigiwhistUnitedKingdomRepublic
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_united_kingdom.DigiwhistUnitedKingdom
    :no-members:
 
 .. code-block:: bash
