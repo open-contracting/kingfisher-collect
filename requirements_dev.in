@@ -5,4 +5,5 @@ isort
 pip-tools
 pytest
 pytest-cov
+pytest-order
 pytest-twisted
