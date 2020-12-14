@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import pytest
 from scrapy.cmdline import execute
 
