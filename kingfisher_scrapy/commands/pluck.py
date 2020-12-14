@@ -5,7 +5,6 @@ from collections import defaultdict
 from datetime import datetime
 
 from scrapy.commands import ScrapyCommand
-from scrapy.crawler import CrawlerProcess
 from scrapy.exceptions import UsageError
 
 from kingfisher_scrapy.util import _pluck_filename
@@ -35,23 +34,21 @@ class Pluck(ScrapyCommand):
         if os.path.isfile(filename):
             os.unlink(filename)
 
-        runner = CrawlerProcess(settings=self.settings)
-
         year = datetime.today().year
         skipped = defaultdict(list)
         running = []
-        for spider_name in runner.spider_loader.list():
+        for spider_name in self.crawler_process.spider_loader.list():
             if spider_name != 'fail':
-                spidercls = runner.spider_loader.load(spider_name)
+                spidercls = self.crawler_process.spider_loader.load(spider_name)
                 if hasattr(spidercls, 'skip_pluck'):
                     skipped[spidercls.skip_pluck].append(spider_name)
                 else:
                     running.append(spider_name)
-                    runner.crawl(spidercls, year=year, sample=1, package_pointer=opts.package_pointer,
-                                 release_pointer=opts.release_pointer, truncate=opts.truncate)
+                    self.crawler_process.crawl(spidercls, year=year, sample=1, package_pointer=opts.package_pointer,
+                                               release_pointer=opts.release_pointer, truncate=opts.truncate)
 
         with open('pluck_skipped.json', 'w') as f:
             json.dump(skipped, f, indent=2)
 
         logger.info('Running %s spiders: %s', len(running), ', '.join(sorted(running)))
-        runner.start()
+        self.crawler_process.start()
