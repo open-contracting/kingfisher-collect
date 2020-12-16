@@ -29,7 +29,8 @@ class BaseSpider(scrapy.Spider):
        ``default_from_date`` class attribute to a date string.
     -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
     -  If a spider collect data from CSV or XLSX files, add a ``unflatten = True`` class attribute to process each item
-       in the Unflatten pipeline class using the ``unflatten`` command from Flatten Tool.
+       in the Unflatten pipeline class using the ``unflatten`` command from Flatten Tool. If more arguments are
+       required, set a ``unflatten_args`` class attribute (must be a mapping object like a dictionary).
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
     ``get_default_until_date()`` return value (which is the current time, by default).
@@ -41,6 +42,7 @@ class BaseSpider(scrapy.Spider):
     date_format = 'date'
     date_required = False
     unflatten = False
+    unflatten_args = {}
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
