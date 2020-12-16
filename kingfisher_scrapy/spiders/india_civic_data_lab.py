@@ -12,8 +12,12 @@ class IndiaCivicDataLab(SimpleSpider):
       https://github.com/CivicDataLab/himachal-pradesh-health-procurement-OCDS/
     """
     name = 'india_civic_data_lab'
-    data_type = 'release_list'
+    data_type = 'release_package'
     unflatten = True
+    unflatten_args = {
+        'metatab_name': 'Meta',
+        'metatab_vertical_orientation': True
+    }
 
     def start_requests(self):
         url = 'https://github.com/CivicDataLab/himachal-pradesh-health-procurement-OCDS'
