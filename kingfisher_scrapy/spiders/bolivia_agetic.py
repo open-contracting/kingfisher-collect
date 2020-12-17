@@ -30,13 +30,7 @@ class BoliviaAgetic(SimpleSpider):
         data = json.loads(response.text)
         for resource in data['result']['resources']:
             if 'ocds' in resource['description']:
-                # Presently, only one URL matches.
-                yield scrapy.Request(
+                yield self.build_request(
                     resource['url'],
-                    meta={'file_name': components(-1)(resource['url'])},
-                    callback=self.parse_data
+                    formatter=components(-1)
                 )
-
-    @handle_http_error
-    def parse_data(self, response):
-        yield self.build_file_from_response(response, data_type=self.data_type)

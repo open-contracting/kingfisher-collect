@@ -27,12 +27,7 @@ class IndiaCivicDataLab(SimpleSpider):
     def parse_list(self, response):
         for path in response.xpath('//div[@role="rowheader"]/span/a/@href').getall():
             if path.endswith('.xlsx'):
-                yield scrapy.Request(
-                    'https://github.com{}?raw=true'.format(path),
-                    meta={'file_name': components(-1)(path).replace('%', '_')},
-                    callback=self.parse_data
+                yield self.build_request(
+                    f'https://github.com{path}?raw=true',
+                    formatter=components(-1)
                 )
-
-    @handle_http_error
-    def parse_data(self, response):
-        yield self.build_file_from_response(response, data_type=self.data_type)
