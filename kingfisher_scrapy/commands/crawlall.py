@@ -1,5 +1,4 @@
 from scrapy.commands import ScrapyCommand
-from scrapy.crawler import CrawlerProcess
 from scrapy.exceptions import UsageError
 
 from kingfisher_scrapy.base_spider import BaseSpider, CompressedFileSpider
@@ -55,11 +54,9 @@ class CrawlAll(ScrapyCommand):
         # Disable custom and Telnet extensions.
         self.settings.set('EXTENSIONS', extensions)
 
-        runner = CrawlerProcess(settings=self.settings)
-
-        for spider_name in runner.spider_loader.list():
+        for spider_name in self.crawler_process.spider_loader.list():
             if spider_name not in EXCEPTIONS:
-                spidercls = runner.spider_loader.load(spider_name)
-                runner.crawl(spidercls, **kwargs)
+                spidercls = self.crawler_process.spider_loader.load(spider_name)
+                self.crawler_process.crawl(spidercls, **kwargs)
 
-        runner.start()
+        self.crawler_process.start()
