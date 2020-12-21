@@ -151,7 +151,8 @@ class Unflatten:
                 root_id='ocid',
                 schema=schema,
                 input_format=input_format,
-                output_name=output_name
+                output_name=output_name,
+                **spider.unflatten_args
             )
 
             with open(output_name, 'r') as f:

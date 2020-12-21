@@ -601,6 +601,16 @@ Honduras
 
    scrapy crawl honduras_portal_releases
 
+India
+-----
+
+.. autoclass:: kingfisher_scrapy.spiders.india_civic_data_lab.IndiaCivicDataLab
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl india_civic_data_lab
+
 Indonesia
 ---------
 
