@@ -601,6 +601,16 @@ Honduras
 
    scrapy crawl honduras_portal_releases
 
+India
+-----
+
+.. autoclass:: kingfisher_scrapy.spiders.india_civic_data_lab.IndiaCivicDataLab
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl india_civic_data_lab
+
 Indonesia
 ---------
 
@@ -804,6 +814,23 @@ Openopps
 .. code-block:: bash
 
    env KINGFISHER_OPENOPPS_USERNAME=... KINGFISHER_OPENOPPS_PASSWORD=... scrapy crawl openopps
+
+Pakistan
+--------
+
+.. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_bulk.PakistanPPRABulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl pakistan_ppra_bulk
+
+.. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_releases.PakistanPPRAReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl pakistan_ppra_releases
 
 Paraguay
 --------

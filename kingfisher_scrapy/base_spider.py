@@ -27,8 +27,9 @@ class BaseSpider(scrapy.Spider):
     -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
        ``default_from_date`` class attribute to a date string.
     -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
-    -  If a spider collect data from CSV or XLSX files, add a ``unflatten = True`` class attribute to process each item
-       in the Unflatten pipeline class using the ``unflatten`` command from Flatten Tool.
+    -  If a spider collects data as CSV or XLSX files, set the class attribute ``unflatten = True`` to convert each
+       item to json files in the Unflatten pipeline class using the ``unflatten`` command from Flatten Tool.
+       If you need to set more arguments for the unflatten command, set a ``unflatten_args`` dict with them.
     -  If the data source is not packaged within a record or release package set ``root_path`` to point to where the
        data ``data_type`` is.
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
@@ -44,6 +45,7 @@ class BaseSpider(scrapy.Spider):
     root_path = ''
     # override this if the file is in json_line format
     file_format = None
+    unflatten_args = {}
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
@@ -190,7 +192,7 @@ class BaseSpider(scrapy.Spider):
         :rtype: scrapy.Request
         """
         file_name = formatter(url)
-        if not file_name.endswith(('.json', '.zip')):
+        if not file_name.endswith(('.json', '.zip', '.xlsx', '.csv')):
             file_name += '.json'
         meta = {'file_name': file_name}
         if 'meta' in kwargs:
