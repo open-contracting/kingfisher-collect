@@ -8,6 +8,11 @@ class Kyrgyzstan(LinksSpider):
     """
     Domain
       Ministry of Finance
+    Bulk download documentation
+      https://analytics.zakupki.gov.kg/dashboard/weekly and then to 'API & EXPORT'.
+      Direct access to https://analytics.zakupki.gov.kg/api-export doesn't work.
+    Swagger API documentation
+      https://app.swaggerhub.com/apis/DPAteam/export-api-documentation/1.0
     """
     name = 'kyrgyzstan'
     data_type = 'release_package'
