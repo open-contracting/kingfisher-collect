@@ -4,7 +4,6 @@ from json import JSONDecodeError
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
-from kingfisher_scrapy.exceptions import SpiderArgumentError
 from kingfisher_scrapy.util import parameters
 
 
@@ -19,8 +18,6 @@ class Colombia(LinksSpider):
       until_date
         Download only data until this date (YYYY-MM-DD format).
         If ``from_date`` is provided, defaults to today.
-      year
-        The year to crawl. See API documentation for valid values.
       start_page
         The page number from which to start crawling.
     API documentation
@@ -33,18 +30,9 @@ class Colombia(LinksSpider):
     default_from_date = '2011-01-01'
     data_type = 'release_package'
 
-    @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super().from_crawler(crawler, *args, **kwargs)
-        if (spider.from_date or spider.until_date) and hasattr(spider, 'year'):
-            raise SpiderArgumentError('You cannot specify both year and from_date/until_date spider argument(s).')
-        return spider
-
     def start_requests(self):
         base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases'
-        if hasattr(self, 'year'):
-            base_url += f'/page/{int(self.year)}'
-        elif self.from_date or self.until_date:
+        if self.from_date and self.until_date:
             from_date = self.from_date.strftime(self.date_format)
             until_date = self.until_date.strftime(self.date_format)
             base_url += f'/dates/{from_date}/{until_date}'
