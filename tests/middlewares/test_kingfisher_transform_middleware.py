@@ -7,7 +7,7 @@ import pytest
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.items import File, FileError, FileItem
-from kingfisher_scrapy.middlewares import KingfisherTransformMiddleware
+from kingfisher_scrapy.middlewares import KingfisherTransformMiddleware, KingfisherTransformCompressedMiddleware
 from tests import spider_with_crawler, response_fixture
 
 items = [
@@ -76,7 +76,7 @@ def test_parse_release_package(sample, len_items, len_releases):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.compressed_file_format = 'release_package'
-    transform_middleware = KingfisherTransformMiddleware()
+    transform_middleware = KingfisherTransformCompressedMiddleware()
     package = {'releases': []}
     for i in range(200):
         package['releases'].append({'key': 'value'})
@@ -107,7 +107,7 @@ def test_parse_json_lines(sample, len_items):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.compressed_file_format = 'json_lines'
-    transform_middleware = KingfisherTransformMiddleware()
+    transform_middleware = KingfisherTransformCompressedMiddleware()
 
     content = []
     for i in range(1, 21):
@@ -128,7 +128,7 @@ def test_parse_json_lines(sample, len_items):
             'file_name': 'test.json',
             'url': 'http://example.com',
             'number': i,
-            'data': b'{"key": %s}\n' % i,
+            'data': '{"key": %s}\n' % i,
             'data_type': 'release_package',
-            'encoding': 'utf-8',
+            'encoding': 'utf-8'
         }
