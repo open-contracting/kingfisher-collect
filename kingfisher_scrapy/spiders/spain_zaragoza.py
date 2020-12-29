@@ -27,7 +27,7 @@ class SpainZaragoza(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        ids = json.loads(response.text)
+        ids = response.json()
         for contracting_process_id in ids:
             ocid = contracting_process_id['ocid']
             url = f'{self.url}{ocid}'

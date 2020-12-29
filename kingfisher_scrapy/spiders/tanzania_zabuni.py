@@ -29,7 +29,7 @@ class TanzaniaZabuni(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        releases = json.loads(response.text)['releases']
+        releases = response.json()['releases']
         for release in releases:
             yield self.build_request(
                 self.url.format(f"{release['ocid']}/{response.request.meta['stage']}"),

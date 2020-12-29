@@ -24,7 +24,7 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = json.loads(response.text)
+        data = response.json()
         for resource in data['result']['resources']:
             if resource['format'].upper() == 'JSON':
                 yield self.build_request(resource['url'], formatter=components(-1))

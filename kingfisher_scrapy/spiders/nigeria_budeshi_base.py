@@ -16,6 +16,6 @@ class NigeriaBudeshiBase(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        project_list = json.loads(response.text)
+        project_list = response.json()
         for project in project_list:
             yield self.build_request(self.url.format(project['id']), formatter=components(-2))

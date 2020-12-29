@@ -32,7 +32,7 @@ class MexicoQuienEsQuien(IndexSpider):
 
     @handle_http_error
     def parse(self, response):
-        data = json.loads(response.text)
+        data = response.json()
         yield self.build_file_from_response(
             response,
             data=json.dumps(data['data']).encode(),

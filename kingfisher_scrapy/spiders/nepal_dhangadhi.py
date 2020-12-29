@@ -26,6 +26,6 @@ class NepalDhangadhi(SimpleSpider):
     @handle_http_error
     def parse_list(self, response):
         pattern = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
-        data = json.loads(response.text)
+        data = response.json()
         for item in data['data']['fiscal_years']:
             yield self.build_request(pattern.format(item['name']), formatter=components(-1))

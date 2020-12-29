@@ -24,7 +24,7 @@ class France(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = json.loads(response.text)
+        data = response.json()
         for item in data['data']:
             for resource in item['resources']:
                 description = resource['description']

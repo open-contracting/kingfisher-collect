@@ -34,7 +34,7 @@ class Uganda(IndexSpider):
     def parse_data(self, response):
         pattern = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v1/releases/{}?fy={}&pde={}'
 
-        data = json.loads(response.text)
+        data = response.json()
         for pdes in data['data']['data']:
             for plans in pdes['procurement_plans']:
                 for tag in ('planning', 'tender', 'award', 'contract'):

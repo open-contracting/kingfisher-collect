@@ -323,7 +323,7 @@ class SimpleSpider(BaseSpider):
     def parse(self, response):
         kwargs = {}
         if self.data_pointer:
-            kwargs['data'] = json.dumps(resolve_pointer(json.loads(response.text), self.data_pointer)).encode()
+            kwargs['data'] = json.dumps(resolve_pointer(response.json(), self.data_pointer)).encode()
 
         yield self.build_file_from_response(response, data_type=self.data_type, encoding=self.encoding, **kwargs)
 
@@ -449,7 +449,7 @@ class LinksSpider(SimpleSpider):
         """
         If the JSON response has a ``links.next`` key, returns a ``scrapy.Request`` for the URL.
         """
-        data = json.loads(response.text)
+        data = response.json()
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
             return self.build_request(url, formatter=self.next_page_formatter, **kwargs)
@@ -600,7 +600,7 @@ class IndexSpider(SimpleSpider):
         if not self.base_url:
             self._set_base_url(response.request.url)
         try:
-            data = json.loads(response.text)
+            data = response.json()
         except json.JSONDecodeError:
             data = None
         for value in self.range_generator(data, response):

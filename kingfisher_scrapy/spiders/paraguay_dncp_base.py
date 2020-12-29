@@ -77,7 +77,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
 
     def parse_access_token(self, response):
         if self.is_http_success(response):
-            r = json.loads(response.text)
+            r = response.json()
             token = r.get('access_token')
             if token:
                 self.logger.info('New access token: %s', token)
@@ -109,7 +109,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
 
     @handle_http_error
     def parse_pages(self, response):
-        content = json.loads(response.text)
+        content = response.json()
         for url in self.get_files_to_download(content):
             yield self.build_request(url, formatter=components(-1), dont_filter=True)
         pagination = content['pagination']

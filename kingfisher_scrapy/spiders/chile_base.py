@@ -48,7 +48,7 @@ class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
 
     @handle_http_error
     def parse(self, response):
-        data = json.loads(response.text)
+        data = response.json()
         error = self._check_data_error(response, data)
         if error:
             yield error
@@ -74,7 +74,7 @@ class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
 
     @handle_http_error
     def parse_page(self, response, **kwargs):
-        data = json.loads(response.text)
+        data = response.json()
         error = self._check_data_error(response, data)
         if error:
             yield error

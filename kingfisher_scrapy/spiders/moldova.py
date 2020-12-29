@@ -28,7 +28,7 @@ class Moldova(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = json.loads(response.text)
+        data = response.json()
         # The last page returns an empty JSON object.
         if not data:
             return

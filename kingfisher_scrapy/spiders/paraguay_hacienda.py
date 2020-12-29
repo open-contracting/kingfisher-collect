@@ -14,7 +14,7 @@ class ParaguayHacienda(BaseSpider):
       Ministerio de Hacienda
     Environment variables
       KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN
-        To get an API account and request token go to https://datos.hacienda.gov.py/aplicaciones/new.
+        To get an API account and request token go to https://datos.hacienda.gov.py/apli 47b25374-53ba-45e3-8306-3b1ef636dfa5caciones/new.
       KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET
         Your client secret generated.
     Swagger API documentation
@@ -67,7 +67,7 @@ class ParaguayHacienda(BaseSpider):
 
     @handle_http_error
     def parse(self, response):
-        data = json.loads(response.text)
+        data = response.json()
         pattern = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/ocds/release-package/{}'
 
         # If is the first URL, we need to iterate over all the pages to get all the process ids to query
@@ -123,7 +123,7 @@ class ParaguayHacienda(BaseSpider):
 
     def parse_access_token(self, response):
         if self.is_http_success(response):
-            r = json.loads(response.text)
+            r = response.json()
             token = r.get('accessToken')
             if token:
                 self.logger.info('New access token: %s', token)

@@ -30,7 +30,7 @@ class MexicoINAI(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        datas = json.loads(response.text)
+        datas = response.json()
         for result in datas['result']['results']:
             for resource in result['resources']:
                 if resource['format'] == 'JSON':

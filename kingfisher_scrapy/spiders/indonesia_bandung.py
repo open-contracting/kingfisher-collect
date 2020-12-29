@@ -46,7 +46,7 @@ class IndonesiaBandung(PeriodicSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = json.loads(response.text)
+        data = response.json()
         for item in data['data']:
             url = item['uri']
             if url:
@@ -59,7 +59,7 @@ class IndonesiaBandung(PeriodicSpider):
 
     @handle_http_error
     def parse(self, response):
-        data = json.loads(response.text)
+        data = response.json()
         if len(data) == 0:
             return
         yield self.build_file_from_response(response, data_type=self.data_type)

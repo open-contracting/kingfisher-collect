@@ -24,7 +24,7 @@ class Zambia(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        urls = json.loads(response.text)['packagesPerMonth']
+        urls = response.json()['packagesPerMonth']
 
         for url in urls:
             # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
