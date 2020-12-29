@@ -1,4 +1,3 @@
-import json
 from datetime import date
 
 from kingfisher_scrapy.base_spider import IndexSpider, PeriodicSpider

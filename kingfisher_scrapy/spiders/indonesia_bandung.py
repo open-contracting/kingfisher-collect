@@ -1,5 +1,3 @@
-import json
-
 from kingfisher_scrapy.base_spider import PeriodicSpider
 from kingfisher_scrapy.util import components, handle_http_error, join, parameters
 
