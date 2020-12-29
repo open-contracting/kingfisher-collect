@@ -207,12 +207,14 @@ class KingfisherTransformCompressedMiddleware(KingfisherTransformBaseMiddleware)
                 data = item['data']['data']
             else:
                 data = item['data']
+
             data_type = item['data_type']
             list_type = self._get_list_type(data_type)
             # If it is a compressed file and the file does'nt need any transformation
             if spider.compressed_file_format is None:
                 item['data'] = data.read()
                 yield item
+
             else:
                 items = self._split_data(spider, data, item['encoding'])
                 items = self._apply_root_path(items, spider)

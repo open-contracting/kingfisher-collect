@@ -8,12 +8,11 @@ from zipfile import ZipFile
 
 import scrapy
 from jsonpointer import resolve_pointer
-from rarfile import RarFile
-
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.util import add_query_string, handle_http_error
+from rarfile import RarFile
 
 browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
@@ -30,8 +29,8 @@ class BaseSpider(scrapy.Spider):
     -  If a spider collects data as CSV or XLSX files, set the class attribute ``unflatten = True`` to convert each
        item to json files in the Unflatten pipeline class using the ``unflatten`` command from Flatten Tool.
        If you need to set more arguments for the unflatten command, set a ``unflatten_args`` dict with them.
-    -  If the data source is not packaged within a record or release package set ``root_path`` to point to where the
-       data ``data_type`` is.
+    -  If the data is not formatted as OCDS (record, release, record package or release package), set the ``root_path``
+       class attribute to the path to the OCDS data.
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
     ``get_default_until_date()`` return value (which is the current time, by default).
@@ -349,8 +348,8 @@ class CompressedFileSpider(BaseSpider):
                 basename += '.json'
 
             data = archive_file.open(filename)
-            # for compressed_file_format == 'release_package' we need to read the file twice: once to extract the
-            # package metadata and then to extract the releases themselves
+            # For compressed_file_format == 'release_package' we need to read the file twice: once to extract the
+            # package metadata and then to extract the releases themselves.
             if self.compressed_file_format == 'release_package':
                 package = archive_file.open(filename)
             else:
