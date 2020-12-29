@@ -14,7 +14,7 @@ class ParaguayHacienda(BaseSpider):
       Ministerio de Hacienda
     Environment variables
       KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN
-        To get an API account and request token go to https://datos.hacienda.gov.py/apli 47b25374-53ba-45e3-8306-3b1ef636dfa5caciones/new.
+        To get an API account and request token go to https://datos.hacienda.gov.py/aplicaciones/new.
       KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET
         Your client secret generated.
     Swagger API documentation
