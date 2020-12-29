@@ -21,5 +21,8 @@ class EcuadorEmergency(SimpleSpider):
     @handle_http_error
     def parse_list(self, response):
         html_urls = response.xpath('//a/@href').getall()
-        for html_url in html_urls:
-            yield self.build_request(response.request.url + html_url, formatter=components(-1))
+        if html_urls:
+            # Each link contains different versions of SERCOP's emergency dataset, only the newest should be downloaded
+            # URL format: ./archivos/ocds-YYYY-MM-DD.json
+            html_urls.sort(reverse=True)
+            yield self.build_request(f'{response.request.url}{html_urls[0]}', formatter=components(-1))
