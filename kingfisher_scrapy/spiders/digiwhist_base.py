@@ -15,7 +15,7 @@ class DigiwhistBase(BaseSpider):
       https://opentender.eu/download
     """
     data_type = 'release_package'
-    file_format = 'json_lines'
+    compressed_file_format = 'json_lines'
 
     def start_requests(self):
         # See scrapy.spiders.Spider.start_requests

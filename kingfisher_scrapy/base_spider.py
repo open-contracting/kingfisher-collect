@@ -43,8 +43,7 @@ class BaseSpider(scrapy.Spider):
     date_required = False
     unflatten = False
     root_path = ''
-    # override this if the file is in json_line format
-    file_format = None
+
     unflatten_args = {}
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
