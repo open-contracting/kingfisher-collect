@@ -1,14 +1,14 @@
 import json
 from io import BytesIO
 from unittest.mock import MagicMock
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZIP_DEFLATED, ZipFile
 
 import pytest
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.items import File, FileError, FileItem
-from kingfisher_scrapy.middlewares import KingfisherTransformMiddleware, KingfisherTransformCompressedMiddleware
-from tests import spider_with_crawler, response_fixture
+from kingfisher_scrapy.middlewares import KingfisherTransformCompressedMiddleware, KingfisherTransformMiddleware
+from tests import response_fixture, spider_with_crawler
 
 items = [
     (File({

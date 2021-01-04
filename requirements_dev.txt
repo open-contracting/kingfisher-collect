@@ -29,7 +29,7 @@ idna==2.8                 # via -r requirements.txt, hyperlink, requests, twiste
 ijson==3.1.1              # via -r requirements.txt
 importlib-metadata==1.6.1  # via -r requirements.txt, jsonschema, pluggy, pytest
 incremental==17.5.0       # via -r requirements.txt, treq, twisted
-isort==4.3.21             # via -r requirements_dev.in
+isort==5.7.0              # via -r requirements_dev.in
 itemadapter==0.1.1        # via -r requirements.txt, itemloaders, scrapy
 itemloaders==1.0.3        # via -r requirements.txt, scrapy
 jdcal==1.4.1              # via -r requirements.txt, openpyxl
