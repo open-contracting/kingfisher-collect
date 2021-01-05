@@ -601,7 +601,7 @@ class IndexSpider(SimpleSpider):
             self._set_base_url(response.request.url)
         try:
             data = response.json()
-        except json.JSONDecodeError:
+        except ValueError:
             data = None
         for value in self.range_generator(data, response):
             yield self.build_request(self.url_builder(value, data, response), formatter=self.formatter, **kwargs)
