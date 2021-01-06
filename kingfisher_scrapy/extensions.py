@@ -148,13 +148,17 @@ class KingfisherProcessAPI:
         if reason not in ('finished', 'sample') or spider.pluck or spider.keep_collection_open:
             return
 
-        data = {
-            'collection_source': spider.name,
-            'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': str(bool(spider.sample)),
-        }
+        data = self.create_data(spider)
 
         return self._request(spider, 'end_collection_store', data['collection_source'], data)
+
+    def spider_error(self, failure, response, spider):
+        return self._request(
+            spider,
+            'create_file_error',
+            response['url'],
+            self.create_data(spider, response.request.meta['file_name'], response.request.url, failure)
+        )
 
     def item_scraped(self, item, spider):
         """
@@ -164,13 +168,7 @@ class KingfisherProcessAPI:
         if not item.get('post_to_api', True) or isinstance(item, PluckedItem):
             return
 
-        data = {
-            'collection_source': spider.name,
-            'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': str(bool(spider.sample)),
-            'file_name': item['file_name'],
-            'url': item['url'],
-        }
+        data = self.create_data(spider, item['file_name'], item['url'])
 
         if isinstance(item, FileError):
             data['errors'] = json.dumps(item['errors'])
@@ -199,6 +197,28 @@ class KingfisherProcessAPI:
             files = {'file': (item['file_name'], 'application/json', f)}
 
         return self._request(spider, 'create_file', item['url'], data, files)
+
+    def item_error(self, item, response, spider, failure):
+        return self._request(
+            spider,
+            'create_file_error',
+            item['url'],
+            self.create_data(spider, item['file_name'], item['url'], failure)
+        )
+
+    def create_data(self, spider, file_name=None, url=None, errors=None):
+        data = {
+            'collection_source': spider.name,
+            'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
+            'collection_sample': str(bool(spider.sample))
+        }
+        if file_name:
+            data['file_name'] = file_name
+        if url:
+            data['url'] = url
+        if errors:
+            data['errors'] = errors
+        return data
 
     def _request(self, spider, method, infix, *args):
         def log_for_status(response):
