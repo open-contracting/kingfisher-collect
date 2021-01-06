@@ -1,5 +1,3 @@
-import json
-
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import components, handle_http_error, join, parameters, replace_parameters
 
@@ -28,7 +26,7 @@ class Moldova(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = json.loads(response.text)
+        data = response.json()
         # The last page returns an empty JSON object.
         if not data:
             return
