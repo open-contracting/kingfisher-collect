@@ -8,6 +8,8 @@ class Kyrgyzstan(LinksSpider):
     """
     Domain
       Ministry of Finance
+    Caveats
+      The planning endpoint is not implemented because is not completely in OCDS.
     Bulk download documentation
       https://analytics.zakupki.gov.kg/dashboard/weekly and then to 'API & EXPORT'.
       Direct access to https://analytics.zakupki.gov.kg/api-export doesn't work.
