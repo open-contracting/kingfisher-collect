@@ -1,6 +1,6 @@
 import itertools
 import json
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 from functools import wraps
 from urllib.parse import parse_qs, urlencode, urlsplit
@@ -79,6 +79,13 @@ def handle_http_error(decorated):
         else:
             yield self.build_file_error_from_response(response)
     return wrapper
+
+
+def date_range(start, stop):
+    """
+    Returns a list of all dates between ``start`` and ``stop``
+    """
+    return [(start + timedelta(days=d)).strftime("%Y-%m-%d") for d in range((stop - start).days + 1)]
 
 
 # https://stackoverflow.com/questions/34898525/generate-list-of-months-between-interval-in-python
