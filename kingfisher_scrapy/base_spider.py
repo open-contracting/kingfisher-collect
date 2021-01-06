@@ -486,7 +486,7 @@ class PeriodicSpider(SimpleSpider):
 
     If ``sample`` is set, the data from the most recent year or month is retrieved.
     """
-    VALID_DATE_FORMATS = {'year': '%Y', 'year-month': '%Y-%m'}
+    VALID_DATE_FORMATS = {'year': '%Y', 'year-month': '%Y-%m', 'date': '%Y-%m-%d'}
 
     # PeriodicSpider requires date parameters to be always set.
     date_required = True
@@ -514,8 +514,10 @@ class PeriodicSpider(SimpleSpider):
 
         if self.date_format == '%Y':
             date_range = util.date_range_by_year(start.year, stop.year)
-        else:
+        elif self.date_format == '%Y-%m':
             date_range = util.date_range_by_month(start, stop)
+        else:
+            date_range = util.date_range(start, stop)
 
         for date in date_range:
             for url in self.build_urls(date):
