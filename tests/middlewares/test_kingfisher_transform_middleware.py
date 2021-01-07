@@ -1,7 +1,7 @@
 import json
 from io import BytesIO
 from unittest.mock import MagicMock
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZIP_DEFLATED, ZipFile
 
 import pytest
 
