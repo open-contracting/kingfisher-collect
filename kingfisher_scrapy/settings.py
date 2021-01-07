@@ -58,8 +58,10 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #    'kingfisher_scrapy.middlewares.MyCustomSpiderMiddleware': 543,
 #}
 SPIDER_MIDDLEWARES = {
-    'kingfisher_scrapy.middlewares.KingfisherTransformMiddleware': 543,
-    'kingfisher_scrapy.middlewares.KingfisherTransformCompressedMiddleware': 543
+    'kingfisher_scrapy.middlewares.KingfisherTransformJsonLinesMiddleware': 500,
+    'kingfisher_scrapy.middlewares.KingfisherTransformRootPathMiddleware': 400,
+    'kingfisher_scrapy.middlewares.KingfisherTransformAddPackageMiddleware': 300,
+    'kingfisher_scrapy.middlewares.KingfisherTransformResizePackageMiddleware': 200
 }
 
 # Enable or disable downloader middlewares

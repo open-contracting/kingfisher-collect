@@ -6,8 +6,7 @@ import ijson
 import scrapy
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.base_spider import CompressedFileSpider
-from kingfisher_scrapy.items import File
+from kingfisher_scrapy.items import File, FileItem
 
 
 class ParaguayAuthMiddleware:
@@ -81,38 +80,106 @@ class OpenOppsAuthMiddleware:
         request.headers['Authorization'] = spider.access_token
 
 
-class KingfisherTransformBaseMiddleware:
+class KingfisherTransformJsonLinesMiddleware:
     """
-    Base class used by middlewares that corrects the packaging of OCDS data
+     If the item is a json lines file, yields each line, otherwise yields data back
     """
-    def _split_data(self, spider, item, encoding='utf-8'):
-        """
-         If the item is a json lines file, yields each line, otherwise yields data back
-        """
-        if not spider.compressed_file_format == 'json_lines':
-            yield item
-        else:
-            for number, line in enumerate(item, 1):
+    def process_spider_output(self, response, result, spider):
+        for item in result:
+            if not(isinstance(item, File) and hasattr(spider, 'compressed_file_format') and
+                   spider.compressed_file_format == 'json_lines'):
+                yield item
+                continue
+            data = item['data']
+            for number, line in enumerate(data, 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
                 if isinstance(line, bytes):
-                    line = line.decode(encoding=encoding)
-                yield line
+                    line = line.decode(encoding=item['encoding'])
+                yield spider.build_file_item(number=number, file_name=item['file_name'], url=item['url'], data=line,
+                                             data_type=item['data_type'], encoding=item['encoding'])
 
-    def _apply_root_path(self, items, spider):
+
+class KingfisherTransformRootPathMiddleware:
+    """
+     If spider.root_path is set, calls ijson.items and yields each value, otherwise yields each item back
+    """
+    def process_spider_output(self, response, result, spider):
+        for item in result:
+            if not(isinstance(item, (File, FileItem)) and spider.root_path):
+                yield item
+                continue
+            data = item['data']
+            for number, parsed_item in enumerate(ijson.items(data, spider.root_path)):
+                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
+                if spider.sample and number > spider.sample:
+                    return
+                item['data'] = parsed_item
+                yield item
+
+
+class KingfisherTransformAddPackageMiddleware:
+    """
+    If data_type is release or record, adds a simple package to each item, otherwise yields each item back
+    """
+    def process_spider_output(self, response, result, spider):
+        for item in result:
+            if not(isinstance(item, (File, FileItem)) and item['data_type'] in ('release', 'record')):
+                yield item
+                continue
+            data = item['data']
+            data_type = item['data_type']
+            list_type = self._get_list_type(data_type)
+            package = {list_type: []}
+            if isinstance(data, dict):
+                package[list_type].append(data)
+            else:
+                package[list_type].append(json.loads(data, encoding=item['encoding']))
+            item['data'] = package
+            item['data_type'] = f'{data_type}_package'
+            yield item
+
+    def _get_list_type(self, data_type):
         """
-         If spider.root_path is set, calls ijson.items and yields each value, otherwise yields each item back
+        Returns if the packages contains a list of releases or records
         """
-        if not spider.root_path:
-            yield from items
+        if 'record' in data_type:
+            list_type = 'records'
         else:
-            for item in items:
-                for number, parsed_item in enumerate(ijson.items(item, spider.root_path)):
-                    # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                    if spider.sample and number > spider.sample:
-                        return
-                    yield parsed_item
+            list_type = 'releases'
+        return list_type
+
+
+class KingfisherTransformResizePackageMiddleware:
+    """
+     If spider.root_path is set, calls ijson.items and yields each value, otherwise yields each item back
+    """
+    def process_spider_output(self, response, result, spider):
+        for item in result:
+            if not(isinstance(item, File) and hasattr(spider, 'compressed_file_format') and
+                   spider.compressed_file_format == 'release_package'):
+                yield item
+                continue
+            list_data = item['data']['data']
+            package_data = item['data']['package']
+            data_type = item['data_type']
+            max_releases_per_package = 100
+            if spider.sample:
+                size = spider.sample
+            else:
+                size = max_releases_per_package
+
+            package = self._get_package_metadata(package_data, 'releases', data_type)
+            # We yield a release o record package with a maximum of self.max_releases_per_package releases or records
+            for number, items in enumerate(util.grouper(ijson.items(list_data, 'releases.item'), size), 1):
+                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
+                if spider.sample and number > spider.sample:
+                    return
+                package['releases'] = filter(None, items)
+                data = json.dumps(package, default=util.default)
+                yield spider.build_file_item(number=number, file_name=item['file_name'], url=item['url'],
+                                             data=data, data_type=data_type, encoding=item['encoding'])
 
     def _get_package_metadata(self, data, skip_key, data_type):
         """
@@ -128,127 +195,3 @@ class KingfisherTransformBaseMiddleware:
             for item in util.items(ijson.parse(data), '', skip_key=skip_key):
                 package.update(item)
         return package
-
-    def _add_package(self, items, data_type, list_type):
-        """
-        If data_type is release or record, adds a simple package to each item, otherwise yields each item back
-        """
-        if data_type not in ('release', 'record'):
-            yield from items
-        else:
-            package = {list_type: []}
-            for item in items:
-                if isinstance(item, dict):
-                    package[list_type].append(item)
-                else:
-                    package[list_type].append(json.loads(item))
-            yield package
-
-    def _resize_package(self, list_data, package_data, data_type, spider, file_name, url, encoding, list_type):
-        """
-        Yield a release package or record package, with a maximum number of releases or records per package.
-        Once Kingfisher Process can handle large files, we can remove this logic, which is only required for handling
-        compressed_file_format = 'release_package'. https://github.com/open-contracting/kingfisher-collect/issues/154
-        """
-        max_releases_per_package = 100
-        if spider.sample:
-            size = spider.sample
-        else:
-            size = max_releases_per_package
-
-        package = self._get_package_metadata(package_data, list_type, data_type)
-        # We yield a release o record package with a maximum of self.max_releases_per_package releases or records
-        for item in list_data:
-            for number, items in enumerate(util.grouper(ijson.items(item, f'{list_type}.item'), size), 1):
-                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                if spider.sample and number > spider.sample:
-                    return
-                package[list_type] = filter(None, items)
-                data = json.dumps(package, default=util.default)
-                yield spider.build_file_item(number=number, file_name=file_name, url=url, data=data,
-                                             data_type=data_type, encoding=encoding)
-
-    def _get_list_type(self, data_type):
-        """
-        Returns if the packages contains a list of releases or records
-        """
-        if 'record' in data_type:
-            list_type = 'records'
-        else:
-            list_type = 'releases'
-        return list_type
-
-    def _get_transformed_data_type(self, data_type):
-        """
-        Returns a valid OCDS data type: record_package or release_package
-        """
-
-        if 'package' in data_type:
-            transformed_data_type = data_type
-        else:
-            transformed_data_type = f'{data_type}_package'
-
-        return transformed_data_type
-
-
-class KingfisherTransformCompressedMiddleware(KingfisherTransformBaseMiddleware):
-    """
-    Middleware that corrects the packaging of OCDS data (whether the OCDS data is embedded, line-delimited JSON, etc.).
-    """
-    def process_spider_output(self, response, result, spider):
-        for item in result:
-
-            if not(isinstance(item, File) and (isinstance(spider, CompressedFileSpider) or
-                                               spider.compressed_file_format)):
-                yield item
-                continue
-
-            if isinstance(spider, CompressedFileSpider):
-                data = item['data']['data']
-            else:
-                data = item['data']
-
-            data_type = item['data_type']
-            list_type = self._get_list_type(data_type)
-            # If it is a compressed file and the file does'nt need any transformation
-            if spider.compressed_file_format is None:
-                item['data'] = data.read()
-                yield item
-
-            else:
-                items = self._split_data(spider, data, item['encoding'])
-                items = self._apply_root_path(items, spider)
-                items = self._add_package(items, data_type, list_type)
-                data_type = self._get_transformed_data_type(data_type)
-                if spider.compressed_file_format == 'json_lines':
-                    for number, data in enumerate(items, 1):
-                        yield spider.build_file_item(number=number, file_name=item['file_name'], url=item['url'],
-                                                     data=data, data_type=data_type, encoding=item['encoding'])
-                else:
-                    package_data = item['data']['package']
-                    yield from self._resize_package(items, package_data, data_type, spider, item['file_name'],
-                                                    item['url'], item['encoding'], list_type)
-
-
-class KingfisherTransformMiddleware(KingfisherTransformBaseMiddleware):
-    """
-    Middleware that corrects the packaging of OCDS data (whether the OCDS data is embedded, line-delimited JSON, etc.).
-    """
-
-    def process_spider_output(self, response, result, spider):
-        for item in result:
-
-            if not(isinstance(item, File) and (item['data_type'] not in ('release_package', 'record_package') or
-                                               spider.root_path) and not isinstance(spider, CompressedFileSpider)):
-                yield item
-                continue
-
-            data_type = item['data_type']
-            list_type = self._get_list_type(data_type)
-            items = self._apply_root_path([item['data']], spider)
-            items = self._add_package(items, data_type, list_type)
-            data_type = self._get_transformed_data_type(data_type)
-            for number, data in enumerate(items, 1):
-                data = json.dumps(data, default=util.default)
-                yield spider.build_file_item(number=number, file_name=item['file_name'], url=item['url'], data=data,
-                                             data_type=data_type, encoding=item['encoding'])

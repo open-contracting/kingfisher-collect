@@ -7,6 +7,7 @@ import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
+from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
 from kingfisher_scrapy.util import _pluck_filename
@@ -100,7 +101,7 @@ class KingfisherFilesStore:
             if isinstance(data, (bytes, str)):
                 f.write(data)
             else:
-                json.dump(data, f)
+                json.dump(data, f, default=util.default)
 
 
 class KingfisherItemCount:

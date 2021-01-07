@@ -348,16 +348,19 @@ class CompressedFileSpider(BaseSpider):
                 basename += '.json'
 
             data = archive_file.open(filename)
+            data_to_ret = {}
             # For compressed_file_format == 'release_package' we need to read the file twice: once to extract the
             # package metadata and then to extract the releases themselves.
             if self.compressed_file_format == 'release_package':
                 package = archive_file.open(filename)
+                data_to_ret['data'] = data
+                data_to_ret['package'] = package
             else:
-                package = None
+                data_to_ret = data
 
             yield File({
                 'file_name': basename,
-                'data': {'data': data, 'package': package},
+                'data': data_to_ret,
                 'data_type': self.data_type,
                 'url': response.request.url,
                 'encoding': self.encoding

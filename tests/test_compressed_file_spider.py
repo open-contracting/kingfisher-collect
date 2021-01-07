@@ -28,8 +28,8 @@ def test_parse():
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == spider.data_type
     assert item['encoding'] == 'utf-8'
-    assert item['data']['package'] is None
-    assert item['data']['data'] is not None
+    assert hasattr(item['data'], 'package') is False
+    assert item['data'] is not None
 
     with pytest.raises(StopIteration):
         next(generator)
@@ -121,8 +121,7 @@ def test_parse_rar_file():
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == spider.data_type
     assert item['encoding'] == 'utf-8'
-    assert item['data']['package'] is None
-    assert item['data']['data'] is not None
+    assert item['data'] is not None
 
     with pytest.raises(StopIteration):
         next(generator)
