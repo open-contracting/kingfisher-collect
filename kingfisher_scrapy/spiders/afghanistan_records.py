@@ -1,5 +1,3 @@
-import json
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
@@ -26,7 +24,7 @@ class AfghanistanRecords(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        urls = json.loads(response.text)
+        urls = response.json()
         for url in urls:
             # URL looks like https://ocds.ageops.net/api/record/5ed2a62c4192f32c8c74a4e5
             yield self.build_request(url, formatter=components(-1))

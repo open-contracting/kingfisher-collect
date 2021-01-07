@@ -1,8 +1,9 @@
 import re
 from math import ceil
-from unittest.mock import MagicMock
 
 import pytest
+from scrapy import Request
+from scrapy.http import TextResponse
 
 from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.util import parameters
@@ -15,7 +16,8 @@ TEST_CASES = [
          'total_pages_pointer': '/results',
          'data_type': 'release_package',
          'formatter': staticmethod(parameters('page'))
-       }, '{"results": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)', [str(x) for x in range(2, 11)]),
+       }, '{"results": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)',
+     [str(x) for x in range(2, 11)]),
     ({
          'total_pages_pointer': '/results',
          'page_size': '50',
@@ -59,16 +61,21 @@ TEST_CASES = [
 @pytest.mark.parametrize('spider_args,start_request_response,initial_url,results_pattern,expected',
                          TEST_CASES)
 def test_urls(spider_args, start_request_response, initial_url, results_pattern, expected):
-    response_mock = MagicMock()
-    response_mock.request.url = initial_url
-    response_mock.status = 200
-    response_mock.text = start_request_response
+
+    text_response_mock = TextResponse(
+        initial_url,
+        status=200,
+        headers={'Content-type': 'text/html'},
+        encoding='UTF-8',
+        body=start_request_response,
+        request=Request(url=initial_url, meta={'file_name': 'list.json'})
+    )
 
     test_spider = type('TestSpider', (IndexSpider,), spider_args)
 
     spider = spider_with_crawler(spider_class=test_spider)
 
-    requests = [x for x in spider.parse_list(response_mock)]
+    requests = [x for x in spider.parse_list(text_response_mock)]
 
     if 'yield_list_results' in spider_args and not spider_args['yield_list_results']:
         assert len(requests) == len(expected)

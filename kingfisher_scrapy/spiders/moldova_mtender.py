@@ -1,5 +1,3 @@
-import json
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
@@ -21,7 +19,7 @@ class MoldovaMTender(SimpleSpider):
     @handle_http_error
     def parse_list(self, response):
         base_url = 'http://public.eprocurement.systems/ocds/tenders/'
-        data = json.loads(response.text)
+        data = response.json()
         # The last page returns an empty JSON object.
         if not data:
             return

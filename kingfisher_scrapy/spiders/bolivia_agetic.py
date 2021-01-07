@@ -1,5 +1,3 @@
-import json
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
@@ -24,7 +22,7 @@ class BoliviaAgetic(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = json.loads(response.text)
+        data = response.json()
         for resource in data['result']['resources']:
             if 'ocds' in resource['description']:
                 yield self.build_request(

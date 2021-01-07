@@ -78,7 +78,7 @@ class OpenOpps(BaseSpider):
 
     def parse_access_token(self, response):
         if self.is_http_success(response):
-            r = json.loads(response.text)
+            r = response.json()
             token = r.get('token')
             if token:
                 self.logger.info('New access token: %s', token)
@@ -139,7 +139,7 @@ class OpenOpps(BaseSpider):
 
     def parse(self, response):
         if self.is_http_success(response):
-            results = json.loads(response.text)
+            results = response.json()
             count = results['count']
             release_date = response.request.meta['release_date']  # date used for the search
             search_h = response.request.meta['search_h']  # hour range used for the search

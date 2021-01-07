@@ -1,5 +1,3 @@
-import json
-
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_http_error, parameters
 
@@ -26,7 +24,7 @@ class AustraliaNSW(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = json.loads(response.text)
+        data = response.json()
         release_type = response.request.meta['release_type']
 
         if 'links' in data and isinstance(data['links'], dict) and 'next' in data['links']:

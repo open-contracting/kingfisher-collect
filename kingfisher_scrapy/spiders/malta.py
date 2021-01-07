@@ -1,4 +1,3 @@
-import json
 from urllib.parse import urlsplit
 
 import scrapy
@@ -26,7 +25,7 @@ class Malta(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        urls = json.loads(response.text)['packagesPerMonth']
+        urls = response.json()['packagesPerMonth']
 
         netloc = urlsplit(response.request.url).netloc
         for url in urls:
