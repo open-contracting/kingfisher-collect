@@ -7,10 +7,12 @@ import pytest
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.items import File, FileError, FileItem
-from kingfisher_scrapy.middlewares import KingfisherTransformAddPackageMiddleware, \
-    KingfisherTransformJsonLinesMiddleware, KingfisherTransformResizePackageMiddleware, \
-    KingfisherTransformRootPathMiddleware
-from tests import spider_with_crawler, response_fixture
+from kingfisher_scrapy.middlewares import (
+    KingfisherTransformAddPackageMiddleware,
+    KingfisherTransformJsonLinesMiddleware,
+    KingfisherTransformResizePackageMiddleware,
+    KingfisherTransformRootPathMiddleware)
+from tests import response_fixture, spider_with_crawler
 
 items = [
     (File({
