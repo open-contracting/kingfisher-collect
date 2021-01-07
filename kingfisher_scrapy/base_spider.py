@@ -36,7 +36,7 @@ class BaseSpider(scrapy.Spider):
     ``get_default_until_date()`` return value (which is the current time, by default).
     """
     MAX_RELEASES_PER_PACKAGE = 100
-    VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
+    VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S', 'year': '%Y', 'year-month': '%Y-%m'}
 
     ocds_version = '1.1'
     date_format = 'date'
@@ -464,13 +464,14 @@ class LinksSpider(SimpleSpider):
 
 class PeriodicSpider(SimpleSpider):
     """
-    This class makes it easy to collect data from an API that accepts a year or a year and month as parameters.
+    This class makes it easy to collect data from an API that accepts dates as parameters.
 
     #. Inherit from ``PeriodicSpider``
-    #. Set a ``date_format`` class attribute to "year" or "year-month"
-    #. Set a ``pattern`` class attribute to a URL pattern, with placeholders. If the ``date_format`` is "year", then a
-       year is passed to the placeholder as an ``int``. If the ``date_format`` is "year-month", then the first day of
-       the month is passed to the placeholder as a ``date``, which you can format as, for example:
+    #. Set a ``date_format`` class attribute to "year" or "year-month", it defaults to "date"
+    #. Set a ``pattern`` class attribute to a URL pattern, with placeholders. If the ``date_format`` is "date", then a
+       ``date`` is passed to the placeholder. If the ``date_format`` is "year", then a year is passed to the placeholder
+       as an ``int``. If the ``date_format`` is "year-month", then the first day of the month is passed to the
+       placeholder as a ``date``, which you can format as, for example:
 
        .. code-block: python
 
@@ -478,15 +479,15 @@ class PeriodicSpider(SimpleSpider):
 
     #. Implement a ``get_formatter`` method to return the formatter to use in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls
-    #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a string
-    #. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a
-       string, if the source is known to have stopped publishing - otherwise, it defaults to today
+    #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") or date ("YYYY-MM-DD")
+       as a string
+    #. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") or date
+       ("YYYY-MM-DD") as a string, if the source is known to have stopped publishing - otherwise, it defaults to today
     #. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
        :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
 
-    If ``sample`` is set, the data from the most recent year or month is retrieved.
+    If ``sample`` is set, the data from the most recent date is retrieved.
     """
-    VALID_DATE_FORMATS = {'year': '%Y', 'year-month': '%Y-%m', 'date': '%Y-%m-%d'}
 
     # PeriodicSpider requires date parameters to be always set.
     date_required = True
