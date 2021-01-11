@@ -934,6 +934,13 @@ Uk
 
    scrapy crawl uk_fts
 
+.. autoclass:: kingfisher_scrapy.spiders.uk_fts_test.UKFTSTest
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl uk_fts_test
+
 Uruguay
 -------
 
