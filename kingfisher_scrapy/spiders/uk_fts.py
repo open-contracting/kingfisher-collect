@@ -8,12 +8,27 @@ class UKFTS(LinksSpider):
     """
     Domain
       Find a Tender Service (FTS)
+    Spider arguments
+      from_date
+        Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
+        If ``until_date`` is provided, defaults to '2021-01-01T00:00:00'.
+      until_date
+        Download only data until this time (YYYY-MM-DDThh:mm:ss format).
+        If ``from_date`` is provided, defaults to now.
+    API documentation
+      https://www.find-tender.service.gov.uk/apidocumentation/1.0/GET-ocdsReleasePackages
     """
     name = 'uk_fts'
     data_type = 'release_package'
+    date_format = 'datetime'
+    default_from_date = '2021-01-01T00:00:00'
     next_page_formatter = staticmethod(parameters('cursor'))
 
     def start_requests(self):
-        # This URL was provided by the publisher and is not the production URL.
-        url = 'https://enoticetest.service.xgov.uk/api/1.0/ocdsReleasePackages'
+        url = 'https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages'
+        if self.from_date and self.until_date:
+            self.from_date = self.from_date.strftime(self.date_format)
+            self.until_date = self.until_date.strftime(self.date_format)
+            url = f'{url}?updatedFrom={self.from_date}&updatedTo={self.until_date}'
+
         yield scrapy.Request(url, meta={'file_name': 'start.json'}, headers={'Accept': 'application/json'})
