@@ -8,6 +8,8 @@ class UKFTSTest(LinksSpider):
     """
     Domain
       Find a Tender Service (FTS)
+    Caveats
+      The endpoint used here is a test. The production is in ``uk_fts``.
     """
     name = 'uk_fts_test'
     data_type = 'release_package'
