@@ -156,7 +156,7 @@ class KingfisherProcessAPI:
         return self._request(
             spider,
             'create_file_error',
-            response['url'],
+            response.request.url,
             self._build_data_to_send(spider, response.request.meta['file_name'], response.request.url, failure)
         )
 
