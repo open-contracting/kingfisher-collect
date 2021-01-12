@@ -237,6 +237,52 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
 @pytest_twisted.inlineCallbacks
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
+def test_item_error_file_error(sample, is_sample, ok, tmpdir, caplog):
+    with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
+        mocked.return_value = 200 if ok else 400
+
+        spider = spider_with_files_store(tmpdir, sample=sample)
+        extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+
+        item = FileError({
+            'file_name': 'file.json',
+            'url': 'https://example.com/remote.json',
+            'errors': 'ExceptionRaised',
+        })
+
+        response = yield extension.item_error(item, 'ResponseObject', spider, 'ExceptionRaised')
+        data = yield response.json()
+
+        form = {
+            'collection_source': 'test',
+            'collection_data_version': '2001-02-03 04:05:06',
+            'collection_sample': str(is_sample),
+            'file_name': 'file.json',
+            'url': 'https://example.com/remote.json',
+            # Specific to FileError.
+            'errors': 'ExceptionRaised',
+        }
+
+        assert data['method'] == 'POST'
+        assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/file_errors/'
+        assert data['headers']['Authorization'] == 'ApiKey xxx'
+        assert data['form'] == form
+        assert data['args'] == {}
+        assert data['data'] == ''
+        assert data['files'] == {}
+
+        if not ok:
+            message = 'create_file_error failed (https://example.com/remote.json) with status code: 400'
+
+            assert len(caplog.records) == 1
+            assert caplog.records[0].name == 'test'
+            assert caplog.records[0].levelname == 'WARNING'
+            assert caplog.records[0].message == message
+
+
+@pytest_twisted.inlineCallbacks
+@pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
+@pytest.mark.parametrize('ok', [True, False])
 def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
     with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
         mocked.return_value = 200 if ok else 400
@@ -290,3 +336,39 @@ def test_spider_closed_other_reason(tmpdir):
     response = yield extension.spider_closed(spider, 'xxx')
 
     assert response is None
+
+
+@pytest_twisted.inlineCallbacks
+@pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
+@pytest.mark.parametrize('ok', [True, False])
+def test_spider_error(sample, is_sample, ok, tmpdir, caplog):
+    with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
+        mocked.return_value = 200 if ok else 400
+
+        spider = spider_with_files_store(tmpdir, sample=sample)
+        extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+
+        response = yield extension.spider_error('ExceptionRaised', 'ResponseObject', spider)
+        data = yield response.json()
+
+        form = {
+            'collection_source': 'test',
+            'collection_data_version': '2001-02-03 04:05:06',
+            'collection_sample': str(is_sample),
+        }
+
+        assert data['method'] == 'POST'
+        assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/end_collection_store/'
+        assert data['headers']['Authorization'] == 'ApiKey xxx'
+        assert data['form'] == form
+        assert data['args'] == {}
+        assert data['data'] == ''
+        assert data['files'] == {}
+
+        if not ok:
+            message = 'end_collection_store failed (test) with status code: 400'
+
+            assert len(caplog.records) == 1
+            assert caplog.records[0].name == 'test'
+            assert caplog.records[0].levelname == 'WARNING'
+            assert caplog.records[0].message == message
