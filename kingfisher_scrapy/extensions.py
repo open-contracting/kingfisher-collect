@@ -149,24 +149,15 @@ class KingfisherProcessAPI:
             return
 
         data = self._build_data_to_send(spider)
-
         return self._request(spider, 'end_collection_store', data['collection_source'], data)
 
     def spider_error(self, failure, response, spider):
-        return self._request(
-            spider,
-            'create_file_error',
-            response.request.url,
-            self._build_data_to_send(spider, response.request.meta['file_name'], response.request.url, failure)
-        )
+        data = self._build_data_to_send(spider, response.request.meta['file_name'], response.request.url, failure)
+        return self._request(spider, 'create_file_error', response.request.url, data)
 
     def item_error(self, item, response, spider, failure):
-        return self._request(
-            spider,
-            'create_file_error',
-            item['url'],
-            self._build_data_to_send(spider, item['file_name'], item['url'], failure)
-        )
+        data = self._build_data_to_send(spider, item['file_name'], item['url'], failure)
+        return self._request(spider, 'create_file_error', item['url'], data)
 
     def item_scraped(self, item, spider):
         """
