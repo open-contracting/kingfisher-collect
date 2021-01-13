@@ -6,6 +6,11 @@ class UruguayHistorical(CompressedFileSpider, PeriodicSpider):
     """
     Domain
       Agencia Reguladora de Compras Estatales (ARCE)
+    Spider arguments
+      from_date
+        Download only data from this month onward (YYYY format). Defaults to '2002'.
+      until_date
+        Download only data until this month (YYYY format). Defaults to '2017'.
     Bulk download documentation
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
     """
