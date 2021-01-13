@@ -160,6 +160,14 @@ class KingfisherProcessAPI:
             self._build_data_to_send(spider, response.request.meta['file_name'], response.request.url, failure)
         )
 
+    def item_error(self, item, response, spider, failure):
+        return self._request(
+            spider,
+            'create_file_error',
+            item['url'],
+            self._build_data_to_send(spider, item['file_name'], item['url'], failure)
+        )
+
     def item_scraped(self, item, spider):
         """
         Sends an API request to store the file, file item or file error in Kingfisher Process.
@@ -197,14 +205,6 @@ class KingfisherProcessAPI:
             files = {'file': (item['file_name'], 'application/json', f)}
 
         return self._request(spider, 'create_file', item['url'], data, files)
-
-    def item_error(self, item, response, spider, failure):
-        return self._request(
-            spider,
-            'create_file_error',
-            item['url'],
-            self._build_data_to_send(spider, item['file_name'], item['url'], failure)
-        )
 
     def _request(self, spider, method, infix, *args):
         def log_for_status(response):
