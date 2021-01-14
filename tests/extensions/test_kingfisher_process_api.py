@@ -261,7 +261,7 @@ def test_item_error_file_error(sample, is_sample, ok, tmpdir, caplog):
             'file_name': 'file.json',
             'url': 'https://example.com/remote.json',
             # Specific to FileError.
-            'errors': 'ExceptionRaised',
+            'errors': '"ExceptionRaised"',
         }
 
         assert data['method'] == 'POST'
@@ -273,7 +273,7 @@ def test_item_error_file_error(sample, is_sample, ok, tmpdir, caplog):
         assert data['files'] == {}
 
         if not ok:
-            message = 'create_file_error failed (https://example.com/remote.json) with status code: 400'
+            message = 'create_file_error failed (file.json) with status code: 400'
 
             assert len(caplog.records) == 1
             assert caplog.records[0].name == 'test'
@@ -349,7 +349,7 @@ def test_spider_error(sample, is_sample, ok, tmpdir, caplog):
         spider = spider_with_files_store(tmpdir, sample=sample)
         extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-        scrapy_request = yield Request('https://example.com/remote.json', meta={'file_name': 'file.json'})
+        scrapy_request = yield Request('https://example.com/remote.json')
         scrapy_response = Response('https://example.com/remote.json', request=scrapy_request)
         response = yield extension.spider_error('ExceptionRaised', scrapy_response, spider)
         data = yield response.json()
@@ -358,10 +358,10 @@ def test_spider_error(sample, is_sample, ok, tmpdir, caplog):
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
             'collection_sample': str(is_sample),
-            'file_name': 'file.json',
+            'file_name': 'spider_error.json',
             'url': 'https://example.com/remote.json',
             # Specific to FileError.
-            'errors': 'ExceptionRaised',
+            'errors': '"ExceptionRaised"',
         }
 
         assert data['method'] == 'POST'
