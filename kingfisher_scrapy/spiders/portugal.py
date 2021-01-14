@@ -8,6 +8,8 @@ class Portugal(CompressedFileSpider):
     """
     Domain
       Instituto dos Mercados Públicos, do Imobiliário e da Construção (IMPIC)
+    Bulk download documentation
+      https://dados.gov.pt/pt/datasets/ocds-portal-base-www-base-gov-pt/
     API documentation
       https://dados.gov.pt/pt/apidoc/
     Swagger API documentation
