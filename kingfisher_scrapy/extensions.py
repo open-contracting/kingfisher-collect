@@ -152,18 +152,27 @@ class KingfisherProcessAPI:
         return self._request(spider, 'end_collection_store', data['collection_source'], data)
 
     def spider_error(self, failure, response, spider):
-        data = self._build_data_to_send(spider, response.request.meta['file_name'], response.request.url, failure)
+        """
+        Sends an API request to store a file error in Kingfisher Process when a spider callback generates an error.
+        """
+        # https://docs.scrapy.org/en/latest/topics/signals.html#scrapy.signals.spider_error
+        file_name = response.request.meta.get('file_name', 'spider_error.json')
+        data = self._build_data_to_send(spider, file_name, response.request.url, failure)
         return self._request(spider, 'create_file_error', response.request.url, data)
 
     def item_error(self, item, response, spider, failure):
+        """
+        Sends an API request to store a file error in Kingfisher Process when a item pipeline generates an error.
+        """
+        # https://docs.scrapy.org/en/latest/topics/signals.html#scrapy.signals.item_error
         data = self._build_data_to_send(spider, item['file_name'], item['url'], failure)
-        return self._request(spider, 'create_file_error', item['url'], data)
+        return self._request(spider, 'create_file_error', item['file_name'], data)
 
     def item_scraped(self, item, spider):
         """
         Sends an API request to store the file, file item or file error in Kingfisher Process.
         """
-
+        # https://docs.scrapy.org/en/latest/topics/signals.html#scrapy.signals.item_scraped
         if not item.get('post_to_api', True) or isinstance(item, PluckedItem):
             return
 
@@ -222,7 +231,7 @@ class KingfisherProcessAPI:
         if url:
             data['url'] = url
         if errors:
-            data['errors'] = errors
+            data['errors'] = json.dumps(errors)
         return data
 
 
