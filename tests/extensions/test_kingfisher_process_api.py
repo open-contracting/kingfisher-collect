@@ -238,7 +238,7 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
 @pytest_twisted.inlineCallbacks
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
-def test_item_error_file_error(sample, is_sample, ok, tmpdir, caplog):
+def test_item_error(sample, is_sample, ok, tmpdir, caplog):
     with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
         mocked.return_value = 200 if ok else 400
 
