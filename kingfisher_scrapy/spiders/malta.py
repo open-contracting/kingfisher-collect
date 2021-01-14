@@ -1,33 +1,26 @@
-from urllib.parse import urlsplit
-
-import scrapy
-
-from kingfisher_scrapy.base_spider import CompressedFileSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.base_spider import CompressedFileSpider, PeriodicSpider
+from kingfisher_scrapy.util import components
 
 
-class Malta(CompressedFileSpider):
+class Malta(CompressedFileSpider, PeriodicSpider):
     """
     Domain
       Malta
+    Spider arguments
+      from_date
+        Download only data from this month onward (YYYY-MM format). Defaults to '2019-10'.
+      until_date
+        Download only data until this month (YYYY-MM format). Defaults to the current month.
     API documentation
       https://docs.google.com/document/d/1VnCEywKkkQ7BcVbT7HlW2s_N_QI8W0KE/edit
     """
     name = 'malta'
     data_type = 'record_package'
 
-    def start_requests(self):
-        yield scrapy.Request(
-            'http://demowww.etenders.gov.mt/ocds/services/recordpackage/getrecordpackagelist',
-            meta={'file_name': 'list.json'},
-            callback=self.parse_list
-        )
+    # PeriodicSpider variables
+    date_format = 'year-month'
+    default_from_date = '2019-10'
+    pattern = 'http://demowww.etenders.gov.mt/ocds/services/recordpackage/getrecordpackage/{0.year:d}/{0.month:02d}'
 
-    @handle_http_error
-    def parse_list(self, response):
-        urls = response.json()['packagesPerMonth']
-
-        netloc = urlsplit(response.request.url).netloc
-        for url in urls:
-            # URL looks like http://malta-demo-server.eurodyn.com/ocds/services/recordpackage/getrecordpackage/2020/1
-            yield self.build_request(urlsplit(url)._replace(netloc=netloc).geturl(), formatter=components(-2))
+    def get_formatter(self):
+        return components(-2)
