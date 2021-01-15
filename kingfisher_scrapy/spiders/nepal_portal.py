@@ -6,6 +6,11 @@ class NepalPortal(PeriodicSpider):
     """
     Domain
       Public Procurement Monitoring Office (PPMO)
+     Spider arguments
+      from_date
+        Download only data from this year onward (YYYY format). Defaults to '2012'.
+      until_date
+        Download only data until this year (YYYY format). Defaults to '2018'.
     Bulk download documentation
       http://ppip.gov.np/downloads
     """
