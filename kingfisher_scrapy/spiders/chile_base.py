@@ -57,6 +57,11 @@ class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
     @handle_http_error
     # from PeriodicSpider
     def build_periodic_requests(self, response, **kwargs):
+        data = response.json()
+        error = self._check_data_error(response, data)
+        if error:
+            yield error
+            return
         yield from self.parse_page(response)
         kwargs['callback'] = self.parse_page
         yield from self.parse_list(response, **kwargs)

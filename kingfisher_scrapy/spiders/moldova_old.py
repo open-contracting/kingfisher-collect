@@ -6,6 +6,11 @@ class MoldovaOld(PeriodicSpider):
     """
     Domain
       Public Procurement Agency (PPA)
+    Spider arguments
+      from_date
+        Download only data from this month onward (YYYY format). Defaults to '2012'.
+      until_date
+        Download only data until this month (YYYY format). Defaults to '2018'.
     Bulk download documentation
       http://opencontracting.date.gov.md/downloads
     """
