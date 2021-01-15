@@ -469,9 +469,9 @@ class PeriodicSpider(SimpleSpider):
     #. Inherit from ``PeriodicSpider``
     #. Set a ``date_format`` class attribute to "year" or "year-month", it defaults to "date"
     #. Set a ``pattern`` class attribute to a URL pattern, with placeholders. If the ``date_format`` is "date", then a
-       ``date`` is passed to the placeholder. If the ``date_format`` is "year", then a year is passed to the placeholder
-       as an ``int``. If the ``date_format`` is "year-month", then the first day of the month is passed to the
-       placeholder as a ``date``, which you can format as, for example:
+       ``date`` is passed to the placeholder. If the ``date_format`` is "year", then a year is passed to the
+       placeholder as an ``int``. If the ``date_format`` is "year-month", then the first day of the month is passed to
+       the placeholder as a ``date``, which you can format as, for example:
 
        .. code-block: python
 
