@@ -8,9 +8,9 @@ class AfghanistanReleases(PeriodicSpider):
       Afghanistan Government Electronic & Open Procurement System (AGEOPS)
     Spider arguments
       from_date
-        Download only data from this month onward (YYYY-MM-DD format). Defaults to '2018-12-12'.
+        Download only data from this date onward (YYYY-MM-DD format). Defaults to '2018-12-12'.
       until_date
-        Download only data until this month (YYYY-MM-DD format). Defaults to the current date.
+        Download only data until this date (YYYY-MM-DD format). Defaults to today.
     API documentation
       https://ocds.ageops.net/
     """

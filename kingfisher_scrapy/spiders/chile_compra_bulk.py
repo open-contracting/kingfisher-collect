@@ -13,7 +13,7 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
       from_date
         Download only data from this month onward (YYYY-MM format). Defaults to '2009-01'.
       until_date
-        Download only data until this month (YYYY-MM format). Defaults to the current year and month.
+        Download only data until this month (YYYY-MM format). Defaults to the current month.
     Bulk download documentation
       https://desarrolladores.mercadopublico.cl/OCDS/DescargaMasiva
     """
