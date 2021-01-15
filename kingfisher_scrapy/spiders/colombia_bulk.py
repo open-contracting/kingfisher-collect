@@ -11,10 +11,10 @@ class ColombiaBulk(CompressedFileSpider):
       Colombia Compra Eficiente (CCE)
     Spider arguments
       from_date
-        Download only data from this month onward (YYYY-MM format). Defaults to '2005-11'.
+        Download only data from this year onward (YYYY format). Defaults to '2011'.
         Only supported for 'SECOP1' system.
       until_date
-        Download only data until this month (YYYY-MM format). Defaults to the current month.
+        Download only data until this year (YYYY format). Defaults to the current year.
         Only supported for 'SECOP1' system.
       system
         Filter by system:
@@ -32,6 +32,7 @@ class ColombiaBulk(CompressedFileSpider):
     name = 'colombia_bulk'
     date_format = 'year'
     data_type = 'release_in_Release'
+    default_from_date = '2011'
     encoding = 'iso-8859-1'
     compressed_file_format = 'json_lines'
     available_systems = {'SECOP1': 'SI', 'SECOP2': 'SECOP2', 'TVEC': 'TVEC'}
