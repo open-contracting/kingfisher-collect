@@ -13,8 +13,8 @@ class DominicanRepublic(CompressedFileSpider):
         Download only data from this year onward (YYYY format).
         If ``until_date`` is provided, defaults to '2018'.
       until_date
-        Download only data until this date (YYYY format).
-        If ``from_date`` is provided, defaults to current year.
+        Download only data until this year (YYYY format).
+        If ``from_date`` is provided, defaults to the current year.
     Bulk download documentation
       https://www.dgcp.gob.do/estandar-mundial-ocds/
     """
