@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
-from kingfisher_scrapy.util import parameters
+from kingfisher_scrapy.util import parameters, handle_http_error
 
 
 class UKFTS(LinksSpider):
@@ -32,3 +32,12 @@ class UKFTS(LinksSpider):
             url = f'{url}?updatedFrom={self.from_date}&updatedTo={self.until_date}'
 
         yield scrapy.Request(url, meta={'file_name': 'start.json'}, headers={'Accept': 'application/json'})
+
+    @handle_http_error
+    def parse(self, response):
+        data = response.text
+        # TODO: temporary fix for https://github.com/open-contracting/kingfisher-process/issues/323, remove when it's
+        #  solved in kingfisher process
+        data = data.replace('1e9999', '9999999')
+        response = response.replace(body=data)
+        yield from super().parse(response)
