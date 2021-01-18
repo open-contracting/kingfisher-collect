@@ -33,6 +33,10 @@ def test_start_requests_http_error(spider_name):
             response = Response('http://example.com', status=555, request=request)
             items = list(callback(response))
 
+            # if all errors are allowed the spider is handling its own errors and could retry after an error
+            if spider.custom_settings and spider.custom_settings.get('HTTPERROR_ALLOW_ALL', False):
+                items = [items[0]]
+
             assert len(items) == 1
             for item in items:
                 assert type(item) is FileError
