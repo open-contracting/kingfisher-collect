@@ -42,4 +42,5 @@ class PortugalBase(LinksSpider):
                 self.logger.info(f'Response status {response.status}, maximum attempts reached, giving up')
                 yield self.build_file_error_from_response(response)
         else:
+            self.number_of_retries = 0
             yield from super().parse(response)
