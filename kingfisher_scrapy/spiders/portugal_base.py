@@ -34,6 +34,7 @@ class PortugalBase(LinksSpider):
             if self.number_of_retries < 5:
                 self.logger.info(f'Response status {response.status} waiting 180 seconds before continue, '
                                  f'attempt {self.number_of_retries}')
+                yield self.build_file_error_from_response(response)
                 time.sleep(180)
                 self.number_of_retries = self.number_of_retries + 1
                 yield scrapy.Request(response.request.url, dont_filter=True, meta=response.request.meta)
