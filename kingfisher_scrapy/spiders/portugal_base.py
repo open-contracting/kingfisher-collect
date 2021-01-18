@@ -19,6 +19,8 @@ class PortugalBase(LinksSpider):
         'HTTPERROR_ALLOW_ALL': True
     }
 
+    number_of_retries = 0
+
     def start_requests(self):
         url = self.url
         if self.from_date and self.until_date:
@@ -29,8 +31,14 @@ class PortugalBase(LinksSpider):
         # after a undefined number of requests, the API returns 5XX errors. After waiting a few seconds the URL
         # works again
         if not self.is_http_success(response):
-            self.logger.info(f'Response status {response.status} waiting 120 seconds before continue')
-            time.sleep(120)
-            yield scrapy.Request(response.request.url, dont_filter=True, meta=response.request.meta)
+            if self.number_of_retries < 5:
+                self.logger.info(f'Response status {response.status} waiting 180 seconds before continue, '
+                                 f'attempt {self.number_of_retries}')
+                time.sleep(180)
+                self.number_of_retries = self.number_of_retries + 1
+                yield scrapy.Request(response.request.url, dont_filter=True, meta=response.request.meta)
+            else:
+                self.logger.info(f'Response status {response.status}, maximum attempts reached, giving up')
+                yield self.build_file_error_from_response(response)
         else:
             yield from super().parse(response)
