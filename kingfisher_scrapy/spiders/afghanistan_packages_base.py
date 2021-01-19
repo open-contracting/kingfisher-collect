@@ -18,14 +18,14 @@ class AfghanistanPackagesBase(SimpleSpider):
         urls = response.json()
         for url in urls:
             if self.from_date and self.until_date:
-                date = datetime.strptime(url[-10:], "%Y-%m-%d")
+                date = datetime.strptime(url[-10:], self.date_format)
                 if not (self.from_date <= date <= self.until_date):
                     continue
             yield self.build_request(url, formatter=components(-2), callback=self.parse_release_list)
 
     @handle_http_error
     def parse_release_list(self, response):
-        text_urls = response.xpath('//a/text()').getall()
-        urls = list(filter(lambda x: 'https://ocds.ageops.net/api/' in x, text_urls))
+        urls = response.xpath('//a/text()').getall()
         for url in urls:
-            yield self.build_request(url.strip(), formatter=components(-2))
+            if 'https://ocds.ageops.net/api/' in url:
+                yield self.build_request(url.strip(), formatter=components(-2))
