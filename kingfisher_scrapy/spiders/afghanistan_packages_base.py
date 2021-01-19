@@ -18,7 +18,7 @@ class AfghanistanPackagesBase(SimpleSpider):
         urls = response.json()
         for url in urls:
             if self.from_date and self.until_date:
-                date = datetime.strptime(url[-10:], "%Y-%m-%d")
+                date = datetime.strptime(url[-10:], '%Y-%m-%d')
                 if not (self.from_date <= date <= self.until_date):
                     continue
             yield self.build_request(url, formatter=components(-2), callback=self.parse_release_list)
