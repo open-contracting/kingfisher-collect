@@ -33,17 +33,16 @@ def test_start_requests_http_error(spider_name):
             response = Response('http://example.com', status=555, request=request)
             items = list(callback(response))
 
-            # if all errors are allowed the spider is handling its own errors and could retry after an error
-            if spider.custom_settings and spider.custom_settings.get('HTTPERROR_ALLOW_ALL', False):
-                items = [items[0]]
+            # if number_of_retries is set the spider is handling its own errors and could retry after an error
+            if not hasattr(spider, 'number_of_retries'):
 
-            assert len(items) == 1
-            for item in items:
-                assert type(item) is FileError
-                assert len(item) == 3
-                assert item['errors'] == {'http_code': 555}
-                assert item['file_name']
-                assert item['url']
+                assert len(items) == 1
+                for item in items:
+                    assert type(item) is FileError
+                    assert len(item) == 3
+                    assert item['errors'] == {'http_code': 555}
+                    assert item['file_name']
+                    assert item['url']
     except MissingEnvVarError as e:
         warnings.warn(f'{spidercls.name}: {e}')
 
