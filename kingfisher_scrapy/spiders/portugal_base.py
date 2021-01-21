@@ -37,7 +37,8 @@ class PortugalBase(LinksSpider):
         # After waiting a few seconds the URL works again
         if not self.is_http_success(response):
             if self.number_of_retries < self.max_number_of_retries:
-                self.retry(response, scrapy.Request(response.request.url, dont_filter=True, meta=response.request.meta))
+                return self.retry(response, scrapy.Request(response.request.url, dont_filter=True,
+                                                           meta=response.request.meta))
             else:
                 self.number_of_retries = 0
                 self.wait_time = self.initial_wait_time
