@@ -1,8 +1,10 @@
-from kingfisher_scrapy.base_spider import CompressedFileSpider, PeriodicSpider
-from kingfisher_scrapy.util import components
+import scrapy
+
+from kingfisher_scrapy.base_spider import CompressedFileSpider
+from kingfisher_scrapy.util import components, handle_http_error
 
 
-class Zambia(CompressedFileSpider, PeriodicSpider):
+class Zambia(CompressedFileSpider):
     """
     Domain
       Zambia Public Procurement Authority
@@ -14,12 +16,26 @@ class Zambia(CompressedFileSpider, PeriodicSpider):
     """
     name = 'zambia'
     data_type = 'record_package'
-    ocds_version = '1.0'
-
-    # PeriodicSpider variables
     date_format = 'year-month'
     default_from_date = '2016-07'
-    pattern = 'https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/{0.year:d}/{0.month:02d}'
+    ocds_version = '1.0'
 
-    def get_formatter(self):
-        return components(-2)
+    def start_requests(self):
+        yield scrapy.Request(
+            'https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackagelist',
+            meta={'file_name': 'list.json'},
+            callback=self.parse_list
+        )
+
+    @handle_http_error
+    def parse_list(self, response):
+        urls = response.json()['packagesPerMonth']
+        for url in urls:
+            if self.from_date and self.until_date:
+                year = int(url[69:73])
+                month = int(url[74:])
+                if not ((self.from_date.year <= year <= self.until_date.year)
+                        and (self.from_date.month <= month <= self.until_date.month)):
+                    continue
+            # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
+            yield self.build_request(url, formatter=components(-2))

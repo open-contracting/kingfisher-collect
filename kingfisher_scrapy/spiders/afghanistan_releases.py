@@ -1,8 +1,12 @@
-from kingfisher_scrapy.base_spider import PeriodicSpider
+from datetime import datetime
+
+import scrapy
+
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class AfghanistanReleases(PeriodicSpider):
+class AfghanistanReleases(SimpleSpider):
     """
     Domain
       Afghanistan Government Electronic & Open Procurement System (AGEOPS)
@@ -16,20 +20,28 @@ class AfghanistanReleases(PeriodicSpider):
     """
     name = 'afghanistan_releases'
     data_type = 'release'
-
-    # PeriodicSpider variables
     default_from_date = '2018-12-12'
-    pattern = 'https://ocds.ageops.net/api/ocds/releases/{}'
-    start_requests_callback = 'parse_list'
 
     download_delay = 1.5
+
+    def start_requests(self):
+        # A JSON array of URL strings, in reverse chronological order.
+        url = 'https://ocds.ageops.net/api/ocds/releases/dates'
+        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
         urls = response.json()
         for url in urls:
-            # URL looks like https://ocds.ageops.net/api/release/5ed2a62c4192f32c8c74a4e3
-            yield self.build_request(url, self.get_formatter())
+            if self.from_date and self.until_date:
+                date = datetime.strptime(url[-10:], self.date_format)
+                if not (self.from_date <= date <= self.until_date):
+                    continue
+            yield self.build_request(url, formatter=components(-2), callback=self.parse_release_list)
 
-    def get_formatter(self):
-        return components(-1)
+    @handle_http_error
+    def parse_release_list(self, response):
+        urls = response.json()
+        for url in urls:
+            # URL looks like https://ocds.ageops.net/api/release/5c10b7d67e0a947b1461057e
+            yield self.build_request(url, formatter=components(-2))

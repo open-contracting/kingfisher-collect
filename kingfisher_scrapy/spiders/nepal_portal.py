@@ -6,7 +6,7 @@ class NepalPortal(PeriodicSpider):
     """
     Domain
       Public Procurement Monitoring Office (PPMO)
-     Spider arguments
+    Spider arguments
       from_date
         Download only data from this year onward (YYYY format). Defaults to '2012'.
       until_date

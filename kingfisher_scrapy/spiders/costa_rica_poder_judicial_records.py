@@ -1,14 +1,16 @@
-from kingfisher_scrapy.base_spider import PeriodicSpider
-from kingfisher_scrapy.util import components
+import scrapy
+
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import components, handle_http_error
 
 
-class CostaRicaPoderJudicialRecords(PeriodicSpider):
+class CostaRicaPoderJudicialRecords(SimpleSpider):
     """
     Domain
       Poder Judicial de Costa Rica
     Spider arguments
       from_date
-        Download only data from this year onward (YYYY format). Defaults to '2016'.
+        Download only data from this year onward (YYYY format). Defaults to '2018'.
       until_date
         Download only data until this year (YYYY format). Defaults to the current year.
     Bulk download documentation
@@ -17,11 +19,21 @@ class CostaRicaPoderJudicialRecords(PeriodicSpider):
 
     name = 'costa_rica_poder_judicial_records'
     data_type = 'record_package'
-
-    # PeriodicSpider variables
     date_format = 'year'
-    default_from_date = '2016'
-    pattern = 'https://pjcrdatosabiertos.blob.core.windows.net/datosabiertos/OpenContracting/{}.json'
+    default_from_date = '2018'
 
-    def get_formatter(self):
-        return components(-1)
+    def start_requests(self):
+        url = 'http://datosabiertospj.eastus.cloudapp.azure.com/api/3/action/package_show?id=estandar-de-datos-de' \
+              '-contrataciones-abiertas-ocds'
+        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
+
+    @handle_http_error
+    def parse_list(self, response):
+        data = response.json()
+        for resource in data['result']['resources']:
+            if resource['format'].upper() == 'JSON':
+                if self.from_date and self.until_date:
+                    date = int(resource['url'][-9:-5])
+                    if not (self.from_date.year <= date <= self.until_date.year):
+                        continue
+                yield self.build_request(resource['url'], formatter=components(-1))
