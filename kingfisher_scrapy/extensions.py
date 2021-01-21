@@ -156,7 +156,7 @@ class KingfisherProcessAPI:
         Sends an API request to store a file error in Kingfisher Process when a spider callback generates an error.
         """
         # https://docs.scrapy.org/en/latest/topics/signals.html#scrapy.signals.spider_error
-        file_name = response.request.meta.get('file_name', 'spider_error.json')
+        file_name = response.request.meta.get('file_name', response.request.url)
         data = self._build_data_to_send(spider, file_name, response.request.url, failure)
         return self._request(spider, 'create_file_error', response.request.url, data)
 
