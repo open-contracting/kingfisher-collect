@@ -358,7 +358,7 @@ def test_spider_error(sample, is_sample, ok, tmpdir, caplog):
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
             'collection_sample': str(is_sample),
-            'file_name': 'spider_error.json',
+            'file_name': 'https://example.com/remote.json',
             'url': 'https://example.com/remote.json',
             # Specific to FileError.
             'errors': '"ExceptionRaised"',
