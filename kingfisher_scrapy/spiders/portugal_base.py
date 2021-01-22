@@ -1,4 +1,6 @@
 import scrapy
+from scrapy import signals
+from scrapy.exceptions import DontCloseSpider
 from twisted.internet import reactor, defer
 
 from kingfisher_scrapy.base_spider import LinksSpider
@@ -15,6 +17,17 @@ class PortugalBase(LinksSpider):
     max_number_of_retries = 5
     wait_time = initial_wait_time = 60
 
+    # from https://stackoverflow.com/questions/46698333/deferred-requests-in-scrapy
+    @classmethod
+    def from_crawler(cls, crawler, **kwargs):
+        spider = super().from_crawler(crawler, **kwargs)
+        crawler.signals.connect(spider.spider_idle, signal=signals.spider_idle)
+        return spider
+
+    @classmethod
+    def spider_idle(cls, spider):
+        raise DontCloseSpider()
+
     def start_requests(self):
         url = self.url
         if self.from_date and self.until_date:
@@ -25,12 +38,12 @@ class PortugalBase(LinksSpider):
     def retry(self, response, request):
         self.logger.info(f'Response status {response.status} waiting {self.wait_time} seconds before continue, '
                          f'attempt {self.number_of_retries}')
-        d = defer.Deferred()
-        reactor.callLater(self.wait_time, d.callback, request)
+        deferred = defer.Deferred()
+        reactor.callLater(self.wait_time, self.crawler.engine.schedule, request, spider=self)
         self.number_of_retries += 1
         # if it fails again for the same request, we wait more
         self.wait_time *= 2
-        return d
+        return deferred
 
     def parse(self, response):
         # after a undefined number of requests (around 36100?), the API returns 5XX errors.
