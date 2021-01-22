@@ -50,5 +50,5 @@ class UpdateDocs(ScrapyCommand):
                                 environment_variables = re.findall(r'^(\S.+)\n  ', dedent(section[1]), re.MULTILINE)
                                 infix = f"env {' '.join([f'{variable}=...' for variable in environment_variables])} "
 
-                        f.write(f'\n.. code-block:: bash\n')
+                        f.write('\n.. code-block:: bash\n')
                         f.write(f"\n   {infix}scrapy crawl {module.__name__.rsplit('.')[-1]}\n")
