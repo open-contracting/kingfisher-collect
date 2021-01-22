@@ -1,7 +1,7 @@
 import scrapy
 from scrapy import signals
 from scrapy.exceptions import DontCloseSpider
-from twisted.internet import reactor, defer
+from twisted.internet import defer, reactor
 
 from kingfisher_scrapy.base_spider import LinksSpider
 from kingfisher_scrapy.util import parameters
