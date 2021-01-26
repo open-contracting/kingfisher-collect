@@ -42,8 +42,9 @@ class PortugalBase(LinksSpider):
             request = scrapy.Request(response.request.url, meta=response.request.meta, dont_filter=True)
 
             self.logger.debug('Retrying %(request)s in %(wait_time)ds (failed %(retries)d times): HTTP %(status)d',
-                              {'request': response.request, 'retries': retries, 'status': response.status,
-                               'wait_time': wait_time}, extra={'spider': self})
+                              {'request': response.request, 'retries': response.request.meta['retries'],
+                               'status': response.status, 'wait_time': response.request.meta['delay_request']},
+                              extra={'spider': self})
 
             yield request
         else:
