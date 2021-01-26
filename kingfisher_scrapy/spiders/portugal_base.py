@@ -37,8 +37,8 @@ class PortugalBase(LinksSpider):
         if self.is_http_success(response):
             yield from super().parse(response)
         elif retries < self.max_retries:
-            response.request.meta['retries'] += 1
-            response.request.meta['delay_request'] *= 2
+            response.request.meta['retries'] = retries + 1
+            response.request.meta['delay_request'] = wait_time * 2
             request = scrapy.Request(response.request.url, meta=response.request.meta, dont_filter=True)
 
             self.logger.debug('Retrying %(request)s in %(wait_time)ds (failed %(retries)d times): HTTP %(status)d',
