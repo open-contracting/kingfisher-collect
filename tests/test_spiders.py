@@ -27,8 +27,8 @@ def test_start_requests_http_error(spider_name):
         # See scrapy.crawler.Crawler._create_spider
         spider = crawler.spidercls.from_crawler(crawler)
 
-        # If `retries` is set, the spider handles (and retries) error responses.
-        if hasattr(spider, 'retries'):
+        # If `max_retries` is set, the spider handles (and retries) error responses.
+        if hasattr(spider, 'max_retries'):
             spider.retries = spider.max_retries
 
         for request in spider.start_requests():
