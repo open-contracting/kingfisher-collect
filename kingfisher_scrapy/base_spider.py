@@ -189,7 +189,7 @@ class BaseSpider(scrapy.Spider):
         :rtype: scrapy.Request
         """
         file_name = formatter(url)
-        if not file_name.endswith(('.json', '.zip', '.xlsx', '.csv')):
+        if not file_name.endswith(('.json', '.zip', '.xlsx', '.csv', '.rar')):
             file_name += '.json'
         meta = {'file_name': file_name}
         if 'meta' in kwargs:
@@ -335,7 +335,6 @@ class CompressedFileSpider(BaseSpider):
     #. Inherit from ``CompressedFileSpider``
     #. Set a ``data_type`` class attribute to the data type of the compressed files
     #. Optionally, set an ``encoding`` class attribute to the encoding of the compressed files (default UTF-8)
-    #. Optionally, set a ``archive_format`` class attribute to the archive file format ("zip" or "rar").
     #. Optionally, set a ``compressed_file_format`` class attribute to the format of the compressed files
 
        ``json_lines``
@@ -367,14 +366,15 @@ class CompressedFileSpider(BaseSpider):
     encoding = 'utf-8'
     skip_pluck = 'Archive files are not supported'
     compressed_file_format = None
-    archive_format = 'zip'
     file_name_must_contain = ''
 
     @handle_http_error
     def parse(self, response):
+        archive_name, archive_format = os.path.splitext(response.request.meta['file_name'])
+        archive_format = archive_format.replace('.', '')
         if self.compressed_file_format:
-            yield self.build_file_from_response(response, data_type=self.archive_format, post_to_api=False)
-        if self.archive_format == 'zip':
+            yield self.build_file_from_response(response, data_type=archive_format, post_to_api=False)
+        if archive_format == 'zip':
             cls = ZipFile
         else:
             cls = RarFile
@@ -384,9 +384,9 @@ class CompressedFileSpider(BaseSpider):
             basename = os.path.basename(filename)
             if self.file_name_must_contain not in basename:
                 continue
-            if self.archive_format == 'rar' and file_info.isdir():
+            if archive_format == 'rar' and file_info.isdir():
                 continue
-            if self.archive_format == 'zip' and file_info.is_dir():
+            if archive_format == 'zip' and file_info.is_dir():
                 continue
             if not basename.endswith('.json'):
                 basename += '.json'
