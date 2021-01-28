@@ -6,8 +6,6 @@ import scrapy
 from twisted.internet import reactor
 from twisted.internet.defer import Deferred
 
-WAIT_META = 'wait_time'
-
 
 class ParaguayAuthMiddleware:
     """
@@ -81,7 +79,7 @@ class OpenOppsAuthMiddleware:
 
 
 # https://github.com/ArturGaspar/scrapy-delayed-requests/blob/master/scrapy_delayed_requests.py
-class DelayedRequestsMiddleware:
+class DelayedRequestMiddleware:
 
     """
     Downloader middleware that allows for delaying a request by a set 'wait_time' number of seconds.
@@ -89,7 +87,7 @@ class DelayedRequestsMiddleware:
     A delayed request is useful when an API fails and works again after waiting a few minutes.
     """
     def process_request(self, request, spider):
-        delay = request.meta.get(WAIT_META, None)
+        delay = request.meta.get('wait_time', None)
         if delay:
             d = Deferred()
             reactor.callLater(delay, d.callback, None)
