@@ -12,7 +12,7 @@ class PortugalBase(LinksSpider):
     download_delay = 1
 
     # We will wait 1, 2, 4, 8, 16 minutes (31 minutes total).
-    max_retries = 6
+    max_retries = 5
     initial_wait_time = 30
 
     custom_settings = {
@@ -28,19 +28,20 @@ class PortugalBase(LinksSpider):
 
         yield scrapy.Request(url, meta={'file_name': 'offset-1.json'})
 
+    # https://github.com/scrapy/scrapy/blob/master/scrapy/downloadermiddlewares/retry.py
     def parse(self, response):
-
-        retries = response.request.meta.get('retries', 0)
+        retries = response.request.meta.get('retries', 0) + 1
         wait_time = response.request.meta.get(WAIT_META, self.initial_wait_time)
 
         # Every ~36,000 requests, the API returns HTTP errors. After a few minutes, it starts working again.
         # https://github.com/open-contracting/kingfisher-collect/issues/545#issuecomment-762768460
         if self.is_http_success(response):
             yield from super().parse(response)
-        elif retries < self.max_retries:
-            response.request.meta['retries'] = retries + 1
-            response.request.meta[WAIT_META] = wait_time * 2
-            request = scrapy.Request(response.request.url, meta=response.request.meta, dont_filter=True)
+        elif retries <= self.max_retries:
+            request = response.request.copy()
+            request.meta['retries'] = retries
+            request.meta[WAIT_META] = wait_time * 2
+            request.dont_filter = True
 
             self.logger.debug('Retrying %(request)s in %(wait_time)ds (failed %(retries)d times): HTTP %(status)d',
                               {'request': response.request, 'retries': response.request.meta['retries'],
@@ -52,4 +53,5 @@ class PortugalBase(LinksSpider):
             self.logger.error('Gave up retrying %(request)s (failed %(retries)d times): HTTP %(status)d',
                               {'request': response.request, 'retries': retries, 'status': response.status},
                               extra={'spider': self})
+
             yield self.build_file_error_from_response(response)
