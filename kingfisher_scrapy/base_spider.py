@@ -371,7 +371,7 @@ class CompressedFileSpider(BaseSpider):
     @handle_http_error
     def parse(self, response):
         archive_name, archive_format = os.path.splitext(response.request.meta['file_name'])
-        archive_format = archive_format.replace('.', '')
+        archive_format = archive_format[1:].lower()
         if self.compressed_file_format:
             yield self.build_file_from_response(response, data_type=archive_format, post_to_api=False)
         if archive_format == 'zip':
