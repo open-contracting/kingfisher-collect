@@ -1,25 +1,16 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
-from kingfisher_scrapy.middlewares import WAIT_META
 from kingfisher_scrapy.util import parameters
 
 
 class PortugalBase(LinksSpider):
     default_from_date = '2010-01-01'
     next_page_formatter = staticmethod(parameters('offset'))
-    # The API otherwise returns HTTP 429.
-    download_delay = 1
 
     # We will wait 1, 2, 4, 8, 16 minutes (31 minutes total).
     max_retries = 5
     half_initial_wait_time = 30
-
-    custom_settings = {
-        'DOWNLOADER_MIDDLEWARES': {
-            'kingfisher_scrapy.middlewares.DelayedRequestsMiddleware': 543,
-        }
-    }
 
     def start_requests(self):
         url = self.url
@@ -31,7 +22,7 @@ class PortugalBase(LinksSpider):
     # https://github.com/scrapy/scrapy/blob/master/scrapy/downloadermiddlewares/retry.py
     def parse(self, response):
         retries = response.request.meta.get('retries', 0) + 1
-        wait_time = response.request.meta.get(WAIT_META, self.half_initial_wait_time) * 2
+        wait_time = response.request.meta.get('wait_time', self.half_initial_wait_time) * 2
 
         # Every ~36,000 requests, the API returns HTTP errors. After a few minutes, it starts working again.
         # The number of failed attempts in the log messages includes the original request.
@@ -41,7 +32,7 @@ class PortugalBase(LinksSpider):
         elif retries <= self.max_retries:
             request = response.request.copy()
             request.meta['retries'] = retries
-            request.meta[WAIT_META] = wait_time
+            request.meta['wait_time'] = wait_time
             request.dont_filter = True
 
             self.logger.debug('Retrying %(request)s in %(wait_time)ds (failed %(failures)d times): HTTP %(status)d',
