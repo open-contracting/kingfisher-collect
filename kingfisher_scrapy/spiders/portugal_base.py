@@ -1,6 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
+from kingfisher_scrapy.middlewares import WAIT_META
 from kingfisher_scrapy.util import parameters
 
 
@@ -30,7 +31,7 @@ class PortugalBase(LinksSpider):
     def parse(self, response):
 
         retries = response.request.meta.get('retries', 0)
-        wait_time = response.request.meta.get('delay_request', self.initial_wait_time)
+        wait_time = response.request.meta.get(WAIT_META, self.initial_wait_time)
 
         # Every ~36,000 requests, the API returns HTTP errors. After a few minutes, it starts working again.
         # https://github.com/open-contracting/kingfisher-collect/issues/545#issuecomment-762768460
@@ -38,12 +39,12 @@ class PortugalBase(LinksSpider):
             yield from super().parse(response)
         elif retries < self.max_retries:
             response.request.meta['retries'] = retries + 1
-            response.request.meta['delay_request'] = wait_time * 2
+            response.request.meta[WAIT_META] = wait_time * 2
             request = scrapy.Request(response.request.url, meta=response.request.meta, dont_filter=True)
 
             self.logger.debug('Retrying %(request)s in %(wait_time)ds (failed %(retries)d times): HTTP %(status)d',
                               {'request': response.request, 'retries': response.request.meta['retries'],
-                               'status': response.status, 'wait_time': response.request.meta['delay_request']},
+                               'status': response.status, 'wait_time': response.request.meta[WAIT_META]},
                               extra={'spider': self})
 
             yield request
