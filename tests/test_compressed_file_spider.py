@@ -28,7 +28,7 @@ def test_parse():
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == spider.data_type
     assert item['encoding'] == 'utf-8'
-    assert hasattr(item['data'], 'package') is False
+    assert 'package' not in item['data']
     assert item['data'] is not None
 
     with pytest.raises(StopIteration):
@@ -59,6 +59,9 @@ def test_parse_json_lines(sample, len_items):
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == spider.data_type
     assert item['encoding'] == 'utf-8'
+
+    with pytest.raises(StopIteration):
+        next(generator)
 
 
 @pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), (5, 1, 5)])

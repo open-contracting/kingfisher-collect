@@ -11,7 +11,7 @@ from jsonpointer import resolve_pointer
 from rarfile import RarFile
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError
+from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, UnknownArchiveFormatError
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.util import add_query_string, handle_http_error
 
@@ -333,10 +333,10 @@ class CompressedFileSpider(BaseSpider):
 
         if archive_format == 'zip':
             cls = ZipFile
-        else archive_format == 'rar':
+        elif archive_format == 'rar':
             cls = RarFile
         else:
-            raise Exception(response.request.meta['file_name'])
+            raise UnknownArchiveFormat(response.request.meta['file_name'])
 
         archive_file = cls(BytesIO(response.body))
         for file_info in archive_file.infolist():
