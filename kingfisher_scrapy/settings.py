@@ -58,6 +58,8 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #    'kingfisher_scrapy.middlewares.MyCustomSpiderMiddleware': 543,
 #}
 SPIDER_MIDDLEWARES = {
+    # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#topics-spider-middleware-setting
+    # `process_spider_output` is invoked in decreasing order.
     'kingfisher_scrapy.middlewares.KingfisherTransformJsonLinesMiddleware': 500,
     'kingfisher_scrapy.middlewares.KingfisherTransformRootPathMiddleware': 400,
     'kingfisher_scrapy.middlewares.KingfisherTransformAddPackageMiddleware': 300,
