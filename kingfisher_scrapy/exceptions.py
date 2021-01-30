@@ -16,3 +16,7 @@ class AccessTokenError(KingfisherScrapyError):
 
 class MissingNextLinkError(KingfisherScrapyError):
     """Raised when a next link is not found on the first page of results"""
+
+
+class UnknownArchiveFormat(KingfisherScrapyError):
+    """Raised if the archive format of a file can't be determined from the filename"""

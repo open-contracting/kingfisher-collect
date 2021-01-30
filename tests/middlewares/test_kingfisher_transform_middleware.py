@@ -15,17 +15,17 @@ from kingfisher_scrapy.middlewares import (
 from tests import response_fixture, spider_with_crawler
 
 items = [
-    (File({
+    File({
         'file_name': 'test',
         'data': 'data',
         'data_type': 'release_package',
         'url': 'http://test.com',
-    })),
-    (FileError({
+    }),
+    FileError({
         'file_name': 'test',
         'url': 'http://test.com',
         'errors': ''
-    }))
+    })
 ]
 
 
@@ -53,17 +53,16 @@ def test_yield_items(item):
     assert item == returned_item
 
 
-@pytest.mark.parametrize('data_type,data,root_path', [('release', b'{"ocid": "abc"}', ''),
-                                                      ('record', b'{"ocid": "abc"}', ''),
-                                                      ('record', b'[{"ocid": "abc"}]', 'item'),
-                                                      ('release', b'[{"ocid": "abc"}]', 'item'),
-                                                      ('release', b'{"results":[{"ocid": "abc"}]}', 'results.item'),
-                                                      ('record', b'{"results":[{"ocid": "abc"}]}', 'results.item'),
-                                                      ('release_package', b'[{"releases":[{"ocid": "abc"}], '
-                                                                          b'"uri": "test"}]', 'item'),
-                                                      ('record_package', b'[{"records":[{"ocid": "abc"}], '
-                                                                         b'"uri": "test"}]', 'item')
-                                                      ])
+@pytest.mark.parametrize('data_type,data,root_path', [
+    ('release', b'{"ocid": "abc"}', ''),
+    ('record', b'{"ocid": "abc"}', ''),
+    ('record', b'[{"ocid": "abc"}]', 'item'),
+    ('release', b'[{"ocid": "abc"}]', 'item'),
+    ('release', b'{"results":[{"ocid": "abc"}]}', 'results.item'),
+    ('record', b'{"results":[{"ocid": "abc"}]}', 'results.item'),
+    ('release_package', b'[{"releases":[{"ocid": "abc"}], "uri": "test"}]', 'item'),
+    ('record_package', b'[{"records":[{"ocid": "abc"}], "uri": "test"}]', 'item'),
+])
 def test_data_types(data_type, data, root_path):
     spider = spider_with_crawler()
     spider.root_path = root_path
@@ -107,7 +106,7 @@ def test_parse_release_package(sample, len_items, len_releases):
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
         zipfile.writestr('test.json', json.dumps(package))
 
-    response = response_fixture(body=io.getvalue())
+    response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
     generator = spider.parse(response)
     item = next(generator)
     generator = transform_middleware.process_spider_output(response, [item], spider)
@@ -139,7 +138,7 @@ def test_parse_json_lines(sample, len_items):
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
         zipfile.writestr('test.json', ''.join(content))
 
-    response = response_fixture(body=io.getvalue())
+    response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
     generator = spider.parse(response)
     item = next(generator)
     generator = json_lines_middleware.process_spider_output(response, [item], spider)

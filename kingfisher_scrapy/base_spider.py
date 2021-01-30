@@ -333,8 +333,10 @@ class CompressedFileSpider(BaseSpider):
 
         if archive_format == 'zip':
             cls = ZipFile
-        else:
+        else archive_format == 'rar':
             cls = RarFile
+        else:
+            raise Exception(response.request.meta['file_name'])
 
         archive_file = cls(BytesIO(response.body))
         for file_info in archive_file.infolist():
