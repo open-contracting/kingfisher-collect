@@ -57,7 +57,6 @@ def test_build_file_from_response():
         "data_type": 'release_package',
         "url": 'https://example.com/remote.json',
         'encoding': 'iso-8859-1',
-        'post_to_api': True,
     })
 
 
@@ -76,7 +75,6 @@ def test_build_file():
         "data_type": 'release_package',
         "url": 'https://example.com/remote.json',
         'encoding': 'iso-8859-1',
-        'post_to_api': True,
     })
 
 

@@ -52,9 +52,8 @@ def test_from_crawler_missing_arguments(api_url, api_key):
 @pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
 @pytest.mark.parametrize('ok', [True, False])
 @pytest.mark.parametrize('directory', [True, False])
-@pytest.mark.parametrize('post_to_api', [True, False])
 @pytest.mark.parametrize('crawl_time', [None, '2020-01-01T00:00:00'])
-def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, post_to_api, crawl_time,
+def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, crawl_time,
                            tmpdir, caplog):
     with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
         mocked.return_value = 200 if ok else 400
@@ -73,7 +72,6 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
             url='https://example.com/remote.json',
             data=b'{"key": "value"}',
             data_type='release_package',
-            post_to_api=post_to_api,
             **kwargs,
         )
 
@@ -82,51 +80,45 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
 
         response = yield extension.item_scraped(item, spider)
 
-        if post_to_api:
-            data = yield response.json()
+        data = yield response.json()
 
-            form = {
-                'collection_source': 'test',
-                'collection_data_version': '2001-02-03 04:05:06',
-                'collection_sample': str(is_sample),
-                'file_name': 'file.json',
-                'url': 'https://example.com/remote.json',
-                # Specific to File.
-                'data_type': 'release_package',
-                'encoding': encoding2,
-            }
-            if note:
-                form['collection_note'] = note
-            if crawl_time:
-                form['collection_data_version'] = '2020-01-01 00:00:00'
-                path = path.replace('20010203_040506', '20200101_000000')
+        form = {
+            'collection_source': 'test',
+            'collection_data_version': '2001-02-03 04:05:06',
+            'collection_sample': str(is_sample),
+            'file_name': 'file.json',
+            'url': 'https://example.com/remote.json',
+            # Specific to File.
+            'data_type': 'release_package',
+            'encoding': encoding2,
+        }
+        if note:
+            form['collection_note'] = note
+        if crawl_time:
+            form['collection_data_version'] = '2020-01-01 00:00:00'
+            path = path.replace('20010203_040506', '20200101_000000')
+        if directory:
+            form['local_file_name'] = tmpdir.join('xxx', path)
+
+        with open(tmpdir.join(path)) as f:
+            assert data['method'] == 'POST'
+            assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/file/'
+            assert data['headers']['Authorization'] == 'ApiKey xxx'
+            assert data['form'] == form
+            assert data['args'] == {}
+            assert data['data'] == ''
             if directory:
-                form['local_file_name'] = tmpdir.join('xxx', path)
-
-            with open(tmpdir.join(path)) as f:
-                assert data['method'] == 'POST'
-                assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/file/'
-                assert data['headers']['Authorization'] == 'ApiKey xxx'
-                assert data['form'] == form
-                assert data['args'] == {}
-                assert data['data'] == ''
-                if directory:
-                    assert data['files'] == {}
-                else:
-                    assert data['files'] == {'file': f.read()}
-        else:
-            assert response is None
+                assert data['files'] == {}
+            else:
+                assert data['files'] == {'file': f.read()}
 
         if not ok:
-            if post_to_api:
-                message = 'create_file failed (https://example.com/remote.json) with status code: 400'
+            message = 'create_file failed (https://example.com/remote.json) with status code: 400'
 
-                assert len(caplog.records) == 1
-                assert caplog.records[0].name == 'test'
-                assert caplog.records[0].levelname == 'WARNING'
-                assert caplog.records[0].message == message
-            else:
-                assert len(caplog.records) == 0
+            assert len(caplog.records) == 1
+            assert caplog.records[0].name == 'test'
+            assert caplog.records[0].levelname == 'WARNING'
+            assert caplog.records[0].message == message
 
 
 @pytest_twisted.inlineCallbacks

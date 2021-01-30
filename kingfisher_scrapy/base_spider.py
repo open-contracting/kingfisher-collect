@@ -207,7 +207,7 @@ class BaseSpider(scrapy.Spider):
         kwargs.setdefault('data', response.body)
         return self.build_file(**kwargs)
 
-    def build_file(self, *, file_name=None, url=None, data=None, data_type=None, encoding='utf-8', post_to_api=True):
+    def build_file(self, *, file_name=None, url=None, data=None, data_type=None, encoding='utf-8'):
         """
         Returns a File item to yield.
         """
@@ -217,7 +217,6 @@ class BaseSpider(scrapy.Spider):
             'data_type': data_type,
             'url': url,
             'encoding': encoding,
-            'post_to_api': post_to_api,
         })
 
     def build_file_item(self, *, number=None, file_name=None, url=None, data=None, data_type=None, encoding='utf-8'):
