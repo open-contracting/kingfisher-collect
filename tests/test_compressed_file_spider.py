@@ -26,7 +26,7 @@ def test_parse():
     assert type(item) is File
     assert item['file_name'] == 'test.json'
     assert item['url'] == 'http://example.com'
-    assert item['data_type'] == spider.data_type
+    assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
     assert 'package' not in item['data']
     assert item['data'] is not None
@@ -57,8 +57,10 @@ def test_parse_json_lines(sample, len_items):
     assert len(item) == 5
     assert item['file_name'] == 'test.json'
     assert item['url'] == 'http://example.com'
-    assert item['data_type'] == spider.data_type
+    assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
+    assert 'package' not in item['data']
+    assert item['data'] is not None
 
     with pytest.raises(StopIteration):
         next(generator)
@@ -86,10 +88,13 @@ def test_parse_release_package(sample, len_items, len_releases):
     assert len(item) == 5
     assert item['file_name'] == 'test.json'
     assert item['url'] == 'http://example.com'
-    assert item['data_type'] == spider.data_type
+    assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
     assert item['data']['package'] is not None
     assert item['data']['data'] is not None
+
+    with pytest.raises(StopIteration):
+        next(generator)
 
 
 def test_parse_zip_empty_dir():
@@ -102,6 +107,7 @@ def test_parse_zip_empty_dir():
         zipfile.writestr(empty_folder, '')
     response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
     generator = spider.parse(response)
+
     with pytest.raises(StopIteration):
         next(generator)
 
@@ -119,10 +125,12 @@ def test_parse_rar_file():
     item = next(generator)
 
     assert type(item) is File
+    assert len(item) == 5
     assert item['file_name'] == 'test.json'
     assert item['url'] == 'http://example.com'
-    assert item['data_type'] == spider.data_type
+    assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
+    assert 'package' not in item['data']
     assert item['data'] is not None
 
     with pytest.raises(StopIteration):
