@@ -19,7 +19,7 @@ def test_parse():
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
         zipfile.writestr('test.json', '{}')
 
-    response = response_fixture(body=io.getvalue())
+    response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
     generator = spider.parse(response)
     item = next(generator)
 
@@ -49,7 +49,7 @@ def test_parse_json_lines(sample, len_items):
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
         zipfile.writestr('test.json', ''.join(content))
 
-    response = response_fixture(body=io.getvalue())
+    response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
     generator = spider.parse(response)
     item = next(generator)
 
@@ -75,7 +75,7 @@ def test_parse_release_package(sample, len_items, len_releases):
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
         zipfile.writestr('test.json', json.dumps(package))
 
-    response = response_fixture(body=io.getvalue())
+    response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
     generator = spider.parse(response)
     item = next(generator)
 
@@ -97,7 +97,7 @@ def test_parse_zip_empty_dir():
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
         empty_folder = ZipInfo(os.path.join('test', 'test', '/'))
         zipfile.writestr(empty_folder, '')
-    response = response_fixture(body=io.getvalue())
+    response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
     generator = spider.parse(response)
     with pytest.raises(StopIteration):
         next(generator)
@@ -106,13 +106,12 @@ def test_parse_zip_empty_dir():
 def test_parse_rar_file():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = 'release_package'
-    spider.archive_format = 'rar'
 
     # the rar library does'nt support the write mode so we use a static rar file
     rar_file_path = os.path.join(pathlib.Path(__file__).parent.absolute(), 'data', 'test.rar')
     with open(rar_file_path, 'rb') as f:
         io = BytesIO(f.read())
-    response = response_fixture(body=io.getvalue())
+    response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.rar'})
     generator = spider.parse(response)
     item = next(generator)
 

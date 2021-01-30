@@ -120,6 +120,17 @@ The Scrapy framework is very flexible. To maintain a good separation of concerns
 
 When setting a custom `Request.meta key <https://docs.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request.meta>`__, check that the attribute name isn't `already in use <https://docs.scrapy.org/en/latest/topics/request-response.html#topics-request-meta>`__ by Scrapy.
 
+Update requirements
+-------------------
+
+Update the requirements files `as documented <https://ocp-software-handbook.readthedocs.io/en/latest/python/applications.html#requirements>`__ in the OCP Software Development Handbook.
+
+Then, re-calculate the checksum for the ``requirements.txt`` file. The checksum is used by deployments to determine whether to update dependencies:
+
+.. code-block:: bash
+
+   shasum -a 256 requirements.txt > requirements.txt.sha256
+
 API reference
 -------------
 
