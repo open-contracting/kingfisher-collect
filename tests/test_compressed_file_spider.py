@@ -36,7 +36,7 @@ def test_parse():
 
 
 @pytest.mark.parametrize('sample,len_items', [(None, 20), (5, 5)])
-def test_parse_json_lines(sample, len_items):
+def test_parse_line_delimited(sample, len_items):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.line_delimited = True
