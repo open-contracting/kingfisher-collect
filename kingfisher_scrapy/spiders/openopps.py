@@ -32,10 +32,15 @@ class OpenOpps(BaseSpider):
     """
     name = 'openopps'
     download_delay = 1
+    custom_settings = {
+        'DOWNLOADER_MIDDLEWARES': {
+            'kingfisher_scrapy.middlewares.OpenOppsAuthMiddleware': 543,
+        },
+    }
 
     # BaseSpider
-    root_path = 'item'
     default_from_date = '2011-01-01'
+    root_path = 'item'
 
     access_token = None
     api_limit = 10000  # OpenOpps API limit for search results
@@ -46,12 +51,6 @@ class OpenOpps(BaseSpider):
 
     base_page_url = 'https://api.openopps.com/api/ocds/?format=json&ordering=releasedate&page_size=1000&' \
                     'releasedate__gte={}&releasedate__lte={}'
-
-    custom_settings = {
-        'DOWNLOADER_MIDDLEWARES': {
-            'kingfisher_scrapy.middlewares.OpenOppsAuthMiddleware': 543,
-        },
-    }
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):

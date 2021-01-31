@@ -9,6 +9,13 @@ from kingfisher_scrapy.util import components, handle_http_error, parameters, re
 
 
 class ParaguayDNCPBaseSpider(SimpleSpider):
+    custom_settings = {
+        'DOWNLOADER_MIDDLEWARES': {
+            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
+        },
+        'CONCURRENT_REQUESTS': 1,
+    }
+
     # BaseSpider
     date_format = 'datetime'
     default_from_date = '2010-01-01T00:00:00'
@@ -25,13 +32,6 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
     auth_url = f'{base_url}/oauth/token'
     request_token = None
     max_attempts = 10
-
-    custom_settings = {
-        'DOWNLOADER_MIDDLEWARES': {
-            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
-        },
-        'CONCURRENT_REQUESTS': 1,
-    }
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):

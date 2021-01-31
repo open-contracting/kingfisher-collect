@@ -19,9 +19,9 @@ class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
     start_requests_callback = 'build_periodic_requests'
 
     # IndexSpider
+    count_pointer = '/pagination/total'
     limit = 100
     formatter = staticmethod(components(-4, -1))
-    count_pointer = '/pagination/total'
     yield_list_results = False
 
     available_systems = {

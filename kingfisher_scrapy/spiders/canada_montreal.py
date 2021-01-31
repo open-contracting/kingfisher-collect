@@ -20,8 +20,8 @@ class CanadaMontreal(IndexSpider):
     data_type = 'release_package'
 
     # IndexSpider
-    limit = 10000
     count_pointer = '/meta/count'
+    limit = 10000
     formatter = staticmethod(parameters('offset'))
 
     def start_requests(self):

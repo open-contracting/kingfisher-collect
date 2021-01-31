@@ -50,10 +50,9 @@ class BaseSpider(scrapy.Spider):
     date_format = 'date'
     date_required = False
     unflatten = False
-    root_path = ''
-    line_delimited = False
-
     unflatten_args = {}
+    line_delimited = False
+    root_path = ''
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
@@ -487,6 +486,8 @@ class IndexSpider(SimpleSpider):
            configure the spider to send a ``page`` query string parameter instead of a pair of ``limit`` and ``offset``
            query string parameters. The spider then yields a request for each offset/page.
 
+    #. Set a ``formatter`` class attribute to set the file name as in
+       :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`.
     #. Write a ``start_requests`` method to yield the initial URL. The request's ``callback`` parameter should be set
        to ``self.parse_list``.
 

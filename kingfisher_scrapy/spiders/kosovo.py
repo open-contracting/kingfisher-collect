@@ -19,9 +19,9 @@ class Kosovo(SimpleSpider):
     name = 'kosovo'
 
     # BaseSpider
-    root_path = 'item'
     date_format = 'datetime'
     default_from_date = '2000-01-01T00:00:00'
+    root_path = 'item'
 
     # SimpleSpider
     data_type = 'release'
