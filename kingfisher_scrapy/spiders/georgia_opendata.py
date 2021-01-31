@@ -10,7 +10,6 @@ class GeorgiaOpenData(CompressedFileSpider):
     """
     name = 'georgia_opendata'
     data_type = 'release_package'
-    compressed_file_format = 'release_package'
 
     # The file is about 450MB.
     download_timeout = 1200  # 20min
