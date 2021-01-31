@@ -293,6 +293,10 @@ class CompressedFileSpider(BaseSpider):
 
             def start_requests(self):
                 yield self.build_request('https://example.com/api/packages.zip', formatter=components(-1))
+
+    .. note::
+
+       ``resize_package = True`` is not compatible with ``line_delimited = True`` or ``root_path``.
     """
 
     encoding = 'utf-8'
