@@ -21,17 +21,25 @@ class BaseSpider(scrapy.Spider):
     """
     -  If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for `Kingfisher
        Process integration <https://github.com/open-contracting/kingfisher-collect/issues/411>`__.
-    -  If the spider supports ``from_date`` and ``until_date`` spider arguments, set the ``default_from_date`` class
-       attribute to a date string.
-    -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
-       ``default_from_date`` class attribute to a date string.
+    -  If the spider supports ``from_date`` and ``until_date`` spider arguments:
+
+       -  If the source supports time components, set a ``date_format`` class attribute to "datetime".
+       -  Set a ``default_from_date`` class attribute to a date ("YYYY-MM-DD") or datetime ("YYYY-MM-DDTHH:MM:SS").
+       -  If the source stopped publishing, set a ``default_until_date`` class attribute to a date or datetime.
+
+       The :class:`~kingfisher_scrapy.base_spider.PeriodicSpider` class changes the allowed date formats to "year"
+       ("YYYY") and "year-month" ("YYYY-MM").
+
+    -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set a
+       ``default_from_date`` class attribute as above.
     -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
     -  If a spider collects data as CSV or XLSX files, add a ``unflatten = True`` class attribute to convert each
        item to json files in the Unflatten pipeline class using the ``unflatten`` command from Flatten Tool.
        If you need to set more arguments for the unflatten command, set a ``unflatten_args`` dict with them.
-    -  If the data is not formatted as OCDS (record, release, record package or release package), set the ``root_path``
+    -  If the data is not formatted as OCDS (record, release, record package or release package), set a ``root_path``
        class attribute to the path to the OCDS data.
     -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
+
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
     ``get_default_until_date()`` return value (which is the current time, by default).
@@ -236,8 +244,10 @@ class BaseSpider(scrapy.Spider):
     @classmethod
     def get_default_until_date(cls, spider):
         """
-        Returns the default value of the ``until_date`` spider argument.
+        Returns the ``default_until_date`` class attribute if truthy. Otherwise, returns the current time.
         """
+        if getattr(spider, 'default_until_date', None):
+            return spider.default_until_date
         return datetime.utcnow()
 
 
@@ -415,9 +425,8 @@ class PeriodicSpider(SimpleSpider):
 
     #. Implement a ``get_formatter`` method to return the formatter to use in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls
-    #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a string
-    #. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a
-       string, if the source is known to have stopped publishing - otherwise, it defaults to today
+    #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM")
+    #. If the source stopped publishing, set a ``default_until_date`` class attribute to a year or year-month
     #. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
        :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
 
@@ -435,15 +444,6 @@ class PeriodicSpider(SimpleSpider):
             self.start_requests_callback = getattr(self, self.start_requests_callback)
         else:
             self.start_requests_callback = self.parse
-
-    @classmethod
-    def get_default_until_date(cls, spider):
-        """
-        Returns the ``default_until_date`` class attribute if truthy. Otherwise, returns today's date.
-        """
-        if getattr(spider, 'default_until_date', None):
-            return spider.default_until_date
-        return datetime.today()
 
     def start_requests(self):
         start = self.from_date
