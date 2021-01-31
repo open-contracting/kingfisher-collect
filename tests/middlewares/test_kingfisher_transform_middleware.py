@@ -5,18 +5,19 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 import pytest
 
-from kingfisher_scrapy.base_spider import CompressedFileSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider, SimpleSpider
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.middlewares import (
     KingfisherTransformAddPackageMiddleware,
-    KingfisherTransformJsonLinesMiddleware,
+    KingfisherTransformLineDelimitedJSONMiddleware,
     KingfisherTransformResizePackageMiddleware,
     KingfisherTransformRootPathMiddleware)
 from tests import response_fixture, spider_with_crawler
 
+
 @pytest.mark.parametrize('middleware', [
     KingfisherTransformAddPackageMiddleware,
-    KingfisherTransformJsonLinesMiddleware,
+    KingfisherTransformLineDelimitedJSONMiddleware,
     KingfisherTransformResizePackageMiddleware,
     KingfisherTransformRootPathMiddleware,
 ])
@@ -119,12 +120,43 @@ def test_parse_release_package(sample, len_releases):
 
 
 @pytest.mark.parametrize('sample', [None, 5])
-def test_parse_json_lines(sample):
+def test_line_delimited_json_middleware(sample):
+    spider = spider_with_crawler(spider_class=SimpleSpider, sample=sample)
+    spider.data_type = 'release_package'
+    spider.line_delimited = True
+
+    middleware = KingfisherTransformLineDelimitedJSONMiddleware()
+
+    content = []
+    for i in range(1, 21):
+        content.append('{"key": %s}\n' % i)
+
+    response = response_fixture(body=''.join(content), meta={'file_name': 'test.json'})
+    generator = spider.parse(response)
+    item = next(generator)
+
+    generator = middleware.process_spider_output(response, [item], spider)
+    transformed_items = list(generator)
+
+    for i, item in enumerate(transformed_items, 1):
+        assert type(item) is FileItem
+        assert item == {
+            'file_name': 'test.json',
+            'url': 'http://example.com',
+            'number': i,
+            'data': '{"key": %s}\n' % i,
+            'data_type': 'release_package',
+            'encoding': 'utf-8'
+        }
+
+
+@pytest.mark.parametrize('sample', [None, 5])
+def test_line_delimited_json_middleware_compressed(sample):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
-    spider.compressed_file_format = 'json_lines'
+    spider.line_delimited = True
 
-    middleware = KingfisherTransformJsonLinesMiddleware()
+    middleware = KingfisherTransformLineDelimitedJSONMiddleware()
 
     content = []
     for i in range(1, 21):

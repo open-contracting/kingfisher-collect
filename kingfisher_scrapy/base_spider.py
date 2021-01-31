@@ -12,7 +12,7 @@ from rarfile import RarFile
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, UnknownArchiveFormatError
-from kingfisher_scrapy.items import File, FileError, FileItem
+from kingfisher_scrapy.items import File, FileError
 from kingfisher_scrapy.util import add_query_string, handle_http_error
 
 browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
@@ -32,6 +32,7 @@ class BaseSpider(scrapy.Spider):
        If you need to set more arguments for the unflatten command, set a ``unflatten_args`` dict with them.
     -  If the data is not formatted as OCDS (record, release, record package or release package), set the ``root_path``
        class attribute to the path to the OCDS data.
+    -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
     ``get_default_until_date()`` return value (which is the current time, by default).
@@ -43,6 +44,7 @@ class BaseSpider(scrapy.Spider):
     date_required = False
     unflatten = False
     root_path = ''
+    line_delimited = False
 
     unflatten_args = {}
 
@@ -219,19 +221,6 @@ class BaseSpider(scrapy.Spider):
             'encoding': encoding,
         })
 
-    def build_file_item(self, *, number=None, file_name=None, url=None, data=None, data_type=None, encoding='utf-8'):
-        """
-        Returns a FileItem item to yield.
-        """
-        return FileItem({
-            'number': number,
-            'file_name': file_name,
-            'data': data,
-            'data_type': data_type,
-            'url': url,
-            'encoding': encoding,
-        })
-
     def build_file_error_from_response(self, response, **kwargs):
         """
         Returns a FileError item to yield, based on the response to a request.
@@ -299,8 +288,6 @@ class CompressedFileSpider(BaseSpider):
     #. Optionally, set an ``encoding`` class attribute to the encoding of the compressed files (default UTF-8)
     #. Optionally, set a ``compressed_file_format`` class attribute to the format of the compressed files
 
-       ``json_lines``
-         Yields each line of each compressed file.
        ``release_package``
          Re-packages the releases in the compressed files in groups of
          :const:`~kingfisher_scrapy.base_spider.BaseSpider.MAX_RELEASES_PER_PACKAGE`, and yields the packages.

@@ -6,6 +6,7 @@ import pytest
 from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import KingfisherFilesStore
+from kingfisher_scrapy.items import FileItem
 from tests import spider_with_crawler, spider_with_files_store
 
 
@@ -68,17 +69,19 @@ def test_item_scraped_with_build_file_and_existing_directory():
         files_store = os.path.join(tmpdirname, 'data')
         spider = spider_with_crawler(settings={'FILES_STORE': files_store})
         extension = KingfisherFilesStore.from_crawler(spider.crawler)
+        item = spider.build_file(file_name='file.json', data=b'{"key": "value"}')
 
         os.makedirs(os.path.join(files_store, 'test', '20010203_040506'))
 
         # No FileExistsError exception.
-        extension.item_scraped(spider.build_file(file_name='file.json', data=b'{"key": "value"}'), spider)
+        extension.item_scraped(item, spider)
 
 
-def test_item_scraped_with_build_file_item():
+def test_item_scraped_with_file_item():
     with TemporaryDirectory() as tmpdirname:
         files_store = os.path.join(tmpdirname, 'data')
         spider = spider_with_crawler(settings={'FILES_STORE': files_store})
         extension = KingfisherFilesStore.from_crawler(spider.crawler)
+        item = FileItem({'number': 1, 'file_name': 'file.json', 'data': 'data'})
 
-        assert extension.item_scraped(spider.build_file_item(), spider) is None
+        assert extension.item_scraped(item, spider) is None

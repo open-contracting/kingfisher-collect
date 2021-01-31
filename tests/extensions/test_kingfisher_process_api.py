@@ -7,7 +7,7 @@ from scrapy.exceptions import NotConfigured
 from scrapy.http import Request, Response
 
 from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessAPI
-from kingfisher_scrapy.items import FileError
+from kingfisher_scrapy.items import FileError, FileItem
 from tests import spider_with_crawler, spider_with_files_store
 
 
@@ -125,26 +125,23 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
 @pytest_twisted.inlineCallbacks
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('note', ['', 'Started by NAME.'])
-@pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
+@pytest.mark.parametrize('encoding', ['utf-8', 'iso-8859-1'])
 @pytest.mark.parametrize('ok', [True, False])
-def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok, tmpdir, caplog):
+def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, caplog):
     with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
         mocked.return_value = 200 if ok else 400
 
         spider = spider_with_files_store(tmpdir, sample=sample, note=note)
         extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-        kwargs = {}
-        if encoding:
-            kwargs['encoding'] = encoding
-        item = spider.build_file_item(
-            number=1,
-            file_name='data.json',
-            url='https://example.com/remote.json',
-            data=b'{"key": "value"}',
-            data_type='release_package',
-            **kwargs
-        )
+        item = FileItem({
+            'number': 1,
+            'file_name': 'data.json',
+            'data': b'{"key": "value"}',
+            'data_type': 'release_package',
+            'url': 'https://example.com/remote.json',
+            'encoding': encoding,
+        })
 
         response = yield extension.item_scraped(item, spider)
         data = yield response.json()
@@ -157,7 +154,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, encoding2, ok
             'url': 'https://example.com/remote.json',
             # Specific to FileItem.
             'data_type': 'release_package',
-            'encoding': encoding2,
+            'encoding': encoding,
             'number': '1',
             'data': '{"key": "value"}',
         }

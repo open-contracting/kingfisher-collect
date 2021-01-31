@@ -80,41 +80,55 @@ class OpenOppsAuthMiddleware:
         request.headers['Authorization'] = spider.access_token
 
 
-class KingfisherTransformJsonLinesMiddleware:
+class KingfisherTransformLineDelimitedJSONMiddleware:
     """
-     If the item is a json lines file, yields each line, otherwise yields data back
+    If the item is a line-delimited JSON file, yields each line. Otherwise, yields the item.
     """
     def process_spider_output(self, response, result, spider):
         for item in result:
-            if not(isinstance(item, File) and hasattr(spider, 'compressed_file_format') and
-                   spider.compressed_file_format == 'json_lines'):
+            if not isinstance(item, File) or not spider.line_delimited:
                 yield item
                 continue
+
             data = item['data']
+            # Data can be bytes or a file-like object.
+            if isinstance(data, bytes):
+                data = data.decode(encoding=item['encoding']).splitlines(True)
+
             for number, line in enumerate(data, 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
+
                 if isinstance(line, bytes):
                     line = line.decode(encoding=item['encoding'])
-                yield spider.build_file_item(number=number, file_name=item['file_name'], url=item['url'], data=line,
-                                             data_type=item['data_type'], encoding=item['encoding'])
+
+                yield FileItem({
+                    'number': number,
+                    'file_name': item['file_name'],
+                    'data': line,
+                    'data_type': item['data_type'],
+                    'url': item['url'],
+                    'encoding': item['encoding'],
+                })
 
 
 class KingfisherTransformRootPathMiddleware:
     """
-     If spider.root_path is set, calls ijson.items and yields each value, otherwise yields each item back
+    If spider.root_path is set, calls ijson.items and yields each value, otherwise yields each item back
     """
     def process_spider_output(self, response, result, spider):
         for item in result:
-            if not(isinstance(item, (File, FileItem)) and spider.root_path):
+            if not isinstance(item, (File, FileItem)) or not spider.root_path:
                 yield item
                 continue
+
             data = item['data']
             for number, parsed_item in enumerate(ijson.items(data, spider.root_path)):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
+
                 item['data'] = parsed_item
                 yield item
 
@@ -178,8 +192,14 @@ class KingfisherTransformResizePackageMiddleware:
                     return
                 package['releases'] = filter(None, items)
                 data = json.dumps(package, default=util.default)
-                yield spider.build_file_item(number=number, file_name=item['file_name'], url=item['url'],
-                                             data=data, data_type=data_type, encoding=item['encoding'])
+                yield FileItem({
+                    'number': number,
+                    'file_name': item['file_name'],
+                    'data': data,
+                    'data_type': data_type,
+                    'url': item['url'],
+                    'encoding': item['encoding'],
+                })
 
     def _get_package_metadata(self, data, skip_key, data_type):
         """

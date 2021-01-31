@@ -15,7 +15,7 @@ class ColombiaBulk(CompressedFileSpider):
     name = 'colombia_bulk'
     data_type = 'release'
     encoding = 'iso-8859-1'
-    compressed_file_format = 'json_lines'
+    line_delimited = True
     root_path = 'Release'
 
     download_timeout = 99999

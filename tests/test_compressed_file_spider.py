@@ -39,7 +39,7 @@ def test_parse():
 def test_parse_json_lines(sample, len_items):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
-    spider.compressed_file_format = 'json_lines'
+    spider.line_delimited = True
 
     content = []
     for i in range(1, 21):

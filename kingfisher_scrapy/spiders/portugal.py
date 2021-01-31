@@ -18,7 +18,7 @@ class Portugal(CompressedFileSpider):
     name = 'portugal'
     data_type = 'record_package'
     encoding = 'iso-8859-1'
-    compressed_file_format = 'json_lines'
+    line_delimited = True
 
     download_timeout = 9999
 

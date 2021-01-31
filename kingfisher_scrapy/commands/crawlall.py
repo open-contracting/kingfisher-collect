@@ -1,7 +1,7 @@
 from scrapy.commands import ScrapyCommand
 from scrapy.exceptions import UsageError
 
-from kingfisher_scrapy.base_spider import BaseSpider, CompressedFileSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 
 EXCEPTIONS = {
     'fail',
@@ -44,7 +44,6 @@ class CrawlAll(ScrapyCommand):
         if opts.sample:
             kwargs['sample'] = opts.sample
 
-        BaseSpider.parse_json_lines = yield_nothing
         CompressedFileSpider.parse = yield_nothing
 
         # Stop after one item or error.
