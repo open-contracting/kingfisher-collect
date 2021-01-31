@@ -336,7 +336,7 @@ class CompressedFileSpider(BaseSpider):
         elif archive_format == 'rar':
             cls = RarFile
         else:
-            raise UnknownArchiveFormat(response.request.meta['file_name'])
+            raise UnknownArchiveFormatError(response.request.meta['file_name'])
 
         archive_file = cls(BytesIO(response.body))
         for file_info in archive_file.infolist():
