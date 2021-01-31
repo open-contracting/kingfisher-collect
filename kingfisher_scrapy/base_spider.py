@@ -249,7 +249,6 @@ class SimpleSpider(BaseSpider):
     #. Inherit from ``SimpleSpider``
     #. Set a ``data_type`` class attribute to the data type of the responses
     #. Optionally, set an ``encoding`` class attribute to the encoding of the responses (default UTF-8)
-    #. Optionally, set a ``data_pointer`` class attribute to the JSON Pointer for OCDS data (default "")
     #. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
 
     .. code-block:: python
@@ -267,15 +266,10 @@ class SimpleSpider(BaseSpider):
     """
 
     encoding = 'utf-8'
-    data_pointer = ''
 
     @handle_http_error
     def parse(self, response):
-        kwargs = {}
-        if self.data_pointer:
-            kwargs['data'] = json.dumps(resolve_pointer(response.json(), self.data_pointer)).encode()
-
-        yield self.build_file_from_response(response, data_type=self.data_type, encoding=self.encoding, **kwargs)
+        yield self.build_file_from_response(response, data_type=self.data_type, encoding=self.encoding)
 
 
 class CompressedFileSpider(BaseSpider):

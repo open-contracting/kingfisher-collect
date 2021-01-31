@@ -20,6 +20,6 @@ class HondurasPortalRecords(HondurasPortalBase):
     """
     name = 'honduras_portal_records'
     data_type = 'record_package'
-    data_pointer = '/recordPackage'
+    root_path = 'recordPackage'
     skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
     url = 'http://www.contratacionesabiertas.gob.hn/api/v1/record/?format=json'

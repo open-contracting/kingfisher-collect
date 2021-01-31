@@ -20,5 +20,5 @@ class HondurasPortalReleases(HondurasPortalBase):
     """
     name = 'honduras_portal_releases'
     data_type = 'release_package'
-    data_pointer = '/releasePackage'
+    root_path = 'releasePackage'
     url = 'http://www.contratacionesabiertas.gob.hn/api/v1/release/?format=json'
