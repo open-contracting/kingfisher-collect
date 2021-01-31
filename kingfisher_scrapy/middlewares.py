@@ -177,13 +177,12 @@ class AddPackageMiddleware:
             if not isinstance(data, dict):
                 data = json.loads(data, encoding=item['encoding'])
 
-            data_type = item['data_type']
-            if data_type == 'release':
+            if item['data_type'] == 'release':
                 key = 'releases'
             else:
                 key = 'records'
             item['data'] = {key: [data]}
-            item['data_type'] = f'{data_type}_package'
+            item['data_type'] += '_package'
 
             yield item
 
@@ -199,14 +198,13 @@ class ResizePackageMiddleware:
                 yield item
                 continue
 
-            data_type = item['data_type']
             if spider.sample:
                 size = spider.sample
             else:
                 size = 100
 
-            package = self._get_package_metadata(item['data']['package'], 'releases', data_type)
-            # We yield a release o record package with a maximum of self.max_releases_per_package releases or records
+            package = self._get_package_metadata(item['data']['package'], 'releases', item['data_type'])
+            # We yield release packages containing a maximum of 100 releases.
             for number, items in enumerate(util.grouper(ijson.items(item['data']['data'], 'releases.item'), size), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
@@ -219,7 +217,7 @@ class ResizePackageMiddleware:
                     'number': number,
                     'file_name': item['file_name'],
                     'data': data,
-                    'data_type': data_type,
+                    'data_type': item['data_type'],
                     'url': item['url'],
                     'encoding': item['encoding'],
                 })
