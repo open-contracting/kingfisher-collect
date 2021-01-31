@@ -11,7 +11,7 @@ from kingfisher_scrapy.items import FileError, FileItem
 from tests import spider_with_crawler, spider_with_files_store
 
 
-class TestError(Exception):
+class ExpectedError(Exception):
     pass
 
 
@@ -309,12 +309,12 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
 @pytest_twisted.inlineCallbacks
 def test_spider_closed_exception(tmpdir, caplog):
     with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
-        mocked.side_effect = TestError
+        mocked.side_effect = ExpectedError
 
         spider = spider_with_files_store(tmpdir)
         extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-        with pytest.raises(TestError):
+        with pytest.raises(ExpectedError):
             yield extension.spider_closed(spider, 'finished')
 
 
