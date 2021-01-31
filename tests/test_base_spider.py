@@ -78,28 +78,50 @@ def test_build_file():
     })
 
 
-def test_date_arguments():
-    test_date = '2000-01-01'
-    error_message = "time data 'test' does not match format '%Y-%m-%d'"
-
-    assert spider_with_crawler(from_date=test_date)
+def test_sample_invalid():
     with pytest.raises(SpiderArgumentError) as e:
-        assert spider_with_crawler(from_date='test')
-    assert str(e.value) == f'spider argument `from_date`: invalid date value: {error_message}'
+        spider_with_crawler(sample='invalid')
+    assert str(e.value) == "spider argument `sample`: invalid integer value: 'invalid'"
 
-    assert spider_with_crawler(until_date=test_date, default_from_date=test_date)
+
+def test_from_date():
+    # No SpiderArgumentError exception.
+    spider_with_crawler(from_date='2000-01-01')
+
+
+def test_from_date_invalid():
+    expected = "spider argument `from_date`: invalid date value: time data 'invalid' does not match format '%Y-%m-%d'"
+
     with pytest.raises(SpiderArgumentError) as e:
-        assert spider_with_crawler(until_date='test', default_from_date=test_date)
-    assert str(e.value) == f'spider argument `until_date`: invalid date value: {error_message}'
+        spider_with_crawler(from_date='invalid')
+    assert str(e.value) == expected
 
 
-def test_custom_collection_data_version():
-    error_message = "time data '2020' does not match format '%Y-%m-%dT%H:%M:%S'"
+def test_until_date():
+    # No SpiderArgumentError exception.
+    spider_with_crawler(until_date='2000-01-01', default_from_date='2000-01-01')
 
-    assert spider_with_crawler(crawl_time='2020-01-01T00:00:00')
+
+def test_until_date_invalid():
+    expected = "spider argument `until_date`: invalid date value: time data 'invalid' does not match format '%Y-%m-%d'"
+
     with pytest.raises(SpiderArgumentError) as e:
-        assert spider_with_crawler(crawl_time='2020')
-    assert str(e.value) == f'spider argument `crawl_time`: invalid date value: {error_message}'
+        spider_with_crawler(until_date='invalid', default_from_date='2000-01-01')
+    assert str(e.value) == expected
+
+
+def test_crawl_time():
+    # No SpiderArgumentError exception.
+    spider_with_crawler(crawl_time='2020-01-01T00:00:00')
+
+
+def test_crawl_time_invalid():
+    expected = "spider argument `crawl_time`: invalid date value: time data '2020' does not match format " \
+               "'%Y-%m-%dT%H:%M:%S'"
+
+    with pytest.raises(SpiderArgumentError) as e:
+        spider_with_crawler(crawl_time='2020')
+    assert str(e.value) == expected
 
 
 @pytest.mark.parametrize('kwargs,expected', [
