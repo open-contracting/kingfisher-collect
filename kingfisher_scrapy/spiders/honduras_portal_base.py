@@ -9,9 +9,8 @@ class HondurasPortalBase(IndexSpider):
     download_delay = 0.9
 
     # IndexSpider
-    next_pointer = '/next'
-    formatter = staticmethod(parameters('page'))
     total_pages_pointer = '/pages'
+    formatter = staticmethod(parameters('page'))
 
     available_publishers = ['oncae', 'sefin']
 
