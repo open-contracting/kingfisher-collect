@@ -21,7 +21,7 @@ class NepalPortal(PeriodicSpider):
     date_format = 'year'
     default_from_date = '2012'
     default_until_date = '2018'  # HTTP 500 after 2018
- 
+
     # SimpleSpider
     data_type = 'release_package'
 

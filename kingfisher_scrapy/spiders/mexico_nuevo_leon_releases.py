@@ -9,7 +9,7 @@ class MexicoNuevoLeonReleases(MexicoNuevoLeonBase):
       http://si.nl.gob.mx/transparencia/acerca-del-proyecto
     """
     name = 'mexico_nuevo_leon_releases'
- 
+
     # SimpleSpider
     data_type = 'release_package'
 

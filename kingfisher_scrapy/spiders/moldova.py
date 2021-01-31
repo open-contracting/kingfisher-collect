@@ -8,7 +8,7 @@ class Moldova(SimpleSpider):
       MTender
     """
     name = 'moldova'
- 
+
     # SimpleSpider
     data_type = 'record_package'
 

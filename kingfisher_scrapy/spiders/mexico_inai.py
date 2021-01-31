@@ -14,7 +14,7 @@ class MexicoINAI(SimpleSpider):
       https://datos.gob.mx/busca/dataset/contrataciones-abiertas-del-inai
     """
     name = 'mexico_inai'
- 
+
     # SimpleSpider
     data_type = 'release_package'
     encoding = 'utf-8-sig'

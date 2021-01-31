@@ -76,10 +76,10 @@ def test_data_types(data_type, data, root_path):
     item = next(generator)
 
     expected = {
-            'file_name': 'test',
-            'url': 'http://test.com',
-            'encoding': 'utf-8',
-        }
+        'file_name': 'test',
+        'url': 'http://test.com',
+        'encoding': 'utf-8',
+    }
     if root_path:
         expected['number'] = 1
 

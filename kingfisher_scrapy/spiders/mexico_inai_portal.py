@@ -10,7 +10,7 @@ class MexicoINAIPortal(SimpleSpider):
       Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI)
     """
     name = 'mexico_inai_portal'
- 
+
     # SimpleSpider
     data_type = 'record'
 

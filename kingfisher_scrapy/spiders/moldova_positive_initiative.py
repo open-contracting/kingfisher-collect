@@ -12,7 +12,7 @@ class MoldovaPositiveInitiative(SimpleSpider):
       https://www.tender.health/ocdsrelease
     """
     name = 'moldova_positive_initiative'
- 
+
     # SimpleSpider
     data_type = 'release_package'
 

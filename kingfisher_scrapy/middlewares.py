@@ -85,6 +85,7 @@ class LineDelimitedMiddleware:
     If the spider's ``line_delimited`` class attribute is ``True``, yields each line of the File as a FileItem.
     Otherwise, yields the original item.
     """
+
     def process_spider_output(self, response, result, spider):
         for item in result:
             if not isinstance(item, File) or not spider.line_delimited:
@@ -119,6 +120,7 @@ class RootPathMiddleware:
     If the spider's ``root_path`` class attribute is non-empty, yields a FileItem for each object at that prefix.
     Otherwise, yields the original item.
     """
+
     def process_spider_output(self, response, result, spider):
         for item in result:
             if not isinstance(item, (File, FileItem)) or not spider.root_path:
@@ -166,6 +168,7 @@ class AddPackageMiddleware:
     If the spider's ``data_type`` class attribute is "release" or "record", wraps the data in a package.
     Otherwise, yields the original item.
     """
+
     def process_spider_output(self, response, result, spider):
         for item in result:
             if not isinstance(item, (File, FileItem)) or item['data_type'] not in ('release', 'record'):
@@ -192,6 +195,7 @@ class ResizePackageMiddleware:
     If the spider's ``resize_package`` class attribute is ``True``, splits the package into multiple packages.
     Otherwise, yields the original item.
     """
+
     def process_spider_output(self, response, result, spider):
         for item in result:
             if not isinstance(item, File) or not getattr(spider, 'resize_package', False):

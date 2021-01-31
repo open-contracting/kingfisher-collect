@@ -39,9 +39,9 @@ def test_item_scraped_file_error(caplog):
     spider = spider_with_crawler()
     item_extension = KingfisherItemCount.from_crawler(spider.crawler)
     item = FileError({
-            'url': 'https://example.com/remote.json',
-            'errors': {'http_code': 404},
-        })
+        'url': 'https://example.com/remote.json',
+        'errors': {'http_code': 404},
+    })
 
     item_extension.item_scraped(item, spider)
 

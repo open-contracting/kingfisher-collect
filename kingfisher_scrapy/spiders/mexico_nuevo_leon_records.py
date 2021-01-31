@@ -12,7 +12,7 @@ class MexicoNuevoLeonRecords(MexicoNuevoLeonBase):
 
     # BaseSpider
     skip_pluck = 'Already covered (see code for details)'  # mexico_nuevo_leon_releases
- 
+
     # SimpleSpider
     data_type = 'record_package'
 

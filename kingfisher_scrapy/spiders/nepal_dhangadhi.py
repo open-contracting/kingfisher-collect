@@ -12,7 +12,7 @@ class NepalDhangadhi(SimpleSpider):
       https://ims.susasan.org/dhangadhi/about
     """
     name = 'nepal_dhangadhi'
- 
+
     # SimpleSpider
     data_type = 'release_package'
 

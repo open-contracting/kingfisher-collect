@@ -12,7 +12,7 @@ class Italy(SimpleSpider):
       https://www.appaltipop.it/it/download
     """
     name = 'italy'
- 
+
     # SimpleSpider
     data_type = 'release_package'
 

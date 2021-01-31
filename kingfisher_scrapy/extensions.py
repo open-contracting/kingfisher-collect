@@ -123,6 +123,7 @@ class KingfisherProcessAPI:
     If the ``KINGFISHER_API_URI`` and ``KINGFISHER_API_KEY`` environment variables or configuration settings are set,
     then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
     """
+
     def __init__(self, url, key, directory=None):
         """
         Initializes a Kingfisher Process API client.

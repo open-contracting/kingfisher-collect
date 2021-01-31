@@ -38,7 +38,7 @@ class IndonesiaBandung(PeriodicSpider):
     # BaseSpider
     date_format = 'year'
     default_from_date = '2013'
- 
+
     # SimpleSpider
     data_type = 'release'
 

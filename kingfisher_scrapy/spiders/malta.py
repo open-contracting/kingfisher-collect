@@ -14,7 +14,7 @@ class Malta(CompressedFileSpider):
       https://docs.google.com/document/d/1VnCEywKkkQ7BcVbT7HlW2s_N_QI8W0KE/edit
     """
     name = 'malta'
- 
+
     # SimpleSpider
     data_type = 'record_package'
 
