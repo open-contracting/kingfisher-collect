@@ -282,8 +282,7 @@ class CompressedFileSpider(BaseSpider):
     #. Optionally, set a ``compressed_file_format`` class attribute to the format of the compressed files
 
        ``release_package``
-         Re-packages the releases in the compressed files in groups of
-         :const:`~kingfisher_scrapy.base_spider.BaseSpider.MAX_RELEASES_PER_PACKAGE`, and yields the packages.
+         Re-packages the releases in the compressed files in groups of 100, and yields the packages.
        ``None``
          Yields each compressed file.
 

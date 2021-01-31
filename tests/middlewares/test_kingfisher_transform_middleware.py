@@ -14,7 +14,7 @@ from kingfisher_scrapy.middlewares import (KingfisherTransformAddPackageMiddlewa
 from tests import response_fixture, spider_with_crawler
 
 
-@pytest.mark.parametrize('middleware', [
+@pytest.mark.parametrize('middleware_class', [
     KingfisherTransformAddPackageMiddleware,
     KingfisherTransformLineDelimitedJSONMiddleware,
     KingfisherTransformResizePackageMiddleware,
@@ -33,10 +33,12 @@ from tests import response_fixture, spider_with_crawler
         'errors': ''
     }),
 ])
-def test_yield_items(middleware, item):
+def test_yield_items(middleware_class, item):
     spider = spider_with_crawler()
-    transform_middleware = middleware()
-    generator = transform_middleware.process_spider_output(None, [item], spider)
+
+    middleware = middleware_class()
+
+    generator = middleware.process_spider_output(None, [item], spider)
     returned_item = next(generator)
 
     assert item == returned_item
@@ -45,8 +47,8 @@ def test_yield_items(middleware, item):
 @pytest.mark.parametrize('data_type,data,root_path', [
     ('release', b'{"ocid": "abc"}', ''),
     ('record', b'{"ocid": "abc"}', ''),
-    ('record', b'[{"ocid": "abc"}]', 'item'),
     ('release', b'[{"ocid": "abc"}]', 'item'),
+    ('record', b'[{"ocid": "abc"}]', 'item'),
     ('release', b'{"results":[{"ocid": "abc"}]}', 'results.item'),
     ('record', b'{"results":[{"ocid": "abc"}]}', 'results.item'),
     ('release_package', b'[{"releases":[{"ocid": "abc"}], "uri": "test"}]', 'item'),
@@ -69,19 +71,28 @@ def test_data_types(data_type, data, root_path):
     response_mock = MagicMock()
 
     response_mock.request.url = item['url']
-    generator = root_path_middleware.process_spider_output(response_mock, [item], spider)
-    returned_item = next(generator)
 
-    response_mock['data'] = returned_item
+    generator = root_path_middleware.process_spider_output(response_mock, [item], spider)
+    item = next(generator)
     generator = add_package_middleware.process_spider_output(response_mock, [item], spider)
-    returned_item = next(generator)
+    item = next(generator)
+
+    expected = {
+            'file_name': 'test',
+            'url': 'http://test.com',
+            'encoding': 'utf-8',
+        }
+    if root_path:
+        expected['number'] = 1
 
     if 'package' in data_type:
-        assert returned_item['data_type'] == data_type
-        assert returned_item['data'] == {f"{data_type[:-8]}s": [{"ocid": "abc"}], "uri": "test"}
+        expected['data'] = {f"{data_type[:-8]}s": [{"ocid": "abc"}], "uri": "test"}
+        expected['data_type'] = data_type
     else:
-        assert returned_item['data_type'] == f'{data_type}_package'
-        assert returned_item['data'] == {f"{data_type}s": [{"ocid": "abc"}]}
+        expected['data'] = {f"{data_type}s": [{"ocid": "abc"}]}
+        expected['data_type'] = f'{data_type}_package'
+
+    assert item == expected
 
 
 @pytest.mark.parametrize('sample,len_releases', [(None, 100), (5, 5)])

@@ -82,7 +82,8 @@ class OpenOppsAuthMiddleware:
 
 class KingfisherTransformLineDelimitedJSONMiddleware:
     """
-    If the item is a line-delimited JSON file, yields each line. Otherwise, yields the item.
+    If the spider's ``line_delimited`` class attribute is ``True``, yields each line of the File as a FileItem.
+    Otherwise, yields the original item.
     """
     def process_spider_output(self, response, result, spider):
         for item in result:
@@ -115,7 +116,8 @@ class KingfisherTransformLineDelimitedJSONMiddleware:
 
 class KingfisherTransformRootPathMiddleware:
     """
-    If spider.root_path is set, calls ijson.items and yields each value, otherwise yields each item back
+    If the spider's ``root_path`` class attribute is non-empty, yields a FileItem for each object at that prefix.
+    Otherwise, yields the original item.
     """
     def process_spider_output(self, response, result, spider):
         for item in result:
@@ -124,45 +126,66 @@ class KingfisherTransformRootPathMiddleware:
                 continue
 
             data = item['data']
-            for number, parsed_item in enumerate(ijson.items(data, spider.root_path)):
+
+            for number, obj in enumerate(ijson.items(data, spider.root_path), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
 
-                item['data'] = parsed_item
-                yield item
+                if isinstance(item, File):
+                    yield FileItem({
+                        'number': number,
+                        'file_name': item['file_name'],
+                        'data': obj,
+                        'data_type': item['data_type'],
+                        'url': item['url'],
+                        'encoding': item['encoding'],
+                    })
+                else:
+                    # If the JSON file is line-delimited and the root path is to a JSON array, then this method will
+                    # need to yield multiple FileItems for each input FileItem. To do so, the input FileItem's number
+                    # is multiplied by the maximum length of the JSON array, to avoid duplicate numbers. Note that, to
+                    # be stored by Kingfisher Process, the number must be within PostgreSQL's integer range.
+                    #
+                    # If this is the case, then, on the spider, set a ``root_path_max_length`` class attribute to the
+                    # maximum length of the JSON array at the root path.
+                    #
+                    # https://www.postgresql.org/docs/11/datatype-numeric.html
+                    yield FileItem({
+                        'number': (item['number'] - 1) * spider.max_items_per_file + number,
+                        'file_name': item['file_name'],
+                        'data': obj,
+                        'data_type': item['data_type'],
+                        'url': item['url'],
+                        'encoding': item['encoding'],
+                    })
 
 
 class KingfisherTransformAddPackageMiddleware:
     """
-    If data_type is release or record, adds a simple package to each item, otherwise yields each item back
+    If the spider's ``data_type`` class attribute is "release" or "record", wraps the data in a package.
+    Otherwise, yields the original item.
     """
     def process_spider_output(self, response, result, spider):
         for item in result:
-            if not(isinstance(item, (File, FileItem)) and item['data_type'] in ('release', 'record')):
+            if not isinstance(item, (File, FileItem)) or item['data_type'] not in ('release', 'record'):
                 yield item
                 continue
-            data = item['data']
-            data_type = item['data_type']
-            list_type = self._get_list_type(data_type)
-            package = {list_type: []}
-            if isinstance(data, dict):
-                package[list_type].append(data)
-            else:
-                package[list_type].append(json.loads(data, encoding=item['encoding']))
-            item['data'] = package
-            item['data_type'] = f'{data_type}_package'
-            yield item
 
-    def _get_list_type(self, data_type):
-        """
-        Returns if the packages contains a list of releases or records
-        """
-        if 'record' in data_type:
-            list_type = 'records'
-        else:
-            list_type = 'releases'
-        return list_type
+            data = item['data']
+            # If the spider's ``root_path`` class attribute is non-empty, then the JSON data is already parsed.
+            if not isinstance(data, dict):
+                data = json.loads(data, encoding=item['encoding'])
+
+            data_type = item['data_type']
+            if data_type == 'release':
+                key = 'releases'
+            else:
+                key = 'records'
+            item['data'] = {key: [data]}
+            item['data_type'] = f'{data_type}_package'
+
+            yield item
 
 
 class KingfisherTransformResizePackageMiddleware:
@@ -175,6 +198,7 @@ class KingfisherTransformResizePackageMiddleware:
                    spider.compressed_file_format == 'release_package'):
                 yield item
                 continue
+
             list_data = item['data']['data']
             package_data = item['data']['package']
             data_type = item['data_type']
@@ -192,6 +216,7 @@ class KingfisherTransformResizePackageMiddleware:
                     return
                 package['releases'] = filter(None, items)
                 data = json.dumps(package, default=util.default)
+
                 yield FileItem({
                     'number': number,
                     'file_name': item['file_name'],
