@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import LinksSpider
-from kingfisher_scrapy.util import parameters, handle_http_error
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class UKFTS(LinksSpider):
