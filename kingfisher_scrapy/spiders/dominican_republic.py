@@ -12,8 +12,12 @@ class DominicanRepublic(CompressedFileSpider):
       https://www.dgcp.gob.do/estandar-mundial-ocds/
     """
     name = 'dominican_republic'
+
+    # SimpleSpider
     data_type = 'release_package'
-    compressed_file_format = 'release_package'
+
+    # CompressedFileSpider
+    resize_package = True
 
     def start_requests(self):
         yield scrapy.Request(

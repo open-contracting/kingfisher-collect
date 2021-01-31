@@ -26,7 +26,7 @@ class BaseSpider(scrapy.Spider):
     -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
        ``default_from_date`` class attribute to a date string.
     -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
-    -  If a spider collects data as CSV or XLSX files, set the class attribute ``unflatten = True`` to convert each
+    -  If a spider collects data as CSV or XLSX files, add a ``unflatten = True`` class attribute to convert each
        item to json files in the Unflatten pipeline class using the ``unflatten`` command from Flatten Tool.
        If you need to set more arguments for the unflatten command, set a ``unflatten_args`` dict with them.
     -  If the data is not formatted as OCDS (record, release, record package or release package), set the ``root_path``
@@ -279,13 +279,7 @@ class CompressedFileSpider(BaseSpider):
     #. Inherit from ``CompressedFileSpider``
     #. Set a ``data_type`` class attribute to the data type of the compressed files
     #. Optionally, set an ``encoding`` class attribute to the encoding of the compressed files (default UTF-8)
-    #. Optionally, set a ``compressed_file_format`` class attribute to the format of the compressed files
-
-       ``release_package``
-         Re-packages the releases in the compressed files in groups of 100, and yields the packages.
-       ``None``
-         Yields each compressed file.
-
+    #. Optionally, add a ``resize_package = True`` class attribute to split large packages (e.g. greater than 100MB)
     #. Write a ``start_requests`` method to request the archive files
 
     .. code-block:: python
@@ -302,7 +296,7 @@ class CompressedFileSpider(BaseSpider):
     """
 
     encoding = 'utf-8'
-    compressed_file_format = None
+    resize_package = False
     file_name_must_contain = ''
 
     @handle_http_error
@@ -331,9 +325,9 @@ class CompressedFileSpider(BaseSpider):
                 basename += '.json'
 
             compressed_file = archive_file.open(filename)
-            # If `compressed_file_format` is 'release_package', we need to open the file twice: once to extract the
-            # package metadata and then to extract the releases themselves.
-            if self.compressed_file_format == 'release_package':
+            # If `resize_package = True`, then we need to open the file twice: once to extract the package metadata and
+            # then to extract the releases themselves.
+            if self.resize_package:
                 data = {'data': compressed_file, 'package': archive_file.open(filename)}
             else:
                 data = compressed_file

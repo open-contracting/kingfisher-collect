@@ -190,30 +190,28 @@ class AddPackageMiddleware:
 
 class ResizePackageMiddleware:
     """
-    If the spider's ``compressed_file_format`` class attribute is "release_package", splits the package into multiple
-    packages. Otherwise, yields the original item.
+    If the spider's ``resize_package`` class attribute is ``True``, splits the package into multiple packages.
+    Otherwise, yields the original item.
     """
     def process_spider_output(self, response, result, spider):
         for item in result:
-            if not isinstance(item, File) or getattr(spider, 'compressed_file_format', None) != 'release_package':
+            if not isinstance(item, File) or not getattr(spider, 'resize_package', False):
                 yield item
                 continue
 
-            list_data = item['data']['data']
-            package_data = item['data']['package']
             data_type = item['data_type']
-            max_releases_per_package = 100
             if spider.sample:
                 size = spider.sample
             else:
-                size = max_releases_per_package
+                size = 100
 
-            package = self._get_package_metadata(package_data, 'releases', data_type)
+            package = self._get_package_metadata(item['data']['package'], 'releases', data_type)
             # We yield a release o record package with a maximum of self.max_releases_per_package releases or records
-            for number, items in enumerate(util.grouper(ijson.items(list_data, 'releases.item'), size), 1):
+            for number, items in enumerate(util.grouper(ijson.items(item['data']['data'], 'releases.item'), size), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
+
                 package['releases'] = filter(None, items)
                 data = json.dumps(package, default=util.default)
 

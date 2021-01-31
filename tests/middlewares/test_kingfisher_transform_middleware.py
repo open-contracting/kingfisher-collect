@@ -97,7 +97,7 @@ def test_data_types(data_type, data, root_path):
 def test_parse_release_package(sample, len_releases):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
-    spider.compressed_file_format = 'release_package'
+    spider.resize_package = True
 
     middleware = ResizePackageMiddleware()
 

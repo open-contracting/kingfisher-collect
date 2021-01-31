@@ -70,7 +70,7 @@ def test_parse_line_delimited(sample, len_items):
 def test_parse_release_package(sample, len_items, len_releases):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
-    spider.compressed_file_format = 'release_package'
+    spider.resize_package = True
 
     package = {'releases': []}
     for i in range(200):
