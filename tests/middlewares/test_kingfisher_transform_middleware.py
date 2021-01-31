@@ -7,18 +7,16 @@ import pytest
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider, SimpleSpider
 from kingfisher_scrapy.items import File, FileError, FileItem
-from kingfisher_scrapy.middlewares import (KingfisherTransformAddPackageMiddleware,
-                                           KingfisherTransformLineDelimitedJSONMiddleware,
-                                           KingfisherTransformResizePackageMiddleware,
-                                           KingfisherTransformRootPathMiddleware)
+from kingfisher_scrapy.middlewares import (AddPackageMiddleware, LineDelimitedMiddleware, ResizePackageMiddleware,
+                                           RootPathMiddleware)
 from tests import response_fixture, spider_with_crawler
 
 
 @pytest.mark.parametrize('middleware_class', [
-    KingfisherTransformAddPackageMiddleware,
-    KingfisherTransformLineDelimitedJSONMiddleware,
-    KingfisherTransformResizePackageMiddleware,
-    KingfisherTransformRootPathMiddleware,
+    AddPackageMiddleware,
+    LineDelimitedMiddleware,
+    ResizePackageMiddleware,
+    RootPathMiddleware,
 ])
 @pytest.mark.parametrize('item', [
     File({
@@ -58,8 +56,8 @@ def test_data_types(data_type, data, root_path):
     spider = spider_with_crawler()
     spider.root_path = root_path
 
-    root_path_middleware = KingfisherTransformRootPathMiddleware()
-    add_package_middleware = KingfisherTransformAddPackageMiddleware()
+    root_path_middleware = RootPathMiddleware()
+    add_package_middleware = AddPackageMiddleware()
 
     item = File({
         'file_name': 'test',
@@ -101,7 +99,7 @@ def test_parse_release_package(sample, len_releases):
     spider.data_type = 'release_package'
     spider.compressed_file_format = 'release_package'
 
-    middleware = KingfisherTransformResizePackageMiddleware()
+    middleware = ResizePackageMiddleware()
 
     package = {'releases': []}
     for i in range(200):
@@ -135,7 +133,7 @@ def test_line_delimited_json_middleware(sample):
     spider.data_type = 'release_package'
     spider.line_delimited = True
 
-    middleware = KingfisherTransformLineDelimitedJSONMiddleware()
+    middleware = LineDelimitedMiddleware()
 
     content = []
     for i in range(1, 21):
@@ -166,7 +164,7 @@ def test_line_delimited_json_middleware_compressed(sample):
     spider.data_type = 'release_package'
     spider.line_delimited = True
 
-    middleware = KingfisherTransformLineDelimitedJSONMiddleware()
+    middleware = LineDelimitedMiddleware()
 
     content = []
     for i in range(1, 21):

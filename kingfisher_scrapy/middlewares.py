@@ -80,7 +80,7 @@ class OpenOppsAuthMiddleware:
         request.headers['Authorization'] = spider.access_token
 
 
-class KingfisherTransformLineDelimitedJSONMiddleware:
+class LineDelimitedMiddleware:
     """
     If the spider's ``line_delimited`` class attribute is ``True``, yields each line of the File as a FileItem.
     Otherwise, yields the original item.
@@ -114,7 +114,7 @@ class KingfisherTransformLineDelimitedJSONMiddleware:
                 })
 
 
-class KingfisherTransformRootPathMiddleware:
+class RootPathMiddleware:
     """
     If the spider's ``root_path`` class attribute is non-empty, yields a FileItem for each object at that prefix.
     Otherwise, yields the original item.
@@ -161,7 +161,7 @@ class KingfisherTransformRootPathMiddleware:
                     })
 
 
-class KingfisherTransformAddPackageMiddleware:
+class AddPackageMiddleware:
     """
     If the spider's ``data_type`` class attribute is "release" or "record", wraps the data in a package.
     Otherwise, yields the original item.
@@ -188,14 +188,14 @@ class KingfisherTransformAddPackageMiddleware:
             yield item
 
 
-class KingfisherTransformResizePackageMiddleware:
+class ResizePackageMiddleware:
     """
-     If spider.root_path is set, calls ijson.items and yields each value, otherwise yields each item back
+    If the spider's ``compressed_file_format`` class attribute is "release_package", splits the package into multiple
+    packages. Otherwise, yields the original item.
     """
     def process_spider_output(self, response, result, spider):
         for item in result:
-            if not(isinstance(item, File) and hasattr(spider, 'compressed_file_format') and
-                   spider.compressed_file_format == 'release_package'):
+            if not isinstance(item, File) or getattr(spider, 'compressed_file_format', None) != 'release_package':
                 yield item
                 continue
 
