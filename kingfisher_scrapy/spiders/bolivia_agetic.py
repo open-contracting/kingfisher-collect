@@ -12,8 +12,12 @@ class BoliviaAgetic(SimpleSpider):
       https://datos.gob.bo/id/dataset/contrataciones-agetic-2019-estandar-ocp
     """
     name = 'bolivia_agetic'
-    data_type = 'release_package'
+
+    # BaseSpider
     unflatten = True
+
+    # SimpleSpider
+    data_type = 'release_package'
 
     def start_requests(self):
         # A CKAN API JSON response.

@@ -10,6 +10,8 @@ class AustraliaNSW(SimpleSpider):
       https://github.com/NSW-eTendering/NSW-eTendering-API/blob/master/README.md
     """
     name = 'australia_nsw'
+
+    # SimpleSpider
     data_type = 'release_package'
 
     def start_requests(self):

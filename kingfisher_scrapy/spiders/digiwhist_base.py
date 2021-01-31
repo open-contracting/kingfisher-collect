@@ -14,7 +14,7 @@ class DigiwhistBase(BaseSpider):
     Bulk download documentation
       https://opentender.eu/download
     """
-    data_type = 'release_package'
+    # BaseSpider
     line_delimited = True
 
     def start_requests(self):
@@ -29,4 +29,4 @@ class DigiwhistBase(BaseSpider):
         with tarfile.open(fileobj=BytesIO(response.body), mode="r:gz") as tar:
             with tar.extractfile(tar.getnames()[0]) as readfp:
                 yield self.build_file_from_response(data=readfp, response=response, file_name='data.json',
-                                                    data_type=self.data_type)
+                                                    data_type='release_package')

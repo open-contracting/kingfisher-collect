@@ -11,17 +11,19 @@ class ColombiaBulk(CompressedFileSpider):
     Bulk download documentation
       https://www.colombiacompra.gov.co/transparencia/datos-json
     """
-
     name = 'colombia_bulk'
-    data_type = 'release'
-    encoding = 'iso-8859-1'
-    line_delimited = True
-    root_path = 'Release'
-
     download_timeout = 99999
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
+
+    # BaseSpider
+    line_delimited = True
+    root_path = 'Release'
+
+    # SimpleSpider
+    data_type = 'release'
+    encoding = 'iso-8859-1'
 
     def start_requests(self):
         yield scrapy.Request(

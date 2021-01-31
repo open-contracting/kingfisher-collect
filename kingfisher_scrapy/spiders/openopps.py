@@ -31,16 +31,18 @@ class OpenOpps(BaseSpider):
       https://api.openopps.com/api/schema/
     """
     name = 'openopps'
+    download_delay = 1
+
+    # BaseSpider
+    root_path = 'item'
+    default_from_date = '2011-01-01'
 
     access_token = None
     api_limit = 10000  # OpenOpps API limit for search results
-    default_from_date = '2011-01-01'
-    download_delay = 1
     request_time_limit = 60  # in minutes
     reauthenticating = False  # flag for request a new token
     start_time = None
     data_type = 'release_package'
-    root_path = 'item'
 
     base_page_url = 'https://api.openopps.com/api/ocds/?format=json&ordering=releasedate&page_size=1000&' \
                     'releasedate__gte={}&releasedate__lte={}'

@@ -6,12 +6,14 @@ from kingfisher_scrapy.util import parameters
 
 
 class HondurasPortalBase(IndexSpider):
+    download_delay = 0.9
+
+    # IndexSpider
     next_pointer = '/next'
     formatter = staticmethod(parameters('page'))
     total_pages_pointer = '/pages'
-    available_publishers = ['oncae', 'sefin']
 
-    download_delay = 0.9
+    available_publishers = ['oncae', 'sefin']
 
     @classmethod
     def from_crawler(cls, crawler, publisher=None, *args, **kwargs):

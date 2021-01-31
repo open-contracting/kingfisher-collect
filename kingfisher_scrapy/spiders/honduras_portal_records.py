@@ -19,7 +19,12 @@ class HondurasPortalRecords(HondurasPortalBase):
       http://www.contratacionesabiertas.gob.hn/servicio/
     """
     name = 'honduras_portal_records'
-    data_type = 'record_package'
+
+    # BaseSpider
     root_path = 'recordPackage'
     skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
+
+    # SimpleSpider
+    data_type = 'record_package'
+
     url = 'http://www.contratacionesabiertas.gob.hn/api/v1/record/?format=json'

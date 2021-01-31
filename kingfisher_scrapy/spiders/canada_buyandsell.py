@@ -12,8 +12,12 @@ class CanadaBuyAndSell(SimpleSpider):
       https://buyandsell.gc.ca/procurement-data/open-contracting-data-standard-pilot/download-ocds-pilot-data
     """
     name = 'canada_buyandsell'
-    data_type = 'release_package'
+
+    # BaseSpider
     ocds_version = '1.0'
+
+    # SimpleSpider
+    data_type = 'release_package'
 
     def start_requests(self):
         urls = [

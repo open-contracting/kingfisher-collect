@@ -25,6 +25,8 @@ class ChileCompraReleases(ChileCompraBaseSpider):
       https://desarrolladores.mercadopublico.cl/docs/services/5a9ed02f718ed712f4403e75/operations/data-listaa-omes-agno-mes
     """
     name = 'chile_compra_releases'
+
+    # SimpleSpider
     data_type = 'release_package'
 
     def handle_item(self, item):

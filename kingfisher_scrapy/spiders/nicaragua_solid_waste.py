@@ -13,9 +13,14 @@ class NicaraguaSolidWaste(SimpleSpider):
         Download only data until this date (YYYY-MM-DD format). Defaults to today.
     """
     name = 'nicaragua_solid_waste'
-    data_type = 'release_package'
+
+    # BaseSpider
     default_from_date = '2000-01-01'
     date_required = True
+
+    # SimpleSpider
+    data_type = 'release_package'
+
     url = 'http://www.gekoware.com/swmp/api/ocds/{}/{}'
 
     def start_requests(self):

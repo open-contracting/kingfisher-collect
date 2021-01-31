@@ -9,5 +9,9 @@ class MexicoNuevoLeonReleases(MexicoNuevoLeonBase):
       http://si.nl.gob.mx/transparencia/acerca-del-proyecto
     """
     name = 'mexico_nuevo_leon_releases'
-    file_name_must_contain = 'ReleasePackage'
+ 
+    # SimpleSpider
     data_type = 'release_package'
+
+    # CompressedFileSpider
+    file_name_must_contain = 'ReleasePackage'

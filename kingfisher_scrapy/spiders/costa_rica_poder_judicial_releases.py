@@ -12,9 +12,12 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
       http://datosabiertospj.eastus.cloudapp.azure.com/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
     """
     name = 'costa_rica_poder_judicial_releases'
+
+    # SimpleSpider
     data_type = 'release_package'
-    # ZIP file contains records and releases
-    # the releases contains a "-" in their names so we use that character to filter them
+
+    # CompressedFileSpider
+    # The ZIP file contains record packages and release packages. The filenames of release packages contain "-".
     file_name_must_contain = '-'
 
     def start_requests(self):

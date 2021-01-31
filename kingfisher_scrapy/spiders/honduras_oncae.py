@@ -25,17 +25,20 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
       http://oncae.gob.hn/datosabiertos
     """
     name = 'honduras_oncae'
-    data_type = 'release_package'
-    skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
-    available_systems = ['HC1', 'CE', 'DDC']
-
-    # the files take too long to be downloaded, so we increase the download timeout
     download_timeout = 900
 
-    # PeriodicSpider variables
+    # BaseSpider
     date_format = 'year'
     default_from_date = '2005'
+    skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
+
+    # SimpleSpider
+    data_type = 'release_package'
+
+    # PeriodicSpider
     pattern = 'http://200.13.162.79/datosabiertos/{}'
+
+    available_systems = ['HC1', 'CE', 'DDC']
 
     @classmethod
     def from_crawler(cls, crawler, system=None, *args, **kwargs):

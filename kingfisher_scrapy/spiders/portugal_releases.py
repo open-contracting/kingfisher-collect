@@ -16,5 +16,8 @@ class PortugalReleases(PortugalBase):
       http://www.base.gov.pt/swagger/index.html
     """
     name = 'portugal_releases'
+
+    # SimpleSpider
     data_type = 'release_package'
+
     url = 'http://www.base.gov.pt/api/Release/GetReleases'

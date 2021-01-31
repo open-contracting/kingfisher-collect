@@ -17,7 +17,11 @@ class Kyrgyzstan(LinksSpider):
       https://app.swaggerhub.com/apis/DPAteam/export-api-documentation/1.0
     """
     name = 'kyrgyzstan'
+ 
+    # SimpleSpider
     data_type = 'release_package'
+
+    # LinksSpider
     next_page_formatter = staticmethod(parameters('offset'))
 
     def start_requests(self):

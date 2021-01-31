@@ -15,16 +15,18 @@ class UruguayHistorical(CompressedFileSpider, PeriodicSpider):
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
     """
     name = 'uruguay_historical'
-    data_type = 'release_package'
-
-    # the files takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000
     user_agent = browser_user_agent
 
-    # PeriodicSpider variables
+    # BaseSpider
     date_format = 'year'
     default_from_date = '2002'
     default_until_date = '2017'
+
+    # SimpleSpider
+    data_type = 'release_package'
+
+    # PeriodicSpider
     pattern = 'https://www.gub.uy/agencia-compras-contrataciones-estado/sites' \
               '/agencia-compras-contrataciones-estado/files/2019-04/OCDS-{}.zip'
 

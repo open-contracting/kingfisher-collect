@@ -14,12 +14,13 @@ class ChileCompraBulk(CompressedFileSpider):
       https://desarrolladores.mercadopublico.cl/OCDS/DescargaMasiva
     """
     name = 'chile_compra_bulk'
-    data_type = 'record_package'
-
     download_timeout = 99999
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
+
+    # SimpleSpider
+    data_type = 'record_package'
 
     def start_requests(self):
         url = 'https://ocds.blob.core.windows.net/ocds/{0.year:d}{0.month:02d}.zip'

@@ -12,13 +12,16 @@ class Uganda(IndexSpider):
       https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
     """
     name = 'uganda_releases'
+    download_delay = 0.9
+
+    # SimpleSpider
     data_type = 'release_package'
+
+    # IndexSpider
     total_pages_pointer = '/data/last_page'
-    yield_list_results = False
     formatter = staticmethod(parameters('page'))
     base_url = 'https://gpp.ppda.go.ug/adminapi/public/api/pdes'
-
-    download_delay = 0.9
+    yield_list_results = False
 
     def start_requests(self):
         yield scrapy.Request(

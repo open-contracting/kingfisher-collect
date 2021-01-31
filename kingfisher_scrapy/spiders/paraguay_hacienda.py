@@ -21,6 +21,12 @@ class ParaguayHacienda(BaseSpider):
       https://datos.hacienda.gov.py/odmh-api-v1/api-docs/
     """
     name = 'paraguay_hacienda'
+    custom_settings = {
+        'DOWNLOADER_MIDDLEWARES': {
+            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
+        },
+        'CONCURRENT_REQUESTS': 1,
+    }
 
     start_time = None
     access_token = None
@@ -31,13 +37,6 @@ class ParaguayHacienda(BaseSpider):
     release_ids = []
     request_time_limit = 14.0
     data_type = 'release_package'
-
-    custom_settings = {
-        'DOWNLOADER_MIDDLEWARES': {
-            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
-        },
-        'CONCURRENT_REQUESTS': 1,
-    }
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):

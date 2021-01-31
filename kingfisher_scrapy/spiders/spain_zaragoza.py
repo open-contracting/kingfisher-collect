@@ -14,7 +14,10 @@ class SpainZaragoza(SimpleSpider):
       https://www.zaragoza.es/docs-api_sede/
     """
     name = 'spain_zaragoza'
+
+    # SimpleSpider
     data_type = 'release_package'
+
     url = 'https://www.zaragoza.es/sede/servicio/contratacion-publica/ocds/contracting-process/'
 
     def start_requests(self):

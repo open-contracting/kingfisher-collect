@@ -10,24 +10,26 @@ class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
 
+    # BaseSpider
+    date_format = 'year-month'
+    default_from_date = '2009-01'
+
+    # PeriodicSpider
     pattern = 'http://api.mercadopublico.cl/APISOCDS/OCDS/{0}/{1.year:d}/{1.month:02d}/{2}/{3}'
+    start_requests_callback = 'build_periodic_requests'
+
+    # IndexSpider
+    limit = 100
+    formatter = staticmethod(components(-4, -1))
+    count_pointer = '/pagination/total'
+    yield_list_results = False
+
     available_systems = {
         'convenio': 'listaOCDSAgnoMesConvenio',
         'licitacion': 'listaOCDSAgnoMes',
         'trato-directo': 'listaOCDSAgnoMesTratoDirecto'
     }
     system = None
-
-    # from PeriodicSpider
-    date_format = 'year-month'
-    default_from_date = '2009-01'
-    start_requests_callback = 'build_periodic_requests'
-
-    # from IndexSpider
-    limit = 100
-    formatter = staticmethod(components(-4, -1))
-    count_pointer = '/pagination/total'
-    yield_list_results = False
 
     @classmethod
     def from_crawler(cls, crawler, system=None, *args, **kwargs):
