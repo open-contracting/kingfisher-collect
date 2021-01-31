@@ -14,7 +14,13 @@ from kingfisher_scrapy.middlewares import (
     KingfisherTransformRootPathMiddleware)
 from tests import response_fixture, spider_with_crawler
 
-items = [
+@pytest.mark.parametrize('middleware', [
+    KingfisherTransformAddPackageMiddleware,
+    KingfisherTransformJsonLinesMiddleware,
+    KingfisherTransformResizePackageMiddleware,
+    KingfisherTransformRootPathMiddleware,
+])
+@pytest.mark.parametrize('item', [
     File({
         'file_name': 'test',
         'data': 'data',
@@ -25,31 +31,14 @@ items = [
         'file_name': 'test',
         'url': 'http://test.com',
         'errors': ''
-    })
-]
-
-
-@pytest.mark.parametrize('item', items)
-def test_yield_items(item):
+    }),
+])
+def test_yield_items(middleware, item):
     spider = spider_with_crawler()
-    transform_middleware = KingfisherTransformAddPackageMiddleware()
+    transform_middleware = middleware()
     generator = transform_middleware.process_spider_output(None, [item], spider)
     returned_item = next(generator)
-    assert item == returned_item
 
-    transform_middleware = KingfisherTransformJsonLinesMiddleware()
-    generator = transform_middleware.process_spider_output(None, [item], spider)
-    returned_item = next(generator)
-    assert item == returned_item
-
-    transform_middleware = KingfisherTransformResizePackageMiddleware()
-    generator = transform_middleware.process_spider_output(None, [item], spider)
-    returned_item = next(generator)
-    assert item == returned_item
-
-    transform_middleware = KingfisherTransformRootPathMiddleware()
-    generator = transform_middleware.process_spider_output(None, [item], spider)
-    returned_item = next(generator)
     assert item == returned_item
 
 
@@ -66,8 +55,10 @@ def test_yield_items(item):
 def test_data_types(data_type, data, root_path):
     spider = spider_with_crawler()
     spider.root_path = root_path
+
     root_path_middleware = KingfisherTransformRootPathMiddleware()
     add_package_middleware = KingfisherTransformAddPackageMiddleware()
+
     item = File({
         'file_name': 'test',
         'data': data,
@@ -76,28 +67,31 @@ def test_data_types(data_type, data, root_path):
         'encoding': 'utf-8'
     })
     response_mock = MagicMock()
+
     response_mock.request.url = item['url']
     generator = root_path_middleware.process_spider_output(response_mock, [item], spider)
     returned_item = next(generator)
+
     response_mock['data'] = returned_item
     generator = add_package_middleware.process_spider_output(response_mock, [item], spider)
     returned_item = next(generator)
 
     if 'package' in data_type:
         assert returned_item['data_type'] == data_type
-        list_type = data_type.replace('_package', '')
-        assert returned_item['data'] == {f"{list_type}s": [{"ocid": "abc"}], "uri": "test"}
+        assert returned_item['data'] == {f"{data_type[:-8]}s": [{"ocid": "abc"}], "uri": "test"}
     else:
         assert returned_item['data_type'] == f'{data_type}_package'
         assert returned_item['data'] == {f"{data_type}s": [{"ocid": "abc"}]}
 
 
-@pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), (5, 1, 5)])
-def test_parse_release_package(sample, len_items, len_releases):
+@pytest.mark.parametrize('sample,len_releases', [(None, 100), (5, 5)])
+def test_parse_release_package(sample, len_releases):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.compressed_file_format = 'release_package'
-    transform_middleware = KingfisherTransformResizePackageMiddleware()
+
+    middleware = KingfisherTransformResizePackageMiddleware()
+
     package = {'releases': []}
     for i in range(200):
         package['releases'].append({'key': 'value'})
@@ -109,7 +103,8 @@ def test_parse_release_package(sample, len_items, len_releases):
     response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
     generator = spider.parse(response)
     item = next(generator)
-    generator = transform_middleware.process_spider_output(response, [item], spider)
+
+    generator = middleware.process_spider_output(response, [item], spider)
     transformed_items = list(generator)
 
     for i, item in enumerate(transformed_items, 1):
@@ -123,12 +118,13 @@ def test_parse_release_package(sample, len_items, len_releases):
         assert item['encoding'] == 'utf-8'
 
 
-@pytest.mark.parametrize('sample,len_items', [(None, 20), (5, 5)])
-def test_parse_json_lines(sample, len_items):
+@pytest.mark.parametrize('sample', [None, 5])
+def test_parse_json_lines(sample):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.compressed_file_format = 'json_lines'
-    json_lines_middleware = KingfisherTransformJsonLinesMiddleware()
+
+    middleware = KingfisherTransformJsonLinesMiddleware()
 
     content = []
     for i in range(1, 21):
@@ -141,8 +137,10 @@ def test_parse_json_lines(sample, len_items):
     response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
     generator = spider.parse(response)
     item = next(generator)
-    generator = json_lines_middleware.process_spider_output(response, [item], spider)
+
+    generator = middleware.process_spider_output(response, [item], spider)
     transformed_items = list(generator)
+
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
         assert item == {
