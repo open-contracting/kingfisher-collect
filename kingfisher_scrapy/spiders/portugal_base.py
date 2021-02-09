@@ -5,18 +5,15 @@ from kingfisher_scrapy.util import parameters
 
 
 class PortugalBase(LinksSpider):
-    default_from_date = '2010-01-01'
-    next_page_formatter = staticmethod(parameters('offset'))
-
-    # We will wait 1, 2, 4, 8, 16 minutes (31 minutes total).
-    max_retries = 5
-    half_initial_wait_time = 30
-
     # BaseSpider
     default_from_date = '2010-01-01'
 
     # LinksSpider
     next_page_formatter = staticmethod(parameters('offset'))
+
+    # We will wait 1, 2, 4, 8, 16 minutes (31 minutes total).
+    max_retries = 5
+    half_initial_wait_time = 30
 
     def start_requests(self):
         url = self.url
