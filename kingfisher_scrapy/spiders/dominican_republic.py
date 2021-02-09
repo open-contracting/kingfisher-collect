@@ -34,9 +34,7 @@ class DominicanRepublic(CompressedFileSpider):
     @handle_http_error
     def parse_list(self, response):
         urls = response.css('.download::attr(href)').getall()
-        json_urls = list(filter(lambda x: '/JSON_DGCP_' in x, urls))
-
-        for url in json_urls:
+        for url in urls:
             if '/JSON_DGCP_' in url:
                 if self.from_date and self.until_date:
                     date = int(url[-8:-4])
