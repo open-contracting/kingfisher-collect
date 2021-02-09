@@ -23,7 +23,6 @@ class DominicanRepublic(CompressedFileSpider):
     data_type = 'release_package'
     default_from_date = '2018'
     compressed_file_format = 'release_package'
-    archive_format = 'rar'
 
     def start_requests(self):
         yield scrapy.Request(

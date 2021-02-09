@@ -148,29 +148,35 @@ class KingfisherProcessAPI:
         if reason not in ('finished', 'sample') or spider.pluck or spider.keep_collection_open:
             return
 
-        data = {
-            'collection_source': spider.name,
-            'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': str(bool(spider.sample)),
-        }
-
+        data = self._build_data_to_send(spider)
         return self._request(spider, 'end_collection_store', data['collection_source'], data)
+
+    def spider_error(self, failure, response, spider):
+        """
+        Sends an API request to store a file error in Kingfisher Process when a spider callback generates an error.
+        """
+        # https://docs.scrapy.org/en/latest/topics/signals.html#scrapy.signals.spider_error
+        file_name = response.request.meta.get('file_name', response.request.url)
+        data = self._build_data_to_send(spider, file_name, response.request.url, failure)
+        return self._request(spider, 'create_file_error', response.request.url, data)
+
+    def item_error(self, item, response, spider, failure):
+        """
+        Sends an API request to store a file error in Kingfisher Process when a item pipeline generates an error.
+        """
+        # https://docs.scrapy.org/en/latest/topics/signals.html#scrapy.signals.item_error
+        data = self._build_data_to_send(spider, item['file_name'], item['url'], failure)
+        return self._request(spider, 'create_file_error', item['file_name'], data)
 
     def item_scraped(self, item, spider):
         """
         Sends an API request to store the file, file item or file error in Kingfisher Process.
         """
-
+        # https://docs.scrapy.org/en/latest/topics/signals.html#scrapy.signals.item_scraped
         if not item.get('post_to_api', True) or isinstance(item, PluckedItem):
             return
 
-        data = {
-            'collection_source': spider.name,
-            'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': str(bool(spider.sample)),
-            'file_name': item['file_name'],
-            'url': item['url'],
-        }
+        data = self._build_data_to_send(spider, item['file_name'], item['url'])
 
         if isinstance(item, FileError):
             data['errors'] = json.dumps(item['errors'])
@@ -212,6 +218,21 @@ class KingfisherProcessAPI:
         d = getattr(self.client, method)(*args)
         d.addCallback(log_for_status)
         return d
+
+    @staticmethod
+    def _build_data_to_send(spider, file_name=None, url=None, errors=None):
+        data = {
+            'collection_source': spider.name,
+            'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
+            'collection_sample': str(bool(spider.sample))
+        }
+        if file_name:
+            data['file_name'] = file_name
+        if url:
+            data['url'] = url
+        if errors:
+            data['errors'] = json.dumps(errors)
+        return data
 
 
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry

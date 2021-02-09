@@ -115,12 +115,26 @@ Some spiders support these arguments:
 Afghanistan
 -----------
 
+.. autoclass:: kingfisher_scrapy.spiders.afghanistan_record_packages.AfghanistanRecordPackages
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl afghanistan_record_packages
+
 .. autoclass:: kingfisher_scrapy.spiders.afghanistan_records.AfghanistanRecords
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl afghanistan_records
+
+.. autoclass:: kingfisher_scrapy.spiders.afghanistan_release_packages.AfghanistanReleasePackages
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl afghanistan_release_packages
 
 .. autoclass:: kingfisher_scrapy.spiders.afghanistan_releases.AfghanistanReleases
    :no-members:
@@ -729,13 +743,6 @@ Moldova
 .. code-block:: bash
 
    scrapy crawl moldova
-
-.. autoclass:: kingfisher_scrapy.spiders.moldova_mtender.MoldovaMTender
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl moldova_mtender
 
 .. autoclass:: kingfisher_scrapy.spiders.moldova_old.MoldovaOld
    :no-members:
