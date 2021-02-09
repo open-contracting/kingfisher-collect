@@ -296,24 +296,17 @@ class KingfisherProcessNGAPI:
     If the ``KINGFISHER_API_URI`` and ``KINGFISHER_API_KEY`` environment variables or configuration settings are set,
     then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
     """
-    def __init__(self, url, username, password):
+    def __init__(self, url):
         self.url = url
-        self.username = username
-        self.password = password
 
     @classmethod
     def from_crawler(cls, crawler):
         url = crawler.settings['KINGFISHER_NG_API_URI']
-        username = crawler.settings['KINGFISHER_NG_API_USERNAME']
-        password = crawler.settings['KINGFISHER_NG_API_PASSWORD']
 
         if not url:
             raise NotConfigured('KINGFISHER_NG_API_URI is not set.')
 
-        if (username and not password) or (password and not username):
-            raise NotConfigured('Both KINGFISHER_NG_API_USERNAME and KINGFISHER_NG_API_PASSWORD must be set.')
-
-        extension = cls(url, username, password)
+        extension = cls(url)
         crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
@@ -334,7 +327,7 @@ class KingfisherProcessNGAPI:
             "check": True,
         }
 
-        response = self._post("api/v1/create_collection", data)
+        response = requests.post(self.url + "/api/v1/create_collection", json=data)
 
         if not response.ok:
             spider.logger.warning(
@@ -347,11 +340,15 @@ class KingfisherProcessNGAPI:
         """
         Sends an API request to close the collection.
         """
+        if reason != 'finished' or spider.pluck or spider.keep_collection_open:
+            return
+
         data = {
             "collection_id": self.collection_id,
         }
 
-        response = self._post("api/v1/close_collection", data)
+        response = requests.post(self.url + "/api/v1/close_collection", json=data)
+
 
         if not response.ok:
             spider.logger.warning(
@@ -361,29 +358,14 @@ class KingfisherProcessNGAPI:
         """
         Sends an API request to store the file in Kingfisher Process.
         """
-        if not item.get('post_to_api', True) or isinstance(item, PluckedItem):
-            return
-
         data = {
             "collection_id": self.collection_id,
             "path": os.path.join(item['files_store'], item['path'])
         }
 
-        if isinstance(item, FileError):
-            # in case of error send info about it to api
-            data['errors'] = json.dumps(item['errors'])
-
-        response = self._post("api/v1/create_collection_file", data)
+        response = requests.post(self.url + "/api/v1/create_collection_file", json=data)
 
         if not response.ok:
             spider.logger.warning(
                 'Failed to POST create_collection_file. API status code: {}'.format(response.status_code))
 
-    def _post(self, url, data):
-        """
-        Wrapper around the requests. Add auth if necessary.
-        """
-        if self.username and self.password:
-            return requests.post("{}/{}".format(self.url, url), json=data, auth=(self.username, self.password))
-        else:
-            return requests.post("{}/{}".format(self.url, url), json=data)
