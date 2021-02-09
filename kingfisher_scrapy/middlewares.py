@@ -154,7 +154,7 @@ class RootPathMiddleware:
                     #
                     # https://www.postgresql.org/docs/11/datatype-numeric.html
                     yield FileItem({
-                        'number': (item['number'] - 1) * spider.max_items_per_file + number,
+                        'number': (item['number'] - 1) * spider.root_path_max_length + number,
                         'file_name': item['file_name'],
                         'data': obj,
                         'data_type': item['data_type'],
