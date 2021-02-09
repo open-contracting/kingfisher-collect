@@ -12,10 +12,11 @@ class NigeriaPortal(SimpleSpider):
       Nigeria Open Contracting Portal (NOCOPO) of Bureau of Public Procurement (BPP)
     """
     name = 'nigeria_portal'
-    data_type = 'release_package'
-
     download_delay = 0.9
     user_agent = browser_user_agent
+
+    # SimpleSpider
+    data_type = 'release_package'
 
     def start_requests(self):
         yield scrapy.Request(

@@ -12,6 +12,12 @@ class PortugalBase(LinksSpider):
     max_retries = 5
     half_initial_wait_time = 30
 
+    # BaseSpider
+    default_from_date = '2010-01-01'
+
+    # LinksSpider
+    next_page_formatter = staticmethod(parameters('offset'))
+
     def start_requests(self):
         url = self.url
         if self.from_date and self.until_date:

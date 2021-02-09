@@ -17,9 +17,13 @@ class Armenia(LinksSpider):
       an error, the spider will try to find the nearest timestamp within the following 1024 days that succeeds.
     """
     name = 'armenia'
-    next_pointer = '/next_page/uri'
-    next_page_formatter = staticmethod(parameters('offset'))
+
+    # SimpleSpider
     data_type = 'release_package'
+
+    # LinksSpider
+    next_page_formatter = staticmethod(parameters('offset'))
+    next_pointer = '/next_page/uri'
 
     def start_requests(self):
         url = 'https://armeps.am/ocds/release'

@@ -7,9 +7,6 @@
   ],
   "type": "object",
   "properties": {
-    "post_to_api": {
-      "type": "boolean"
-    },
     "path": {
       "type": "string"
     },

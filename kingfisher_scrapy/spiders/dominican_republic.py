@@ -12,9 +12,12 @@ class DominicanRepublic(CompressedFileSpider):
       https://www.dgcp.gob.do/estandar-mundial-ocds/
     """
     name = 'dominican_republic'
+
+    # SimpleSpider
     data_type = 'release_package'
-    compressed_file_format = 'release_package'
-    archive_format = 'rar'
+
+    # CompressedFileSpider
+    resize_package = True
 
     def start_requests(self):
         yield scrapy.Request(
@@ -25,9 +28,8 @@ class DominicanRepublic(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        urls = response.css('.fileLink::attr(href)').getall()
-        json_urls = list(filter(lambda x: '/JSON_DGCP_' in x, urls))
+        urls = response.css('.download::attr(href)').getall()
+        json_urls = list(filter(lambda x: '/JSON' in x, urls))
 
         for url in json_urls:
-            if '/JSON_DGCP_' in url:
-                yield self.build_request(url, formatter=components(-1))
+            yield self.build_request(url, formatter=components(-1))

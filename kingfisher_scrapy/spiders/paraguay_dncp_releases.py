@@ -17,6 +17,8 @@ class ParaguayDNCPReleases(ParaguayDNCPBaseSpider):
       https://contrataciones.gov.py/datos/api/v3/doc
     """
     name = 'paraguay_dncp_releases'
+
+    # SimpleSpider
     data_type = 'release_package'
 
     def get_files_to_download(self, content):

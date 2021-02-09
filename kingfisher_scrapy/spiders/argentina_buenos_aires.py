@@ -13,13 +13,14 @@ class ArgentinaBuenosAires(CompressedFileSpider):
     Bulk download documentation
       https://data.buenosaires.gob.ar/dataset/buenos-aires-compras/archivo/2a3d077c-71b6-4ba7-8924-f3e38cf1b8fc
     """
-
     name = 'argentina_buenos_aires'
-    data_type = 'release_package'
-    compressed_file_format = 'release_package'
-
-    # the data list service takes too long to be downloaded, so we increase the download timeout
     download_timeout = 1000
+
+    # SimpleSpider
+    data_type = 'release_package'
+
+    # CompressedFileSpider
+    resize_package = True
 
     def start_requests(self):
         # A CKAN API JSON response.

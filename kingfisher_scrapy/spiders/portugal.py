@@ -16,11 +16,14 @@ class Portugal(CompressedFileSpider):
       https://dados.gov.pt/pt/apidoc/#/datasets
     """
     name = 'portugal'
+    download_timeout = 9999
+
+    # BaseSpider
+    line_delimited = True
+
+    # SimpleSpider
     data_type = 'record_package'
     encoding = 'iso-8859-1'
-    compressed_file_format = 'json_lines'
-
-    download_timeout = 9999
 
     def start_requests(self):
         # A CKAN API JSON response.

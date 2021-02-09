@@ -19,8 +19,14 @@ class DominicanRepublicPortal(LinksSpider):
       http://148.101.176.123:48080/ocdsdr/docs
     """
     name = 'dominican_republic_api'
-    data_type = 'release_package'
+
+    # BaseSpider
     default_from_date = '2018-01-01'
+
+    # SimpleSpider
+    data_type = 'release_package'
+
+    # LinksSpider
     next_page_formatter = staticmethod(parameters('page'))
 
     def start_requests(self):

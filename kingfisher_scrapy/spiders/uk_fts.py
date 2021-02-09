@@ -19,9 +19,15 @@ class UKFTS(LinksSpider):
       https://www.find-tender.service.gov.uk/apidocumentation/1.0/GET-ocdsReleasePackages
     """
     name = 'uk_fts'
-    data_type = 'release_package'
+
+    # BaseSpider
     date_format = 'datetime'
     default_from_date = '2021-01-01T00:00:00'
+
+    # SimpleSpider
+    data_type = 'release_package'
+
+    # LinksSpider
     next_page_formatter = staticmethod(parameters('cursor'))
 
     def start_requests(self):

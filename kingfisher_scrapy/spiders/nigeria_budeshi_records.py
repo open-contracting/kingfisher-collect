@@ -9,5 +9,8 @@ class NigeriaBudeshiRecords(NigeriaBudeshiBase):
       https://budeshi.ng/Api
     """
     name = 'nigeria_budeshi_records'
+
+    # SimpleSpider
     data_type = 'record_package'
+
     url = 'https://budeshi.ng/api/record/{}'

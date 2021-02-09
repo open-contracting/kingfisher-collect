@@ -1,4 +1,3 @@
-import json
 import os
 from abc import abstractmethod
 from datetime import datetime
@@ -6,14 +5,13 @@ from io import BytesIO
 from math import ceil
 from zipfile import ZipFile
 
-import ijson
 import scrapy
 from jsonpointer import resolve_pointer
 from rarfile import RarFile
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError
-from kingfisher_scrapy.items import File, FileError, FileItem
+from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, UnknownArchiveFormatError
+from kingfisher_scrapy.items import File, FileError
 from kingfisher_scrapy.util import add_query_string, handle_http_error
 
 browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
@@ -23,19 +21,29 @@ class BaseSpider(scrapy.Spider):
     """
     -  If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for `Kingfisher
        Process integration <https://github.com/open-contracting/kingfisher-collect/issues/411>`__.
-    -  If the spider supports ``from_date`` and ``until_date`` spider arguments, set the ``default_from_date`` class
-       attribute to a date string.
-    -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
-       ``default_from_date`` class attribute to a date string.
+    -  If the spider supports ``from_date`` and ``until_date`` spider arguments:
+
+       -  If the source supports time components, set a ``date_format`` class attribute to "datetime".
+       -  Set a ``default_from_date`` class attribute to a date ("YYYY-MM-DD") or datetime ("YYYY-MM-DDTHH:MM:SS").
+       -  If the source stopped publishing, set a ``default_until_date`` class attribute to a date or datetime.
+
+       The :class:`~kingfisher_scrapy.base_spider.PeriodicSpider` class changes the allowed date formats to "year"
+       ("YYYY") and "year-month" ("YYYY-MM").
+
+    -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set a
+       ``default_from_date`` class attribute as above.
     -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
-    -  If a spider collects data as CSV or XLSX files, set the class attribute ``unflatten = True`` to convert each
+    -  If a spider collects data as CSV or XLSX files, add a ``unflatten = True`` class attribute to convert each
        item to json files in the Unflatten pipeline class using the ``unflatten`` command from Flatten Tool.
        If you need to set more arguments for the unflatten command, set a ``unflatten_args`` dict with them.
+    -  If the data is not formatted as OCDS (record, release, record package or release package), set a ``root_path``
+       class attribute to the path to the OCDS data.
+    -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
+
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
     ``get_default_until_date()`` return value (which is the current time, by default).
     """
-    MAX_RELEASES_PER_PACKAGE = 100
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
     ocds_version = '1.1'
@@ -43,6 +51,8 @@ class BaseSpider(scrapy.Spider):
     date_required = False
     unflatten = False
     unflatten_args = {}
+    line_delimited = False
+    root_path = ''
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
@@ -189,7 +199,7 @@ class BaseSpider(scrapy.Spider):
         :rtype: scrapy.Request
         """
         file_name = formatter(url)
-        if not file_name.endswith(('.json', '.zip', '.xlsx', '.csv')):
+        if not file_name.endswith(('.json', '.zip', '.xlsx', '.csv', '.rar')):
             file_name += '.json'
         meta = {'file_name': file_name}
         if 'meta' in kwargs:
@@ -205,25 +215,11 @@ class BaseSpider(scrapy.Spider):
         kwargs.setdefault('data', response.body)
         return self.build_file(**kwargs)
 
-    def build_file(self, *, file_name=None, url=None, data=None, data_type=None, encoding='utf-8', post_to_api=True):
+    def build_file(self, *, file_name=None, url=None, data=None, data_type=None, encoding='utf-8'):
         """
         Returns a File item to yield.
         """
         return File({
-            'file_name': file_name,
-            'data': data,
-            'data_type': data_type,
-            'url': url,
-            'encoding': encoding,
-            'post_to_api': post_to_api,
-        })
-
-    def build_file_item(self, *, number=None, file_name=None, url=None, data=None, data_type=None, encoding='utf-8'):
-        """
-        Returns a FileItem item to yield.
-        """
-        return FileItem({
-            'number': number,
             'file_name': file_name,
             'data': data,
             'data_type': data_type,
@@ -244,51 +240,13 @@ class BaseSpider(scrapy.Spider):
         item.update(kwargs)
         return item
 
-    def _get_package_metadata(self, f, skip_key):
-        """
-        Returns the package metadata from a file object.
-
-        :param f: a file object
-        :param str skip_key: the key to skip
-        :returns: the package metadata
-        :rtype: dict
-        """
-        package = {}
-        for item in util.items(ijson.parse(f), '', skip_key=skip_key):
-            package.update(item)
-        return package
-
-    def parse_json_lines(self, f, *, file_name='data.json', url=None, data_type=None, encoding='utf-8'):
-        for number, line in enumerate(f, 1):
-            if self.sample and number > self.sample:
-                break
-            if isinstance(line, bytes):
-                line = line.decode(encoding=encoding)
-            yield self.build_file_item(number=number, file_name=file_name, url=url, data=line, data_type=data_type,
-                                       encoding=encoding)
-
-    def parse_json_array(self, f_package, f_list, *, file_name='data.json', url=None, data_type=None, encoding='utf-8',
-                         array_field_name='releases'):
-        if self.sample:
-            size = self.sample
-        else:
-            size = self.MAX_RELEASES_PER_PACKAGE
-
-        package = self._get_package_metadata(f_package, array_field_name)
-
-        for number, items in enumerate(util.grouper(ijson.items(f_list, f'{array_field_name}.item'), size), 1):
-            package[array_field_name] = filter(None, items)
-            data = json.dumps(package, default=util.default)
-            yield self.build_file_item(number=number, file_name=file_name, url=url, data=data, data_type=data_type,
-                                       encoding=encoding)
-            if self.sample:
-                break
-
     @classmethod
     def get_default_until_date(cls, spider):
         """
-        Returns the default value of the ``until_date`` spider argument.
+        Returns the ``default_until_date`` class attribute if truthy. Otherwise, returns the current time.
         """
+        if getattr(spider, 'default_until_date', None):
+            return spider.default_until_date
         return datetime.utcnow()
 
 
@@ -299,7 +257,6 @@ class SimpleSpider(BaseSpider):
     #. Inherit from ``SimpleSpider``
     #. Set a ``data_type`` class attribute to the data type of the responses
     #. Optionally, set an ``encoding`` class attribute to the encoding of the responses (default UTF-8)
-    #. Optionally, set a ``data_pointer`` class attribute to the JSON Pointer for OCDS data (default "")
     #. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
 
     .. code-block:: python
@@ -317,38 +274,21 @@ class SimpleSpider(BaseSpider):
     """
 
     encoding = 'utf-8'
-    data_pointer = ''
 
     @handle_http_error
     def parse(self, response):
-        kwargs = {}
-        if self.data_pointer:
-            kwargs['data'] = json.dumps(resolve_pointer(response.json(), self.data_pointer)).encode()
-
-        yield self.build_file_from_response(response, data_type=self.data_type, encoding=self.encoding, **kwargs)
+        yield self.build_file_from_response(response, data_type=self.data_type, encoding=self.encoding)
 
 
 class CompressedFileSpider(BaseSpider):
     """
     This class makes it easy to collect data from ZIP or RAR files. It assumes all files have the same data type.
+    Each compressed file is saved to disk. The archive file is *not* saved to disk.
 
     #. Inherit from ``CompressedFileSpider``
     #. Set a ``data_type`` class attribute to the data type of the compressed files
     #. Optionally, set an ``encoding`` class attribute to the encoding of the compressed files (default UTF-8)
-    #. Optionally, set a ``archive_format`` class attribute to the archive file format ("zip" or "rar").
-    #. Optionally, set a ``compressed_file_format`` class attribute to the format of the compressed files
-
-       ``json_lines``
-         Yields each line of each compressed file.
-         The archive file is saved to disk. The compressed files are *not* saved to disk.
-       ``release_package``
-         Re-packages the releases in the compressed files in groups of
-         :const:`~kingfisher_scrapy.base_spider.BaseSpider.MAX_RELEASES_PER_PACKAGE`, and yields the packages.
-         The archive file is saved to disk. The compressed files are *not* saved to disk.
-       ``None``
-         Yields each compressed file.
-         Each compressed file is saved to disk. The archive file is *not* saved to disk.
-
+    #. Optionally, add a ``resize_package = True`` class attribute to split large packages (e.g. greater than 100MB)
     #. Write a ``start_requests`` method to request the archive files
 
     .. code-block:: python
@@ -362,50 +302,56 @@ class CompressedFileSpider(BaseSpider):
 
             def start_requests(self):
                 yield self.build_request('https://example.com/api/packages.zip', formatter=components(-1))
+
+    .. note::
+
+       ``resize_package = True`` is not compatible with ``line_delimited = True`` or ``root_path``.
     """
 
     encoding = 'utf-8'
-    skip_pluck = 'Archive files are not supported'
-    compressed_file_format = None
-    archive_format = 'zip'
+    resize_package = False
     file_name_must_contain = ''
 
     @handle_http_error
     def parse(self, response):
-        if self.compressed_file_format:
-            yield self.build_file_from_response(response, data_type=self.archive_format, post_to_api=False)
-        if self.archive_format == 'zip':
+        archive_name, archive_format = os.path.splitext(response.request.meta['file_name'])
+        archive_format = archive_format[1:].lower()
+
+        if archive_format == 'zip':
             cls = ZipFile
-        else:
+        elif archive_format == 'rar':
             cls = RarFile
+        else:
+            raise UnknownArchiveFormatError(response.request.meta['file_name'])
+
         archive_file = cls(BytesIO(response.body))
         for file_info in archive_file.infolist():
             filename = file_info.filename
             basename = os.path.basename(filename)
             if self.file_name_must_contain not in basename:
                 continue
-            if self.archive_format == 'rar' and file_info.isdir():
+            if archive_format == 'rar' and file_info.isdir():
                 continue
-            if self.archive_format == 'zip' and file_info.is_dir():
+            if archive_format == 'zip' and file_info.is_dir():
                 continue
             if not basename.endswith('.json'):
                 basename += '.json'
 
-            data = archive_file.open(filename)
-
-            kwargs = {
-                'file_name': basename,
-                'url': response.request.url,
-                'data_type': self.data_type,
-                'encoding': self.encoding,
-            }
-            if self.compressed_file_format == 'json_lines':
-                yield from self.parse_json_lines(data, **kwargs)
-            elif self.compressed_file_format == 'release_package':
-                package = archive_file.open(filename)
-                yield from self.parse_json_array(package, data, **kwargs)
+            compressed_file = archive_file.open(filename)
+            # If `resize_package = True`, then we need to open the file twice: once to extract the package metadata and
+            # then to extract the releases themselves.
+            if self.resize_package:
+                data = {'data': compressed_file, 'package': archive_file.open(filename)}
             else:
-                yield self.build_file(data=data.read(), **kwargs)
+                data = compressed_file
+
+            yield File({
+                'file_name': basename,
+                'data': data,
+                'data_type': self.data_type,
+                'url': response.request.url,
+                'encoding': self.encoding
+            })
 
 
 class LinksSpider(SimpleSpider):
@@ -478,9 +424,8 @@ class PeriodicSpider(SimpleSpider):
 
     #. Implement a ``get_formatter`` method to return the formatter to use in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls
-    #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a string
-    #. Optionally, set a ``default_until_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM") as a
-       string, if the source is known to have stopped publishing - otherwise, it defaults to today
+    #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM")
+    #. If the source stopped publishing, set a ``default_until_date`` class attribute to a year or year-month
     #. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
        :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
 
@@ -498,15 +443,6 @@ class PeriodicSpider(SimpleSpider):
             self.start_requests_callback = getattr(self, self.start_requests_callback)
         else:
             self.start_requests_callback = self.parse
-
-    @classmethod
-    def get_default_until_date(cls, spider):
-        """
-        Returns the ``default_until_date`` class attribute if truthy. Otherwise, returns today's date.
-        """
-        if getattr(spider, 'default_until_date', None):
-            return spider.default_until_date
-        return datetime.today()
 
     def start_requests(self):
         start = self.from_date
@@ -550,6 +486,8 @@ class IndexSpider(SimpleSpider):
            configure the spider to send a ``page`` query string parameter instead of a pair of ``limit`` and ``offset``
            query string parameters. The spider then yields a request for each offset/page.
 
+    #. Set a ``formatter`` class attribute to set the file name as in
+       :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`.
     #. Write a ``start_requests`` method to yield the initial URL. The request's ``callback`` parameter should be set
        to ``self.parse_list``.
 

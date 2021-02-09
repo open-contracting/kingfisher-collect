@@ -26,9 +26,15 @@ class Colombia(LinksSpider):
       https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/
     """
     name = 'colombia'
-    next_page_formatter = staticmethod(parameters('_id'))
+
+    # BaseSpider
     default_from_date = '2011-01-01'
+
+    # SimpleSpider
     data_type = 'release_package'
+
+    # LinksSpider
+    next_page_formatter = staticmethod(parameters('_id'))
 
     def start_requests(self):
         base_url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases'

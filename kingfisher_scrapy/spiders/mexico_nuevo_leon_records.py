@@ -9,6 +9,12 @@ class MexicoNuevoLeonRecords(MexicoNuevoLeonBase):
       http://si.nl.gob.mx/transparencia/acerca-del-proyecto
     """
     name = 'mexico_nuevo_leon_records'
-    file_name_must_contain = 'RecordPackage'
-    data_type = 'record_package'
+
+    # BaseSpider
     skip_pluck = 'Already covered (see code for details)'  # mexico_nuevo_leon_releases
+
+    # SimpleSpider
+    data_type = 'record_package'
+
+    # CompressedFileSpider
+    file_name_must_contain = 'RecordPackage'

@@ -64,7 +64,6 @@ def test_parse_200():
         'data': body,
         'data_type': 'release_package',
         'encoding': 'utf-8',
-        'post_to_api': True,
     }
 
     assert type(request) is Request

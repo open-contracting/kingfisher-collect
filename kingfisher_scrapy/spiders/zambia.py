@@ -10,8 +10,12 @@ class Zambia(CompressedFileSpider):
       Zambia Public Procurement Authority
     """
     name = 'zambia'
-    data_type = 'record_package'
+
+    # BaseSpider
     ocds_version = '1.0'
+
+    # SimpleSpider
+    data_type = 'record_package'
 
     def start_requests(self):
         yield scrapy.Request(

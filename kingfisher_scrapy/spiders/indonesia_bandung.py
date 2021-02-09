@@ -34,11 +34,15 @@ class IndonesiaBandung(PeriodicSpider):
             release id
     """
     name = 'indonesia_bandung'
-    data_type = 'release'
 
-    # PeriodicSpider variables
+    # BaseSpider
     date_format = 'year'
     default_from_date = '2013'
+
+    # SimpleSpider
+    data_type = 'release'
+
+    # PeriodicSpider
     pattern = 'https://birms.bandung.go.id/api/packages/year/{}'
     start_requests_callback = 'parse_list'
 

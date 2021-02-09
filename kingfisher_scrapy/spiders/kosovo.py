@@ -17,9 +17,14 @@ class Kosovo(SimpleSpider):
       https://ocdskrpp-test.rks-gov.net/Help
     """
     name = 'kosovo'
-    data_type = 'release_list'
+
+    # BaseSpider
     date_format = 'datetime'
     default_from_date = '2000-01-01T00:00:00'
+    root_path = 'item'
+
+    # SimpleSpider
+    data_type = 'release'
 
     def start_requests(self):
         stages = ['Award', 'Tender', 'Bid']

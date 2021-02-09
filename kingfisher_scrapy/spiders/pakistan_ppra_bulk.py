@@ -11,6 +11,8 @@ class PakistanPPRABulk(SimpleSpider):
       https://www.ppra.org.pk/api/
     """
     name = 'pakistan_ppra_bulk'
+
+    # SimpleSpider
     data_type = 'release_package'
 
     def start_requests(self):

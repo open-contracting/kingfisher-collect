@@ -52,6 +52,7 @@ class Sample:
     """
     Drop items and close the spider once the sample size is reached.
     """
+
     def __init__(self):
         self.item_count = 0
 

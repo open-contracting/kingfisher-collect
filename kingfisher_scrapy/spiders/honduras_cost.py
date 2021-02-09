@@ -9,6 +9,8 @@ class HondurasCoST(SimpleSpider):
       Systema de Información y Seguimiento de Obras y Contratos (SISOCS)
     """
     name = 'honduras_cost'
+
+    # SimpleSpider
     data_type = 'record_package'
 
     def start_requests(self):

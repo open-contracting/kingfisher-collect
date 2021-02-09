@@ -12,9 +12,10 @@ class AfghanistanReleases(SimpleSpider):
       https://ocds.ageops.net/
     """
     name = 'afghanistan_releases'
-    data_type = 'release'
-
     download_delay = 1.5
+
+    # SimpleSpider
+    data_type = 'release'
 
     def start_requests(self):
         # A JSON array of URL strings, in reverse chronological order.

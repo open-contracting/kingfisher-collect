@@ -13,36 +13,36 @@ from . import spider_with_crawler
 TEST_CASES = [
     # honduras_portal_*
     ({
-         'total_pages_pointer': '/results',
-         'data_type': 'release_package',
-         'formatter': staticmethod(parameters('page'))
-       }, '{"results": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)',
-     [str(x) for x in range(2, 11)]),
+        'total_pages_pointer': '/results',
+        'data_type': 'release_package',
+        'formatter': staticmethod(parameters('page'))
+    }, '{"results": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)',
+        [str(x) for x in range(2, 11)]),
     ({
-         'total_pages_pointer': '/results',
-         'page_size': '50',
-         'data_type': 'release_package',
-         'formatter': staticmethod(parameters('page')),
-         'additional_params': {'pageSize': 10}
-      }, '{"results": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)&pageSize=10',
-     [str(x) for x in range(2, 11)]),
+        'total_pages_pointer': '/results',
+        'page_size': '50',
+        'data_type': 'release_package',
+        'formatter': staticmethod(parameters('page')),
+        'additional_params': {'pageSize': 10}
+    }, '{"results": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)&pageSize=10',
+        [str(x) for x in range(2, 11)]),
     # mexico_administracion_publica_federal
     ({
-         'count_pointer': '/total',
-         'limit': '/limit',
-         'data_type': 'release_package',
-         'use_page': True,
-         'formatter': staticmethod(parameters('page'))
-      }, '{"total": 50, "limit": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)',
-     [str(x) for x in range(2, 6)]),
+        'count_pointer': '/total',
+        'limit': '/limit',
+        'data_type': 'release_package',
+        'use_page': True,
+        'formatter': staticmethod(parameters('page'))
+    }, '{"total": 50, "limit": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)',
+        [str(x) for x in range(2, 6)]),
     # canada_montreal
     ({
-         'count_pointer': '/total',
-         'limit': 10,
-         'data_type': 'release_package',
-         'formatter': staticmethod(parameters('offset'))
-      }, '{"total": 50}', 'http://example.com', r'http://example\.com\?limit=10&offset=(\d+)',
-     [str(x) for x in range(10, 50, 10)]),
+        'count_pointer': '/total',
+        'limit': 10,
+        'data_type': 'release_package',
+        'formatter': staticmethod(parameters('offset'))
+    }, '{"total": 50}', 'http://example.com', r'http://example\.com\?limit=10&offset=(\d+)',
+        [str(x) for x in range(10, 50, 10)]),
     # kenya_makueni
     ({
         'yield_list_results': False,
@@ -54,7 +54,7 @@ TEST_CASES = [
         'formatter': staticmethod(parameters('pageNumber')),
         'base_url': 'http://example.com/ocds'
     }, '100', 'http://example.com', r'http://example\.com/ocds\?pageNumber=(\d+)&step=10',
-     [str(x) for x in range(0, 10)])
+        [str(x) for x in range(0, 10)])
 ]
 
 

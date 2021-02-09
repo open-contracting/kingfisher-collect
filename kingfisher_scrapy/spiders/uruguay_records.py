@@ -15,8 +15,12 @@ class UruguayRecords(UruguayBase):
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
     """
     name = 'uruguay_records'
-    data_type = 'record_package'
+
+    # BaseSpider
     skip_pluck = 'Already covered (see code for details)'  # uruguay_releases
+
+    # SimpleSpider
+    data_type = 'record_package'
 
     @handle_http_error
     def parse_list(self, response):

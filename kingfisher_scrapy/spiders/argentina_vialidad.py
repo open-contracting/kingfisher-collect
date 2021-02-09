@@ -11,7 +11,12 @@ class ArgentinaVialidad(SimpleSpider):
       https://datosabiertos.vialidad.gob.ar/ui/index.html#!/datos_abiertos
     """
     name = 'argentina_vialidad'
-    data_type = 'release_package_list'
+
+    # BaseSpider
+    root_path = 'item'
+
+    # SimpleSpider
+    data_type = 'release_package'
 
     def start_requests(self):
         url = 'https://datosabiertos.vialidad.gob.ar/api/ocds/package/all'

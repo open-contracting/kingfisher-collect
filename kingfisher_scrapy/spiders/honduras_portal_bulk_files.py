@@ -32,15 +32,20 @@ class HondurasPortalBulkFiles(PeriodicSpider):
       http://www.contratacionesabiertas.gob.hn/descargas/
     """
     name = 'honduras_portal_bulk_files'
-    data_type = 'release_package'
-    skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
-    available_publishers = {'oncae': 'oficina_normativa', 'sefin': 'secretaria_de_fin_HN.SIAFI2'}
-    available_systems = {'HC1': 'honducompras-1', 'CE': 'catalogo-electronico', 'DDC': 'difusion-directa-contrato'}
 
-    # PeriodicSpider variables
+    # BaseSpider
     date_format = 'year-month'
     default_from_date = '2005-11'
+    skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
+
+    # SimpleSpider
+    data_type = 'release_package'
+
+    # PeriodicSpider
     pattern = 'http://www.contratacionesabiertas.gob.hn/api/v1/descargas/{}'
+
+    available_publishers = {'oncae': 'oficina_normativa', 'sefin': 'secretaria_de_fin_HN.SIAFI2'}
+    available_systems = {'HC1': 'honducompras-1', 'CE': 'catalogo-electronico', 'DDC': 'difusion-directa-contrato'}
 
     @classmethod
     def from_crawler(cls, crawler, publisher=None, system=None, *args, **kwargs):

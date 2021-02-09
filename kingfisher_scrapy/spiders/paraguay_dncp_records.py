@@ -17,8 +17,12 @@ class ParaguayDNCPRecords(ParaguayDNCPBaseSpider):
       https://contrataciones.gov.py/datos/api/v3/doc
     """
     name = 'paraguay_dncp_records'
-    data_type = 'record_package'
+
+    # BaseSpider
     skip_pluck = 'Already covered (see code for details)'  # paraguay_dncp_releases
+
+    # SimpleSpider
+    data_type = 'record_package'
 
     def get_files_to_download(self, content):
         for record in content['records']:

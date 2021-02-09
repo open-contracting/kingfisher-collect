@@ -14,12 +14,19 @@ class KenyaMakueni(IndexSpider):
       https://opencontracting.makueni.go.ke/swagger-ui.html#/ocds-controller
     """
     name = 'kenya_makueni'
-    data_type = 'release_package_list'
+
+    # BaseSpider
+    root_path = 'item'
+
+    # SimpleSpider
+    data_type = 'release_package'
+
+    # IndexSpider
     limit = 10
+    formatter = staticmethod(parameters('pageNumber'))
+    param_page = 'pageNumber'
     additional_params = {'pageSize': limit}
     yield_list_results = False
-    param_page = 'pageNumber'
-    formatter = staticmethod(parameters('pageNumber'))
 
     base_url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={limit}&pageNumber={page}'
 

@@ -12,6 +12,8 @@ class France(SimpleSpider):
       https://doc.data.gouv.fr/api/reference/
     """
     name = 'france'
+
+    # SimpleSpider
     data_type = 'release_package'
 
     def start_requests(self):
