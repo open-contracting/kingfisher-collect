@@ -84,6 +84,7 @@ EXTENSIONS = {
     'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
     'kingfisher_scrapy.extensions.KingfisherProcessAPI': 500,
     'kingfisher_scrapy.extensions.KingfisherItemCount': 600,
+    'kingfisher_scrapy.extensions.KingfisherProcessNGAPI': 700,
 }
 
 # Configure item pipelines
@@ -103,6 +104,8 @@ SENTRY_DSN = os.getenv('SENTRY_DSN')
 # https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process.html
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
 KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
+KINGFISHER_NG_API_URI = 'http://localhost:22061'
+
 # If Kingfisher Process can read Kingfisher Collect's `FILES_STORE`, then Kingfisher Collect can send file paths
 # instead of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.
 KINGFISHER_API_LOCAL_DIRECTORY = os.getenv('KINGFISHER_API_LOCAL_DIRECTORY')
@@ -143,7 +146,7 @@ KINGFISHER_PLUCK_PATH = os.getenv('KINGFISHER_PLUCK_PATH', '')
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std:setting-FILES_STORE
-FILES_STORE = os.getenv('FILES_STORE', 'data')
+FILES_STORE = "/tmp/kc/"
 
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
 HTTPERROR_ALLOW_ALL = True
