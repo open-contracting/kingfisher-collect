@@ -66,13 +66,10 @@ def test_data_types(data_type, data, root_path):
         'url': 'http://test.com',
         'encoding': 'utf-8'
     })
-    response_mock = MagicMock()
 
-    response_mock.request.url = item['url']
-
-    generator = root_path_middleware.process_spider_output(response_mock, [item], spider)
+    generator = root_path_middleware.process_spider_output(None, [item], spider)
     item = next(generator)
-    generator = add_package_middleware.process_spider_output(response_mock, [item], spider)
+    generator = add_package_middleware.process_spider_output(None, [item], spider)
     item = next(generator)
 
     expected = {
