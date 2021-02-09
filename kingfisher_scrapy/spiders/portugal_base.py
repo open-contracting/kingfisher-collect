@@ -13,7 +13,7 @@ class PortugalBase(LinksSpider):
 
     # We will wait 1, 2, 4, 8, 16 minutes (31 minutes total).
     max_retries = 5
-    half_initial_wait_time = 30
+    initial_wait_time = 60
 
     def start_requests(self):
         url = self.url
@@ -25,7 +25,7 @@ class PortugalBase(LinksSpider):
     # https://github.com/scrapy/scrapy/blob/master/scrapy/downloadermiddlewares/retry.py
     def parse(self, response):
         retries = response.request.meta.get('retries', 0) + 1
-        wait_time = response.request.meta.get('wait_time', self.half_initial_wait_time) * 2
+        wait_time = response.request.meta.get('wait_time', initial_wait_time // 2) * 2
 
         # Every ~36,000 requests, the API returns HTTP errors. After a few minutes, it starts working again.
         # The number of failed attempts in the log messages includes the original request.
