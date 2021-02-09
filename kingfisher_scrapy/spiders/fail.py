@@ -8,8 +8,12 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 
 class Fail(SimpleSpider):
     name = 'fail'
-    data_type = 'release_package'
+
+    # BaseSpider
     skip_pluck = 'Not a real spider'
+
+    # SimpleSpider
+    data_type = 'release_package'
 
     def start_requests(self):
         # Fine

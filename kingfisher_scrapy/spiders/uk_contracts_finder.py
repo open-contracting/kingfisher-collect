@@ -8,10 +8,17 @@ class UKContractsFinder(IndexSpider):
       Contracts Finder
     """
     name = 'uk_contracts_finder'
-    data_type = 'release_package_list_in_results'
+
+    # BaseSpider
+    root_path = 'results.item'
+
+    # SimpleSpider
+    data_type = 'release_package'
     encoding = 'iso-8859-1'
-    formatter = staticmethod(parameters('page'))
+
+    # IndexSpider
     total_pages_pointer = '/maxPage'
+    formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
         url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=desc&page=1'

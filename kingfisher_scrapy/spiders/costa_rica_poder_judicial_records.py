@@ -11,8 +11,9 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
     Bulk download documentation
       http://datosabiertospj.eastus.cloudapp.azure.com/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
     """
-
     name = 'costa_rica_poder_judicial_records'
+
+    # SimpleSpider
     data_type = 'record_package'
 
     def start_requests(self):

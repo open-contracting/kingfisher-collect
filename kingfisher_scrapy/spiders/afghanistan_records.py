@@ -12,10 +12,13 @@ class AfghanistanRecords(SimpleSpider):
       https://ocds.ageops.net/
     """
     name = 'afghanistan_records'
-    data_type = 'record'
+    download_delay = 1
+
+    # BaseSpider
     skip_pluck = 'Already covered (see code for details)'  # afghanistan_releases
 
-    download_delay = 1
+    # SimpleSpider
+    data_type = 'record'
 
     def start_requests(self):
         # A JSON array of URL strings, in reverse chronological order.

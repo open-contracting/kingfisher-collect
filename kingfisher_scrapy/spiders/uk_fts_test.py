@@ -12,7 +12,11 @@ class UKFTSTest(LinksSpider):
       This spider uses a test service that returns test data. For getting real data see ``uk_fts`` instead.
     """
     name = 'uk_fts_test'
+
+    # SimpleSpider
     data_type = 'release_package'
+
+    # LinksSpider
     next_page_formatter = staticmethod(parameters('cursor'))
 
     def start_requests(self):

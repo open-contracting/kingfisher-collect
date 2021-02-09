@@ -7,8 +7,10 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class AfghanistanPackagesBase(SimpleSpider):
-    default_from_date = '2018-12-15'
     download_delay = 1.5  # for 'too many requests' errors
+
+    # BaseSpider
+    default_from_date = '2018-12-15'
 
     def start_requests(self):
         yield scrapy.Request(self.base_url, meta={'file_name': 'list.json'}, callback=self.parse_list)

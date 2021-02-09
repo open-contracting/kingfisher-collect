@@ -12,9 +12,15 @@ class GeorgiaRecords(LinksSpider):
       https://odapi.spa.ge/api/swagger.ui
     """
     name = 'georgia_records'
-    data_type = 'record_package'
-    next_page_formatter = staticmethod(parameters('page'))
+
+    # BaseSpider
     skip_pluck = 'Already covered (see code for details)'  # georgia_releases
+
+    # SimpleSpider
+    data_type = 'record_package'
+
+    # LinksSpider
+    next_page_formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
         url = 'https://odapi.spa.ge/api/records.json'

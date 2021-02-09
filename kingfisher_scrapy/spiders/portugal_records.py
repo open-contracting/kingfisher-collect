@@ -16,5 +16,8 @@ class PortugalRecords(PortugalBase):
       http://www.base.gov.pt/swagger/index.html
     """
     name = 'portugal_records'
+
+    # SimpleSpider
     data_type = 'record_package'
+
     url = 'http://www.base.gov.pt/api/Record/GetRecords'

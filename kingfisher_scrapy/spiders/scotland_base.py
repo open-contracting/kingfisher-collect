@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import parameters
 
 
 class ScotlandBase(PeriodicSpider):
-    # PeriodicSpider variables
+    # BaseSpider
     date_format = 'year-month'
     default_from_date = date(date.today().year - 1, date.today().month, 1)
 

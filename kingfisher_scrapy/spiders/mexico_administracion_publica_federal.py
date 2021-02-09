@@ -12,7 +12,14 @@ class MexicoAdministracionPublicaFederal(IndexSpider):
       https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
     """
     name = 'mexico_administracion_publica_federal'
-    data_type = 'record_package_list_in_results'
+
+    # BaseSpider
+    root_path = 'results.item'
+
+    # SimpleSpider
+    data_type = 'record_package'
+
+    # IndexSpider
     count_pointer = '/pagination/total'
     limit = '/pagination/pageSize'
     use_page = True

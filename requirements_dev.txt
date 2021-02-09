@@ -101,7 +101,7 @@ incremental==17.5.0
     #   -r requirements.txt
     #   treq
     #   twisted
-isort==4.3.21
+isort==5.7.0
     # via -r requirements_dev.in
 itemadapter==0.1.1
     # via

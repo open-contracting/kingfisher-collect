@@ -9,5 +9,8 @@ class NigeriaBudeshiReleases(NigeriaBudeshiBase):
       https://budeshi.ng/Api
     """
     name = 'nigeria_budeshi_releases'
+
+    # SimpleSpider
     data_type = 'release_package'
+
     url = 'https://budeshi.ng/api/releases/{}'

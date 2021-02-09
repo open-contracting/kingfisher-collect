@@ -12,6 +12,8 @@ class EcuadorEmergency(SimpleSpider):
       https://portal.compraspublicas.gob.ec/sercop/data-estandar-ocds/
     """
     name = 'ecuador_emergency'
+
+    # SimpleSpider
     data_type = 'release_package'
 
     def start_requests(self):

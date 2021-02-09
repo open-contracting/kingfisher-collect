@@ -34,6 +34,58 @@ After choosing a base class, read its documentation, as well as its parent class
 
 After writing the spider, add a docstring for :ref:`spider metadata<spider-metadata>`.
 
+Since many class attributes that control a spider's behavior, please put the class attributes in this order, including comments with class names:
+
+.. code-block:: python
+
+   class NewSpider(ParentSpider):
+      """
+      The typical docstring.
+      """
+      name = 'new_spider'
+      # Any other class attributes from Scrapy, including `download_delay`, `download_timeout`, `user_agent`, `custom_settings`
+
+      # BaseSpider
+      ocds_version = '1.0'
+      date_format = 'datetime'
+      default_from_date = '2000-01-01T00:00:00'
+      default_until_date = '2010-01-01T00:00:00'
+      date_required = True
+      unflatten = True
+      unflatten_args = {}
+      line_delimited = True
+      root_path = 'item'
+      skip_pluck = 'A reason'
+
+      # SimpleSpider
+      data_type = 'release_package'
+      encoding = 'iso-8859-1'
+
+      # CompressedFileSpider
+      resize_package = True
+      file_name_must_contain = '-'
+
+      # LinksSpider
+      next_page_formatter = staticmethod(parameters('page'))
+      next_pointer = '/next_page/uri'
+
+      # PeriodicSpider
+      pattern = 'https://example.com/{}'
+      start_requests_callback = 'parse_list'
+
+      # IndexSpider
+      total_pages_pointer = '/data/last_page'
+      count_pointer = '/meta/count'
+      limit = 1000
+      use_page = True
+      formatter = staticmethod(parameters('pageNumber'))
+      param_page = 'pageNumber'
+      param_limit = 'customLimit'
+      param_offset = = 'customOffset'
+      additional_params = {'pageSize': 1000}
+      base_url = 'https://example.com/elsewhere'
+      yield_list_results = False
+
 Test the spider
 ~~~~~~~~~~~~~~~
 
