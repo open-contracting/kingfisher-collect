@@ -29,7 +29,6 @@ def test_middleware_wait():
         return request
 
     spider = spider_with_crawler()
-    delay_middleware = DelayedRequestMiddleware()
     downloader_manager = DownloaderMiddlewareManager.from_crawler(spider.crawler)
     request = Request('http://example.com', meta={'wait_time': 1})
     # we send the request to all the download middlewares including the delayed one
