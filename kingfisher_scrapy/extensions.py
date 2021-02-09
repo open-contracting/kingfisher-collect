@@ -3,6 +3,7 @@
 import json
 import os
 
+import requests
 import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured, StopDownload
@@ -288,3 +289,84 @@ class SentryLogging:
         extension = cls()
         sentry_sdk.init(sentry_dsn)
         return extension
+
+
+class KingfisherProcessNGAPI:
+    """
+    If the ``KINGFISHER_API_URI`` and ``KINGFISHER_API_KEY`` environment variables or configuration settings are set,
+    then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
+    """
+    def __init__(self, url):
+        self.url = url
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        url = crawler.settings['KINGFISHER_NG_API_URI']
+
+        if not url:
+            raise NotConfigured('KINGFISHER_NG_API_URI is not set.')
+
+        extension = cls(url)
+        crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+        crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
+
+        return extension
+
+    def spider_opened(self, spider):
+        """
+        Sends an API request to start the collection in KP.
+        """
+        data = {
+            "source_id": spider.name,
+            "data_version": spider.get_start_time('%Y-%m-%d %H:%M:%S'),
+            "note": "collected by scrapy",
+            "sample": spider.sample,
+            "compile": True,
+            "upgrade": True,
+            "check": True,
+        }
+
+        response = requests.post(self.url + "/api/v1/create_collection", json=data)
+
+        if not response.ok:
+            spider.logger.warning(
+                'Failed to POST create_collection. API status code: {}'.format(response.status_code))
+        else:
+            response_data = json.loads(response.text)
+            self.collection_id = response_data["collection_id"]
+
+    def spider_closed(self, spider, reason):
+        """
+        Sends an API request to close the collection.
+        """
+        if reason != 'finished' or spider.pluck or spider.keep_collection_open:
+            return
+
+        data = {
+            "collection_id": self.collection_id,
+        }
+
+        response = requests.post(self.url + "/api/v1/close_collection", json=data)
+
+
+        if not response.ok:
+            spider.logger.warning(
+                'Failed to post close collection. API status code: {}'.format(response.status_code))
+
+
+    def item_scraped(self, item, spider):
+        """
+        Sends an API request to store the file in Kingfisher Process.
+        """
+        data = {
+            "collection_id": self.collection_id,
+            "path": os.path.join(item['files_store'], item['path'])
+        }
+
+        response = requests.post(self.url + "/api/v1/create_collection_file", json=data)
+
+        if not response.ok:
+            spider.logger.warning(
+                'Failed to POST create_collection_file. API status code: {}'.format(response.status_code))
+
