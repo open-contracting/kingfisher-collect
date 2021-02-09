@@ -1,3 +1,4 @@
+import pytest
 from scrapy import Request
 from scrapy.core.downloader import DownloaderMiddlewareManager
 from twisted.internet.defer import Deferred
@@ -7,20 +8,30 @@ from kingfisher_scrapy.middlewares import DelayedRequestMiddleware
 from tests import spider_with_crawler
 
 
-def mock_download_func(spider, request):
-    return request
-
-
-def test_delayed_middleware():
+@pytest.mark.parametrize('meta', [
+    None,
+    {'wait_time': 1}
+])
+def test_middleware_output(meta):
     spider = spider_with_crawler()
     delay_middleware = DelayedRequestMiddleware()
-    request = Request(f'http://example.com', meta=None)
+    request = Request(f'http://example.com', meta=meta)
     returned_request = delay_middleware.process_request(request, spider)
-    assert returned_request is None
+    if not meta:
+        assert returned_request is None
+    else:
+        assert isinstance(returned_request, Deferred)
+
+
+def test_middleware_wait():
+
+    def mock_download_func(spider, request):
+        return request
+
+    spider = spider_with_crawler()
+    delay_middleware = DelayedRequestMiddleware()
     downloader_manager = DownloaderMiddlewareManager.from_crawler(spider.crawler)
-    request = Request(f'http://example.com', meta={'wait_time': 1})
-    returned_request = delay_middleware.process_request(request, spider)
-    assert isinstance(returned_request, Deferred)
+    request = Request('http://example.com', meta={'wait_time': 1})
     # we send the request to all the download middlewares including the delayed one
     downloaded = downloader_manager.download(mock_download_func, request, spider)
     assert isinstance(downloaded, Deferred)
