@@ -220,17 +220,21 @@ class KingfisherProcessNGAPI:
     If the ``KINGFISHER_API_URI`` and ``KINGFISHER_API_KEY`` environment variables or configuration settings are set,
     then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
     """
-    def __init__(self, url):
+    def __init__(self, url, username, password):
         self.url = url
+        self.username = username
+        self.password = password
 
     @classmethod
     def from_crawler(cls, crawler):
         url = crawler.settings['KINGFISHER_NG_API_URI']
+        username = crawler.settings['KINGFISHER_NG_API_USERNAME']
+        password = crawler.settings['KINGFISHER_NG_API_PASSWORD']
 
         if not url:
             raise NotConfigured('KINGFISHER_NG_API_URI is not set.')
 
-        extension = cls(url)
+        extension = cls(url, username, password)
         crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
@@ -251,7 +255,7 @@ class KingfisherProcessNGAPI:
             "check": True,
         }
 
-        response = requests.post(self.url + "/api/v1/create_collection", json=data)
+        response = self._post("api/v1/create_collection", data)
 
         if not response.ok:
             spider.logger.warning(
@@ -271,7 +275,7 @@ class KingfisherProcessNGAPI:
             "collection_id": self.collection_id,
         }
 
-        response = requests.post(self.url + "/api/v1/close_collection", json=data)
+        response = self._post("api/v1/close_collection", data)
 
 
         if not response.ok:
@@ -288,9 +292,17 @@ class KingfisherProcessNGAPI:
             "path": os.path.join(item['files_store'], item['path'])
         }
 
-        response = requests.post(self.url + "/api/v1/create_collection_file", json=data)
+        response = self._post("api/v1/create_collection_file", data)
 
         if not response.ok:
             spider.logger.warning(
                 'Failed to POST create_collection_file. API status code: {}'.format(response.status_code))
 
+    def _post(self, url, data):
+        """
+        Wrapper around the requests.
+        """
+        if self.username and self.password:
+            return requests.post("{}/{}".format(self.url, url), json=data, auth=(self.username, self.password))
+        else:
+            return requests.post("{}/{}".format(self.url, url), json=data)

@@ -94,7 +94,9 @@ SENTRY_DSN = os.getenv('SENTRY_DSN')
 # https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process.html
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
 KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
-KINGFISHER_NG_API_URI = 'http://localhost:22061'
+KINGFISHER_NG_API_URI = os.getenv('KINGFISHER_NG_API_URL')
+KINGFISHER_NG_API_USERNAME = os.getenv('KINGFISHER_NG_API_USERNAME')
+KINGFISHER_NG_API_PASSWORD = os.getenv('KINGFISHER_NG_API_PASSWORD')
 
 # If Kingfisher Process can read Kingfisher Collect's `FILES_STORE`, then Kingfisher Collect can send file paths
 # instead of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.
