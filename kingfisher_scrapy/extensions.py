@@ -353,11 +353,9 @@ class KingfisherProcessNGAPI:
 
         response = self._post("api/v1/close_collection", data)
 
-
         if not response.ok:
             spider.logger.warning(
                 'Failed to post close collection. API status code: {}'.format(response.status_code))
-
 
     def item_scraped(self, item, spider):
         """
