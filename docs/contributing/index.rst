@@ -55,6 +55,7 @@ Since many class attributes that control a spider's behavior, please put the cla
       unflatten_args = {}
       line_delimited = True
       root_path = 'item'
+      root_path_max_length = 1
       skip_pluck = 'A reason'
 
       # SimpleSpider
