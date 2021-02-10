@@ -80,7 +80,7 @@ class KingfisherFilesStore:
 
         file_name = item['file_name']
         if isinstance(item, FileItem):
-            file_name += f"-{item['number']}"
+            file_name = f"{item['number']}-{file_name}"
 
         path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), file_name)
 
