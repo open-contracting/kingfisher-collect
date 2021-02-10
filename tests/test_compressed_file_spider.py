@@ -28,7 +28,6 @@ def test_parse():
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
-    assert 'package' not in item['data']
     assert item['data'] is not None
 
     with pytest.raises(StopIteration):
@@ -59,7 +58,6 @@ def test_parse_line_delimited(sample, len_items):
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
-    assert 'package' not in item['data']
     assert item['data'] is not None
 
     with pytest.raises(StopIteration):
@@ -130,7 +128,6 @@ def test_parse_rar_file():
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
-    assert 'package' not in item['data']
     assert item['data'] is not None
 
     with pytest.raises(StopIteration):
