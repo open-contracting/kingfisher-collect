@@ -38,6 +38,8 @@ class BaseSpider(scrapy.Spider):
        If you need to set more arguments for the unflatten command, set a ``unflatten_args`` dict with them.
     -  If the data is not formatted as OCDS (record, release, record package or release package), set a ``root_path``
        class attribute to the path to the OCDS data.
+    -  If the JSON file is line-delimited and the root path is to a JSON array root_path_max_length, set a
+       ``root_path_max_length`` class attribute to the maximum length of the JSON array at the root path.
     -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
 
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
@@ -343,7 +345,7 @@ class CompressedFileSpider(BaseSpider):
             if self.resize_package:
                 data = {'data': compressed_file, 'package': archive_file.open(filename)}
             else:
-                data = compressed_file
+                data = compressed_file.read()
 
             yield File({
                 'file_name': basename,
