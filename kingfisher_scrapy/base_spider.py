@@ -12,7 +12,7 @@ from rarfile import RarFile
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, UnknownArchiveFormatError
 from kingfisher_scrapy.items import File, FileError
-from kingfisher_scrapy.util import add_query_string, handle_http_error, get_file_name_and_extension
+from kingfisher_scrapy.util import add_query_string, get_file_name_and_extension, handle_http_error
 
 browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
