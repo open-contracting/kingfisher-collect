@@ -1,5 +1,6 @@
 import itertools
 import json
+import os
 from datetime import date
 from decimal import Decimal
 from functools import wraps
@@ -189,3 +190,14 @@ def default(obj):
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return itertools.zip_longest(*args, fillvalue=fillvalue)
+
+
+def get_file_name_and_extension(filename):
+    """
+    Given a ``filename`` returns its name and extension in two separate strings
+    >>> get_file_name_and_extension('test.json')
+    'test', 'json'
+    """
+    archive_name, archive_format = os.path.splitext(filename)
+    archive_format = archive_format[1:].lower()
+    return archive_name, archive_format
