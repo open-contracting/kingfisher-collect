@@ -29,6 +29,7 @@ def test_parse():
     assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
     assert item['data'] is not None
+    assert 'package' not in item['data']
 
     with pytest.raises(StopIteration):
         next(generator)
@@ -59,6 +60,7 @@ def test_parse_line_delimited(sample, len_items):
     assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
     assert item['data'] is not None
+    assert 'package' not in item['data']
 
     with pytest.raises(StopIteration):
         next(generator)
@@ -129,6 +131,7 @@ def test_parse_rar_file():
     assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
     assert item['data'] is not None
+    assert 'package' not in item['data']
 
     with pytest.raises(StopIteration):
         next(generator)
