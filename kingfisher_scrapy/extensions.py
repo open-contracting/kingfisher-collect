@@ -74,22 +74,21 @@ class KingfisherFilesStore:
             return
 
         # The crawl's relative directory, in the format `<spider_name>[_sample]/<YYMMDD_HHMMSS>`.
-        name = spider.name
+        folder_name = spider.name
         if spider.sample:
-            name += '_sample'
+            folder_name += '_sample'
 
         file_name = item['file_name']
         if isinstance(item, FileItem):
             name, extension = get_file_name_and_extension(file_name)
             file_name = f"{name}-{item['number']}.{extension}"
 
-        path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), file_name)
+        path = os.path.join(folder_name, spider.get_start_time('%Y%m%d_%H%M%S'), file_name)
 
         self._write_file(path, item['data'])
 
         item['path'] = path
         item['files_store'] = self.directory
-        item['file_name'] = file_name
 
     def _write_file(self, path, data):
         path = os.path.join(self.directory, path)
