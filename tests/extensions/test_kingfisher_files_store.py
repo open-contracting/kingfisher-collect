@@ -6,7 +6,7 @@ import pytest
 from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import KingfisherFilesStore
-from kingfisher_scrapy.items import FileItem, File
+from kingfisher_scrapy.items import File, FileItem
 from tests import spider_with_crawler, spider_with_files_store
 
 
