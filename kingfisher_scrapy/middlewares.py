@@ -6,6 +6,7 @@ import ijson
 import scrapy
 
 from kingfisher_scrapy import util
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.items import File, FileItem
 
 
@@ -93,6 +94,7 @@ class LineDelimitedMiddleware:
                 continue
 
             data = item['data']
+
             # Data can be bytes or a file-like object.
             if isinstance(data, bytes):
                 data = data.decode(encoding=item['encoding']).splitlines(True)
@@ -240,3 +242,18 @@ class ResizePackageMiddleware:
             for item in util.items(ijson.parse(data), '', skip_key=skip_key):
                 package.update(item)
         return package
+
+
+class ReadDecompressedMiddleware:
+    """
+    If the spider is a CompressedFileSpider that wasn't processed for other transform middlewares, reads the
+    decompressed file pointer.
+    Otherwise, yields the original item.
+    """
+    def process_spider_output(self, response, result, spider):
+        for item in result:
+            if not isinstance(item, File) or not isinstance(spider, CompressedFileSpider):
+                yield item
+                continue
+            item['data'] = item['data'].read()
+            yield item
