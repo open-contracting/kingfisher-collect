@@ -12,7 +12,11 @@ class GeorgiaReleases(LinksSpider):
       https://odapi.spa.ge/api/swagger.ui
     """
     name = 'georgia_releases'
+
+    # SimpleSpider
     data_type = 'release_package'
+
+    # LinksSpider
     next_page_formatter = staticmethod(parameters('page'))
 
     def start_requests(self):

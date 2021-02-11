@@ -26,11 +26,15 @@ def test_start_requests_http_error(spider_name):
     try:
         # See scrapy.crawler.Crawler._create_spider
         spider = crawler.spidercls.from_crawler(crawler)
+
         for request in spider.start_requests():
             # See scrapy.core.scraper.Scraper.call_spider
             callback = request.callback or spider.parse
 
             response = Response('http://example.com', status=555, request=request)
+            # If `max_retries` is set, the spider handles (and retries) error responses.
+            if hasattr(spider, 'max_retries'):
+                response.request.meta['retries'] = spider.max_retries
             items = list(callback(response))
 
             assert len(items) == 1

@@ -12,9 +12,12 @@ class TanzaniaZabuni(SimpleSpider):
       https://zabuni.co.tz/docs
     """
     name = 'tanzania_zabuni'
-    data_type = 'release_package'
-    url = 'https://app.zabuni.co.tz/api/releases/{}'
     download_delay = 1  # to avoid API 429 error "too many request"
+
+    # SimpleSpider
+    data_type = 'release_package'
+
+    url = 'https://app.zabuni.co.tz/api/releases/{}'
 
     def start_requests(self):
         stages = ['tender', 'award', 'contract']

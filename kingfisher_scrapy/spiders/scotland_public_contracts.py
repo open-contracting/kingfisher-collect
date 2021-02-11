@@ -14,5 +14,9 @@ class ScotlandPublicContracts(ScotlandBase):
       https://api.publiccontractsscotland.gov.uk/v1
     """
     name = 'scotland_public_contracts'
+
+    # SimpleSpider
     data_type = 'release_package'
+
+    # PeriodicSpider
     pattern = 'https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={:%m-%Y}&outputType=0&noticeType={}'

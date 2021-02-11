@@ -15,6 +15,8 @@ class UruguayReleases(UruguayBase):
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
     """
     name = 'uruguay_releases'
+
+    # SimpleSpider
     data_type = 'release_package'
 
     @handle_http_error

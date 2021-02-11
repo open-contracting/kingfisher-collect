@@ -16,7 +16,11 @@ class Australia(LinksSpider):
       https://app.swaggerhub.com/apis/austender/ocds-api/1.1
     """
     name = 'australia'
+
+    # SimpleSpider
     data_type = 'release_package'
+
+    # LinksSpider
     next_page_formatter = staticmethod(parameters('cursor'))
 
     def start_requests(self):

@@ -7,6 +7,7 @@ import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
+from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
 from kingfisher_scrapy.util import _pluck_filename
@@ -69,14 +70,19 @@ class KingfisherFilesStore:
 
         Returns a dict with the metadata.
         """
-        if not isinstance(item, File):
+        if not isinstance(item, (File, FileItem)):
             return
 
         # The crawl's relative directory, in the format `<spider_name>[_sample]/<YYMMDD_HHMMSS>`.
         name = spider.name
         if spider.sample:
             name += '_sample'
-        path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), item['file_name'])
+
+        file_name = item['file_name']
+        if isinstance(item, FileItem):
+            file_name += f"-{item['number']}"
+
+        path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), file_name)
 
         self._write_file(path, item['data'])
 
@@ -96,7 +102,7 @@ class KingfisherFilesStore:
             if isinstance(data, (bytes, str)):
                 f.write(data)
             else:
-                json.dump(data, f)
+                json.dump(data, f, default=util.default)
 
 
 class KingfisherItemCount:
@@ -118,6 +124,7 @@ class KingfisherProcessAPI:
     If the ``KINGFISHER_API_URI`` and ``KINGFISHER_API_KEY`` environment variables or configuration settings are set,
     then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
     """
+
     def __init__(self, url, key, directory=None):
         """
         Initializes a Kingfisher Process API client.
@@ -173,7 +180,7 @@ class KingfisherProcessAPI:
         Sends an API request to store the file, file item or file error in Kingfisher Process.
         """
         # https://docs.scrapy.org/en/latest/topics/signals.html#scrapy.signals.item_scraped
-        if not item.get('post_to_api', True) or isinstance(item, PluckedItem):
+        if isinstance(item, PluckedItem):
             return
 
         data = self._build_data_to_send(spider, item['file_name'], item['url'])

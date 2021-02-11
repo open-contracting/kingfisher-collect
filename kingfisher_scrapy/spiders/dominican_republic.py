@@ -20,9 +20,13 @@ class DominicanRepublic(CompressedFileSpider):
     """
     name = 'dominican_republic'
     date_format = 'year'
-    data_type = 'release_package'
     default_from_date = '2018'
-    compressed_file_format = 'release_package'
+
+    # SimpleSpider
+    data_type = 'release_package'
+
+    # CompressedFileSpider
+    resize_package = True
 
     def start_requests(self):
         yield scrapy.Request(

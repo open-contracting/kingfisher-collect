@@ -15,10 +15,14 @@ class Zambia(CompressedFileSpider):
         Download only data until this month (YYYY-MM format). Defaults to the current month.
     """
     name = 'zambia'
-    data_type = 'record_package'
     date_format = 'year-month'
     default_from_date = '2016-07'
+
+    # BaseSpider
     ocds_version = '1.0'
+
+    # SimpleSpider
+    data_type = 'record_package'
 
     def start_requests(self):
         yield scrapy.Request(

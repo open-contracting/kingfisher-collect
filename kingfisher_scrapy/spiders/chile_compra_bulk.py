@@ -18,12 +18,13 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
       https://desarrolladores.mercadopublico.cl/OCDS/DescargaMasiva
     """
     name = 'chile_compra_bulk'
-    data_type = 'record_package'
-
     download_timeout = 99999
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
+
+    # SimpleSpider
+    data_type = 'record_package'
 
     # PeriodicSpider variables
     date_format = 'year-month'

@@ -57,12 +57,20 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #SPIDER_MIDDLEWARES = {
 #    'kingfisher_scrapy.middlewares.MyCustomSpiderMiddleware': 543,
 #}
+SPIDER_MIDDLEWARES = {
+    # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#topics-spider-middleware-setting
+    # `process_spider_output` is invoked in decreasing order.
+    'kingfisher_scrapy.middlewares.LineDelimitedMiddleware': 500,
+    'kingfisher_scrapy.middlewares.RootPathMiddleware': 400,
+    'kingfisher_scrapy.middlewares.AddPackageMiddleware': 300,
+    'kingfisher_scrapy.middlewares.ResizePackageMiddleware': 200
+}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'kingfisher_scrapy.middlewares.MyCustomDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    'kingfisher_scrapy.middlewares.DelayedRequestMiddleware': 543,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html

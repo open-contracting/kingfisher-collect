@@ -12,10 +12,16 @@ class CanadaMontreal(IndexSpider):
       http://donnees.ville.montreal.qc.ca/dataset/contrats-et-subventions-api
     """
     name = 'canada_montreal'
-    data_type = 'release_package'
-    limit = 10000
+
+    # BaseSpider
     ocds_version = '1.0'
+
+    # SimpleSpider
+    data_type = 'release_package'
+
+    # IndexSpider
     count_pointer = '/meta/count'
+    limit = 10000
     formatter = staticmethod(parameters('offset'))
 
     def start_requests(self):

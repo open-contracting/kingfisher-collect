@@ -9,6 +9,8 @@ class MexicoGrupoAeroporto(SimpleSpider):
       Grupo Aeroportuario de la Ciudad de México (CDMX)
     """
     name = 'mexico_grupo_aeroporto'
+
+    # SimpleSpider
     data_type = 'release_package'
 
     def start_requests(self):
