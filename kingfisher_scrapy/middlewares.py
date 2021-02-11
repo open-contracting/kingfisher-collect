@@ -6,7 +6,6 @@ import ijson
 import scrapy
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.items import File, FileItem
 
 
@@ -178,6 +177,7 @@ class AddPackageMiddleware:
                 continue
 
             data = item['data']
+
             # If the spider's ``root_path`` class attribute is non-empty, then the JSON data is already parsed.
             if not isinstance(data, dict):
                 data = json.loads(data, encoding=item['encoding'])
@@ -244,15 +244,14 @@ class ResizePackageMiddleware:
         return package
 
 
-class ReadDecompressedMiddleware:
+class ReadDataMiddleware:
     """
-    If the spider is a CompressedFileSpider that wasn't processed for other transform middlewares, reads the
-    decompressed file pointer.
+    If the item's ``data`` value is a file pointer, reads it.
     Otherwise, yields the original item.
     """
     def process_spider_output(self, response, result, spider):
         for item in result:
-            if not isinstance(item, File) or not isinstance(spider, CompressedFileSpider):
+            if not isinstance(item, File) or not hasattr(item['data'], 'read'):
                 yield item
                 continue
             item['data'] = item['data'].read()

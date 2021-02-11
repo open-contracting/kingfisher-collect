@@ -6,7 +6,7 @@ import pytest
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider, SimpleSpider
 from kingfisher_scrapy.items import File, FileError, FileItem
-from kingfisher_scrapy.middlewares import (AddPackageMiddleware, LineDelimitedMiddleware, ReadDecompressedMiddleware,
+from kingfisher_scrapy.middlewares import (AddPackageMiddleware, LineDelimitedMiddleware, ReadDataMiddleware,
                                            ResizePackageMiddleware, RootPathMiddleware)
 from tests import response_fixture, spider_with_crawler
 
@@ -16,7 +16,7 @@ from tests import response_fixture, spider_with_crawler
     LineDelimitedMiddleware,
     ResizePackageMiddleware,
     RootPathMiddleware,
-    ReadDecompressedMiddleware
+    ReadDataMiddleware,
 ])
 @pytest.mark.parametrize('item', [
     File({
@@ -194,7 +194,7 @@ def test_read_decompressed_middleware():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = 'release_package'
 
-    middleware = ReadDecompressedMiddleware()
+    middleware = ReadDataMiddleware()
 
     io = BytesIO()
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
