@@ -12,7 +12,7 @@ from rarfile import RarFile
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, UnknownArchiveFormatError
 from kingfisher_scrapy.items import File, FileError
-from kingfisher_scrapy.util import add_query_string, handle_http_error
+from kingfisher_scrapy.util import add_query_string, handle_http_error, get_file_name_and_extension
 
 browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
@@ -316,8 +316,7 @@ class CompressedFileSpider(BaseSpider):
 
     @handle_http_error
     def parse(self, response):
-        archive_name, archive_format = os.path.splitext(response.request.meta['file_name'])
-        archive_format = archive_format[1:].lower()
+        archive_name, archive_format = get_file_name_and_extension(response.request.meta['file_name'])
 
         if archive_format == 'zip':
             cls = ZipFile
@@ -345,7 +344,7 @@ class CompressedFileSpider(BaseSpider):
             if self.resize_package:
                 data = {'data': compressed_file, 'package': archive_file.open(filename)}
             else:
-                data = compressed_file.read()
+                data = compressed_file
 
             yield File({
                 'file_name': basename,
