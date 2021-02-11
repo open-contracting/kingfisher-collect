@@ -84,4 +84,5 @@ def test_item_scraped_with_file_item():
         extension = KingfisherFilesStore.from_crawler(spider.crawler)
         item = FileItem({'number': 1, 'file_name': 'file.json', 'data': 'data'})
 
-        assert extension.item_scraped(item, spider) is None
+        extension.item_scraped(item, spider)
+        assert item['file_name'] == 'file-1.json'
