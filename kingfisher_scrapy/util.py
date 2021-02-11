@@ -198,6 +198,6 @@ def get_file_name_and_extension(filename):
     >>> get_file_name_and_extension('test.json')
     'test', 'json'
     """
-    archive_name, archive_format = os.path.splitext(filename)
-    archive_format = archive_format[1:].lower()
-    return archive_name, archive_format
+    name, extension = os.path.splitext(filename)
+    extension = extension[1:].lower()
+    return name, extension
