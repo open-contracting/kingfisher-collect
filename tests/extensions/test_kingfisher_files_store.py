@@ -6,7 +6,7 @@ import pytest
 from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import KingfisherFilesStore
-from kingfisher_scrapy.items import FileItem
+from kingfisher_scrapy.items import FileItem, File
 from tests import spider_with_crawler, spider_with_files_store
 
 
@@ -45,23 +45,27 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
 
 
 @pytest.mark.parametrize('sample,path', [
-    (None, os.path.join('test', '20010203_040506', 'file.json')),
-    ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
+    (None, os.path.join('test', '20010203_040506')),
+    ('true', os.path.join('test_sample', '20010203_040506')),
 ])
 @pytest.mark.parametrize('data', [b'{"key": "value"}', {"key": "value"}])
-def test_item_scraped_with_build_file(sample, path, data, tmpdir):
+@pytest.mark.parametrize('item,expected_file_name', [(File({'file_name': 'file.json', 'encoding': 'iso-8859-1'}),
+                                                      'file.json'),
+                                                     (FileItem({'number': 1, 'file_name': 'file.json'}),
+                                                      'file-1.json')])
+def test_item_scraped_with_file_and_file_item(sample, path, data, tmpdir, item, expected_file_name):
     spider = spider_with_files_store(tmpdir, sample=sample)
     extension = KingfisherFilesStore.from_crawler(spider.crawler)
-
-    item = spider.build_file(file_name='file.json', url='https://example.com/remote.json', data=data,
-                             data_type='release_package', encoding='iso-8859-1')
+    path = os.path.join(path, expected_file_name)
+    original_file_name = item['file_name']
+    item['data'] = data
     extension.item_scraped(item, spider)
-
     with open(tmpdir.join(path)) as f:
         assert f.read() == '{"key": "value"}'
 
     assert item['path'] == path
     assert item['files_store'] == tmpdir
+    assert item['file_name'] == original_file_name
 
 
 def test_item_scraped_with_build_file_and_existing_directory():
@@ -75,14 +79,3 @@ def test_item_scraped_with_build_file_and_existing_directory():
 
         # No FileExistsError exception.
         extension.item_scraped(item, spider)
-
-
-def test_item_scraped_with_file_item():
-    with TemporaryDirectory() as tmpdirname:
-        files_store = os.path.join(tmpdirname, 'data')
-        spider = spider_with_crawler(settings={'FILES_STORE': files_store})
-        extension = KingfisherFilesStore.from_crawler(spider.crawler)
-        item = FileItem({'number': 1, 'file_name': 'file.json', 'data': 'data'})
-
-        extension.item_scraped(item, spider)
-        assert item['file_name'] == 'file-1.json'
