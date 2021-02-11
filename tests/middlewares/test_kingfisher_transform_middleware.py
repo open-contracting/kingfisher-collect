@@ -6,8 +6,8 @@ import pytest
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider, SimpleSpider
 from kingfisher_scrapy.items import File, FileError, FileItem
-from kingfisher_scrapy.middlewares import (AddPackageMiddleware, LineDelimitedMiddleware, ResizePackageMiddleware,
-                                           RootPathMiddleware)
+from kingfisher_scrapy.middlewares import (AddPackageMiddleware, LineDelimitedMiddleware, ReadDataMiddleware,
+                                           ResizePackageMiddleware, RootPathMiddleware)
 from tests import response_fixture, spider_with_crawler
 
 
@@ -16,6 +16,7 @@ from tests import response_fixture, spider_with_crawler
     LineDelimitedMiddleware,
     ResizePackageMiddleware,
     RootPathMiddleware,
+    ReadDataMiddleware,
 ])
 @pytest.mark.parametrize('item', [
     File({
@@ -187,3 +188,24 @@ def test_line_delimited_json_middleware_compressed(sample):
             'data_type': 'release_package',
             'encoding': 'utf-8'
         }
+
+
+def test_read_decompressed_middleware():
+    spider = spider_with_crawler(spider_class=CompressedFileSpider)
+    spider.data_type = 'release_package'
+
+    middleware = ReadDataMiddleware()
+
+    io = BytesIO()
+    with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
+        zipfile.writestr('test.json', '{}')
+
+    response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
+    generator = spider.parse(response)
+    item = next(generator)
+
+    generator = middleware.process_spider_output(response, [item], spider)
+    transformed_items = list(generator)
+
+    assert len(transformed_items) == 1
+    assert transformed_items[0]['data'] == b'{}'

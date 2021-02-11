@@ -12,7 +12,7 @@ from rarfile import RarFile
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, UnknownArchiveFormatError
 from kingfisher_scrapy.items import File, FileError
-from kingfisher_scrapy.util import add_query_string, handle_http_error
+from kingfisher_scrapy.util import add_query_string, get_file_name_and_extension, handle_http_error
 
 browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
@@ -38,6 +38,8 @@ class BaseSpider(scrapy.Spider):
        If you need to set more arguments for the unflatten command, set a ``unflatten_args`` dict with them.
     -  If the data is not formatted as OCDS (record, release, record package or release package), set a ``root_path``
        class attribute to the path to the OCDS data.
+    -  If the JSON file is line-delimited and the root path is to a JSON array, set a ``root_path_max_length`` class
+       attribute to the maximum length of the JSON array at the root path.
     -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
 
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
@@ -314,8 +316,7 @@ class CompressedFileSpider(BaseSpider):
 
     @handle_http_error
     def parse(self, response):
-        archive_name, archive_format = os.path.splitext(response.request.meta['file_name'])
-        archive_format = archive_format[1:].lower()
+        archive_name, archive_format = get_file_name_and_extension(response.request.meta['file_name'])
 
         if archive_format == 'zip':
             cls = ZipFile

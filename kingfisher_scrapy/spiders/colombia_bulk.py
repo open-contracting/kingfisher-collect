@@ -20,6 +20,7 @@ class ColombiaBulk(CompressedFileSpider):
     # BaseSpider
     line_delimited = True
     root_path = 'Release'
+    root_path_max_length = 1
 
     # SimpleSpider
     data_type = 'release'

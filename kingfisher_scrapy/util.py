@@ -3,6 +3,7 @@ import json
 from datetime import date
 from decimal import Decimal
 from functools import wraps
+from os.path import splitext
 from urllib.parse import parse_qs, urlencode, urlsplit
 
 from ijson import ObjectBuilder, utils
@@ -189,3 +190,14 @@ def default(obj):
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return itertools.zip_longest(*args, fillvalue=fillvalue)
+
+
+def get_file_name_and_extension(filename):
+    """
+    Given a ``filename`` returns its name and extension in two separate strings
+    >>> get_file_name_and_extension('test.json')
+    'test', 'json'
+    """
+    name, extension = splitext(filename)
+    extension = extension[1:].lower()
+    return name, extension
