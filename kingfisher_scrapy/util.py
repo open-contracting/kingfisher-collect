@@ -1,9 +1,9 @@
 import itertools
 import json
-import os
 from datetime import date
 from decimal import Decimal
 from functools import wraps
+from os.path import splitext
 from urllib.parse import parse_qs, urlencode, urlsplit
 
 from ijson import ObjectBuilder, utils
@@ -198,6 +198,6 @@ def get_file_name_and_extension(filename):
     >>> get_file_name_and_extension('test.json')
     'test', 'json'
     """
-    name, extension = os.path.splitext(filename)
+    name, extension = splitext(filename)
     extension = extension[1:].lower()
     return name, extension
