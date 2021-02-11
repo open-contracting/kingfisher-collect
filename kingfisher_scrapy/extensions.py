@@ -10,7 +10,7 @@ from scrapy.exceptions import NotConfigured
 from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
-from kingfisher_scrapy.util import _pluck_filename
+from kingfisher_scrapy.util import _pluck_filename, get_file_name_and_extension
 
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
@@ -66,7 +66,7 @@ class KingfisherFilesStore:
 
     def item_scraped(self, item, spider):
         """
-        If the item is a file, writes its data to the filename in the crawl's directory.
+        If the item is a File or FileItem, writes its data to the filename in the crawl's directory.
 
         Returns a dict with the metadata.
         """
@@ -80,7 +80,8 @@ class KingfisherFilesStore:
 
         file_name = item['file_name']
         if isinstance(item, FileItem):
-            file_name = f"{item['number']}-{file_name}"
+            name, extension = get_file_name_and_extension(file_name)
+            file_name = f"{name}-{item['number']}.{extension}"
 
         path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), file_name)
 
@@ -88,6 +89,7 @@ class KingfisherFilesStore:
 
         item['path'] = path
         item['files_store'] = self.directory
+        item['file_name'] = file_name
 
     def _write_file(self, path, data):
         path = os.path.join(self.directory, path)
