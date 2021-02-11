@@ -193,16 +193,19 @@ def test_line_delimited_json_middleware_compressed(sample):
 def test_read_decompressed_middleware():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = 'release_package'
+
+    middleware = ReadDecompressedMiddleware()
+
     io = BytesIO()
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
         zipfile.writestr('test.json', '{}')
 
-    middleware = ReadDecompressedMiddleware()
     response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
     generator = spider.parse(response)
     item = next(generator)
 
     generator = middleware.process_spider_output(response, [item], spider)
-    transformed_item = list(generator)
-    assert len(transformed_item) == 1
-    assert transformed_item[0]['data'] == b'{}'
+    transformed_items = list(generator)
+
+    assert len(transformed_items) == 1
+    assert transformed_items[0]['data'] == b'{}'
