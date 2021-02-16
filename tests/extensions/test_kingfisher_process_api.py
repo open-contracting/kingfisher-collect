@@ -137,7 +137,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, c
         item = FileItem({
             'number': 1,
             'file_name': 'data.json',
-            'data': b'{"key": "value"}',
+            'data': {"key": "value"},
             'data_type': 'release_package',
             'url': 'https://example.com/remote.json',
             'encoding': encoding,
