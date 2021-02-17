@@ -198,7 +198,6 @@ class KingfisherProcessAPI:
 
         if isinstance(item, FileItem):
             data['number'] = item['number']
-            data['data'] = item['data']
             if isinstance(item['data'], str):
                 data['data'] = item['data']
             else:
