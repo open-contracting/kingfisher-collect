@@ -198,7 +198,7 @@ class KingfisherProcessAPI:
 
         if isinstance(item, FileItem):
             data['number'] = item['number']
-            if isinstance(item['data'], str):
+            if isinstance(item['data'], (str, bytes)):
                 data['data'] = item['data']
             else:
                 data['data'] = json.dumps(item['data'], default=util.default)
