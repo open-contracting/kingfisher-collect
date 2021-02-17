@@ -273,7 +273,6 @@ class ReadDataMiddleware:
                 yield item
                 continue
             data = item['data'].read()
-            if hasattr(item['data'], 'close'):
-                item['data'].close()
+            item['data'].close()
             item['data'] = data
             yield item
