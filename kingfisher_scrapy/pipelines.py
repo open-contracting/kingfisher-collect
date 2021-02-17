@@ -89,13 +89,11 @@ class Pluck:
             else:
                 value = _resolve_pointer(package, spider.package_pointer)
         else:  # spider.release_pointer
-            if item['data_type'] in ('release_package', 'release_package_list', 'release_package_list_in_results',
-                                     'release_list', 'release'):
+            if item['data_type'] in ('release_package', 'release'):
                 data = _get_releases(item)
                 if data:
                     value = max(_resolve_pointer(r, spider.release_pointer) for r in data)
-            elif item['data_type'] in ('record_package', 'record_package_list', 'record_package_list_in_results',
-                                       'record'):
+            elif item['data_type'] in ('record_package', 'record'):
                 data = _get_records(item)
                 if data:
                     # This assumes that the first record in the record package has the desired value.
@@ -174,11 +172,6 @@ def _get_package(item):
 
     if item['data_type'] in ('release_package', 'record_package'):
         return data
-    # This assumes that the first package in the list has the desired value.
-    elif item['data_type'] in ('release_package_list', 'record_package_list'):
-        return data[0]
-    elif item['data_type'] in ('release_package_list_in_results', 'record_package_list_in_results'):
-        return data['results'][0]
 
     raise NotImplementedError(f"no package for data_type: {item['data_type']}")
 
@@ -188,13 +181,6 @@ def _get_releases(item):
 
     if item['data_type'] == 'release_package':
         return data['releases']
-    # This assumes that the first package in the list has the desired value.
-    elif item['data_type'] == 'release_package_list':
-        return data[0]['releases']
-    elif item['data_type'] == 'release_package_list_in_results':
-        return data['results'][0]['releases']
-    elif item['data_type'] == 'release_list':
-        return data
     elif item['data_type'] == 'release':
         return [data]
 
@@ -206,11 +192,6 @@ def _get_records(item):
 
     if item['data_type'] == 'record_package':
         return data['records']
-    # This assumes that the first package in the list has the desired value.
-    elif item['data_type'] == 'record_package_list':
-        return data[0]['records']
-    elif item['data_type'] == 'record_package_list_in_results':
-        return data['results'][0]['records']
     elif item['data_type'] == 'record':
         return [data]
 

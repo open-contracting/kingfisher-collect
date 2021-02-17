@@ -22,12 +22,8 @@ record_package = {
 package_parameters = [
     # Releases
     ('release_package', release_package),
-    ('release_package_list', [release_package]),
-    ('release_package_list_in_results', {'results': [release_package]}),
     # Records
     ('record_package', record_package),
-    ('record_package_list', [record_package]),
-    ('record_package_list_in_results', {'results': [record_package]}),
 ]
 release_parameters = package_parameters + [
     # Releases
