@@ -272,5 +272,8 @@ class ReadDataMiddleware:
             if not isinstance(item, File) or not hasattr(item['data'], 'read'):
                 yield item
                 continue
-            item['data'] = item['data'].read()
+            data = item['data'].read()
+            if hasattr(item['data'], 'close'):
+                item['data'].close()
+            item['data'] = data
             yield item
