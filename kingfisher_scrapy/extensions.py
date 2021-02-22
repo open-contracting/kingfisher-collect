@@ -318,9 +318,6 @@ class KingfisherProcessNGAPI:
         """
         Sends an API request to close the collection.
         """
-        if reason != 'finished' or spider.pluck or spider.keep_collection_open:
-            return
-
         data = {
             "collection_id": self.collection_id,
         }
@@ -335,10 +332,18 @@ class KingfisherProcessNGAPI:
         """
         Sends an API request to store the file in Kingfisher Process.
         """
+
+        if not item.get('post_to_api', True) or isinstance(item, PluckedItem):
+            return
+
         data = {
             "collection_id": self.collection_id,
             "path": os.path.join(item['files_store'], item['path'])
         }
+
+        if isinstance(item, FileError):
+            # in case of error send info to api
+            data['errors'] = json.dumps(item['errors'])
 
         response = self._post("api/v1/create_collection_file", data)
 
