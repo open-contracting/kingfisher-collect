@@ -1,10 +1,10 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.base_spider import BigFileSpider
 from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 
-class France(SimpleSpider):
+class France(BigFileSpider):
     """
     Domain
       France
