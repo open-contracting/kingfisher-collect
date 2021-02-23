@@ -587,11 +587,10 @@ class IndexSpider(SimpleSpider):
 
 class BigFileSpider(SimpleSpider):
     """
-    This class makes it easy to collect data from sources that provide big json files.
+    This class makes it easy to collect data from sources that provide big JSON files as a release package.
     Each big file is resized to multiple small files that the current version of Kingfisher process is able to process.
 
     #. Inherit from ``BigFileSpider``
-    #. Set a ``data_type`` class attribute to the data type of the files
     #. Write a ``start_requests`` method to request the archive files
 
     .. code-block:: python
@@ -601,7 +600,6 @@ class BigFileSpider(SimpleSpider):
 
         class MySpider(BigFileSpider):
             name = 'my_spider'
-            data_type = 'release_package'
 
             def start_requests(self):
                 yield self.build_request('https://example.com/api/package.json', formatter=components(-1)
@@ -614,4 +612,4 @@ class BigFileSpider(SimpleSpider):
         data = {'data': response.body,
                 'package': response.body}
         yield self.build_file(file_name=response.request.meta['file_name'], url=response.request.url,
-                              data_type=self.data_type, data=data)
+                              data_type='release_package', data=data)
