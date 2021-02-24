@@ -30,6 +30,9 @@ class Pluck(ScrapyCommand):
         self.settings.set('CLOSESPIDER_ERRORCOUNT', 1)
         # Disable LogStats extension.
         self.settings.set('LOGSTATS_INTERVAL', None)
+        # Disable Telnet extensions.
+        self.settings.set('EXTENSIONS', {'scrapy.extensions.telnet.TelnetConsole': None})
+
         filename = _pluck_filename(opts)
         if os.path.isfile(filename):
             os.unlink(filename)
