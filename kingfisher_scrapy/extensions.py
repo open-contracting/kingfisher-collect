@@ -38,7 +38,7 @@ class KingfisherPluck:
 
     def bytes_received(self, data, request, spider):
         # We only limit the bytes received for final requests (i.e. where the callback is the default `parse` method).
-        if not spider.pluck or request.callback is not None or request.meta['file_name'].endswith('.zip'):
+        if not spider.pluck or request.callback is not None or request.meta['file_name'].endswith(('.rar', '.zip')):
             return
 
         # Scrapy typically downloads of 16,384-byte chunks.
