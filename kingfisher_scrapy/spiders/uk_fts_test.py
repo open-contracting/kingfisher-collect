@@ -13,6 +13,9 @@ class UKFTSTest(LinksSpider):
     """
     name = 'uk_fts_test'
 
+    # BaseSpider
+    skip_pluck = 'Already covered (see code for details)'  # uk_fts
+
     # SimpleSpider
     data_type = 'release_package'
 
