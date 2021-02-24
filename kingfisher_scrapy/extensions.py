@@ -37,11 +37,11 @@ class KingfisherPluck:
         return extension
 
     def bytes_received(self, data, request, spider):
-        # In principle, it is possible to read a partial `.tar.gz` file. However, without more work, reading a partial
-        # `.tar.gz` file raises an EOFError: "Compressed file ended before the end-of-stream marker was reached"
-        if not spider.pluck or request.callback != spider.parse or request.meta['file_name'].endswith(('.gz', '.zip')):
+        # We only limit the bytes received for final requests (i.e. where the callback is the default `parse` method).
+        if not spider.pluck or request.callback is not None or request.meta['file_name'].endswith('.zip'):
             return
 
+        # Scrapy typically downloads of 16,384-byte chunks.
         self.bytes_received_per_spider[spider.name] += len(data)
         if self.bytes_received_per_spider[spider.name] >= self.max_bytes:
             raise StopDownload(fail=False)
