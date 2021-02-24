@@ -275,13 +275,6 @@ Costa Rica
 Digiwhist
 ---------
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_armenia.DigiwhistArmenia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_armenia
-
 .. autoclass:: kingfisher_scrapy.spiders.digiwhist_austria.DigiwhistAustria
    :no-members:
 
@@ -464,13 +457,6 @@ Digiwhist
 
    scrapy crawl digiwhist_romania
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_serbia.DigiwhistSerbia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_serbia
-
 .. autoclass:: kingfisher_scrapy.spiders.digiwhist_slovakia.DigiwhistSlovakia
    :no-members:
 
@@ -505,6 +491,13 @@ Digiwhist
 .. code-block:: bash
 
    scrapy crawl digiwhist_switzerland
+
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_ted.DigiwhistTED
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl digiwhist_ted
 
 .. autoclass:: kingfisher_scrapy.spiders.digiwhist_united_kingdom.DigiwhistUnitedKingdom
    :no-members:
