@@ -2,10 +2,11 @@
 
 import json
 import os
+from collections import defaultdict
 
 import sentry_sdk
 from scrapy import signals
-from scrapy.exceptions import NotConfigured
+from scrapy.exceptions import NotConfigured, StopDownload
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
@@ -15,30 +16,45 @@ from kingfisher_scrapy.util import _pluck_filename, get_file_name_and_extension
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 class KingfisherPluck:
-    def __init__(self, directory):
+    def __init__(self, directory, max_bytes):
         self.directory = directory
-        self.spiders_seen = set()
+        self.max_bytes = max_bytes
+
+        self.bytes_received_per_spider = defaultdict(int)
+        self.item_scraped_per_spider = set()
 
     @classmethod
     def from_crawler(cls, crawler):
         directory = crawler.settings['KINGFISHER_PLUCK_PATH']
+        max_bytes = crawler.settings['KINGFISHER_PLUCK_MAX_BYTES']
 
-        extension = cls(directory=directory)
+        extension = cls(directory=directory, max_bytes=max_bytes)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
+        crawler.signals.connect(extension.bytes_received, signal=signals.bytes_received)
 
         return extension
 
-    def item_scraped(self, item, spider):
-        if not spider.pluck or spider.name in self.spiders_seen or not isinstance(item, PluckedItem):
+    def bytes_received(self, data, request, spider):
+        # In principle, it is possible to read a partial `.tar.gz` file. However, without more work, reading a partial
+        # `.tar.gz` file raises an EOFError: "Compressed file ended before the end-of-stream marker was reached"
+        if not spider.pluck or request.callback != spider.parse or request.meta['file_name'].endswith(('.gz', '.zip')):
             return
 
-        self.spiders_seen.add(spider.name)
+        self.bytes_received_per_spider[spider.name] += len(data)
+        if self.bytes_received_per_spider[spider.name] >= self.max_bytes:
+            raise StopDownload(fail=False)
+
+    def item_scraped(self, item, spider):
+        if not spider.pluck or spider.name in self.item_scraped_per_spider or not isinstance(item, PluckedItem):
+            return
+
+        self.item_scraped_per_spider.add(spider.name)
 
         self._write(spider, item['value'])
 
     def spider_closed(self, spider, reason):
-        if not spider.pluck or spider.name in self.spiders_seen:
+        if not spider.pluck or spider.name in self.item_scraped_per_spider:
             return
 
         self._write(spider, f'closed: {reason}')
