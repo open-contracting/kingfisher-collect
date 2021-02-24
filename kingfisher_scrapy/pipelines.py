@@ -4,6 +4,7 @@ import json
 import os
 import pkgutil
 import tempfile
+import warnings
 
 import jsonpointer
 from flattentool import unflatten
@@ -144,15 +145,18 @@ class Unflatten:
             with open(input_path, 'wb') as f:
                 f.write(item['data'])
 
-            unflatten(
-                input_name,
-                root_list_path='releases',
-                root_id='ocid',
-                schema=schema,
-                input_format=input_format,
-                output_name=output_name,
-                **spider.unflatten_args
-            )
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore')  # flattentool uses UserWarning, so we can't set a specific category
+
+                unflatten(
+                    input_name,
+                    root_list_path='releases',
+                    root_id='ocid',
+                    schema=schema,
+                    input_format=input_format,
+                    output_name=output_name,
+                    **spider.unflatten_args
+                )
 
             with open(output_name, 'r') as f:
                 item['data'] = f.read()
