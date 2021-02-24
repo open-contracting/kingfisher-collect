@@ -198,7 +198,10 @@ class KingfisherProcessAPI:
 
         if isinstance(item, FileItem):
             data['number'] = item['number']
-            data['data'] = item['data']
+            if isinstance(item['data'], (str, bytes)):
+                data['data'] = item['data']
+            else:
+                data['data'] = json.dumps(item['data'], default=util.default)
 
             return self._request(spider, 'create_file_item', item['url'], data)
 

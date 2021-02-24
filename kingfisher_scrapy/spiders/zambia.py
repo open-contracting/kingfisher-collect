@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components, handle_http_error, join
 
 
 class Zambia(CompressedFileSpider):
@@ -30,4 +30,4 @@ class Zambia(CompressedFileSpider):
 
         for url in urls:
             # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
-            yield self.build_request(url, formatter=components(-2))
+            yield self.build_request(url, formatter=join(components(-2), extension='zip'))

@@ -15,7 +15,7 @@ class AfghanistanRecords(SimpleSpider):
     download_delay = 1
 
     # BaseSpider
-    skip_pluck = 'Already covered (see code for details)'  # afghanistan_releases
+    skip_pluck = 'Already covered (see code for details)'  # afghanistan_release_packages
 
     # SimpleSpider
     data_type = 'record'

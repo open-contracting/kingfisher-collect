@@ -326,7 +326,13 @@ class CompressedFileSpider(BaseSpider):
             raise UnknownArchiveFormatError(response.request.meta['file_name'])
 
         archive_file = cls(BytesIO(response.body))
+
+        number = 1
         for file_info in archive_file.infolist():
+            # Avoid reading the rest of a large file, since the rest of the items will be dropped.
+            if self.sample and number > self.sample:
+                break
+
             filename = file_info.filename
             basename = os.path.basename(filename)
             if self.file_name_must_contain not in basename:
@@ -339,6 +345,7 @@ class CompressedFileSpider(BaseSpider):
                 basename += '.json'
 
             compressed_file = archive_file.open(filename)
+
             # If `resize_package = True`, then we need to open the file twice: once to extract the package metadata and
             # then to extract the releases themselves.
             if self.resize_package:
@@ -353,6 +360,8 @@ class CompressedFileSpider(BaseSpider):
                 'url': response.request.url,
                 'encoding': self.encoding
             })
+
+            number += 1
 
 
 class LinksSpider(SimpleSpider):
@@ -380,7 +389,7 @@ class LinksSpider(SimpleSpider):
             data_type = 'release_package'
 
             def start_requests(self):
-                yield scrapy.Request('https://example.com/api/packages.json', meta={'file_name': 'page1.json'})
+                yield scrapy.Request('https://example.com/api/packages.json', meta={'file_name': 'page-1.json'})
 
     """
 

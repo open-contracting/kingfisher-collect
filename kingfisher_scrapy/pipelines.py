@@ -4,6 +4,7 @@ import json
 import os
 import pkgutil
 import tempfile
+import warnings
 
 import jsonpointer
 from flattentool import unflatten
@@ -80,30 +81,28 @@ class Pluck:
         if not spider.pluck:
             return item
 
+        if isinstance(item['data'], dict):
+            data = item
+        else:
+            data = json.loads(item['data'])
+
         value = None
         if spider.package_pointer:
-            try:
-                package = _get_package(item)
-            except NotImplementedError as e:
-                value = f'error: {e}'
-            else:
-                value = _resolve_pointer(package, spider.package_pointer)
+            value = _resolve_pointer(data, spider.package_pointer)
         else:  # spider.release_pointer
-            if item['data_type'] in ('release_package', 'release_package_list', 'release_package_list_in_results',
-                                     'release_list', 'release'):
-                data = _get_releases(item)
-                if data:
-                    value = max(_resolve_pointer(r, spider.release_pointer) for r in data)
-            elif item['data_type'] in ('record_package', 'record_package_list', 'record_package_list_in_results',
-                                       'record'):
-                data = _get_records(item)
-                if data:
+            if item['data_type'].startswith('release'):
+                releases = data['releases']
+                if releases:
+                    value = max(_resolve_pointer(r, spider.release_pointer) for r in releases)
+            elif item['data_type'].startswith('record'):
+                records = data['records']
+                if records:
                     # This assumes that the first record in the record package has the desired value.
-                    data = data[0]
-                    if 'releases' in data:
-                        value = max(_resolve_pointer(r, spider.release_pointer) for r in data['releases'])
-                    elif 'compiledRelease' in data:
-                        value = _resolve_pointer(data['compiledRelease'], spider.release_pointer)
+                    record = records[0]
+                    if 'releases' in record:
+                        value = max(_resolve_pointer(r, spider.release_pointer) for r in record['releases'])
+                    elif 'compiledRelease' in record:
+                        value = _resolve_pointer(record['compiledRelease'], spider.release_pointer)
 
         if value and spider.truncate:
             value = value[:spider.truncate]
@@ -146,15 +145,18 @@ class Unflatten:
             with open(input_path, 'wb') as f:
                 f.write(item['data'])
 
-            unflatten(
-                input_name,
-                root_list_path='releases',
-                root_id='ocid',
-                schema=schema,
-                input_format=input_format,
-                output_name=output_name,
-                **spider.unflatten_args
-            )
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore')  # flattentool uses UserWarning, so we can't set a specific category
+
+                unflatten(
+                    input_name,
+                    root_list_path='releases',
+                    root_id='ocid',
+                    schema=schema,
+                    input_format=input_format,
+                    output_name=output_name,
+                    **spider.unflatten_args
+                )
 
             with open(output_name, 'r') as f:
                 item['data'] = f.read()
@@ -167,51 +169,3 @@ def _resolve_pointer(data, pointer):
         return jsonpointer.resolve_pointer(data, pointer)
     except jsonpointer.JsonPointerException:
         return f'error: {pointer} not found'
-
-
-def _get_package(item):
-    data = json.loads(item['data'])
-
-    if item['data_type'] in ('release_package', 'record_package'):
-        return data
-    # This assumes that the first package in the list has the desired value.
-    elif item['data_type'] in ('release_package_list', 'record_package_list'):
-        return data[0]
-    elif item['data_type'] in ('release_package_list_in_results', 'record_package_list_in_results'):
-        return data['results'][0]
-
-    raise NotImplementedError(f"no package for data_type: {item['data_type']}")
-
-
-def _get_releases(item):
-    data = json.loads(item['data'])
-
-    if item['data_type'] == 'release_package':
-        return data['releases']
-    # This assumes that the first package in the list has the desired value.
-    elif item['data_type'] == 'release_package_list':
-        return data[0]['releases']
-    elif item['data_type'] == 'release_package_list_in_results':
-        return data['results'][0]['releases']
-    elif item['data_type'] == 'release_list':
-        return data
-    elif item['data_type'] == 'release':
-        return [data]
-
-    raise NotImplementedError(f"unhandled data_type: {item['data_type']}")
-
-
-def _get_records(item):
-    data = json.loads(item['data'])
-
-    if item['data_type'] == 'record_package':
-        return data['records']
-    # This assumes that the first package in the list has the desired value.
-    elif item['data_type'] == 'record_package_list':
-        return data[0]['records']
-    elif item['data_type'] == 'record_package_list_in_results':
-        return data['results'][0]['records']
-    elif item['data_type'] == 'record':
-        return [data]
-
-    raise NotImplementedError(f"unhandled data_type: {item['data_type']}")

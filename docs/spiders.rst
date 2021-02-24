@@ -83,7 +83,7 @@ All spiders support these arguments:
 
 ..
    If you add or rename a spider argument, remember to update `ScrapyLogFile.is_complete()` in:
-   https://github.com/open-contracting/kingfisher-archive/blob/master/ocdskingfisherarchive/scrapy_log_file.py
+   https://github.com/open-contracting/kingfisher-archive/blob/main/ocdskingfisherarchive/scrapy_log_file.py
 
 Some spiders support these arguments:
 

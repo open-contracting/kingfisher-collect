@@ -52,7 +52,7 @@ def parameters(*keys):
     return wrapper
 
 
-def join(*functions):
+def join(*functions, extension=None):
     """
     Returns a function that joins the given functions' outputs.
 
@@ -60,7 +60,10 @@ def join(*functions):
     'planning-page-1'
     """
     def wrapper(url):
-        return '-'.join(function(url) for function in functions)
+        value = '-'.join(function(url) for function in functions)
+        if extension:
+            return f'{value}.{extension}'
+        return value
     return wrapper
 
 
