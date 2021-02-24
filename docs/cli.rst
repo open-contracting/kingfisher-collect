@@ -13,6 +13,8 @@ Plucks one data value per publisher. It writes a CSV file with the results, and 
 -  ``--package-pointer=STR`` (``-p``): The JSON Pointer to the value in the package.
 -  ``--release-pointer=STR`` (``-r``): The JSON Pointer to the value in the release.
 -  ``--truncate=NUM`` (``-t``): Truncate the value to this number of characters.
+-  ``--max-bytes=NUM``: Stop downloading an OCDS file after reading at least this many bytes.
+-  ``spider``: Run specific spiders. Omit to run all spiders.
 
 Get each publisher's publication policy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class Pluck(ScrapyCommand):
+    def syntax(self):
+        return '[options] [spider ...]'
+
     def short_desc(self):
         return 'Pluck one data value per publisher'
 
@@ -21,7 +24,7 @@ class Pluck(ScrapyCommand):
         parser.add_option('-p', '--package-pointer', help='The JSON Pointer to the value in the package')
         parser.add_option('-r', '--release-pointer', help='The JSON Pointer to the value in the release')
         parser.add_option('-t', '--truncate', type=int, help='Truncate the value to this number of characters')
-        parser.add_option('--max-bytes', type=int, help='Download only this many bytes')
+        parser.add_option('--max-bytes', type=int, help='Stop downloading an OCDS file after reading this many bytes')
 
     def run(self, args, opts):
         if not (bool(opts.package_pointer) ^ bool(opts.release_pointer)):
@@ -47,7 +50,7 @@ class Pluck(ScrapyCommand):
         skipped = defaultdict(list)
         running = []
         for spider_name in self.crawler_process.spider_loader.list():
-            if spider_name != 'fail':
+            if not args and spider_name != 'fail' or spider_name in args:
                 spidercls = self.crawler_process.spider_loader.load(spider_name)
                 if hasattr(spidercls, 'skip_pluck'):
                     skipped[spidercls.skip_pluck].append(spider_name)
