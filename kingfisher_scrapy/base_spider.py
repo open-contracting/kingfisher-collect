@@ -389,7 +389,7 @@ class LinksSpider(SimpleSpider):
             data_type = 'release_package'
 
             def start_requests(self):
-                yield scrapy.Request('https://example.com/api/packages.json', meta={'file_name': 'page1.json'})
+                yield scrapy.Request('https://example.com/api/packages.json', meta={'file_name': 'page-1.json'})
 
     """
 
