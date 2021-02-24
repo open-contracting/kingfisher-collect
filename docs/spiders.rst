@@ -591,12 +591,12 @@ Honduras
 
    scrapy crawl honduras_oncae
 
-.. autoclass:: kingfisher_scrapy.spiders.honduras_portal_bulk_files.HondurasPortalBulkFiles
+.. autoclass:: kingfisher_scrapy.spiders.honduras_portal_bulk.HondurasPortalBulk
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl honduras_portal_bulk_files
+   scrapy crawl honduras_portal_bulk
 
 .. autoclass:: kingfisher_scrapy.spiders.honduras_portal_records.HondurasPortalRecords
    :no-members:
