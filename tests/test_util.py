@@ -1,6 +1,6 @@
 import pytest
 
-from kingfisher_scrapy.util import get_parameter_value, replace_parameters, join, components, parameters
+from kingfisher_scrapy.util import components, get_parameter_value, join, parameters, replace_parameters
 
 
 @pytest.mark.parametrize('url,value,expected', [
