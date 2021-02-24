@@ -14,7 +14,7 @@ def test_process_item_csv():
     item = File({
         'file_name': 'test.csv',
         'data': b'data',
-        'data_type': 'release_list',
+        'data_type': 'release_package',
         'url': 'http://test.com/test.csv',
     })
 
@@ -27,7 +27,7 @@ def test_process_item_xlsx():
     item = File({
         'file_name': 'test.xlsx',
         'data': save_virtual_workbook(Workbook()),
-        'data_type': 'release_list',
+        'data_type': 'release_package',
         'url': 'http://test.com/test.xlsx',
     })
 
@@ -40,7 +40,7 @@ def test_process_item_extension_error():
     item = File({
         'file_name': 'file',
         'data': b'data',
-        'data_type': 'release_list',
+        'data_type': 'release_package',
         'url': 'http://test.com/file',
     })
 
@@ -54,7 +54,7 @@ def test_process_item_xlsx_error():
     item = File({
         'file_name': 'test.xlsx',
         'data': b'data',
-        'data_type': 'release_list',
+        'data_type': 'release_package',
         'url': 'http://test.com/test.xlsx',
     })
 

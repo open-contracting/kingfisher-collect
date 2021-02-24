@@ -22,19 +22,15 @@ record_package = {
 package_parameters = [
     # Releases
     ('release_package', release_package),
-    ('release_package_list', [release_package]),
-    ('release_package_list_in_results', {'results': [release_package]}),
     # Records
     ('record_package', record_package),
-    ('record_package_list', [record_package]),
-    ('record_package_list_in_results', {'results': [record_package]}),
 ]
 release_parameters = package_parameters + [
     # Releases
-    ('release', release_package['releases'][1]),
+    ('release', {'releases': [release_package['releases'][1]]}),
     # Records
-    ('record', record_package['records'][0]),
-    ('record', {'compiledRelease': release_package['releases'][1]}),
+    ('record', {'records': [record_package['records'][0]]}),
+    ('record', {'records': [{'compiledRelease': release_package['releases'][1]}]}),
 ]
 
 
@@ -116,4 +112,4 @@ def test_process_item_non_package_data_type():
         'url': 'http://test.com',
     })
 
-    assert pipeline.process_item(item, spider) == PluckedItem({'value': 'error: no package for data_type: release'})
+    assert pipeline.process_item(item, spider) == PluckedItem({'value': 'error: /publishedDate not found'})

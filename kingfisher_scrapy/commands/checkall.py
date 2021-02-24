@@ -39,7 +39,7 @@ class Checker:
     ########
     #
     # If you need to change this list, remember to update `ScrapyLogFile.is_complete()` in:
-    # https://github.com/open-contracting/kingfisher-archive/blob/master/ocdskingfisherarchive/scrapy_log_file.py
+    # https://github.com/open-contracting/kingfisher-archive/blob/main/ocdskingfisherarchive/scrapy_log_file.py
     #
     # Add more spider arguments as needed.
     known_spider_arguments = [

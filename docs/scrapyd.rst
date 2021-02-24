@@ -19,7 +19,7 @@ On the remote server, follow Scrapyd's `installation instructions <https://scrap
 
 .. code-block:: bash
 
-   curl -O https://raw.githubusercontent.com/open-contracting/kingfisher-collect/master/requirements.txt
+   curl -O https://raw.githubusercontent.com/open-contracting/kingfisher-collect/main/requirements.txt
    pip install -r requirements.txt
 
 Start Scrapyd
