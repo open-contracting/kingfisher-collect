@@ -21,6 +21,7 @@ class Pluck(ScrapyCommand):
         parser.add_option('-p', '--package-pointer', help='The JSON Pointer to the value in the package')
         parser.add_option('-r', '--release-pointer', help='The JSON Pointer to the value in the release')
         parser.add_option('-t', '--truncate', type=int, help='Truncate the value to this number of characters')
+        parser.add_option('--max-bytes', type=int, help='Download only this many bytes')
 
     def run(self, args, opts):
         if not (bool(opts.package_pointer) ^ bool(opts.release_pointer)):
@@ -35,6 +36,8 @@ class Pluck(ScrapyCommand):
             'scrapy.extensions.telnet.TelnetConsole': None,
             'kingfisher_scrapy.extensions.KingfisherPluck': 1,
         })
+        if opts.max_bytes:
+            self.settings.set('KINGFISHER_PLUCK_MAX_BYTES', opts.max_bytes)
 
         filename = _pluck_filename(opts)
         if os.path.isfile(filename):

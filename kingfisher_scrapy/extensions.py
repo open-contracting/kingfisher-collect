@@ -31,7 +31,8 @@ class KingfisherPluck:
         extension = cls(directory=directory, max_bytes=max_bytes)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
-        crawler.signals.connect(extension.bytes_received, signal=signals.bytes_received)
+        if max_bytes:
+            crawler.signals.connect(extension.bytes_received, signal=signals.bytes_received)
 
         return extension
 
