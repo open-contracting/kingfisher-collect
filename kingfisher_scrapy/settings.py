@@ -29,7 +29,7 @@ CONCURRENT_REQUESTS = 32
 #DOWNLOAD_DELAY = 3
 
 # The maximum response size (in bytes) that downloader will download (default: 1073741824):
-DOWNLOAD_MAXSIZE = 4000000000
+DOWNLOAD_MAXSIZE = 5000000000
 DOWNLOAD_WARNSIZE = 0
 # Many spiders time out when using default of 180.
 DOWNLOAD_TIMEOUT = 360
