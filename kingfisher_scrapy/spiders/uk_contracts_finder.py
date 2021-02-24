@@ -23,3 +23,17 @@ class UKContractsFinder(IndexSpider):
     def start_requests(self):
         url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=desc&page=1'
         yield self.build_request(url, formatter=parameters('page'), callback=self.parse_list)
+
+    def parse(self, response, **kwargs):
+        if self.is_http_success(response):
+            yield from super().parse(response)
+        else:
+            request = response.request.copy()
+            wait_time = int(response.headers.get('Retry-After', 1))
+            request.meta['wait_time'] = wait_time
+            request.dont_filter = True
+            self.logger.info('Retrying %(request)s in %(wait_time)ds: HTTP %(status)d',
+                             {'request': response.request, 'status': response.status,
+                              'wait_time': wait_time}, extra={'spider': self})
+
+            yield request
