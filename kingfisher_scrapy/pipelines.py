@@ -6,6 +6,7 @@ import pkgutil
 import tempfile
 import warnings
 
+import ijson
 import jsonpointer
 from flattentool import unflatten
 from jsonschema import FormatChecker
@@ -81,15 +82,22 @@ class Pluck:
         if not spider.pluck:
             return item
 
-        if isinstance(item['data'], dict):
-            data = item
-        else:
-            data = json.loads(item['data'])
-
         value = None
         if spider.package_pointer:
-            value = _resolve_pointer(data, spider.package_pointer)
+            pointer = spider.package_pointer
+            if isinstance(item['data'], dict):
+                value = _resolve_pointer(item['data'], pointer)
+            else:
+                try:
+                    value = next(ijson.items(item['data'], pointer.replace('/', '.')[1:]))
+                except StopIteration:
+                    value = f'error: {pointer} not found'
         else:  # spider.release_pointer
+            if isinstance(item['data'], dict):
+                data = item['data']
+            else:
+                data = json.loads(item['data'])
+
             if item['data_type'].startswith('release'):
                 releases = data['releases']
                 if releases:
