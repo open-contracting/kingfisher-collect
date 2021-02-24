@@ -22,7 +22,6 @@ TEST_CASES = [
         'data_type': 'release_package',
         'total_pages_pointer': '/results',
         'formatter': staticmethod(parameters('page')),
-        'page_size': '50',
         'additional_params': {'pageSize': 10},
     }, '{"results": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)&pageSize=10',
         [str(x) for x in range(2, 11)]),
