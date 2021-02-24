@@ -17,6 +17,9 @@ class PortugalRecords(PortugalBase):
     """
     name = 'portugal_records'
 
+    # BaseSpider
+    skip_pluck = 'Already covered (see code for details)'  # portugal_releases
+
     # SimpleSpider
     data_type = 'record_package'
 
