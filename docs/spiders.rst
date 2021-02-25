@@ -1,12 +1,14 @@
 Spiders
 =======
 
+In Kingfisher Collect, there is one spider per data source. Each data source exposes its data in different ways, contains data from different years, and covers different stages of the contracting process.
+
 .. _spider-metadata:
 
 Spider metadata
 ---------------
 
-Below, we provide some metadata for each spider. The meaning of the metadata is:
+Below, we provide some of this information (metadata) for each spider. The meaning of the metadata is:
 
 .. list-table::
    :header-rows: 1
