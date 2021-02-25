@@ -11,6 +11,8 @@ You can:
 
 You can also try using Kingfisher Collect with `Scrapy Cloud <https://scrapinghub.com/scrapy-cloud>`_.
 
+A demo on how to use Kingfisher Collect is available as a `Google Colaboratory <https://research.google.com/colaboratory/faq.html>`_ notebook `here <https://colab.research.google.com/drive/1bN5C9h5YLUF9YpIprAeOMZcXJ5Tr6iaO?usp=sharing>`_.
+
 .. _how-it-works:
 
 How it works
