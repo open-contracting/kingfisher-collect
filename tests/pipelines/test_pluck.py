@@ -1,7 +1,5 @@
 import json
-from io import BytesIO
 
-import ijson
 import pytest
 
 from kingfisher_scrapy.exceptions import SpiderArgumentError
@@ -123,7 +121,7 @@ def test_process_item_incomplete_json():
     pipeline = Pluck()
     item = File({
         'file_name': 'test',
-        'data': BytesIO(b'{"key": "value"'),
+        'data': b'{"key": "value"',
         'data_type': 'release_package',
         'url': 'http://test.com',
     })
