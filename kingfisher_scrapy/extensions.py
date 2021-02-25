@@ -284,6 +284,9 @@ class KingfisherProcessNGAPI:
         if not url:
             raise NotConfigured('KINGFISHER_NG_API_URI is not set.')
 
+        if (username and not password) or (password and not username):
+            raise NotConfigured('Both KINGFISHER_NG_API_USERNAME and KINGFISHER_NG_API_PASSWORD must be set.')
+
         extension = cls(url, username, password)
         crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
@@ -332,7 +335,6 @@ class KingfisherProcessNGAPI:
         """
         Sends an API request to store the file in Kingfisher Process.
         """
-
         if not item.get('post_to_api', True) or isinstance(item, PluckedItem):
             return
 
@@ -342,7 +344,7 @@ class KingfisherProcessNGAPI:
         }
 
         if isinstance(item, FileError):
-            # in case of error send info to api
+            # in case of error send info about it to api
             data['errors'] = json.dumps(item['errors'])
 
         response = self._post("api/v1/create_collection_file", data)
@@ -353,7 +355,7 @@ class KingfisherProcessNGAPI:
 
     def _post(self, url, data):
         """
-        Wrapper around the requests.
+        Wrapper around the requests. Add auth if necessary.
         """
         if self.username and self.password:
             return requests.post("{}/{}".format(self.url, url), json=data, auth=(self.username, self.password))
