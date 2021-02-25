@@ -20,8 +20,10 @@ class KingfisherPluck:
         self.directory = directory
         self.max_bytes = max_bytes
 
-        self.bytes_received_per_spider = defaultdict(int)
-        self.item_scraped_per_spider = set()
+        # The count of bytes received per spider.
+        self.bytes_received_counts = defaultdict(int)
+        # The set of spiders that have called the `item_scraped` method.
+        self.item_scraped_called = set()
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -38,24 +40,23 @@ class KingfisherPluck:
 
     def bytes_received(self, data, request, spider):
         # We only limit the bytes received for final requests (i.e. where the callback is the default `parse` method).
-        if not spider.pluck or request.callback is not None or request.meta['file_name'].endswith(('.rar', '.zip')):
+        if not spider.pluck or request.callback or request.meta['file_name'].endswith(('.rar', '.zip')):
             return
 
-        # Scrapy typically downloads of 16,384-byte chunks.
-        self.bytes_received_per_spider[spider.name] += len(data)
-        if self.bytes_received_per_spider[spider.name] >= self.max_bytes:
+        self.bytes_received_counts[spider.name] += len(data)
+        if self.bytes_received_counts[spider.name] >= self.max_bytes:
             raise StopDownload(fail=False)
 
     def item_scraped(self, item, spider):
-        if not spider.pluck or spider.name in self.item_scraped_per_spider or not isinstance(item, PluckedItem):
+        if not spider.pluck or spider.name in self.item_scraped_called or not isinstance(item, PluckedItem):
             return
 
-        self.item_scraped_per_spider.add(spider.name)
+        self.item_scraped_called.add(spider.name)
 
         self._write(spider, item['value'])
 
     def spider_closed(self, spider, reason):
-        if not spider.pluck or spider.name in self.item_scraped_per_spider:
+        if not spider.pluck or spider.name in self.item_scraped_called:
             return
 
         self._write(spider, f'closed: {reason}')

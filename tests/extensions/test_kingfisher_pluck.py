@@ -1,4 +1,3 @@
-
 import os
 from glob import glob
 from tempfile import TemporaryDirectory
@@ -82,7 +81,7 @@ def test_bytes_received_stop_download():
         request = Request('http://example.com', meta={'file_name': 'test.json'})
 
         with pytest.raises(StopDownload):
-            extension.bytes_received(data={'test': 'test'}, spider=spider, request=request)
+            extension.bytes_received(data=b'12345', spider=spider, request=request)
 
         assert extension.max_bytes == 1
 
@@ -94,16 +93,16 @@ def test_bytes_received_dont_stop_download():
         extension = KingfisherPluck.from_crawler(spider.crawler)
         request = Request('http://example.com', meta={'file_name': 'test.json'})
 
-        extension.bytes_received(data={'test': 'test'}, spider=spider, request=request)
-        assert extension.bytes_received_per_spider[spider.name] == 1
+        extension.bytes_received(data=b'12345', spider=spider, request=request)
 
+        assert extension.bytes_received_counts[spider.name] == 5
         assert extension.max_bytes == 10
 
 
 @pytest.mark.parametrize('test_request', [
-    Request('http://example.com', meta={'file_name': 'test.zip'}),
+    Request('http://example.com', callback=lambda item: item, meta={'file_name': 'test.json'}),
     Request('http://example.com', meta={'file_name': 'test.rar'}),
-    Request('http://example.com', callback=lambda item: item, meta={'file_name': 'test.json'})
+    Request('http://example.com', meta={'file_name': 'test.zip'}),
 ])
 def test_bytes_received_ignored_requests(test_request):
     with TemporaryDirectory() as tmpdirname:
@@ -111,5 +110,6 @@ def test_bytes_received_ignored_requests(test_request):
                                                'KINGFISHER_PLUCK_MAX_BYTES': 10}, release_pointer='/date')
         extension = KingfisherPluck.from_crawler(spider.crawler)
 
-        extension.bytes_received(data={'test': 'test'}, spider=spider, request=test_request)
-        assert extension.bytes_received_per_spider[spider.name] == 0
+        extension.bytes_received(data=b'12345', spider=spider, request=test_request)
+
+        assert extension.bytes_received_counts[spider.name] == 0
