@@ -1,7 +1,7 @@
 Spiders
 =======
 
-In Kingfisher Collect each spider represents a different data source. Each data source expose its data in different ways and each data source contains data from different years and and covering different stages of the contracting process.
+In Kingfisher Collect, there is one spider per data source. Each data source exposes its data in different ways, contains data from different years, and covers different stages of the contracting process.
 
 .. _spider-metadata:
 
