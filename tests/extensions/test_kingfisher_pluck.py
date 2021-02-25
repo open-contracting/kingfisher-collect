@@ -98,3 +98,14 @@ def test_bytes_received_dont_stop_download():
         assert extension.bytes_received_per_spider[spider.name] == 1
 
         assert extension.max_bytes == 10
+
+
+def test_bytes_received_for_compressed_files():
+    with TemporaryDirectory() as tmpdirname:
+        spider = spider_with_crawler(settings={'KINGFISHER_PLUCK_PATH': tmpdirname,
+                                               'KINGFISHER_PLUCK_MAX_BYTES': 10}, release_pointer='/date')
+        extension = KingfisherPluck.from_crawler(spider.crawler)
+        request = Request('http://example.com', meta={'file_name': 'test.zip'})
+
+        extension.bytes_received(data={'test': 'test'}, spider=spider, request=request)
+        assert extension.bytes_received_per_spider[spider.name] == 0
