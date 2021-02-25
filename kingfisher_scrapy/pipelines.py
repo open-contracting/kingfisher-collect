@@ -92,6 +92,9 @@ class Pluck:
                     value = next(ijson.items(item['data'], pointer.replace('/', '.')[1:]))
                 except StopIteration:
                     value = f'error: {pointer} not found'
+                # The JSON text can be truncated by a `bytes_received` handler.
+                except ijson.common.IncompleteJSONError:
+                    value = f'error: {pointer} not found within initial bytes'
         else:  # spider.release_pointer
             if isinstance(item['data'], dict):
                 data = item['data']

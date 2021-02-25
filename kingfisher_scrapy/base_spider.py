@@ -333,42 +333,45 @@ class CompressedFileSpider(BaseSpider):
         else:
             raise UnknownArchiveFormatError(response.request.meta['file_name'])
 
-        with cls(BytesIO(response.body)) as archive_file:
-            number = 1
-            for file_info in archive_file.infolist():
-                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                if self.sample and number > self.sample:
-                    break
+        # If we use a context manager here, the archive file might close before the item pipeline reads from the file
+        # handlers of the compressed files.
+        archive_file = cls(BytesIO(response.body))
 
-                filename = file_info.filename
-                basename = os.path.basename(filename)
-                if self.file_name_must_contain not in basename:
-                    continue
-                if archive_format == 'rar' and file_info.isdir():
-                    continue
-                if archive_format == 'zip' and file_info.is_dir():
-                    continue
-                if not basename.endswith('.json'):
-                    basename += '.json'
+        number = 1
+        for file_info in archive_file.infolist():
+            # Avoid reading the rest of a large file, since the rest of the items will be dropped.
+            if self.sample and number > self.sample:
+                break
 
-                compressed_file = archive_file.open(filename)
+            filename = file_info.filename
+            basename = os.path.basename(filename)
+            if self.file_name_must_contain not in basename:
+                continue
+            if archive_format == 'rar' and file_info.isdir():
+                continue
+            if archive_format == 'zip' and file_info.is_dir():
+                continue
+            if not basename.endswith('.json'):
+                basename += '.json'
 
-                # If `resize_package = True`, then we need to open the file twice: once to extract the package metadata
-                # and then to extract the releases themselves.
-                if self.resize_package:
-                    data = {'data': compressed_file, 'package': archive_file.open(filename)}
-                else:
-                    data = compressed_file
+            compressed_file = archive_file.open(filename)
 
-                yield File({
-                    'file_name': basename,
-                    'data': data,
-                    'data_type': self.data_type,
-                    'url': response.request.url,
-                    'encoding': self.encoding
-                })
+            # If `resize_package = True`, then we need to open the file twice: once to extract the package metadata and
+            # then to extract the releases themselves.
+            if self.resize_package:
+                data = {'data': compressed_file, 'package': archive_file.open(filename)}
+            else:
+                data = compressed_file
 
-                number += 1
+            yield File({
+                'file_name': basename,
+                'data': data,
+                'data_type': self.data_type,
+                'url': response.request.url,
+                'encoding': self.encoding
+            })
+
+            number += 1
 
 
 class LinksSpider(SimpleSpider):

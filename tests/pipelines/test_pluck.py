@@ -113,3 +113,17 @@ def test_process_item_non_package_data_type():
     })
 
     assert pipeline.process_item(item, spider) == PluckedItem({'value': 'error: /publishedDate not found'})
+
+
+def test_process_item_incomplete_json():
+    spider = spider_with_crawler(package_pointer='/publishedDate')
+
+    pipeline = Pluck()
+    item = File({
+        'file_name': 'test',
+        'data': b'{"key": "value"',
+        'data_type': 'release_package',
+        'url': 'http://test.com',
+    })
+
+    assert pipeline.process_item(item, spider) == {'value': 'error: /publishedDate not found within initial bytes'}
