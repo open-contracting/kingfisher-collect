@@ -333,6 +333,8 @@ class CompressedFileSpider(BaseSpider):
         else:
             raise UnknownArchiveFormatError(response.request.meta['file_name'])
 
+        # If we use a context manager here, the archive file might close before the item pipeline reads from the file
+        # handlers of the compressed files.
         archive_file = cls(BytesIO(response.body))
 
         number = 1
