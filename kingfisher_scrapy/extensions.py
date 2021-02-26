@@ -2,7 +2,6 @@
 
 import json
 import os
-from collections import defaultdict
 
 import sentry_sdk
 from scrapy import signals
