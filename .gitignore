@@ -1,3 +1,4 @@
+*.mo
 .ve
 *.pyc
 __pycache__
