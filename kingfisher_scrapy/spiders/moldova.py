@@ -15,8 +15,16 @@ class Moldova(SimpleSpider):
     data_type = 'release_package'
 
     def start_requests(self):
-        # this URL list all the ocids and works with http://public.eprocurement.systems/ocds/tenders/ where the actual
-        # valid OCDS data is returned (as one ocid per process)
+        # https://public.mtender.gov.md offers three endpoints: /tenders/, /tenders/plan/ and /budgets/. However, this
+        # service publishes contracting processes under multiple OCIDs.
+        #
+        # The http://public.eprocurement.systems/ocds/ service instead publishes contracting processes under one OCID.
+        # However, it has no endpoint to list OCIDs.
+        #
+        # As such, we retrieve OCIDs from the first, and data from the second.
+        #
+        # Note: The OCIDs from the /budgets/ endpoint have no corresponding data in the second service. The OCIDs from
+        # the /tenders/plan/ endpoint are the same as from the /tenders/ endpoint.
         url = 'https://public.mtender.gov.md/tenders/'
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
