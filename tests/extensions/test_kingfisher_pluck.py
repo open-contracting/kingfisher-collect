@@ -95,7 +95,7 @@ def test_bytes_received_dont_stop_download():
 
         extension.bytes_received(data=b'12345', spider=spider, request=request)
 
-        assert extension.bytes_received_counts[spider.name] == 5
+        assert extension.total_bytes_received == 5
         assert extension.max_bytes == 10
 
 
@@ -112,4 +112,4 @@ def test_bytes_received_ignored_requests(test_request):
 
         extension.bytes_received(data=b'12345', spider=spider, request=test_request)
 
-        assert extension.bytes_received_counts[spider.name] == 0
+        assert extension.total_bytes_received == 0
