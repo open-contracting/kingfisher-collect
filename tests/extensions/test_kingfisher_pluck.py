@@ -40,14 +40,6 @@ def test_item_scraped():
         with open(os.path.join(tmpdirname, 'pluck-release-date.csv')) as f:
             assert '2020-10-01,test\n' == f.read()
 
-        # An item from another spider is appended.
-        spider.name = 'other'
-        item['value'] = '2020-10-02'
-        extension.item_scraped(item, spider)
-
-        with open(os.path.join(tmpdirname, 'pluck-release-date.csv')) as f:
-            assert '2020-10-01,test\n2020-10-02,other\n' == f.read()
-
 
 def test_spider_closed_with_items():
     with TemporaryDirectory() as tmpdirname:
