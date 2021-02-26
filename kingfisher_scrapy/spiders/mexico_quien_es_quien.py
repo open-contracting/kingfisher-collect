@@ -1,9 +1,7 @@
-import json
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import IndexSpider
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.util import parameters
 
 
 class MexicoQuienEsQuien(IndexSpider):
@@ -19,7 +17,7 @@ class MexicoQuienEsQuien(IndexSpider):
     download_delay = 0.9
 
     # BaseSpider
-    root_path = 'item'
+    root_path = 'data.item'
 
     # SimpleSpider
     data_type = 'record_package'
@@ -29,6 +27,7 @@ class MexicoQuienEsQuien(IndexSpider):
     limit = 1000
     base_url = 'https://api.quienesquien.wiki/v2/contracts'
     formatter = staticmethod(parameters('offset'))
+    yield_list_results = False
 
     def start_requests(self):
         yield scrapy.Request(
@@ -36,8 +35,3 @@ class MexicoQuienEsQuien(IndexSpider):
             meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
-
-    @handle_http_error
-    def parse(self, response):
-        data = response.json()
-        yield self.build_file_from_response(response, data=json.dumps(data['data']).encode(), data_type=self.data_type)
