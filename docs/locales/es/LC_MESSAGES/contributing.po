@@ -1,0 +1,517 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Open Contracting Partnership
+# This file is distributed under the same license as the OCDS Kingfisher
+# Collect package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OCDS Kingfisher Collect \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-25 20:22-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../contributing/base_spider.rst:2
+msgid "Base Spider"
+msgstr ""
+
+#: ../../contributing/exceptions.rst:2
+msgid "Exceptions"
+msgstr ""
+
+#: kingfisher_scrapy.exceptions.KingfisherScrapyError:1 of
+msgid "Base class for exceptions from within this application"
+msgstr ""
+
+#: kingfisher_scrapy.exceptions.SpiderArgumentError:1 of
+msgid "Raised when a spider argument's value is invalid"
+msgstr ""
+
+#: kingfisher_scrapy.exceptions.MissingEnvVarError:1 of
+msgid "Raised when a required environment variable is missing"
+msgstr ""
+
+#: kingfisher_scrapy.exceptions.AccessTokenError:1 of
+msgid ""
+"Raised when the maximum number of attempts to retrieve an access token is"
+" reached"
+msgstr ""
+
+#: kingfisher_scrapy.exceptions.MissingNextLinkError:1 of
+msgid "Raised when a next link is not found on the first page of results"
+msgstr ""
+
+#: kingfisher_scrapy.exceptions.UnknownArchiveFormatError:1 of
+msgid ""
+"Raised if the archive format of a file can't be determined from the "
+"filename"
+msgstr ""
+
+#: ../../contributing/extensions.rst:2
+msgid "Extensions"
+msgstr ""
+
+#: ../../contributing/index.rst:2
+msgid "Contributing"
+msgstr ""
+
+#: ../../contributing/index.rst:4
+msgid "There are mainly two types of contributions: **spiders** and **features**."
+msgstr ""
+
+#: ../../contributing/index.rst:7
+msgid "Write a spider"
+msgstr ""
+
+#: ../../contributing/index.rst:10
+msgid "Learn the data source's access methods"
+msgstr ""
+
+#: ../../contributing/index.rst:12
+msgid ""
+"Read its API documentation or bulk download documentation. Navigate the "
+"API, in your browser or with ``curl``. Inspect its responses, to "
+"determine where the OCDS data is located, and whether it includes "
+"information like pagination links, total pages or total results."
+msgstr ""
+
+#: ../../contributing/index.rst:15
+msgid "Choose a base class"
+msgstr ""
+
+#: ../../contributing/index.rst:17
+msgid ""
+"Access methods for OCDS data are very similar. Spiders therefore share a "
+"lot of logic by inheriting from one of the :doc:`base_spider` classes:"
+msgstr ""
+
+#: ../../contributing/index.rst:19
+msgid ""
+":class:`~kingfisher_scrapy.base_spider.IndexSpider`: Use if the API "
+"includes the total number of results or pages in its response."
+msgstr ""
+
+#: ../../contributing/index.rst:20
+msgid ""
+":class:`~kingfisher_scrapy.base_spider.PeriodicSpider`: Use if the bulk "
+"downloads or API methods accept a year or a year and month as a query "
+"string parameter or URL path component."
+msgstr ""
+
+#: ../../contributing/index.rst:21
+msgid ""
+":class:`~kingfisher_scrapy.base_spider.LinksSpider`: Use if the API "
+"implements `pagination <https://github.com/open-contracting-"
+"extensions/ocds_pagination_extension>`__."
+msgstr ""
+
+#: ../../contributing/index.rst:22
+msgid ""
+":class:`~kingfisher_scrapy.base_spider.CompressedFileSpider`: Use if the "
+"bulk downloads are ZIP or RAR files."
+msgstr ""
+
+#: ../../contributing/index.rst:23
+msgid ""
+":class:`~kingfisher_scrapy.base_spider.SimpleSpider`: Use in almost all "
+"other cases. ``IndexSpider``, ``PeriodicSpider`` and ``LinksSpider`` are "
+"child classes of this class."
+msgstr ""
+
+#: ../../contributing/index.rst:24
+msgid ""
+":class:`~kingfisher_scrapy.base_spider.BaseSpider`: All spiders inherit, "
+"directly or indirectly, from this class, which in turn inherits from "
+"`scrapy.Spider "
+"<https://docs.scrapy.org/en/latest/topics/spiders.html>`__. Use if none "
+"of the above can be used."
+msgstr ""
+
+#: ../../contributing/index.rst:27
+msgid "Write the spider"
+msgstr ""
+
+#: ../../contributing/index.rst:29
+msgid ""
+"After choosing a base class, read its documentation, as well as its "
+"parent class' documentation. It's also helpful to read existing spiders "
+"that inherit from the same class. A few other pointers:"
+msgstr ""
+
+#: ../../contributing/index.rst:31
+msgid ""
+"Write different callback methods for different response types. Writing a "
+"single callback with many if-else branches to handle different response "
+"types is very hard to reason about."
+msgstr ""
+
+#: ../../contributing/index.rst:32
+msgid ""
+"The default ``parse`` callback method should be for \"leaf\" responses: "
+"that is, responses that cause no further requests to be yielded, besides "
+"pagination requests."
+msgstr ""
+
+#: ../../contributing/index.rst:33
+msgid ""
+"Have a look at the :mod:`~kingfisher_scrapy.util` module, which contains "
+"useful functions, notably "
+":func:`~kingfisher_scrapy.util.handle_http_error`."
+msgstr ""
+
+#: ../../contributing/index.rst:35
+msgid ""
+"After writing the spider, add a docstring for :ref:`spider metadata"
+"<spider-metadata>`."
+msgstr ""
+
+#: ../../contributing/index.rst:37
+msgid ""
+"Since many class attributes that control a spider's behavior, please put "
+"the class attributes in this order, including comments with class names:"
+msgstr ""
+
+#: ../../contributing/index.rst:91
+msgid "Test the spider"
+msgstr ""
+
+#: ../../contributing/index.rst:93
+msgid "Run the spider:"
+msgstr ""
+
+#: ../../contributing/index.rst:99
+msgid "It can be helpful to write the log to a file:"
+msgstr ""
+
+#: ../../contributing/index.rst:105
+msgid ":doc:`Check the log for errors and warnings<../logs>`"
+msgstr ""
+
+#: ../../contributing/index.rst:106
+msgid "Check whether the data is as expected, in format and number"
+msgstr ""
+
+#: ../../contributing/index.rst:108
+msgid "Scrapy offers some debugging features that we haven't used yet:"
+msgstr ""
+
+#: ../../contributing/index.rst:110
+msgid ""
+"`Debugging spiders "
+"<https://docs.scrapy.org/en/latest/topics/debug.html>`__"
+msgstr ""
+
+#: ../../contributing/index.rst:111
+msgid ""
+"`Debugging extensions "
+"<https://docs.scrapy.org/en/latest/topics/extensions.html#debugging-"
+"extensions>`__"
+msgstr ""
+
+#: ../../contributing/index.rst:112
+msgid "`Scrapy shell <https://docs.scrapy.org/en/latest/topics/shell.html>`__"
+msgstr ""
+
+#: ../../contributing/index.rst:113
+msgid ""
+"`Telnet console "
+"<https://docs.scrapy.org/en/latest/topics/telnetconsole.html>`__ for in-"
+"progress crawls"
+msgstr ""
+
+#: ../../contributing/index.rst:116
+msgid "Commit the spider"
+msgstr ""
+
+#: ../../contributing/index.rst:118
+msgid "Update ``docs/spiders.rst`` with the :ref:`updatedocs` command:"
+msgstr ""
+
+#: ../../contributing/index.rst:124
+msgid "Check the metadata of all spiders,  with the :ref:`checkall` command:"
+msgstr ""
+
+#: ../../contributing/index.rst:130
+msgid ""
+"After reviewing the output, you can commit your changes to a branch and "
+"make a pull request."
+msgstr ""
+
+#: ../../contributing/index.rst:133
+msgid "Write a feature"
+msgstr ""
+
+#: ../../contributing/index.rst:136
+msgid "Learn Scrapy"
+msgstr ""
+
+#: ../../contributing/index.rst:138
+msgid ""
+"Read the `Scrapy documentation <https://docs.scrapy.org/en/latest/>`__. "
+"In particular, learn the `data flow and architecture "
+"<https://docs.scrapy.org/en/latest/topics/architecture.html>`__. When "
+"working on a specific feature, read the relevant documentation, for "
+"example:"
+msgstr ""
+
+#: ../../contributing/index.rst:140
+msgid "`Spiders <https://docs.scrapy.org/en/latest/topics/spiders.html>`__"
+msgstr ""
+
+#: ../../contributing/index.rst:141
+msgid ""
+"`Requests and responses <https://docs.scrapy.org/en/latest/topics"
+"/request-response.html>`__"
+msgstr ""
+
+#: ../../contributing/index.rst:142
+msgid "`Items <https://docs.scrapy.org/en/latest/topics/items.html>`__"
+msgstr ""
+
+#: ../../contributing/index.rst:143
+msgid ""
+"`Item pipeline <https://docs.scrapy.org/en/latest/topics/item-"
+"pipeline.html>`__"
+msgstr ""
+
+#: ../../contributing/index.rst:144
+msgid ""
+"`Extensions <https://docs.scrapy.org/en/latest/topics/extensions.html>`__"
+" and `signals <https://docs.scrapy.org/en/latest/topics/signals.html>`__"
+msgstr ""
+
+#: ../../contributing/index.rst:145
+msgid ""
+"`Downloader middleware <https://docs.scrapy.org/en/latest/topics"
+"/downloader-middleware.html>`__"
+msgstr ""
+
+#: ../../contributing/index.rst:147
+msgid ""
+"The :doc:`../cli` follows the guidance for `running multiple spiders in "
+"the same process <https://docs.scrapy.org/en/latest/topics/practices.html"
+"#running-multiple-spiders-in-the-same-process>`__."
+msgstr ""
+
+#: ../../contributing/index.rst:150
+msgid "Use Scrapy"
+msgstr ""
+
+#: ../../contributing/index.rst:152
+msgid ""
+"The Scrapy framework is very flexible. To maintain a good separation of "
+"concerns:"
+msgstr ""
+
+#: ../../contributing/index.rst:154
+msgid ""
+"A spider's responsibility is to collect *inputs*. It shouldn't perform "
+"any slow, blocking operations like writing files. It should only:"
+msgstr ""
+
+#: ../../contributing/index.rst:156
+msgid "Yield requests, to be scheduled by Scrapy's engine"
+msgstr ""
+
+#: ../../contributing/index.rst:157
+msgid "Yield items, to be sent to the item pipeline"
+msgstr ""
+
+#: ../../contributing/index.rst:158
+msgid ""
+"Raise a :class:`~kingfisher_scrapy.exceptions.SpiderArgumentError` "
+"exception in its `from_crawler "
+"<https://docs.scrapy.org/en/latest/topics/spiders.html#scrapy.spiders.Spider.from_crawler>`__"
+" method, if a spider argument is invalid"
+msgstr ""
+
+#: ../../contributing/index.rst:159
+msgid ""
+"Raise a :class:`~kingfisher_scrapy.exceptions.MissingEnvVarError` "
+"exception in its `from_crawler "
+"<https://docs.scrapy.org/en/latest/topics/spiders.html#scrapy.spiders.Spider.from_crawler>`__"
+" method, if a required environment variable isn't set"
+msgstr ""
+
+#: ../../contributing/index.rst:160
+msgid ""
+"Raise a :class:`~kingfisher_scrapy.exceptions.AccessTokenError` exception"
+" in a request's callback, if the maximum number of attempts to retrieve "
+"an access token is reached"
+msgstr ""
+
+#: ../../contributing/index.rst:161
+msgid ""
+"Raise any other exception, to be caught by a `spider_error "
+"<https://docs.scrapy.org/en/latest/topics/signals.html#spider-error>`__ "
+"handler in an extension"
+msgstr ""
+
+#: ../../contributing/index.rst:163
+msgid ""
+"An item pipeline's responsibility is to clean, validate, filter, modify "
+"or substitute items. It should only:"
+msgstr ""
+
+#: ../../contributing/index.rst:165
+msgid "Return an item"
+msgstr ""
+
+#: ../../contributing/index.rst:166
+msgid ""
+"Raise a `DropItem "
+"<https://docs.scrapy.org/en/latest/topics/exceptions.html#scrapy.exceptions.DropItem>`__"
+" exception, to stop the processing of the item"
+msgstr ""
+
+#: ../../contributing/index.rst:167
+msgid ""
+"Raise any other exception, to be caught by an `item_error "
+"<https://docs.scrapy.org/en/latest/topics/signals.html#item-error>`__ "
+"handler in an extension"
+msgstr ""
+
+#: ../../contributing/index.rst:169
+msgid ""
+"An extension's responsibility is to write *outputs*: for example, writing"
+" files or sending requests to external services like Kingfisher Process. "
+"It should only:"
+msgstr ""
+
+#: ../../contributing/index.rst:171
+msgid ""
+"Connect signals, typically `item signals "
+"<https://docs.scrapy.org/en/latest/topics/signals.html#item-signals>`__ "
+"and `spider signals "
+"<https://docs.scrapy.org/en/latest/topics/signals.html#spider-signals>`__"
+msgstr ""
+
+#: ../../contributing/index.rst:172
+msgid ""
+"Raise a `NotConfigured "
+"<https://docs.scrapy.org/en/latest/topics/exceptions.html#notconfigured>`__"
+" exception in its `from_crawler "
+"<https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-"
+"own-extension>`__ method, if a required `setting "
+"<https://docs.scrapy.org/en/latest/topics/settings.html>`__ isn't set"
+msgstr ""
+
+#: ../../contributing/index.rst:174
+msgid ""
+"When setting a custom `Request.meta key "
+"<https://docs.scrapy.org/en/latest/topics/request-"
+"response.html#scrapy.http.Request.meta>`__, check that the attribute name"
+" isn't `already in use <https://docs.scrapy.org/en/latest/topics/request-"
+"response.html#topics-request-meta>`__ by Scrapy."
+msgstr ""
+
+#: ../../contributing/index.rst:177
+msgid "Update requirements"
+msgstr ""
+
+#: ../../contributing/index.rst:179
+msgid ""
+"Update the requirements files `as documented <https://ocp-software-"
+"handbook.readthedocs.io/en/latest/python/applications.html#requirements>`__"
+" in the OCP Software Development Handbook."
+msgstr ""
+
+#: ../../contributing/index.rst:181
+msgid ""
+"Then, re-calculate the checksum for the ``requirements.txt`` file. The "
+"checksum is used by deployments to determine whether to update "
+"dependencies:"
+msgstr ""
+
+#: ../../contributing/index.rst:188
+msgid "API reference"
+msgstr ""
+
+#: ../../contributing/util.rst:2
+msgid "Utilities"
+msgstr ""
+
+#: kingfisher_scrapy.util.components:1 of
+msgid ""
+"Returns a function that returns the selected non-empty path components, "
+"excluding the ``.json`` extension."
+msgstr ""
+
+#: kingfisher_scrapy.util.parameters:1 of
+msgid "Returns a function that returns the selected query string parameters."
+msgstr ""
+
+#: kingfisher_scrapy.util.join:1 of
+msgid "Returns a function that joins the given functions' outputs."
+msgstr ""
+
+#: kingfisher_scrapy.util.handle_http_error:1 of
+msgid "A decorator for spider parse methods."
+msgstr ""
+
+#: kingfisher_scrapy.util.handle_http_error:3 of
+msgid ""
+"Yields a :class:`~kingfisher_scrapy.items.FileError` using "
+":meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_file_error_from_response`"
+" for unsuccessful HTTP status codes, determined using "
+":meth:`~kingfisher_scrapy.base_spider.BaseSpider.is_http_success`."
+msgstr ""
+
+#: kingfisher_scrapy.util.date_range_by_month:1 of
+msgid ""
+"Yields the first day of the month as a ``date`` from the ``start`` to the"
+" ``stop`` dates, in reverse chronological order."
+msgstr ""
+
+#: kingfisher_scrapy.util.date_range_by_year:1 of
+msgid ""
+"Returns the year as an ``int`` from the ``start`` to the ``stop`` years, "
+"in reverse chronological order."
+msgstr ""
+
+#: kingfisher_scrapy.util.get_parameter_value:1 of
+msgid "Returns the first value of the query string parameter."
+msgstr ""
+
+#: kingfisher_scrapy.util.replace_parameters:1 of
+msgid "Returns a URL after updating the query string parameters' values."
+msgstr ""
+
+#: kingfisher_scrapy.util.add_query_string:1 of
+msgid ""
+"Returns a function that yields the requests yielded by the wrapped "
+"method, after updating their query string parameters' values."
+msgstr ""
+
+#: kingfisher_scrapy.util.items_basecoro:1 of
+msgid ""
+"This is copied from ``ijson/common.py``. A ``skip_key`` argument is "
+"added. If the ``skip_key`` is in the current path, the current event is "
+"skipped. Otherwise, the method is identical."
+msgstr ""
+
+#: kingfisher_scrapy.util.items:1 of
+msgid ""
+"This is copied from ``ijson/common.py``. A ``skip_key`` argument is "
+"added, which is passed as a keyword argument to "
+":meth:`~kingfisher_scrapy.util.items_basecoro`. Otherwise, the method is "
+"identical."
+msgstr ""
+
+#: kingfisher_scrapy.util.default:1 of
+msgid "Dumps JSON to a string, and returns it."
+msgstr ""
+
+#: kingfisher_scrapy.util.get_file_name_and_extension:1 of
+msgid ""
+"Given a ``filename`` returns its name and extension in two separate "
+"strings >>> get_file_name_and_extension('test.json') 'test', 'json'"
+msgstr ""
+

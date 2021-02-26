@@ -1,0 +1,127 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Open Contracting Partnership
+# This file is distributed under the same license as the OCDS Kingfisher
+# Collect package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OCDS Kingfisher Collect \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-25 20:22-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../index.rst:38
+msgid "Contents"
+msgstr "Contenido"
+
+#: ../../index.rst:2
+msgid "OCDS Kingfisher Collect"
+msgstr ""
+
+#: ../../../README.rst:1
+msgid "|Build Status| |Coverage Status|"
+msgstr ""
+
+#: ../../../README.rst:3
+msgid ""
+"Kingfisher Collect is a tool for downloading OCDS data and storing it on "
+"disk and/or sending it to an instance of `Kingfisher Process <https"
+"://kingfisher-process.readthedocs.io/>`_ for processing."
+msgstr ""
+"Kingfisher Collect es una herramienta para descargar datos OCDS y almacenarlos "
+"en disco y/o enviar los datos a una instancia de `Kingfisher Process <https"
+"://kingfisher-process.readthedocs.io/>`_ para su procesamiento."
+
+#: ../../../README.rst:5
+msgid ""
+"(If you are viewing this on GitHub, open the `full documentation <https"
+"://kingfisher-collect.readthedocs.io/>`__ for additional details.)"
+msgstr ""
+
+#: ../../index.rst:6
+msgid "You can:"
+msgstr ""
+
+#: ../../index.rst:8
+msgid ""
+":doc:`Download data to your computer, by installing Kingfisher "
+"Collect<local>`"
+msgstr ""
+
+#: ../../index.rst:9
+msgid ":doc:`Download data to a remote server, by using Scrapyd<scrapyd>`"
+msgstr ""
+
+#: ../../index.rst:10
+msgid ":doc:`Integrate with Kingfisher Process<kingfisher_process>`"
+msgstr ""
+
+#: ../../index.rst:12
+msgid ""
+"Instead of installing Kingfisher Collect to your computer, you can "
+"`follow this interactive step-by-step guide "
+"<https://colab.research.google.com/drive/1bN5C9h5YLUF9YpIprAeOMZcXJ5Tr6iaO>`__,"
+" to use Kingfisher Collect in `Google Colaboratory "
+"<https://research.google.com/colaboratory/faq.html>`__."
+msgstr ""
+
+#: ../../index.rst:14
+msgid ""
+"You can also try using Kingfisher Collect with `Scrapy Cloud "
+"<https://scrapinghub.com/scrapy-cloud>`_."
+msgstr ""
+
+#: ../../index.rst:19
+msgid "How it works"
+msgstr ""
+
+#: ../../index.rst:21
+msgid ""
+"Kingfisher Collect is built on the `Scrapy <https://scrapy.org/>`_ "
+"framework. Using this framework, we have authored \"spiders\" that you "
+"can run in order to \"crawl\" data sources and extract OCDS data."
+msgstr ""
+
+#: ../../index.rst:23
+msgid ""
+"When collecting data from a data source, each of its OCDS files will be "
+"written to a separate file on your computer. (Depending on the data "
+"source, an OCDS file might be a `record package <https://standard.open-"
+"contracting.org/latest/en/schema/record_package/>`__, `release package "
+"<https://standard.open-"
+"contracting.org/latest/en/schema/release_package/>`__, individual `record"
+" <https://standard.open-"
+"contracting.org/latest/en/schema/records_reference/>`__ or individual "
+"`release <https://standard.open-"
+"contracting.org/latest/en/schema/reference/>`__.)"
+msgstr ""
+
+#: ../../index.rst:25
+msgid ""
+"By default, these files are written to a ``data`` directory (you can "
+":ref:`change this<configure>`) within your ``kingfisher-collect`` "
+"directory (which you will create :ref:`during installation<install>`). "
+"Each spider creates its own directory within the ``data`` directory, and "
+"each crawl of a given spider creates its own directory within its "
+"spider's directory. For example, if you run the ``zambia`` spider "
+"(:ref:`learn how<collect-data>`), then the directory hierarchy will look "
+"like:"
+msgstr ""
+
+#: ../../index.rst:36
+msgid ""
+"As you can see, the ``data`` directory contains a ``zambia`` spider "
+"directory (matching the spider's name), which in turn contains a "
+"``20200102_030405`` crawl directory (matching the time at which you "
+"started the crawl – in this case, 2020-01-02 03:04:05). The crawl "
+"directory contains ``.json`` files – the OCDS data."
+msgstr ""
+

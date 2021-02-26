@@ -1,0 +1,178 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Open Contracting Partnership
+# This file is distributed under the same license as the OCDS Kingfisher
+# Collect package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OCDS Kingfisher Collect \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-25 20:22-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../cli.rst:2
+msgid "Command-line interface"
+msgstr ""
+
+#: ../../cli.rst:4
+msgid ""
+"Most subcommands of the ``scrapy`` command are defined by `Scrapy "
+"<https://docs.scrapy.org/en/latest/topics/commands.html>`__. You were "
+"already :ref:`introduced<collect-data>` to ``scrapy list`` and ``scrapy "
+"crawl``. Kingfisher Collect adds a few more:"
+msgstr ""
+
+#: ../../cli.rst:9
+msgid "pluck"
+msgstr ""
+
+#: ../../cli.rst:11
+msgid ""
+"Plucks one data value per publisher. It writes a CSV file with the "
+"results, and a ``pluck_skipped.json`` file giving the reason for which "
+"some spiders were skipped. It writes no OCDS data files."
+msgstr ""
+
+#: ../../cli.rst:13
+msgid ""
+"``--package-pointer=STR`` (``-p``): The JSON Pointer to the value in the "
+"package."
+msgstr ""
+
+#: ../../cli.rst:14
+msgid ""
+"``--release-pointer=STR`` (``-r``): The JSON Pointer to the value in the "
+"release."
+msgstr ""
+
+#: ../../cli.rst:15
+msgid ""
+"``--truncate=NUM`` (``-t``): Truncate the value to this number of "
+"characters."
+msgstr ""
+
+#: ../../cli.rst:16
+msgid ""
+"``--max-bytes=NUM``: Stop downloading an OCDS file after reading at least"
+" this many bytes."
+msgstr ""
+
+#: ../../cli.rst:17
+msgid "``spider``: Run specific spiders. Omit to run all spiders."
+msgstr ""
+
+#: ../../cli.rst:19
+msgid ""
+"If you're using ``--package-pointer``, it is recommended to use the "
+"``--max-bytes`` option to limit the number of bytes downloaded. For "
+"example, you can set ``--max-bytes 10000``, because package metadata "
+"tends to be located at the start of files."
+msgstr ""
+
+#: ../../cli.rst:23
+msgid ""
+"``--max-bytes`` is ignored for ZIP and RAR files, which must be "
+"downloaded in full to be read."
+msgstr ""
+
+#: ../../cli.rst:26
+msgid "Get each publisher's publication policy"
+msgstr ""
+
+#: ../../cli.rst:32
+msgid ""
+"This writes a ``pluck-package-publicationPolicy.csv`` file, in which the "
+"second column is the spider's name, and the first column is either:"
+msgstr ""
+
+#: ../../cli.rst:34
+msgid "The value of the ``publicationPolicy`` field in the package"
+msgstr ""
+
+#: ../../cli.rst:35
+msgid "An error message, prefixed by ``error:``"
+msgstr ""
+
+#: ../../cli.rst:36
+msgid "The reason for which the spider was closed, prefixed by ``closed:``"
+msgstr ""
+
+#: ../../cli.rst:39
+msgid "Get the latest release date"
+msgstr ""
+
+#: ../../cli.rst:41
+msgid "And truncate to the date component of the datetime:"
+msgstr ""
+
+#: ../../cli.rst:47
+msgid "This writes a ``pluck-release-date.csv`` file."
+msgstr ""
+
+#: ../../cli.rst:50
+msgid "Get the publisher's name"
+msgstr ""
+
+#: ../../cli.rst:56
+msgid "This writes a ``pluck-package-publisher-name.csv`` file."
+msgstr ""
+
+#: ../../cli.rst:61
+msgid "crawlall"
+msgstr ""
+
+#: ../../cli.rst:63
+msgid "Runs all spiders."
+msgstr ""
+
+#: ../../cli.rst:65
+msgid ""
+"``--dry-run``: Runs the spiders without writing any files. It stops after"
+" collecting one file or file item from each spider. This can be used to "
+"test whether any spiders are broken. Add the ``--logfile debug.log`` "
+"option to write the output to a log file for easier review."
+msgstr ""
+
+#: ../../cli.rst:66
+msgid ""
+"``--sample=NUM``: The number of files to write. This can be used to "
+"collect a sample from each spider."
+msgstr ""
+
+#: ../../cli.rst:74
+msgid ""
+"One of ``--dry-run`` or ``--sample`` must be set. If you want to run all "
+"spiders to completion, use :doc:`Scrapyd<../scrapyd>`, which has better "
+"scheduling control and process management."
+msgstr ""
+
+#: ../../cli.rst:79
+msgid "checkall"
+msgstr ""
+
+#: ../../cli.rst:81
+msgid ""
+"Checks that spiders are documented and well-implemented. It reports "
+"whether information is missing, out-of-order, or unexpected in the "
+"docstring, and if an expected spider argument isn't implemented."
+msgstr ""
+
+#: ../../cli.rst:90
+msgid "updatedocs"
+msgstr ""
+
+#: ../../cli.rst:92
+msgid ""
+"This command is for developers of Kingfisher Collect. When a new spider "
+"is added, or when a spider's class-level docstring is updated, the "
+"developer should run this command to update ``docs/spiders.rst``:"
+msgstr ""
+

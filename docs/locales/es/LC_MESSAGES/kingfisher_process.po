@@ -1,0 +1,69 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Open Contracting Partnership
+# This file is distributed under the same license as the OCDS Kingfisher
+# Collect package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OCDS Kingfisher Collect \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-25 20:22-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../kingfisher_process.rst:2
+msgid "Integrate with Kingfisher Process"
+msgstr ""
+
+#: ../../kingfisher_process.rst:4
+msgid ""
+"Besides storing the scraped data on disk, you can also send them to an "
+"instance of `Kingfisher Process <https://kingfisher-"
+"process.readthedocs.io/>`_ for processing."
+msgstr ""
+
+#: ../../kingfisher_process.rst:6
+msgid ""
+"To do that, you need to deploy an instance of Kingfisher Process, "
+"including its `web app <https://kingfisher-"
+"process.readthedocs.io/en/latest/web.html#web-app>`__. Then, set the "
+"following either as environment variables or as Scrapy settings in "
+"``kingfisher_scrapy.settings.py``:"
+msgstr ""
+
+#: ../../kingfisher_process.rst:8
+msgid "``KINGFISHER_API_URI``"
+msgstr ""
+
+#: ../../kingfisher_process.rst:9
+msgid ""
+"The URL from which Kingfisher Process' `web app <https://kingfisher-"
+"process.readthedocs.io/en/latest/web.html#web-app>`_ is served. Do not "
+"include a trailing slash."
+msgstr ""
+
+#: ../../kingfisher_process.rst:11
+msgid "``KINGFISHER_API_KEY``"
+msgstr ""
+
+#: ../../kingfisher_process.rst:11
+msgid ""
+"One of the API keys in Kingfisher Process' `API_KEYS <https://kingfisher-"
+"process.readthedocs.io/en/latest/config.html#web-api>`__ setting."
+msgstr ""
+
+#: ../../kingfisher_process.rst:13
+msgid "To run a spider:"
+msgstr ""
+
+#: ../../kingfisher_process.rst:19
+msgid "To add a note to the collection in Kingfisher Process:"
+msgstr ""
+

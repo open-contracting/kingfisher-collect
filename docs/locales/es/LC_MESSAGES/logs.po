@@ -1,0 +1,518 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Open Contracting Partnership
+# This file is distributed under the same license as the OCDS Kingfisher
+# Collect package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OCDS Kingfisher Collect \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-25 20:22-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../logs.rst:2
+msgid "Log files"
+msgstr ""
+
+#: ../../logs.rst:4
+msgid ""
+"You can use Scrapy's log files to identify and debug issues in data "
+"collection."
+msgstr ""
+
+#: ../../logs.rst:6
+msgid ""
+"If you can't debug an issue on your own, create an issue on `GitHub "
+"<https://github.com/open-contracting/kingfisher-collect/issues>`__."
+msgstr ""
+
+#: ../../logs.rst:9
+msgid "1. Check for unhandled errors"
+msgstr ""
+
+#: ../../logs.rst:11
+msgid ""
+"Kingfisher Collect can handle errors and continue crawling. This step is "
+"to check whether any errors were *unhandled*."
+msgstr ""
+
+#: ../../logs.rst:13
+msgid "Read the last line of the log file:"
+msgstr ""
+
+#: ../../logs.rst:19
+msgid "If the line looks like:"
+msgstr ""
+
+#: ../../logs.rst:25
+msgid ""
+"Then all errors were handled. Otherwise, either a shutdown was forced "
+"(e.g. pressing ``Ctrl-C`` twice), or an error was unhandled. You can read"
+" the lines at the end of the file for context:"
+msgstr ""
+
+#: ../../logs.rst:32
+msgid "2. Check the reason for closing the spider"
+msgstr ""
+
+#: ../../logs.rst:34
+msgid "The last line of the log file (taken above) looked like:"
+msgstr ""
+
+#: ../../logs.rst:40
+msgid "Reasons implemented by Scrapy's core are:"
+msgstr ""
+
+#: ../../logs.rst:42
+msgid "cancelled"
+msgstr ""
+
+#: ../../logs.rst:43
+msgid "The spider closed for an unknown reason"
+msgstr ""
+
+#: ../../logs.rst:44
+msgid "finished"
+msgstr ""
+
+#: ../../logs.rst:45
+msgid "The crawl finished, and any errors were handled"
+msgstr ""
+
+#: ../../logs.rst:47
+msgid "shutdown"
+msgstr ""
+
+#: ../../logs.rst:47
+msgid "The crawl shutdown gracefully (e.g. pressing ``Ctrl-C`` once)"
+msgstr ""
+
+#: ../../logs.rst:49
+msgid "Reasons implemented by Scrapy's extensions are:"
+msgstr ""
+
+#: ../../logs.rst:51
+msgid "closespider_errorcount"
+msgstr ""
+
+#: ../../logs.rst:52
+msgid ""
+"The spider reached the maximum error count, set by the "
+"`CLOSESPIDER_ERRORCOUNT "
+"<https://docs.scrapy.org/en/latest/topics/extensions.html#closespider-"
+"errorcount>`__ setting (the :ref:`pluck` and :ref:`crawlall` commands set"
+" it to 1, otherwise off by default)"
+msgstr ""
+
+#: ../../logs.rst:53
+msgid "closespider_itemcount"
+msgstr ""
+
+#: ../../logs.rst:54
+msgid ""
+"The spider reached the maximum item count, set by the "
+"`CLOSESPIDER_ITEMCOUNT "
+"<https://docs.scrapy.org/en/latest/topics/extensions.html#closespider-"
+"itemcount>`__ setting (off by default)"
+msgstr ""
+
+#: ../../logs.rst:55
+msgid "closespider_pagecount"
+msgstr ""
+
+#: ../../logs.rst:56
+msgid ""
+"The spider reached the maximum page count, set by the "
+"`CLOSESPIDER_PAGECOUNT "
+"<https://docs.scrapy.org/en/latest/topics/extensions.html#closespider-"
+"pagecount>`__ setting (off by default)"
+msgstr ""
+
+#: ../../logs.rst:57
+msgid "closespider_timeout"
+msgstr ""
+
+#: ../../logs.rst:58
+msgid ""
+"The spider remained open longer than the timeout, set by the "
+"`CLOSESPIDER_TIMEOUT "
+"<https://docs.scrapy.org/en/latest/topics/extensions.html#closespider-"
+"timeout>`__ setting (off by default)"
+msgstr ""
+
+#: ../../logs.rst:60
+msgid "memusage_exceeded"
+msgstr ""
+
+#: ../../logs.rst:60
+msgid ""
+"The spider exceeded the maximum allowed memory, set by the "
+"`MEMUSAGE_LIMIT_MB "
+"<https://docs.scrapy.org/en/latest/topics/settings.html#memusage-limit-"
+"mb>`__ setting (off by default)"
+msgstr ""
+
+#: ../../logs.rst:62
+msgid "Reasons implemented by Kingfisher Collect are:"
+msgstr ""
+
+#: ../../logs.rst:65
+msgid "sample"
+msgstr ""
+
+#: ../../logs.rst:65
+msgid ""
+"The crawl reached the maximum sample size, when using the ``sample`` "
+":ref:`spider argument<spider-arguments>`"
+msgstr ""
+
+#: ../../logs.rst:68
+msgid "3. Check the crawl statistics"
+msgstr ""
+
+#: ../../logs.rst:70
+msgid "Extract the crawl statistics:"
+msgstr ""
+
+#: ../../logs.rst:77
+msgid "Read the numbers of error messages"
+msgstr ""
+
+#: ../../logs.rst:79
+msgid "``log_count/CRITICAL``"
+msgstr ""
+
+#: ../../logs.rst:80
+msgid "``log_count/ERROR``"
+msgstr ""
+
+#: ../../logs.rst:81
+msgid "``log_count/WARNING``"
+msgstr ""
+
+#: ../../logs.rst:83
+msgid "If there are any, filter for and read the messages, for example:"
+msgstr ""
+
+#: ../../logs.rst:99
+msgid ""
+"Some messages mean that action is needed. The action might be to fix a "
+"bug, or to add a try-statement to catch an exception. If you don't know "
+"what action is needed, `create an issue <https://github.com/open-"
+"contracting/kingfisher-collect/issues>`__ with the name of the spider and"
+" an excerpt of the log, including the log message and the full traceback."
+msgstr ""
+
+#: ../../logs.rst:101
+msgid "CRITICAL: Unhandled error in Deferred:"
+msgstr ""
+
+#: ../../logs.rst:102
+msgid ""
+"An exception was raised before the spider was opened, like "
+":class:`~kingfisher_scrapy.exceptions.SpiderArgumentError`, in which case"
+" the problem is in the user's input."
+msgstr ""
+
+#: ../../logs.rst:106
+msgid "ERROR: Spider error processing <GET https:…> (referer: None)"
+msgstr ""
+
+#: ../../logs.rst:104
+msgid ""
+"An exception was raised in the spider's code. (See the "
+"``spider_exceptions/…`` statistics below.)"
+msgstr ""
+
+#: ../../logs.rst:106 ../../logs.rst:111 ../../logs.rst:116
+msgid "Action needed."
+msgstr ""
+
+#: ../../logs.rst:111
+msgid "ERROR: Error processing {…}"
+msgstr ""
+
+#: ../../logs.rst:109
+msgid ""
+"An exception was raised in an item pipeline, like "
+"``jsonschema.exceptions.ValidationError``."
+msgstr ""
+
+#: ../../logs.rst:116
+msgid "ERROR: Error caught on signal handler: …"
+msgstr ""
+
+#: ../../logs.rst:114
+msgid "An exception was raised in an extension."
+msgstr ""
+
+#: ../../logs.rst:118
+msgid "ERROR: Error downloading <GET https:…>"
+msgstr ""
+
+#: ../../logs.rst:119
+msgid ""
+"An exception was raised by the downloader, typically after failed retries"
+" by the `RetryMiddleware <https://docs.scrapy.org/en/latest/topics"
+"/downloader-middleware.html#module-scrapy.downloadermiddlewares.retry>`__"
+" downloader middleware. (See the ``downloader/exception_type_count/…`` "
+"statistics below.)"
+msgstr ""
+
+#: ../../logs.rst:125
+msgid "WARNING: Failed to post [https:…]. File API status code: 500"
+msgstr ""
+
+#: ../../logs.rst:121
+msgid ""
+"Issued by the :class:`~kingfisher_scrapy.extensions.KingfisherProcessAPI`"
+" extension."
+msgstr ""
+
+#: ../../logs.rst:123 ../../logs.rst:130
+msgid "Potential action"
+msgstr ""
+
+#: ../../logs.rst:125
+msgid ""
+"If you need the collection in Kingfisher Process to be complete, re-run "
+"the spider."
+msgstr ""
+
+#: ../../logs.rst:132
+msgid "WARNING: Duplicate File: '….json'"
+msgstr ""
+
+#: ../../logs.rst:128
+msgid "Issued by the :class:`~kingfisher_scrapy.pipelines.Validate` pipeline."
+msgstr ""
+
+#: ../../logs.rst:132
+msgid ""
+"Check whether the key collisions are caused by identical items, or by "
+"different items. If by different items, the spider needs to be updated to"
+" assign keys without collisions."
+msgstr ""
+
+#: ../../logs.rst:134
+msgid ""
+"WARNING: Got data loss in https:…. If you want to process broken "
+"responses set the setting DOWNLOAD_FAIL_ON_DATALOSS = False -- This "
+"message won't be shown in further requests"
+msgstr ""
+
+#: ../../logs.rst:135
+msgid ""
+"Issued by Scrapy if the ``Content-Length`` header doesn't match the bytes"
+" received, after which Scrapy retries the request. If you don't trust the"
+" ``Content-Length`` header, set to ``False`` either the "
+"`DOWNLOAD_FAIL_ON_DATALOSS "
+"<https://docs.scrapy.org/en/latest/topics/settings.html#download-fail-on-"
+"dataloss>`__ key of the spider's `custom_settings "
+"<https://docs.scrapy.org/en/latest/topics/settings.html#settings-per-"
+"spider>`__ attribute, or the `download_fail_on_dataloss "
+"<https://docs.scrapy.org/en/latest/topics/request-response.html#std-"
+"reqmeta-download_fail_on_dataloss>`__ key of the request's ``meta`` "
+"attribute."
+msgstr ""
+
+#: ../../logs.rst:136
+msgid ""
+"WARNING: Expected response size (987654321) larger than download warn "
+"size (123456789) in request <GET https:…>."
+msgstr ""
+
+#: ../../logs.rst:137 ../../logs.rst:139
+msgid ""
+"Issued based on the `DOWNLOAD_WARNSIZE "
+"<https://docs.scrapy.org/en/latest/topics/settings.html#download-"
+"warnsize>`__ setting, ``download_warnsize`` spider attribute or "
+"``download_warnsize`` Request.meta key. Can be ignored."
+msgstr ""
+
+#: ../../logs.rst:138
+msgid ""
+"WARNING: Received more bytes than download warn size (123456789) in "
+"request <GET https:…>."
+msgstr ""
+
+#: ../../logs.rst:141
+msgid ""
+"WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None,"
+" status=None)) after connection broken by '…': …"
+msgstr ""
+
+#: ../../logs.rst:141
+msgid ""
+"Issued by Scrapy's `RetryMiddleware "
+"<https://docs.scrapy.org/en/latest/topics/downloader-middleware.html"
+"#module-scrapy.downloadermiddlewares.retry>`__ downloader middleware. Can"
+" be ignored."
+msgstr ""
+
+#: ../../logs.rst:144
+msgid "Read the numbers of successful response status codes"
+msgstr ""
+
+#: ../../logs.rst:146
+msgid "``downloader/response_status_count/2...``"
+msgstr ""
+
+#: ../../logs.rst:148
+msgid ""
+"Decide whether the number is as expected. If the statistic isn't present,"
+" there were no successful responses."
+msgstr ""
+
+#: ../../logs.rst:151
+msgid "Read the numbers of error response status codes"
+msgstr ""
+
+#: ../../logs.rst:153
+msgid "``downloader/response_status_count/[4-5]...``"
+msgstr ""
+
+#: ../../logs.rst:155
+msgid ""
+"You can look up a `status code's semantics "
+"<https://httpstatuses.com/>`__. Decide whether the numbers are elevated."
+msgstr ""
+
+#: ../../logs.rst:157
+msgid "Some spiders can recover from errors, for example:"
+msgstr ""
+
+#: ../../logs.rst:159
+msgid "*401 Unauthorized*: request a new access token"
+msgstr ""
+
+#: ../../logs.rst:160
+msgid "*429 Too Many Requests*: back off and retry"
+msgstr ""
+
+#: ../../logs.rst:161
+msgid "*503 Service Unavailable*: back off and retry"
+msgstr ""
+
+#: ../../logs.rst:162
+msgid "… or try different parameters until a request succeeds"
+msgstr ""
+
+#: ../../logs.rst:164
+msgid ""
+"Unrecoverable errors are yielded as FileError items (see :ref:`log-file-"
+"error-items`)."
+msgstr ""
+
+#: ../../logs.rst:167
+msgid "Read the numbers of spider exceptions"
+msgstr ""
+
+#: ../../logs.rst:169
+msgid "``spider_exceptions/...``"
+msgstr ""
+
+#: ../../logs.rst:171
+msgid ""
+"If there are any, filter for and read the message(s) in which the "
+"exception is logged. (See the ``ERROR: Spider error processing`` error "
+"message above.)"
+msgstr ""
+
+#: ../../logs.rst:174
+msgid "Read the numbers of downloader exceptions"
+msgstr ""
+
+#: ../../logs.rst:176
+msgid "``downloader/exception_type_count/...``"
+msgstr ""
+
+#: ../../logs.rst:178
+msgid ""
+"If there are any, filter for and read the message(s) in which the "
+"exception is logged. (See the ``ERROR: Error downloading`` error message "
+"above.)"
+msgstr ""
+
+#: ../../logs.rst:180
+msgid ""
+"The ``downloader/exception_count`` statistic is the total number of all "
+"types of downloader exceptions."
+msgstr ""
+
+#: ../../logs.rst:183
+msgid ""
+"Read the number of requests for which the maximum number of retries was "
+"reached"
+msgstr ""
+
+#: ../../logs.rst:185
+msgid "``retry/max_reached``"
+msgstr ""
+
+#: ../../logs.rst:187
+msgid ""
+"The maximum is set by the `RETRY_TIMES "
+"<https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#std-"
+"setting-RETRY_TIMES>`__ setting or the `max_retry_times "
+"<https://docs.scrapy.org/en/latest/topics/request-response.html#std-"
+"reqmeta-max_retry_times>`__ Request.meta key."
+msgstr ""
+
+#: ../../logs.rst:189
+msgid "If the maximum is reached, read the exceptions causing retries:"
+msgstr ""
+
+#: ../../logs.rst:191
+msgid "``retry/reason_count/...``"
+msgstr ""
+
+#: ../../logs.rst:193
+msgid "Then, filter for and read the message(s) in which the exception is logged."
+msgstr ""
+
+#: ../../logs.rst:197
+msgid "The following statistics are not presently collected:"
+msgstr ""
+
+#: ../../logs.rst:199
+msgid "httperror/response_ignored_count"
+msgstr ""
+
+#: ../../logs.rst:200
+msgid ""
+"Collected if the `HTTPERROR_ALLOW_ALL "
+"<https://docs.scrapy.org/en/latest/topics/spider-middleware.html"
+"#httperror-allow-all>`__ setting is ``False``."
+msgstr ""
+
+#: ../../logs.rst:201
+msgid "scheduler/unserializable"
+msgstr ""
+
+#: ../../logs.rst:202
+msgid ""
+"Collected if the `SCHEDULER_DEBUG "
+"<https://docs.scrapy.org/en/latest/topics/settings.html#scheduler-"
+"debug>`__ setting is ``True``."
+msgstr ""
+
+#: ../../logs.rst:207
+msgid "4. Check for FileError items"
+msgstr ""
+
+#: ../../logs.rst:209
+msgid ""
+"Kingfisher Collect yields some errors as FileError items. You can open "
+"the log file and search for ``'errors':`` to get more context on each "
+"error."
+msgstr ""
+

@@ -1,0 +1,399 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Open Contracting Partnership
+# This file is distributed under the same license as the OCDS Kingfisher
+# Collect package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OCDS Kingfisher Collect \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-25 20:22-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../spiders.rst:2
+msgid "Spiders"
+msgstr ""
+
+#: ../../spiders.rst:4
+msgid ""
+"In Kingfisher Collect, there is one spider per data source. Each data "
+"source exposes its data in different ways, contains data from different "
+"years, and covers different stages of the contracting process."
+msgstr ""
+
+#: ../../spiders.rst:9
+msgid "Spider metadata"
+msgstr ""
+
+#: ../../spiders.rst:11
+msgid ""
+"Below, we provide some of this information (metadata) for each spider. "
+"The meaning of the metadata is:"
+msgstr ""
+
+#: ../../spiders.rst:17
+msgid "Metadata"
+msgstr ""
+
+#: ../../spiders.rst:18 ../../spiders.rst:27 ../../spiders.rst:80
+#: ../../spiders.rst:97
+msgid "Description"
+msgstr ""
+
+#: ../../spiders.rst:19
+msgid "Domain"
+msgstr ""
+
+#: ../../spiders.rst:20
+msgid ""
+"The name of the IT system, jurisdiction, agency or program that is "
+"publishing the data. Some spiders have the same domain, in which case the"
+" difference between them is indicated in the suffix to the spider's name:"
+msgstr ""
+
+#: ../../spiders.rst:26
+msgid "Suffix"
+msgstr ""
+
+#: ../../spiders.rst:28
+msgid "``_releases``"
+msgstr ""
+
+#: ../../spiders.rst:29
+msgid "Downloads individual releases or release packages"
+msgstr ""
+
+#: ../../spiders.rst:30
+msgid "``_records``"
+msgstr ""
+
+#: ../../spiders.rst:31
+msgid "Downloads individual records or record packages"
+msgstr ""
+
+#: ../../spiders.rst:32
+msgid "``_bulk``"
+msgstr ""
+
+#: ../../spiders.rst:33
+msgid "The data source is bulk data"
+msgstr ""
+
+#: ../../spiders.rst:34
+msgid "``_historical``"
+msgstr ""
+
+#: ../../spiders.rst:35
+msgid "The data source is historical data"
+msgstr ""
+
+#: ../../spiders.rst:37
+msgid "Caveats"
+msgstr ""
+
+#: ../../spiders.rst:38
+msgid "Any noteworthy API or dataset limitations."
+msgstr ""
+
+#: ../../spiders.rst:39 ../../spiders.rst:59
+msgid "Spider arguments"
+msgstr ""
+
+#: ../../spiders.rst:40
+msgid "The :ref:`spider-arguments` the spider supports."
+msgstr ""
+
+#: ../../spiders.rst:41
+msgid "Environment variables"
+msgstr ""
+
+#: ../../spiders.rst:42
+msgid ""
+"The environment variables required to run the spider. If a data source "
+"requires account registration, a link is provided. You can set "
+"environment variables as, for example:"
+msgstr ""
+
+#: ../../spiders.rst:47
+msgid "API documentation"
+msgstr ""
+
+#: ../../spiders.rst:48
+msgid "The URL of the API's documentation."
+msgstr ""
+
+#: ../../spiders.rst:49
+msgid "Bulk download documentation"
+msgstr ""
+
+#: ../../spiders.rst:50
+msgid "The URL of any bulk download documentation."
+msgstr ""
+
+#: ../../spiders.rst:51
+msgid "Swagger API documentation"
+msgstr ""
+
+#: ../../spiders.rst:52
+msgid ""
+"The URL of the API's documentation, using `Swagger "
+"<https://swagger.io>`__."
+msgstr ""
+
+#: ../../spiders.rst:53
+msgid "API endpoints"
+msgstr ""
+
+#: ../../spiders.rst:54
+msgid ""
+"If official API documentation is unavailable, we provide some brief "
+"documentation."
+msgstr ""
+
+#: ../../spiders.rst:61
+msgid "A spider's behavior can be changed by setting *spider arguments*:"
+msgstr ""
+
+#: ../../spiders.rst:67
+msgid "You can set multiple spider arguments:"
+msgstr ""
+
+#: ../../spiders.rst:73
+msgid "All spiders support these arguments:"
+msgstr ""
+
+#: ../../spiders.rst:79 ../../spiders.rst:96
+msgid "Name"
+msgstr ""
+
+#: ../../spiders.rst:81 ../../spiders.rst:98
+msgid "Format"
+msgstr ""
+
+#: ../../spiders.rst:82
+msgid "``sample``"
+msgstr ""
+
+#: ../../spiders.rst:83
+msgid "Set the number of files and file items to download."
+msgstr ""
+
+#: ../../spiders.rst:84 ../../spiders.rst:107
+msgid "integer"
+msgstr ""
+
+#: ../../spiders.rst:90
+msgid "Some spiders support these arguments:"
+msgstr ""
+
+#: ../../spiders.rst:99
+msgid "``from_date``"
+msgstr ""
+
+#: ../../spiders.rst:100
+msgid ""
+"Download data from this date onward. The spider might describe specific "
+"semantics (e.g. the relevant date is the date the contract was signed). "
+"Otherwise, the relevant date is the release date."
+msgstr ""
+
+#: ../../spiders.rst:101 ../../spiders.rst:104 ../../spiders.rst:110
+#: ../../spiders.rst:113
+msgid "See spider"
+msgstr ""
+
+#: ../../spiders.rst:102
+msgid "``until_date``"
+msgstr ""
+
+#: ../../spiders.rst:103
+msgid ""
+"Download data until this date. The spider might describe specific "
+"semantics (e.g. the relevant date is the date the contract was signed). "
+"Otherwise, the relevant date is the release date."
+msgstr ""
+
+#: ../../spiders.rst:105
+msgid "``start_page``"
+msgstr ""
+
+#: ../../spiders.rst:106
+msgid "Download data from this page onward."
+msgstr ""
+
+#: ../../spiders.rst:108
+msgid "``publisher``"
+msgstr ""
+
+#: ../../spiders.rst:109
+msgid "Download data by this publisher."
+msgstr ""
+
+#: ../../spiders.rst:111
+msgid "``system``"
+msgstr ""
+
+#: ../../spiders.rst:112
+msgid "Download data from this system."
+msgstr ""
+
+#: ../../spiders.rst:118
+msgid "Afghanistan"
+msgstr ""
+
+#: ../../spiders.rst:149
+msgid "Argentina"
+msgstr ""
+
+#: ../../spiders.rst:166
+msgid "Armenia"
+msgstr ""
+
+#: ../../spiders.rst:176
+msgid "Australia"
+msgstr ""
+
+#: ../../spiders.rst:193
+msgid "Bolivia"
+msgstr ""
+
+#: ../../spiders.rst:203
+msgid "Canada"
+msgstr ""
+
+#: ../../spiders.rst:220
+msgid "Chile"
+msgstr ""
+
+#: ../../spiders.rst:244
+msgid "Colombia"
+msgstr ""
+
+#: ../../spiders.rst:261
+msgid "Costa Rica"
+msgstr ""
+
+#: ../../spiders.rst:278
+msgid "Digiwhist"
+msgstr ""
+
+#: ../../spiders.rst:512
+msgid "Dominican Republic"
+msgstr ""
+
+#: ../../spiders.rst:529
+msgid "Ecuador"
+msgstr ""
+
+#: ../../spiders.rst:539
+msgid "France"
+msgstr ""
+
+#: ../../spiders.rst:549
+msgid "Georgia"
+msgstr ""
+
+#: ../../spiders.rst:573
+msgid "Honduras"
+msgstr ""
+
+#: ../../spiders.rst:611
+msgid "India"
+msgstr ""
+
+#: ../../spiders.rst:621
+msgid "Indonesia"
+msgstr ""
+
+#: ../../spiders.rst:631
+msgid "Italy"
+msgstr ""
+
+#: ../../spiders.rst:641
+msgid "Kenya"
+msgstr ""
+
+#: ../../spiders.rst:651
+msgid "Kosovo"
+msgstr ""
+
+#: ../../spiders.rst:661
+msgid "Kyrgyzstan"
+msgstr ""
+
+#: ../../spiders.rst:671
+msgid "Malta"
+msgstr ""
+
+#: ../../spiders.rst:681
+msgid "Mexico"
+msgstr ""
+
+#: ../../spiders.rst:733
+msgid "Moldova"
+msgstr ""
+
+#: ../../spiders.rst:757
+msgid "Nepal"
+msgstr ""
+
+#: ../../spiders.rst:774
+msgid "Nicaragua"
+msgstr ""
+
+#: ../../spiders.rst:784
+msgid "Nigeria"
+msgstr ""
+
+#: ../../spiders.rst:808
+msgid "Openopps"
+msgstr ""
+
+#: ../../spiders.rst:818
+msgid "Pakistan"
+msgstr ""
+
+#: ../../spiders.rst:835
+msgid "Paraguay"
+msgstr ""
+
+#: ../../spiders.rst:859
+msgid "Portugal"
+msgstr ""
+
+#: ../../spiders.rst:883
+msgid "Scotland"
+msgstr ""
+
+#: ../../spiders.rst:893
+msgid "Spain"
+msgstr ""
+
+#: ../../spiders.rst:903
+msgid "Tanzania"
+msgstr ""
+
+#: ../../spiders.rst:913
+msgid "Uganda"
+msgstr ""
+
+#: ../../spiders.rst:923
+msgid "Uk"
+msgstr ""
+
+#: ../../spiders.rst:947
+msgid "Uruguay"
+msgstr ""
+
+#: ../../spiders.rst:971
+msgid "Zambia"
+msgstr ""
+

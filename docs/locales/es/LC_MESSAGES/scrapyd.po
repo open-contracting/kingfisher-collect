@@ -1,0 +1,229 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Open Contracting Partnership
+# This file is distributed under the same license as the OCDS Kingfisher
+# Collect package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OCDS Kingfisher Collect \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-25 20:22-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../scrapyd.rst:2
+msgid "Download data to a remote server"
+msgstr ""
+
+#: ../../scrapyd.rst:6
+msgid "This is an advanced guide that assumes knowledge of web hosting."
+msgstr ""
+
+#: ../../scrapyd.rst:8
+msgid ""
+"Some spiders take a long time to run (days or weeks), and some data "
+"sources have a lot of OCDS data (GBs). In such cases, you might not want "
+"to :doc:`download data to your computer<local>`, and instead use a "
+"separate machine. You have two options:"
+msgstr ""
+
+#: ../../scrapyd.rst:10
+msgid ""
+"Follow the same instructions as :doc:`before<local>`, and start crawls on"
+" the other machine"
+msgstr ""
+
+#: ../../scrapyd.rst:11
+msgid ""
+"Install `Scrapyd <https://scrapyd.readthedocs.io/>`__ on a remote server "
+"(this guide)"
+msgstr ""
+
+#: ../../scrapyd.rst:13
+msgid ""
+"Scrapyd also makes it possible for many users to schedule crawls on the "
+"same machine."
+msgstr ""
+
+#: ../../scrapyd.rst:16
+msgid "Install Scrapyd"
+msgstr ""
+
+#: ../../scrapyd.rst:18
+msgid ""
+"On the remote server, follow Scrapyd's `installation instructions "
+"<https://scrapyd.readthedocs.io/en/stable/install.html>`__, then install "
+"Kingfisher Collect's requirements in the same environment as Scrapyd:"
+msgstr ""
+
+#: ../../scrapyd.rst:26
+msgid "Start Scrapyd"
+msgstr ""
+
+#: ../../scrapyd.rst:28
+msgid ""
+"On the remote server, follow `these instructions "
+"<https://scrapyd.readthedocs.io/en/latest/overview.html#starting-"
+"scrapyd>`__ to start Scrapyd. Scrapyd should then be accessible at ``http"
+"://your-remote-server:6800/``. If not, refer to `Scrapyd's documentation "
+"<http://scrapyd.readthedocs.org/>`__ or its `GitHub issues "
+"<https://github.com/scrapy/scrapyd/issues>`__ to troubleshoot."
+msgstr ""
+
+#: ../../scrapyd.rst:31
+msgid "Using the Scrapyd web interface"
+msgstr ""
+
+#: ../../scrapyd.rst:33
+msgid "To see the scheduled, running and finished crawls, click \"Jobs\""
+msgstr ""
+
+#: ../../scrapyd.rst:34
+msgid "To browse the crawls' log files, click \"Logs\""
+msgstr ""
+
+#: ../../scrapyd.rst:36
+msgid "For help understanding the log files, read :doc:`logs`."
+msgstr ""
+
+#: ../../scrapyd.rst:40
+msgid ""
+"If Scrapyd restarts or the server reboots, all scheduled crawls are "
+"cancelled, all running crawls are interrupted, and all finished crawls "
+"are delisted from the web interface. However, you can still browse the "
+"crawls' logs files to review the finished crawls."
+msgstr ""
+
+#: ../../scrapyd.rst:43
+msgid "Install Kingfisher Collect"
+msgstr ""
+
+#: ../../scrapyd.rst:45
+msgid "On your local machine, :ref:`install Kingfisher Collect<install>`."
+msgstr ""
+
+#: ../../scrapyd.rst:48
+msgid "Configure Kingfisher Collect"
+msgstr ""
+
+#: ../../scrapyd.rst:50
+msgid ""
+"Create a ``~/.config/scrapy.cfg`` file using the template below, and set "
+"the ``url`` variable to point to the remote server:"
+msgstr ""
+
+#: ../../scrapyd.rst:58
+msgid ""
+"You need to at least replace ``localhost`` with the remote server's "
+"domain name. If you changed the ``http_port`` variable in Scrapyd's "
+"`configuration file "
+"<https://scrapyd.readthedocs.io/en/stable/config.html>`__, you need to "
+"replace ``6800``."
+msgstr ""
+
+#: ../../scrapyd.rst:60
+msgid ""
+"If you changed the ``FILES_STORE`` variable when :ref:`installing "
+"Kingfisher Collect<configure>`, that same directory needs to exist on the"
+" remote server, and the ``scrapyd`` process needs permission to write to "
+"it. If you are using the default value, then files will be stored in a "
+"``data`` directory under the Scrapyd directory on the remote server."
+msgstr ""
+
+#: ../../scrapyd.rst:63
+msgid "Deploy spiders"
+msgstr ""
+
+#: ../../scrapyd.rst:65
+msgid ""
+"On your local machine, deploy the spiders in Kingfisher Collect to "
+"Scrapyd, using the `scrapyd-deploy <https://github.com/scrapy/scrapyd-"
+"client/blob/v1.1.0/README.rst>`__ command, which was installed with "
+"Kingfisher Collect:"
+msgstr ""
+
+#: ../../scrapyd.rst:71
+msgid "Remember to run this command every time you add or update a spider."
+msgstr ""
+
+#: ../../scrapyd.rst:74
+msgid "Collect data"
+msgstr ""
+
+#: ../../scrapyd.rst:78
+msgid ""
+"In all examples below, replace ``localhost`` with your remote server's "
+"domain name, and replace ``spider_name`` with a spider's name."
+msgstr ""
+
+#: ../../scrapyd.rst:80
+msgid "You're now ready to collect data!"
+msgstr ""
+
+#: ../../scrapyd.rst:82
+msgid ""
+"To list the spiders, use `Scrapyd's listspiders.json API endpoint "
+"<https://scrapyd.readthedocs.io/en/stable/api.html#listspiders-json>`__:"
+msgstr ""
+
+#: ../../scrapyd.rst:88
+msgid ""
+"To make the list of spiders easier to read, pipe the response through "
+"``python -m json.tool``:"
+msgstr ""
+
+#: ../../scrapyd.rst:94
+msgid ""
+"The spiders' names might be ambiguous. If you're unsure which spider to "
+"run, you can compare their names to the list of `OCDS publishers "
+"<https://www.open-contracting.org/worldwide/#/table>`__, or `contact the "
+"OCDS Helpdesk <data@open-contracting.org>`__."
+msgstr ""
+
+#: ../../scrapyd.rst:96
+msgid ""
+"To run a spider (that is, to schedule a \"crawl\"), use `Scrapyd's "
+"schedule.json API endpoint "
+"<https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__:"
+msgstr ""
+
+#: ../../scrapyd.rst:102
+msgid "If successful, you'll see something like:"
+msgstr ""
+
+#: ../../scrapyd.rst:108
+msgid ""
+"To :ref:`download only a sample of the available data<sample>`, "
+":ref:`filter data<filter>` or :ref:`collect data "
+"incrementally<increment>`, use ``-d`` instead of ``-a`` before each "
+"spider argument:"
+msgstr ""
+
+#: ../../scrapyd.rst:114
+msgid ""
+"To :ref:`use an HTTP and/or HTTPS proxy<proxy>`, `use "
+"<https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__ ``-d"
+" setting=`` instead of ``-s`` before each overridden setting:"
+msgstr ""
+
+#: ../../scrapyd.rst:122
+msgid ""
+"The ``http_proxy`` and/or ``https_proxy`` environment variables must "
+"already be set in Scrapyd's environment on the remote server."
+msgstr ""
+
+#: ../../scrapyd.rst:124
+msgid ""
+"If the crawl's log file contains HTTP 429 Too Many Requests errors, you "
+"can make the spider wait between requests by setting the `DOWNLOAD_DELAY "
+"<https://docs.scrapy.org/en/latest/topics/settings.html#download-"
+"delay>`__ setting (in seconds):"
+msgstr ""
+
