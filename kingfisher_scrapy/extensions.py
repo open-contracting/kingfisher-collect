@@ -9,6 +9,7 @@ from scrapy import signals
 from scrapy.exceptions import NotConfigured, StopDownload
 
 from kingfisher_scrapy import util
+from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
 from kingfisher_scrapy.util import _pluck_filename, get_file_name_and_extension
@@ -39,8 +40,18 @@ class KingfisherPluck:
         return extension
 
     def bytes_received(self, data, request, spider):
-        # We only limit the bytes received for final requests (i.e. where the callback is the default `parse` method).
-        if not spider.pluck or request.callback or request.meta['file_name'].endswith(('.rar', '.zip')):
+        if (
+            not spider.pluck
+            # We only limit bytes received for final requests (i.e. where the callback is the default `parse` method).
+            or request.callback
+            # ijson will parse the value at `root_path`, which can go to the end of the file.
+            # https://github.com/ICRAR/ijson/issues/43
+            or spider.root_path
+            # XLSX files must be read in full.
+            or spider.unflatten
+            # ZIP and RAR files must be read in full.
+            or isinstance(spider, CompressedFileSpider)
+        ):
             return
 
         self.bytes_received_counts[spider.name] += len(data)

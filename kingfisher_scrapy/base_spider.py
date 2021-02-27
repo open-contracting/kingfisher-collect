@@ -415,6 +415,10 @@ class LinksSpider(SimpleSpider):
         """
         If the JSON response has a ``links.next`` key, returns a ``scrapy.Request`` for the URL.
         """
+        # If the sample size is 1, we don't want to parse the response, especially if --max-bytes is used.
+        if self.sample and self.sample == 1:
+            return
+
         data = response.json()
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
