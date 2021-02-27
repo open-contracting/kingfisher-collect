@@ -28,4 +28,6 @@ class NepalDhangadhi(SimpleSpider):
         pattern = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
         data = response.json()
         for item in data['data']['fiscal_years']:
-            yield self.build_request(pattern.format(item['name']), formatter=components(-1))
+            # A URL might redirect to https://admin.ims.susasan.org/login
+            yield self.build_request(pattern.format(item['name']), formatter=components(-1),
+                                     meta={'dont_redirect': True})
