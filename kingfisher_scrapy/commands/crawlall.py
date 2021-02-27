@@ -16,6 +16,9 @@ def yield_nothing(*args, **kwargs):
 
 
 class CrawlAll(ScrapyCommand):
+    def syntax(self):
+        return '[options] [spider ...]'
+
     def short_desc(self):
         return 'Run all spiders'
 
@@ -50,7 +53,7 @@ class CrawlAll(ScrapyCommand):
         self.settings.set('EXTENSIONS', extensions)
 
         for spider_name in self.crawler_process.spider_loader.list():
-            if spider_name not in EXCEPTIONS:
+            if not args and spider_name not in EXCEPTIONS or spider_name in args:
                 spidercls = self.crawler_process.spider_loader.load(spider_name)
                 self.crawler_process.crawl(spidercls, **kwargs)
 
