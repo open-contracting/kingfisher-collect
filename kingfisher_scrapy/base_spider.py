@@ -321,6 +321,9 @@ class CompressedFileSpider(BaseSpider):
        ``resize_package = True`` is not compatible with ``line_delimited = True`` or ``root_path``.
     """
 
+    # BaseSpider
+    dont_truncate = True
+
     encoding = 'utf-8'
     resize_package = False
     file_name_must_contain = ''

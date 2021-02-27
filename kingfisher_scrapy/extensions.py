@@ -9,7 +9,6 @@ from scrapy import signals
 from scrapy.exceptions import NotConfigured, StopDownload
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
 from kingfisher_scrapy.util import _pluck_filename, get_file_name_and_extension
@@ -50,8 +49,6 @@ class KingfisherPluck:
             or spider.root_path
             # XLSX files must be read in full.
             or spider.unflatten
-            # ZIP and RAR files must be read in full.
-            or isinstance(spider, CompressedFileSpider)
         ):
             return
 
