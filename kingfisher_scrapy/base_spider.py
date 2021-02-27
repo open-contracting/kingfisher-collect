@@ -46,6 +46,8 @@ class BaseSpider(scrapy.Spider):
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
     ``get_default_until_date()`` return value (which is the current time, by default).
+
+    If the spider needs to parse the JSON response in its ``parse`` method, set ``dont_truncate = True``.
     """
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
@@ -56,6 +58,7 @@ class BaseSpider(scrapy.Spider):
     unflatten_args = {}
     line_delimited = False
     root_path = ''
+    dont_truncate = False
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,

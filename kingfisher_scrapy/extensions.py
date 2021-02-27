@@ -42,6 +42,7 @@ class KingfisherPluck:
     def bytes_received(self, data, request, spider):
         if (
             not spider.pluck
+            or spider.dont_truncate
             # We only limit bytes received for final requests (i.e. where the callback is the default `parse` method).
             or request.callback
             # ijson will parse the value at `root_path`, which can go to the end of the file.

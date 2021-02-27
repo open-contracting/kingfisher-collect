@@ -106,6 +106,7 @@ def test_bytes_received_dont_stop_download():
     (Request('http://example.com', meta={'file_name': 'test.zip'}), CompressedFileSpider, {}),
     (Request('http://example.com', meta={'file_name': 'test.xlsx'}), BaseSpider, {'unflatten': True}),
     (Request('http://example.com', meta={'file_name': 'test.json'}), BaseSpider, {'root_path': 'item'}),
+    (Request('http://example.com', meta={'file_name': 'test.json'}), BaseSpider, {'dont_truncate': True}),
 ])
 def test_bytes_received_ignored_requests(test_request, spider_class, attributes):
     with TemporaryDirectory() as tmpdirname:
