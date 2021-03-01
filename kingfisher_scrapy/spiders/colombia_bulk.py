@@ -31,7 +31,6 @@ class ColombiaBulk(CompressedFileSpider):
     name = 'colombia_bulk'
     date_format = 'year'
     default_from_date = '2011'
-    compressed_file_format = 'json_lines'
     available_systems = {'SECOP1': 'SI', 'SECOP2': 'SECOP2', 'TVEC': 'TVEC'}
 
     download_timeout = 99999

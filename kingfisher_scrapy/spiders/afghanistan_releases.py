@@ -45,4 +45,4 @@ class AfghanistanReleases(SimpleSpider):
         urls = response.json()
         for url in urls:
             # URL looks like https://ocds.ageops.net/api/release/5c10b7d67e0a947b1461057e
-            yield self.build_request(url, formatter=components(-2))
+            yield self.build_request(url, formatter=components(-1))

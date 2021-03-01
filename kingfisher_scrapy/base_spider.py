@@ -23,12 +23,10 @@ class BaseSpider(scrapy.Spider):
        Process integration <https://github.com/open-contracting/kingfisher-collect/issues/411>`__.
     -  If the spider supports ``from_date`` and ``until_date`` spider arguments:
 
-       -  If the source supports time components, set a ``date_format`` class attribute to "datetime".
-       -  Set a ``default_from_date`` class attribute to a date ("YYYY-MM-DD") or datetime ("YYYY-MM-DDTHH:MM:SS").
+       -  Set a ``date_format`` class attribute to "date", "datetime", "year" or "year-month".
+       -  Set a ``default_from_date`` class attribute to a date ("YYYY-MM-DD"), datetime ("YYYY-MM-DDTHH:MM:SS"),
+          year ("YYYY") or year-month ("YYYY-MM").
        -  If the source stopped publishing, set a ``default_until_date`` class attribute to a date or datetime.
-
-       The :class:`~kingfisher_scrapy.base_spider.PeriodicSpider` class changes the allowed date formats to "year"
-       ("YYYY") and "year-month" ("YYYY-MM").
 
     -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set a
        ``default_from_date`` class attribute as above.
