@@ -8,6 +8,9 @@ class NepalDhangadhi(SimpleSpider):
     """
     Domain
       Dhangadhi Infrastructure Management System (IMS)
+    Caveats
+      Some URLs listed in https://admin.ims.susasan.org/api/static-data/dhangadhi require login and cannot be
+      downloaded
     Bulk download documentation
       https://ims.susasan.org/dhangadhi/about
     """
@@ -28,4 +31,6 @@ class NepalDhangadhi(SimpleSpider):
         pattern = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
         data = response.json()
         for item in data['data']['fiscal_years']:
-            yield self.build_request(pattern.format(item['name']), formatter=components(-1))
+            # A URL might redirect to https://admin.ims.susasan.org/login
+            yield self.build_request(pattern.format(item['name']), formatter=components(-1),
+                                     meta={'dont_redirect': True})
