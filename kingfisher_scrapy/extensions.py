@@ -2,7 +2,6 @@
 
 import json
 import os
-from collections import defaultdict
 
 import sentry_sdk
 from scrapy import signals
@@ -20,10 +19,10 @@ class KingfisherPluck:
         self.directory = directory
         self.max_bytes = max_bytes
 
-        # The count of bytes received per spider.
-        self.bytes_received_counts = defaultdict(int)
-        # The set of spiders that have called the `item_scraped` method.
-        self.item_scraped_called = set()
+        # The number of bytes received.
+        self.total_bytes_received = 0
+        # Whether `item_scraped` has been called.
+        self.item_scraped_called = False
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -52,20 +51,20 @@ class KingfisherPluck:
         ):
             return
 
-        self.bytes_received_counts[spider.name] += len(data)
-        if self.bytes_received_counts[spider.name] >= self.max_bytes:
+        self.total_bytes_received += len(data)
+        if self.total_bytes_received >= self.max_bytes:
             raise StopDownload(fail=False)
 
     def item_scraped(self, item, spider):
-        if not spider.pluck or spider.name in self.item_scraped_called or not isinstance(item, PluckedItem):
+        if not spider.pluck or self.item_scraped_called or not isinstance(item, PluckedItem):
             return
 
-        self.item_scraped_called.add(spider.name)
+        self.item_scraped_called = True
 
         self._write(spider, item['value'])
 
     def spider_closed(self, spider, reason):
-        if not spider.pluck or spider.name in self.item_scraped_called:
+        if not spider.pluck or self.item_scraped_called:
             return
 
         self._write(spider, f'closed: {reason}')

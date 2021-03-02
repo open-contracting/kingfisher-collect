@@ -41,14 +41,6 @@ def test_item_scraped():
         with open(os.path.join(tmpdirname, 'pluck-release-date.csv')) as f:
             assert '2020-10-01,test\n' == f.read()
 
-        # An item from another spider is appended.
-        spider.name = 'other'
-        item['value'] = '2020-10-02'
-        extension.item_scraped(item, spider)
-
-        with open(os.path.join(tmpdirname, 'pluck-release-date.csv')) as f:
-            assert '2020-10-01,test\n2020-10-02,other\n' == f.read()
-
 
 def test_spider_closed_with_items():
     with TemporaryDirectory() as tmpdirname:
@@ -96,7 +88,7 @@ def test_bytes_received_dont_stop_download():
 
         extension.bytes_received(data=b'12345', spider=spider, request=request)
 
-        assert extension.bytes_received_counts[spider.name] == 5
+        assert extension.total_bytes_received == 5
         assert extension.max_bytes == 10
 
 
@@ -119,4 +111,4 @@ def test_bytes_received_ignored_requests(test_request, spider_class, attributes)
 
         extension.bytes_received(data=b'12345', spider=spider, request=test_request)
 
-        assert extension.bytes_received_counts[spider.name] == 0
+        assert extension.total_bytes_received == 0
