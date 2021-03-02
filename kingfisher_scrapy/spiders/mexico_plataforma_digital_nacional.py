@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class MexicoPlataformaDigitalNacional(CompressedFileSpider):
@@ -23,6 +23,7 @@ class MexicoPlataformaDigitalNacional(CompressedFileSpider):
             callback=self.parse_list
         )
 
+    @handle_http_error
     def parse_list(self, response):
         url = response.xpath('//a[@id="uc-download-link"]/@href').get()
         yield self.build_request(url=f'https://drive.google.com{url}',
