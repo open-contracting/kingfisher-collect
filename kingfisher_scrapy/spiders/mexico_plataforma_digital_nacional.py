@@ -19,8 +19,8 @@ class MexicoPlataformaDigitalNacional(CompressedFileSpider):
     def start_requests(self):
         yield scrapy.Request(
             'https://drive.google.com/uc?id=1XOYDLVv-RqcMs8_hzkZ0fjC9FYh2psFw',
-            meta={'file_name': 'list.html'},
-            callback=self.parse_list,
+            meta={'file_name': 'confirmation.html'},
+            callback=self.parse_list
         )
 
     def parse_list(self, response):
