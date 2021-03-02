@@ -64,6 +64,7 @@ Runs all spiders.
 
 -  ``--dry-run``: Runs the spiders without writing any files. It stops after collecting one file or file item from each spider. This can be used to test whether any spiders are broken. Add the ``--logfile debug.log`` option to write the output to a log file for easier review.
 -  ``--sample=NUM``: The number of files to write. This can be used to collect a sample from each spider.
+-  ``spider``: Run specific spiders. Omit to run all spiders.
 
 .. code-block:: bash
 
