@@ -40,9 +40,9 @@ class OpenOpps(BaseSpider):
 
     # BaseSpider
     default_from_date = '2011-01-01'
-    root_path = 'item'
+    root_path = 'results.item.json'
     dont_truncate = True
-
+    
     access_token = None
     api_limit = 10000  # OpenOpps API limit for search results
     request_time_limit = 60  # in minutes
@@ -108,7 +108,7 @@ class OpenOpps(BaseSpider):
             yield from self.request_range_per_day(self.from_date, self.until_date, search_h)
         else:
             # Use larger ranges for filters with less than (api_limit) search results
-            release_date_gte_list = ['', '2009-01-01', '2010-01-01', '2010-07-01']
+            release_date_gte_list = ['1970-01-01', '2009-01-01', '2010-01-01', '2010-07-01']
             release_date_lte_list = ['2008-12-31', '2009-12-31', '2010-06-30', '2010-12-31']
 
             for i in range(len(release_date_gte_list)):
@@ -148,15 +148,7 @@ class OpenOpps(BaseSpider):
 
             # Counts response and range hour split control
             if count <= self.api_limit or search_h == 1:
-                # Data type changed to release package list in order to have fewer files
-                all_data = []
-                for data in results['results']:
-                    json_data = data['json']
-                    if json_data:
-                        all_data.append(json_data)
-
-                if all_data:
-                    yield self.build_file_from_response(response, data=all_data, data_type=self.data_type)
+                yield self.build_file_from_response(response, data_type=self.data_type)
 
                 next_url = results.get('next')
                 if next_url:

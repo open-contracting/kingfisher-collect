@@ -59,12 +59,5 @@ class IndonesiaBandung(PeriodicSpider):
                 yield self.build_request(next_page_url, formatter=join(self.get_formatter(), parameters('page')),
                                          callback=self.parse_list)
 
-    @handle_http_error
-    def parse(self, response):
-        data = response.json()
-        if len(data) == 0:
-            return
-        yield self.build_file_from_response(response, data_type=self.data_type)
-
     def get_formatter(self):
         return components(-1)
