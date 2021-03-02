@@ -8,6 +8,9 @@ class NepalDhangadhi(SimpleSpider):
     """
     Domain
       Dhangadhi Infrastructure Management System (IMS)
+    Caveats
+      Some URLs listed in https://admin.ims.susasan.org/api/static-data/dhangadhi require login and cannot be
+      downloaded
     Bulk download documentation
       https://ims.susasan.org/dhangadhi/about
     """
@@ -31,11 +34,3 @@ class NepalDhangadhi(SimpleSpider):
             # A URL might redirect to https://admin.ims.susasan.org/login
             yield self.build_request(pattern.format(item['name']), formatter=components(-1),
                                      meta={'dont_redirect': True})
-
-    def parse(self, response):
-        # if we got a redirect response we try it again to download that file
-        if response.status == 302:
-            yield self.build_request(response.request.url, formatter=components(-1),
-                                     dont_filter=True)
-        else:
-            yield from super().parse(response)
