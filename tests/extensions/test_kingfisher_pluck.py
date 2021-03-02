@@ -6,6 +6,7 @@ import pytest
 from scrapy import Request
 from scrapy.exceptions import StopDownload
 
+from kingfisher_scrapy.base_spider import BaseSpider, CompressedFileSpider
 from kingfisher_scrapy.extensions import KingfisherPluck
 from kingfisher_scrapy.items import PluckedItem
 from tests import spider_with_crawler
@@ -99,15 +100,21 @@ def test_bytes_received_dont_stop_download():
         assert extension.max_bytes == 10
 
 
-@pytest.mark.parametrize('test_request', [
-    Request('http://example.com', callback=lambda item: item, meta={'file_name': 'test.json'}),
-    Request('http://example.com', meta={'file_name': 'test.rar'}),
-    Request('http://example.com', meta={'file_name': 'test.zip'}),
+@pytest.mark.parametrize('test_request,spider_class,attributes', [
+    (Request('http://example.com', callback=lambda item: item, meta={'file_name': 'test.json'}), BaseSpider, {}),
+    (Request('http://example.com', meta={'file_name': 'test.rar'}), CompressedFileSpider, {}),
+    (Request('http://example.com', meta={'file_name': 'test.zip'}), CompressedFileSpider, {}),
+    (Request('http://example.com', meta={'file_name': 'test.xlsx'}), BaseSpider, {'unflatten': True}),
+    (Request('http://example.com', meta={'file_name': 'test.json'}), BaseSpider, {'root_path': 'item'}),
+    (Request('http://example.com', meta={'file_name': 'test.json'}), BaseSpider, {'dont_truncate': True}),
 ])
-def test_bytes_received_ignored_requests(test_request):
+def test_bytes_received_ignored_requests(test_request, spider_class, attributes):
     with TemporaryDirectory() as tmpdirname:
-        spider = spider_with_crawler(settings={'KINGFISHER_PLUCK_PATH': tmpdirname,
-                                               'KINGFISHER_PLUCK_MAX_BYTES': 10}, release_pointer='/date')
+        spider = spider_with_crawler(spider_class=spider_class, release_pointer='/date',
+                                     settings={'KINGFISHER_PLUCK_PATH': tmpdirname, 'KINGFISHER_PLUCK_MAX_BYTES': 10})
+        for attr, value in attributes.items():
+            setattr(spider, attr, value)
+
         extension = KingfisherPluck.from_crawler(spider.crawler)
 
         extension.bytes_received(data=b'12345', spider=spider, request=test_request)

@@ -39,8 +39,17 @@ class KingfisherPluck:
         return extension
 
     def bytes_received(self, data, request, spider):
-        # We only limit the bytes received for final requests (i.e. where the callback is the default `parse` method).
-        if not spider.pluck or request.callback or request.meta['file_name'].endswith(('.rar', '.zip')):
+        if (
+            not spider.pluck
+            or spider.dont_truncate
+            # We only limit bytes received for final requests (i.e. where the callback is the default `parse` method).
+            or request.callback
+            # ijson will parse the value at `root_path`, which can go to the end of the file.
+            # https://github.com/ICRAR/ijson/issues/43
+            or spider.root_path
+            # XLSX files must be read in full.
+            or spider.unflatten
+        ):
             return
 
         self.bytes_received_counts[spider.name] += len(data)

@@ -46,6 +46,8 @@ class BaseSpider(scrapy.Spider):
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
     ``get_default_until_date()`` return value (which is the current time, by default).
+
+    If the spider needs to parse the JSON response in its ``parse`` method, set ``dont_truncate = True``.
     """
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
@@ -56,6 +58,7 @@ class BaseSpider(scrapy.Spider):
     unflatten_args = {}
     line_delimited = False
     root_path = ''
+    dont_truncate = False
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
@@ -318,6 +321,9 @@ class CompressedFileSpider(BaseSpider):
        ``resize_package = True`` is not compatible with ``line_delimited = True`` or ``root_path``.
     """
 
+    # BaseSpider
+    dont_truncate = True
+
     encoding = 'utf-8'
     resize_package = False
     file_name_must_contain = ''
@@ -415,6 +421,10 @@ class LinksSpider(SimpleSpider):
         """
         If the JSON response has a ``links.next`` key, returns a ``scrapy.Request`` for the URL.
         """
+        # If the sample size is 1, we don't want to parse the response, especially if --max-bytes is used.
+        if self.sample and self.sample == 1:
+            return
+
         data = response.json()
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
