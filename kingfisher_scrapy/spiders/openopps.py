@@ -42,7 +42,7 @@ class OpenOpps(BaseSpider):
     default_from_date = '2011-01-01'
     root_path = 'results.item.json'
     dont_truncate = True
-    
+
     access_token = None
     api_limit = 10000  # OpenOpps API limit for search results
     request_time_limit = 60  # in minutes
