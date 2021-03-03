@@ -71,7 +71,6 @@ jsonpointer==2.0
     # via -r requirements.in
 jsonref==0.2
     # via
-    #   -r requirements.in
     #   flattentool
     #   ocdsmerge
 jsonschema==3.2.0

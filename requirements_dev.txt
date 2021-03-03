@@ -148,6 +148,7 @@ odfpy==1.4.1
 openpyxl==3.0.5
     # via
     #   -r requirements.txt
+    #   -r requirements_dev.in
     #   flattentool
 packaging==19.2
     # via pytest
