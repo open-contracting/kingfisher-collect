@@ -162,6 +162,12 @@ The Scrapy framework is very flexible. To maintain a good separation of concerns
    -  Raise a :class:`~kingfisher_scrapy.exceptions.AccessTokenError` exception in a request's callback, if the maximum number of attempts to retrieve an access token is reached
    -  Raise any other exception, to be caught by a `spider_error <https://docs.scrapy.org/en/latest/topics/signals.html#spider-error>`__ handler in an extension
 
+-  A downloader middleware's responsibility is to process requests, before they are sent to the internet, and responses, before they are processed by the spider. It should only:
+
+   -  Yield a request, for example :class:`~kingfisher_scrapy.middlewares.ParaguayAuthMiddleware`
+   -  Return a Deferred, for example :class:`~kingfisher_scrapy.middlewares.DelayedRequestMiddleware`
+   -  Yield items, for example :class:`~kingfisher_scrapy.middlewares.AddPackageMiddleware`
+
 -  An item pipeline's responsibility is to clean, validate, filter, modify or substitute items. It should only:
 
    -  Return an item
@@ -195,3 +201,4 @@ API reference
    extensions.rst
    util.rst
    exceptions.rst
+   middlewares.rst
