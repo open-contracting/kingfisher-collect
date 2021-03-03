@@ -722,6 +722,13 @@ Mexico
 
    scrapy crawl mexico_nuevo_leon_releases
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_plataforma_digital_nacional.MexicoPlataformaDigitalNacional
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_plataforma_digital_nacional
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien.MexicoQuienEsQuien
    :no-members:
 
