@@ -1,12 +1,14 @@
 Spiders
 =======
 
+In Kingfisher Collect, there is one spider per data source. Each data source exposes its data in different ways, contains data from different years, and covers different stages of the contracting process.
+
 .. _spider-metadata:
 
 Spider metadata
 ---------------
 
-Below, we provide some metadata for each spider. The meaning of the metadata is:
+Below, we provide some of this information (metadata) for each spider. The meaning of the metadata is:
 
 .. list-table::
    :header-rows: 1
@@ -275,13 +277,6 @@ Costa Rica
 Digiwhist
 ---------
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_armenia.DigiwhistArmenia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_armenia
-
 .. autoclass:: kingfisher_scrapy.spiders.digiwhist_austria.DigiwhistAustria
    :no-members:
 
@@ -464,13 +459,6 @@ Digiwhist
 
    scrapy crawl digiwhist_romania
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_serbia.DigiwhistSerbia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_serbia
-
 .. autoclass:: kingfisher_scrapy.spiders.digiwhist_slovakia.DigiwhistSlovakia
    :no-members:
 
@@ -505,6 +493,13 @@ Digiwhist
 .. code-block:: bash
 
    scrapy crawl digiwhist_switzerland
+
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_ted.DigiwhistTED
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl digiwhist_ted
 
 .. autoclass:: kingfisher_scrapy.spiders.digiwhist_united_kingdom.DigiwhistUnitedKingdom
    :no-members:
@@ -591,12 +586,12 @@ Honduras
 
    scrapy crawl honduras_oncae
 
-.. autoclass:: kingfisher_scrapy.spiders.honduras_portal_bulk_files.HondurasPortalBulkFiles
+.. autoclass:: kingfisher_scrapy.spiders.honduras_portal_bulk.HondurasPortalBulk
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl honduras_portal_bulk_files
+   scrapy crawl honduras_portal_bulk
 
 .. autoclass:: kingfisher_scrapy.spiders.honduras_portal_records.HondurasPortalRecords
    :no-members:
@@ -726,6 +721,13 @@ Mexico
 .. code-block:: bash
 
    scrapy crawl mexico_nuevo_leon_releases
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_plataforma_digital_nacional.MexicoPlataformaDigitalNacional
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_plataforma_digital_nacional
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien.MexicoQuienEsQuien
    :no-members:

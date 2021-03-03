@@ -25,7 +25,7 @@ constantly==15.1.0
     # via twisted
 contextlib2==0.6.0.post1
     # via schema
-cryptography==3.2.1
+cryptography==3.4.6
     # via
     #   pyopenssl
     #   scrapy
@@ -69,7 +69,6 @@ jsonpointer==2.0
     # via -r requirements.in
 jsonref==0.2
     # via
-    #   -r requirements.in
     #   flattentool
     #   ocdsmerge
 jsonschema==3.2.0
@@ -142,7 +141,6 @@ service-identity==18.1.0
 six==1.13.0
     # via
     #   automat
-    #   cryptography
     #   jsonschema
     #   parsel
     #   protego

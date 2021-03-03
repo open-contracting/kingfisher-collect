@@ -44,9 +44,9 @@ coverage==5.0.3
     # via
     #   coveralls
     #   pytest-cov
-coveralls==2.0.0
+coveralls==3.0.0
     # via -r requirements_dev.in
-cryptography==3.2.1
+cryptography==3.4.6
     # via
     #   -r requirements.txt
     #   pyopenssl
@@ -142,6 +142,7 @@ odfpy==1.4.1
 openpyxl==3.0.5
     # via
     #   -r requirements.txt
+    #   -r requirements_dev.in
     #   flattentool
 packaging==19.2
     # via pytest
@@ -250,7 +251,6 @@ six==1.13.0
     # via
     #   -r requirements.txt
     #   automat
-    #   cryptography
     #   jsonschema
     #   packaging
     #   parsel

@@ -2,6 +2,7 @@
 coveralls
 flake8
 isort
+openpyxl
 pip-tools
 pytest
 pytest-cov

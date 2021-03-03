@@ -33,6 +33,7 @@ class MexicoINAI(SimpleSpider):
         for result in datas['result']['results']:
             for resource in result['resources']:
                 if resource['format'] == 'JSON':
+                    # http://bit.ly/ConcentradoINAI
                     yield self.build_request(resource['url'], formatter=components(-1), meta={'dont_redirect': True},
                                              callback=self.parse_redirect)
 

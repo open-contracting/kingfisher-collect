@@ -16,4 +16,4 @@ class GeorgiaOpenData(CompressedFileSpider):
     data_type = 'release_package'
 
     def start_requests(self):
-        yield scrapy.Request('http://opendata.spa.ge/json/allTenders.zip', meta={'file_name': 'all.json'})
+        yield scrapy.Request('http://opendata.spa.ge/json/allTenders.zip', meta={'file_name': 'all.zip'})

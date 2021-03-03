@@ -3,7 +3,7 @@ from urllib.parse import urlsplit
 import scrapy
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components, handle_http_error, join
 
 
 class Malta(CompressedFileSpider):
@@ -32,4 +32,5 @@ class Malta(CompressedFileSpider):
         netloc = urlsplit(response.request.url).netloc
         for url in urls:
             # URL looks like http://malta-demo-server.eurodyn.com/ocds/services/recordpackage/getrecordpackage/2020/1
-            yield self.build_request(urlsplit(url)._replace(netloc=netloc).geturl(), formatter=components(-2))
+            yield self.build_request(urlsplit(url)._replace(netloc=netloc).geturl(),
+                                     formatter=join(components(-2), extension='zip'))

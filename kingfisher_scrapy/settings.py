@@ -29,7 +29,7 @@ CONCURRENT_REQUESTS = 32
 #DOWNLOAD_DELAY = 3
 
 # The maximum response size (in bytes) that downloader will download (default: 1073741824):
-DOWNLOAD_MAXSIZE = 4000000000
+DOWNLOAD_MAXSIZE = 5000000000
 DOWNLOAD_WARNSIZE = 0
 # Many spiders time out when using default of 180.
 DOWNLOAD_TIMEOUT = 360
@@ -125,6 +125,7 @@ KINGFISHER_OPENOPPS_USERNAME = os.getenv('KINGFISHER_OPENOPPS_USERNAME')
 KINGFISHER_OPENOPPS_PASSWORD = os.getenv('KINGFISHER_OPENOPPS_PASSWORD')
 
 KINGFISHER_PLUCK_PATH = os.getenv('KINGFISHER_PLUCK_PATH', '')
+KINGFISHER_PLUCK_MAX_BYTES = None
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

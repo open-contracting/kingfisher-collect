@@ -13,46 +13,45 @@ from . import spider_with_crawler
 TEST_CASES = [
     # honduras_portal_*
     ({
-        'total_pages_pointer': '/results',
         'data_type': 'release_package',
-        'formatter': staticmethod(parameters('page'))
+        'total_pages_pointer': '/results',
+        'formatter': staticmethod(parameters('page')),
     }, '{"results": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)',
         [str(x) for x in range(2, 11)]),
     ({
-        'total_pages_pointer': '/results',
-        'page_size': '50',
         'data_type': 'release_package',
+        'total_pages_pointer': '/results',
         'formatter': staticmethod(parameters('page')),
-        'additional_params': {'pageSize': 10}
+        'additional_params': {'pageSize': 10},
     }, '{"results": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)&pageSize=10',
         [str(x) for x in range(2, 11)]),
     # mexico_administracion_publica_federal
     ({
+        'data_type': 'release_package',
         'count_pointer': '/total',
         'limit': '/limit',
-        'data_type': 'release_package',
         'use_page': True,
-        'formatter': staticmethod(parameters('page'))
+        'formatter': staticmethod(parameters('page')),
     }, '{"total": 50, "limit": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)',
         [str(x) for x in range(2, 6)]),
     # canada_montreal
     ({
+        'data_type': 'release_package',
         'count_pointer': '/total',
         'limit': 10,
-        'data_type': 'release_package',
-        'formatter': staticmethod(parameters('offset'))
+        'formatter': staticmethod(parameters('offset')),
     }, '{"total": 50}', 'http://example.com', r'http://example\.com\?limit=10&offset=(\d+)',
         [str(x) for x in range(10, 50, 10)]),
     # kenya_makueni
     ({
+        'data_type': 'release_package',
+        'formatter': staticmethod(parameters('pageNumber')),
+        'param_page': 'pageNumber',
+        'additional_params': {'step': 10},
         'yield_list_results': False,
+        'base_url': 'http://example.com/ocds',
         'range_generator': lambda _self, data, response: range(ceil(int(response.text) / 10)),
         'url_builder': lambda _self, value, data, response: _self.pages_url_builder(value, data, response),
-        'additional_params': {'step': 10},
-        'param_page': 'pageNumber',
-        'data_type': 'release_package_list',
-        'formatter': staticmethod(parameters('pageNumber')),
-        'base_url': 'http://example.com/ocds'
     }, '100', 'http://example.com', r'http://example\.com/ocds\?pageNumber=(\d+)&step=10',
         [str(x) for x in range(0, 10)])
 ]

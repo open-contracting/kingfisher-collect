@@ -8,11 +8,19 @@ Most subcommands of the ``scrapy`` command are defined by `Scrapy <https://docs.
 pluck
 -----
 
-Plucks one data value per publisher. It writes a CSV file with the results, and a ``pluck_skipped.json`` file giving the reason for which some spiders were skipped.
+Plucks one data value per publisher. It writes a CSV file with the results, and a ``pluck_skipped.json`` file giving the reason for which some spiders were skipped. It writes no OCDS data files.
 
 -  ``--package-pointer=STR`` (``-p``): The JSON Pointer to the value in the package.
 -  ``--release-pointer=STR`` (``-r``): The JSON Pointer to the value in the release.
 -  ``--truncate=NUM`` (``-t``): Truncate the value to this number of characters.
+-  ``--max-bytes=NUM``: Stop downloading an OCDS file after reading at least this many bytes.
+-  ``spider``: Run specific spiders. Omit to run all spiders.
+
+If you're using ``--package-pointer``, it is recommended to use the ``--max-bytes`` option to limit the number of bytes downloaded. For example, you can set ``--max-bytes 10000``, because package metadata tends to be located at the start of files.
+
+.. note::
+
+   ``--max-bytes`` is ignored for ZIP and RAR files, which must be downloaded in full to be read.
 
 Get each publisher's publication policy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,6 +64,7 @@ Runs all spiders.
 
 -  ``--dry-run``: Runs the spiders without writing any files. It stops after collecting one file or file item from each spider. This can be used to test whether any spiders are broken. Add the ``--logfile debug.log`` option to write the output to a log file for easier review.
 -  ``--sample=NUM``: The number of files to write. This can be used to collect a sample from each spider.
+-  ``spider``: Run specific spiders. Omit to run all spiders.
 
 .. code-block:: bash
 

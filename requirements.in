@@ -1,7 +1,6 @@
 flattentool
 ijson>=3.1.1
 jsonpointer
-jsonref
 jsonschema
 ocdsmerge
 rarfile
