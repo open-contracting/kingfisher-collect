@@ -46,6 +46,8 @@ class BaseSpider(scrapy.Spider):
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
     ``get_default_until_date()`` return value (which is the current time, by default).
+
+    If the spider needs to parse the JSON response in its ``parse`` method, set ``dont_truncate = True``.
     """
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
 
@@ -56,6 +58,7 @@ class BaseSpider(scrapy.Spider):
     unflatten_args = {}
     line_delimited = False
     root_path = ''
+    dont_truncate = False
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
@@ -318,6 +321,9 @@ class CompressedFileSpider(BaseSpider):
        ``resize_package = True`` is not compatible with ``line_delimited = True`` or ``root_path``.
     """
 
+    # BaseSpider
+    dont_truncate = True
+
     encoding = 'utf-8'
     resize_package = False
     file_name_must_contain = ''
@@ -333,42 +339,45 @@ class CompressedFileSpider(BaseSpider):
         else:
             raise UnknownArchiveFormatError(response.request.meta['file_name'])
 
-        with cls(BytesIO(response.body)) as archive_file:
-            number = 1
-            for file_info in archive_file.infolist():
-                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                if self.sample and number > self.sample:
-                    break
+        # If we use a context manager here, the archive file might close before the item pipeline reads from the file
+        # handlers of the compressed files.
+        archive_file = cls(BytesIO(response.body))
 
-                filename = file_info.filename
-                basename = os.path.basename(filename)
-                if self.file_name_must_contain not in basename:
-                    continue
-                if archive_format == 'rar' and file_info.isdir():
-                    continue
-                if archive_format == 'zip' and file_info.is_dir():
-                    continue
-                if not basename.endswith('.json'):
-                    basename += '.json'
+        number = 1
+        for file_info in archive_file.infolist():
+            # Avoid reading the rest of a large file, since the rest of the items will be dropped.
+            if self.sample and number > self.sample:
+                break
 
-                compressed_file = archive_file.open(filename)
+            filename = file_info.filename
+            basename = os.path.basename(filename)
+            if self.file_name_must_contain not in basename:
+                continue
+            if archive_format == 'rar' and file_info.isdir():
+                continue
+            if archive_format == 'zip' and file_info.is_dir():
+                continue
+            if not basename.endswith('.json'):
+                basename += '.json'
 
-                # If `resize_package = True`, then we need to open the file twice: once to extract the package metadata
-                # and then to extract the releases themselves.
-                if self.resize_package:
-                    data = {'data': compressed_file, 'package': archive_file.open(filename)}
-                else:
-                    data = compressed_file
+            compressed_file = archive_file.open(filename)
 
-                yield File({
-                    'file_name': basename,
-                    'data': data,
-                    'data_type': self.data_type,
-                    'url': response.request.url,
-                    'encoding': self.encoding
-                })
+            # If `resize_package = True`, then we need to open the file twice: once to extract the package metadata and
+            # then to extract the releases themselves.
+            if self.resize_package:
+                data = {'data': compressed_file, 'package': archive_file.open(filename)}
+            else:
+                data = compressed_file
 
-                number += 1
+            yield File({
+                'file_name': basename,
+                'data': data,
+                'data_type': self.data_type,
+                'url': response.request.url,
+                'encoding': self.encoding
+            })
+
+            number += 1
 
 
 class LinksSpider(SimpleSpider):
@@ -412,6 +421,10 @@ class LinksSpider(SimpleSpider):
         """
         If the JSON response has a ``links.next`` key, returns a ``scrapy.Request`` for the URL.
         """
+        # If the sample size is 1, we don't want to parse the response, especially if --max-bytes is used.
+        if self.sample and self.sample == 1:
+            return
+
         data = response.json()
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
@@ -599,3 +612,33 @@ class IndexSpider(SimpleSpider):
         url_params = params.copy()
         url_params.update(self.additional_params)
         return util.replace_parameters(self.base_url, **url_params)
+
+
+class BigFileSpider(SimpleSpider):
+    """
+    This class makes it easy to collect data from sources that provide big JSON files as a release package.
+    Each big file is resized to multiple small files that the current version of Kingfisher process is able to process.
+
+    #. Inherit from ``BigFileSpider``
+    #. Write a ``start_requests`` method to request the archive files
+
+    .. code-block:: python
+
+        from kingfisher_scrapy.base_spider import BigFileSpider
+        from kingfisher_scrapy.util import components
+
+        class MySpider(BigFileSpider):
+            name = 'my_spider'
+
+            def start_requests(self):
+                yield self.build_request('https://example.com/api/package.json', formatter=components(-1)
+    """
+
+    resize_package = True
+
+    @handle_http_error
+    def parse(self, response):
+        data = {'data': response.body,
+                'package': response.body}
+        yield self.build_file(file_name=response.request.meta['file_name'], url=response.request.url,
+                              data_type='release_package', data=data)

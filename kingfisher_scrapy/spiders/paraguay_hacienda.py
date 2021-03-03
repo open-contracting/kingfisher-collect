@@ -37,6 +37,7 @@ class ParaguayHacienda(BaseSpider):
     release_ids = []
     request_time_limit = 14.0
     data_type = 'release_package'
+    dont_truncate = True
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):

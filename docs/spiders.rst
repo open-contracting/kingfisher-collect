@@ -1,12 +1,14 @@
 Spiders
 =======
 
+In Kingfisher Collect, there is one spider per data source. Each data source exposes its data in different ways, contains data from different years, and covers different stages of the contracting process.
+
 .. _spider-metadata:
 
 Spider metadata
 ---------------
 
-Below, we provide some metadata for each spider. The meaning of the metadata is:
+Below, we provide some of this information (metadata) for each spider. The meaning of the metadata is:
 
 .. list-table::
    :header-rows: 1
@@ -719,6 +721,13 @@ Mexico
 .. code-block:: bash
 
    scrapy crawl mexico_nuevo_leon_releases
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_plataforma_digital_nacional.MexicoPlataformaDigitalNacional
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_plataforma_digital_nacional
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien.MexicoQuienEsQuien
    :no-members:

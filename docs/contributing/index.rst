@@ -20,6 +20,7 @@ Access methods for OCDS data are very similar. Spiders therefore share a lot of 
 -  :class:`~kingfisher_scrapy.base_spider.PeriodicSpider`: Use if the bulk downloads or API methods accept a year or a year and month as a query string parameter or URL path component.
 -  :class:`~kingfisher_scrapy.base_spider.LinksSpider`: Use if the API implements `pagination <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__.
 -  :class:`~kingfisher_scrapy.base_spider.CompressedFileSpider`: Use if the bulk downloads are ZIP or RAR files.
+-  :class:`~kingfisher_scrapy.base_spider.BigFileSpider`: Use if the downloads include a big JSON file as a release package that can not be processed in Kingfisher Process.
 -  :class:`~kingfisher_scrapy.base_spider.SimpleSpider`: Use in almost all other cases. ``IndexSpider``, ``PeriodicSpider`` and ``LinksSpider`` are child classes of this class.
 -  :class:`~kingfisher_scrapy.base_spider.BaseSpider`: All spiders inherit, directly or indirectly, from this class, which in turn inherits from `scrapy.Spider <https://docs.scrapy.org/en/latest/topics/spiders.html>`__. Use if none of the above can be used.
 
@@ -104,6 +105,7 @@ Test the spider
 
 #. :doc:`Check the log for errors and warnings<../logs>`
 #. Check whether the data is as expected, in format and number
+#. Integrate it with `Kingfisher Process<../kingfisher_process>` and check for errors and warnings in its logs
 
 Scrapy offers some debugging features that we haven't used yet:
 

@@ -13,6 +13,7 @@ class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
     # BaseSpider
     date_format = 'year-month'
     default_from_date = '2009-01'
+    dont_truncate = True
 
     # PeriodicSpider
     pattern = 'http://api.mercadopublico.cl/APISOCDS/OCDS/{0}/{1.year:d}/{1.month:02d}/{2}/{3}'

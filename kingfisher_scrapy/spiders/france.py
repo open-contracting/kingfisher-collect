@@ -1,10 +1,10 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.base_spider import BigFileSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class France(SimpleSpider):
+class France(BigFileSpider):
     """
     Domain
       France
@@ -12,9 +12,6 @@ class France(SimpleSpider):
       https://doc.data.gouv.fr/api/reference/
     """
     name = 'france'
-
-    # SimpleSpider
-    data_type = 'release_package'
 
     def start_requests(self):
         # A CKAN API JSON response.

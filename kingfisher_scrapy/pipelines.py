@@ -89,9 +89,21 @@ class Pluck:
                 value = _resolve_pointer(item['data'], pointer)
             else:
                 try:
-                    value = next(ijson.items(item['data'], pointer.replace('/', '.')[1:]))
+                    value = next(ijson.items(item['data'], pointer[1:].replace('/', '.')))
                 except StopIteration:
                     value = f'error: {pointer} not found'
+                except ijson.common.IncompleteJSONError as e:
+                    message = str(e).split('\n', 1)[0]
+                    if message.endswith((
+                        # The JSON text can be truncated by a `bytes_received` handler.
+                        'premature EOF',
+                        # These messages occur if the JSON text is truncated at `"\\u` or `"\\`.
+                        r"lexical error: invalid (non-hex) character occurs after '\u' inside string.",
+                        r"lexical error: inside a string, '\' occurs before a character which it may not.",
+                    )):
+                        value = f'error: {pointer} not found within initial bytes'
+                    else:
+                        raise
         else:  # spider.release_pointer
             if isinstance(item['data'], dict):
                 data = item['data']
