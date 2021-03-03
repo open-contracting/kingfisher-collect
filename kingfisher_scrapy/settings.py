@@ -163,7 +163,7 @@ KINGFISHER_PLUCK_MAX_BYTES = None
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std:setting-FILES_STORE
-FILES_STORE = "/tmp/kc/"
+FILES_STORE = os.getenv('FILES_STORE', 'data')
 
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
 HTTPERROR_ALLOW_ALL = True
