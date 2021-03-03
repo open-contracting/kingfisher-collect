@@ -171,7 +171,7 @@ The Scrapy framework is very flexible. To maintain a good separation of concerns
    -  Connect signals, typically `item signals <https://docs.scrapy.org/en/latest/topics/signals.html#item-signals>`__ and `spider signals <https://docs.scrapy.org/en/latest/topics/signals.html#spider-signals>`__
    -  Raise a `NotConfigured <https://docs.scrapy.org/en/latest/topics/exceptions.html#notconfigured>`__ exception in its `from_crawler <https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension>`__ method, if a required `setting <https://docs.scrapy.org/en/latest/topics/settings.html>`__ isn't set
 
--  A downloader middleware's responsibility is to process requests, before they are sent to the internet, and responses, before they are processed by the Spiders. It should only:
+-  A downloader middleware's responsibility is to process requests, before they are sent to the internet, and responses, before they are processed by the spider. It should only:
    -  Yield a request
    -  Return a Deferred
    -  Yield items
