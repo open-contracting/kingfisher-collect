@@ -13,8 +13,12 @@ class MexicoPlataformaDigitalNacional(CompressedFileSpider):
       https://plataformadigitalnacional.org/contrataciones
     """
     name = 'mexico_plataforma_digital_nacional'
-    data_type = 'release'
+
+    # BaseSpider
     root_path = 'item'
+
+    # CompressedFileSpider
+    data_type = 'release'
 
     def start_requests(self):
         yield scrapy.Request(
