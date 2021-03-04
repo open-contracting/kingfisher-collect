@@ -280,6 +280,8 @@ class SimpleSpider(BaseSpider):
 
         class MySpider(SimpleSpider):
             name = 'my_spider'
+
+            # SimpleSpider
             data_type = 'release_package'
 
             def start_requests(self):
@@ -311,6 +313,8 @@ class CompressedFileSpider(BaseSpider):
 
         class MySpider(CompressedFileSpider):
             name = 'my_spider'
+
+            # CompressedFileSpider
             data_type = 'release_package'
 
             def start_requests(self):
@@ -402,6 +406,8 @@ class LinksSpider(SimpleSpider):
 
         class MySpider(LinksSpider):
             name = 'my_spider'
+
+            # SimpleSpider
             data_type = 'release_package'
 
             def start_requests(self):
