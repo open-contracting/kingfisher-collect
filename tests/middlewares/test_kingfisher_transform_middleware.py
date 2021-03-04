@@ -84,7 +84,7 @@ def test_data_types(data_type, data, root_path):
         expected['data'] = {f"{data_type[:-8]}s": [{"ocid": "abc"}], "uri": "test"}
         expected['data_type'] = data_type
     else:
-        expected['data'] = {f"{data_type}s": [{"ocid": "abc"}]}
+        expected['data'] = {f"{data_type}s": [{"ocid": "abc"}], "version": spider.ocds_version}
         expected['data_type'] = f'{data_type}_package'
 
     assert item == expected

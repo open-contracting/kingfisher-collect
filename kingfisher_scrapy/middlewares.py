@@ -204,7 +204,7 @@ class AddPackageMiddleware:
                 key = 'releases'
             else:
                 key = 'records'
-            item['data'] = {key: [data]}
+            item['data'] = {key: [data], 'version': spider.ocds_version}
             item['data_type'] += '_package'
 
             yield item
