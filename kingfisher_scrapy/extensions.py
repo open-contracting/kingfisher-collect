@@ -332,7 +332,7 @@ class KingfisherProcessNGAPI:
             "note": spider.note,
             "sample": spider.sample,
             "compile": True,
-            "upgrade": True,
+            "upgrade": spider.ocds_version == '1.0',
             "check": True,
         }
 
