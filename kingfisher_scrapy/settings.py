@@ -104,7 +104,7 @@ SENTRY_DSN = os.getenv('SENTRY_DSN')
 # https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process.html
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
 KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
-KINGFISHER_NG_API_URL = os.getenv('KINGFISHER_NG_API_URL')
+KINGFISHER_NG_API_URL = "http://127.0.0.1:22061"
 KINGFISHER_NG_API_USERNAME = os.getenv('KINGFISHER_NG_API_USERNAME')
 KINGFISHER_NG_API_PASSWORD = os.getenv('KINGFISHER_NG_API_PASSWORD')
 
