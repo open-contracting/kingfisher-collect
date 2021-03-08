@@ -328,7 +328,7 @@ class KingfisherProcessNGAPI:
         data = {
             "source_id": spider.name,
             "data_version": spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            "note": "collected by scrapy",
+            "note": spider.note,
             "sample": spider.sample,
             "compile": True,
             "upgrade": True,
@@ -341,7 +341,7 @@ class KingfisherProcessNGAPI:
             spider.logger.warning(
                 'Failed to POST create_collection. API status code: {}'.format(response.status_code))
         else:
-            response_data = json.loads(response.text)
+            response_data = response.json()
             self.collection_id = response_data["collection_id"]
 
     def spider_closed(self, spider, reason):
@@ -362,7 +362,7 @@ class KingfisherProcessNGAPI:
         """
         Sends an API request to store the file in Kingfisher Process.
         """
-        if not item.get('post_to_api', True) or isinstance(item, PluckedItem):
+        if isinstance(item, PluckedItem):
             return
 
         data = {
