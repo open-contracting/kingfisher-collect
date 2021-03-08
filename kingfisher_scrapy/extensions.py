@@ -362,7 +362,7 @@ class KingfisherProcessNGAPI:
         """
         Sends an API request to store the file in Kingfisher Process.
         """
-        if not item.get('post_to_api', True) or isinstance(item, PluckedItem):
+        if isinstance(item, PluckedItem):
             return
 
         data = {
