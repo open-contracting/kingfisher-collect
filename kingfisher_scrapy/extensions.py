@@ -328,7 +328,7 @@ class KingfisherProcessNGAPI:
         data = {
             "source_id": spider.name,
             "data_version": spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            "note": "collected by scrapy",
+            "note": spider.note,
             "sample": spider.sample,
             "compile": True,
             "upgrade": True,
