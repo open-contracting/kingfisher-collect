@@ -374,7 +374,9 @@ class KingfisherProcessNGAPI:
 
         data = {
             "collection_id": self.collection_id,
-            "path": os.path.join(item['files_store'], item['path'])
+            "path": os.path.join(item['files_store'], item['path']),
+            "file_name": item.get('file_name', None),
+            "url": item.get('url', None)
         }
 
         if isinstance(item, FileError):
