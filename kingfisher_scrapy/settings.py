@@ -112,6 +112,7 @@ KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 KINGFISHER_NG_API_URI = os.getenv('KINGFISHER_NG_API_URL')
 =======
 KINGFISHER_NG_API_URL = os.getenv('KINGFISHER_NG_API_URL')
@@ -119,6 +120,9 @@ KINGFISHER_NG_API_URL = os.getenv('KINGFISHER_NG_API_URL')
 =======
 KINGFISHER_NG_API_URL = "http://127.0.0.1:22061"
 >>>>>>> added sync and async calls to api
+=======
+KINGFISHER_NG_API_URL = os.getenv('KINGFISHER_NG_API_URL')
+>>>>>>> reverted forgotten config file
 KINGFISHER_NG_API_USERNAME = os.getenv('KINGFISHER_NG_API_USERNAME')
 KINGFISHER_NG_API_PASSWORD = os.getenv('KINGFISHER_NG_API_PASSWORD')
 =======
