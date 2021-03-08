@@ -323,7 +323,7 @@ class KingfisherProcessNGAPI:
 
     def spider_opened(self, spider):
         """
-        Sends an API request to start the collection in KP.
+        Sends an API request to start the collection in Kingfisher Process.
         """
         data = {
             "source_id": spider.name,
