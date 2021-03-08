@@ -14,7 +14,7 @@ class Response(object):
 
 def test_from_crawler():
     spider = spider_with_crawler(settings={
-        'KINGFISHER_NG_API_URI': 'http://httpbin.org/anything',
+        'KINGFISHER_NG_API_URL': 'http://httpbin.org/anything',
         'KINGFISHER_NG_API_USERNAME': 'xxx',
         'KINGFISHER_NG_API_PASSWORD': 'password',
     })
@@ -28,19 +28,19 @@ def test_from_crawler():
 
 def test_from_crawler_missing_uri():
     spider = spider_with_crawler(settings={
-        "KINGFISHER_API_URI": "missign",
+        "KINGFISHER_API_URL": "missign",
         "KINGFISHER_NG_API_USERNAME": "aaa",
     })
 
     with pytest.raises(NotConfigured) as excinfo:
         KingfisherProcessNGAPI.from_crawler(spider.crawler)
 
-    assert str(excinfo.value) == "KINGFISHER_NG_API_URI is not set."
+    assert str(excinfo.value) == "KINGFISHER_NG_API_URL is not set."
 
 
 def test_from_crawler_missing_password():
     spider = spider_with_crawler(settings={
-        "KINGFISHER_NG_API_URI": "/some/uti",
+        "KINGFISHER_NG_API_URL": "/some/uti",
         "KINGFISHER_NG_API_USERNAME": "aaa",
     })
 
@@ -57,7 +57,7 @@ def mocked_spider_open(cls, *args, **kwargs):
 
 def test_spider_opened(tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
-        'KINGFISHER_NG_API_URI': 'anything',
+        'KINGFISHER_NG_API_URL': 'anything',
         'KINGFISHER_NG_API_USERNAME': 'xxx',
         'KINGFISHER_NG_API_PASSWORD': 'password',
     })
@@ -85,7 +85,7 @@ def test_spider_opened(tmpdir):
 
 def test_spider_closed(tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
-        'KINGFISHER_NG_API_URI': 'anything',
+        'KINGFISHER_NG_API_URL': 'anything',
         'KINGFISHER_NG_API_USERNAME': 'xxx',
         'KINGFISHER_NG_API_PASSWORD': 'password',
     })
@@ -106,7 +106,7 @@ def test_spider_closed(tmpdir):
 def test_item_scraped(tmpdir):
     settings = {
         "KINGFISHER_API_LOCAL_DIRECTORY": str(tmpdir.join('xxx')),
-        'KINGFISHER_NG_API_URI': 'anything',
+        'KINGFISHER_NG_API_URL': 'anything',
         'KINGFISHER_NG_API_USERNAME': 'xxx',
         'KINGFISHER_NG_API_PASSWORD': 'password',
     }

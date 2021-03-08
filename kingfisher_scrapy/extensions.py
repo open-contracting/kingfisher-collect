@@ -293,8 +293,9 @@ class SentryLogging:
 
 class KingfisherProcessNGAPI:
     """
-    If the ``KINGFISHER_API_URI`` and ``KINGFISHER_API_KEY`` environment variables or configuration settings are set,
+    If the ``KINGFISHER_NG_API_URL`` environment variable or configuration setting is set,
     then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
+
     """
     def __init__(self, url, username, password):
         self.url = url
@@ -303,12 +304,12 @@ class KingfisherProcessNGAPI:
 
     @classmethod
     def from_crawler(cls, crawler):
-        url = crawler.settings['KINGFISHER_NG_API_URI']
+        url = crawler.settings['KINGFISHER_NG_API_URL']
         username = crawler.settings['KINGFISHER_NG_API_USERNAME']
         password = crawler.settings['KINGFISHER_NG_API_PASSWORD']
 
         if not url:
-            raise NotConfigured('KINGFISHER_NG_API_URI is not set.')
+            raise NotConfigured('KINGFISHER_NG_API_URL is not set.')
 
         if (username and not password) or (password and not username):
             raise NotConfigured('Both KINGFISHER_NG_API_USERNAME and KINGFISHER_NG_API_PASSWORD must be set.')
