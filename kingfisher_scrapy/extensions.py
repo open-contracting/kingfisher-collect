@@ -5,6 +5,7 @@ import os
 
 import requests
 import sentry_sdk
+import treq
 from scrapy import signals
 from scrapy.exceptions import NotConfigured, StopDownload
 
@@ -335,7 +336,7 @@ class KingfisherProcessNGAPI:
             "check": True,
         }
 
-        response = self._post("api/v1/create_collection", data)
+        response = self._post_sync("api/v1/create_collection", data)
 
         if not response.ok:
             spider.logger.warning(
@@ -349,7 +350,7 @@ class KingfisherProcessNGAPI:
         Sends an API request to close the collection.
         """
         # https://docs.scrapy.org/en/latest/topics/signals.html#spider-closed
-        if reason not in ('finished', 'sample') or spider.pluck or spider.keep_collection_open:
+        if spider.pluck or spider.keep_collection_open:
             return
 
         data = {
@@ -357,11 +358,12 @@ class KingfisherProcessNGAPI:
             "reason": reason
         }
 
-        response = self._post("api/v1/close_collection", data)
+        def response_callback(response):
+            if not response.ok:
+                spider.logger.warning(
+                    'Failed to post close collection. API status code: {}'.format(response.status_code))
 
-        if not response.ok:
-            spider.logger.warning(
-                'Failed to post close collection. API status code: {}'.format(response.status_code))
+        self._post_async("api/v1/close_collection", data, response_callback)
 
     def item_scraped(self, item, spider):
         """
@@ -379,17 +381,29 @@ class KingfisherProcessNGAPI:
             # in case of error send info about it to api
             data['errors'] = json.dumps(item['errors'])
 
-        response = self._post("api/v1/create_collection_file", data)
+        def response_callback(response):
+            if not response.ok:
+                spider.logger.warning("Failed to POST create_collection_file. API status code: {}".format(
+                    response.status_code))
 
-        if not response.ok:
-            spider.logger.warning(
-                'Failed to POST create_collection_file. API status code: {}'.format(response.status_code))
+        self._post_async("api/v1/create_collection_file", data, response_callback)
 
-    def _post(self, url, data):
+    def _post_sync(self, url, data):
         """
-        Wrapper around the requests. Add auth if necessary.
+        Wrapper around the requests to api. Adds auth if necessary.
         """
         if self.username and self.password:
             return requests.post("{}/{}".format(self.url, url), json=data, auth=(self.username, self.password))
         else:
             return requests.post("{}/{}".format(self.url, url), json=data)
+
+    def _post_async(self, url, data, callback):
+        """
+        Wrapper around the treq to api. Adds auth if necessary.
+        """
+        if self.username and self.password:
+            request = treq.post("{}/{}".format(self.url, url), json=data, auth=(self.username, self.password))
+        else:
+            request = treq.post("{}/{}".format(self.url, url), json=data)
+
+        request.addCallback(callback)
