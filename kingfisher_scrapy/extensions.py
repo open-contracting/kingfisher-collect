@@ -348,8 +348,13 @@ class KingfisherProcessNGAPI:
         """
         Sends an API request to close the collection.
         """
+        # https://docs.scrapy.org/en/latest/topics/signals.html#spider-closed
+        if reason not in ('finished', 'sample') or spider.pluck or spider.keep_collection_open:
+            return
+
         data = {
             "collection_id": self.collection_id,
+            "reason": reason
         }
 
         response = self._post("api/v1/close_collection", data)
