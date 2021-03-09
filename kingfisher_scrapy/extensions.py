@@ -402,9 +402,9 @@ class KingfisherProcessNGAPI:
         """
         Posts asynchronous requests to Kingfisher Process' API, adding authentication if needed.
         """
+        kwargs = {}
         if self.username and self.password:
-            request = treq.post("{}/{}".format(self.url, url), json=data, auth=(self.username, self.password))
-        else:
-            request = treq.post("{}/{}".format(self.url, url), json=data)
+            kwargs['auth'] = (self.username, self.password)
+        request = treq.post("{}/{}".format(self.url, url), json=data, **kwargs)
 
         request.addCallback(callback)
