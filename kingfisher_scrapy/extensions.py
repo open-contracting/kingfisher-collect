@@ -393,10 +393,11 @@ class KingfisherProcessNGAPI:
         """
         Posts synchronous requests to Kingfisher Process' API, adding authentication if needed.
         """
+        kwargs = {}
         if self.username and self.password:
-            return requests.post("{}/{}".format(self.url, url), json=data, auth=(self.username, self.password))
-        else:
-            return requests.post("{}/{}".format(self.url, url), json=data)
+            kwargs['auth'] = (self.username, self.password)
+
+        return requests.post("{}/{}".format(self.url, url), json=data, **kwargs)
 
     def _post_async(self, url, data, callback):
         """
