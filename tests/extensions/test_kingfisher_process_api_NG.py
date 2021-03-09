@@ -28,7 +28,7 @@ def test_from_crawler():
 
 def test_from_crawler_missing_uri():
     spider = spider_with_crawler(settings={
-        "KINGFISHER_API_URL": "missign",
+        "KINGFISHER_API_URL": "missing",
         "KINGFISHER_NG_API_USERNAME": "aaa",
     })
 
