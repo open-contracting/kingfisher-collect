@@ -296,7 +296,6 @@ class KingfisherProcessNGAPI:
     """
     If the ``KINGFISHER_NG_API_URL`` environment variable or configuration setting is set,
     then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
-
     """
     def __init__(self, url, username, password):
         self.url = url
