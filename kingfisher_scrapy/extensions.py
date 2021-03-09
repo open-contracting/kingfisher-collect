@@ -358,9 +358,9 @@ class KingfisherProcessNGAPI:
         }
 
         def response_callback(response):
-            if not response.ok:
+            if not response.code == 200:
                 spider.logger.warning(
-                    'Failed to post close collection. API status code: {}'.format(response.status_code))
+                    'Failed to post close collection. API status code: {}'.format(response.code))
 
         self._post_async("api/v1/close_collection", data, response_callback)
 
@@ -383,9 +383,9 @@ class KingfisherProcessNGAPI:
             data['errors'] = json.dumps(item['errors'])
 
         def response_callback(response):
-            if not response.ok:
+            if not response.code == 200:
                 spider.logger.warning("Failed to POST create_collection_file. API status code: {}".format(
-                    response.status_code))
+                    response.code))
 
         self._post_async("api/v1/create_collection_file", data, response_callback)
 
