@@ -170,7 +170,9 @@ class KingfisherProcessAPI:
 
         extension = cls(url, key, directory=directory)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+        crawler.signals.connect(extension.item_error, signal=signals.item_error)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
+        crawler.signals.connect(extension.spider_error, signal=signals.spider_error)
 
         return extension
 
