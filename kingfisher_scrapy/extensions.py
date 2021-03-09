@@ -391,7 +391,7 @@ class KingfisherProcessNGAPI:
 
     def _post_sync(self, url, data):
         """
-        Wrapper around the requests to api. Adds auth if necessary.
+        Posts synchronous requests to Kingfisher Process' API, adding authentication if needed.
         """
         if self.username and self.password:
             return requests.post("{}/{}".format(self.url, url), json=data, auth=(self.username, self.password))
