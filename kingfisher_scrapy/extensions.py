@@ -400,7 +400,7 @@ class KingfisherProcessNGAPI:
 
     def _post_async(self, url, data, callback):
         """
-        Wrapper around the treq to api. Adds auth if necessary.
+        Posts asynchronous requests to Kingfisher Process' API, adding authentication if needed.
         """
         if self.username and self.password:
             request = treq.post("{}/{}".format(self.url, url), json=data, auth=(self.username, self.password))
