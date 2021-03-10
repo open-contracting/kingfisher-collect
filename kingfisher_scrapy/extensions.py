@@ -263,7 +263,8 @@ class KingfisherProcessAPI:
         data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': str(bool(spider.sample))
+            'collection_sample': str(bool(spider.sample)),
+            'collection_ocds_version': spider.ocds_version,
         }
         if file_name:
             data['file_name'] = file_name
