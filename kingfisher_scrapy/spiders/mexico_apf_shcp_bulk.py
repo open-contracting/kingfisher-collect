@@ -4,14 +4,14 @@ from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class MexicoAPFSHCP(CompressedFileSpider):
+class MexicoAPFSHCPBulk(CompressedFileSpider):
     """
     Domain
       Administración Pública Federal (APF) - Secretaría de Hacienda y Crédito Público (SHCP)
     Bulk download documentation
       https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf-shcp
     """
-    name = 'mexico_apf_shcp'
+    name = 'mexico_apf_shcp_bulk'
 
     # BaseSpider
     root_path = 'item'
