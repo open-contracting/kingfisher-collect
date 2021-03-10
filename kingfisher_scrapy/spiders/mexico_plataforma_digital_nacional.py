@@ -5,7 +5,6 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class MexicoPlataformaDigitalNacional(CompressedFileSpider):
-
     """
     Domain
       Plataforma Digital Nacional
