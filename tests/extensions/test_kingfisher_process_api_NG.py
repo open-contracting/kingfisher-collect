@@ -2,8 +2,7 @@ import os
 from unittest.mock import MagicMock
 
 import pytest
-from kingfisher_scrapy.extensions import (KingfisherFilesStore,
-                                          KingfisherProcessNGAPI)
+from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessNGAPI
 from scrapy.exceptions import NotConfigured
 from tests import spider_with_crawler, spider_with_files_store
 
