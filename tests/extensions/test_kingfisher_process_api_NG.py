@@ -2,14 +2,15 @@ import os
 from unittest.mock import MagicMock
 
 import pytest
+from kingfisher_scrapy.extensions import (KingfisherFilesStore,
+                                          KingfisherProcessNGAPI)
 from scrapy.exceptions import NotConfigured
-
-from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessNGAPI
 from tests import spider_with_crawler, spider_with_files_store
 
 
 class Response(object):
-    pass
+    def json(self):
+        return self.json_response
 
 
 def test_from_crawler():
@@ -66,21 +67,20 @@ def test_spider_opened(tmpdir):
 
     response = Response()
     response.ok = True
-    response.text = '{"collection_id":"1"}'
-
-    extension._post = MagicMock(return_value=response)
+    response.json_response = {"collection_id": "1"}
+    extension._post_sync = MagicMock(return_value=response)
     extension.spider_opened(spider)
 
-    extension._post.assert_called_with('api/v1/create_collection',
-                                       {
-                                            'source_id': 'test',
-                                            'data_version': '2001-02-03 04:05:06',
-                                            'note': 'collected by scrapy',
-                                            'sample': None,
-                                            'compile': True,
-                                            'upgrade': True,
-                                            'check': True
-                                        })
+    extension._post_sync.assert_called_with('api/v1/create_collection',
+                                            {
+                                                'source_id': 'test',
+                                                'data_version': '2001-02-03 04:05:06',
+                                                'note': None,
+                                                'sample': None,
+                                                'compile': True,
+                                                'upgrade': False,
+                                                'check': True
+                                            })
 
 
 def test_spider_closed(tmpdir):
@@ -97,10 +97,11 @@ def test_spider_closed(tmpdir):
     response.ok = True
     response.text = '{"collection_id":"1"}'
 
-    extension._post = MagicMock(return_value=response)
+    extension._post_async = MagicMock(return_value=response)
     extension.spider_closed(spider, "done")
 
-    extension._post.assert_called_with('api/v1/close_collection', {'collection_id': 1})
+    assert extension._post_async.mock_calls[0].args[0] == "api/v1/close_collection"
+    assert extension._post_async.mock_calls[0].args[1] == {'collection_id': 1, 'reason': 'done'}
 
 
 def test_item_scraped(tmpdir):
@@ -129,10 +130,12 @@ def test_item_scraped(tmpdir):
     response.ok = True
     response.text = '{"collection_id":"1"}'
 
-    extension._post = MagicMock(return_value=response)
+    extension._post_async = MagicMock(return_value=response)
     extension.item_scraped(item, spider)
 
-    extension._post.assert_called_with('api/v1/create_collection_file',
-                                       {
-                                           'collection_id': 1,
-                                           'path': os.path.join(item['files_store'], item['path'])})
+    assert extension._post_async.mock_calls[0].args[0] == "api/v1/create_collection_file"
+    assert extension._post_async.mock_calls[0].args[1] == {
+                                             'collection_id': 1,
+                                             'path': os.path.join(item['files_store'], item['path']),
+                                             'url': 'https://example.com/remote.json'}
+
