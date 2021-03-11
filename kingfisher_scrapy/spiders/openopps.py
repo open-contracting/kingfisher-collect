@@ -39,6 +39,7 @@ class OpenOpps(BaseSpider):
     }
 
     # BaseSpider
+    ocds_version = '1.0'
     default_from_date = '2011-01-01'
     root_path = 'results.item.json'
     dont_truncate = True
