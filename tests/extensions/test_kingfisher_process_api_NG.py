@@ -138,4 +138,3 @@ def test_item_scraped(tmpdir):
                                              'collection_id': 1,
                                              'path': os.path.join(item['files_store'], item['path']),
                                              'url': 'https://example.com/remote.json'}
-
