@@ -22,7 +22,8 @@ class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            'https://datos.gob.mx/busca/api/3/action/package_search?q=concentrado-de-contrataciones-abiertas-de-la-apf',
+            'https://datos.gob.mx/busca/api/3/action/package_search?q=concentrado-de-contrataciones-abiertas-de-la'
+            '-apf',
             meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
