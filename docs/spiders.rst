@@ -680,12 +680,19 @@ Malta
 Mexico
 ------
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_administracion_publica_federal.MexicoAdministracionPublicaFederal
+.. autoclass:: kingfisher_scrapy.spiders.mexico_administracion_publica_federal_api.MexicoAdministracionPublicaFederalAPI
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl mexico_administracion_publica_federal
+   scrapy crawl mexico_administracion_publica_federal_api
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_administracion_publica_federal_bulk.MexicoAdministracionPublicaFederalBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_administracion_publica_federal_bulk
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_grupo_aeroporto.MexicoGrupoAeroporto
    :no-members:

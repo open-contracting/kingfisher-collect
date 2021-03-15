@@ -4,14 +4,15 @@ from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.util import parameters
 
 
-class MexicoAdministracionPublicaFederal(IndexSpider):
+class MexicoAdministracionPublicaFederalAPI(IndexSpider):
     """
     Domain
-      Administración Pública Federal (APF)
-    Bulk download documentation
-      https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
+      Administración Pública Federal (APF): Secretaria de la Función Pública (SFP) - Secretaría de Hacienda y Crédito
+      Público (SHCP)
+    API documentation
+      https://www.datos.gob.mx/busca/dataset/api-de-contrataciones-abiertas-de-la-apf
     """
-    name = 'mexico_administracion_publica_federal'
+    name = 'mexico_administracion_publica_federal_api'
 
     # BaseSpider
     root_path = 'results.item'
@@ -26,5 +27,5 @@ class MexicoAdministracionPublicaFederal(IndexSpider):
     formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
-        url = 'https://api.datos.gob.mx/v1/contratacionesabiertas'
+        url = 'https://api.datos.gob.mx/v2/contratacionesabiertas'
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
