@@ -194,11 +194,9 @@ class Filter:
         return filtered_records
 
     def _filter_releases(self, releases):
-        filtered_releases = []
-        for release in releases:
-            for function in self.filter_functions:
-                if function(release):
-                    filtered_releases.append(release)
+        filtered_releases = releases
+        for function in self.filter_functions:
+            filtered_releases = list(filter(function, filtered_releases))
 
         return filtered_releases
 
@@ -207,46 +205,25 @@ class Filter:
         return self.filter_arguments['from_date'] <= release_date <= self.filter_arguments['until_date']
 
     def process_item(self, item, spider):
-        if spider.from_date and spider.until_date:
-            self.filter_arguments['from_date'] = spider.from_date
-            self.filter_arguments['until_date'] = spider.until_date
-            self.filter_functions.append(self._date_filter)
-
-        # More filter functions can be added here
-
         if self.filter_functions:
             data = json.loads(item['data'])
-
-            if 'package_list' in item['data_type']:
-                if 'package_list_in_results' in item['data_type']:
-                    data['results'] = self._filter_packages(data['results'], item['data_type'])
-                    self._check_data_filtered(data['results'])
-                else:
-                    data = self._filter_packages(data, item['data_type'])
-                    self._check_data_filtered(data)
-            elif 'package' in item['data_type']:
-                if 'release' in item['data_type']:
-                    data['releases'] = self._filter_releases(data['releases'])
-                    self._check_data_filtered(data['releases'])
-                else:
-                    data['records'] = self._filter_records(data['records'])
-                    self._check_data_filtered(data['records'])
-            elif 'list' in item['data_type']:
-                if 'release' in item['data_type']:
-                    data = self._filter_releases(data)
-                else:
-                    data = self._filter_records(data)
-                self._check_data_filtered(data)
-            else:
-                if item['data_type'] == 'release':
-                    [data] = self._filter_releases([data])
-                else:
-                    [data] = self._filter_records([data])
-                self._check_data_filtered([data])
+            if item['data_type'] == 'release_package':
+                data['releases'] = self._filter_releases(data['releases'])
+                self._check_data_filtered(data['releases'])
+            elif item['data_type'] == 'record_package':
+                data['records'] = self._filter_records(data['records'])
+                self._check_data_filtered(data['records'])
 
             item['data'] = json.dumps(data)
 
         return item
+
+    def open_spider(self, spider):
+        if spider.from_date and spider.until_date:
+            self.filter_arguments['from_date'] = spider.from_date
+            self.filter_arguments['until_date'] = spider.until_date
+            self.filter_functions.append(self._date_filter)
+            # More filter functions can be added here
 
 
 def _resolve_pointer(data, pointer):
