@@ -1,8 +1,10 @@
+import scrapy
+
 from kingfisher_scrapy.base_spider import CompressedFileSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
-class MexicoAPFBulk(CompressedFileSpider):
+class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
     """
     Domain
       Administración Pública Federal (APF) - Secretaria de la Función Pública (SFP) - Secretaría de Hacienda y Crédito
@@ -10,14 +12,25 @@ class MexicoAPFBulk(CompressedFileSpider):
     Bulk download documentation
       https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
     """
-    name = 'mexico_apf_bulk'
+    name = 'mexico_administracion_publica_federal_bulk'
 
     # BaseSpider
     root_path = 'item'
 
-    # CompressedFileSpider
+    # SimpleSpider
     data_type = 'release'
 
     def start_requests(self):
-        url = 'https://compranetinfo.hacienda.gob.mx/dabiertos/contrataciones_arr.json.zip'
-        yield self.build_request(url, formatter=components(-1))
+        yield scrapy.Request(
+            'https://datos.gob.mx/busca/api/3/action/package_search?q=concentrado-de-contrataciones-abiertas-de-la-apf',
+            meta={'file_name': 'list.json'},
+            callback=self.parse_list
+        )
+
+    @handle_http_error
+    def parse_list(self, response):
+        data = response.json()
+        for result in data['result']['results']:
+            for resource in result['resources']:
+                if resource['name'].endswith('JSON.') and resource['format'].upper() == 'JSON':
+                    yield self.build_request(resource['url'], formatter=components(-1))
