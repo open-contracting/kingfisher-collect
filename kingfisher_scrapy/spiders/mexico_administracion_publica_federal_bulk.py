@@ -7,8 +7,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
     """
     Domain
-      Administración Pública Federal (APF) - Secretaria de la Función Pública (SFP) - Secretaría de Hacienda y Crédito
-      Público (SHCP)
+      Administración Pública Federal (APF): Secretaría de Hacienda y Crédito Público (SHCP)
     Bulk download documentation
       https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
     """

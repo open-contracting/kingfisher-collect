@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import parameters
 class MexicoAdministracionPublicaFederalAPI(IndexSpider):
     """
     Domain
-      Administración Pública Federal (APF) - Secretaria de la Función Pública (SFP) - Secretaría de Hacienda y Crédito
+      Administración Pública Federal (APF): Secretaria de la Función Pública (SFP) - Secretaría de Hacienda y Crédito
       Público (SHCP)
     API documentation
       https://www.datos.gob.mx/busca/dataset/api-de-contrataciones-abiertas-de-la-apf
