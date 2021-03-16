@@ -865,12 +865,12 @@ Paraguay
 Peru
 ----
 
-.. autoclass:: kingfisher_scrapy.spiders.peru_compras_releases.PeruComprasReleases
+.. autoclass:: kingfisher_scrapy.spiders.peru_compras.PeruCompras
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl peru_compras_releases
+   scrapy crawl peru_compras
 
 Portugal
 --------
