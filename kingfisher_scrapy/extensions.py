@@ -373,13 +373,13 @@ class KingfisherProcessNGAPI:
 
         data = {
             "collection_id": self.collection_id,
-            "path": os.path.join(item['files_store'], item['path']),
+            "path": os.path.join(item.get("files_store", None), item.get("path", None)),
             "url": item.get('url', None)
         }
 
         if isinstance(item, FileError):
             # in case of error send info about it to api
-            data['errors'] = json.dumps(item['errors'])
+            data['errors'] = json.dumps(item.get("errors", None))
 
         def response_callback(response):
             if not response.code == 200:
