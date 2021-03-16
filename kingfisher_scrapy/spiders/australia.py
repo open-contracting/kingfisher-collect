@@ -27,7 +27,6 @@ class Australia(LinksSpider):
     next_page_formatter = staticmethod(parameters('cursor'))
 
     def start_requests(self):
-
         url = f'https://api.tenders.gov.au/ocds/findByDates/contractPublished/' \
               f'{self.from_date.strftime(self.date_format)}Z/{self.until_date.strftime(self.date_format)}Z'
 
