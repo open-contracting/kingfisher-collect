@@ -869,6 +869,16 @@ Paraguay
 
    env KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN=... KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET=... scrapy crawl paraguay_hacienda
 
+Peru
+----
+
+.. autoclass:: kingfisher_scrapy.spiders.peru_compras.PeruCompras
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl peru_compras
+
 Portugal
 --------
 
