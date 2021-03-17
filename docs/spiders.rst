@@ -913,6 +913,16 @@ Scotland
 
    scrapy crawl scotland_public_contracts
 
+Slovenia
+--------
+
+.. autoclass:: kingfisher_scrapy.spiders.slovenia.Slovenia
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl slovenia
+
 Spain
 -----
 
