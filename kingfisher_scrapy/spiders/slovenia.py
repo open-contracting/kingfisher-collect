@@ -24,4 +24,4 @@ class Slovenia(SimpleSpider):
         html_urls = response.xpath('//a/@href').getall()
         for url in html_urls:
             if 'ocds' and 'json' in url:
-                yield self.build_request(f"{self.url}{url}", formatter=components(-1))
+                yield self.build_request(f'{self.url}{url}', formatter=components(-1))
