@@ -24,7 +24,6 @@ class Malta(CompressedFileSpider):
     data_type = 'record_package'
     date_format = 'year-month'
     default_from_date = '2019-10'
-    encoding = 'mytmtm'
 
     def start_requests(self):
         yield scrapy.Request(
