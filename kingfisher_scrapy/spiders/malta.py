@@ -3,7 +3,7 @@ from urllib.parse import urlsplit
 import scrapy
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components, handle_http_error, join
 
 
 class Malta(CompressedFileSpider):
@@ -46,5 +46,5 @@ class Malta(CompressedFileSpider):
                 if not ((self.from_date.year <= year <= self.until_date.year)
                         and (self.from_date.month <= month <= self.until_date.month)):
                     continue
-            url = urlsplit(url)._replace(netloc=netloc).geturl()
-            yield scrapy.Request(url, meta={'file_name': components(-2)(f'{url}.zip')})
+            yield self.build_request(urlsplit(url)._replace(netloc=netloc).geturl(),
+                                     formatter=join(components(-2), extension='zip'))

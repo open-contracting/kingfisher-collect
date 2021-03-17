@@ -3,6 +3,7 @@ import json
 from datetime import date, timedelta
 from decimal import Decimal
 from functools import wraps
+from os.path import splitext
 from urllib.parse import parse_qs, urlencode, urlsplit
 
 from ijson import ObjectBuilder, utils
@@ -51,7 +52,7 @@ def parameters(*keys):
     return wrapper
 
 
-def join(*functions):
+def join(*functions, extension=None):
     """
     Returns a function that joins the given functions' outputs.
 
@@ -59,7 +60,10 @@ def join(*functions):
     'planning-page-1'
     """
     def wrapper(url):
-        return '-'.join(function(url) for function in functions)
+        value = '-'.join(function(url) for function in functions)
+        if extension:
+            return f'{value}.{extension}'
+        return value
     return wrapper
 
 
@@ -197,3 +201,14 @@ def default(obj):
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return itertools.zip_longest(*args, fillvalue=fillvalue)
+
+
+def get_file_name_and_extension(filename):
+    """
+    Given a ``filename`` returns its name and extension in two separate strings
+    >>> get_file_name_and_extension('test.json')
+    'test', 'json'
+    """
+    name, extension = splitext(filename)
+    extension = extension[1:].lower()
+    return name, extension

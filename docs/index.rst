@@ -9,6 +9,8 @@ You can:
 -  :doc:`Download data to a remote server, by using Scrapyd<scrapyd>`
 -  :doc:`Integrate with Kingfisher Process<kingfisher_process>`
 
+Instead of installing Kingfisher Collect to your computer, you can `follow this interactive step-by-step guide <https://colab.research.google.com/drive/1bN5C9h5YLUF9YpIprAeOMZcXJ5Tr6iaO>`__, to use Kingfisher Collect in `Google Colaboratory <https://research.google.com/colaboratory/faq.html>`__.
+
 You can also try using Kingfisher Collect with `Scrapy Cloud <https://scrapinghub.com/scrapy-cloud>`_.
 
 .. _how-it-works:

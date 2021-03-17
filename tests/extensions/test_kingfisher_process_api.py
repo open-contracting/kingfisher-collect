@@ -87,6 +87,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
             'collection_sample': str(is_sample),
+            'collection_ocds_version': '1.1',
             'file_name': 'file.json',
             'url': 'https://example.com/remote.json',
             # Specific to File.
@@ -150,6 +151,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, c
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
             'collection_sample': str(is_sample),
+            'collection_ocds_version': '1.1',
             'file_name': 'data.json',
             'url': 'https://example.com/remote.json',
             # Specific to FileItem.
@@ -201,6 +203,7 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
             'collection_sample': str(is_sample),
+            'collection_ocds_version': '1.1',
             'file_name': 'file.json',
             'url': 'https://example.com/remote.json',
             # Specific to FileError.
@@ -247,6 +250,7 @@ def test_item_error(sample, is_sample, ok, tmpdir, caplog):
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
             'collection_sample': str(is_sample),
+            'collection_ocds_version': '1.1',
             'file_name': 'file.json',
             'url': 'https://example.com/remote.json',
             # Specific to FileError.
@@ -287,6 +291,7 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
             'collection_sample': str(is_sample),
+            'collection_ocds_version': '1.1',
         }
 
         assert data['method'] == 'POST'
@@ -347,6 +352,7 @@ def test_spider_error(sample, is_sample, ok, tmpdir, caplog):
             'collection_source': 'test',
             'collection_data_version': '2001-02-03 04:05:06',
             'collection_sample': str(is_sample),
+            'collection_ocds_version': '1.1',
             'file_name': 'https://example.com/remote.json',
             'url': 'https://example.com/remote.json',
             # Specific to FileError.

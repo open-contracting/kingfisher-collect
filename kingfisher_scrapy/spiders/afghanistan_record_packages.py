@@ -15,6 +15,9 @@ class AfghanistanRecordPackages(AfghanistanPackagesBase):
     """
     name = 'afghanistan_record_packages'
 
+    # BaseSpider
+    skip_pluck = 'Already covered (see code for details)'  # afghanistan_release_packages
+
     # SimpleSpider
     data_type = 'record_package'
 

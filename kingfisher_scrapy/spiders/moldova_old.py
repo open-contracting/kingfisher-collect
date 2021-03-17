@@ -19,7 +19,7 @@ class MoldovaOld(PeriodicSpider):
     # BaseSpider
     date_format = 'year'
     default_from_date = '2012'
-    default_until_date = '2018'
+    default_until_date = '2017'
 
     # SimpleSpider
     data_type = 'release_package'

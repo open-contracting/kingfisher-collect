@@ -10,6 +10,9 @@ class NigeriaBudeshiReleases(NigeriaBudeshiBase):
     """
     name = 'nigeria_budeshi_releases'
 
+    # BaseSpider
+    skip_pluck = 'Already covered (see code for details)'  # nigeria_budeshi_records
+
     # SimpleSpider
     data_type = 'release_package'
 

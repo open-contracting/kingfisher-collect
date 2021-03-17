@@ -19,7 +19,7 @@ On the remote server, follow Scrapyd's `installation instructions <https://scrap
 
 .. code-block:: bash
 
-   curl -O https://raw.githubusercontent.com/open-contracting/kingfisher-collect/master/requirements.txt
+   curl -O https://raw.githubusercontent.com/open-contracting/kingfisher-collect/main/requirements.txt
    pip install -r requirements.txt
 
 Start Scrapyd
@@ -120,3 +120,9 @@ To :ref:`use an HTTP and/or HTTPS proxy<proxy>`, `use <https://scrapyd.readthedo
 .. note::
 
    The ``http_proxy`` and/or ``https_proxy`` environment variables must already be set in Scrapyd's environment on the remote server.
+
+If the crawl's log file contains HTTP 429 Too Many Requests errors, you can make the spider wait between requests by setting the `DOWNLOAD_DELAY <https://docs.scrapy.org/en/latest/topics/settings.html#download-delay>`__ setting (in seconds):
+
+.. code-block:: bash
+
+   curl http://localhost:6800/schedule.json -d project=kingfisher -d spider=spider_name -d setting=DOWNLOAD_DELAY=1

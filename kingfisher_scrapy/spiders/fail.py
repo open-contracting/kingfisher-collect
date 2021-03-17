@@ -18,7 +18,7 @@ class Fail(SimpleSpider):
     def start_requests(self):
         # Fine
         yield scrapy.Request(
-            'https://raw.githubusercontent.com/open-contracting/sample-data/master/fictional-example/1.1/ocds-213czf-000-00001-01-planning.json',  # noqa: E501
+            'https://raw.githubusercontent.com/open-contracting/sample-data/main/fictional-example/1.1/ocds-213czf-000-00001-01-planning.json',  # noqa: E501
             meta={'file_name': 'fine.json'}
         )
         # A straight 404

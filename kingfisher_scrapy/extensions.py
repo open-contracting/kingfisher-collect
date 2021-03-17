@@ -5,40 +5,66 @@ import os
 
 import sentry_sdk
 from scrapy import signals
-from scrapy.exceptions import NotConfigured
+from scrapy.exceptions import NotConfigured, StopDownload
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
-from kingfisher_scrapy.util import _pluck_filename
+from kingfisher_scrapy.util import _pluck_filename, get_file_name_and_extension
 
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 class KingfisherPluck:
-    def __init__(self, directory):
+    def __init__(self, directory, max_bytes):
         self.directory = directory
-        self.spiders_seen = set()
+        self.max_bytes = max_bytes
+
+        # The number of bytes received.
+        self.total_bytes_received = 0
+        # Whether `item_scraped` has been called.
+        self.item_scraped_called = False
 
     @classmethod
     def from_crawler(cls, crawler):
         directory = crawler.settings['KINGFISHER_PLUCK_PATH']
+        max_bytes = crawler.settings['KINGFISHER_PLUCK_MAX_BYTES']
 
-        extension = cls(directory=directory)
+        extension = cls(directory=directory, max_bytes=max_bytes)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
+        if max_bytes:
+            crawler.signals.connect(extension.bytes_received, signal=signals.bytes_received)
 
         return extension
 
-    def item_scraped(self, item, spider):
-        if not spider.pluck or spider.name in self.spiders_seen or not isinstance(item, PluckedItem):
+    def bytes_received(self, data, request, spider):
+        if (
+            not spider.pluck
+            or spider.dont_truncate
+            # We only limit bytes received for final requests (i.e. where the callback is the default `parse` method).
+            or request.callback
+            # ijson will parse the value at `root_path`, which can go to the end of the file.
+            # https://github.com/ICRAR/ijson/issues/43
+            or spider.root_path
+            # XLSX files must be read in full.
+            or spider.unflatten
+        ):
             return
 
-        self.spiders_seen.add(spider.name)
+        self.total_bytes_received += len(data)
+        if self.total_bytes_received >= self.max_bytes:
+            raise StopDownload(fail=False)
+
+    def item_scraped(self, item, spider):
+        if not spider.pluck or self.item_scraped_called or not isinstance(item, PluckedItem):
+            return
+
+        self.item_scraped_called = True
 
         self._write(spider, item['value'])
 
     def spider_closed(self, spider, reason):
-        if not spider.pluck or spider.name in self.spiders_seen:
+        if not spider.pluck or self.item_scraped_called:
             return
 
         self._write(spider, f'closed: {reason}')
@@ -66,7 +92,7 @@ class KingfisherFilesStore:
 
     def item_scraped(self, item, spider):
         """
-        If the item is a file, writes its data to the filename in the crawl's directory.
+        If the item is a File or FileItem, writes its data to the filename in the crawl's directory.
 
         Returns a dict with the metadata.
         """
@@ -74,15 +100,16 @@ class KingfisherFilesStore:
             return
 
         # The crawl's relative directory, in the format `<spider_name>[_sample]/<YYMMDD_HHMMSS>`.
-        name = spider.name
+        directory = spider.name
         if spider.sample:
-            name += '_sample'
+            directory += '_sample'
 
         file_name = item['file_name']
         if isinstance(item, FileItem):
-            file_name += f"-{item['number']}"
+            name, extension = get_file_name_and_extension(file_name)
+            file_name = f"{name}-{item['number']}.{extension}"
 
-        path = os.path.join(name, spider.get_start_time('%Y%m%d_%H%M%S'), file_name)
+        path = os.path.join(directory, spider.get_start_time('%Y%m%d_%H%M%S'), file_name)
 
         self._write_file(path, item['data'])
 
@@ -143,7 +170,9 @@ class KingfisherProcessAPI:
 
         extension = cls(url, key, directory=directory)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+        crawler.signals.connect(extension.item_error, signal=signals.item_error)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
+        crawler.signals.connect(extension.spider_error, signal=signals.spider_error)
 
         return extension
 
@@ -197,7 +226,10 @@ class KingfisherProcessAPI:
 
         if isinstance(item, FileItem):
             data['number'] = item['number']
-            data['data'] = item['data']
+            if isinstance(item['data'], (str, bytes)):
+                data['data'] = item['data']
+            else:
+                data['data'] = json.dumps(item['data'], default=util.default)
 
             return self._request(spider, 'create_file_item', item['url'], data)
 
@@ -231,7 +263,8 @@ class KingfisherProcessAPI:
         data = {
             'collection_source': spider.name,
             'collection_data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'collection_sample': str(bool(spider.sample))
+            'collection_sample': str(bool(spider.sample)),
+            'collection_ocds_version': spider.ocds_version,
         }
         if file_name:
             data['file_name'] = file_name

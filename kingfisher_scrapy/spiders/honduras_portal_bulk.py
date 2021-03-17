@@ -3,7 +3,7 @@ from kingfisher_scrapy.exceptions import SpiderArgumentError
 from kingfisher_scrapy.util import components
 
 
-class HondurasPortalBulkFiles(PeriodicSpider):
+class HondurasPortalBulk(PeriodicSpider):
     """
     Domain
       Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Secretaria de Finanzas de Honduras (SEFIN)
@@ -31,7 +31,7 @@ class HondurasPortalBulkFiles(PeriodicSpider):
     Bulk download documentation
       http://www.contratacionesabiertas.gob.hn/descargas/
     """
-    name = 'honduras_portal_bulk_files'
+    name = 'honduras_portal_bulk'
 
     # BaseSpider
     date_format = 'year-month'

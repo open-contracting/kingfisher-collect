@@ -20,6 +20,7 @@ Access methods for OCDS data are very similar. Spiders therefore share a lot of 
 -  :class:`~kingfisher_scrapy.base_spider.PeriodicSpider`: Use if the bulk downloads or API methods accept a year or a year and month as a query string parameter or URL path component.
 -  :class:`~kingfisher_scrapy.base_spider.LinksSpider`: Use if the API implements `pagination <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__.
 -  :class:`~kingfisher_scrapy.base_spider.CompressedFileSpider`: Use if the bulk downloads are ZIP or RAR files.
+-  :class:`~kingfisher_scrapy.base_spider.BigFileSpider`: Use if the downloads include a big JSON file as a release package that can not be processed in Kingfisher Process.
 -  :class:`~kingfisher_scrapy.base_spider.SimpleSpider`: Use in almost all other cases. ``IndexSpider``, ``PeriodicSpider`` and ``LinksSpider`` are child classes of this class.
 -  :class:`~kingfisher_scrapy.base_spider.BaseSpider`: All spiders inherit, directly or indirectly, from this class, which in turn inherits from `scrapy.Spider <https://docs.scrapy.org/en/latest/topics/spiders.html>`__. Use if none of the above can be used.
 
@@ -55,6 +56,7 @@ Since many class attributes that control a spider's behavior, please put the cla
       unflatten_args = {}
       line_delimited = True
       root_path = 'item'
+      root_path_max_length = 1
       skip_pluck = 'A reason'
 
       # SimpleSpider
@@ -103,6 +105,7 @@ Test the spider
 
 #. :doc:`Check the log for errors and warnings<../logs>`
 #. Check whether the data is as expected, in format and number
+#. Integrate it with `Kingfisher Process<../kingfisher_process>` and check for errors and warnings in its logs
 
 Scrapy offers some debugging features that we haven't used yet:
 
@@ -159,6 +162,12 @@ The Scrapy framework is very flexible. To maintain a good separation of concerns
    -  Raise a :class:`~kingfisher_scrapy.exceptions.AccessTokenError` exception in a request's callback, if the maximum number of attempts to retrieve an access token is reached
    -  Raise any other exception, to be caught by a `spider_error <https://docs.scrapy.org/en/latest/topics/signals.html#spider-error>`__ handler in an extension
 
+-  A downloader middleware's responsibility is to process requests, before they are sent to the internet, and responses, before they are processed by the spider. It should only:
+
+   -  Yield a request, for example :class:`~kingfisher_scrapy.middlewares.ParaguayAuthMiddleware`
+   -  Return a Deferred, for example :class:`~kingfisher_scrapy.middlewares.DelayedRequestMiddleware`
+   -  Yield items, for example :class:`~kingfisher_scrapy.middlewares.AddPackageMiddleware`
+
 -  An item pipeline's responsibility is to clean, validate, filter, modify or substitute items. It should only:
 
    -  Return an item
@@ -192,3 +201,4 @@ API reference
    extensions.rst
    util.rst
    exceptions.rst
+   middlewares.rst

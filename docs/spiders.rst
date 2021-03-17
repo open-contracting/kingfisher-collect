@@ -1,12 +1,14 @@
 Spiders
 =======
 
+In Kingfisher Collect, there is one spider per data source. Each data source exposes its data in different ways, contains data from different years, and covers different stages of the contracting process.
+
 .. _spider-metadata:
 
 Spider metadata
 ---------------
 
-Below, we provide some metadata for each spider. The meaning of the metadata is:
+Below, we provide some of this information (metadata) for each spider. The meaning of the metadata is:
 
 .. list-table::
    :header-rows: 1
@@ -83,7 +85,7 @@ All spiders support these arguments:
 
 ..
    If you add or rename a spider argument, remember to update `ScrapyLogFile.is_complete()` in:
-   https://github.com/open-contracting/kingfisher-archive/blob/master/ocdskingfisherarchive/scrapy_log_file.py
+   https://github.com/open-contracting/kingfisher-archive/blob/main/ocdskingfisherarchive/scrapy_log_file.py
 
 Some spiders support these arguments:
 
@@ -275,13 +277,6 @@ Costa Rica
 Digiwhist
 ---------
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_armenia.DigiwhistArmenia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_armenia
-
 .. autoclass:: kingfisher_scrapy.spiders.digiwhist_austria.DigiwhistAustria
    :no-members:
 
@@ -464,13 +459,6 @@ Digiwhist
 
    scrapy crawl digiwhist_romania
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_serbia.DigiwhistSerbia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_serbia
-
 .. autoclass:: kingfisher_scrapy.spiders.digiwhist_slovakia.DigiwhistSlovakia
    :no-members:
 
@@ -505,6 +493,13 @@ Digiwhist
 .. code-block:: bash
 
    scrapy crawl digiwhist_switzerland
+
+.. autoclass:: kingfisher_scrapy.spiders.digiwhist_ted.DigiwhistTED
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl digiwhist_ted
 
 .. autoclass:: kingfisher_scrapy.spiders.digiwhist_united_kingdom.DigiwhistUnitedKingdom
    :no-members:
@@ -591,12 +586,12 @@ Honduras
 
    scrapy crawl honduras_oncae
 
-.. autoclass:: kingfisher_scrapy.spiders.honduras_portal_bulk_files.HondurasPortalBulkFiles
+.. autoclass:: kingfisher_scrapy.spiders.honduras_portal_bulk.HondurasPortalBulk
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl honduras_portal_bulk_files
+   scrapy crawl honduras_portal_bulk
 
 .. autoclass:: kingfisher_scrapy.spiders.honduras_portal_records.HondurasPortalRecords
    :no-members:
@@ -685,12 +680,19 @@ Malta
 Mexico
 ------
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_administracion_publica_federal.MexicoAdministracionPublicaFederal
+.. autoclass:: kingfisher_scrapy.spiders.mexico_administracion_publica_federal_api.MexicoAdministracionPublicaFederalAPI
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl mexico_administracion_publica_federal
+   scrapy crawl mexico_administracion_publica_federal_api
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_administracion_publica_federal_bulk.MexicoAdministracionPublicaFederalBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_administracion_publica_federal_bulk
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_grupo_aeroporto.MexicoGrupoAeroporto
    :no-members:
@@ -726,6 +728,13 @@ Mexico
 .. code-block:: bash
 
    scrapy crawl mexico_nuevo_leon_releases
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_plataforma_digital_nacional.MexicoPlataformaDigitalNacional
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_plataforma_digital_nacional
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien.MexicoQuienEsQuien
    :no-members:
@@ -860,6 +869,16 @@ Paraguay
 
    env KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN=... KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET=... scrapy crawl paraguay_hacienda
 
+Peru
+----
+
+.. autoclass:: kingfisher_scrapy.spiders.peru_compras.PeruCompras
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl peru_compras
+
 Portugal
 --------
 
@@ -893,6 +912,16 @@ Scotland
 .. code-block:: bash
 
    scrapy crawl scotland_public_contracts
+
+Slovenia
+--------
+
+.. autoclass:: kingfisher_scrapy.spiders.slovenia.Slovenia
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl slovenia
 
 Spain
 -----

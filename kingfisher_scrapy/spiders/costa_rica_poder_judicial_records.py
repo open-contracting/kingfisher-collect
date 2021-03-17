@@ -18,6 +18,9 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
     """
     name = 'costa_rica_poder_judicial_records'
 
+    # BaseSpider
+    skip_pluck = 'Already covered (see code for details)'  # costa_rica_poder_judicial_releases
+
     # SimpleSpider
     data_type = 'record_package'
     date_format = 'year'
