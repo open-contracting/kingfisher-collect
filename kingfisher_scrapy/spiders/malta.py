@@ -24,6 +24,7 @@ class Malta(CompressedFileSpider):
     data_type = 'record_package'
     date_format = 'year-month'
     default_from_date = '2019-10'
+    encoding = 'mytmtm'
 
     def start_requests(self):
         yield scrapy.Request(
@@ -38,10 +39,12 @@ class Malta(CompressedFileSpider):
         netloc = urlsplit(response.request.url).netloc
         for url in urls:
             if self.from_date and self.until_date:
-                year = int(url[82:86])
-                month = int(url[87:])
+                # URL looks like http://malta-demo-server.eurodyn.com/ocds/services/recordpackage/getrecordpackage/
+                # 2020/1
+                year = int(url.split('/')[-2])
+                month = int(url.split('/')[-1])
                 if not ((self.from_date.year <= year <= self.until_date.year)
                         and (self.from_date.month <= month <= self.until_date.month)):
                     continue
-            # URL looks like http://malta-demo-server.eurodyn.com/ocds/services/recordpackage/getrecordpackage/2020/1
-            yield self.build_request(urlsplit(url)._replace(netloc=netloc).geturl(), formatter=components(-2))
+            url = urlsplit(url)._replace(netloc=netloc).geturl()
+            yield scrapy.Request(url, meta={'file_name': components(-2)(f'{url}.zip')})

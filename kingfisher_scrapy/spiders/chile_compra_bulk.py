@@ -26,9 +26,11 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
     # SimpleSpider
     data_type = 'record_package'
 
-    # PeriodicSpider variables
+    # BaseSpider
     date_format = 'year-month'
     default_from_date = '2009-01'
+
+    # PeriodicSpider
     pattern = 'https://ocds.blob.core.windows.net/ocds/{0.year:d}{0.month:02d}.zip'
 
     def build_file(self, file_name=None, url=None, data=None, **kwargs):

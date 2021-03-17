@@ -20,7 +20,7 @@ class ColombiaBulk(CompressedFileSpider):
         Filter by system:
 
         SECOP1
-          Sistema Electrónico para la Contratación Pública (plataforma exclusivamente de publicidad)
+          Sistema Electrónico para la Contratación Pública (todos los procesos de contratación)
         SECOP2
           Sistema Electrónico para la Contratación Pública (todos los procesos de contratación)
         TVEC
