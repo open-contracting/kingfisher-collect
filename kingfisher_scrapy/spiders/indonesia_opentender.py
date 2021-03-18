@@ -39,8 +39,8 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
             code = item['code']
             if code:
                 url = f'{self.base_url}tender/export-ocds-batch?year={date}&lpse={code}'
-                yield self.build_request(url, formatter=join(components(-1), parameters('year', 'lpse'), extension='zip'))
+                yield self.build_request(url, formatter=join(components(-1),
+                                                             parameters('year', 'lpse'), extension='zip'))
 
     def get_formatter(self):
         return components(-1)
-
