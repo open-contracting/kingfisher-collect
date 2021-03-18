@@ -34,11 +34,11 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     @handle_http_error
     def parse_list(self, response):
         data = response.json()
-        date = response.request.meta['date']
+        year = response.request.url.split('=')[1]
         for item in data['data']:
             code = item['code']
             if code:
-                url = f'{self.base_url}tender/export-ocds-batch?year={date}&lpse={code}'
+                url = f'{self.base_url}tender/export-ocds-batch?year={year}&lpse={code}'
                 yield self.build_request(url, formatter=join(components(-1),
                                                              parameters('year', 'lpse'), extension='zip'))
 
