@@ -491,7 +491,7 @@ class PeriodicSpider(SimpleSpider):
 
         for date in date_range:
             for url in self.build_urls(date):
-                yield self.build_request(url, self.get_formatter(), meta={'date': date},
+                yield self.build_request(url, self.get_formatter(),
                                          callback=self.start_requests_callback)
 
     def build_urls(self, date):
