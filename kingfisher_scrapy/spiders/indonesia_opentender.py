@@ -12,7 +12,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
            If ``from_date`` is not provided defaults to 2008.
          until_date
            Download only releases until this date (YYYY format).
-           If ``from_date`` is not provided defaults to current year.
+           If ``until_date`` is not provided defaults to current year.
        Bulk download documentation
          https://v3.opentender.net/#/ocds
     """

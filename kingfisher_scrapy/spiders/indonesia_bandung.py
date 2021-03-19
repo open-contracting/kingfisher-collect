@@ -12,7 +12,7 @@ class IndonesiaBandung(PeriodicSpider):
         If ``from_date`` is not provided defaults to 2013.
       until_date
         Download only releases until this date (YYYY format).
-        If ``from_date`` is not provided defaults to current year.
+        If ``until_date`` is not provided defaults to current year.
     API endpoints
       Get contract list by year
         Link
