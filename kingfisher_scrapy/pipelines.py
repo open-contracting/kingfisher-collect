@@ -39,12 +39,12 @@ class Validate:
         if isinstance(item, FileItem):
             key = (item['file_name'], item['number'])
             if key in self.file_items:
-                spider.logger.warning('Duplicate FileItem: %r', key)
+                raise DropItem('Duplicate FileItem: %r', key)
             self.file_items.add(key)
         elif isinstance(item, File):
             key = item['file_name']
             if key in self.files:
-                spider.logger.warning('Duplicate File: %r', key)
+                raise DropItem('Duplicate File: %r', key)
             self.files.add(key)
 
         return item

@@ -1,5 +1,6 @@
 import pytest
 from jsonschema import ValidationError
+from scrapy.exceptions import DropItem
 
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.pipelines import Validate
@@ -102,13 +103,8 @@ def test_process_item_duplicate_file(caplog):
     })
 
     pipeline.process_item(item, spider)
-    pipeline.process_item(item, spider)
-    item2 = item.copy()
-    item2['file_name'] = 'file2'
-    pipeline.process_item(item2, spider)
-
-    assert len(caplog.messages) == 1
-    assert caplog.messages[0] == "Duplicate File: 'test1'"
+    with pytest.raises(DropItem):
+        pipeline.process_item(item, spider)
 
 
 def test_process_item_duplicate_file_item(caplog):
@@ -123,10 +119,5 @@ def test_process_item_duplicate_file_item(caplog):
     })
 
     pipeline.process_item(item, spider)
-    pipeline.process_item(item, spider)
-    item2 = item.copy()
-    item2['number'] = 2
-    pipeline.process_item(item2, spider)
-
-    assert len(caplog.messages) == 1
-    assert caplog.messages[0] == "Duplicate FileItem: ('test1', 1)"
+    with pytest.raises(DropItem):
+        pipeline.process_item(item, spider)
