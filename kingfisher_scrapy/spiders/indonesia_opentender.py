@@ -21,7 +21,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
 
     # BaseSpider
     date_format = 'year'
-    default_from_date = '2020'
+    default_from_date = '2008'
 
     # SimpleSpider
     data_type = 'release_package'
