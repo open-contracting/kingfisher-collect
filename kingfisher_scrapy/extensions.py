@@ -275,8 +275,7 @@ class KingfisherProcessAPI:
             # https://twistedmatrix.com/documents/current/api/twisted.python.failure.Failure.html
             if isinstance(errors, Failure):
                 errors = {'twisted': str(errors)}
-            else:
-                data['errors'] = json.dumps(errors)
+            data['errors'] = json.dumps(errors)
         return data
 
 
