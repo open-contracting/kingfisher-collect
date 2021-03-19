@@ -90,8 +90,8 @@ def test_data_types(data_type, data, root_path):
     assert item == expected
 
 
-@pytest.mark.parametrize('sample,len_releases', [(None, 100), (5, 5)])
-def test_parse_release_package(sample, len_releases):
+@pytest.mark.parametrize('sample,len_releases,file_name', [(None, 100, 'test'), (5, 5, 'test')])
+def test_parse_release_package(sample, len_releases, file_name):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.resize_package = True
@@ -106,7 +106,7 @@ def test_parse_release_package(sample, len_releases):
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
         zipfile.writestr('test.json', json.dumps(package))
 
-    response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
+    response = response_fixture(body=io.getvalue(), meta={'file_name': f'{file_name}.zip'})
     generator = spider.parse(response)
     item = next(generator)
 
@@ -116,7 +116,7 @@ def test_parse_release_package(sample, len_releases):
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
         assert len(item) == 6
-        assert item['file_name'] == 'test.json'
+        assert item['file_name'] == f'{file_name}-test.json'
         assert item['url'] == 'http://example.com'
         assert item['number'] == i
         assert len(json.loads(item['data'])['releases']) == len_releases
@@ -181,7 +181,7 @@ def test_line_delimited_json_middleware_compressed(sample):
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
         assert item == {
-            'file_name': 'test.json',
+            'file_name': 'test-test.json',
             'url': 'http://example.com',
             'number': i,
             'data': '{"key": %s}\n' % i,
