@@ -1,3 +1,4 @@
+import json
 import os
 from unittest.mock import PropertyMock, patch
 
@@ -5,6 +6,7 @@ import pytest
 import pytest_twisted
 from scrapy.exceptions import NotConfigured
 from scrapy.http import Request, Response
+from twisted.python.failure import Failure
 
 from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessAPI
 from kingfisher_scrapy.items import FileError, FileItem
@@ -231,6 +233,11 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
 def test_item_error(sample, is_sample, ok, tmpdir, caplog):
+    try:
+        {}['nonexistent']
+    except KeyError:
+        failure = Failure()
+
     with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
         mocked.return_value = 200 if ok else 400
 
@@ -240,11 +247,13 @@ def test_item_error(sample, is_sample, ok, tmpdir, caplog):
         item = FileError({
             'file_name': 'file.json',
             'url': 'https://example.com/remote.json',
-            'errors': 'ExceptionRaised',
         })
 
-        response = yield extension.item_error(item, 'ResponseObject', spider, 'ExceptionRaised')
+        scrapy_request = yield Request('https://example.com/remote.json')
+        scrapy_response = Response('https://example.com/remote.json', request=scrapy_request)
+        response = yield extension.item_error(item, scrapy_response, spider, failure)
         data = yield response.json()
+        errors = json.loads(data['form'].pop('errors'))
 
         form = {
             'collection_source': 'test',
@@ -253,8 +262,6 @@ def test_item_error(sample, is_sample, ok, tmpdir, caplog):
             'collection_ocds_version': '1.1',
             'file_name': 'file.json',
             'url': 'https://example.com/remote.json',
-            # Specific to FileError.
-            'errors': '"ExceptionRaised"',
         }
 
         assert data['method'] == 'POST'
@@ -264,6 +271,9 @@ def test_item_error(sample, is_sample, ok, tmpdir, caplog):
         assert data['args'] == {}
         assert data['data'] == ''
         assert data['files'] == {}
+
+        assert len(errors) == 1
+        assert errors['twisted'].startswith("[Failure instance: Traceback: <class 'KeyError'>: 'nonexistent'\n")
 
         if not ok:
             message = 'create_file_error failed (file.json) with status code: 400'
@@ -337,6 +347,11 @@ def test_spider_closed_other_reason(tmpdir):
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
 def test_spider_error(sample, is_sample, ok, tmpdir, caplog):
+    try:
+        {}['nonexistent']
+    except KeyError:
+        failure = Failure()
+
     with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
         mocked.return_value = 200 if ok else 400
 
@@ -345,8 +360,9 @@ def test_spider_error(sample, is_sample, ok, tmpdir, caplog):
 
         scrapy_request = yield Request('https://example.com/remote.json')
         scrapy_response = Response('https://example.com/remote.json', request=scrapy_request)
-        response = yield extension.spider_error('ExceptionRaised', scrapy_response, spider)
+        response = yield extension.spider_error(failure, scrapy_response, spider)
         data = yield response.json()
+        errors = json.loads(data['form'].pop('errors'))
 
         form = {
             'collection_source': 'test',
@@ -355,8 +371,6 @@ def test_spider_error(sample, is_sample, ok, tmpdir, caplog):
             'collection_ocds_version': '1.1',
             'file_name': 'https://example.com/remote.json',
             'url': 'https://example.com/remote.json',
-            # Specific to FileError.
-            'errors': '"ExceptionRaised"',
         }
 
         assert data['method'] == 'POST'
@@ -366,6 +380,9 @@ def test_spider_error(sample, is_sample, ok, tmpdir, caplog):
         assert data['args'] == {}
         assert data['data'] == ''
         assert data['files'] == {}
+
+        assert len(errors) == 1
+        assert errors['twisted'].startswith("[Failure instance: Traceback: <class 'KeyError'>: 'nonexistent'\n")
 
         if not ok:
             message = 'create_file_error failed (https://example.com/remote.json) with status code: 400'
