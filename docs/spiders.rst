@@ -708,19 +708,12 @@ Mexico
 
    scrapy crawl mexico_grupo_aeroporto
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_inai.MexicoINAI
+.. autoclass:: kingfisher_scrapy.spiders.mexico_inai_api.MexicoINAIAPI
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl mexico_inai
-
-.. autoclass:: kingfisher_scrapy.spiders.mexico_inai_portal.MexicoINAIPortal
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_inai_portal
+   scrapy crawl mexico_inai_api
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_records.MexicoNuevoLeonRecords
    :no-members:
