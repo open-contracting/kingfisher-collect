@@ -701,7 +701,7 @@ Mexico
 
    scrapy crawl mexico_grupo_aeroporto
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_inai_api.MexicoINAIAAPI
+.. autoclass:: kingfisher_scrapy.spiders.mexico_inai_api.MexicoINAIAPI
    :no-members:
 
 .. code-block:: bash

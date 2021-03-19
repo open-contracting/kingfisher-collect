@@ -2,7 +2,7 @@ from kingfisher_scrapy.base_spider import PeriodicSpider
 from kingfisher_scrapy.util import components
 
 
-class MexicoINAIAAPI(PeriodicSpider):
+class MexicoINAIAPI(PeriodicSpider):
     """
     Domain
       Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI)
@@ -12,7 +12,7 @@ class MexicoINAIAAPI(PeriodicSpider):
         If ``from_date`` is not provided defaults to 2015.
       until_date
         Download only releases until this date (YYYY format).
-        If ``from_date`` is not provided defaults to current year.
+        If ``until_date`` is not provided defaults to 2020.
     API documentation
       http://contratacionesabiertas.inai.org.mx/contratacionesabiertas/datosabiertos
     """
@@ -22,7 +22,7 @@ class MexicoINAIAAPI(PeriodicSpider):
     root_path = 'arrayReleasePackage.item'
     date_format = 'year'
     default_from_date = '2015'
-
+default_until_date = '2020'
     # SimpleSpider
     data_type = 'release_package'
 
