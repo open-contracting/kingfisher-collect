@@ -22,7 +22,8 @@ class MexicoINAIAPI(PeriodicSpider):
     root_path = 'arrayReleasePackage.item'
     date_format = 'year'
     default_from_date = '2015'
-default_until_date = '2020'
+    default_until_date = '2020'
+
     # SimpleSpider
     data_type = 'release_package'
 
