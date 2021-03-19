@@ -627,6 +627,13 @@ Indonesia
 
    scrapy crawl indonesia_bandung
 
+.. autoclass:: kingfisher_scrapy.spiders.indonesia_opentender.IndonesiaOpentender
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl indonesia_opentender
+
 Italy
 -----
 
