@@ -39,12 +39,12 @@ class Validate:
         if isinstance(item, FileItem):
             key = (item['file_name'], item['number'])
             if key in self.file_items:
-                raise DropItem('Duplicate FileItem: %r', key)
+                raise DropItem(f'Duplicate File Item: {key[0]}-{key[1]}')
             self.file_items.add(key)
         elif isinstance(item, File):
             key = item['file_name']
             if key in self.files:
-                raise DropItem('Duplicate File: %r', key)
+                raise DropItem(f'Duplicate File: {key}')
             self.files.add(key)
 
         return item

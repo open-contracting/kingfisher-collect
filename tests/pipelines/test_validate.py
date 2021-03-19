@@ -103,8 +103,9 @@ def test_process_item_duplicate_file(caplog):
     })
 
     pipeline.process_item(item, spider)
-    with pytest.raises(DropItem):
+    with pytest.raises(DropItem) as excinfo:
         pipeline.process_item(item, spider)
+    assert str(excinfo.value) == "Duplicate File: test1"
 
 
 def test_process_item_duplicate_file_item(caplog):
@@ -119,5 +120,6 @@ def test_process_item_duplicate_file_item(caplog):
     })
 
     pipeline.process_item(item, spider)
-    with pytest.raises(DropItem):
+    with pytest.raises(DropItem) as excinfo:
         pipeline.process_item(item, spider)
+    assert str(excinfo.value) == "Duplicate File Item: test1-1"
