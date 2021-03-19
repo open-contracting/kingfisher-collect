@@ -21,7 +21,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
 
     # BaseSpider
     date_format = 'year'
-    default_from_date = '2008'
+    default_from_date = '2020'
 
     # SimpleSpider
     data_type = 'release_package'
@@ -35,9 +35,12 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     def parse_list(self, response):
         data = response.json()
         year = response.request.url.split('=')[1]
+        requested_codes = []
         for item in data['data']:
             code = item['code']
-            if code:
+            # there are some duplicated codes
+            if code not in requested_codes:
+                requested_codes.append(code)
                 url = f'{self.base_url}tender/export-ocds-batch?year={year}&lpse={code}'
                 yield self.build_request(url, formatter=join(components(-1),
                                                              parameters('year', 'lpse'), extension='zip'))
