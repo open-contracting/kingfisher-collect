@@ -354,7 +354,8 @@ class KingfisherProcessNGAPI:
 
         data = {
             "collection_id": self.collection_id,
-            "reason": reason
+            "reason": reason,
+            "stats": json.dumps(spider.crawler.stats.get_stats(), default=str)
         }
 
         def response_callback(response):
