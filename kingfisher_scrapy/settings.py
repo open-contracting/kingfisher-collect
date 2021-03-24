@@ -83,15 +83,8 @@ EXTENSIONS = {
     # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
     'kingfisher_scrapy.extensions.KingfisherProcessAPI': 500,
-<<<<<<< HEAD
     'kingfisher_scrapy.extensions.KingfisherItemCount': 600,
     'kingfisher_scrapy.extensions.KingfisherProcessNGAPI': 700,
-<<<<<<< HEAD
-=======
-    'kingfisher_scrapy.extensions.KingfisherProcessNGAPI': 600,
->>>>>>> basic naive integration with kingfisher process NG
-=======
->>>>>>> 2c3a471f94d372cba64ae23e983fcb64a1ffa78e
 }
 
 # Configure item pipelines
@@ -111,37 +104,10 @@ SENTRY_DSN = os.getenv('SENTRY_DSN')
 # https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process.html
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
 KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-KINGFISHER_NG_API_URI = os.getenv('KINGFISHER_NG_API_URL')
-=======
-KINGFISHER_NG_API_URL = os.getenv('KINGFISHER_NG_API_URL')
->>>>>>> rafactored URI to URL
-=======
-KINGFISHER_NG_API_URL = "http://127.0.0.1:22061"
->>>>>>> added sync and async calls to api
-=======
-KINGFISHER_NG_API_URL = os.getenv('KINGFISHER_NG_API_URL')
->>>>>>> reverted forgotten config file
-KINGFISHER_NG_API_USERNAME = os.getenv('KINGFISHER_NG_API_USERNAME')
-KINGFISHER_NG_API_PASSWORD = os.getenv('KINGFISHER_NG_API_PASSWORD')
-=======
-KINGFISHER_NG_API_URI = 'http://localhost:22061'
->>>>>>> basic naive integration with kingfisher process NG
-=======
+
 KINGFISHER_NG_API_URI = os.getenv('KINGFISHER_NG_API_URL')
 KINGFISHER_NG_API_USERNAME = os.getenv('KINGFISHER_NG_API_USERNAME')
 KINGFISHER_NG_API_PASSWORD = os.getenv('KINGFISHER_NG_API_PASSWORD')
->>>>>>> added config
-=======
-KINGFISHER_NG_API_URL = os.getenv('KINGFISHER_NG_API_URL')
-KINGFISHER_NG_API_USERNAME = os.getenv('KINGFISHER_NG_API_USERNAME')
-KINGFISHER_NG_API_PASSWORD = os.getenv('KINGFISHER_NG_API_PASSWORD')
->>>>>>> 2c3a471f94d372cba64ae23e983fcb64a1ffa78e
 
 # If Kingfisher Process can read Kingfisher Collect's `FILES_STORE`, then Kingfisher Collect can send file paths
 # instead of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.
