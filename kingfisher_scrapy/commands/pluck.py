@@ -2,7 +2,6 @@ import json
 import logging
 import os
 from collections import defaultdict
-from datetime import datetime
 
 from scrapy.commands import ScrapyCommand
 from scrapy.exceptions import UsageError
