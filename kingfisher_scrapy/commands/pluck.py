@@ -46,7 +46,6 @@ class Pluck(ScrapyCommand):
         if os.path.isfile(filename):
             os.unlink(filename)
 
-        year = datetime.today().year
         skipped = defaultdict(list)
         running = []
         for spider_name in self.crawler_process.spider_loader.list():
@@ -56,7 +55,7 @@ class Pluck(ScrapyCommand):
                     skipped[spidercls.skip_pluck].append(spider_name)
                 else:
                     running.append(spider_name)
-                    self.crawler_process.crawl(spidercls, year=year, sample=1, package_pointer=opts.package_pointer,
+                    self.crawler_process.crawl(spidercls, sample=1, package_pointer=opts.package_pointer,
                                                release_pointer=opts.release_pointer, truncate=opts.truncate)
 
         with open('pluck_skipped.json', 'w') as f:
