@@ -424,17 +424,3 @@ class KingfisherProcessNGAPI:
         self.spider.logger.debug("Sent sync request to kingfisher process url {}/{} with data {}".format(
             self.url, url, data))
         return requests.post("{}/{}".format(self.url, url), json=data, **kwargs)
-
-    def _post_async(self, url, data, callback):
-        """
-        Posts asynchronous requests to Kingfisher Process' API, adding authentication if needed.
-        """
-        kwargs = {}
-        if self.username and self.password:
-            kwargs['auth'] = (self.username, self.password)
-
-        self.spider.logger.debug("Sent async request to kingfisher process url {}/{} with data {}".format(
-            self.url, url, data))
-        req = treq.post("{}/{}".format(self.url, url), json=data, **kwargs)
-
-        req.addCallback(callback)

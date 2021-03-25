@@ -2,9 +2,8 @@ import os
 from unittest.mock import MagicMock
 
 import pytest
-from scrapy.exceptions import NotConfigured
-
 from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessNGAPI
+from scrapy.exceptions import NotConfigured
 from tests import spider_with_crawler, spider_with_files_store
 
 
@@ -95,16 +94,23 @@ def test_spider_closed(tmpdir):
 
     response = Response()
     response.ok = True
-    response.text = '{"collection_id":"1"}'
+    response.json_response = '{"collection_id":"1"}'
 
-    extension._post_async = MagicMock(return_value=response)
+    extension._post_sync = MagicMock(return_value=response)
     extension.spider_closed(spider, "done")
 
-    call_args = extension._post_async.call_args
+    call_args = extension._post_sync.call_args
     call = call_args[0]
 
     assert call[0] == "api/v1/close_collection"
-    assert call[1] == {'collection_id': 1, 'reason': 'done'}
+    assert call[1] == {
+                        'collection_id': 1,
+                        'reason': 'done',
+                        'stats': {
+                            'kingfisher_process_items_failed': 0,
+                            'kingfisher_process_items_sent': 0,
+                            'start_time': '2001-02-03 04:05:06'
+                        }}
 
 
 def test_item_scraped(tmpdir):
@@ -131,15 +137,15 @@ def test_item_scraped(tmpdir):
 
     response = Response()
     response.ok = True
-    response.text = '{"collection_id":"1"}'
+    response.json_response = '{"collection_id":"1"}'
 
-    extension._post_async = MagicMock(return_value=response)
+    extension._post_sync = MagicMock(return_value=response)
     extension.item_scraped(item, spider)
 
-    call_args = extension._post_async.call_args
+    call_args = extension._post_sync.call_args
     call = call_args[0]
     assert call[0] == "api/v1/create_collection_file"
     assert call[1] == {
-                                             'collection_id': 1,
-                                             'path': os.path.join(item['files_store'], item['path']),
-                                             'url': 'https://example.com/remote.json'}
+                        'collection_id': 1,
+                        'path': os.path.join(item['files_store'], item['path']),
+                        'url': 'https://example.com/remote.json'}
