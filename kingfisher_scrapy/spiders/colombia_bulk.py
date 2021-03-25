@@ -19,12 +19,12 @@ class ColombiaBulk(CompressedFileSpider):
       system
         Filter by system:
 
-        SECOP1
-          Sistema Electrónico para la Contratación Pública (todos los procesos de contratación)
-        SECOP2
-          Sistema Electrónico para la Contratación Pública (todos los procesos de contratación)
-        TVEC
-          Tienda Virtual del Estado Colombiano (acuerdos marco, agregación de demanda, mínima cuantía)
+          SECOP1
+            Sistema Electrónico para la Contratación Pública (todos los procesos de contratación)
+          SECOP2
+            Sistema Electrónico para la Contratación Pública (todos los procesos de contratación)
+          TVEC
+            Tienda Virtual del Estado Colombiano (acuerdos marco, agregación de demanda, mínima cuantía)
     Bulk download documentation
       https://www.colombiacompra.gov.co/transparencia/datos-json
     """
