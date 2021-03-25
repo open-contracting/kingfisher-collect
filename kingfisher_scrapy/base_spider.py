@@ -169,7 +169,7 @@ class BaseSpider(scrapy.Spider):
             date = self.crawler.stats.get_value('start_time')
         return date.strftime(format)
 
-    def build_request(self, url, formatter, **kwargs):
+    def build_request(self, url, formatter, priority=0, **kwargs):
         """
         Returns a Scrapy request, with a file name added to the request's ``meta`` attribute. If the file name doesn't
         have a ``.json``, ``.csv``, ``.xlsx``, ``.rar`` or ``.zip`` extension, it adds a ``.json`` extension.
@@ -201,6 +201,7 @@ class BaseSpider(scrapy.Spider):
 
         :param str url: the URL to request
         :param formatter: a function that accepts a URL and returns a file name
+        :param priority: the priority of this request (defaults to 0).
         :returns: a Scrapy request
         :rtype: scrapy.Request
         """
@@ -210,7 +211,8 @@ class BaseSpider(scrapy.Spider):
         meta = {'file_name': file_name}
         if 'meta' in kwargs:
             meta.update(kwargs.pop('meta'))
-        return scrapy.Request(url, meta=meta, **kwargs)
+
+        return scrapy.Request(url, meta=meta, priority=priority, **kwargs)
 
     def build_file_from_response(self, response, **kwargs):
         """
@@ -490,8 +492,9 @@ class PeriodicSpider(SimpleSpider):
             date_range = util.date_range_by_month(start, stop)
 
         for date in date_range:
-            for url in self.build_urls(date):
-                yield self.build_request(url, self.get_formatter(), callback=self.start_requests_callback)
+            for number, url in enumerate(self.build_urls(date)):
+                yield self.build_request(url, self.get_formatter(), callback=self.start_requests_callback,
+                                         priority=number * -1)
 
     def build_urls(self, date):
         """
@@ -577,8 +580,9 @@ class IndexSpider(SimpleSpider):
             data = response.json()
         except ValueError:
             data = None
-        for value in self.range_generator(data, response):
-            yield self.build_request(self.url_builder(value, data, response), formatter=self.formatter, **kwargs)
+        for number, value in enumerate(self.range_generator(data, response)):
+            yield self.build_request(self.url_builder(value, data, response), formatter=self.formatter,
+                                     priority=number * -1, **kwargs)
 
     def pages_from_total_range_generator(self, data, response):
         pages = resolve_pointer(data, self.total_pages_pointer)
@@ -592,7 +596,10 @@ class IndexSpider(SimpleSpider):
     def limit_offset_range_generator(self, data, response):
         limit = self._resolve_limit(data)
         count = resolve_pointer(data, self.count_pointer)
-        return range(self.limit, count, limit)
+        if not self.yield_list_results:
+            return range(0, count, limit)
+        else:
+            return range(self.limit, count, limit)
 
     def limit_offset_url_builder(self, value, data, response):
         return self._build_url({
