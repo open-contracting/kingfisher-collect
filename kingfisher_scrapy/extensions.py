@@ -293,20 +293,30 @@ class SentryLogging:
 
 
 class KingfisherProcessNGAPI:
+
+    ITEMS_SENT_KEY = "kingfisher_process_items_sent"
+    ITEMS_FAILED_KEY = "kingfisher_process_items_failed"
+
     """
     If the ``KINGFISHER_NG_API_URL`` environment variable or configuration setting is set,
     then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
     """
-    def __init__(self, url, username, password):
+    def __init__(self, url, username, password, stats):
         self.url = url
         self.username = username
         self.password = password
+        self.collection_id = None
+        self.spider = None
+        self.stats = stats
 
     @classmethod
     def from_crawler(cls, crawler):
         url = crawler.settings['KINGFISHER_NG_API_URL']
         username = crawler.settings['KINGFISHER_NG_API_USERNAME']
         password = crawler.settings['KINGFISHER_NG_API_PASSWORD']
+        stats = crawler.stats
+        stats.set_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY, 0)
+        stats.set_value(KingfisherProcessNGAPI.ITEMS_FAILED_KEY, 0)
 
         if not url:
             raise NotConfigured('KINGFISHER_NG_API_URL is not set.')
@@ -314,7 +324,7 @@ class KingfisherProcessNGAPI:
         if (username and not password) or (password and not username):
             raise NotConfigured('Both KINGFISHER_NG_API_USERNAME and KINGFISHER_NG_API_PASSWORD must be set.')
 
-        extension = cls(url, username, password)
+        extension = cls(url, username, password, stats)
         crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
@@ -325,6 +335,8 @@ class KingfisherProcessNGAPI:
         """
         Sends an API request to start the collection in Kingfisher Process.
         """
+        self.spider = spider
+
         data = {
             "source_id": spider.name,
             "data_version": spider.get_start_time('%Y-%m-%d %H:%M:%S'),
@@ -343,11 +355,17 @@ class KingfisherProcessNGAPI:
         else:
             response_data = response.json()
             self.collection_id = response_data["collection_id"]
+            spider.logger.info("Created collection in Kingfisher process with id {}".format(self.collection_id))
 
     def spider_closed(self, spider, reason):
         """
         Sends an API request to close the collection.
         """
+        if not self.collection_id:
+            # something went wrong in create collection file
+            spider.logger.warning("No files were sent over to Kingfisher Process. Integration failed.")
+            return
+
         # https://docs.scrapy.org/en/latest/topics/signals.html#spider-closed
         if spider.pluck or spider.keep_collection_open:
             return
@@ -355,20 +373,24 @@ class KingfisherProcessNGAPI:
         data = {
             "collection_id": self.collection_id,
             "reason": reason,
-            "stats": json.dumps(spider.crawler.stats.get_stats(), default=str)
+            "stats": json.loads(json.dumps(self.stats.get_stats(), default=str))
         }
 
-        def response_callback(response):
-            if not response.code == 200:
-                spider.logger.warning(
-                    "Failed to post close collection. API status code: {}".format(response.code))
-
-        self._post_async("api/v1/close_collection", data, response_callback)
+        response = self._post_sync("api/v1/close_collection", data)
+        if not response.ok:
+            spider.logger.warning(
+                "Failed to post close collection. API status code: {}".format(response.code))
+        else:
+            spider.logger.info("Closed collection in Kingfisher process with id {}".format(self.collection_id))
 
     def item_scraped(self, item, spider):
         """
         Sends an API request to store the file in Kingfisher Process.
         """
+        if not self.collection_id:
+            # probably create collection failed, skip
+            return
+
         if isinstance(item, PluckedItem):
             return
 
@@ -382,12 +404,14 @@ class KingfisherProcessNGAPI:
             # in case of error send info about it to api
             data["errors"] = json.dumps(item.get("errors", None))
 
-        def response_callback(response):
-            if not response.code == 200:
-                spider.logger.warning("Failed to POST create_collection_file. API status code: {}".format(
-                    response.code))
-
-        self._post_async("api/v1/create_collection_file", data, response_callback)
+        response = self._post_sync("api/v1/create_collection_file", data)
+        if not response.ok:
+            self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_FAILED_KEY)
+            spider.logger.warning("Failed to POST create_collection_file. API status code: {}".format(
+                response.status_code))
+        else:
+            self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY)
+            spider.logger.debug("Created create_collection_file. Response: {}".format(response.json()))
 
     def _post_sync(self, url, data):
         """
@@ -397,6 +421,8 @@ class KingfisherProcessNGAPI:
         if self.username and self.password:
             kwargs['auth'] = (self.username, self.password)
 
+        self.spider.logger.debug("Sent sync request to kingfisher process url {}/{} with data {}".format(
+            self.url, url, data))
         return requests.post("{}/{}".format(self.url, url), json=data, **kwargs)
 
     def _post_async(self, url, data, callback):
@@ -406,6 +432,9 @@ class KingfisherProcessNGAPI:
         kwargs = {}
         if self.username and self.password:
             kwargs['auth'] = (self.username, self.password)
-        request = treq.post("{}/{}".format(self.url, url), json=data, **kwargs)
 
-        request.addCallback(callback)
+        self.spider.logger.debug("Sent async request to kingfisher process url {}/{} with data {}".format(
+            self.url, url, data))
+        req = treq.post("{}/{}".format(self.url, url), json=data, **kwargs)
+
+        req.addCallback(callback)
