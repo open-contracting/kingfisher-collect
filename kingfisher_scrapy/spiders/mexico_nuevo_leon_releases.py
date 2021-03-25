@@ -10,6 +10,9 @@ class MexicoNuevoLeonReleases(MexicoNuevoLeonBase):
     """
     name = 'mexico_nuevo_leon_releases'
 
+    # BaseSpider
+    skip_pluck = 'Already covered (see code for details)'  # mexico_nuevo_leon_records.py
+
     # SimpleSpider
     data_type = 'release_package'
 

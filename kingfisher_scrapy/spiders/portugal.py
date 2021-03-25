@@ -20,6 +20,7 @@ class Portugal(CompressedFileSpider):
 
     # BaseSpider
     line_delimited = True
+    skip_pluck = 'Already covered (see code for details)'  # portugal_releases
 
     # SimpleSpider
     data_type = 'record_package'

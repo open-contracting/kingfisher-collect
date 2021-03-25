@@ -15,6 +15,7 @@ class MexicoPlataformaDigitalNacional(CompressedFileSpider):
 
     # BaseSpider
     root_path = 'item'
+    skip_pluck = 'Already covered (see code for details)'  # mexico_administracion_publica_federal_bulk.py
 
     # CompressedFileSpider
     data_type = 'release'

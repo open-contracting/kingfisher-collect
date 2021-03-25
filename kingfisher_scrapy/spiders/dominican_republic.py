@@ -13,6 +13,9 @@ class DominicanRepublic(CompressedFileSpider):
     """
     name = 'dominican_republic'
 
+    # BaseSpider
+    skip_pluck = 'Already covered (see code for details)'  # dominican_republic_api
+
     # SimpleSpider
     data_type = 'release_package'
 
