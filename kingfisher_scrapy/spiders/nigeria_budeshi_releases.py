@@ -1,7 +1,5 @@
-from operator import itemgetter
-
 from kingfisher_scrapy.spiders.nigeria_budeshi_base import NigeriaBudeshiBase
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class NigeriaBudeshiReleases(NigeriaBudeshiBase):
@@ -21,9 +19,6 @@ class NigeriaBudeshiReleases(NigeriaBudeshiBase):
 
     url = 'https://budeshi.ng/api/releases/{id}/{tag}'
 
-    @handle_http_error
-    def parse_list(self, response):
-        project_list = response.json()
-        for project in sorted(project_list, key=itemgetter('year'), reverse=True):
-            for tag in ('planning', 'tender', 'award', 'contract'):
-                yield self.build_request(self.url.format(id=project['id'], tag=tag), formatter=components(-2))
+    def build_urls(self, project):
+        for tag in ('planning', 'tender', 'award', 'contract'):
+            yield self.build_request(self.url.format(id=project['id'], tag=tag), formatter=components(-2))
