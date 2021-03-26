@@ -169,7 +169,7 @@ class BaseSpider(scrapy.Spider):
             date = self.crawler.stats.get_value('start_time')
         return date.strftime(format)
 
-    def build_request(self, url, formatter, priority=0, **kwargs):
+    def build_request(self, url, formatter, **kwargs):
         """
         Returns a Scrapy request, with a file name added to the request's ``meta`` attribute. If the file name doesn't
         have a ``.json``, ``.csv``, ``.xlsx``, ``.rar`` or ``.zip`` extension, it adds a ``.json`` extension.
@@ -201,7 +201,6 @@ class BaseSpider(scrapy.Spider):
 
         :param str url: the URL to request
         :param formatter: a function that accepts a URL and returns a file name
-        :param priority: the priority of this request (defaults to 0).
         :returns: a Scrapy request
         :rtype: scrapy.Request
         """
@@ -212,7 +211,7 @@ class BaseSpider(scrapy.Spider):
         if 'meta' in kwargs:
             meta.update(kwargs.pop('meta'))
 
-        return scrapy.Request(url, meta=meta, priority=priority, **kwargs)
+        return scrapy.Request(url, meta=meta, **kwargs)
 
     def build_file_from_response(self, response, **kwargs):
         """
