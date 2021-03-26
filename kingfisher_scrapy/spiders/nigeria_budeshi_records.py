@@ -14,7 +14,6 @@ class NigeriaBudeshiRecords(NigeriaBudeshiBase):
     # SimpleSpider
     data_type = 'record_package'
 
-    url = 'https://budeshi.ng/api/record/{}'
-
     def build_urls(self, project):
-        yield self.build_request(self.url.format(project['id']), formatter=components(-2))
+        url = 'https://budeshi.ng/api/record/{}'
+        yield self.build_request(url.format(project['id']), formatter=components(-2))

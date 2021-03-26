@@ -17,8 +17,7 @@ class NigeriaBudeshiReleases(NigeriaBudeshiBase):
     # SimpleSpider
     data_type = 'release_package'
 
-    url = 'https://budeshi.ng/api/releases/{id}/{tag}'
-
     def build_urls(self, project):
+        url = 'https://budeshi.ng/api/releases/{id}/{tag}'
         for tag in ('planning', 'tender', 'award', 'contract'):
-            yield self.build_request(self.url.format(id=project['id'], tag=tag), formatter=components(-2))
+            yield self.build_request(url.format(id=project['id'], tag=tag), formatter=components(-2))
