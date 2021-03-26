@@ -28,6 +28,6 @@ class Zambia(CompressedFileSpider):
     def parse_list(self, response):
         urls = response.json()['packagesPerMonth']
 
-        for url in urls:
+        for url in reversed(urls):
             # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
             yield self.build_request(url, formatter=join(components(-2), extension='zip'))
