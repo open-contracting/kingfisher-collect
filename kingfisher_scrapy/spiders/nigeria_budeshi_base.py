@@ -1,9 +1,10 @@
+from abc import abstractmethod
 from operator import itemgetter
 
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import handle_http_error
 
 
 class NigeriaBudeshiBase(SimpleSpider):
@@ -18,4 +19,8 @@ class NigeriaBudeshiBase(SimpleSpider):
     def parse_list(self, response):
         project_list = response.json()
         for project in sorted(project_list, key=itemgetter('year'), reverse=True):
-            yield self.build_request(self.url.format(project['id']), formatter=components(-2))
+            yield from self.build_urls(project)
+
+    @abstractmethod
+    def build_urls(self, project):
+        pass

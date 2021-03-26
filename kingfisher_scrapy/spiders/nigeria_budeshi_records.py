@@ -1,4 +1,5 @@
 from kingfisher_scrapy.spiders.nigeria_budeshi_base import NigeriaBudeshiBase
+from kingfisher_scrapy.util import components
 
 
 class NigeriaBudeshiRecords(NigeriaBudeshiBase):
@@ -14,3 +15,6 @@ class NigeriaBudeshiRecords(NigeriaBudeshiBase):
     data_type = 'record_package'
 
     url = 'https://budeshi.ng/api/record/{}'
+
+    def build_urls(self, project):
+        yield self.build_request(self.url.format(project['id']), formatter=components(-2))
