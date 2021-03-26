@@ -30,7 +30,7 @@ class Malta(CompressedFileSpider):
         urls = response.json()['packagesPerMonth']
 
         netloc = urlsplit(response.request.url).netloc
-        for url in urls:
+        for url in reversed(urls):
             # URL looks like http://malta-demo-server.eurodyn.com/ocds/services/recordpackage/getrecordpackage/2020/1
             yield self.build_request(urlsplit(url)._replace(netloc=netloc).geturl(),
                                      formatter=join(components(-2), extension='zip'))

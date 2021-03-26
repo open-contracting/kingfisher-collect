@@ -29,4 +29,5 @@ class MexicoAdministracionPublicaFederalAPI(IndexSpider):
 
     def start_requests(self):
         url = 'https://api.datos.gob.mx/v2/contratacionesabiertas'
+        # The pages are in reverse chronological order.
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
