@@ -16,7 +16,6 @@ class DigiwhistBase(BaseSpider):
     """
     # BaseSpider
     line_delimited = True
-    skip_pluck = 'non ordered releases'
 
     def start_requests(self):
         # See scrapy.spiders.Spider.start_requests
