@@ -1,7 +1,7 @@
 from operator import itemgetter
 
 from kingfisher_scrapy.spiders.nigeria_budeshi_base import NigeriaBudeshiBase
-from kingfisher_scrapy.util import handle_http_error, components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class NigeriaBudeshiReleases(NigeriaBudeshiBase):
