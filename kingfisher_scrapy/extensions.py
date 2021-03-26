@@ -5,7 +5,6 @@ import os
 
 import requests
 import sentry_sdk
-import treq
 from scrapy import signals
 from scrapy.exceptions import NotConfigured, StopDownload
 
@@ -411,7 +410,7 @@ class KingfisherProcessNGAPI:
                 response.status_code))
         else:
             self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY)
-            spider.logger.debug("Created create_collection_file. Response: {}".format(response.json()))
+            spider.logger.debug("Sent POST to create collection file.")
 
     def _post_sync(self, url, data):
         """
