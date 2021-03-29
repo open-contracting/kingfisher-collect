@@ -24,7 +24,7 @@ def test_parse():
     item = next(generator)
 
     assert type(item) is File
-    assert item['file_name'] == 'test.json'
+    assert item['file_name'] == 'test-test.json'
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
@@ -35,8 +35,8 @@ def test_parse():
         next(generator)
 
 
-@pytest.mark.parametrize('sample,len_items', [(None, 20), (5, 5)])
-def test_parse_line_delimited(sample, len_items):
+@pytest.mark.parametrize('sample,len_items,file_name', [(None, 20, 'test'), (5, 5, 'test')])
+def test_parse_line_delimited(sample, len_items, file_name):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.line_delimited = True
@@ -49,13 +49,13 @@ def test_parse_line_delimited(sample, len_items):
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
         zipfile.writestr('test.json', ''.join(content))
 
-    response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
+    response = response_fixture(body=io.getvalue(), meta={'file_name': f'{file_name}.zip'})
     generator = spider.parse(response)
     item = next(generator)
 
     assert type(item) is File
     assert len(item) == 5
-    assert item['file_name'] == 'test.json'
+    assert item['file_name'] == f'{file_name}-test.json'
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
@@ -66,8 +66,8 @@ def test_parse_line_delimited(sample, len_items):
         next(generator)
 
 
-@pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), (5, 1, 5)])
-def test_parse_release_package(sample, len_items, len_releases):
+@pytest.mark.parametrize('sample,len_items,len_releases, file_name', [(None, 2, 100, 'test'), (5, 1, 5, 'test')])
+def test_parse_release_package(sample, len_items, len_releases, file_name):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.resize_package = True
@@ -80,13 +80,13 @@ def test_parse_release_package(sample, len_items, len_releases):
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
         zipfile.writestr('test.json', json.dumps(package))
 
-    response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
+    response = response_fixture(body=io.getvalue(), meta={'file_name': f'{file_name}.zip'})
     generator = spider.parse(response)
     item = next(generator)
 
     assert type(item) is File
     assert len(item) == 5
-    assert item['file_name'] == 'test.json'
+    assert item['file_name'] == f'{file_name}-test.json'
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'
@@ -126,7 +126,7 @@ def test_parse_rar_file():
 
     assert type(item) is File
     assert len(item) == 5
-    assert item['file_name'] == 'test.json'
+    assert item['file_name'] == 'test-test.json'
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'release_package'
     assert item['encoding'] == 'utf-8'

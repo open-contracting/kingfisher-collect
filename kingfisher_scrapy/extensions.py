@@ -6,6 +6,7 @@ import os
 import sentry_sdk
 from scrapy import signals
 from scrapy.exceptions import NotConfigured, StopDownload
+from twisted.python.failure import Failure
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
@@ -193,7 +194,7 @@ class KingfisherProcessAPI:
         """
         # https://docs.scrapy.org/en/latest/topics/signals.html#scrapy.signals.spider_error
         file_name = response.request.meta.get('file_name', response.request.url)
-        data = self._build_data_to_send(spider, file_name, response.request.url, failure)
+        data = self._build_data_to_send(spider, file_name, response.request.url, errors=failure)
         return self._request(spider, 'create_file_error', response.request.url, data)
 
     def item_error(self, item, response, spider, failure):
@@ -201,7 +202,7 @@ class KingfisherProcessAPI:
         Sends an API request to store a file error in Kingfisher Process when a item pipeline generates an error.
         """
         # https://docs.scrapy.org/en/latest/topics/signals.html#scrapy.signals.item_error
-        data = self._build_data_to_send(spider, item['file_name'], item['url'], failure)
+        data = self._build_data_to_send(spider, item['file_name'], item['url'], errors=failure)
         return self._request(spider, 'create_file_error', item['file_name'], data)
 
     def item_scraped(self, item, spider):
@@ -271,6 +272,9 @@ class KingfisherProcessAPI:
         if url:
             data['url'] = url
         if errors:
+            # https://twistedmatrix.com/documents/current/api/twisted.python.failure.Failure.html
+            if isinstance(errors, Failure):
+                errors = {'twisted': str(errors)}
             data['errors'] = json.dumps(errors)
         return data
 

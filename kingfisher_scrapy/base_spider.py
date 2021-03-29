@@ -372,7 +372,7 @@ class CompressedFileSpider(BaseSpider):
                 data = compressed_file
 
             yield File({
-                'file_name': basename,
+                'file_name': f'{archive_name}-{basename}',
                 'data': data,
                 'data_type': self.data_type,
                 'url': response.request.url,

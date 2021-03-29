@@ -124,7 +124,7 @@ WARNING: Failed to post [https:…]. File API status code: 500
 
      If you need the collection in Kingfisher Process to be complete, re-run the spider.
 
-WARNING: Duplicate File: '….json'
+WARNING: Dropped: Duplicate File: '….json'
   Issued by the :class:`~kingfisher_scrapy.pipelines.Validate` pipeline.
 
   .. admonition:: Potential action

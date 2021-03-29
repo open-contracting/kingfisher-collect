@@ -1,4 +1,5 @@
 from kingfisher_scrapy.spiders.nigeria_budeshi_base import NigeriaBudeshiBase
+from kingfisher_scrapy.util import components
 
 
 class NigeriaBudeshiReleases(NigeriaBudeshiBase):
@@ -16,4 +17,7 @@ class NigeriaBudeshiReleases(NigeriaBudeshiBase):
     # SimpleSpider
     data_type = 'release_package'
 
-    url = 'https://budeshi.ng/api/releases/{}'
+    def build_urls(self, project):
+        url = 'https://budeshi.ng/api/releases/{id}/{tag}'
+        for tag in ('planning', 'tender', 'award', 'contract'):
+            yield self.build_request(url.format(id=project['id'], tag=tag), formatter=components(-2))

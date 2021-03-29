@@ -36,7 +36,7 @@ class Malta(CompressedFileSpider):
     def parse_list(self, response):
         urls = response.json()['packagesPerMonth']
         netloc = urlsplit(response.request.url).netloc
-        for url in urls:
+        for url in reversed(urls):
             if self.from_date and self.until_date:
                 # URL looks like http://malta-demo-server.eurodyn.com/ocds/services/recordpackage/getrecordpackage/
                 # 2020/1

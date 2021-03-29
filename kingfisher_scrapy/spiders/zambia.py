@@ -34,7 +34,7 @@ class Zambia(CompressedFileSpider):
     @handle_http_error
     def parse_list(self, response):
         urls = response.json()['packagesPerMonth']
-        for url in urls:
+        for url in reversed(urls):
             if self.from_date and self.until_date:
                 # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
                 year = int(url[69:73])
