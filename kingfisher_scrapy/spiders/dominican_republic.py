@@ -41,6 +41,7 @@ class DominicanRepublic(CompressedFileSpider):
         for url in urls:
             if '/JSON_DGCP_' in url:
                 if self.from_date and self.until_date:
+                    # URL looks like https://www.dgcp.gob.do/new_dgcp/documentos/andres/JSON_DGCP_2019.rar
                     date = int(url[-8:-4])
                     if not (self.from_date.year <= date <= self.until_date.year):
                         continue

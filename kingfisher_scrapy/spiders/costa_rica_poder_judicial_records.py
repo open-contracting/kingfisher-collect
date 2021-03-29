@@ -40,4 +40,6 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
                     date = int(resource['url'][-9:-5])
                     if not (self.from_date.year <= date <= self.until_date.year):
                         continue
+                # URL looks like https://pjcrdatosabiertos.blob.core.windows.net/datosabiertos/OpenContracting/2021
+                # .json
                 yield self.build_request(resource['url'], formatter=components(-1))

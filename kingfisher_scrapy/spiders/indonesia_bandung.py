@@ -58,4 +58,5 @@ class IndonesiaBandung(PeriodicSpider):
                                          callback=self.parse_list)
 
     def get_formatter(self):
+        # URL looks like https://birms.bandung.go.id/api/newcontract/ocds-afzrfb-b-2021-131978
         return components(-1)

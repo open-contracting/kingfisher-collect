@@ -36,10 +36,10 @@ class Zambia(CompressedFileSpider):
         urls = response.json()['packagesPerMonth']
         for url in urls:
             if self.from_date and self.until_date:
+                # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
                 year = int(url[69:73])
                 month = int(url[74:])
                 if not ((self.from_date.year <= year <= self.until_date.year)
                         and (self.from_date.month <= month <= self.until_date.month)):
                     continue
-            # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
             yield self.build_request(url, formatter=join(components(-2), extension='zip'))
