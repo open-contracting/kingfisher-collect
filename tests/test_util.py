@@ -1,6 +1,8 @@
+from datetime import datetime
+
 import pytest
 
-from kingfisher_scrapy.util import components, get_parameter_value, join, parameters, replace_parameters
+from kingfisher_scrapy.util import components, get_parameter_value, join, parameters, replace_parameters, date_range
 
 
 @pytest.mark.parametrize('url,value,expected', [
@@ -28,3 +30,12 @@ def test_get_parameter_value(url, expected):
 ])
 def test_join(url, extension, expected):
     assert join(components(-1), parameters('page'), extension=extension)(url) == expected
+
+
+def test_date_range():
+    start = datetime.strptime('2020-01-01', '%Y-%m-%d')
+    stop = datetime.strptime('2020-01-15', '%Y-%m-%d')
+    dates = list(date_range(start, stop))
+    assert len(dates) == 15
+    assert dates[0] == '2020-01-15'
+    assert dates[-1] == '2020-01-01'
