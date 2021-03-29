@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from kingfisher_scrapy.util import components, get_parameter_value, join, parameters, replace_parameters, date_range
+from kingfisher_scrapy.util import components, date_range, get_parameter_value, join, parameters, replace_parameters
 
 
 @pytest.mark.parametrize('url,value,expected', [
