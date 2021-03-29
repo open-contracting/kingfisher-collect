@@ -543,7 +543,11 @@ class IndexSpider(SimpleSpider):
 
     By default, responses passed to ``parse_list`` are passed to the ``parse`` method from which items are yielded. If
     the responses passed to ``parse_list`` contain no OCDS data, set ``yield_list_results`` to ``False``.
+
+    If the results are in ascending chronological order set the ``chronological_order`` class attribute to 'asc'
     """
+
+    chronological_order = 'desc'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -580,8 +584,14 @@ class IndexSpider(SimpleSpider):
         except ValueError:
             data = None
         for number, value in enumerate(self.range_generator(data, response)):
+            # Requests with a higher priority value will execute earlier and we want the newest pages first.
+            # https://doc.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request
+            if self.chronological_order == 'desc':
+                priority = number * -1
+            else:
+                priority = number
             yield self.build_request(self.url_builder(value, data, response), formatter=self.formatter,
-                                     priority=number * -1, **kwargs)
+                                     priority=priority, **kwargs)
 
     def pages_from_total_range_generator(self, data, response):
         pages = resolve_pointer(data, self.total_pages_pointer)
@@ -595,10 +605,12 @@ class IndexSpider(SimpleSpider):
     def limit_offset_range_generator(self, data, response):
         limit = self._resolve_limit(data)
         count = resolve_pointer(data, self.count_pointer)
-        if not self.yield_list_results:
-            return range(0, count, limit)
+        # If `yield_list_results` is `True` (default), the response is parsed is `parse_list`.
+        if self.yield_list_results:
+            start = self.limit
         else:
-            return range(self.limit, count, limit)
+            start = 0
+        return range(start, count, limit)
 
     def limit_offset_url_builder(self, value, data, response):
         return self._build_url({
