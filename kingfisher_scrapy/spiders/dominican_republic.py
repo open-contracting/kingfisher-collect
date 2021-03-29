@@ -1,3 +1,5 @@
+import re
+
 import scrapy
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
@@ -39,10 +41,14 @@ class DominicanRepublic(CompressedFileSpider):
     def parse_list(self, response):
         urls = response.css('.download::attr(href)').getall()
         for url in urls:
-            if '/JSON_DGCP_' in url:
+            if 'JSON' in url:
                 if self.from_date and self.until_date:
                     # URL looks like https://www.dgcp.gob.do/new_dgcp/documentos/andres/JSON_DGCP_2019.rar
-                    date = int(url[-8:-4])
-                    if not (self.from_date.year <= date <= self.until_date.year):
-                        continue
+                    # but also as https://www.dgcp.gob.do/new_dgcp/documentos/andres/JSON-20200713T141805Z-001.zip
+                    first_digit = re.search(r'\d', url)
+                    if first_digit:
+                        first_digit_position = first_digit.start()
+                        year = int(url[first_digit_position:first_digit_position + 4])
+                        if not (self.from_date.year <= year <= self.until_date.year):
+                            continue
                 yield self.build_request(url, formatter=components(-1))
