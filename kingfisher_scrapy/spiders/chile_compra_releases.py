@@ -30,5 +30,4 @@ class ChileCompraReleases(ChileCompraBaseSpider):
     def handle_item(self, item):
         for key in item:
             if key.startswith('url'):
-                # URL looks like http://api.mercadopublico.cl/APISOCDS/OCDS/listaOCDSAgnoMes/2021/03/9500/100
                 yield self.build_request(item[key], formatter=components(-2))

@@ -36,14 +36,14 @@ class AfghanistanReleases(SimpleSpider):
     @handle_http_error
     def parse_list(self, response):
         urls = response.json()
+        # A JSON array of URL strings, in reverse chronological order.
         for url in urls:
             if self.from_date and self.until_date:
-                date = datetime.strptime(url[-10:], self.date_format)
+                # URL looks like https://ocds.ageops.net/api/ocds/releases/2020-05-30
+                date = datetime.strptime(components(-1)(url), self.date_format)
                 if not (self.from_date <= date <= self.until_date):
                     continue
-            # A JSON array of URL strings, in reverse chronological order.
-            # URL looks like https://ocds.ageops.net/api/ocds/releases/2020-05-30
-            yield self.build_request(url, formatter=components(-2), callback=self.parse_release_list)
+            yield self.build_request(url, formatter=components(-1), callback=self.parse_release_list)
 
     @handle_http_error
     def parse_release_list(self, response):

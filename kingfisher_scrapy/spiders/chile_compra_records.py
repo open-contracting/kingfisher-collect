@@ -32,5 +32,4 @@ class ChileCompraRecords(ChileCompraBaseSpider):
 
     def handle_item(self, item):
         url = 'https://apis.mercadopublico.cl/OCDS/data/record/' + item['ocid'].replace('ocds-70d2nz-', '')
-        # URL looks like http://api.mercadopublico.cl/APISOCDS/OCDS/listaOCDSAgnoMesTratoDirecto/2021/03/31500/100
         yield self.build_request(url, formatter=components(-2))

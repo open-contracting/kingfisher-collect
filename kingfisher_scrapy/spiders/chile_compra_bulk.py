@@ -51,5 +51,4 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
             return super().build_file(file_name=file_name, url=url, data=data, **kwargs)
 
     def get_formatter(self):
-        # URL looks like https://ocds.blob.core.windows.net/ocds/202103.zip
         return components(-1)

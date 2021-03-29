@@ -38,6 +38,4 @@ class Portugal(CompressedFileSpider):
                 description = resource['description']
                 if description and 'ocds' in description.lower():
                     # Presently, only one URL matches.
-                    # URL looks like https://dados.gov.pt/s/resources/ocds-portal-base-www-base-gov-pt/20201007-153042
-                    # /base2-pt-ocds-202010.zip
                     yield self.build_request(resource['url'], formatter=components(-2))

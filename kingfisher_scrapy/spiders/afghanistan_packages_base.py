@@ -20,7 +20,8 @@ class AfghanistanPackagesBase(SimpleSpider):
         urls = response.json()
         for url in urls:
             if self.from_date and self.until_date:
-                date = datetime.strptime(url[-10:], self.date_format)
+                # URL looks like https://ocds.ageops.net/api/ocds/release-package/2021-03-29
+                date = datetime.strptime(components(-1)(url), self.date_format)
                 if not (self.from_date <= date <= self.until_date):
                     continue
             yield self.build_request(url, formatter=components(-2), callback=self.parse_release_list)
