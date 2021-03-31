@@ -11,6 +11,7 @@ class PakistanPPRABulk(SimpleSpider):
       https://www.ppra.org.pk/api/
     """
     name = 'pakistan_ppra_bulk'
+
     # BaseSpider
     skip_pluck = 'Already covered (see code for details)'  # pakistan_ppra_releases
 

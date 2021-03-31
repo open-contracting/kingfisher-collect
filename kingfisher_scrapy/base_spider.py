@@ -210,7 +210,6 @@ class BaseSpider(scrapy.Spider):
         meta = {'file_name': file_name}
         if 'meta' in kwargs:
             meta.update(kwargs.pop('meta'))
-
         return scrapy.Request(url, meta=meta, **kwargs)
 
     def build_file_from_response(self, response, **kwargs):
@@ -544,7 +543,7 @@ class IndexSpider(SimpleSpider):
     By default, responses passed to ``parse_list`` are passed to the ``parse`` method from which items are yielded. If
     the responses passed to ``parse_list`` contain no OCDS data, set ``yield_list_results`` to ``False``.
 
-    If the results are in ascending chronological order set the ``chronological_order`` class attribute to 'asc'
+    If the results are in ascending chronological order, set the ``chronological_order`` class attribute to ``'asc'``.
     """
 
     chronological_order = 'desc'
@@ -583,13 +582,11 @@ class IndexSpider(SimpleSpider):
             data = response.json()
         except ValueError:
             data = None
-        for number, value in enumerate(self.range_generator(data, response)):
+        for priority, value in enumerate(self.range_generator(data, response)):
             # Requests with a higher priority value will execute earlier and we want the newest pages first.
             # https://doc.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request
             if self.chronological_order == 'desc':
-                priority = number * -1
-            else:
-                priority = number
+                priority *= -1
             yield self.build_request(self.url_builder(value, data, response), formatter=self.formatter,
                                      priority=priority, **kwargs)
 
