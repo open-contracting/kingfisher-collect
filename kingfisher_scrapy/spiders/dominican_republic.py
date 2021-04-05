@@ -44,11 +44,9 @@ class DominicanRepublic(CompressedFileSpider):
             if 'JSON' in url:
                 if self.from_date and self.until_date:
                     # URL looks like https://www.dgcp.gob.do/new_dgcp/documentos/andres/JSON_DGCP_2019.rar
-                    # but also as https://www.dgcp.gob.do/new_dgcp/documentos/andres/JSON-20200713T141805Z-001.zip
-                    first_digit = re.search(r'\d', url)
-                    if first_digit:
-                        first_digit_position = first_digit.start()
-                        year = int(url[first_digit_position:first_digit_position + 4])
-                        if not (self.from_date.year <= year <= self.until_date.year):
-                            continue
+                    # but also https://www.dgcp.gob.do/new_dgcp/documentos/andres/JSON-20200713T141805Z-001.zip
+                    # so we look for the first 4 digits in the URL
+                    year = int(re.search(r'\d{4}', url).group(0))
+                    if not (self.from_date.year <= year <= self.until_date.year):
+                        continue
                 yield self.build_request(url, formatter=components(-1))
