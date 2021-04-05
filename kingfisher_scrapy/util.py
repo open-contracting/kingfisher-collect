@@ -85,14 +85,6 @@ def handle_http_error(decorated):
     return wrapper
 
 
-def date_range(start, stop):
-    """
-    Yields the dates between ``start`` and ``stop`` dates, in reverse chronological order.
-    """
-    for days in reversed(range((stop - start).days + 1)):
-        yield (start + timedelta(days=days)).strftime('%Y-%m-%d')
-
-
 # https://stackoverflow.com/questions/34898525/generate-list-of-months-between-interval-in-python
 def date_range_by_month(start, stop):
     """
