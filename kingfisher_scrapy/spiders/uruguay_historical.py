@@ -22,6 +22,7 @@ class UruguayHistorical(CompressedFileSpider, PeriodicSpider):
     date_format = 'year'
     default_from_date = '2002'
     default_until_date = '2017'
+    skip_pluck = 'Already covered (see code for details)'  # uruguay_releases
 
     # SimpleSpider
     data_type = 'release_package'

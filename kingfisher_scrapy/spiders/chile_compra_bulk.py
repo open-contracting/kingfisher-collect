@@ -19,6 +19,9 @@ class ChileCompraBulk(CompressedFileSpider):
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
 
+    # BaseSpider
+    skip_pluck = 'Already covered (see code for details)'  # chile_compra_records
+
     # SimpleSpider
     data_type = 'record_package'
 

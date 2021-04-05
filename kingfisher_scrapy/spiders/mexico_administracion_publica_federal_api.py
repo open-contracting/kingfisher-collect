@@ -16,6 +16,7 @@ class MexicoAdministracionPublicaFederalAPI(IndexSpider):
 
     # BaseSpider
     root_path = 'results.item'
+    skip_pluck = 'Already covered (see code for details)'  # mexico_administracion_publica_federal_bulk
 
     # SimpleSpider
     data_type = 'record_package'
