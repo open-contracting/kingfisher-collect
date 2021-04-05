@@ -37,8 +37,7 @@ class Zambia(CompressedFileSpider):
         for url in reversed(urls):
             if self.from_date and self.until_date:
                 # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
-                year = int(url.split('/')[-2])
-                month = int(url.split('/')[-1])
+                year, month = map(int, url.rsplit('/', 2)[1:])
                 if not ((self.from_date.year <= year <= self.until_date.year)
                         and (self.from_date.month <= month <= self.until_date.month)):
                     continue
