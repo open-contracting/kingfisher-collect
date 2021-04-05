@@ -38,10 +38,9 @@ class Malta(CompressedFileSpider):
         netloc = urlsplit(response.request.url).netloc
         for url in reversed(urls):
             if self.from_date and self.until_date:
-                # URL looks like http://malta-demo-server.eurodyn.com/ocds/services/recordpackage/getrecordpackage/
-                # 2020/1
-                year = int(url.split('/')[-2])
-                month = int(url.split('/')[-1])
+                # URL looks like:
+                # http://malta-demo-server.eurodyn.com/ocds/services/recordpackage/getrecordpackage/2020/1
+                year, month = map(int, url.rsplit('/', 2)[1:])
                 if not ((self.from_date.year <= year <= self.until_date.year)
                         and (self.from_date.month <= month <= self.until_date.month)):
                     continue

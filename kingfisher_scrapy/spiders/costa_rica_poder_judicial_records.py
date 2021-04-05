@@ -37,8 +37,8 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
         for resource in data['result']['resources']:
             if resource['format'].upper() == 'JSON':
                 if self.from_date and self.until_date:
-                    # URL looks like https://pjcrdatosabiertos.blob.core.windows.net/datosabiertos/OpenContracting/2021
-                    # .json
+                    # URL looks like:
+                    # https://pjcrdatosabiertos.blob.core.windows.net/datosabiertos/OpenContracting/2021.json
                     year = int(components(-1)(resource['url']))
                     if not (self.from_date.year <= year <= self.until_date.year):
                         continue
