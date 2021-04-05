@@ -487,8 +487,9 @@ class PeriodicSpider(SimpleSpider):
             date_range = util.date_range_by_month(start, stop)
 
         for date in date_range:
-            for url in self.build_urls(date):
-                yield self.build_request(url, self.get_formatter(), callback=self.start_requests_callback)
+            for number, url in enumerate(self.build_urls(date)):
+                yield self.build_request(url, self.get_formatter(), callback=self.start_requests_callback,
+                                         priority=number * -1)
 
     def build_urls(self, date):
         """
@@ -538,7 +539,11 @@ class IndexSpider(SimpleSpider):
 
     By default, responses passed to ``parse_list`` are passed to the ``parse`` method from which items are yielded. If
     the responses passed to ``parse_list`` contain no OCDS data, set ``yield_list_results`` to ``False``.
+
+    If the results are in ascending chronological order, set the ``chronological_order`` class attribute to ``'asc'``.
     """
+
+    chronological_order = 'desc'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -574,8 +579,13 @@ class IndexSpider(SimpleSpider):
             data = response.json()
         except ValueError:
             data = None
-        for value in self.range_generator(data, response):
-            yield self.build_request(self.url_builder(value, data, response), formatter=self.formatter, **kwargs)
+        for priority, value in enumerate(self.range_generator(data, response)):
+            # Requests with a higher priority value will execute earlier and we want the newest pages first.
+            # https://doc.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request
+            if self.chronological_order == 'desc':
+                priority *= -1
+            yield self.build_request(self.url_builder(value, data, response), formatter=self.formatter,
+                                     priority=priority, **kwargs)
 
     def pages_from_total_range_generator(self, data, response):
         pages = resolve_pointer(data, self.total_pages_pointer)
@@ -589,7 +599,12 @@ class IndexSpider(SimpleSpider):
     def limit_offset_range_generator(self, data, response):
         limit = self._resolve_limit(data)
         count = resolve_pointer(data, self.count_pointer)
-        return range(self.limit, count, limit)
+        # If `yield_list_results` is `True` (default), the response is parsed is `parse_list`.
+        if self.yield_list_results:
+            start = self.limit
+        else:
+            start = 0
+        return range(start, count, limit)
 
     def limit_offset_url_builder(self, value, data, response):
         return self._build_url({

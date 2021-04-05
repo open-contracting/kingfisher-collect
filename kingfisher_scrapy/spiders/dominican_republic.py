@@ -24,6 +24,9 @@ class DominicanRepublic(CompressedFileSpider):
     date_format = 'year'
     default_from_date = '2018'
 
+    # BaseSpider
+    skip_pluck = 'Already covered (see code for details)'  # dominican_republic_api
+
     # SimpleSpider
     data_type = 'release_package'
 

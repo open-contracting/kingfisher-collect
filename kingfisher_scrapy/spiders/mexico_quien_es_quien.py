@@ -25,7 +25,7 @@ class MexicoQuienEsQuien(IndexSpider):
     # IndexSpider
     count_pointer = '/data/0/collections/contracts/count'
     limit = 1000
-    base_url = 'https://api.quienesquien.wiki/v2/contracts'
+    base_url = 'https://api.quienesquien.wiki/v2/contracts?sort=-compiledRelease.date'
     formatter = staticmethod(parameters('offset'))
     yield_list_results = False
 
