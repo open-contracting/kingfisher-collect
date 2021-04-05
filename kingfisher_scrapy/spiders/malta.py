@@ -1,3 +1,4 @@
+import datetime
 from urllib.parse import urlsplit
 
 import scrapy
@@ -41,8 +42,8 @@ class Malta(CompressedFileSpider):
                 # URL looks like:
                 # http://malta-demo-server.eurodyn.com/ocds/services/recordpackage/getrecordpackage/2020/1
                 year, month = map(int, url.rsplit('/', 2)[1:])
-                if not ((self.from_date.year <= year <= self.until_date.year)
-                        and (self.from_date.month <= month <= self.until_date.month)):
+                url_date = datetime.datetime(year, month, 1)
+                if not (self.from_date <= url_date <= self.until_date):
                     continue
             yield self.build_request(urlsplit(url)._replace(netloc=netloc).geturl(),
                                      formatter=join(components(-2), extension='zip'))

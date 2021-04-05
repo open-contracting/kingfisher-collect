@@ -1,3 +1,5 @@
+import datetime
+
 import scrapy
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
@@ -38,7 +40,7 @@ class Zambia(CompressedFileSpider):
             if self.from_date and self.until_date:
                 # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
                 year, month = map(int, url.rsplit('/', 2)[1:])
-                if not ((self.from_date.year <= year <= self.until_date.year)
-                        and (self.from_date.month <= month <= self.until_date.month)):
+                url_date = datetime.datetime(year, month, 1)
+                if not (self.from_date <= url_date <= self.until_date):
                     continue
             yield self.build_request(url, formatter=join(components(-2), extension='zip'))
