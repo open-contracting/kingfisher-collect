@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import pytest
 
 from kingfisher_scrapy.util import components, get_parameter_value, join, parameters, replace_parameters
