@@ -1,15 +1,19 @@
 import json
-from datetime import date
 
-from kingfisher_scrapy.base_spider import CompressedFileSpider
+from kingfisher_scrapy.base_spider import CompressedFileSpider, PeriodicSpider
 from kingfisher_scrapy.items import FileError
-from kingfisher_scrapy.util import components, date_range_by_month
+from kingfisher_scrapy.util import components
 
 
-class ChileCompraBulk(CompressedFileSpider):
+class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
     """
     Domain
       ChileCompra
+    Spider arguments
+      from_date
+        Download only data from this month onward (YYYY-MM format). Defaults to '2009-01'.
+      until_date
+        Download only data until this month (YYYY-MM format). Defaults to the current month.
     Bulk download documentation
       https://desarrolladores.mercadopublico.cl/OCDS/DescargaMasiva
     """
@@ -25,14 +29,12 @@ class ChileCompraBulk(CompressedFileSpider):
     # SimpleSpider
     data_type = 'record_package'
 
-    def start_requests(self):
-        url = 'https://ocds.blob.core.windows.net/ocds/{0.year:d}{0.month:02d}.zip'
+    # BaseSpider
+    date_format = 'year-month'
+    default_from_date = '2009-01'
 
-        start = date(2009, 1, 1)
-        stop = date.today().replace(day=1)
-
-        for d in date_range_by_month(start, stop):
-            yield self.build_request(url.format(d), formatter=components(-1))
+    # PeriodicSpider
+    pattern = 'https://ocds.blob.core.windows.net/ocds/{0.year:d}{0.month:02d}.zip'
 
     def build_file(self, file_name=None, url=None, data=None, **kwargs):
         json_data = json.loads(data)
@@ -50,3 +52,6 @@ class ChileCompraBulk(CompressedFileSpider):
             })
         else:
             return super().build_file(file_name=file_name, url=url, data=data, **kwargs)
+
+    def get_formatter(self):
+        return components(-1)

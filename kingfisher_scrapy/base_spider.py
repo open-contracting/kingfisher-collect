@@ -24,12 +24,10 @@ class BaseSpider(scrapy.Spider):
        Process integration <https://github.com/open-contracting/kingfisher-collect/issues/411>`__.
     -  If the spider supports ``from_date`` and ``until_date`` spider arguments:
 
-       -  If the source supports time components, set a ``date_format`` class attribute to "datetime".
-       -  Set a ``default_from_date`` class attribute to a date ("YYYY-MM-DD") or datetime ("YYYY-MM-DDTHH:MM:SS").
+       -  Set a ``date_format`` class attribute to "date", "datetime", "year" or "year-month".
+       -  Set a ``default_from_date`` class attribute to a date ("YYYY-MM-DD"), datetime ("YYYY-MM-DDTHH:MM:SS"),
+          year ("YYYY") or year-month ("YYYY-MM").
        -  If the source stopped publishing, set a ``default_until_date`` class attribute to a date or datetime.
-
-       The :class:`~kingfisher_scrapy.base_spider.PeriodicSpider` class changes the allowed date formats to "year"
-       ("YYYY") and "year-month" ("YYYY-MM").
 
     -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set a
        ``default_from_date`` class attribute as above.
@@ -49,7 +47,7 @@ class BaseSpider(scrapy.Spider):
 
     If the spider needs to parse the JSON response in its ``parse`` method, set ``dont_truncate = True``.
     """
-    VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S'}
+    VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S', 'year': '%Y', 'year-month': '%Y-%m'}
 
     ocds_version = '1.1'
     date_format = 'date'
@@ -467,7 +465,6 @@ class PeriodicSpider(SimpleSpider):
 
     If ``sample`` is set, the data from the most recent year or month is retrieved.
     """
-    VALID_DATE_FORMATS = {'year': '%Y', 'year-month': '%Y-%m'}
 
     # PeriodicSpider requires date parameters to be always set.
     date_required = True

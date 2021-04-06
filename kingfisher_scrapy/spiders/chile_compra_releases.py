@@ -8,11 +8,9 @@ class ChileCompraReleases(ChileCompraBaseSpider):
       ChileCompra
     Spider arguments
       from_date
-        Download only releases from this date onward (YYYY-MM format).
-        If ``from_date`` is not provided defaults to 2009-01.
+        Download only data from this month onward (YYYY-MM format). Defaults to '2009-01'.
       until_date
-        Download only releases until this date (YYYY-MM format).
-        If ``from_date`` is not provided defaults to current year and month.
+        Download only data until this month (YYYY-MM format). Defaults to the current month.
       system
         Filter by system, if not set gets all:
           convenio

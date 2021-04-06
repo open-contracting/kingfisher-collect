@@ -32,5 +32,7 @@ class DominicanRepublicPortal(LinksSpider):
     def start_requests(self):
         url = 'http://148.101.176.123:48080/ocdsdr/api/v1/releases'
         if self.from_date and self.until_date:
-            url = f"{url}/byDatesBetween/{self.from_date.strftime('%Y-%m-%d')}/{self.until_date.strftime('%Y-%m-%d')}"
+            from_date = self.from_date.strftime(self.date_format)
+            until_date = self.until_date.strftime(self.date_format)
+            url = f'{url}/byDatesBetween/{from_date}/{until_date}'
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'})

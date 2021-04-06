@@ -99,6 +99,7 @@ class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
 
     # from IndexSpider
     def url_builder(self, value, data, response):
+        # URL looks like http://api.mercadopublico.cl/APISOCDS/OCDS/listaOCDSAgnoMesTratoDirecto/2021/03/31500/100
         system = components(-5, -4)(response.request.url)
         year = int(components(-4, -3)(response.request.url))
         month = int(components(-3, -2)(response.request.url).lstrip('0'))
