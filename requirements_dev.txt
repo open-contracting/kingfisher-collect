@@ -151,6 +151,8 @@ parsel==1.5.2
     #   -r requirements.txt
     #   itemloaders
     #   scrapy
+pika==1.2.0
+    # via -r requirements.txt
 pip-tools==5.5.0
     # via -r requirements_dev.in
 pluggy==0.13.1

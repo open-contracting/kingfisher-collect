@@ -5,6 +5,7 @@ import os
 
 import requests
 import sentry_sdk
+from pika import BasicProperties, BlockingConnection, ConnectionParameters, PlainCredentials
 from scrapy import signals
 from scrapy.exceptions import NotConfigured, StopDownload
 
@@ -293,29 +294,64 @@ class SentryLogging:
 
 class KingfisherProcessNGAPI:
 
-    ITEMS_SENT_KEY = "kingfisher_process_items_sent"
-    ITEMS_FAILED_KEY = "kingfisher_process_items_failed"
+    ITEMS_SENT_KEY_POST = "kingfisher_process_items_sent_post"
+    ITEMS_FAILED_KEY_POST = "kingfisher_process_items_failed_post"
+
+    ITEMS_SENT_KEY_RABBIT = "kingfisher_process_items_sent_rabbit"
+    ITEMS_FAILED_KEY_RABBIT = "kingfisher_process_items_failed_rabbit"
 
     """
     If the ``KINGFISHER_NG_API_URL`` environment variable or configuration setting is set,
     then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
     """
-    def __init__(self, url, username, password, stats):
+    def __init__(self,
+                 url,
+                 username,
+                 password,
+                 stats,
+                 rabbit_host,
+                 rabbit_port,
+                 rabbit_username,
+                 rabbit_password,
+                 rabbit_exchange,
+                 rabbit_publish_key):
+
         self.url = url
         self.username = username
         self.password = password
+
         self.collection_id = None
         self.spider = None
         self.stats = stats
+
+        if rabbit_host:
+            self.rabbit_exchange = rabbit_exchange
+            self.rabbit_publish_key = rabbit_publish_key
+
+            self.channel = self._get_rabbit_channel(rabbit_host,
+                                                    rabbit_port,
+                                                    rabbit_username,
+                                                    rabbit_password,
+                                                    rabbit_exchange)
 
     @classmethod
     def from_crawler(cls, crawler):
         url = crawler.settings['KINGFISHER_NG_API_URL']
         username = crawler.settings['KINGFISHER_NG_API_USERNAME']
         password = crawler.settings['KINGFISHER_NG_API_PASSWORD']
+
+        rabbit_host = crawler.settings['KINGFISHER_NG_RABBIT_HOST']
+        rabbit_port = crawler.settings['KINGFISHER_NG_RABBIT_PORT']
+        rabbit_username = crawler.settings['KINGFISHER_NG_RABBIT_USERNAME']
+        rabbit_password = crawler.settings['KINGFISHER_NG_RABBIT_PASSWORD']
+        rabbit_exchange = crawler.settings['KINGFISHER_NG_RABBIT_EXCHANGE']
+        rabbit_publish_key = crawler.settings['KINGFISHER_NG_RABBIT_PUBLISH_KEY']
+
         stats = crawler.stats
-        stats.set_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY, 0)
-        stats.set_value(KingfisherProcessNGAPI.ITEMS_FAILED_KEY, 0)
+        stats.set_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY_POST, 0)
+        stats.set_value(KingfisherProcessNGAPI.ITEMS_FAILED_KEY_POST, 0)
+        stats.set_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY_RABBIT, 0)
+        stats.set_value(KingfisherProcessNGAPI.ITEMS_FAILED_KEY_RABBIT, 0)
 
         if not url:
             raise NotConfigured('KINGFISHER_NG_API_URL is not set.')
@@ -323,7 +359,17 @@ class KingfisherProcessNGAPI:
         if (username and not password) or (password and not username):
             raise NotConfigured('Both KINGFISHER_NG_API_USERNAME and KINGFISHER_NG_API_PASSWORD must be set.')
 
-        extension = cls(url, username, password, stats)
+        extension = cls(url,
+                        username,
+                        password,
+                        stats,
+                        rabbit_host,
+                        rabbit_port,
+                        rabbit_username,
+                        rabbit_password,
+                        rabbit_exchange,
+                        rabbit_publish_key)
+
         crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
@@ -403,14 +449,18 @@ class KingfisherProcessNGAPI:
             # in case of error send info about it to api
             data["errors"] = json.dumps(item.get("errors", None))
 
-        response = self._post_sync("api/v1/create_collection_file", data)
-        if not response.ok:
-            self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_FAILED_KEY)
-            spider.logger.warning("Failed to POST create_collection_file. API status code: {}".format(
-                response.status_code))
+        if self.rabbit_exchange:
+            self._publish_to_rabbit(json.dumps(data))
+            self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY_RABBIT)
         else:
-            self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY)
-            spider.logger.debug("Sent POST to create collection file.")
+            response = self._post_sync("api/v1/create_collection_file", data)
+            if not response.ok:
+                self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_FAILED_KEY_POST)
+                spider.logger.warning("Failed to POST create_collection_file. API status code: {}".format(
+                    response.status_code))
+            else:
+                self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY_POST)
+                spider.logger.debug("Sent POST to create collection file.")
 
     def _post_sync(self, url, data):
         """
@@ -423,3 +473,38 @@ class KingfisherProcessNGAPI:
         self.spider.logger.debug("Sent sync request to kingfisher process url {}/{} with data {}".format(
             self.url, url, data))
         return requests.post("{}/{}".format(self.url, url), json=data, **kwargs)
+
+    def _publish_to_rabbit(self, message):
+        self.channel.basic_publish(
+            exchange=self.rabbit_exchange,
+            routing_key=self.rabbit_publish_key,
+            body=message,
+            properties=BasicProperties(delivery_mode=2),
+        )
+
+    def _get_rabbit_channel(self,
+                            rabbit_host,
+                            rabbit_port,
+                            rabbit_username,
+                            rabbit_password,
+                            rabbit_exchange):
+
+        # connect to messaging
+        credentials = PlainCredentials(rabbit_username, rabbit_password)
+
+        connection = BlockingConnection(
+            ConnectionParameters(
+                host=rabbit_host,
+                port=rabbit_port,
+                credentials=credentials,
+                blocked_connection_timeout=1800,
+                heartbeat=0,
+            )
+        )
+
+        rabbit_channel = connection.channel()
+
+        # declare durable exchange
+        rabbit_channel.exchange_declare(exchange=rabbit_exchange, durable="true", exchange_type="direct")
+
+        return rabbit_channel

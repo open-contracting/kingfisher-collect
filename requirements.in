@@ -12,3 +12,4 @@ sentry-sdk
 treq
 twisted
 requests
+pika

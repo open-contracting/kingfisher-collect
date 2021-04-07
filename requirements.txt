@@ -88,6 +88,8 @@ parsel==1.5.2
     # via
     #   itemloaders
     #   scrapy
+pika==1.2.0
+    # via -r requirements.in
 protego==0.1.16
     # via scrapy
 pyasn1-modules==0.2.7
