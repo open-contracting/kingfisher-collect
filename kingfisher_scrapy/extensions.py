@@ -324,7 +324,9 @@ class KingfisherProcessNGAPI:
         self.spider = None
         self.stats = stats
 
+        self.rabbit_enabled = False
         if rabbit_host:
+            self.rabbit_enabled = True
             self.rabbit_exchange = rabbit_exchange
             self.rabbit_publish_key = rabbit_publish_key
 
@@ -449,9 +451,13 @@ class KingfisherProcessNGAPI:
             # in case of error send info about it to api
             data["errors"] = json.dumps(item.get("errors", None))
 
-        if self.rabbit_exchange:
-            self._publish_to_rabbit(json.dumps(data))
-            self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY_RABBIT)
+        if self.rabbit_enabled:
+            try:
+                self._publish_to_rabbit(data)
+                self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY_RABBIT)
+            except Exception as e:
+                self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_FAILED_KEY_RABBIT)
+                spider.logger.error("Unable to publish message to Rabbit %s", e)
         else:
             response = self._post_sync("api/v1/create_collection_file", data)
             if not response.ok:
@@ -478,7 +484,7 @@ class KingfisherProcessNGAPI:
         self.channel.basic_publish(
             exchange=self.rabbit_exchange,
             routing_key=self.rabbit_publish_key,
-            body=message,
+            body=json.dumps(message),
             properties=BasicProperties(delivery_mode=2),
         )
 
