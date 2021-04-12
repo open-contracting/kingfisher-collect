@@ -17,7 +17,7 @@ class MexicoYucatan(PeriodicSpider):
         https://contratacionesabiertas.inaipyucatan.org.mx/contratacionesabiertas/datosabiertos#
     """
 
-    name = 'mexico_yucatan'
+    name = 'mexico_yucatan_inaip'
 
     # BaseSpider
     root_path = 'arrayReleasePackage.item'
