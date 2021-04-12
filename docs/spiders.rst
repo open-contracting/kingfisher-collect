@@ -743,6 +743,13 @@ Mexico
 
    scrapy crawl mexico_quien_es_quien
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_yucatan_inaip.MexicoYucatan
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_yucatan_inaip
+
 Moldova
 -------
 
