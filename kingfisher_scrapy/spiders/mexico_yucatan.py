@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import components
 class MexicoYucatan(PeriodicSpider):
     """
        Domain
-         Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI) - Yucatangit
+         Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI) - Yucatan
        Spider arguments
       from_date
         Download only releases from this date onward (YYYY format).
