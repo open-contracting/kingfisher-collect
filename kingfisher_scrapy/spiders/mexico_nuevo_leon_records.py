@@ -17,6 +17,6 @@ class MexicoNuevoLeonRecords(SimpleSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            'http://si.nl.gob.mx/siasi_ws/api/ocds/DescargarRecordPackage?usuario=undefined&servidor=undefined',
+            'http://si.nl.gob.mx/siasi_ws/api/ocds/DescargarRecordPackage',
             meta={'file_name': 'records.json'}
         )
