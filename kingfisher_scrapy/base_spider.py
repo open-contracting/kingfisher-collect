@@ -57,6 +57,7 @@ class BaseSpider(scrapy.Spider):
     line_delimited = False
     root_path = ''
     dont_truncate = False
+    default_from_date = None
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
