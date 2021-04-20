@@ -19,6 +19,8 @@ class Moldova(SimpleSpider):
 
     # BaseSpider
     date_format = 'datetime'
+    default_from_date = '2018-10-18T00:00:00'
+    date_required = True
 
     def start_requests(self):
         # https://public.mtender.gov.md offers three endpoints: /tenders/, /tenders/plan/ and /budgets/. However, this
@@ -31,9 +33,7 @@ class Moldova(SimpleSpider):
         #
         # Note: The OCIDs from the /budgets/ endpoint have no corresponding data in the second service. The OCIDs from
         # the /tenders/plan/ endpoint are the same as from the /tenders/ endpoint.
-        url = 'https://public.mtender.gov.md/tenders/'
-        if self.from_date:
-            url = f'{url}?offset={self.from_date.strftime(self.date_format)}'
+        url = f'https://public.mtender.gov.md/tenders/?offset={self.from_date.strftime(self.date_format)}'
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
