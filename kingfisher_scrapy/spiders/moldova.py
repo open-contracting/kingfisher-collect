@@ -14,11 +14,11 @@ class Moldova(SimpleSpider):
     """
     name = 'moldova'
 
-    # SimpleSpider
-    data_type = 'release_package'
-
     # BaseSpider
     date_format = 'datetime'
+
+    # SimpleSpider
+    data_type = 'release_package'
 
     def start_requests(self):
         # https://public.mtender.gov.md offers three endpoints: /tenders/, /tenders/plan/ and /budgets/. However, this
