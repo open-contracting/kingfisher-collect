@@ -118,10 +118,13 @@ class Checker:
             if not hasattr(self.cls, class_attribute) and spider_argument in spider_arguments:
                 self.log('warning', f'unexpected "{spider_argument}" spider argument ({class_attribute} is not set)')
 
-        self.check_date_spider_argument('from_date', spider_arguments, lambda cls: repr(cls.default_from_date),
+        def default_from_date(cls):
+            return repr(getattr(cls, 'default_from_date', None))
+
+        self.check_date_spider_argument('from_date', spider_arguments, default_from_date,
                                         'Download only data from this {period} onward ({format} format).')
 
-        def default(cls):
+        def default_until_date(cls):
             if hasattr(cls, 'default_until_date'):
                 return f"'{cls.default_until_date}'"
             if cls.date_format == 'datetime':
@@ -133,7 +136,7 @@ class Checker:
             elif cls.date_format == 'year':
                 return 'the current year'
 
-        self.check_date_spider_argument('until_date', spider_arguments, default,
+        self.check_date_spider_argument('until_date', spider_arguments, default_until_date,
                                         'Download only data until this {period} ({format} format).')
 
     def check_list(self, items, known_items, name):
@@ -154,7 +157,7 @@ class Checker:
     def check_date_spider_argument(self, spider_argument, spider_arguments, default, format_string):
         if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
-            if self.cls.__name__ in ('Australia', 'ColombiaBulk', 'PortugalRecords', 'PortugalReleases',
+            if self.cls.__name__ in ('ColombiaBulk', 'PortugalRecords', 'PortugalReleases',
                                      'ScotlandPublicContracts'):
                 level = 'info'
             else:
@@ -183,7 +186,5 @@ class Checker:
                 raise NotImplementedError(f'checkall: date_format "{self.cls.date_format}" not implemented')
 
             expected = format_string.format(period=period, format=format_, default=default(self.cls))
-            if 'None' in expected:
-                self.log(level, f"\nA default_{spider_argument} must be set")
-            elif spider_arguments[spider_argument] != expected:
+            if spider_arguments[spider_argument] != expected:
                 self.log(level, f"\n{spider_arguments[spider_argument]!r} !=\n{expected!r}")
