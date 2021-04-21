@@ -10,9 +10,11 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
       Poder Judicial de Costa Rica
     Spider arguments
       from_date
-        Download only data from this year onward (YYYY format). Defaults to '2018'.
+        Download only data from this year onward (YYYY format).
+        If ``until_date`` is provided, defaults to '2018'.
       until_date
-        Download only data until this year (YYYY format). Defaults to the current year.
+        Download only data until this year (YYYY format).
+        If ``from_date`` is provided, defaults to the current year.
     Bulk download documentation
       http://datosabiertospj.eastus.cloudapp.azure.com/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
     """
