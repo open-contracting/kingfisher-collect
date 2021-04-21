@@ -122,6 +122,8 @@ class Checker:
                                         'Download only data from this {period} onward ({format} format).')
 
         def default(cls):
+            if hasattr(cls, 'default_until_date'):
+                return f"'{cls.default_until_date}'"
             if cls.date_format == 'datetime':
                 return 'now'
             elif cls.date_format == 'date':
@@ -152,16 +154,17 @@ class Checker:
     def check_date_spider_argument(self, spider_argument, spider_arguments, default, format_string):
         if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
-            if self.cls.__name__ in ('PortugalRecords', 'PortugalReleases', 'ScotlandPublicContracts'):
+            if self.cls.__name__ in ('Australia', 'ColombiaBulk', 'PortugalRecords', 'PortugalReleases',
+                                     'ScotlandPublicContracts'):
                 level = 'info'
             else:
                 level = 'warning'
 
             if self.cls.date_required:
                 format_string += " Defaults to {default}."
-            elif spider_argument == 'from_date':
+            elif spider_argument == 'from_date' and 'until_date' in spider_arguments:
                 format_string += "\n  If ``until_date`` is provided, defaults to {default}."
-            elif spider_argument == 'until_date':
+            elif spider_argument == 'until_date' and 'from_date' in spider_arguments:
                 format_string += "\n  If ``from_date`` is provided, defaults to {default}."
 
             if self.cls.date_format == 'datetime':
@@ -180,5 +183,7 @@ class Checker:
                 raise NotImplementedError(f'checkall: date_format "{self.cls.date_format}" not implemented')
 
             expected = format_string.format(period=period, format=format_, default=default(self.cls))
-            if spider_arguments[spider_argument] != expected:
+            if 'None' in expected:
+                self.log(level, f"\nA default_{spider_argument} must be set")
+            elif spider_arguments[spider_argument] != expected:
                 self.log(level, f"\n{spider_arguments[spider_argument]!r} !=\n{expected!r}")
