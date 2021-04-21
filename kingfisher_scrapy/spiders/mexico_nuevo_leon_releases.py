@@ -25,4 +25,3 @@ class MexicoNuevoLeonReleases(CompressedFileSpider):
             'http://si.nl.gob.mx/acceso/DatosAbiertos/JSONsInfraestructuraAbierta.rar',
             formatter=components(-1)
         )
-
