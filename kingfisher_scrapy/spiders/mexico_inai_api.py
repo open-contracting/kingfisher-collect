@@ -8,11 +8,9 @@ class MexicoINAIAPI(PeriodicSpider):
       Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI)
     Spider arguments
       from_date
-        Download only releases from this date onward (YYYY format).
-        If ``from_date`` is not provided defaults to 2015.
+        Download only data from this year onward (YYYY format). Defaults to '2015'.
       until_date
-        Download only releases until this date (YYYY format).
-        If ``until_date`` is not provided defaults to 2020.
+        Download only data until this year (YYYY format). Defaults to '2020'.
     API documentation
       http://contratacionesabiertas.inai.org.mx/contratacionesabiertas/datosabiertos
     """

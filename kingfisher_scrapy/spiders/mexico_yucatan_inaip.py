@@ -9,11 +9,9 @@ class MexicoYucatan(PeriodicSpider):
       (INAIP) - Yucatán
     Spider arguments
       from_date
-        Download only releases from this date onward (YYYY format).
-        If ``from_date`` is not provided defaults to 2020.
+        Download only data from this year onward (YYYY format). Defaults to '2020'.
       until_date
-        Download only releases until this date (YYYY format).
-        If ``until_date`` is not provided defaults to 2020.
+        Download only data until this year (YYYY format). Defaults to '2020'.
     API documentation
       https://contratacionesabiertas.inaipyucatan.org.mx/contratacionesabiertas/datosabiertos#
     """
