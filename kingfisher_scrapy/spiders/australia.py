@@ -10,9 +10,9 @@ class Australia(LinksSpider):
       AusTender
     Spider arguments
       from_date
-        Download only contracts from this time onward (YYYY-MM-DDThh:mm:ss format). Defaults to '2004-01-01T00:00:00'.
+        Download only data from this time onward (YYYY-MM-DDThh:mm:ss format). Defaults to '2004-01-01T00:00:00'.
       until_date
-        Download only contracts until this time (YYYY-MM-DDThh:mm:ss format). Defaults to now.
+        Download only data until this time (YYYY-MM-DDThh:mm:ss format). Defaults to now.
     API documentation
       https://github.com/austender/austender-ocds-api
     Swagger API documentation
