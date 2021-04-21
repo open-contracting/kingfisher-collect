@@ -20,11 +20,9 @@ class MexicoNuevoLeonReleases(CompressedFileSpider):
     # CompressedFileSpider
     file_name_must_contain = 'ReleasePackage'
 
-
     def start_requests(self):
         yield self.build_request(
             'http://si.nl.gob.mx/acceso/DatosAbiertos/JSONsInfraestructuraAbierta.rar',
             formatter=components(-1)
         )
-
 
