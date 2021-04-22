@@ -3,11 +3,11 @@ import json
 import os
 
 import ijson
+import psycopg2
 from scrapy.commands import ScrapyCommand
 from scrapy.exceptions import UsageError, NotConfigured
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.commands.incremental_data_store.db import Database
 
 # these can be a command line argument as well
 CRAWL_TIME = '2021-04-22T00:00:00'
@@ -42,6 +42,23 @@ class IncrementalDataStore(ScrapyCommand):
         else:
             return last_date[0:6]
 
+    def database_setup(self, spider_name):
+        """
+        Creates the database connection, set the search path and create the required table if doesn't exists.
+        """
+        connection = psycopg2.connect(os.getenv('KINGFISHER_COLLECT_DATABASE_URL'))
+        cursor = connection.cursor()
+        cursor.execute(f'SET search_path = {SCHEMA_NAME}')
+        self.create_table(cursor, spider_name)
+        return connection, cursor
+
+    def create_table(self, cursor, spider_name):
+        """
+        Creates a table with a jsonb "data" column and creates and index on the data->>'date' field
+        """
+        cursor.execute(f'CREATE TABLE IF NOT EXISTS {spider_name} (data jsonb);')
+        cursor.execute(f"CREATE INDEX IF NOT EXISTS idx_{spider_name} ON {spider_name}(cast(data->>'date' as text));")
+
     def run_spider(self, last_date, spider_name):
 
         if not self.settings['FILES_STORE'] or not os.getenv('KINGFISHER_COLLECT_DATABASE_URL'):
@@ -66,12 +83,18 @@ class IncrementalDataStore(ScrapyCommand):
         # we disable kingfisher process extension
         self.settings['EXTENSIONS']['kingfisher_scrapy.extensions.KingfisherProcessAPI'] = None
 
-        database = Database(SCHEMA_NAME, spider_name)
-        last_date = database.get_last_release_date()
+        connection, cursor = self.database_setup(spider_name)
+
+        # gets the last data->>'date' that exists in the country table
+        cursor.execute(f"SELECT max(data->>'date') FROM {spider_name};")
+        last_date = cursor.fetchone()[0]
+
         self.run_spider(last_date, spider_name)
 
         # we drop the table and insert all the data again
-        database.re_create_country_table()
+        cursor.execute(f'DROP TABLE {spider_name} CASCADE ;')
+        self.create_table(cursor, spider_name)
+
         data_directory = os.path.join(self.settings['FILES_STORE'], f'{spider_name}', FOLDER_NAME)
         # if we don't need to compile the releases, we insert them directly in the database
         if opts.compile:
@@ -81,5 +104,6 @@ class IncrementalDataStore(ScrapyCommand):
                 if filename.endswith('.json'):
                     with open(os.path.join(data_directory, filename)) as f:
                         for item in ijson.items(f, 'releases.item'):
-                            database.insert_data_row(json.dumps(item, default=util.default))
-            database.commit()
+                            data = json.dumps(item, default=util.default)
+                            cursor.execute(f'INSERT INTO {spider_name} values (%s)  ;', (data,))
+            connection.commit()
