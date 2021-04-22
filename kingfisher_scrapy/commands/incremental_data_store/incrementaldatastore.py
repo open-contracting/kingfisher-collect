@@ -76,7 +76,7 @@ class IncrementalDataStore(ScrapyCommand):
         data_directory = os.path.join(self.settings['FILES_STORE'], f'{spider_name}', FOLDER_NAME)
         # if we don't need to compile the releases, we insert them directly in the database
         if opts.compile:
-            raise NotImplemented('The compile option is not implemented yet')
+            raise NotImplementedError('The compile option is not implemented yet')
         else:
             for filename in os.listdir(data_directory):
                 if filename.endswith('.json'):
