@@ -64,8 +64,7 @@ class IncrementalDataStore(ScrapyCommand):
             raise UsageError('A valid spider must be given.')
 
         # we disable kingfisher process extension
-        extensions = {'kingfisher_scrapy.extensions.KingfisherProcessAPI': None}
-        self.settings.set('EXTENSIONS', extensions)
+        self.settings['EXTENSIONS']['kingfisher_scrapy.extensions.KingfisherProcessAPI'] = None
 
         database = Database(SCHEMA_NAME, spider_name)
         last_date = database.get_last_release_date()
