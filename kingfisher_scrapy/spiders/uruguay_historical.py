@@ -12,9 +12,11 @@ class UruguayHistorical(CompressedFileSpider):
       Agencia Reguladora de Compras Estatales (ARCE)
     Spider arguments
       from_date
-        Download only data from this year onward (YYYY format). Defaults to '2002'.
+        Download only data from this year onward (YYYY format).
+        If ``until_date`` is provided, defaults to '2002'.
       until_date
         Download only data until this year (YYYY format).
+        If ``from_date`` is provided, defaults to the current year.
     Bulk download documentation
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
     """
