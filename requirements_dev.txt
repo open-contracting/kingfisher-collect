@@ -165,7 +165,7 @@ protego==0.1.16
     # via
     #   -r requirements.txt
     #   scrapy
-py==1.8.0
+py==1.10.0
     # via pytest
 pyasn1-modules==0.2.7
     # via

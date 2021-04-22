@@ -118,10 +118,15 @@ class Checker:
             if not hasattr(self.cls, class_attribute) and spider_argument in spider_arguments:
                 self.log('warning', f'unexpected "{spider_argument}" spider argument ({class_attribute} is not set)')
 
-        self.check_date_spider_argument('from_date', spider_arguments, lambda cls: repr(cls.default_from_date),
+        def default_from_date(cls):
+            return repr(getattr(cls, 'default_from_date', None))
+
+        self.check_date_spider_argument('from_date', spider_arguments, default_from_date,
                                         'Download only data from this {period} onward ({format} format).')
 
-        def default(cls):
+        def default_until_date(cls):
+            if hasattr(cls, 'default_until_date'):
+                return f"'{cls.default_until_date}'"
             if cls.date_format == 'datetime':
                 return 'now'
             elif cls.date_format == 'date':
@@ -131,7 +136,7 @@ class Checker:
             elif cls.date_format == 'year':
                 return 'the current year'
 
-        self.check_date_spider_argument('until_date', spider_arguments, default,
+        self.check_date_spider_argument('until_date', spider_arguments, default_until_date,
                                         'Download only data until this {period} ({format} format).')
 
     def check_list(self, items, known_items, name):
@@ -152,16 +157,17 @@ class Checker:
     def check_date_spider_argument(self, spider_argument, spider_arguments, default, format_string):
         if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
-            if self.cls.__name__ in ('PortugalRecords', 'PortugalReleases', 'ScotlandPublicContracts'):
+            if self.cls.__name__ in ('ColombiaBulk', 'PortugalRecords', 'PortugalReleases',
+                                     'ScotlandPublicContracts'):
                 level = 'info'
             else:
                 level = 'warning'
 
             if self.cls.date_required:
                 format_string += " Defaults to {default}."
-            elif spider_argument == 'from_date':
+            elif spider_argument == 'from_date' and 'until_date' in spider_arguments:
                 format_string += "\n  If ``until_date`` is provided, defaults to {default}."
-            elif spider_argument == 'until_date':
+            elif spider_argument == 'until_date' and 'from_date' in spider_arguments:
                 format_string += "\n  If ``from_date`` is provided, defaults to {default}."
 
             if self.cls.date_format == 'datetime':
