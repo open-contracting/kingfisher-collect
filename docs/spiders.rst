@@ -216,6 +216,13 @@ Canada
 
    scrapy crawl canada_montreal
 
+.. autoclass:: kingfisher_scrapy.spiders.canada_quebec.CanadaQuebec
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl canada_quebec
+
 Chile
 -----
 
