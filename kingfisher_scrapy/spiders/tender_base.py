@@ -10,8 +10,13 @@ class TenderBase(IndexSpider):
     """
     Domain
       TenderBase
-    API documentation
-      http://www.tenderbase.eu/releases/
+    API endpoints
+      Get contract list by year
+        Link
+          ``http://www.tenderbase.eu/api/releases/?&page={page}``
+        Parameter
+          page
+            page number
     """
     name = 'europe_ted_tender_base'
 
