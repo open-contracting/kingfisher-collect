@@ -1,3 +1,4 @@
+import csv
 import datetime
 import json
 import os
@@ -59,13 +60,13 @@ class IncrementalDataStore(ScrapyCommand):
         cursor.execute(f'CREATE TABLE IF NOT EXISTS {spider_name} (data jsonb);')
         cursor.execute(f"CREATE INDEX IF NOT EXISTS idx_{spider_name} ON {spider_name}(cast(data->>'date' as text));")
 
-    def run_spider(self, last_date, spider_name):
+    def run_spider(self, last_date, spidercls):
 
         if not self.settings['FILES_STORE'] or not os.getenv('KINGFISHER_COLLECT_DATABASE_URL'):
             raise NotConfigured('You must set a FILES_STORE and KINGFISHER_COLLECT_DATABASE_URL')
 
         kwargs = {'crawl_time': CRAWL_TIME}
-        spidercls = self.crawler_process.spider_loader.load(spider_name)
+
 
         # If there is data already in the database we only download data after the last release date
         if last_date:
@@ -73,12 +74,30 @@ class IncrementalDataStore(ScrapyCommand):
         self.crawler_process.crawl(spidercls, **kwargs)
         self.crawler_process.start()
 
+    def json_to_csv(self, data_directory):
+        """
+        Reads all the OCDS release packages json files from the given directory and save each release as a row in a
+        csv file called data.csv
+        """
+        file_name = os.path.join(data_directory, 'data.csv')
+        with open(file_name, 'w') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            for filename in os.listdir(data_directory):
+                if filename.endswith('.json'):
+                    with open(os.path.join(data_directory, filename)) as f:
+                        for item in ijson.items(f, 'releases.item'):
+                            data = json.dumps(item, default=util.default)
+                            csv_writer.writerow([data])
+        return file_name
+
     def run(self, args, opts):
         spiders = self.crawler_process.spider_loader.list()
         spider_name = opts.spider
 
         if not spider_name or opts.spider not in spiders:
             raise UsageError('A valid spider must be given.')
+
+        spidercls = self.crawler_process.spider_loader.load(spider_name)
 
         # we disable kingfisher process extension
         self.settings['EXTENSIONS']['kingfisher_scrapy.extensions.KingfisherProcessAPI'] = None
@@ -100,10 +119,8 @@ class IncrementalDataStore(ScrapyCommand):
         if opts.compile:
             raise NotImplementedError('The compile option is not implemented yet')
         else:
-            for filename in os.listdir(data_directory):
-                if filename.endswith('.json'):
-                    with open(os.path.join(data_directory, filename)) as f:
-                        for item in ijson.items(f, 'releases.item'):
-                            data = json.dumps(item, default=util.default)
-                            cursor.execute(f'INSERT INTO {spider_name} values (%s)  ;', (data,))
+            csv_file_name = self.json_to_csv(data_directory)
+            with open(csv_file_name) as csv_file:
+                cursor.copy_expert(f"COPY {spider_name}(data) FROM STDIN WITH CSV", csv_file)
+            os.remove(csv_file_name)
             connection.commit()
