@@ -1,7 +1,7 @@
 import scrapy
 from math import ceil
 from kingfisher_scrapy.base_spider import IndexSpider
-from kingfisher_scrapy.util import parameters, handle_http_error
+from kingfisher_scrapy.util import parameters
 
 
 class TenderBase(IndexSpider):
