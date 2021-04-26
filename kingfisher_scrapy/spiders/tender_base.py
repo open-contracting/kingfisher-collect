@@ -13,7 +13,7 @@ class TenderBase(IndexSpider):
     API documentation
       http://www.tenderbase.eu/releases/
     """
-    name = 'tender_base'
+    name = 'europe_ted_tender_base'
 
     # BaseSpider
     ocds_version = '1.1'
