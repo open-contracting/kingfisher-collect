@@ -1,11 +1,12 @@
-import scrapy
 from math import ceil
+
+import scrapy
+
 from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.util import parameters
 
 
 class TenderBase(IndexSpider):
-
     """
     Domain
       TenderBase
