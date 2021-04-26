@@ -32,6 +32,7 @@ class TenderBase(IndexSpider):
     def start_requests(self):
         yield scrapy.Request(
             'http://www.tenderbase.eu/releases/',
+            meta={'file_name': 'count.json'},
             callback=self.parse_list
         )
 
