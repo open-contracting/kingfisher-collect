@@ -535,6 +535,16 @@ Ecuador
 
    scrapy crawl ecuador_emergency
 
+Europe
+------
+
+.. autoclass:: kingfisher_scrapy.spiders.europe_ted_tender_base.EuropeTedTenderBase
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl europe_ted_tender_base
+
 France
 ------
 

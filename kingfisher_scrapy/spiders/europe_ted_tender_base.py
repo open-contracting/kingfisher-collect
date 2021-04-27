@@ -11,7 +11,7 @@ class EuropeTedTenderBase(IndexSpider):
     Domain
       TenderBase
     API endpoints
-      Get contract list by page
+      Get releases by page
         Link
           ``http://www.tenderbase.eu/api/releases/?page={page}``
         Parameters
