@@ -6,15 +6,15 @@ from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.util import parameters
 
 
-class EuropeTedTenderBase(IndexSpider):
+class EuropeTedTender(IndexSpider):
     """
     Domain
       TenderBase
     API endpoints
-      Get contract list by year
+      Get contract list by page
         Link
-          ``http://www.tenderbase.eu/api/releases/?&page={page}``
-        Parameter
+          ``http://www.tenderbase.eu/api/releases/?page={page}``
+        Parameters
           page
             page number
     """
