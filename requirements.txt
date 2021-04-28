@@ -40,6 +40,8 @@ et-xmlfile==1.0.1
     # via openpyxl
 flattentool==0.14.0
     # via -r requirements.in
+greenlet==1.0.0
+    # via sqlalchemy
 hyperlink==19.0.0
     # via
     #   treq
@@ -50,9 +52,13 @@ idna==2.8
     #   requests
     #   twisted
 ijson==3.1.1
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   ocdskit
 importlib-metadata==1.6.1
-    # via jsonschema
+    # via
+    #   jsonschema
+    #   sqlalchemy
 incremental==17.5.0
     # via
     #   treq
@@ -63,25 +69,39 @@ itemadapter==0.1.1
     #   scrapy
 itemloaders==1.0.3
     # via scrapy
+itsdangerous==1.1.0
+    # via requests-cache
 jdcal==1.4.1
     # via openpyxl
 jmespath==0.10.0
     # via itemloaders
+json-merge-patch==0.2
+    # via ocdsextensionregistry
 jsonpointer==2.0
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   ocdskit
 jsonref==0.2
     # via
     #   flattentool
+    #   ocdsextensionregistry
+    #   ocdskit
     #   ocdsmerge
 jsonschema==3.2.0
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   ocdskit
 lxml==4.6.3
     # via
     #   flattentool
     #   parsel
     #   scrapy
-ocdsmerge==0.6.4
+ocdsextensionregistry==0.1.4
+    # via ocdskit
+ocdskit==0.2.22
     # via -r requirements.in
+ocdsmerge==0.6.4
+    # via ocdskit
 odfpy==1.4.1
     # via flattentool
 openpyxl==3.0.5
@@ -118,12 +138,19 @@ queuelib==1.5.0
     # via scrapy
 rarfile==3.1
     # via -r requirements.in
+requests-cache==0.6.3
+    # via ocdsextensionregistry
 requests==2.22.0
     # via
+    #   ocdsextensionregistry
+    #   ocdskit
     #   ocdsmerge
+    #   requests-cache
     #   treq
 rfc3987==1.3.8
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   ocdskit
 schema==0.7.2
     # via flattentool
 scrapy==2.3.0
@@ -154,6 +181,10 @@ six==1.13.0
     #   scrapyd-client
     #   treq
     #   w3lib
+sqlalchemy==1.4.11
+    # via ocdskit
+strict-rfc3339==0.7
+    # via ocdskit
 treq==20.9.0
     # via -r requirements.in
 twisted[tls]==20.3.0
@@ -162,6 +193,8 @@ twisted[tls]==20.3.0
     #   scrapy
     #   scrapyd
     #   treq
+url-normalize==1.4.3
+    # via requests-cache
 urllib3==1.25.7
     # via
     #   requests
