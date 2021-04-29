@@ -8,7 +8,7 @@ import ijson
 import psycopg2
 from ocdskit.combine import merge
 from scrapy.commands import ScrapyCommand
-from scrapy.exceptions import UsageError, NotConfigured
+from scrapy.exceptions import NotConfigured, UsageError
 
 from kingfisher_scrapy import util
 
