@@ -29,7 +29,7 @@ class AustraliaNSW(SimpleSpider):
         data = response.json()
         release_type = response.request.meta['release_type']
 
-        if 'links' in data and isinstance(data['links'], dict) and 'next' in data['links']:
+        if data['releases'] and 'links' in data and isinstance(data['links'], dict) and 'next' in data['links']:
             yield self.build_request(
                 data['links']['next'],
                 formatter=parameters('event', 'startRow'),
