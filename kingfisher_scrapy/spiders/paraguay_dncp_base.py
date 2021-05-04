@@ -46,8 +46,8 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
 
     def start_requests(self):
         url = f'{self.base_url}/search/processes?tipo_fecha=fecha_release&' \
-              f'fecha_desde={self.from_date.strftime(self.date_format)}-4:00&' \
-              f'fecha_hasta={self.until_date.strftime(self.date_format)}-4:00'
+              f'fecha_desde={self.from_date.strftime(self.date_format)}-04:00&' \
+              f'fecha_hasta={self.until_date.strftime(self.date_format)}-04:00'
 
         yield self.build_request(
             url,
@@ -91,7 +91,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
                     raise AccessTokenError()
                 else:
                     self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
-                    return scrapy.Request(
+                    yield scrapy.Request(
                         self.auth_url,
                         method='POST',
                         headers={'accept': 'application/json', 'Content-Type': 'application/json'},
