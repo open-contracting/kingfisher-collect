@@ -276,7 +276,7 @@ twisted[tls]==20.3.0
     #   scrapy
     #   scrapyd
     #   treq
-urllib3==1.25.7
+urllib3==1.25.11
     # via
     #   -r requirements.txt
     #   requests
