@@ -12,11 +12,13 @@ class Uganda(IndexSpider):
       from_date
         Download only data from this year onward (YYYY format).
         If ``until_date`` is provided, defaults to '2017'.
-        The year refers to the start of the fiscal year range, e.g. if from_date='2017' then fiscal_year='2017-2018'
+        The year refers to the start of the fiscal year range, e.g. if ``from_date`` = '2017' then the fiscal year is
+        '2017-2018'
       until_date
         Download only data until this year (YYYY format).
         If ``from_date`` is provided, defaults to the current year.
-        The year refers to the start of the fiscal year range, e.g. if until_date='2017' then fiscal_year='2017-2018'
+        The year refers to the start of the fiscal year range, e.g. if ``until_date`` = '2017' then the fiscal year is
+        '2017-2018'
     """
     name = 'uganda_releases'
     download_delay = 30  # to avoid API 429 error "too many request"
