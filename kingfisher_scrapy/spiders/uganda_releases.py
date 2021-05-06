@@ -8,6 +8,8 @@ class Uganda(IndexSpider):
     """
     Domain
       Government Procurement Portal (GPP) of Public Procurement and Disposal of Public Assets Authority (PPDA)
+    Caveats
+      The domains described in the API documentation must be replaced by https://gpppapi.com
     Spider arguments
       from_date
         Download only data from this year onward (YYYY format).
@@ -19,6 +21,8 @@ class Uganda(IndexSpider):
         If ``from_date`` is provided, defaults to the current year.
         The year refers to the start of the fiscal year range, e.g. if ``until_date`` = '2017' then the fiscal year is
         '2017-2018'
+      API documentation
+        https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
     """
     name = 'uganda_releases'
     download_delay = 30  # to avoid API 429 error "too many request"
