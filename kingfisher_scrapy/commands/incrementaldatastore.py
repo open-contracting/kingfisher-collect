@@ -12,24 +12,18 @@ from scrapy.exceptions import NotConfigured, UsageError
 
 from kingfisher_scrapy import util
 
-# these can be a command line argument as well
-CRAWL_TIME = '2021-04-22T00:00:00'
-FOLDER_NAME = datetime.datetime.strptime(CRAWL_TIME, '%Y-%m-%dT%H:%M:%S').strftime('%Y%m%d_%H%M%S')
-
 logger = logging.getLogger(__name__)
 
 
 class IncrementalDataStore(ScrapyCommand):
     def syntax(self):
-        return '[options] --spider spider_name --db_schema schema'
+        return '[options] <spider_name> <db_schema_name> <crawl_time>'
 
     def short_desc(self):
         return 'Download OCDS data and store it in a PostgresSQL database, incrementally'
 
     def add_options(self, parser):
         ScrapyCommand.add_options(self, parser)
-        parser.add_option('--spider', type=str, help='The spider to run')
-        parser.add_option('--db_schema', type=str, help='The existing database schema to use')
         parser.add_option('--compile', action='store_true',
                           help='Merge individual releases into compiled releases')
 
@@ -58,8 +52,8 @@ class IncrementalDataStore(ScrapyCommand):
         """
         cursor.execute(f'CREATE TABLE IF NOT EXISTS {spider_name} (data jsonb);')
 
-    def run_spider(self, last_date, spidercls):
-        kwargs = {'crawl_time': CRAWL_TIME}
+    def run_spider(self, last_date, spidercls, crawl_time):
+        kwargs = {'crawl_time': crawl_time}
 
         # If there is data already in the database we only download data after the last release date
         if last_date:
@@ -97,13 +91,19 @@ class IncrementalDataStore(ScrapyCommand):
             raise NotConfigured('FILES_STORE and/or KINGFISHER_COLLECT_DATABASE_URL is not set.')
 
         spiders = self.crawler_process.spider_loader.list()
-        spider_name = opts.spider
+        if len(args) < 3:
+            raise UsageError('A valid spider, database schema nme, and crawl time must be given.')
 
-        if not spider_name or opts.spider not in spiders:
+        spider_name = args[0]
+        db_schema_name = args[1]
+        try:
+            crawl_time = datetime.datetime.strptime(args[2], '%Y-%m-%dT%H:%M:%S')
+            folder_name = crawl_time.strftime('%Y%m%d_%H%M%S')
+        except ValueError as e:
+            raise UsageError(f'argument `crawl_time`: invalid date value: {e}')
+
+        if not spider_name or spider_name not in spiders:
             raise UsageError('A valid spider must be given.')
-
-        if not opts.db_schema:
-            raise UsageError('A database schema name must be given.')
 
         spidercls = self.crawler_process.spider_loader.load(spider_name)
 
@@ -113,21 +113,21 @@ class IncrementalDataStore(ScrapyCommand):
         # Disable the Kingfisher Process extension.
         self.settings['EXTENSIONS']['kingfisher_scrapy.extensions.KingfisherProcessAPI'] = None
 
-        connection, cursor = self.database_setup(spider_name, opts.db_schema)
+        connection, cursor = self.database_setup(spider_name, db_schema_name)
 
         # Get the most recent date in the spider's data table.
         cursor.execute(f"SELECT max(data->>'date') FROM {spider_name};")
         last_date = cursor.fetchone()[0]
 
-        logger.info(f'Running: scrapy crawl -a from_date={kwargs["from_date"]} -a crawl_time={kwargs["crawl_time"]}')
+        logger.info(f'Running: scrapy crawl -a from_date={last_date} -a crawl_time={crawl_time}')
 
-        self.run_spider(last_date, spidercls)
+        self.run_spider(last_date, spidercls, crawl_time)
 
         # Replace the spider's data table.
         cursor.execute(f'DROP TABLE {spider_name} CASCADE ;')
         self.create_table(cursor, spider_name)
 
-        data_directory = os.path.join(self.settings['FILES_STORE'], f'{spider_name}', FOLDER_NAME)
+        data_directory = os.path.join(self.settings['FILES_STORE'], f'{spider_name}', folder_name)
 
         logger.info('Starting the compile/file reading process')
         if opts.compile:
