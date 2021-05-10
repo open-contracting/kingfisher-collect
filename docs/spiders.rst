@@ -216,6 +216,13 @@ Canada
 
    scrapy crawl canada_montreal
 
+.. autoclass:: kingfisher_scrapy.spiders.canada_quebec.CanadaQuebec
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl canada_quebec
+
 Chile
 -----
 
@@ -534,6 +541,16 @@ Ecuador
 .. code-block:: bash
 
    scrapy crawl ecuador_emergency
+
+Europe
+------
+
+.. autoclass:: kingfisher_scrapy.spiders.europe_ted_tender_base.EuropeTedTenderBase
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl europe_ted_tender_base
 
 France
 ------
