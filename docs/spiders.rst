@@ -967,6 +967,9 @@ Tanzania
 
    scrapy crawl tanzania_zabuni
 
+Test
+----
+
 Uganda
 ------
 
