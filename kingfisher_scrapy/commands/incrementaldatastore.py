@@ -52,16 +52,16 @@ class IncrementalDataStore(ScrapyCommand):
         """
         cursor.execute(f'CREATE TABLE IF NOT EXISTS {spider_name} (data jsonb)')
 
-    def get_data_from_directory(self, data_directory, json_data_path=''):
+    def get_data_from_directory(self, data_directory, prefix=''):
         """
         Yields items from jsons files in the given directory
         :param data_directory directory from where read the json files
-        :param json_data_path the path from which read the data from the json file. By default the complete json file
+        :param prefix the path from which read the data from the json file. By default the complete json file
         """
         for dir_entry in os.scandir(data_directory):
             if dir_entry.name.endswith('.json'):
                 with open(dir_entry.path) as f:
-                    yield from ijson.items(f, json_data_path)
+                    yield from ijson.items(f, prefix)
 
     def json_to_csv(self, data, data_directory):
         """
