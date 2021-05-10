@@ -21,7 +21,7 @@ class Uganda(IndexSpider):
         If ``from_date`` is provided, defaults to the current year.
         The year refers to the start of the fiscal year range, e.g. if ``until_date`` = '2017' then the fiscal year is
         '2017-2018'
-      API documentation
+    API documentation
         https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
     """
     name = 'uganda_releases'
