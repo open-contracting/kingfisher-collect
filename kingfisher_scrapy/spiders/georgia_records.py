@@ -9,12 +9,7 @@ class GeorgiaRecords(LinksSpider):
     Domain
       State Procurement Agency (SPA)
     Bulk download documentation
-      JSON
-        https://odapi.spa.ge/spage.json.zip
-      Excel
-        https://odapi.spa.ge/spage.xlsx
-    Swagger API documentation
-      https://odapi.spa.ge/api/swagger.ui
+      https://odapi.spa.ge/publication-policy
     """
     name = 'georgia_records'
 
