@@ -24,31 +24,27 @@ class IncrementalDataStore(ScrapyCommand):
         return '[options] --spider spider_name --db_schema schema'
 
     def short_desc(self):
-        return 'Store compile releases from the given spider in a PostgresSQL database, incrementally'
+        return 'Download OCDS data and store it in a PostgresSQL database, incrementally'
 
     def add_options(self, parser):
         ScrapyCommand.add_options(self, parser)
         parser.add_option('--spider', type=str, help='The spider to run')
         parser.add_option('--db_schema', type=str, help='The existing database schema to use')
-        parser.add_option('--compile', action='store_true', help='Compile the releases before saving them to the '
-                                                                 'database')
+        parser.add_option('--compile', action='store_true',
+                          help='Merge individual releases into compiled releases')
 
     def from_date_formatted(self, last_date, date_format):
-        """
-        Returns the date formatted as the specified spider date format
-        """
         if date_format == 'datetime':
-            return last_date[0:19]
-        elif date_format == 'date':
-            return last_date[0:10]
-        elif date_format == 'year-month':
-            return last_date[0:7]
-        else:
-            return last_date[0:6]
+            return last_date[:19]
+        if date_format == 'date':
+            return last_date[:10]
+        if date_format == 'year-month':
+            return last_date[:7]
+        return last_date[:6]
 
     def database_setup(self, spider_name, schema_name):
         """
-        Creates the database connection, set the search path and create the required table if it doesn't exists yet.
+        Creates the database connection, sets the search path and creates the required table if it doesn't exists yet.
         """
         connection = psycopg2.connect(os.getenv('KINGFISHER_COLLECT_DATABASE_URL'))
         cursor = connection.cursor()
@@ -89,17 +85,16 @@ class IncrementalDataStore(ScrapyCommand):
         :param data_directory directory to where create the csv file
         """
         file_name = os.path.join(data_directory, 'data.csv')
-        with open(file_name, 'w') as csv_file:
-            csv_writer = csv.writer(csv_file)
+        with open(file_name, 'w') as f:
+            writer = csv.writer(f)
             for item in data:
                 data = json.dumps(item, default=util.default)
-                csv_writer.writerow([data])
+                writer.writerow([data])
         return file_name
 
     def run(self, args, opts):
-
         if not self.settings['FILES_STORE'] or not os.getenv('KINGFISHER_COLLECT_DATABASE_URL'):
-            raise NotConfigured('You must set a FILES_STORE and KINGFISHER_COLLECT_DATABASE_URL')
+            raise NotConfigured('FILES_STORE and/or KINGFISHER_COLLECT_DATABASE_URL is not set.')
 
         spiders = self.crawler_process.spider_loader.list()
         spider_name = opts.spider
@@ -113,22 +108,22 @@ class IncrementalDataStore(ScrapyCommand):
         spidercls = self.crawler_process.spider_loader.load(spider_name)
 
         if 'record' in spidercls.data_type and opts.compile:
-            raise UsageError('The compile option can only be used with spiders that returns releases.')
+            raise UsageError('The --compile option can only be used with spiders that return releases.')
 
-        # we disable kingfisher process extension
+        # Disable the Kingfisher Process extension.
         self.settings['EXTENSIONS']['kingfisher_scrapy.extensions.KingfisherProcessAPI'] = None
 
         connection, cursor = self.database_setup(spider_name, opts.db_schema)
 
-        # gets the last data->>'date' that exists in the country table
+        # Get the most recent date in the spider's data table.
         cursor.execute(f"SELECT max(data->>'date') FROM {spider_name};")
         last_date = cursor.fetchone()[0]
 
-        logger.info(f'Last release date found {last_date}')
+        logger.info(f'Running: scrapy crawl -a from_date={kwargs["from_date"]} -a crawl_time={kwargs["crawl_time"]}')
 
         self.run_spider(last_date, spidercls)
 
-        # we drop the table and insert all the data again
+        # Replace the spider's data table.
         cursor.execute(f'DROP TABLE {spider_name} CASCADE ;')
         self.create_table(cursor, spider_name)
 
@@ -147,10 +142,8 @@ class IncrementalDataStore(ScrapyCommand):
             csv_file_name = self.json_to_csv(self.get_data_from_directory(data_directory, list_type),
                                              data_directory)
         logger.info('Dumping the data into the data base')
-        with open(csv_file_name) as csv_file:
-            cursor.copy_expert(f"COPY {spider_name}(data) FROM STDIN WITH CSV", csv_file)
+        with open(csv_file_name) as f:
+            cursor.copy_expert(f"COPY {spider_name}(data) FROM STDIN WITH CSV", f)
         os.remove(csv_file_name)
         cursor.execute(f"CREATE INDEX IF NOT EXISTS idx_{spider_name} ON {spider_name}(cast(data->>'date' as text));")
         connection.commit()
-
-        logger.info('Process completed')
