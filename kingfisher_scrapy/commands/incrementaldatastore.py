@@ -52,15 +52,6 @@ class IncrementalDataStore(ScrapyCommand):
         """
         cursor.execute(f'CREATE TABLE IF NOT EXISTS {spider_name} (data jsonb)')
 
-    def run_spider(self, last_date, spidercls, crawl_time):
-        kwargs = {'crawl_time': crawl_time}
-
-        # If there is data already in the database we only download data after the last release date
-        if last_date:
-            kwargs['from_date'] = self.from_date_formatted(last_date, spidercls.date_format)
-        self.crawler_process.crawl(spidercls, **kwargs)
-        self.crawler_process.start()
-
     def get_data_from_directory(self, data_directory, json_data_path=''):
         """
         Yields items from jsons files in the given directory
@@ -121,7 +112,13 @@ class IncrementalDataStore(ScrapyCommand):
 
         logger.info(f'Running: scrapy crawl -a from_date={last_date} -a crawl_time={crawl_time}')
 
-        self.run_spider(last_date, spidercls, crawl_time)
+        kwargs = {'crawl_time': crawl_time}
+
+        # If there is data already in the database we only download data after the last release date
+        if last_date:
+            kwargs['from_date'] = self.from_date_formatted(last_date, spidercls.date_format)
+        self.crawler_process.crawl(spidercls, **kwargs)
+        self.crawler_process.start()
 
         # Replace the spider's data table.
         cursor.execute(f'DROP TABLE {spider_name} CASCADE ')
