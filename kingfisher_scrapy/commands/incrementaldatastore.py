@@ -27,14 +27,14 @@ class IncrementalDataStore(ScrapyCommand):
         parser.add_option('--compile', action='store_true',
                           help='Merge individual releases into compiled releases')
 
-    def from_date_formatted(self, last_date, date_format):
+    def from_date_formatted(self, date, date_format):
         if date_format == 'datetime':
-            return last_date[:19]
+            return date[:19]
         if date_format == 'date':
-            return last_date[:10]
+            return date[:10]
         if date_format == 'year-month':
-            return last_date[:7]
-        return last_date[:6]
+            return date[:7]
+        return date[:4]
 
     def database_setup(self, spider_name, schema_name):
         """
