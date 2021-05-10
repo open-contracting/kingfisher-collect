@@ -50,7 +50,7 @@ class IncrementalDataStore(ScrapyCommand):
         """
         Creates a table with a jsonb "data" column and creates and index on the data->>'date' field
         """
-        cursor.execute(f'CREATE TABLE IF NOT EXISTS {spider_name} (data jsonb);')
+        cursor.execute(f'CREATE TABLE IF NOT EXISTS {spider_name} (data jsonb)')
 
     def run_spider(self, last_date, spidercls, crawl_time):
         kwargs = {'crawl_time': crawl_time}
@@ -116,7 +116,7 @@ class IncrementalDataStore(ScrapyCommand):
         connection, cursor = self.database_setup(spider_name, db_schema_name)
 
         # Get the most recent date in the spider's data table.
-        cursor.execute(f"SELECT max(data->>'date') FROM {spider_name};")
+        cursor.execute(f"SELECT max(data->>'date') FROM {spider_name}")
         last_date = cursor.fetchone()[0]
 
         logger.info(f'Running: scrapy crawl -a from_date={last_date} -a crawl_time={crawl_time}')
@@ -124,7 +124,7 @@ class IncrementalDataStore(ScrapyCommand):
         self.run_spider(last_date, spidercls, crawl_time)
 
         # Replace the spider's data table.
-        cursor.execute(f'DROP TABLE {spider_name} CASCADE ;')
+        cursor.execute(f'DROP TABLE {spider_name} CASCADE ')
         self.create_table(cursor, spider_name)
 
         data_directory = os.path.join(self.settings['FILES_STORE'], f'{spider_name}', folder_name)
@@ -145,5 +145,5 @@ class IncrementalDataStore(ScrapyCommand):
         with open(csv_file_name) as f:
             cursor.copy_expert(f"COPY {spider_name}(data) FROM STDIN WITH CSV", f)
         os.remove(csv_file_name)
-        cursor.execute(f"CREATE INDEX IF NOT EXISTS idx_{spider_name} ON {spider_name}(cast(data->>'date' as text));")
+        cursor.execute(f"CREATE INDEX IF NOT EXISTS idx_{spider_name} ON {spider_name}(cast(data->>'date' as text))")
         connection.commit()
