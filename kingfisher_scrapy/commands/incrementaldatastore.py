@@ -40,20 +40,20 @@ class IncrementalDataStore(ScrapyCommand):
             return date[:7]
         return date[:4]
 
-    def database_setup(self, spider_name, schema_name):
+    def database_setup(self, table_and_schema_name):
         """
         Creates the database connection, sets the search path and creates the required table if it doesn't exists yet.
         """
         self.connection = psycopg2.connect(os.getenv('KINGFISHER_COLLECT_DATABASE_URL'))
         self.cursor = self.connection.cursor()
-        self.cursor.execute(f'SET search_path = {schema_name}')
-        self.create_table(self.cursor, spider_name)
+        self.cursor.execute(f'SET search_path = {table_and_schema_name}')
+        self.create_table(table_and_schema_name)
 
-    def create_table(self, spider_name):
+    def create_table(self, table_name):
         """
         Creates a table with a jsonb "data" column and creates and index on the data->>'date' field
         """
-        self.cursor.execute(f'CREATE TABLE IF NOT EXISTS {spider_name} (data jsonb)')
+        self.cursor.execute(f'CREATE TABLE IF NOT EXISTS {table_name} (data jsonb)')
 
     def get_data_from_directory(self, data_directory, prefix=''):
         """
@@ -89,7 +89,7 @@ class IncrementalDataStore(ScrapyCommand):
             raise UsageError('A valid spider, database schema nme, and crawl time must be given.')
 
         spider_name = args[0]
-        db_schema_name = args[1]
+        db_schema_name = table_name = args[1]
         try:
             crawl_time = datetime.datetime.strptime(args[2], '%Y-%m-%dT%H:%M:%S')
             folder_name = crawl_time.strftime('%Y%m%d_%H%M%S')
@@ -107,13 +107,13 @@ class IncrementalDataStore(ScrapyCommand):
         # Disable the Kingfisher Process extension.
         self.settings['EXTENSIONS']['kingfisher_scrapy.extensions.KingfisherProcessAPI'] = None
 
-        self.database_setup(spider_name, db_schema_name)
+        self.database_setup(db_schema_name)
 
         # Get the most recent date in the spider's data table.
-        self.cursor.execute(f"SELECT max(data->>'date') FROM {spider_name}")
+        self.cursor.execute(f"SELECT max(data->>'date') FROM {table_name}")
         last_date = self.cursor.fetchone()[0]
 
-        logger.info(f'Running: scrapy crawl -a from_date={last_date} -a crawl_time={crawl_time}')
+        logger.info(f'Running: scrapy crawl {spider_name} -a from_date={last_date} -a crawl_time={crawl_time}')
 
         kwargs = {'crawl_time': crawl_time}
 
@@ -122,10 +122,6 @@ class IncrementalDataStore(ScrapyCommand):
             kwargs['from_date'] = self.from_date_formatted(last_date, spidercls.date_format)
         self.crawler_process.crawl(spidercls, **kwargs)
         self.crawler_process.start()
-
-        # Replace the spider's data table.
-        self.cursor.execute(f'DROP TABLE {spider_name} CASCADE ')
-        self.create_table(spider_name)
 
         data_directory = os.path.join(self.settings['FILES_STORE'], f'{spider_name}', folder_name)
 
@@ -141,9 +137,14 @@ class IncrementalDataStore(ScrapyCommand):
                 list_type = 'records.item.compiledRelease'
             csv_file_name = self.json_to_csv(self.get_data_from_directory(data_directory, list_type),
                                              data_directory)
+        # Replace the spider's data table.
+        self.cursor.execute(f'DROP TABLE {table_name} CASCADE ')
+        self.create_table(spider_name)
+
         logger.info('Dumping the data into the data base')
         with open(csv_file_name) as f:
-            self.cursor.copy_expert(f"COPY {spider_name}(data) FROM STDIN WITH CSV", f)
+            self.cursor.copy_expert(f"COPY {table_name}(data) FROM STDIN WITH CSV", f)
         os.remove(csv_file_name)
-        self.cursor.execute(f"CREATE INDEX IF NOT EXISTS idx_{spider_name} ON {spider_name}(cast(data->>'date' as text))")
+        self.cursor.execute(f"CREATE INDEX IF NOT EXISTS idx_{table_name} ON "
+                            f"{table_name}(cast(data->>'date' as text))")
         self.connection.commit()
