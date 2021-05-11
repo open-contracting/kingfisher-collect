@@ -40,14 +40,14 @@ class IncrementalDataStore(ScrapyCommand):
             return date[:7]
         return date[:4]
 
-    def database_setup(self, table_and_schema_name):
+    def database_setup(self, schema_name, table_name):
         """
         Creates the database connection, sets the search path and creates the required table if it doesn't exists yet.
         """
         self.connection = psycopg2.connect(os.getenv('KINGFISHER_COLLECT_DATABASE_URL'))
         self.cursor = self.connection.cursor()
-        self.cursor.execute(f'SET search_path = {table_and_schema_name}')
-        self.create_table(table_and_schema_name)
+        self.cursor.execute(f'SET search_path = {schema_name}')
+        self.create_table(table_name)
 
     def create_table(self, table_name):
         """
@@ -86,18 +86,21 @@ class IncrementalDataStore(ScrapyCommand):
 
         spiders = self.crawler_process.spider_loader.list()
         if len(args) < 3:
-            raise UsageError('A valid spider, database schema nme, and crawl time must be given.')
+            raise UsageError('A valid spider, database schema name, and crawl time must be given.')
 
         spider_name = args[0]
-        db_schema_name = table_name = args[1]
+        db_schema_name = args[1]
         try:
-            crawl_time = datetime.datetime.strptime(args[2], '%Y-%m-%dT%H:%M:%S')
-            folder_name = crawl_time.strftime('%Y%m%d_%H%M%S')
+            crawl_time = args[2]
+            folder_name = datetime.datetime.strptime(crawl_time, '%Y-%m-%dT%H:%M:%S').strftime('%Y%m%d_%H%M%S')
         except ValueError as e:
             raise UsageError(f'argument `crawl_time`: invalid date value: {e}')
 
         if not spider_name or spider_name not in spiders:
             raise UsageError('A valid spider must be given.')
+
+        # Use the first word of the spider's name as the table name to avoid table names like 'chile_compra_records' etc
+        table_name = spider_name.split('_')[0]
 
         spidercls = self.crawler_process.spider_loader.load(spider_name)
 
@@ -107,7 +110,7 @@ class IncrementalDataStore(ScrapyCommand):
         # Disable the Kingfisher Process extension.
         self.settings['EXTENSIONS']['kingfisher_scrapy.extensions.KingfisherProcessAPI'] = None
 
-        self.database_setup(db_schema_name)
+        self.database_setup(db_schema_name, table_name)
 
         # Get the most recent date in the spider's data table.
         self.cursor.execute(f"SELECT max(data->>'date') FROM {table_name}")
@@ -142,7 +145,7 @@ class IncrementalDataStore(ScrapyCommand):
         csv_file_name = self.json_to_csv(data, data_directory)
         # Replace the spider's data table.
         self.cursor.execute(f'DROP TABLE {table_name} CASCADE ')
-        self.create_table(spider_name)
+        self.create_table(table_name)
 
         logger.info('Dumping the data into the data base')
         with open(csv_file_name) as f:
