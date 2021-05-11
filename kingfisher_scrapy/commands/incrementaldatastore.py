@@ -127,16 +127,19 @@ class IncrementalDataStore(ScrapyCommand):
 
         logger.info('Starting the compile/file reading process')
         if opts.compile:
-            csv_file_name = self.json_to_csv(merge(self.get_data_from_directory(data_directory)),
-                                             data_directory)
+            list_type = ''
         # if we don't need to compile the releases, we insert them directly in the database
         else:
             if 'release' in spidercls.data_type:
                 list_type = 'releases.item'
             else:
                 list_type = 'records.item.compiledRelease'
-            csv_file_name = self.json_to_csv(self.get_data_from_directory(data_directory, list_type),
-                                             data_directory)
+        data = self.get_data_from_directory(data_directory, list_type)
+
+        if opts.compile:
+            data = merge(data)
+
+        csv_file_name = self.json_to_csv(data, data_directory)
         # Replace the spider's data table.
         self.cursor.execute(f'DROP TABLE {table_name} CASCADE ')
         self.create_table(spider_name)
@@ -145,6 +148,5 @@ class IncrementalDataStore(ScrapyCommand):
         with open(csv_file_name) as f:
             self.cursor.copy_expert(f"COPY {table_name}(data) FROM STDIN WITH CSV", f)
         os.remove(csv_file_name)
-        self.cursor.execute(f"CREATE INDEX IF NOT EXISTS idx_{table_name} ON "
-                            f"{table_name}(cast(data->>'date' as text))")
+        self.cursor.execute(f"CREATE INDEX IF NOT EXISTS idx_{table_name} ON {table_name}(cast(data->>'date' as text))")
         self.connection.commit()
