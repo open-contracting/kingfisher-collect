@@ -159,7 +159,7 @@ class Checker:
         if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
             if self.cls.__name__ in ('ColombiaBulk', 'PortugalRecords', 'PortugalReleases',
-                                     'ScotlandPublicContracts'):
+                                     'ScotlandPublicContracts', 'Uganda'):
                 level = 'info'
             else:
                 level = 'warning'
