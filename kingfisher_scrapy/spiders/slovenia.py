@@ -8,6 +8,8 @@ class Slovenia(SimpleSpider):
     """
     Domain
       Ministry of Public Administration Slovenia
+    Bulk download documentation
+      http://tbfy.ijs.si/?m=tenders&a=list_data&t=si_ocds
     """
     name = 'slovenia'
 
