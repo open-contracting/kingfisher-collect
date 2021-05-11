@@ -99,7 +99,7 @@ class IncrementalDataStore(ScrapyCommand):
         if not spider_name or spider_name not in spiders:
             raise UsageError('A valid spider must be given.')
 
-        # Use the first word of the spider's name as the table name to avoid table names like 'chile_compra_records' etc
+        # Use the first word of the spider's name as the table name to avoid table names like 'chile_compra_records'
         table_name = spider_name.split('_')[0]
 
         spidercls = self.crawler_process.spider_loader.load(spider_name)
@@ -151,5 +151,5 @@ class IncrementalDataStore(ScrapyCommand):
         with open(csv_file_name) as f:
             self.cursor.copy_expert(f"COPY {table_name}(data) FROM STDIN WITH CSV", f)
         os.remove(csv_file_name)
-        self.cursor.execute(f"CREATE INDEX IF NOT EXISTS idx_{table_name} ON {table_name}(cast(data->>'date' as text))")
+        self.cursor.execute(f"CREATE INDEX idx_{table_name} ON {table_name}(cast(data->>'date' as text))")
         self.connection.commit()
