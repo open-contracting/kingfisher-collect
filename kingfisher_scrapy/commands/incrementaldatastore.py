@@ -21,17 +21,24 @@ class IncrementalDataStore(ScrapyCommand):
     cursor = None
 
     def syntax(self):
-        return '[options] <spider_name> <db_schema_name> <crawl_time>'
+        return '[options] <spider> <database-schema> <crawl-time>'
 
     def short_desc(self):
         return 'Download OCDS data and store it in a PostgresSQL database, incrementally'
+
+    def long_desc(self):
+        return "Download OCDS data and store it in a PostgresSQL database. The database schema must already exist. " \
+               "A table with a \"data\" column is created if it doesn't exist, named after the spider. If the table " \
+               "isn't empty, the crawl starts with the `from_date` spider argument set to the maximum value of the " \
+               "`date` field of the OCDS data stored in the \"data\" column. If the spider returns records, each " \
+               "record must set the `compiledRelease` field."
 
     def add_options(self, parser):
         ScrapyCommand.add_options(self, parser)
         parser.add_option('--compile', action='store_true',
                           help='Merge individual releases into compiled releases')
 
-    def from_date_formatted(self, date, date_format):
+    def format_from_date(self, date, date_format):
         if date_format == 'datetime':
             return date[:19]
         if date_format == 'date':
@@ -40,116 +47,124 @@ class IncrementalDataStore(ScrapyCommand):
             return date[:7]
         return date[:4]
 
-    def database_setup(self, schema_name, table_name):
+    # Copied from kingfisher-summarize
+    def format(self, statement, **kwargs):
         """
-        Creates the database connection, sets the search path and creates the required table if it doesn't exists yet.
+        Formats the SQL statement, expressed as a format string with keyword arguments. A keyword argument's value is
+        converted to a SQL identifier, or a list of SQL identifiers, unless it's already a ``sql`` object.
         """
-        self.connection = psycopg2.connect(os.getenv('KINGFISHER_COLLECT_DATABASE_URL'))
-        self.cursor = self.connection.cursor()
-        self.cursor.execute(f'SET search_path = {schema_name}')
-        self.create_table(table_name)
+        objects = {}
+        for key, value in kwargs.items():
+            if isinstance(value, sql.Composable):
+                objects[key] = value
+            elif isinstance(value, list):
+                objects[key] = sql.SQL(', ').join(sql.Identifier(entry) for entry in value)
+            else:
+                objects[key] = sql.Identifier(value)
+        return sql.SQL(statement).format(**objects)
 
-    def create_table(self, table_name):
+    # Copied from kingfisher-summarize
+    def execute(self, statement, variables=None, **kwargs):
         """
-        Creates a table with a jsonb "data" column and creates and index on the data->>'date' field
+        Executes the SQL statement.
         """
-        self.cursor.execute(f'CREATE TABLE IF NOT EXISTS {table_name} (data jsonb)')
+        if kwargs:
+            statement = self.format(statement, **kwargs)
+        self.cursor.execute(statement, variables)
 
-    def get_data_from_directory(self, data_directory, prefix=''):
-        """
-        Yields items from jsons files in the given directory
-        :param data_directory directory from where read the json files
-        :param prefix the path from which read the data from the json file. By default the complete json file
-        """
+    def create_table(self, table):
+        self.execute('CREATE TABLE IF NOT EXISTS {table} (data jsonb)', table=table)
+
+    def yield_items_from_directory(self, data_directory, prefix=''):
         for dir_entry in os.scandir(data_directory):
             if dir_entry.name.endswith('.json'):
                 with open(dir_entry.path) as f:
                     yield from ijson.items(f, prefix)
 
-    def json_to_csv(self, data, data_directory):
-        """
-        Receives an iterable of json dicts and save them into a data.csv file in the given directory
-        :param data an iterable of json dict
-        :param data_directory directory to where create the csv file
-        """
-        file_name = os.path.join(data_directory, 'data.csv')
-        with open(file_name, 'w') as f:
-            writer = csv.writer(f)
-            for item in data:
-                data = json.dumps(item, default=util.default)
-                writer.writerow([data])
-        return file_name
-
     def run(self, args, opts):
+        # Check the settings and environment.
         if not self.settings['FILES_STORE'] or not os.getenv('KINGFISHER_COLLECT_DATABASE_URL'):
             raise NotConfigured('FILES_STORE and/or KINGFISHER_COLLECT_DATABASE_URL is not set.')
 
-        spiders = self.crawler_process.spider_loader.list()
+        # Check the command-line arguments.
         if len(args) < 3:
-            raise UsageError('A valid spider, database schema name, and crawl time must be given.')
+            raise UsageError('The spider, database-schema and crawl-time arguments must be set.')
 
         spider_name = args[0]
-        db_schema_name = args[1]
+        schema_name = args[1]
+        crawl_time = args[2]
+
         try:
-            crawl_time = args[2]
-            folder_name = datetime.datetime.strptime(crawl_time, '%Y-%m-%dT%H:%M:%S').strftime('%Y%m%d_%H%M%S')
+            spidercls = self.crawler_process.spider_loader.load(spider_name)
+        except KeyError:
+            raise UsageError(f'The spider argument {spider_name!r} is not a known spider.')
+
+        try:
+            crawl_directory = datetime.datetime.strptime(crawl_time, '%Y-%m-%dT%H:%M:%S').strftime('%Y%m%d_%H%M%S')
         except ValueError as e:
-            raise UsageError(f'argument `crawl_time`: invalid date value: {e}')
+            raise UsageError(f'The crawl-time argument {crawl_time!r} must be in YYYY-MM-DDTHH:MM:SS format: {e}')
 
-        if not spider_name or spider_name not in spiders:
-            raise UsageError('A valid spider must be given.')
+        if opts.compile and 'record' in spidercls.data_type:
+            raise UsageError('The --compile flag can be set only if the spider returns releases.')
 
-        # Use the first word of the spider's name as the table name to avoid table names like 'chile_compra_records'
-        table_name = spider_name.split('_')[0]
+        logger.info('Getting the date from which to resume the crawl (if any)')
 
-        spidercls = self.crawler_process.spider_loader.load(spider_name)
-
-        if 'record' in spidercls.data_type and opts.compile:
-            raise UsageError('The --compile option can only be used with spiders that return releases.')
-
-        # Disable the Kingfisher Process extension.
-        self.settings['EXTENSIONS']['kingfisher_scrapy.extensions.KingfisherProcessAPI'] = None
-
-        self.database_setup(db_schema_name, table_name)
+        # Create the database connection.
+        self.connection = psycopg2.connect(os.getenv('KINGFISHER_COLLECT_DATABASE_URL'))
+        self.cursor = self.connection.cursor()
+        self.execute('SET search_path = {schema}', schema=schema_name)
 
         # Get the most recent date in the spider's data table.
-        self.cursor.execute(f"SELECT max(data->>'date') FROM {table_name}")
-        last_date = self.cursor.fetchone()[0]
+        self.create_table(spider_name)
+        self.execute("SELECT max(data->>'date') FROM {table}", table=spider_name)
+        from_date = self.cursor.fetchone()[0]
 
-        logger.info(f'Running: scrapy crawl {spider_name} -a from_date={last_date} -a crawl_time={crawl_time}')
-
+        # Set the spider arguments.
         kwargs = {'crawl_time': crawl_time}
+        if from_date:
+            kwargs['from_date'] = self.format_from_date(from_date, spidercls.date_format)
 
-        # If there is data already in the database we only download data after the last release date
-        if last_date:
-            kwargs['from_date'] = self.from_date_formatted(last_date, spidercls.date_format)
+        logger.info(f"Running: scrapy crawl {spider_name} {' '.join(f'-a {key}={value}' for key, value in kwargs)}")
+
+        # Run the crawl, without sending data to Kingfisher Process.
+        self.settings['EXTENSIONS']['kingfisher_scrapy.extensions.KingfisherProcessAPI'] = None
         self.crawler_process.crawl(spidercls, **kwargs)
         self.crawler_process.start()
 
-        data_directory = os.path.join(self.settings['FILES_STORE'], f'{spider_name}', folder_name)
+        logger.info('Reading the crawl directory')
 
-        logger.info('Starting the compile/file reading process')
         if opts.compile:
             list_type = ''
-        # if we don't need to compile the releases, we insert them directly in the database
+        elif 'release' in spidercls.data_type:
+            list_type = 'releases.item'
         else:
-            if 'release' in spidercls.data_type:
-                list_type = 'releases.item'
-            else:
-                list_type = 'records.item.compiledRelease'
-        data = self.get_data_from_directory(data_directory, list_type)
+            list_type = 'records.item.compiledRelease'
+
+        crawl_directory_full_path = os.path.join(self.settings['FILES_STORE'], spider_name, crawl_directory)
+        data = self.yield_items_from_directory(crawl_directory_full_path, list_type)
 
         if opts.compile:
+            logger.info('Creating compiled releases')
             data = merge(data)
 
-        csv_file_name = self.json_to_csv(data, data_directory)
-        # Replace the spider's data table.
-        self.cursor.execute(f'DROP TABLE {table_name} CASCADE ')
-        self.create_table(table_name)
+        logger.info('Writing the JSON data to a CSV file')
 
-        logger.info('Dumping the data into the data base')
-        with open(csv_file_name) as f:
-            self.cursor.copy_expert(f"COPY {table_name}(data) FROM STDIN WITH CSV", f)
-        os.remove(csv_file_name)
-        self.cursor.execute(f"CREATE INDEX idx_{table_name} ON {table_name}(cast(data->>'date' as text))")
-        self.connection.commit()
+        filename = os.path.join(crawl_directory_full_path, 'data.csv')
+        with open(filename, 'w') as f:
+            writer = csv.writer(f)
+            for item in data:
+                writer.writerow([json.dumps(item, default=util.default)])
+
+        logger.info('Replacing the JSON data in the SQL table')
+
+        try:
+            self.execute('DROP TABLE {table} CASCADE', table=spider_name)
+            self.create_table(spider_name)
+            with open(filename) as f:
+                self.cursor.copy_expert(self.format('COPY {table}(data) FROM STDIN WITH CSV', table=spider_name), f)
+            self.execute("CREATE INDEX idx_{table} ON {table}(cast(data->>'date' as text))", table=spider_name)
+            self.connection.commit()
+        finally:
+            self.cursor.close()
+            self.connection.close()
+            os.remove(filename)
