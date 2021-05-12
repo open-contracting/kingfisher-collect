@@ -7,6 +7,7 @@ import os
 import ijson
 import psycopg2
 from ocdskit.combine import merge
+from psycopg2 import sql
 from scrapy.commands import ScrapyCommand
 from scrapy.exceptions import NotConfigured, UsageError
 
