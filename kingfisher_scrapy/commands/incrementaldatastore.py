@@ -36,8 +36,7 @@ class IncrementalDataStore(ScrapyCommand):
 
     def add_options(self, parser):
         ScrapyCommand.add_options(self, parser)
-        parser.add_option('--compile', action='store_true',
-                          help='Merge individual releases into compiled releases')
+        parser.add_option('--compile', action='store_true', help='Merge individual releases into compiled releases')
 
     def format_from_date(self, date, date_format):
         if date_format == 'datetime':
