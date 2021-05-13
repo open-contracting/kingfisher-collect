@@ -158,7 +158,7 @@ class IncrementalDataStore(ScrapyCommand):
         logger.info('Replacing the JSON data in the SQL table')
 
         try:
-            self.execute('DROP TABLE {table} CASCADE', table=spider_name)
+            self.execute('DROP TABLE {table}', table=spider_name)
             self.create_table(spider_name)
             with open(filename) as f:
                 self.cursor.copy_expert(self.format('COPY {table}(data) FROM STDIN WITH CSV', table=spider_name), f)
