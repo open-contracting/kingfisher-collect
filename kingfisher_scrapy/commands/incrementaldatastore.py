@@ -151,7 +151,7 @@ class IncrementalDataStore(ScrapyCommand):
         logger.info('Writing the JSON data to a CSV file')
 
         filename = os.path.join(crawl_directory_full_path, 'data.csv')
-        with open(filename, 'w+') as f:
+        with open(filename, 'w') as f:
             writer = csv.writer(f)
             for item in data:
                 writer.writerow([json.dumps(item, default=util.default)])
