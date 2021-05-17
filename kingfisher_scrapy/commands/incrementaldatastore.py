@@ -124,7 +124,8 @@ class IncrementalDataStore(ScrapyCommand):
         if from_date:
             kwargs['from_date'] = self.format_from_date(from_date, spidercls.date_format)
 
-        logger.info(f"Running: scrapy crawl {spider_name} {' '.join(f'-a {key}={value}' for key, value in kwargs)}")
+        logger.info(f"Running: scrapy crawl {spider_name} "
+                    f"{' '.join(f'-a {key}={value}' for key, value in kwargs.items())}")
 
         # Run the crawl, without sending data to Kingfisher Process.
         self.settings['EXTENSIONS']['kingfisher_scrapy.extensions.KingfisherProcessAPI'] = None
@@ -150,7 +151,7 @@ class IncrementalDataStore(ScrapyCommand):
         logger.info('Writing the JSON data to a CSV file')
 
         filename = os.path.join(crawl_directory_full_path, 'data.csv')
-        with open(filename, 'w') as f:
+        with open(filename, 'w+') as f:
             writer = csv.writer(f)
             for item in data:
                 writer.writerow([json.dumps(item, default=util.default)])
@@ -162,7 +163,8 @@ class IncrementalDataStore(ScrapyCommand):
             self.create_table(spider_name)
             with open(filename) as f:
                 self.cursor.copy_expert(self.format('COPY {table}(data) FROM STDIN WITH CSV', table=spider_name), f)
-            self.execute("CREATE INDEX idx_{table} ON {table}(cast(data->>'date' as text))", table=spider_name)
+            self.execute("CREATE INDEX {index} ON {table}(cast(data->>'date' as text))", table=spider_name,
+                         index=f'idx_{spider_name}')
             self.connection.commit()
         finally:
             self.cursor.close()
