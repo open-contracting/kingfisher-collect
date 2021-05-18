@@ -7,7 +7,7 @@ EXCEPTIONS = {
     'openopps',
     'paraguay_dncp_records',
     'paraguay_dncp_releases',
-    'paraguay_hacienda'
+    'paraguay_hacienda',
 }
 
 
