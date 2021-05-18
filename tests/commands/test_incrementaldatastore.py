@@ -1,34 +1,45 @@
+import json
 import os
-import sys
-from subprocess import Popen, PIPE
+from unittest.mock import patch
 
 import psycopg2
 import pytest
 from scrapy.cmdline import execute
+from scrapy.utils.project import get_project_settings
+
 from kingfisher_scrapy.commands.incrementaldatastore import IncrementalDataStore
 
 
 # tests/extensions/test_kingfisher_process_api.py fails if execute() is already called.
 @pytest.mark.order(-1)
-def test_command_without_arguments(caplog):
-    with pytest.raises(SystemExit) as e:
+def test_command_without_arguments(capsys):
+    with pytest.raises(SystemExit):
         execute(['scrapy', 'incrementaldatastore'])
 
-    assert e.value.code == 2
+    captured = capsys.readouterr()
+
+    assert "The spider, database-schema and crawl-time arguments must be set." in captured.err
 
 
 @pytest.mark.order(-1)
-def test_invalid_spider(caplog):
-    with pytest.raises(SystemExit) as e:
+def test_invalid_spider(capsys):
+    with pytest.raises(SystemExit):
         execute(['scrapy', 'incrementaldatastore', 'non-exist-spider', 'test', 'test'])
-    assert e.value.code == 2
+
+    captured = capsys.readouterr()
+
+    assert "The spider argument 'non-exist-spider' is not a known spider." in captured.err
 
 
 @pytest.mark.order(-1)
-def test_invalid_crawl_time(caplog):
-    with pytest.raises(SystemExit) as e:
-        execute(['scrapy', 'incrementaldatastore', 'succeed', 'test', 'test'])
-    assert e.value.code == 2
+def test_invalid_crawl_time(capsys):
+    with pytest.raises(SystemExit):
+        execute(['scrapy', 'incrementaldatastore', 'fail', 'test', 'test'])
+
+    captured = capsys.readouterr()
+
+    assert "The crawl-time argument 'test' must be in YYYY-MM-DDTHH:MM:SS format: time data 'test' " \
+           "does not match format '%Y-%m-%dT%H:%M:%S'" in captured.err
 
 
 def test_format_date():
@@ -39,26 +50,39 @@ def test_format_date():
     assert command.format_from_date('2020-01-01T00:00:00', 'year') == '2020'
 
 
-# from https://github.com/scrapy/scrapy/blob/master/tests/test_commands.py
-def test_command(caplog):
+@patch('scrapy.crawler.CrawlerProcess.crawl')
+@pytest.mark.order(-1)
+def test_command(crawl, caplog, tmpdir):
+
+    release_date = '2020-05-13T00:00:00Z'
+    crawl_date = '2020-01-01T00:00:00'
+
+    data_directory = os.path.join(tmpdir, 'fail', '20200101_000000')
+    os.makedirs(data_directory)
+
+    with open(os.path.join(data_directory,  'data.json'), 'w') as f:
+        json.dump({'releases': [{'date': release_date}]}, f)
+
+    settings = get_project_settings()
+    settings['FILES_STORE'] = tmpdir.strpath
 
     connection = psycopg2.connect(os.getenv('KINGFISHER_COLLECT_DATABASE_URL'))
     cursor = connection.cursor()
-    os.environ['FILE_STORE'] = '/tmp/data'
-    args = (sys.executable, '-m', 'scrapy.cmdline', 'incrementaldatastore', 'succeed', 'public', '2021-05-13T00:00:00')
-    cwd = os.path.dirname(os.path.abspath(__file__))
-    proc = Popen(args, stdout=PIPE, stderr=PIPE, cwd=cwd)
-    stdout, stderr = proc.communicate()
-    assert stdout == b''
-    assert b'Replacing the JSON data in the SQL table' in stderr
-    assert b'Running: scrapy crawl succeed -a crawl_time=2021-05-13T00:00:00' in stderr
 
-    proc = Popen(args, stdout=PIPE, stderr=PIPE, cwd=cwd)
-    stdout, stderr = proc.communicate()
+    with pytest.raises(SystemExit):
+        execute(['scrapy', 'incrementaldatastore', 'fail', 'public', crawl_date], settings=settings)
 
-    assert b'Running: scrapy crawl succeed -a crawl_time=2021-05-13T00:00:00 -a from_date=2020-05-13\n' in stderr
+    cursor.execute("SELECT max(data->>'date') FROM fail")
+    from_date = cursor.fetchone()[0]
 
-    cursor.execute('DROP TABLE succeed')
+    assert from_date == release_date
+
+    log = ' '.join([str(elem) for elem in caplog.records])
+
+    assert 'Replacing the JSON data in the SQL table' in log
+    assert f'Running: scrapy crawl fail -a crawl_time={crawl_date}' in log
+
+    cursor.execute('DROP TABLE fail')
     connection.commit()
     cursor.close()
     connection.close()
