@@ -8,8 +8,7 @@ jobs:
     runs-on: ubuntu-18.04
     services:
       postgres:
-        # See https://github.com/tgstation/tgstation-server/blob/a64be6d9819b8923231ffbe54e37f5d92ebd0f17/.github/workflows/ci-suite.yml
-        image: cyberboss/postgres-max-connections
+        image: postgres:11
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
