@@ -16,19 +16,19 @@ def test_command_without_arguments(capsys):
     with pytest.raises(SystemExit):
         execute(['scrapy', 'incrementaldatastore'])
 
-    captured = capsys.readouterr()
+    actual = capsys.readouterr().err.rsplit("\n", 2)[-2]
 
-    assert "The spider, database-schema and crawl-time arguments must be set." in captured.err
+    assert actual == "pytest: error: The spider, database-schema and crawl-time arguments must be set."
 
 
 @pytest.mark.order(-1)
 def test_invalid_spider(capsys):
     with pytest.raises(SystemExit):
-        execute(['scrapy', 'incrementaldatastore', 'non-exist-spider', 'test', 'test'])
+        execute(['scrapy', 'incrementaldatastore', 'nonexistent', 'test', 'test'])
 
-    captured = capsys.readouterr()
+    actual = capsys.readouterr().err.rsplit("\n", 2)[-2]
 
-    assert "The spider argument 'non-exist-spider' is not a known spider." in captured.err
+    assert actual == "pytest: error: The spider argument 'nonexistent' is not a known spider."
 
 
 @pytest.mark.order(-1)
@@ -36,14 +36,15 @@ def test_invalid_crawl_time(capsys):
     with pytest.raises(SystemExit):
         execute(['scrapy', 'incrementaldatastore', 'fail', 'test', 'test'])
 
-    captured = capsys.readouterr()
+    actual = capsys.readouterr().err.rsplit("\n", 2)[-2]
 
-    assert "The crawl-time argument 'test' must be in YYYY-MM-DDTHH:MM:SS format: time data 'test' " \
-           "does not match format '%Y-%m-%dT%H:%M:%S'" in captured.err
+    assert actual == "pytest: error: The crawl-time argument 'test' must be in YYYY-MM-DDTHH:MM:SS format: time " \
+                     "data 'test' does not match format '%Y-%m-%dT%H:%M:%S'"
 
 
 def test_format_date():
     command = IncrementalDataStore()
+
     assert command.format_from_date('2020-01-01T00:00:00', 'datetime') == '2020-01-01T00:00:00'
     assert command.format_from_date('2020-01-01T00:00:00', 'date') == '2020-01-01'
     assert command.format_from_date('2020-01-01T00:00:00', 'year-month') == '2020-01'
@@ -52,37 +53,36 @@ def test_format_date():
 
 @patch('scrapy.crawler.CrawlerProcess.crawl')
 @pytest.mark.order(-1)
-def test_command(crawl, caplog, tmpdir):
+def test_command(crawl, caplog, tmp_path):
+    data_directory = tmp_path / 'fail' / '20200101_000000'
+    data_directory.mkdir(parents=True)
 
-    release_date = '2020-05-13T00:00:00Z'
-    crawl_date = '2020-01-01T00:00:00'
-
-    data_directory = os.path.join(tmpdir, 'fail', '20200101_000000')
-    os.makedirs(data_directory)
-
-    with open(os.path.join(data_directory,  'data.json'), 'w') as f:
-        json.dump({'releases': [{'date': release_date}]}, f)
-
-    settings = get_project_settings()
-    settings['FILES_STORE'] = tmpdir.strpath
+    with (data_directory /  'data.json').open('w') as f:
+        json.dump({'releases': [{'date': '2020-05-13T00:00:00Z'}]}, f)
 
     connection = psycopg2.connect(os.getenv('KINGFISHER_COLLECT_DATABASE_URL'))
     cursor = connection.cursor()
 
-    with pytest.raises(SystemExit):
-        execute(['scrapy', 'incrementaldatastore', 'fail', 'public', crawl_date], settings=settings)
+    try:
+        settings = get_project_settings()
+        settings['FILES_STORE'] = str(tmp_path)
 
-    cursor.execute("SELECT max(data->>'date') FROM fail")
-    from_date = cursor.fetchone()[0]
+        with pytest.raises(SystemExit):
+            execute(['scrapy', 'incrementaldatastore', 'fail', 'public', '2020-01-01T00:00:00'], settings=settings)
 
-    assert from_date == release_date
+        cursor.execute("SELECT max(data->>'date') FROM fail")
+        max_date = cursor.fetchone()[0]
 
-    log = ' '.join([str(elem) for elem in caplog.records])
+        assert max_date == '2020-05-13T00:00:00Z'
 
-    assert 'Replacing the JSON data in the SQL table' in log
-    assert f'Running: scrapy crawl fail -a crawl_time={crawl_date}' in log
-
-    cursor.execute('DROP TABLE fail')
-    connection.commit()
-    cursor.close()
-    connection.close()
+        assert [record.message for record in caplog.records][-5:] == [
+            'Getting the date from which to resume the crawl (if any)',
+            'Running: scrapy crawl fail -a crawl_time=2020-01-01T00:00:00 -a from_date=2020-05-13',
+            'Reading the crawl directory',
+            'Writing the JSON data to a CSV file',
+            'Replacing the JSON data in the SQL table',
+        ]
+    finally:
+        connection.rollback()
+        cursor.close()
+        connection.close()
