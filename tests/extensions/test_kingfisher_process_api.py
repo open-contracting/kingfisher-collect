@@ -8,7 +8,7 @@ from scrapy.exceptions import NotConfigured
 from scrapy.http import Request, Response
 from twisted.python.failure import Failure
 
-from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessAPI
+from kingfisher_scrapy.extensions import FilesStore, KingfisherProcessAPI
 from kingfisher_scrapy.items import FileError, FileItem
 from tests import spider_with_crawler, spider_with_files_store
 
@@ -78,7 +78,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
             **kwargs,
         )
 
-        store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
+        store_extension = FilesStore.from_crawler(spider.crawler)
         store_extension.item_scraped(item, spider)
 
         response = yield extension.item_scraped(item, spider)

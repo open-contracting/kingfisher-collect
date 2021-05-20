@@ -15,7 +15,7 @@ from kingfisher_scrapy.util import _pluck_filename, get_file_name_and_extension
 
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
-class KingfisherPluck:
+class Pluck:
     def __init__(self, directory, max_bytes):
         self.directory = directory
         self.max_bytes = max_bytes
@@ -75,7 +75,7 @@ class KingfisherPluck:
             f.write(f'{value},{spider.name}\n')
 
 
-class KingfisherFilesStore:
+class FilesStore:
     def __init__(self, directory):
         self.directory = directory
 
@@ -133,7 +133,7 @@ class KingfisherFilesStore:
                 json.dump(data, f, default=util.default)
 
 
-class KingfisherItemCount:
+class ItemCount:
     def __init__(self, stats):
         self.stats = stats
 
