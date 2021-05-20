@@ -73,16 +73,18 @@ def test_command(crawl, caplog, tmp_path):
         cursor.execute("SELECT max(data->>'date') FROM fail")
         max_date = cursor.fetchone()[0]
 
+        cursor.execute('DROP TABLE fail')
+        connection.commit()
+
         assert max_date == '2020-05-13T00:00:00Z'
 
         assert [record.message for record in caplog.records][-5:] == [
             'Getting the date from which to resume the crawl (if any)',
-            'Running: scrapy crawl fail -a crawl_time=2020-01-01T00:00:00 -a from_date=2020-05-13',
+            'Running: scrapy crawl fail -a crawl_time=2020-01-01T00:00:00',
             'Reading the crawl directory',
             'Writing the JSON data to a CSV file',
             'Replacing the JSON data in the SQL table',
         ]
     finally:
-        connection.rollback()
         cursor.close()
         connection.close()
