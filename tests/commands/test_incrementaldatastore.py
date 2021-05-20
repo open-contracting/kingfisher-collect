@@ -57,7 +57,7 @@ def test_command(crawl, caplog, tmp_path):
     data_directory = tmp_path / 'fail' / '20200101_000000'
     data_directory.mkdir(parents=True)
 
-    with (data_directory /  'data.json').open('w') as f:
+    with (data_directory / 'data.json').open('w') as f:
         json.dump({'releases': [{'date': '2020-05-13T00:00:00Z'}]}, f)
 
     connection = psycopg2.connect(os.getenv('KINGFISHER_COLLECT_DATABASE_URL'))
