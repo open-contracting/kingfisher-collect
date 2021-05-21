@@ -78,12 +78,12 @@ DOWNLOADER_MIDDLEWARES = {
 #}
 EXTENSIONS = {
     'kingfisher_scrapy.extensions.SentryLogging': -1,
-    'kingfisher_scrapy.extensions.KingfisherPluck': 1,
-    # `KingfisherFilesStore` must run before `KingfisherProcessAPI`, because the file needs to be written before the
+    'kingfisher_scrapy.extensions.Pluck': 1,
+    # `FilesStore` must run before `KingfisherProcessAPI`, because the file needs to be written before the
     # request is sent to Kingfisher Process.
-    'kingfisher_scrapy.extensions.KingfisherFilesStore': 100,
+    'kingfisher_scrapy.extensions.FilesStore': 100,
     'kingfisher_scrapy.extensions.KingfisherProcessAPI': 500,
-    'kingfisher_scrapy.extensions.KingfisherItemCount': 600,
+    'kingfisher_scrapy.extensions.ItemCount': 600,
 }
 
 # Configure item pipelines
@@ -107,7 +107,7 @@ KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
 # instead of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.
 KINGFISHER_API_LOCAL_DIRECTORY = os.getenv('KINGFISHER_API_LOCAL_DIRECTORY')
 
-LOG_FORMATTER = 'kingfisher_scrapy.log_formatter.KingfisherLogFormatter'
+LOG_FORMATTER = 'kingfisher_scrapy.log_formatter.LogFormatter'
 
 KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
 KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
