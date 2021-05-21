@@ -1,11 +1,17 @@
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
-
+import csv
+import datetime
 import json
+import logging
 import os
 
+import ijson
+import psycopg2
 import sentry_sdk
+from ocdskit.combine import merge
+from psycopg2 import sql
 from scrapy import signals
-from scrapy.exceptions import NotConfigured, StopDownload
+from scrapy.exceptions import NotConfigured, StopDownload, UsageError
 from twisted.python.failure import Failure
 
 from kingfisher_scrapy import util
@@ -133,6 +139,166 @@ class FilesStore:
                 json.dump(data, f, default=util.default)
 
 
+class DatabaseStore:
+    """
+    If DATABASE_URL is set and crawl_time used, store the spider data in a PostgresSQL database, incrementally
+
+    A table with a \"data\" column is created if it doesn't exist, named after the spider. If the table isn't empty,
+    the crawl starts with the `from_date` spider argument set to the maximum value of the `date` field of the OCDS data
+    stored in the \"data\" column. If the spider returns records, each record must set the `compiledRelease` field."
+    """
+
+    connection = None
+    cursor = None
+    crawl_directory = None
+    file_store_directory = None
+    data_use_error = None
+
+    logger = logging.getLogger(__name__)
+
+    def __init__(self, database_url, file_store_directory):
+        self.database_url = database_url
+        self.file_store_directory = file_store_directory
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        database_url = crawler.settings['DATABASE_URL']
+        directory = crawler.settings['FILES_STORE']
+
+        if not database_url:
+            raise NotConfigured('DATABASE_URL is not set.')
+
+        if not directory:
+            raise NotConfigured('FILES_STORE is not set.')
+
+        extension = cls(database_url, directory)
+
+        crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
+
+        return extension
+
+    def format_from_date(self, date, date_format, valid_formats):
+        if date_format == valid_formats['datetime']:
+            return date[:19]
+        if date_format == valid_formats['date']:
+            return date[:10]
+        if date_format == valid_formats['year-month']:
+            return date[:7]
+        return date[:4]
+
+    def spider_opened(self, spider):
+
+        if not spider.crawl_time:
+            self.data_use_error = 'The crawl_time argument must be set'
+
+        if spider.compile and 'record' in spider.data_type:
+            self.data_use_error = 'The compile flag can only be set if the spider returns releases.'
+
+        # We raise an error but the spider is not closed or finished. There is no way to close or finish the spider
+        # from this method.
+        if self.data_use_error:
+            raise UsageError(self.data_use_error)
+
+        self.crawl_directory = spider.crawl_time.strftime('%Y%m%d_%H%M%S')
+
+        self.connection = psycopg2.connect(self.database_url)
+        self.cursor = self.connection.cursor()
+        self.create_table(spider.name)
+
+        # If there is not a from_date from the command line, get the most recent date in the spider's data table.
+        if not spider.from_date:
+            self.logger.info('Getting the date from which to resume the crawl (if any)')
+            self.execute("SELECT max(data->>'date') FROM {table}", table=spider.name)
+            from_date = self.cursor.fetchone()[0]
+            if from_date:
+                spider.from_date = datetime.datetime.strptime(self.format_from_date(from_date, spider.date_format,
+                                                                                    spider.VALID_DATE_FORMATS),
+                                                              spider.date_format)
+        self.connection.commit()
+        self.cursor.close()
+        self.connection.close()
+
+    def spider_closed(self, spider, reason):
+
+        if reason != 'finished' or self.data_use_error:
+            self.logger.error(f'DataBaseStore extension failure: Finished reason: {reason}, '
+                              f'data use errors: {self.data_use_error}')
+            return
+
+        if spider.compile:
+            list_type = ''
+        elif 'release' in spider.data_type:
+            list_type = 'releases.item'
+        else:
+            list_type = 'records.item.compiledRelease'
+
+        self.logger.info('Reading the crawl directory')
+
+        crawl_directory_full_path = os.path.join(self.file_store_directory, spider.name, self.crawl_directory)
+        data = self.yield_items_from_directory(crawl_directory_full_path, list_type)
+        if spider.compile:
+            self.logger.info('Creating compiled releases')
+            data = merge(data)
+
+        self.logger.info('Writing the JSON data to a CSV file')
+        filename = os.path.join(crawl_directory_full_path, 'data.csv')
+        with open(filename, 'w') as f:
+            writer = csv.writer(f)
+            for item in data:
+                writer.writerow([json.dumps(item, default=util.default)])
+
+        self.logger.info('Replacing the JSON data in the SQL table')
+        try:
+            self.connection = psycopg2.connect(self.database_url)
+            self.cursor = self.connection.cursor()
+            self.execute('DROP TABLE {table}', table=spider.name)
+            self.create_table(spider.name)
+            with open(filename) as f:
+                self.cursor.copy_expert(self.format('COPY {table}(data) FROM STDIN WITH CSV', table=spider.name), f)
+            self.execute("CREATE INDEX {index} ON {table}(cast(data->>'date' as text))", table=spider.name,
+                         index=f'idx_{spider.name}')
+            self.connection.commit()
+        finally:
+            self.cursor.close()
+            self.connection.close()
+            os.remove(filename)
+
+    # Copied from kingfisher-summarize
+    def format(self, statement, **kwargs):
+        """
+        Formats the SQL statement, expressed as a format string with keyword arguments. A keyword argument's value is
+        converted to a SQL identifier, or a list of SQL identifiers, unless it's already a ``sql`` object.
+        """
+        objects = {}
+        for key, value in kwargs.items():
+            if isinstance(value, sql.Composable):
+                objects[key] = value
+            elif isinstance(value, list):
+                objects[key] = sql.SQL(', ').join(sql.Identifier(entry) for entry in value)
+            else:
+                objects[key] = sql.Identifier(value)
+        return sql.SQL(statement).format(**objects)
+
+    def create_table(self, table):
+        self.execute('CREATE TABLE IF NOT EXISTS {table} (data jsonb)', table=table)
+
+    def yield_items_from_directory(self, data_directory, prefix=''):
+        for dir_entry in os.scandir(data_directory):
+            if dir_entry.name.endswith('.json'):
+                with open(dir_entry.path) as f:
+                    yield from ijson.items(f, prefix)
+
+    # Copied from kingfisher-summarize
+    def execute(self, statement, variables=None, **kwargs):
+        """
+        Executes the SQL statement.
+        """
+        if kwargs:
+            statement = self.format(statement, **kwargs)
+        self.cursor.execute(statement, variables)
+
+
 class ItemCount:
     def __init__(self, stats):
         self.stats = stats
@@ -168,6 +334,9 @@ class KingfisherProcessAPI:
 
         if not url or not key:
             raise NotConfigured('KINGFISHER_API_URI and/or KINGFISHER_API_KEY is not set.')
+
+        if crawler.settings['DATABASE_URL']:
+            raise NotConfigured('DATABASE_URL is set.')
 
         extension = cls(url, key, directory=directory)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
