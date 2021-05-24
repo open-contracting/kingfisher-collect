@@ -41,7 +41,8 @@ class Moldova(SimpleSpider):
         base_url = 'http://public.eprocurement.systems/ocds/tenders/'
         data = response.json()
         # The last page returns an empty JSON object.
-        if not data:
+        # Occasional error response with HTTP 200 code.
+        if not data or ('name' in data and data['name'] == 'Error'):
             return
 
         for item in data['data']:
@@ -50,3 +51,4 @@ class Moldova(SimpleSpider):
 
         url = replace_parameters(response.request.url, offset=data['offset'])
         yield self.build_request(url, formatter=join(components(-1), parameters('offset')), callback=self.parse_list)
+
