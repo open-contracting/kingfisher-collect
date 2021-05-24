@@ -41,9 +41,12 @@ class Moldova(SimpleSpider):
         base_url = 'http://public.eprocurement.systems/ocds/tenders/'
         data = response.json()
         # The last page returns an empty JSON object.
-        # Occasional error response with HTTP 200 code.
-        if not data or ('name' in data and data['name'] == 'Error'):
+        if not data:
             return
+
+        # Occasional error response with HTTP 200 code.
+        if 'name' in data and data['name'] == 'Error':
+            return self.build_file_error_from_response(response, errors=data['stack'])
 
         for item in data['data']:
             url = replace_parameters(base_url, offset=None) + item['ocid']
