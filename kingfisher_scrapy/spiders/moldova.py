@@ -51,4 +51,3 @@ class Moldova(SimpleSpider):
 
         url = replace_parameters(response.request.url, offset=data['offset'])
         yield self.build_request(url, formatter=join(components(-1), parameters('offset')), callback=self.parse_list)
-
