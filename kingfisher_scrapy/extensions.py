@@ -11,7 +11,7 @@ import sentry_sdk
 from ocdskit.combine import merge
 from psycopg2 import sql
 from scrapy import signals
-from scrapy.exceptions import NotConfigured, StopDownload, UsageError, CloseSpider
+from scrapy.exceptions import NotConfigured, StopDownload
 from twisted.python.failure import Failure
 
 from kingfisher_scrapy import util
