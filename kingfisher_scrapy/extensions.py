@@ -152,14 +152,14 @@ class DatabaseStore:
     connection = None
     cursor = None
     crawl_directory = None
-    file_store_directory = None
+    files_store_directory = None
     data_use_error = None
 
     logger = logging.getLogger(__name__)
 
-    def __init__(self, database_url, file_store_directory):
+    def __init__(self, database_url, files_store_directory):
         self.database_url = database_url
-        self.file_store_directory = file_store_directory
+        self.files_store_directory = files_store_directory
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -235,7 +235,7 @@ class DatabaseStore:
 
         self.logger.info('Reading the crawl directory')
 
-        crawl_directory_full_path = os.path.join(self.file_store_directory, spider.name, self.crawl_directory)
+        crawl_directory_full_path = os.path.join(self.files_store_directory, spider.name, self.crawl_directory)
         data = self.yield_items_from_directory(crawl_directory_full_path, list_type)
         if spider.compile:
             self.logger.info('Creating compiled releases')
