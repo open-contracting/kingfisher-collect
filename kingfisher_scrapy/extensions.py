@@ -149,10 +149,10 @@ class DatabaseStore:
     the ``date`` field of the stored data (if any). If the user sets a ``from_date`` argument that argument will take
     precedence over the one from the database, unless the ``from_date`` is equal to the spider's ``default_from_date``,
     in which case the database ``date`` will be used (if any).
-    When the spider is closed, this extension: reads the data written by the FilesStore extension to the crawl directory
-    matching the ``crawl_time`` spider argument; creates compiled releases if the ``compile_releases`` spider argument
-    is set; and recreates the table with the data from the crawl directory. To incrementally update the data, the data
-    stored in the crawl directory must not be deleted.
+    When the spider is closed, this extension: reads the data written by the FilesStore extension to the crawl
+    directory matching the ``crawl_time`` spider argument; creates compiled releases if the ``compile_releases`` spider
+    argument is set; and recreates the table with the data from the crawl directory. To incrementally update the data,
+    the data stored in the crawl directory must not be deleted.
 
     This extension doesn't yet support spiders that return records without ``compiledRelease`` fields.
     """
