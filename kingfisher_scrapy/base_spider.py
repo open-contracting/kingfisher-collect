@@ -158,7 +158,6 @@ class BaseSpider(scrapy.Spider):
             if spider.compile_releases and 'record' in spider.data_type:
                 raise SpiderArgumentError('The compile_releases flag can only be set if the spider returns releases.')
 
-
         return spider
 
     def is_http_success(self, response):
