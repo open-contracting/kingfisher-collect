@@ -81,7 +81,7 @@ class BaseSpider(scrapy.Spider):
         self.release_pointer = release_pointer
         self.truncate = int(truncate) if truncate else None
 
-        # DatabaseStore-related argument
+        # DatabaseStore-related argument.
         self.compile = compile_releases == 'true'
 
         self.query_string_parameters = {}

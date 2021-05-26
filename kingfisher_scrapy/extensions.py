@@ -141,11 +141,12 @@ class FilesStore:
 
 class DatabaseStore:
     """
-    If DATABASE_URL is set and crawl_time used, store the spider data in a PostgresSQL database, incrementally
+    If the ``DATABASE_URL`` Scrapy setting and the ``crawl_time`` spider argument are set, store the spider data in a
+    PostgresSQL database, incrementally.
 
-    A table with a \"data\" column is created if it doesn't exist, named after the spider. If the table isn't empty,
-    the crawl starts with the `from_date` spider argument set to the maximum value of the `date` field of the OCDS data
-    stored in the \"data\" column. If the spider returns records, each record must set the `compiledRelease` field."
+    A table with a "data" column is created if it doesn't exist, named after the spider. If the table isn't empty, the
+    crawl starts with the ``from_date`` spider argument set to the maximum value of the ``date`` field of the OCDS data
+    stored in the "data" column. If the spider returns records, each record must set the ``compiledRelease`` field.
     """
 
     connection = None
@@ -188,7 +189,6 @@ class DatabaseStore:
         return date[:4]
 
     def spider_opened(self, spider):
-
         if not spider.crawl_time:
             self.data_use_error = 'The crawl_time argument must be set'
 
