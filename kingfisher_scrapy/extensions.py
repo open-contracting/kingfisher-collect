@@ -141,12 +141,16 @@ class FilesStore:
 
 class DatabaseStore:
     """
-    If the ``DATABASE_URL`` Scrapy setting and the ``crawl_time`` spider argument are set, store the spider data in a
+    If the ``DATABASE_URL`` Scrapy setting and the ``crawl_time`` spider argument are set, the OCDS data is stored in a
     PostgresSQL database, incrementally.
 
-    A table with a "data" column is created if it doesn't exist, named after the spider. If the table isn't empty, the
-    crawl starts with the ``from_date`` spider argument set to the maximum value of the ``date`` field of the OCDS data
-    stored in the "data" column. If the spider returns records, each record must set the ``compiledRelease`` field.
+    This extension stores data in the "data" column of a table named after the spider. When the spider is opened, if
+    the table doesn't exist, it is created. The spider's ``from_date`` attribute is then set to the maximum value of
+    the ``date`` field of the stored data. When the spider is closed, this extension: reads the data written by the
+    FilesStore extension to the crawl directory matching the ``crawl_time`` spider argument; creates compiled releases
+    if the ``compile_releases`` spider argument is set; and inserts the data into the table.
+
+    This extension doesn't yet support spiders that return records without ``compiledRelease`` fields.
     """
 
     connection = None
@@ -167,7 +171,6 @@ class DatabaseStore:
 
         if not database_url:
             raise NotConfigured('DATABASE_URL is not set.')
-
         if not directory:
             raise NotConfigured('FILES_STORE is not set.')
 
