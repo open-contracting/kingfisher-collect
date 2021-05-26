@@ -123,7 +123,7 @@ KINGFISHER_OPENOPPS_PASSWORD = os.getenv('KINGFISHER_OPENOPPS_PASSWORD')
 KINGFISHER_PLUCK_PATH = os.getenv('KINGFISHER_PLUCK_PATH', '')
 KINGFISHER_PLUCK_MAX_BYTES = None
 
-# To store items into a local Postgres data base
+# To store items into a PostgreSQL database.
 DATABASE_URL = None
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

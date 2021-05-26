@@ -152,11 +152,12 @@ class BaseSpider(scrapy.Spider):
             except ValueError as e:
                 raise SpiderArgumentError(f'spider argument `until_date`: invalid date value: {e}')
 
+        # DatabaseStore-related logic.
         if crawler.settings['DATABASE_URL']:
             if not spider.crawl_time:
-                raise SpiderArgumentError('When using `DATABASE_URL` the spider argument `crawl_time` must be set')
-            if spider.compile_releases and hasattr(spider, 'data_type') and 'record' in spider.data_type:
-                raise SpiderArgumentError('The compile_releases flag can only be set if the spider returns releases.')
+                raise SpiderArgumentError('spider argument `crawl_time`: can't be blank if `DATABASE_URL` is set')
+            if spider.compile_releases and 'record' in getattr(spider, 'data_type', ''):
+                raise SpiderArgumentError("spider argument `compile_releases`: can't be set if spider returns records")
 
         return spider
 
