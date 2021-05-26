@@ -11,7 +11,7 @@ import sentry_sdk
 from ocdskit.combine import merge
 from psycopg2 import sql
 from scrapy import signals
-from scrapy.exceptions import NotConfigured, StopDownload, UsageError
+from scrapy.exceptions import NotConfigured, StopDownload, UsageError, CloseSpider
 from twisted.python.failure import Failure
 
 from kingfisher_scrapy import util
@@ -153,7 +153,6 @@ class DatabaseStore:
     cursor = None
     crawl_directory = None
     files_store_directory = None
-    data_use_error = None
 
     logger = logging.getLogger(__name__)
 
@@ -189,17 +188,6 @@ class DatabaseStore:
         return date[:4]
 
     def spider_opened(self, spider):
-        if not spider.crawl_time:
-            self.data_use_error = 'The crawl_time argument must be set'
-
-        if spider.compile and 'record' in spider.data_type:
-            self.data_use_error = 'The compile flag can only be set if the spider returns releases.'
-
-        # We raise an error but the spider is not closed or finished. There is no way to close or finish the spider
-        # from this method.
-        if self.data_use_error:
-            raise UsageError(self.data_use_error)
-
         self.crawl_directory = spider.crawl_time.strftime('%Y%m%d_%H%M%S')
 
         self.connection = psycopg2.connect(self.database_url)
@@ -220,10 +208,7 @@ class DatabaseStore:
         self.connection.close()
 
     def spider_closed(self, spider, reason):
-
-        if reason != 'finished' or self.data_use_error:
-            self.logger.error(f'DataBaseStore extension failure: Finished reason: {reason}, '
-                              f'data use errors: {self.data_use_error}')
+        if reason != 'finished':
             return
 
         if spider.compile:
