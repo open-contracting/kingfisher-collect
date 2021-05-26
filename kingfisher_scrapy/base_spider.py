@@ -155,7 +155,7 @@ class BaseSpider(scrapy.Spider):
         if crawler.settings['DATABASE_URL']:
             if not spider.crawl_time:
                 raise SpiderArgumentError('When using `DATABASE_URL` the spider argument `crawl_time` must be set')
-            if spider.compile_releases and 'record' in spider.data_type:
+            if spider.compile_releases and hasattr(spider, 'data_type') and 'record' in spider.data_type:
                 raise SpiderArgumentError('The compile_releases flag can only be set if the spider returns releases.')
 
         return spider
