@@ -264,6 +264,15 @@ class DatabaseStore:
             self.connection.close()
             os.remove(filename)
 
+    def create_table(self, table):
+        self.execute('CREATE TABLE IF NOT EXISTS {table} (data jsonb)', table=table)
+
+    def yield_items_from_directory(self, data_directory, prefix=''):
+        for dir_entry in os.scandir(data_directory):
+            if dir_entry.name.endswith('.json'):
+                with open(dir_entry.path) as f:
+                    yield from ijson.items(f, prefix)
+
     # Copied from kingfisher-summarize
     def format(self, statement, **kwargs):
         """
@@ -279,15 +288,6 @@ class DatabaseStore:
             else:
                 objects[key] = sql.Identifier(value)
         return sql.SQL(statement).format(**objects)
-
-    def create_table(self, table):
-        self.execute('CREATE TABLE IF NOT EXISTS {table} (data jsonb)', table=table)
-
-    def yield_items_from_directory(self, data_directory, prefix=''):
-        for dir_entry in os.scandir(data_directory):
-            if dir_entry.name.endswith('.json'):
-                with open(dir_entry.path) as f:
-                    yield from ijson.items(f, prefix)
 
     # Copied from kingfisher-summarize
     def execute(self, statement, variables=None, **kwargs):
