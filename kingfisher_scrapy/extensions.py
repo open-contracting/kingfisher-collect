@@ -198,10 +198,9 @@ class DatabaseStore:
                 default_from_date = None
             if not spider.from_date or (spider.from_date == default_from_date):
                 self.logger.info('Getting the date from which to resume the crawl (if any)')
-                self.execute("SELECT max(data->>'date') FROM {table}", table=spider.name)
+                self.execute("SELECT max(data->>'date')::timestamptz FROM {table}", table=spider.name)
                 from_date = self.cursor.fetchone()[0]
                 if from_date:
-                    from_date = datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S%z')
                     spider.from_date = datetime.strptime(datetime.strftime(from_date, spider.date_format),
                                                          spider.date_format)
             self.connection.commit()

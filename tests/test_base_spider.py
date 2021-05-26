@@ -141,7 +141,7 @@ def test_qs_parameters(kwargs, expected):
 
 
 def test_data_base_url_without_crawl_time():
-    expected = 'When using `DATABASE_URL` the spider argument `crawl_time` must be set'
+    expected = "spider argument `compile_releases`: can't be set if spider returns records"
 
     with pytest.raises(SpiderArgumentError) as e:
         spider_with_crawler(settings={'DATABASE_URL': 'test'})
