@@ -192,20 +192,22 @@ class DatabaseStore:
 
         self.connection = psycopg2.connect(self.database_url)
         self.cursor = self.connection.cursor()
-        self.create_table(spider.name)
+        try:
+            self.create_table(spider.name)
 
-        # If there is not a from_date from the command line, get the most recent date in the spider's data table.
-        if not spider.from_date:
-            self.logger.info('Getting the date from which to resume the crawl (if any)')
-            self.execute("SELECT max(data->>'date') FROM {table}", table=spider.name)
-            from_date = self.cursor.fetchone()[0]
-            if from_date:
-                spider.from_date = datetime.datetime.strptime(self.format_from_date(from_date, spider.date_format,
-                                                                                    spider.VALID_DATE_FORMATS),
-                                                              spider.date_format)
-        self.connection.commit()
-        self.cursor.close()
-        self.connection.close()
+            # If there is not a from_date from the command line, get the most recent date in the spider's data table.
+            if not spider.from_date:
+                self.logger.info('Getting the date from which to resume the crawl (if any)')
+                self.execute("SELECT max(data->>'date') FROM {table}", table=spider.name)
+                from_date = self.cursor.fetchone()[0]
+                if from_date:
+                    spider.from_date = datetime.datetime.strptime(self.format_from_date(from_date, spider.date_format,
+                                                                                        spider.VALID_DATE_FORMATS),
+                                                                  spider.date_format)
+            self.connection.commit()
+        finally:
+            self.cursor.close()
+            self.connection.close()
 
     def spider_closed(self, spider, reason):
         if reason != 'finished':
@@ -234,9 +236,9 @@ class DatabaseStore:
                 writer.writerow([json.dumps(item, default=util.default)])
 
         self.logger.info('Replacing the JSON data in the SQL table')
+        self.connection = psycopg2.connect(self.database_url)
+        self.cursor = self.connection.cursor()
         try:
-            self.connection = psycopg2.connect(self.database_url)
-            self.cursor = self.connection.cursor()
             self.execute('DROP TABLE {table}', table=spider.name)
             self.create_table(spider.name)
             with open(filename) as f:
