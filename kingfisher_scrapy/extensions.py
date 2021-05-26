@@ -1,9 +1,9 @@
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 import csv
-import datetime
 import json
 import logging
 import os
+from datetime import datetime
 
 import ijson
 import psycopg2
@@ -146,16 +146,19 @@ class DatabaseStore:
 
     This extension stores data in the "data" column of a table named after the spider. When the spider is opened, if
     the table doesn't exist, it is created. The spider's ``from_date`` attribute is then set to the maximum value of
-    the ``date`` field of the stored data. When the spider is closed, this extension: reads the data written by the
-    FilesStore extension to the crawl directory matching the ``crawl_time`` spider argument; creates compiled releases
-    if the ``compile_releases`` spider argument is set; and inserts the data into the table.
+    the ``date`` field of the stored data (if any). If the user sets a ``from_date`` argument that argument will take
+    precedence over the one from the database, unless the ``from_date`` is equal to the spider's ``default_from_date``,
+    in which case the database ``date`` will be used (if any).
+    When the spider is closed, this extension: reads the data written by the FilesStore extension to the crawl directory
+    matching the ``crawl_time`` spider argument; creates compiled releases if the ``compile_releases`` spider argument
+    is set; and recreates the table with the data from the crawl directory. To incrementally update the data, the data
+    stored in the crawl directory must not be deleted.
 
     This extension doesn't yet support spiders that return records without ``compiledRelease`` fields.
     """
 
     connection = None
     cursor = None
-    crawl_directory = None
     files_store_directory = None
 
     logger = logging.getLogger(__name__)
@@ -181,42 +184,38 @@ class DatabaseStore:
 
         return extension
 
-    def format_from_date(self, date, date_format, valid_formats):
-        if date_format == valid_formats['datetime']:
-            return date[:19]
-        if date_format == valid_formats['date']:
-            return date[:10]
-        if date_format == valid_formats['year-month']:
-            return date[:7]
-        return date[:4]
-
     def spider_opened(self, spider):
-        self.crawl_directory = spider.crawl_time.strftime('%Y%m%d_%H%M%S')
-
         self.connection = psycopg2.connect(self.database_url)
         self.cursor = self.connection.cursor()
         try:
             self.create_table(spider.name)
 
-            # If there is not a from_date from the command line, get the most recent date in the spider's data table.
-            if not spider.from_date:
+            # If there is not a from_date from the command line or the from_date is equal to the default_from_date,
+            # get the most recent date in the spider's data table.
+            if getattr(spider, 'default_from_date', None):
+                default_from_date = datetime.strptime(spider.default_from_date, spider.date_format)
+            else:
+                default_from_date = None
+            if not spider.from_date or (spider.from_date == default_from_date):
                 self.logger.info('Getting the date from which to resume the crawl (if any)')
                 self.execute("SELECT max(data->>'date') FROM {table}", table=spider.name)
                 from_date = self.cursor.fetchone()[0]
                 if from_date:
-                    spider.from_date = datetime.datetime.strptime(self.format_from_date(from_date, spider.date_format,
-                                                                                        spider.VALID_DATE_FORMATS),
-                                                                  spider.date_format)
+                    from_date = datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S%z')
+                    spider.from_date = datetime.strptime(datetime.strftime(from_date, spider.date_format),
+                                                         spider.date_format)
             self.connection.commit()
         finally:
             self.cursor.close()
             self.connection.close()
 
     def spider_closed(self, spider, reason):
-        if reason != 'finished':
+        if reason not in ('finished', 'sample'):
             return
 
-        if spider.compile:
+        crawl_directory = spider.crawl_time.strftime('%Y%m%d_%H%M%S')
+
+        if spider.compile_releases:
             list_type = ''
         elif 'release' in spider.data_type:
             list_type = 'releases.item'
@@ -225,9 +224,9 @@ class DatabaseStore:
 
         self.logger.info('Reading the crawl directory')
 
-        crawl_directory_full_path = os.path.join(self.files_store_directory, spider.name, self.crawl_directory)
+        crawl_directory_full_path = os.path.join(self.files_store_directory, spider.name, crawl_directory)
         data = self.yield_items_from_directory(crawl_directory_full_path, list_type)
-        if spider.compile:
+        if spider.compile_releases:
             self.logger.info('Creating compiled releases')
             data = merge(data)
 
