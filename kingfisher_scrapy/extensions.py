@@ -223,7 +223,11 @@ class DatabaseStore:
 
         self.logger.info('Reading the crawl directory')
 
-        crawl_directory_full_path = os.path.join(self.files_store_directory, spider.name, crawl_directory)
+        directory = spider.name
+        if spider.sample:
+            directory += '_sample'
+
+        crawl_directory_full_path = os.path.join(self.files_store_directory, directory, crawl_directory)
         data = self.yield_items_from_directory(crawl_directory_full_path, list_type)
         if spider.compile_releases:
             self.logger.info('Creating compiled releases')
