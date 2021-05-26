@@ -82,7 +82,7 @@ class BaseSpider(scrapy.Spider):
         self.truncate = int(truncate) if truncate else None
 
         # DatabaseStore-related argument.
-        self.compile = compile_releases == 'true'
+        self.compile_releases = compile_releases == 'true'
 
         self.query_string_parameters = {}
         for key, value in kwargs.items():
@@ -111,7 +111,7 @@ class BaseSpider(scrapy.Spider):
             'package_pointer': package_pointer,
             'release_pointer': release_pointer,
             'truncate': truncate,
-            'compile': compile_releases
+            'compile_releases': compile_releases,
         }
         spider_arguments.update(kwargs)
         self.logger.info('Spider arguments: %r', spider_arguments)
