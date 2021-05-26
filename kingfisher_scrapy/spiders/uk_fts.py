@@ -33,9 +33,9 @@ class UKFTS(LinksSpider):
     def start_requests(self):
         url = 'https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages'
         if self.from_date and self.until_date:
-            self.from_date = self.from_date.strftime(self.date_format)
-            self.until_date = self.until_date.strftime(self.date_format)
-            url = f'{url}?updatedFrom={self.from_date}&updatedTo={self.until_date}'
+            from_date = self.from_date.strftime(self.date_format)
+            until_date = self.until_date.strftime(self.date_format)
+            url = f'{url}?updatedFrom={from_date}&updatedTo={until_date}'
 
         yield scrapy.Request(url, meta={'file_name': 'start.json'}, headers={'Accept': 'application/json'})
 
