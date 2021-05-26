@@ -44,7 +44,7 @@ def test_spider_opened_first_time(caplog, tmpdir, from_date, default_from_date, 
         extension.spider_opened(spider)
         if not from_date:
             assert [record.message for record in caplog.records][-5:] == [
-                'Getting the date from which to resume the crawl (if any)']
+                'Getting the date from which to resume the crawl from the test table']
 
     connection = psycopg2.connect(database_url)
     cursor = connection.cursor()
@@ -118,11 +118,24 @@ def test_spider_closed(caplog, tmpdir, data, data_type, sample, compile_releases
 
         cursor.execute('DROP TABLE test')
         connection.commit()
+
+        if compile_releases:
+            prefix = 'empty'
+        elif data_type == 'release_package':
+            prefix = 'releases.item'
+        else:
+            prefix = 'records.item.compiledRelease'
+
+        if sample:
+            suffix = '_sample'
+        else:
+            suffix = ''
+
         expected_messages = [
-                'Reading the crawl directory',
-                'Writing the JSON data to a CSV file',
-                'Replacing the JSON data in the SQL table',
-            ]
+            f'Reading the {tmpdir}/test{suffix}/20210525_000000 crawl directory with the {prefix} prefix',
+            f'Writing the JSON data to the {tmpdir}/test{suffix}/20210525_000000/data.csv CSV file',
+            'Replacing the JSON data in the test table',
+        ]
         if compile_releases:
             expected_messages.insert(1, 'Creating compiled releases')
         assert [record.message for record in caplog.records][-5:] == expected_messages

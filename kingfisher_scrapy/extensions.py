@@ -86,6 +86,24 @@ class FilesStore:
         self.directory = directory
 
     @classmethod
+    def relative_crawl_directory(cls, spider):
+        """
+        Returns the crawl's relative directory, in the format `<spider_name>[_sample]/<YYMMDD_HHMMSS>`.
+        """
+        spider_directory = spider.name
+        if spider.sample:
+            spider_directory += '_sample'
+
+        return os.path.join(spider_directory, spider.get_start_time('%Y%m%d_%H%M%S'))
+
+    @classmethod
+    def absolute_crawl_directory(cls, spider, files_store_directory):
+        """
+        Returns the crawl's absolute directory.
+        """
+        return os.path.join(files_store_directory, cls.relative_crawl_directory(spider))
+
+    @classmethod
     def from_crawler(cls, crawler):
         directory = crawler.settings['FILES_STORE']
 
@@ -106,17 +124,12 @@ class FilesStore:
         if not isinstance(item, (File, FileItem)):
             return
 
-        # The crawl's relative directory, in the format `<spider_name>[_sample]/<YYMMDD_HHMMSS>`.
-        directory = spider.name
-        if spider.sample:
-            directory += '_sample'
-
         file_name = item['file_name']
         if isinstance(item, FileItem):
             name, extension = get_file_name_and_extension(file_name)
             file_name = f"{name}-{item['number']}.{extension}"
 
-        path = os.path.join(directory, spider.get_start_time('%Y%m%d_%H%M%S'), file_name)
+        path = os.path.join(self.relative_crawl_directory(spider), file_name)
 
         self._write_file(path, item['data'])
 
@@ -145,16 +158,18 @@ class DatabaseStore:
     PostgresSQL database, incrementally.
 
     This extension stores data in the "data" column of a table named after the spider. When the spider is opened, if
-    the table doesn't exist, it is created. The spider's ``from_date`` attribute is then set to the maximum value of
-    the ``date`` field of the stored data (if any). If the user sets a ``from_date`` argument that argument will take
-    precedence over the one from the database, unless the ``from_date`` is equal to the spider's ``default_from_date``,
-    in which case the database ``date`` will be used (if any).
-    When the spider is closed, this extension: reads the data written by the FilesStore extension to the crawl
-    directory matching the ``crawl_time`` spider argument; creates compiled releases if the ``compile_releases`` spider
-    argument is set; and recreates the table with the data from the crawl directory. To incrementally update the data,
-    the data stored in the crawl directory must not be deleted.
+    the table doesn't exist, it is created. The spider's ``from_date`` attribute is then set, in order of precedence,
+    to: the ``from_date`` spider argument (unless equal to the spider's ``default_from_date`` class attribute); the
+    maximum value of the ``date`` field of the stored data (if any); the spider's ``default_from_date`` class attribute
+    (if set).
 
-    This extension doesn't yet support spiders that return records without ``compiledRelease`` fields.
+    When the spider is closed, this extension reads the data written by the FilesStore extension to the crawl directory
+    that matches the ``crawl_time`` spider argument. If the ``compile_releases`` spider argument is set, it creates
+    compiled releases. Then, it recreates the table, and inserts either the compiled releases, the individual releases
+    in release packages (if the spider returns releases), or the compiled releases in record packages (if the spider
+    returns records). (Spiders that return records without ``compiledRelease`` fields are not supported.)
+
+    To perform incremental updates, the OCDS data in the crawl directory must not be deleted between crawls.
     """
 
     connection = None
@@ -196,13 +211,16 @@ class DatabaseStore:
                 default_from_date = datetime.strptime(spider.default_from_date, spider.date_format)
             else:
                 default_from_date = None
-            if not spider.from_date or (spider.from_date == default_from_date):
-                self.logger.info('Getting the date from which to resume the crawl (if any)')
+
+            if not spider.from_date or spider.from_date == default_from_date:
+                self.logger.info(f'Getting the date from which to resume the crawl from the {spider.name} table')
                 self.execute("SELECT max(data->>'date')::timestamptz FROM {table}", table=spider.name)
                 from_date = self.cursor.fetchone()[0]
                 if from_date:
-                    spider.from_date = datetime.strptime(datetime.strftime(from_date, spider.date_format),
-                                                         spider.date_format)
+                    formatted_from_date = datetime.strftime(from_date, spider.date_format)
+                    self.logger.info(f'Resuming the crawl from {formatted_from_date}')
+                    spider.from_date = datetime.strptime(formatted_from_date, spider.date_format)
+
             self.connection.commit()
         finally:
             self.cursor.close()
@@ -212,35 +230,29 @@ class DatabaseStore:
         if reason not in ('finished', 'sample'):
             return
 
-        crawl_directory = spider.crawl_time.strftime('%Y%m%d_%H%M%S')
-
         if spider.compile_releases:
-            list_type = ''
+            prefix = ''
         elif 'release' in spider.data_type:
-            list_type = 'releases.item'
+            prefix = 'releases.item'
         else:
-            list_type = 'records.item.compiledRelease'
+            prefix = 'records.item.compiledRelease'
 
-        self.logger.info('Reading the crawl directory')
+        crawl_directory = FilesStore.absolute_crawl_directory(spider, self.files_store_directory)
+        self.logger.info(f"Reading the {crawl_directory} crawl directory with the {prefix or 'empty'} prefix")
 
-        directory = spider.name
-        if spider.sample:
-            directory += '_sample'
-
-        crawl_directory_full_path = os.path.join(self.files_store_directory, directory, crawl_directory)
-        data = self.yield_items_from_directory(crawl_directory_full_path, list_type)
+        data = self.yield_items_from_directory(crawl_directory, prefix)
         if spider.compile_releases:
             self.logger.info('Creating compiled releases')
             data = merge(data)
 
-        self.logger.info('Writing the JSON data to a CSV file')
-        filename = os.path.join(crawl_directory_full_path, 'data.csv')
+        filename = os.path.join(crawl_directory, 'data.csv')
+        self.logger.info(f'Writing the JSON data to the {filename} CSV file')
         with open(filename, 'w') as f:
             writer = csv.writer(f)
             for item in data:
                 writer.writerow([json.dumps(item, default=util.default)])
 
-        self.logger.info('Replacing the JSON data in the SQL table')
+        self.logger.info(f'Replacing the JSON data in the {spider.name} table')
         self.connection = psycopg2.connect(self.database_url)
         self.cursor = self.connection.cursor()
         try:
@@ -259,8 +271,8 @@ class DatabaseStore:
     def create_table(self, table):
         self.execute('CREATE TABLE IF NOT EXISTS {table} (data jsonb)', table=table)
 
-    def yield_items_from_directory(self, data_directory, prefix=''):
-        for dir_entry in os.scandir(data_directory):
+    def yield_items_from_directory(self, crawl_directory, prefix=''):
+        for dir_entry in os.scandir(crawl_directory):
             if dir_entry.name.endswith('.json'):
                 with open(dir_entry.path) as f:
                     yield from ijson.items(f, prefix)
