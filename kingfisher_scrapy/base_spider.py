@@ -155,7 +155,7 @@ class BaseSpider(scrapy.Spider):
         # DatabaseStore-related logic.
         if crawler.settings['DATABASE_URL']:
             if not spider.crawl_time:
-                raise SpiderArgumentError('spider argument `crawl_time`: can't be blank if `DATABASE_URL` is set')
+                raise SpiderArgumentError("spider argument `crawl_time`: can't be blank if `DATABASE_URL` is set")
             if spider.compile_releases and 'record' in getattr(spider, 'data_type', ''):
                 raise SpiderArgumentError("spider argument `compile_releases`: can't be set if spider returns records")
 
