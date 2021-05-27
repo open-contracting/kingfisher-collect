@@ -1,5 +1,7 @@
+import json
 import logging
 import os
+from datetime import datetime
 from unittest.mock import Mock
 
 import psycopg2
@@ -49,13 +51,10 @@ def test_spider_opened_first_time(caplog, tmpdir, from_date, default_from_date, 
     connection = psycopg2.connect(database_url)
     cursor = connection.cursor()
     try:
-        cursor.execute("SELECT to_regclass('test');")
+        cursor.execute("SELECT to_regclass('test')")
         table_exists = cursor.fetchone()[0]
         assert table_exists == 'test'
         assert spider.from_date == from_date
-
-        cursor.execute('DROP TABLE test')
-        connection.commit()
     finally:
         cursor.close()
         connection.close()
@@ -116,9 +115,6 @@ def test_spider_closed(caplog, tmpdir, data, data_type, sample, compile_releases
         max_date = cursor.fetchone()[0]
         assert max_date == expected_date
 
-        cursor.execute('DROP TABLE test')
-        connection.commit()
-
         if compile_releases:
             prefix = 'empty'
         elif data_type == 'release_package':
@@ -141,5 +137,29 @@ def test_spider_closed(caplog, tmpdir, data, data_type, sample, compile_releases
         assert [record.message for record in caplog.records][-5:] == expected_messages
 
     finally:
+        cursor.close()
+        connection.close()
+
+
+def test_spider_opened_with_data(caplog, tmpdir):
+    database_url = os.getenv('KINGFISHER_COLLECT_DATABASE_URL')
+
+    spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00',
+                                 settings={'DATABASE_URL': database_url, 'FILES_STORE': tmpdir})
+    extension = DatabaseStore.from_crawler(spider.crawler)
+    connection = psycopg2.connect(database_url)
+    cursor = connection.cursor()
+    try:
+        with caplog.at_level(logging.INFO):
+            extension.spider_opened(spider)
+
+        assert spider.from_date == datetime(2021, 5, 26, 0, 0)
+
+        assert [record.message for record in caplog.records][-5:] == [
+            'Getting the date from which to resume the crawl from the test table',
+            'Resuming the crawl from 2021-05-26']
+    finally:
+        cursor.execute('DROP TABLE test')
+        connection.commit()
         cursor.close()
         connection.close()
