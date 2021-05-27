@@ -59,7 +59,8 @@ class BaseSpider(scrapy.Spider):
     dont_truncate = False
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
-                 keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None, *args,
+                 keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None,
+                 compile_releases=None, *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -79,6 +80,9 @@ class BaseSpider(scrapy.Spider):
         self.package_pointer = package_pointer
         self.release_pointer = release_pointer
         self.truncate = int(truncate) if truncate else None
+
+        # DatabaseStore-related argument.
+        self.compile_releases = compile_releases == 'true'
 
         self.query_string_parameters = {}
         for key, value in kwargs.items():
@@ -107,6 +111,7 @@ class BaseSpider(scrapy.Spider):
             'package_pointer': package_pointer,
             'release_pointer': release_pointer,
             'truncate': truncate,
+            'compile_releases': compile_releases,
         }
         spider_arguments.update(kwargs)
         self.logger.info('Spider arguments: %r', spider_arguments)
@@ -146,6 +151,13 @@ class BaseSpider(scrapy.Spider):
                     spider.until_date = datetime.strptime(spider.until_date, spider.date_format)
             except ValueError as e:
                 raise SpiderArgumentError(f'spider argument `until_date`: invalid date value: {e}')
+
+        # DatabaseStore-related logic.
+        if crawler.settings['DATABASE_URL']:
+            if not spider.crawl_time:
+                raise SpiderArgumentError("spider argument `crawl_time`: can't be blank if `DATABASE_URL` is set")
+            if spider.compile_releases and 'record' in getattr(spider, 'data_type', ''):
+                raise SpiderArgumentError("spider argument `compile_releases`: can't be set if spider returns records")
 
         return spider
 

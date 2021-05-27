@@ -46,6 +46,19 @@ def test_from_crawler_missing_arguments(api_url, api_key):
     assert str(excinfo.value) == 'KINGFISHER_API_URI and/or KINGFISHER_API_KEY is not set.'
 
 
+def test_from_crawler_with_database_url():
+    spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00', settings={
+        'KINGFISHER_API_URI': 'test',
+        'KINGFISHER_API_KEY': 'test',
+        'DATABASE_URL': 'test'
+    })
+
+    with pytest.raises(NotConfigured) as excinfo:
+        KingfisherProcessAPI.from_crawler(spider.crawler)
+
+    assert str(excinfo.value) == 'DATABASE_URL is set.'
+
+
 @pytest_twisted.inlineCallbacks
 @pytest.mark.parametrize('sample,is_sample,path', [
     (None, False, os.path.join('test', '20010203_040506', 'file.json')),

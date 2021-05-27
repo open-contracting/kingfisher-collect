@@ -2,7 +2,9 @@ flattentool
 ijson>=3.1.1
 jsonpointer
 jsonschema
+ocdskit
 ocdsmerge
+psycopg2
 rarfile
 rfc3987
 scrapyd
