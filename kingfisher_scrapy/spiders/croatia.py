@@ -1,5 +1,3 @@
-import re
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider, browser_user_agent
