@@ -281,6 +281,16 @@ Costa Rica
 
    scrapy crawl costa_rica_poder_judicial_releases
 
+Croatia
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.croatia.CroatiaPortal
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl croatia
+
 Digiwhist
 ---------
 

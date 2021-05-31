@@ -34,8 +34,7 @@ class CroatiaPortal(CompressedFileSpider):
             yield scrapy.FormRequest.from_response(
                 response,
                 clickdata={'id': id},
-                meta={'file_name': 'list.zip',
-                },
+                meta={'file_name': 'list.zip'},
                 formdata={
                     '__EVENTTARGET': id.replace('_', '$'),
                     '__EVENTARGUMENT': '',
