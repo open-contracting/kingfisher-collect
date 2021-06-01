@@ -4,11 +4,12 @@ from kingfisher_scrapy.base_spider import CompressedFileSpider, browser_user_age
 from kingfisher_scrapy.util import handle_http_error
 
 
-class CroatiaPortal(CompressedFileSpider):
+class Croatia(CompressedFileSpider):
     """
         Domain
-          Open data from the register of contracts from the Electronic Public
-        Procurement Notice of the Republic of Croatia
+          Electronic Public Procurement Classifieds of the Republic of Croatia
+        Bulk download documentation
+          https://eojn.nn.hr/SPIN/application/ipn/Oglasnik/PreuzimanjeUgovoraOCD.aspx
     """
 
     name = 'croatia'

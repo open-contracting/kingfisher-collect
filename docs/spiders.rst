@@ -284,7 +284,7 @@ Costa Rica
 Croatia
 -------
 
-.. autoclass:: kingfisher_scrapy.spiders.croatia.CroatiaPortal
+.. autoclass:: kingfisher_scrapy.spiders.croatia.Croatia
    :no-members:
 
 .. code-block:: bash
