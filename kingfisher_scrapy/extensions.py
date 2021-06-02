@@ -426,7 +426,7 @@ class KingfisherProcessNGAPI:
         response = self._post_sync("api/v1/close_collection", data)
         if not response.ok:
             spider.logger.warning(
-                "Failed to post close collection. API status code: {}".format(response.code))
+                "Failed to post close collection. API status code: {}".format(response.status_code))
         else:
             spider.logger.info("Closed collection in Kingfisher process with id {}".format(self.collection_id))
 
