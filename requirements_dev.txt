@@ -251,7 +251,7 @@ requests-cache==0.6.3
     # via
     #   -r requirements.txt
     #   ocdsextensionregistry
-requests==2.22.0
+requests==2.25.1
     # via
     #   -r requirements.txt
     #   coveralls
@@ -309,7 +309,7 @@ url-normalize==1.4.3
     # via
     #   -r requirements.txt
     #   requests-cache
-urllib3==1.25.11
+urllib3==1.26.5
     # via
     #   -r requirements.txt
     #   requests
