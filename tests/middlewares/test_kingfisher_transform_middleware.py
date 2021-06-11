@@ -7,7 +7,7 @@ import pytest
 from kingfisher_scrapy.base_spider import CompressedFileSpider, SimpleSpider
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.middlewares import (AddPackageMiddleware, LineDelimitedMiddleware, ReadDataMiddleware,
-                                           ResizePackageMiddleware, RootPathMiddleware)
+                                           ResizePackageMiddleware, RootPathMiddleware, ConcatenatedJSONMiddleware)
 from tests import response_fixture, spider_with_crawler
 
 
@@ -124,17 +124,23 @@ def test_parse_release_package(sample, len_releases, file_name):
         assert item['encoding'] == 'utf-8'
 
 
+@pytest.mark.parametrize('delimited_type', ['line', 'concatenated'])
 @pytest.mark.parametrize('sample', [None, 5])
-def test_line_delimited_json_middleware(sample):
+def test_custom_delimited_json_middleware(sample, delimited_type):
     spider = spider_with_crawler(spider_class=SimpleSpider, sample=sample)
     spider.data_type = 'release_package'
-    spider.line_delimited = True
-
-    middleware = LineDelimitedMiddleware()
+    if delimited_type == 'line':
+        spider.line_delimited = True
+        middleware = LineDelimitedMiddleware()
+        separator = '\n'
+    else:
+        spider.concatenated_json = True
+        middleware = ConcatenatedJSONMiddleware()
+        separator = ''
 
     content = []
     for i in range(1, 21):
-        content.append('{"key": %s}\n' % i)
+        content.append('{"key": %s}%s' % (i, separator))
 
     response = response_fixture(body=''.join(content), meta={'file_name': 'test.json'})
     generator = spider.parse(response)
@@ -145,11 +151,15 @@ def test_line_delimited_json_middleware(sample):
 
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
+        if delimited_type == 'concatenated':
+            data = {'key': i}
+        else:
+            data = '{"key": %s}\n' % i
         assert item == {
             'file_name': 'test.json',
             'url': 'http://example.com',
             'number': i,
-            'data': '{"key": %s}\n' % i,
+            'data': data,
             'data_type': 'release_package',
             'encoding': 'utf-8'
         }

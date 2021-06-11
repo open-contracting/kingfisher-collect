@@ -98,6 +98,33 @@ class DelayedRequestMiddleware:
             return d
 
 
+class ConcatenatedJSONMiddleware:
+    """
+    If the spider's ``concatenated_json`` class attribute is ``True``, yields each object of the File as a FileItem.
+    Otherwise, yields the original item.
+    """
+    def process_spider_output(self, response, result, spider):
+        for item in result:
+            if not isinstance(item, File) or not spider.concatenated_json:
+                yield item
+                continue
+
+            data = item['data']
+            for number, obj in enumerate(ijson.items(data, '', multiple_values=True), 1):
+                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
+                if spider.sample and number > spider.sample:
+                    return
+
+                yield FileItem({
+                    'number': number,
+                    'file_name': item['file_name'],
+                    'data': obj,
+                    'data_type': item['data_type'],
+                    'url': item['url'],
+                    'encoding': item['encoding'],
+                })
+
+
 class LineDelimitedMiddleware:
     """
     If the spider's ``line_delimited`` class attribute is ``True``, yields each line of the File as a FileItem.
