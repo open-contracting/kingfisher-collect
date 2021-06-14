@@ -115,14 +115,7 @@ class ConcatenatedJSONMiddleware:
                 if spider.sample and number > spider.sample:
                     return
 
-                yield FileItem({
-                    'number': number,
-                    'file_name': item['file_name'],
-                    'data': obj,
-                    'data_type': item['data_type'],
-                    'url': item['url'],
-                    'encoding': item['encoding'],
-                })
+                yield spider.build_file_item(number, obj, item)
 
 
 class LineDelimitedMiddleware:
@@ -151,14 +144,7 @@ class LineDelimitedMiddleware:
                 if isinstance(line, bytes):
                     line = line.decode(encoding=item['encoding'])
 
-                yield FileItem({
-                    'number': number,
-                    'file_name': item['file_name'],
-                    'data': line,
-                    'data_type': item['data_type'],
-                    'url': item['url'],
-                    'encoding': item['encoding'],
-                })
+                yield spider.build_file_item(number, line, item)
 
 
 class RootPathMiddleware:
@@ -181,14 +167,7 @@ class RootPathMiddleware:
                     return
 
                 if isinstance(item, File):
-                    yield FileItem({
-                        'number': number,
-                        'file_name': item['file_name'],
-                        'data': obj,
-                        'data_type': item['data_type'],
-                        'url': item['url'],
-                        'encoding': item['encoding'],
-                    })
+                    yield spider.build_file_item(number, obj, item)
                 else:
                     # If the JSON file is line-delimited and the root path is to a JSON array, then this method will
                     # need to yield multiple FileItems for each input FileItem. To do so, the input FileItem's number
@@ -199,14 +178,7 @@ class RootPathMiddleware:
                     # maximum length of the JSON array at the root path.
                     #
                     # https://www.postgresql.org/docs/11/datatype-numeric.html
-                    yield FileItem({
-                        'number': (item['number'] - 1) * spider.root_path_max_length + number,
-                        'file_name': item['file_name'],
-                        'data': obj,
-                        'data_type': item['data_type'],
-                        'url': item['url'],
-                        'encoding': item['encoding'],
-                    })
+                    yield spider.build_file_item((item['number'] - 1) * spider.root_path_max_length + number, obj, item)
 
 
 class AddPackageMiddleware:
@@ -264,14 +236,7 @@ class ResizePackageMiddleware:
                 package['releases'] = filter(None, items)
                 data = json.dumps(package, default=util.default)
 
-                yield FileItem({
-                    'number': number,
-                    'file_name': item['file_name'],
-                    'data': data,
-                    'data_type': item['data_type'],
-                    'url': item['url'],
-                    'encoding': item['encoding'],
-                })
+                yield spider.build_file_item(number, data, item)
 
     def _get_package_metadata(self, data, skip_key, data_type):
         """

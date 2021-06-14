@@ -12,7 +12,7 @@ from rarfile import RarFile
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, UnknownArchiveFormatError
-from kingfisher_scrapy.items import File, FileError
+from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.util import add_query_string, get_file_name_and_extension, handle_http_error
 
 browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
@@ -40,6 +40,7 @@ class BaseSpider(scrapy.Spider):
     -  If the JSON file is line-delimited and the root path is to a JSON array, set a ``root_path_max_length`` class
        attribute to the maximum length of the JSON array at the root path.
     -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
+    -  If the data is a concatenated JSON, add a ``concatenated_json = True`` class attribute.
 
     If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
     ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
@@ -55,6 +56,7 @@ class BaseSpider(scrapy.Spider):
     unflatten = False
     unflatten_args = {}
     line_delimited = False
+    concatenated_json = False
     root_path = ''
     dont_truncate = False
 
@@ -250,6 +252,19 @@ class BaseSpider(scrapy.Spider):
             'encoding': encoding,
         })
 
+    def build_file_item(self, number, data, item):
+        """
+        Returns a FileItem item to yield.
+        """
+        return FileItem({
+                    'number': number,
+                    'file_name': item['file_name'],
+                    'data': data,
+                    'data_type': item['data_type'],
+                    'url': item['url'],
+                    'encoding': item['encoding'],
+                })
+
     def build_file_error_from_response(self, response, **kwargs):
         """
         Returns a FileError item to yield, based on the response to a request.
@@ -333,6 +348,7 @@ class CompressedFileSpider(BaseSpider):
     .. note::
 
        ``resize_package = True`` is not compatible with ``line_delimited = True`` or ``root_path``.
+       ``concatenated_json = True`` is not compatible with ``line_delimited = True``.
     """
 
     # BaseSpider
