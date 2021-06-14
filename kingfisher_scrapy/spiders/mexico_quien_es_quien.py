@@ -20,12 +20,12 @@ class MexicoQuienEsQuien(IndexSpider):
     root_path = 'data.item'
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = 'release'
 
     # IndexSpider
     count_pointer = '/data/index/contracts/count'
     limit = 1000
-    base_url = 'https://api.quienesquien.wiki/v3/contracts'
+    base_url = 'https://api.quienesquien.wiki/v3/contracts?sort=date&sort_direction=desc'
     formatter = staticmethod(parameters('offset'))
     yield_list_results = False
 
