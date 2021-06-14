@@ -178,7 +178,8 @@ class RootPathMiddleware:
                     # maximum length of the JSON array at the root path.
                     #
                     # https://www.postgresql.org/docs/11/datatype-numeric.html
-                    yield spider.build_file_item((item['number'] - 1) * spider.root_path_max_length + number, obj, item)
+                    yield spider.build_file_item((item['number'] - 1) * spider.root_path_max_length + number,
+                                                 obj, item)
 
 
 class AddPackageMiddleware:
