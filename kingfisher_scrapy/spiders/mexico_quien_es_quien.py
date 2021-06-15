@@ -9,9 +9,9 @@ class MexicoQuienEsQuien(IndexSpider):
     Domain
       QuiénEsQuién.Wiki
     API documentation
-      https://quienesquienapi.readthedocs.io/es/latest/
+      https://qqwapi-elastic.readthedocs.io/es/latest/
     Swagger API documentation
-      https://api.quienesquien.wiki/v2/docs/
+      https://api.quienesquien.wiki/v3/docs/
     """
     name = 'mexico_quien_es_quien'
     download_delay = 0.9
@@ -20,18 +20,18 @@ class MexicoQuienEsQuien(IndexSpider):
     root_path = 'data.item'
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = 'release'
 
     # IndexSpider
-    count_pointer = '/data/0/collections/contracts/count'
+    count_pointer = '/data/index/contracts/count'
     limit = 1000
-    base_url = 'https://api.quienesquien.wiki/v2/contracts?sort=-compiledRelease.date'
+    base_url = 'https://api.quienesquien.wiki/v3/contracts?sort=date&sort_direction=desc'
     formatter = staticmethod(parameters('offset'))
     yield_list_results = False
 
     def start_requests(self):
         yield scrapy.Request(
-            'https://api.quienesquien.wiki/v2/sources',
+            'https://api.quienesquien.wiki/v3/sources',
             meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
