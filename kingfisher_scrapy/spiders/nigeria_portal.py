@@ -18,6 +18,8 @@ class NigeriaPortal(SimpleSpider):
     # SimpleSpider
     data_type = 'release_package'
 
+    concatenated_json = True
+
     def start_requests(self):
         yield scrapy.Request(
             'http://nocopo.bpp.gov.ng/OpenData.aspx',

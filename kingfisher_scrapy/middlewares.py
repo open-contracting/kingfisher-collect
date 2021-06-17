@@ -98,6 +98,26 @@ class DelayedRequestMiddleware:
             return d
 
 
+class ConcatenatedJSONMiddleware:
+    """
+    If the spider's ``concatenated_json`` class attribute is ``True``, yields each object of the File as a FileItem.
+    Otherwise, yields the original item.
+    """
+    def process_spider_output(self, response, result, spider):
+        for item in result:
+            if not isinstance(item, File) or not spider.concatenated_json:
+                yield item
+                continue
+
+            data = item['data']
+            for number, obj in enumerate(ijson.items(data, '', multiple_values=True), 1):
+                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
+                if spider.sample and number > spider.sample:
+                    return
+
+                yield spider.build_file_item(number, obj, item)
+
+
 class LineDelimitedMiddleware:
     """
     If the spider's ``line_delimited`` class attribute is ``True``, yields each line of the File as a FileItem.
@@ -124,14 +144,7 @@ class LineDelimitedMiddleware:
                 if isinstance(line, bytes):
                     line = line.decode(encoding=item['encoding'])
 
-                yield FileItem({
-                    'number': number,
-                    'file_name': item['file_name'],
-                    'data': line,
-                    'data_type': item['data_type'],
-                    'url': item['url'],
-                    'encoding': item['encoding'],
-                })
+                yield spider.build_file_item(number, line, item)
 
 
 class RootPathMiddleware:
@@ -154,14 +167,7 @@ class RootPathMiddleware:
                     return
 
                 if isinstance(item, File):
-                    yield FileItem({
-                        'number': number,
-                        'file_name': item['file_name'],
-                        'data': obj,
-                        'data_type': item['data_type'],
-                        'url': item['url'],
-                        'encoding': item['encoding'],
-                    })
+                    yield spider.build_file_item(number, obj, item)
                 else:
                     # If the JSON file is line-delimited and the root path is to a JSON array, then this method will
                     # need to yield multiple FileItems for each input FileItem. To do so, the input FileItem's number
@@ -172,14 +178,8 @@ class RootPathMiddleware:
                     # maximum length of the JSON array at the root path.
                     #
                     # https://www.postgresql.org/docs/11/datatype-numeric.html
-                    yield FileItem({
-                        'number': (item['number'] - 1) * spider.root_path_max_length + number,
-                        'file_name': item['file_name'],
-                        'data': obj,
-                        'data_type': item['data_type'],
-                        'url': item['url'],
-                        'encoding': item['encoding'],
-                    })
+                    yield spider.build_file_item((item['number'] - 1) * spider.root_path_max_length + number,
+                                                 obj, item)
 
 
 class AddPackageMiddleware:
@@ -237,14 +237,7 @@ class ResizePackageMiddleware:
                 package['releases'] = filter(None, items)
                 data = json.dumps(package, default=util.default)
 
-                yield FileItem({
-                    'number': number,
-                    'file_name': item['file_name'],
-                    'data': data,
-                    'data_type': item['data_type'],
-                    'url': item['url'],
-                    'encoding': item['encoding'],
-                })
+                yield spider.build_file_item(number, data, item)
 
     def _get_package_metadata(self, data, skip_key, data_type):
         """
