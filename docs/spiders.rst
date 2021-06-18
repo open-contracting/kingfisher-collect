@@ -735,7 +735,7 @@ Mexico
 
    scrapy crawl mexico_grupo_aeroporto
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_idaip.MexicoIdaip
+.. autoclass:: kingfisher_scrapy.spiders.mexico_idaip.MexicoIDAIP
    :no-members:
 
 .. code-block:: bash

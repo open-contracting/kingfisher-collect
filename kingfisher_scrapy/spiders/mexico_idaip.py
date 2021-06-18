@@ -2,7 +2,7 @@ from kingfisher_scrapy.base_spider import PeriodicSpider
 from kingfisher_scrapy.util import components
 
 
-class MexicoIdaip(PeriodicSpider):
+class MexicoIDAIP(PeriodicSpider):
     """
     Domain
       Instituto Duranguense de Acceso a la Información y de Protección de Datos Personales (IDAIP)
@@ -10,7 +10,7 @@ class MexicoIdaip(PeriodicSpider):
       from_date
         Download only data from this year onward (YYYY format). Defaults to '2020'.
       until_date
-        Download only data until this year (YYYY format). Defaults to '2020'.
+        Download only data until this year (YYYY format). Defaults to '2021'.
     API documentation
       http://contratacionesabiertas.idaip.org.mx/contratacionesabiertas/datosabiertos
     """
