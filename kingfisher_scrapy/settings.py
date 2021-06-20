@@ -86,6 +86,7 @@ EXTENSIONS = {
     'kingfisher_scrapy.extensions.KingfisherProcessAPI': 500,
     'kingfisher_scrapy.extensions.ItemCount': 600,
     'kingfisher_scrapy.extensions.DatabaseStore': 700,
+    'kingfisher_scrapy.extensions.KingfisherProcessNGAPI': 800,
 }
 
 # Configure item pipelines
@@ -105,6 +106,18 @@ SENTRY_DSN = os.getenv('SENTRY_DSN')
 # https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process.html
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
 KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
+
+# Configuration for a new generation of Kingfisher process
+KINGFISHER_NG_API_URL = os.getenv('KINGFISHER_NG_API_URL')
+KINGFISHER_NG_API_USERNAME = os.getenv('KINGFISHER_NG_API_USERNAME')
+KINGFISHER_NG_API_PASSWORD = os.getenv('KINGFISHER_NG_API_PASSWORD')
+KINGFISHER_NG_RABBIT_HOST = os.getenv("KINGFISHER_NG_RABBIT_HOST")
+KINGFISHER_NG_RABBIT_PORT = os.getenv("KINGFISHER_NG_RABBIT_PORT")
+KINGFISHER_NG_RABBIT_USERNAME = os.getenv("KINGFISHER_NG_RABBIT_USERNAME")
+KINGFISHER_NG_RABBIT_PASSWORD = os.getenv("KINGFISHER_NG_RABBIT_PASSWORD")
+KINGFISHER_NG_RABBIT_EXCHANGE = os.getenv("KINGFISHER_NG_RABBIT_EXCHANGE")
+KINGFISHER_NG_RABBIT_PUBLISH_KEY = os.getenv("KINGFISHER_NG_RABBIT_PUBLISH_KEY")
+
 # If Kingfisher Process can read Kingfisher Collect's `FILES_STORE`, then Kingfisher Collect can send file paths
 # instead of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.
 KINGFISHER_API_LOCAL_DIRECTORY = os.getenv('KINGFISHER_API_LOCAL_DIRECTORY')
