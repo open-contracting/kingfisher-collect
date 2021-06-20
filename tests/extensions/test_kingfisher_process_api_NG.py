@@ -2,8 +2,9 @@ import os
 from unittest.mock import MagicMock
 
 import pytest
-from kingfisher_scrapy.extensions import KingfisherFilesStore, KingfisherProcessNGAPI
 from scrapy.exceptions import NotConfigured
+
+from kingfisher_scrapy.extensions import FilesStore, KingfisherProcessNGAPI
 from tests import spider_with_crawler, spider_with_files_store
 
 
@@ -134,7 +135,7 @@ def test_item_scraped(tmpdir):
         data_type='release_package',
     )
 
-    store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
+    store_extension = FilesStore.from_crawler(spider.crawler)
     store_extension.item_scraped(item, spider)
 
     response = Response()
@@ -179,7 +180,7 @@ def test_item_scraped_rabbit(tmpdir):
         data_type='release_package',
     )
 
-    store_extension = KingfisherFilesStore.from_crawler(spider.crawler)
+    store_extension = FilesStore.from_crawler(spider.crawler)
     store_extension.item_scraped(item, spider)
 
     response = Response()
