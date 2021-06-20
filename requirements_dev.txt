@@ -92,6 +92,12 @@ ijson==3.1.1
     # via
     #   -r requirements.txt
     #   ocdskit
+importlib-metadata==4.5.0
+    # via
+    #   -r requirements.txt
+    #   jsonschema
+    #   pluggy
+    #   pytest
 incremental==17.5.0
     # via
     #   -r requirements.txt
@@ -301,6 +307,10 @@ twisted[tls]==20.3.0
     #   scrapy
     #   scrapyd
     #   treq
+typing-extensions==3.10.0.0
+    # via
+    #   -r requirements.txt
+    #   importlib-metadata
 url-normalize==1.4.3
     # via
     #   -r requirements.txt
@@ -322,6 +332,10 @@ xmltodict==0.12.0
     # via
     #   -r requirements.txt
     #   flattentool
+zipp==3.4.1
+    # via
+    #   -r requirements.txt
+    #   importlib-metadata
 zope.interface==5.4.0
     # via
     #   -r requirements.txt

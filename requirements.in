@@ -15,4 +15,3 @@ treq
 twisted
 requests
 pika
-zope.interface>=4.7.2

@@ -53,6 +53,8 @@ ijson==3.1.1
     # via
     #   -r requirements.in
     #   ocdskit
+importlib-metadata==4.5.0
+    # via jsonschema
 incremental==17.5.0
     # via
     #   treq
@@ -181,6 +183,8 @@ twisted[tls]==20.3.0
     #   scrapy
     #   scrapyd
     #   treq
+typing-extensions==3.10.0.0
+    # via importlib-metadata
 url-normalize==1.4.3
     # via requests-cache
 urllib3==1.26.5
@@ -194,9 +198,10 @@ w3lib==1.21.0
     #   scrapy
 xmltodict==0.12.0
     # via flattentool
+zipp==3.4.1
+    # via importlib-metadata
 zope.interface==5.4.0
     # via
-    #   -r requirements.in
     #   scrapy
     #   twisted
 
