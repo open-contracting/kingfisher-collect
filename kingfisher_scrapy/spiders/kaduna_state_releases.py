@@ -28,5 +28,5 @@ class KadunaStateBudeshiReleases(SimpleSpider):
         for item in data:
             id = item['id']
             for type in types:
-                url = f'{self.base_url}record/{id}/{type}'
+                url = f'{self.base_url}releases/{id}/{type}'
                 yield self.build_request(url, formatter=components(-2))
