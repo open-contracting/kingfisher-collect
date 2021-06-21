@@ -1,8 +1,5 @@
-import scrapy
-
-from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.spiders.nigeria_kaduna_state_base import NigeriaKadunaStateBudeshiBase
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class NigeriaKadunaStateBudeshiReleases(NigeriaKadunaStateBudeshiBase):
