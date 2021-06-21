@@ -6,7 +6,7 @@ class NigeriaKadunaStateBudeshiReleases(NigeriaKadunaStateBudeshiBase):
     """
     Domain
         Budeshi Nigeria - Kaduna State
-    Bulk download documentation
+    API documentation
         https://www.budeshi.ng/kadppa/api
     """
     name = 'nigeria_kaduna_state_releases'
