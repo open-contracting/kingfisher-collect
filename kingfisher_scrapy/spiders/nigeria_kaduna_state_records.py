@@ -2,10 +2,10 @@ from kingfisher_scrapy.spiders.nigeria_kaduna_state_base import NigeriaKadunaSta
 from kingfisher_scrapy.util import components
 
 
-class KadunaStateBudeshiRecords(NigeriaKadunaStateBudeshiBase):
+class NigeriaKadunaStateBudeshiRecords(NigeriaKadunaStateBudeshiBase):
     """
     Domain
-        Kaduna State
+        Budeshi Nigeria - Kaduna State
     Bulk download documentation
         https://www.budeshi.ng/kadppa/api
     """

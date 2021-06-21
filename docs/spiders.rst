@@ -852,7 +852,7 @@ Nigeria
 
    scrapy crawl nigeria_budeshi_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_records.KadunaStateBudeshiRecords
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_records.NigeriaKadunaStateBudeshiRecords
    :no-members:
 
 .. code-block:: bash

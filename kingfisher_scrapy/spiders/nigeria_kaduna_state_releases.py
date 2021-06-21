@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import components
 class NigeriaKadunaStateBudeshiReleases(NigeriaKadunaStateBudeshiBase):
     """
     Domain
-        Kaduna State
+        Budeshi Nigeria - Kaduna State
     Bulk download documentation
         https://www.budeshi.ng/kadppa/api
     """
