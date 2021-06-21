@@ -671,23 +671,6 @@ Italy
 
    scrapy crawl italy
 
-Kaduna
-------
-
-.. autoclass:: kingfisher_scrapy.spiders.kaduna_state_records.KadunaStateBudeshiRecords
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl kaduna_state_records
-
-.. autoclass:: kingfisher_scrapy.spiders.kaduna_state_releases.KadunaStateBudeshiReleases
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl kaduna_state_releases
-
 Kenya
 -----
 
@@ -868,6 +851,20 @@ Nigeria
 .. code-block:: bash
 
    scrapy crawl nigeria_budeshi_releases
+
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_records.KadunaStateBudeshiRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_kaduna_state_records
+
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_releases.NigeriaKadunaStateBudeshiReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_kaduna_state_releases
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_portal.NigeriaPortal
    :no-members:

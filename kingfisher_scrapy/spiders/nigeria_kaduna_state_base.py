@@ -22,7 +22,7 @@ class NigeriaKadunaStateBudeshiBase(SimpleSpider):
     def parse_list(self, response):
         project_list = response.json()
         for project in sorted(project_list, key=itemgetter('year'), reverse=True):
-            yield from self.build_urls(project)
+            yield from self.build_urls(project['id'])
 
     @abstractmethod
     def build_urls(self, project):

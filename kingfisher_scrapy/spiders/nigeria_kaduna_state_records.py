@@ -14,7 +14,6 @@ class KadunaStateBudeshiRecords(NigeriaKadunaStateBudeshiBase):
     # SimpleSpider
     data_type = 'record_package'
 
-    def build_urls(self, project):
-        id = project['id']
+    def build_urls(self, id):
         url = f'{self.base_url}record/{id}'
         yield self.build_request(url, formatter=components(-2))
