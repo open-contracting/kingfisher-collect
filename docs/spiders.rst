@@ -671,6 +671,23 @@ Italy
 
    scrapy crawl italy
 
+Kaduna
+------
+
+.. autoclass:: kingfisher_scrapy.spiders.kaduna_state_records.KadunaStateBudeshiRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl kaduna_state_records
+
+.. autoclass:: kingfisher_scrapy.spiders.kaduna_state_releases.KadunaStateBudeshiReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl kaduna_state_releases
+
 Kenya
 -----
 
