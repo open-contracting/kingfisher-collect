@@ -29,13 +29,13 @@ class Croatia(CompressedFileSpider):
     @handle_http_error
     def parse_list(self, response):
 
-        for id in response.xpath('//td/a/@id').getall():
+        for file_id in sorted(response.xpath('//td/a/@id').getall(), reverse=True):
             yield scrapy.FormRequest.from_response(
                 response,
-                clickdata={'id': id},
+                clickdata={'id': file_id},
                 meta={'file_name': 'list.zip'},
                 formdata={
-                    '__EVENTTARGET': id.replace('_', '$'),
+                    '__EVENTTARGET': file_id.replace('_', '$'),
                     '__EVENTARGUMENT': '',
                 },
             )
