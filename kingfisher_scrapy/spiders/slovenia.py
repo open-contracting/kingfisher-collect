@@ -23,7 +23,7 @@ class Slovenia(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        html_urls = response.xpath('//a/@href').getall()
-        for url in html_urls:
+        html_urls = reversed(response.xpath('//a/@href').getall())
+        for number, url in enumerate(html_urls):
             if 'ocds' and 'json' in url:
-                yield self.build_request(f'{self.url}{url}', formatter=components(-1))
+                yield self.build_request(f'{self.url}{url}', formatter=components(-1), priority=number * -1)
