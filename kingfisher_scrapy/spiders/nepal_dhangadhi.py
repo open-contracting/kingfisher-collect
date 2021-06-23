@@ -30,7 +30,7 @@ class NepalDhangadhi(SimpleSpider):
     def parse_list(self, response):
         pattern = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
         data = response.json()
-        for item in reversed(data['data']['fiscal_years']):
+        for number, item in enumerate(reversed(data['data']['fiscal_years'])):
             # A URL might redirect to https://admin.ims.susasan.org/login
             yield self.build_request(pattern.format(item['name']), formatter=components(-1),
-                                     meta={'dont_redirect': True})
+                                     meta={'dont_redirect': True}, priority=number * -1)
