@@ -20,9 +20,6 @@ class EuropeTedTenderBase(IndexSpider):
     """
     name = 'europe_ted_tender_base'
 
-    # BaseSpider
-    ocds_version = '1.1'
-
     # SimpleSpider
     data_type = 'release_package'
 
