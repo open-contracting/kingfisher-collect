@@ -59,7 +59,8 @@ class Moldova(SimpleSpider):
 
         if 'name' in data and data['name'] == 'Error':
             data['http_code'] = response.status
-            return self.build_file_error_from_response(response, errors=data)
+            yield self.build_file_error_from_response(response, errors=data)
+            return
 
         for item in data['data']:
             url = replace_parameters(base_url, offset=None) + item['ocid']
