@@ -18,7 +18,8 @@ class PortugalBase(LinksSpider):
     def start_requests(self):
         url = self.url
         if self.from_date and self.until_date:
-            url = f'{url}&contractStartDate={self.from_date}&contractEndDate={self.until_date}'
+            url = f'{url}?contractStartDate={self.from_date.strftime(self.date_format)}' \
+                  f'&contractEndDate={self.until_date.strftime(self.date_format)}'
 
         yield scrapy.Request(url, meta={'file_name': 'offset-1.json'})
 
@@ -30,7 +31,7 @@ class PortugalBase(LinksSpider):
         # Every ~36,000 requests, the API returns HTTP errors. After a few minutes, it starts working again.
         # The number of failed attempts in the log messages includes the original request.
         # https://github.com/open-contracting/kingfisher-collect/issues/545#issuecomment-762768460
-        if self.is_http_success(response):
+        if self.is_http_success(response) or response.status == 404:
             yield from super().parse(response)
         elif retries <= self.max_retries:
             request = response.request.copy()
