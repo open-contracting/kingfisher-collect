@@ -15,6 +15,9 @@ class ArgentinaBuenosAires(CompressedFileSpider):
     """
     name = 'argentina_buenos_aires'
     download_timeout = 1000
+    custom_settings = {
+        'DOWNLOAD_FAIL_ON_DATALOSS': False,
+    }
 
     # SimpleSpider
     data_type = 'release_package'
