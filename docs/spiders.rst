@@ -735,7 +735,14 @@ Mexico
 
    scrapy crawl mexico_grupo_aeroporto
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_idaip.MexicoIDAIP
+.. autoclass:: kingfisher_scrapy.spiders.mexico_guanajuato_iacip.MexicoGuanajuato
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_guanajuato_iacip
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_idaip.MexicoDurango
    :no-members:
 
 .. code-block:: bash
