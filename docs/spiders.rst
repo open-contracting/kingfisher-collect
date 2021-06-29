@@ -728,6 +728,13 @@ Mexico
 
    scrapy crawl mexico_administracion_publica_federal_bulk
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_durango_idaip.MexicoDurango
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_durango_idaip
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_grupo_aeroporto.MexicoGrupoAeroporto
    :no-members:
 
@@ -741,13 +748,6 @@ Mexico
 .. code-block:: bash
 
    scrapy crawl mexico_guanajuato_iacip
-
-.. autoclass:: kingfisher_scrapy.spiders.mexico_idaip.MexicoDurango
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_idaip
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_inai_api.MexicoINAIAPI
    :no-members:
