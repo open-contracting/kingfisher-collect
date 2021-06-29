@@ -2,7 +2,7 @@ from kingfisher_scrapy.base_spider import PeriodicSpider
 from kingfisher_scrapy.util import components
 
 
-class MexicoIDAIP(PeriodicSpider):
+class MexicoDurango(PeriodicSpider):
     """
     Domain
       Instituto Duranguense de Acceso a la Información y de Protección de Datos Personales (IDAIP)
@@ -14,7 +14,7 @@ class MexicoIDAIP(PeriodicSpider):
     API documentation
       http://contratacionesabiertas.idaip.org.mx/contratacionesabiertas/datosabiertos
     """
-    name = 'mexico_idaip'
+    name = 'mexico_durango_idaip'
 
     # BaseSpider
     root_path = 'arrayReleasePackage.item'
