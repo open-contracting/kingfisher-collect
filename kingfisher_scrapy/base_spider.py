@@ -77,7 +77,6 @@ class BaseSpider(scrapy.Spider):
         self.until_date = until_date
         self.crawl_time = crawl_time
         self.keep_collection_open = keep_collection_open == 'true'
-        self.path = path
         # Pluck-related arguments.
         self.package_pointer = package_pointer
         self.release_pointer = release_pointer
@@ -97,8 +96,8 @@ class BaseSpider(scrapy.Spider):
         if hasattr(self, 'start_requests'):
             if self.query_string_parameters:
                 self.start_requests = add_query_string(self.start_requests, self.query_string_parameters)
-            if self.path:
-                self.start_requests = add_path_param(self.start_requests, self.path)
+            if path:
+                self.start_requests = add_path_param(self.start_requests, path)
 
         self.filter_arguments = {
             'from_date': from_date,
