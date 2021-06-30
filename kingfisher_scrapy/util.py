@@ -4,7 +4,7 @@ from datetime import date
 from decimal import Decimal
 from functools import wraps
 from os.path import splitext
-from urllib.parse import parse_qs, urlencode, urlsplit
+from urllib.parse import parse_qs, urlencode, urlsplit, urljoin
 
 from ijson import ObjectBuilder, utils
 
@@ -137,6 +137,17 @@ def add_query_string(method, params):
     def wrapper(*args, **kwargs):
         for request in method(*args, **kwargs):
             url = replace_parameters(request.url, **params)
+            yield request.replace(url=url)
+    return wrapper
+
+
+def add_path_param(method, path):
+    """
+    Returns a function that yields the requests yielded by the wrapped method, after updating their path parameters.
+    """
+    def wrapper(*args, **kwargs):
+        for request in method(*args, **kwargs):
+            url = '/'.join([request.url, path])
             yield request.replace(url=url)
     return wrapper
 

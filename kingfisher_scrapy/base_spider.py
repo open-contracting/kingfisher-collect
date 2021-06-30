@@ -13,7 +13,7 @@ from rarfile import RarFile
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, UnknownArchiveFormatError
 from kingfisher_scrapy.items import File, FileError, FileItem
-from kingfisher_scrapy.util import add_query_string, get_file_name_and_extension, handle_http_error
+from kingfisher_scrapy.util import add_query_string, get_file_name_and_extension, handle_http_error, add_path_param
 
 browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
@@ -62,8 +62,7 @@ class BaseSpider(scrapy.Spider):
 
     def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
                  keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None,
-                 compile_releases=None, *args,
-                 **kwargs):
+                 compile_releases=None, path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
@@ -78,6 +77,7 @@ class BaseSpider(scrapy.Spider):
         self.until_date = until_date
         self.crawl_time = crawl_time
         self.keep_collection_open = keep_collection_open == 'true'
+        self.path = path
         # Pluck-related arguments.
         self.package_pointer = package_pointer
         self.release_pointer = release_pointer
@@ -94,12 +94,16 @@ class BaseSpider(scrapy.Spider):
         self.date_format = self.VALID_DATE_FORMATS[self.date_format]
         self.pluck = bool(package_pointer or release_pointer)
 
-        if self.query_string_parameters and hasattr(self, 'start_requests'):
-            self.start_requests = add_query_string(self.start_requests, self.query_string_parameters)
+        if hasattr(self, 'start_requests'):
+            if self.query_string_parameters:
+                self.start_requests = add_query_string(self.start_requests, self.query_string_parameters)
+            if self.path:
+                self.start_requests = add_path_param(self.start_requests, self.path)
 
         self.filter_arguments = {
             'from_date': from_date,
             'until_date': until_date,
+            'path': path,
         }
         self.filter_arguments.update(kwargs)
 
