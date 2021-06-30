@@ -102,9 +102,6 @@ Some spiders support these arguments:
    * - ``until_date``
      - Download data until this date. The spider might describe specific semantics (e.g. the relevant date is the date the contract was signed). Otherwise, the relevant date is the release date.
      - See spider
-   * - ``start_page``
-     - Download data from this page onward.
-     - integer
    * - ``publisher``
      - Download data by this publisher.
      - See spider

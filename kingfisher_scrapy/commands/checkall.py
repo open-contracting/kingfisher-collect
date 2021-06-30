@@ -46,7 +46,6 @@ class Checker:
         'from_date',
         'until_date',
         'year',
-        'start_page',
         'publisher',
         'system',
         'sample',
