@@ -143,7 +143,8 @@ def add_query_string(method, params):
 
 def add_path_param(method, path):
     """
-    Returns a function that yields the requests yielded by the wrapped method, after updating their path parameters.
+    Returns a function that yields the requests yielded by the wrapped method, after updating their path parameters'
+    values.
     """
     def wrapper(*args, **kwargs):
         for request in method(*args, **kwargs):

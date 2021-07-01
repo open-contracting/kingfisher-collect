@@ -94,11 +94,11 @@ Not all of an API's features are exposed by Kingfisher Collect. Each spider link
 
 .. _increment:
 
-If the filters are implemented as path parameters, you can add them to the base URL path, for example:
+If the filters are implemented as path parameters, you can append path components to each URL, for example:
 
 .. code-block:: bash
 
-    scrapy crawl spider_name -a path=path/value/path2/value2/value3
+    scrapy crawl spider_name -a path=key1/value1/key2/value2/value3
 
 .. _increment:
 
