@@ -92,8 +92,6 @@ Not all of an API's features are exposed by Kingfisher Collect. Each spider link
 
     scrapy crawl spider_name -a qs:parameter1=value1 -a qs:parameter2=value2
 
-.. _increment:
-
 If the filters are implemented as path parameters, you can append path components to each URL, for example:
 
 .. code-block:: bash
