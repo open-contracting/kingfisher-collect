@@ -13,7 +13,7 @@ from rarfile import RarFile
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, UnknownArchiveFormatError
 from kingfisher_scrapy.items import File, FileError, FileItem
-from kingfisher_scrapy.util import add_path_param, add_query_string, get_file_name_and_extension, handle_http_error
+from kingfisher_scrapy.util import add_path_components, add_query_string, get_file_name_and_extension, handle_http_error
 
 browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
@@ -97,7 +97,7 @@ class BaseSpider(scrapy.Spider):
             if self.query_string_parameters:
                 self.start_requests = add_query_string(self.start_requests, self.query_string_parameters)
             if path:
-                self.start_requests = add_path_param(self.start_requests, path)
+                self.start_requests = add_path_components(self.start_requests, path)
 
         self.filter_arguments = {
             'from_date': from_date,
