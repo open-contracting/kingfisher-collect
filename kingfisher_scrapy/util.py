@@ -4,7 +4,7 @@ from datetime import date
 from decimal import Decimal
 from functools import wraps
 from os.path import splitext
-from urllib.parse import parse_qs, urlencode, urlsplit, urljoin
+from urllib.parse import parse_qs, urlencode, urljoin, urlsplit
 
 from ijson import ObjectBuilder, utils
 
