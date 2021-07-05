@@ -606,6 +606,13 @@ Honduras
 
    scrapy crawl honduras_cost
 
+.. autoclass:: kingfisher_scrapy.spiders.honduras_iaip.HondurasIAIP
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl honduras_iaip
+
 .. autoclass:: kingfisher_scrapy.spiders.honduras_oncae.HondurasONCAE
    :no-members:
 
