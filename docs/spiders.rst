@@ -107,6 +107,7 @@ Some spiders support these arguments:
      - integer
    * - ``portal``
      - Download data from this portal.
+     - See spider
    * - ``publisher``
      - Download data by this publisher.
      - See spider
