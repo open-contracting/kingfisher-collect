@@ -105,6 +105,8 @@ Some spiders support these arguments:
    * - ``start_page``
      - Download data from this page onward.
      - integer
+   * - ``portal``
+     - Download data from this portal.
    * - ``publisher``
      - Download data by this publisher.
      - See spider
