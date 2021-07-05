@@ -51,7 +51,7 @@ class HondurasIAIP(SimpleSpider):
             # each portal is a list of objects with the file name and its CSV, excel and JSON URL representation, eg:
             # "portal": [ {"nombreArchivo": "name", "excel": "URL", "csv": "URL", "json": "URL"} ]
             portal_urls = response.json()[portal]
-            for url in portal_urls:
+            for file_urls_object in portal_urls:
                 json_url = url['json']
                 # the URLs include releases and compile releases, but we only download releases packages.
                 if 'COMPILED' not in json_url.upper():
