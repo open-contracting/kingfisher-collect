@@ -95,10 +95,10 @@ class BaseSpider(scrapy.Spider):
         self.pluck = bool(package_pointer or release_pointer)
 
         if hasattr(self, 'start_requests'):
-            if self.query_string_parameters:
-                self.start_requests = add_query_string(self.start_requests, self.query_string_parameters)
             if path:
                 self.start_requests = add_path_components(self.start_requests, path)
+            if self.query_string_parameters:
+                self.start_requests = add_query_string(self.start_requests, self.query_string_parameters)
 
         self.filter_arguments = {
             'from_date': from_date,
