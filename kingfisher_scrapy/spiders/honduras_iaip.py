@@ -52,7 +52,7 @@ class HondurasIAIP(SimpleSpider):
             # "portal": [ {"nombreArchivo": "name", "excel": "URL", "csv": "URL", "json": "URL"} ]
             portal_urls = response.json()[portal]
             for file_urls_object in portal_urls:
-                json_url = url['json']
+                json_url = file_urls_object['json']
                 # the URLs include releases and compile releases, but we only download releases packages.
                 if 'COMPILED' not in json_url.upper():
                     yield self.build_request(json_url, formatter=components(-1))
