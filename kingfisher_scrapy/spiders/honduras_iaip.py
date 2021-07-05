@@ -53,6 +53,6 @@ class HondurasIAIP(SimpleSpider):
             portal_urls = response.json()[portal]
             for url in portal_urls:
                 json_url = url['json']
-                # avoid case sensitivity when filtering release package URLs
+                # the URLs include releases and compile releases, but we only download releases packages.
                 if 'COMPILED' not in json_url.upper():
                     yield self.build_request(json_url, formatter=components(-1))
