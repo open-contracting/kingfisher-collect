@@ -34,8 +34,6 @@ class Colombia(LinksSpider):
     def start_requests(self):
         url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases'
         if self.from_date and self.until_date:
-            from_date = self.from_date.strftime(self.date_format)
-            until_date = self.until_date.strftime(self.date_format)
-            url += f'/dates/{from_date}/{until_date}'
+            url += f'/dates/{self.from_date.strftime(self.date_format)}/{self.until_date.strftime(self.date_format)}'
 
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'})
