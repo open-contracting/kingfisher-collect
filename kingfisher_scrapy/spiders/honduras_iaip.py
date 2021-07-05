@@ -13,12 +13,12 @@ class HondurasIAIP(SimpleSpider):
       portal
         Filter by portal:
 
-        covid19
-          Emergencia Covid-19
-        huracanes
-          Emergencia Huracán Eta
-        oficio
-          Portal Único de Transparencia
+          covid19
+            IAIP Emergencia Covid-19
+          huracanes
+            Emergencia Huracán ETA
+          oficio
+            Portal Único de Transparencia
     Bulk download documentation
       https://portalunico.iaip.gob.hn/datosabierto/
     """
@@ -48,8 +48,11 @@ class HondurasIAIP(SimpleSpider):
         for portal in self.available_portals:
             if self.portal and self.portal != portal:
                 continue
+            # each portal is a list of objects with the file name and its CSV, excel and JSON URL representation, eg:
+            # "portal": [ {"nombreArchivo": "name", "excel": "URL", "csv": "URL", "json": "URL"} ]
             portal_urls = response.json()[portal]
             for url in portal_urls:
                 json_url = url['json']
-                if 'compiled'.upper() not in json_url.upper():
+                # avoid case sensitivity when filtering release package URLs
+                if 'COMPILED' not in json_url.upper():
                     yield self.build_request(json_url, formatter=components(-1))
