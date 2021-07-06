@@ -151,3 +151,19 @@ def test_data_base_url_without_crawl_time():
 def test_data_base_url_with_compile():
     # No SpiderArgumentError exception.
     spider_with_crawler(settings={'DATABASE_URL': 'test'}, crawl_time='2021-05-25T00:00:00', compile_releases='true')
+
+
+@pytest.mark.parametrize('base_url,kwargs,expected', [
+    ('http://example.com', {'path': 'data'}, 'http://example.com/data'),
+    ('http://example.com/', {'path': 'data'}, 'http://example.com/data'),
+    ('http://example.com/test?arg=val', {'path': 'data'}, 'http://example.com/data'),
+    ('http://example.com/', {'path': 'data', 'qs:param1': 'val1'}, 'http://example.com/data?param1=val1')
+])
+def test_path_parameters(base_url, kwargs, expected):
+    test_spider = type('TestSpider', (BaseSpider,), {
+        'start_requests': lambda _self: [scrapy.Request(base_url)]
+    })
+    spider = spider_with_crawler(test_spider, **kwargs)
+
+    for request in spider.start_requests():
+        assert expected == request.url
