@@ -148,8 +148,12 @@ def add_path_components(method, path):
     """
     def wrapper(*args, **kwargs):
         for request in method(*args, **kwargs):
-            url = urljoin(request.url, path)
-            yield request.replace(url=url)
+            if request.url.endswith('/'):
+                url = request.url
+            else:
+                url = f'{request.url}/'
+            new_url = urljoin(url, path)
+            yield request.replace(url=new_url)
     return wrapper
 
 
