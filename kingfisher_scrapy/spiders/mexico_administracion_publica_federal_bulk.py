@@ -12,6 +12,7 @@ class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
       https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
     """
     name = 'mexico_administracion_publica_federal_bulk'
+    download_timeout = 99999
 
     # BaseSpider
     root_path = 'item'

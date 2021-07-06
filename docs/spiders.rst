@@ -102,6 +102,9 @@ Some spiders support these arguments:
    * - ``until_date``
      - Download data until this date. The spider might describe specific semantics (e.g. the relevant date is the date the contract was signed). Otherwise, the relevant date is the release date.
      - See spider
+   * - ``portal``
+     - Download data from this portal.
+     - See spider
    * - ``publisher``
      - Download data by this publisher.
      - See spider
@@ -602,6 +605,13 @@ Honduras
 .. code-block:: bash
 
    scrapy crawl honduras_cost
+
+.. autoclass:: kingfisher_scrapy.spiders.honduras_iaip.HondurasIAIP
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl honduras_iaip
 
 .. autoclass:: kingfisher_scrapy.spiders.honduras_oncae.HondurasONCAE
    :no-members:
