@@ -21,3 +21,14 @@ class NigeriaBudeshiReleases(NigeriaBudeshiBase):
         url = 'https://budeshi.ng/api/releases/{id}/{tag}'
         for tag in ('planning', 'tender', 'award', 'contract'):
             yield self.build_request(url.format(id=project['id'], tag=tag), formatter=components(-2))
+
+    def parse(self, response):
+        data = response.json()
+        # some responses includes a release list with null objects, eg:
+        #   "releases": [
+        #     null
+        #   ]
+        if 'releases' in data and data['releases'] and any(release is None for release in data['releases']):
+            yield self.build_file_error_from_response(response, errors=data)
+        else:
+            yield from super().parse(response)
