@@ -105,6 +105,9 @@ Some spiders support these arguments:
    * - ``start_page``
      - Download data from this page onward.
      - integer
+   * - ``portal``
+     - Download data from this portal.
+     - See spider
    * - ``publisher``
      - Download data by this publisher.
      - See spider
@@ -605,6 +608,13 @@ Honduras
 .. code-block:: bash
 
    scrapy crawl honduras_cost
+
+.. autoclass:: kingfisher_scrapy.spiders.honduras_iaip.HondurasIAIP
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl honduras_iaip
 
 .. autoclass:: kingfisher_scrapy.spiders.honduras_oncae.HondurasONCAE
    :no-members:
