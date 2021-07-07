@@ -154,10 +154,19 @@ def test_data_base_url_with_compile():
 
 
 @pytest.mark.parametrize('base_url,kwargs,expected', [
-    ('http://example.com', {'path': 'data'}, 'http://example.com/data'),
-    ('http://example.com/', {'path': 'data'}, 'http://example.com/data'),
-    ('http://example.com/test?arg=val', {'path': 'data'}, 'http://example.com/data'),
-    ('http://example.com/', {'path': 'data', 'qs:param1': 'val1'}, 'http://example.com/data?param1=val1')
+    # Empty `path` argument.
+    ('http://example.com/a', {'path': ''}, 'http://example.com/a'),
+    # `path` argument with trailing slash.
+    ('http://example.com', {'path': 'a/'}, 'http://example.com/a/'),
+    # `path` argument with unsafe characters.
+    ('http://example.com', {'path': 'a?'}, 'http://example.com/a%3F'),
+    # URL with trailing slash and without trailing slash.
+    ('http://example.com/a', {'path': 'b/c'}, 'http://example.com/a/b/c'),
+    ('http://example.com/a/', {'path': 'b/c'}, 'http://example.com/a/b/c'),
+    # URL with query string and fragment identifier.
+    ('http://example.com/a?k=v#frag', {'path': 'b/c'}, 'http://example.com/a/b/c'),
+    # `path` argument with `qs` argument.
+    ('http://example.com/a?k=v#frag', {'path': 'b/c', 'qs:param1': 'val1'}, 'http://example.com/a/b/c?param1=val1'),
 ])
 def test_path_parameters(base_url, kwargs, expected):
     test_spider = type('TestSpider', (BaseSpider,), {

@@ -4,7 +4,7 @@ from datetime import date
 from decimal import Decimal
 from functools import wraps
 from os.path import splitext
-from urllib.parse import parse_qs, urlencode, urljoin, urlsplit
+from urllib.parse import parse_qs, quote, urlencode, urljoin, urlsplit
 
 from ijson import ObjectBuilder, utils
 
@@ -145,15 +145,15 @@ def add_path_components(method, path):
     """
     Returns a function that yields the requests yielded by the wrapped method, after updating their path parameters'
     values.
+
+    :param method: a function that yields requests
+    :param path str: the path to append to the URLs of the yielded requests
     """
     def wrapper(*args, **kwargs):
         for request in method(*args, **kwargs):
-            if request.url.endswith('/'):
-                url = request.url
-            else:
-                url = f'{request.url}/'
-            new_url = urljoin(url, path)
-            yield request.replace(url=new_url)
+            parsed = urlsplit(request.url)
+            url = urljoin(parsed._replace(path=f'{parsed.path}/').geturl(), quote(path.lstrip('/')))
+            yield request.replace(url=url)
     return wrapper
 
 
