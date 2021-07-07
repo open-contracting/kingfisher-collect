@@ -24,7 +24,7 @@ class NigeriaBudeshiReleases(NigeriaBudeshiBase):
 
     def parse(self, response):
         data = response.json()
-        # some responses includes a release list with null objects, eg:
+        # some responses include a release list with null objects, eg:
         #   "releases": [
         #     null
         #   ]
