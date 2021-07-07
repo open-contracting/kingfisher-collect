@@ -4,7 +4,7 @@ from datetime import date
 from decimal import Decimal
 from functools import wraps
 from os.path import splitext
-from urllib.parse import parse_qs, urlencode, urlsplit
+from urllib.parse import parse_qs, quote, urlencode, urljoin, urlsplit
 
 from ijson import ObjectBuilder, utils
 
@@ -129,14 +129,34 @@ def replace_parameters(url, **kwargs):
     return parsed._replace(query=urlencode(query, doseq=True)).geturl()
 
 
+def append_path_components(url, path):
+    """
+    Returns a URL after appending path components to its path.
+    """
+    parsed = urlsplit(url)
+    return urljoin(parsed._replace(path=f'{parsed.path}/').geturl(), quote(path.lstrip('/')))
+
+
 def add_query_string(method, params):
     """
-    Returns a function that yields the requests yielded by the wrapped method, after updating their query string
-    parameters' values.
+    Returns a function that yields the requests yielded by the wrapped method, after updating the query string
+    parameter values in each request's URL.
     """
     def wrapper(*args, **kwargs):
         for request in method(*args, **kwargs):
             url = replace_parameters(request.url, **params)
+            yield request.replace(url=url)
+    return wrapper
+
+
+def add_path_components(method, path):
+    """
+    Returns a function that yields the requests yielded by the wrapped method, after appending path components
+    to each request's URL.
+    """
+    def wrapper(*args, **kwargs):
+        for request in method(*args, **kwargs):
+            url = append_path_components(request.url, path)
             yield request.replace(url=url)
     return wrapper
 
