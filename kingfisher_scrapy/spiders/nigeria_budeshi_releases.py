@@ -28,7 +28,7 @@ class NigeriaBudeshiReleases(NigeriaBudeshiBase):
         #   "releases": [
         #     null
         #   ]
-        if 'releases' in data and data['releases'] and any(release is None for release in data['releases']):
+        if 'releases' in data and data['releases'] == [None]:
             yield self.build_file_error_from_response(response, errors=data)
         else:
             yield from super().parse(response)
