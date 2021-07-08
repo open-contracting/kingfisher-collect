@@ -596,6 +596,16 @@ Georgia
 
    scrapy crawl georgia_releases
 
+Ghana
+-----
+
+.. autoclass:: kingfisher_scrapy.spiders.ghana.Ghana
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl ghana
+
 Honduras
 --------
 
