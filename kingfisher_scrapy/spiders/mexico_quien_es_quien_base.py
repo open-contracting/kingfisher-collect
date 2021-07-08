@@ -4,28 +4,18 @@ from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.util import parameters
 
 
-class MexicoQuienEsQuien(IndexSpider):
-    """
-    Domain
-      QuiénEsQuién.Wiki
-    API documentation
-      https://qqwapi-elastic.readthedocs.io/es/latest/
-    Swagger API documentation
-      https://api.quienesquien.wiki/v3/docs/
-    """
-    name = 'mexico_quien_es_quien'
+class MexicoQuienEsQuienBase(IndexSpider):
     download_delay = 0.9
 
     # BaseSpider
     root_path = 'data.item'
 
     # SimpleSpider
-    data_type = 'release'
+    data_type = 'record_package'
 
     # IndexSpider
     count_pointer = '/data/index/contracts/count'
     limit = 1000
-    base_url = 'https://api.quienesquien.wiki/v3/contracts?sort=date&sort_direction=desc'
     formatter = staticmethod(parameters('offset'))
     yield_list_results = False
 
