@@ -17,4 +17,3 @@ class MexicoQuienEsQuienReleases(MexicoQuienEsQuienBase):
 
     # IndexSpider
     base_url = 'https://api.quienesquien.wiki/v3/contracts?sort=date&sort_direction=desc'
-
