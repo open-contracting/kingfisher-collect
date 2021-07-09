@@ -794,12 +794,19 @@ Mexico
 
    scrapy crawl mexico_plataforma_digital_nacional
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien.MexicoQuienEsQuien
+.. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien_records.MexicoQuienEsQuienRecords
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl mexico_quien_es_quien
+   scrapy crawl mexico_quien_es_quien_records
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien_releases.MexicoQuienEsQuienReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_quien_es_quien_releases
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_yucatan_inaip.MexicoYucatan
    :no-members:
