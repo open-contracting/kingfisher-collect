@@ -759,13 +759,6 @@ Mexico
 
    scrapy crawl mexico_inai_api
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_izai.MexicoIZAI
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_izai
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_records.MexicoNuevoLeonRecords
    :no-members:
 
@@ -807,6 +800,13 @@ Mexico
 .. code-block:: bash
 
    scrapy crawl mexico_yucatan_inaip
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_zacatecas_izai.MexicoZacatecasIZAI
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_zacatecas_izai
 
 Moldova
 -------

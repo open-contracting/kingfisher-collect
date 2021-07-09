@@ -2,7 +2,7 @@ from kingfisher_scrapy.base_spider import PeriodicSpider
 from kingfisher_scrapy.util import components
 
 
-class MexicoIZAI(PeriodicSpider):
+class MexicoZacatecasIZAI(PeriodicSpider):
     """
     Domain
       Instituto Zacatecano de Transparencia y Acceso a la Información (IZAI)
@@ -14,7 +14,7 @@ class MexicoIZAI(PeriodicSpider):
     API documentation
       https://contratacionesabiertas.izai.org.mx/contratacionesabiertas/datosabiertos
     """
-    name = 'mexico_izai'
+    name = 'mexico_zacatecas_izai'
 
     # BaseSpider
     root_path = 'arrayReleasePackage.item'
