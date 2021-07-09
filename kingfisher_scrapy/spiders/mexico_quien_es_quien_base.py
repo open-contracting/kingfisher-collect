@@ -10,9 +10,6 @@ class MexicoQuienEsQuienBase(IndexSpider):
     # BaseSpider
     root_path = 'data.item'
 
-    # SimpleSpider
-    data_type = 'record_package'
-
     # IndexSpider
     count_pointer = '/data/index/contracts/count'
     limit = 1000
