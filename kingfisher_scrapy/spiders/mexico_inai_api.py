@@ -10,7 +10,7 @@ class MexicoINAIAPI(PeriodicSpider):
       from_date
         Download only data from this year onward (YYYY format). Defaults to '2015'.
       until_date
-        Download only data until this year (YYYY format). Defaults to '2020'.
+        Download only data until this year (YYYY format). Defaults to '2021'.
     API documentation
       http://contratacionesabiertas.inai.org.mx/contratacionesabiertas/datosabiertos
     """
@@ -20,7 +20,7 @@ class MexicoINAIAPI(PeriodicSpider):
     root_path = 'arrayReleasePackage.item'
     date_format = 'year'
     default_from_date = '2015'
-    default_until_date = '2020'
+    default_until_date = '2021'
 
     # SimpleSpider
     data_type = 'release_package'
