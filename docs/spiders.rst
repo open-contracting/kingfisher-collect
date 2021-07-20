@@ -897,6 +897,13 @@ Nigeria
 
    scrapy crawl nigeria_budeshi_releases
 
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_edo_state.NigeriaEdoState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_edo_state
+
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_records.NigeriaKadunaStateBudeshiRecords
    :no-members:
 
