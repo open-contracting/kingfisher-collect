@@ -1,6 +1,7 @@
 from kingfisher_scrapy.base_spider import PeriodicSpider
 from kingfisher_scrapy.util import components
 
+
 class NigeriaEbonyiState(PeriodicSpider):
     """
     Domain
