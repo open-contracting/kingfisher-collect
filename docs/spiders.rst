@@ -890,6 +890,13 @@ Nigeria
 
    scrapy crawl nigeria_abia_state
 
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_anambra_state_records.NigeriaAnambraState
+  :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_anambra_state_records
+
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_budeshi_records.NigeriaBudeshiRecords
    :no-members:
 
