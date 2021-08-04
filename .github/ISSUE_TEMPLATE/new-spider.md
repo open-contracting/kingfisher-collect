@@ -21,3 +21,5 @@ e.g. as soon as possible, this week, next week, anytime
 
 **Data structure**
 Check if the data is at least close to be structurally valid against OCDS
+
+*If the publication passes the [basic criteria](https://standard.open-contracting.org/latest/en/getting_started/quality/#basic-criteria), please inform Yohanna and/or James to add it to the data registry.*
