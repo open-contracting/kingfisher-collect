@@ -49,6 +49,7 @@ class Checker:
         'publisher',
         'system',
         'sample',
+        'portal',
     ]
 
     conditional_spider_arguments = {

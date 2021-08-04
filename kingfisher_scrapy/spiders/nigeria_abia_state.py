@@ -6,6 +6,11 @@ class NigeriaAbiaState(PeriodicSpider):
     """
     Domain
       Abia E-PROCUREMENT
+    Spider arguments
+      from_date
+        Download only data from this year onward (YYYY format). Defaults to '2018'.
+      until_date
+        Download only data until this year (YYYY format). Defaults to '2021'.
     Bulk download documentation
       https://abiaeprocurement.ab.gov.ng/ocds_report.php
     """

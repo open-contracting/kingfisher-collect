@@ -12,11 +12,11 @@ class Ghana(CompressedFileSpider):
          Ghana Electronic Procurement System
        Spider arguments
           from_date
-             Download only data from this month onward (YYYY-MM format).
-             If ``until_date`` is provided, defaults to '2019-07'.
+            Download only data from this month onward (YYYY-MM format).
+            If ``until_date`` is provided, defaults to '2019-07'.
           until_date
-             Download only data until this month (YYYY-MM format).
-             If ``from_date`` is provided, defaults to the current month.
+            Download only data until this month (YYYY-MM format).
+            If ``from_date`` is provided, defaults to the current month.
     """
 
     name = 'ghana'
