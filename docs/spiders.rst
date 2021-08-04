@@ -883,6 +883,13 @@ Nicaragua
 Nigeria
 -------
 
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_abia_state.NigeriaAbiaState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_abia_state
+
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_budeshi_records.NigeriaBudeshiRecords
    :no-members:
 
