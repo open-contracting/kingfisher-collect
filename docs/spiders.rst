@@ -911,6 +911,13 @@ Nigeria
 
    scrapy crawl nigeria_budeshi_releases
 
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_ebonyi_state.NigeriaEbonyiState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_ebonyi_state
+
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_edo_state.NigeriaEdoState
    :no-members:
 
