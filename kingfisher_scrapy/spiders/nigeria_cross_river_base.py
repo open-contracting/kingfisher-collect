@@ -11,7 +11,6 @@ class NigeriaCrossRiverBase(PeriodicSpider):
     # BaseSpider
     date_format = 'year-month'
     default_from_date = '2020-02'
-    default_until_date = '2020-11'
 
     def get_formatter(self):
         return join(components(-1), parameters('year', 'month'))
