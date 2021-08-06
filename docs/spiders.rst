@@ -883,6 +883,20 @@ Nicaragua
 Nigeria
 -------
 
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_abia_state.NigeriaAbiaState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_abia_state
+
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_anambra_state_records.NigeriaAnambraState
+  :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_anambra_state_records
+
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_budeshi_records.NigeriaBudeshiRecords
    :no-members:
 
@@ -896,6 +910,13 @@ Nigeria
 .. code-block:: bash
 
    scrapy crawl nigeria_budeshi_releases
+
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_ebonyi_state.NigeriaEbonyiState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_ebonyi_state
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_edo_state.NigeriaEdoState
    :no-members:
