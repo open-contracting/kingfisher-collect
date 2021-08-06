@@ -897,20 +897,6 @@ Nigeria
 
    scrapy crawl nigeria_budeshi_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_cross_river_records.NigeriaCrossRiverRecords
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_cross_river_records
-
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_cross_river_releases.NigeriaCrossRiverReleases
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_cross_river_releases
-
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_edo_state.NigeriaEdoState
    :no-members:
 
