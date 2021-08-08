@@ -891,7 +891,7 @@ Nigeria
    scrapy crawl nigeria_abia_state
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_anambra_state_records.NigeriaAnambraState
-  :no-members:
+   :no-members:
 
 .. code-block:: bash
 
@@ -910,6 +910,20 @@ Nigeria
 .. code-block:: bash
 
    scrapy crawl nigeria_budeshi_releases
+
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_cross_river_records.NigeriaCrossRiverRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_cross_river_records
+
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_cross_river_releases.NigeriaCrossRiverReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_cross_river_releases
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_ebonyi_state.NigeriaEbonyiState
    :no-members:
