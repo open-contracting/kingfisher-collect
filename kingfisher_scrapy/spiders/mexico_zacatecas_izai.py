@@ -1,8 +1,7 @@
-from kingfisher_scrapy.base_spider import PeriodicSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoZacatecas(PeriodicSpider):
+class MexicoZacatecas(MexicoINAIBase):
     """
     Domain
       Instituto Zacatecano de Transparencia y Acceso a la Información (IZAI)
@@ -17,16 +16,8 @@ class MexicoZacatecas(PeriodicSpider):
     name = 'mexico_zacatecas_izai'
 
     # BaseSpider
-    root_path = 'arrayReleasePackage.item'
-    date_format = 'year'
     default_from_date = '2016'
     default_until_date = '2021'
 
-    # SimpleSpider
-    data_type = 'release_package'
-
     # PeriodicSpider
     pattern = 'http://128.199.8.41:3000/edca/contractingprocess/{}'
-
-    def get_formatter(self):
-        return components(-1)

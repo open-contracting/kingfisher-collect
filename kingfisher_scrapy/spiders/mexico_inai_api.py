@@ -1,8 +1,7 @@
-from kingfisher_scrapy.base_spider import PeriodicSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoINAIAPI(PeriodicSpider):
+class MexicoINAIAPI(MexicoINAIBase):
     """
     Domain
       Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI)
@@ -17,16 +16,8 @@ class MexicoINAIAPI(PeriodicSpider):
     name = 'mexico_inai_api'
 
     # BaseSpider
-    root_path = 'arrayReleasePackage.item'
-    date_format = 'year'
     default_from_date = '2015'
     default_until_date = '2021'
 
-    # SimpleSpider
-    data_type = 'release_package'
-
     # PeriodicSpider
     pattern = 'http://contratacionesabiertas.inai.org.mx:3000/edca/contractingprocess/{}'
-
-    def get_formatter(self):
-        return components(-1)

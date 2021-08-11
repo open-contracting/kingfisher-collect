@@ -1,8 +1,7 @@
-from kingfisher_scrapy.base_spider import PeriodicSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoYucatan(PeriodicSpider):
+class MexicoYucatan(MexicoINAIBase):
     """
     Domain
       Instituto Estatal de Transparencia, Acceso a la Información Pública y Protección de Datos Personales
@@ -18,16 +17,8 @@ class MexicoYucatan(PeriodicSpider):
     name = 'mexico_yucatan_inaip'
 
     # BaseSpider
-    root_path = 'arrayReleasePackage.item'
-    date_format = 'year'
     default_from_date = '2020'
     default_until_date = '2020'
 
-    # SimpleSpider
-    data_type = 'release_package'
-
     # PeriodicSpider
     pattern = 'https://captura.contratacionesabiertas.inaipyucatan.org.mx/edca/contractingprocess/{}'
-
-    def get_formatter(self):
-        return components(-1)

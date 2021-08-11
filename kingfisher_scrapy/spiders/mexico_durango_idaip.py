@@ -1,8 +1,7 @@
-from kingfisher_scrapy.base_spider import PeriodicSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoDurango(PeriodicSpider):
+class MexicoDurango(MexicoINAIBase):
     """
     Domain
       Instituto Duranguense de Acceso a la Información y de Protección de Datos Personales (IDAIP)
@@ -17,16 +16,8 @@ class MexicoDurango(PeriodicSpider):
     name = 'mexico_durango_idaip'
 
     # BaseSpider
-    root_path = 'arrayReleasePackage.item'
-    date_format = 'year'
     default_from_date = '2020'
     default_until_date = '2021'
 
-    # SimpleSpider
-    data_type = 'release_package'
-
     # PeriodicSpider
     pattern = 'http://74.208.135.52:3000/edca/contractingprocess/{}'
-
-    def get_formatter(self):
-        return components(-1)

@@ -1,8 +1,7 @@
-from kingfisher_scrapy.base_spider import PeriodicSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoGuanajuato(PeriodicSpider):
+class MexicoGuanajuato(MexicoINAIBase):
     """
     Domain
       Instituto de Acceso a la Información Pública para el Estado de Guanajuato (IACIP)
@@ -17,16 +16,8 @@ class MexicoGuanajuato(PeriodicSpider):
     name = 'mexico_guanajuato_iacip'
 
     # BaseSpider
-    root_path = 'arrayReleasePackage.item'
-    date_format = 'year'
     default_from_date = '2021'
     default_until_date = '2021'
 
-    # SimpleSpider
-    data_type = 'release_package'
-
     # PeriodicSpider
     pattern = 'http://162.214.71.135:3000/edca/contractingprocess/{}'
-
-    def get_formatter(self):
-        return components(-1)
