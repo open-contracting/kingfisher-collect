@@ -18,7 +18,7 @@ class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
     root_path = 'item'
 
     # SimpleSpider
-    data_type = 'release'
+    data_type = 'release_package'
 
     def start_requests(self):
         yield scrapy.Request(
