@@ -84,9 +84,9 @@ EXTENSIONS = {
     # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.FilesStore': 100,
     'kingfisher_scrapy.extensions.KingfisherProcessAPI': 500,
+    'kingfisher_scrapy.extensions.KingfisherProcessAPI2': 501,
     'kingfisher_scrapy.extensions.ItemCount': 600,
     'kingfisher_scrapy.extensions.DatabaseStore': 700,
-    'kingfisher_scrapy.extensions.KingfisherProcessAPI2': 800,
 }
 
 # Configure item pipelines
@@ -102,12 +102,12 @@ ITEM_PIPELINES = {
 # To send exceptions and log records to Sentry.
 SENTRY_DSN = os.getenv('SENTRY_DSN')
 
-# To send items to Kingfisher Process, see
+# To send items to Kingfisher Process (version 1), see
 # https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process.html
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
 KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
 
-# Configuration for a new generation of Kingfisher process
+# To send items to Kingfisher Process (version 2).
 KINGFISHER_API2_URL = os.getenv('KINGFISHER_API2_URL')
 KINGFISHER_API2_USERNAME = os.getenv('KINGFISHER_API2_USERNAME')
 KINGFISHER_API2_PASSWORD = os.getenv('KINGFISHER_API2_PASSWORD')
