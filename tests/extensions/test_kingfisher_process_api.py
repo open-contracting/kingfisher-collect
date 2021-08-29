@@ -69,8 +69,8 @@ def test_from_crawler_with_database_url():
 @pytest.mark.parametrize('ok', [True, False])
 @pytest.mark.parametrize('directory', [True, False])
 @pytest.mark.parametrize('crawl_time', [None, '2020-01-01T00:00:00'])
-def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, crawl_time,
-                           tmpdir, caplog):
+def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, crawl_time, tmpdir,
+                           caplog):
     with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
         mocked.return_value = 200 if ok else 400
 
@@ -140,7 +140,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
 
 @pytest_twisted.inlineCallbacks
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
-@pytest.mark.parametrize('note', ['', 'Started by NAME.'])
+@pytest.mark.parametrize('note', [None, 'Started by NAME.'])
 @pytest.mark.parametrize('encoding', ['utf-8', 'iso-8859-1'])
 @pytest.mark.parametrize('ok', [True, False])
 def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, caplog):
@@ -195,7 +195,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, c
             assert caplog.records[0].message == message
 
 
-def test_item_scraped_plucked_item():
+def test_item_scraped_plucked_item(tmpdir):
     spider = spider_with_files_store(tmpdir)
     extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
@@ -203,7 +203,7 @@ def test_item_scraped_plucked_item():
         'value': '123',
     })
 
-    response = yield extension.item_scraped(item, spider)
+    response = extension.item_scraped(item, spider)
 
     assert response is None
 
@@ -355,7 +355,7 @@ def test_spider_closed_return(attribute, tmpdir):
 
     extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    response = yield extension.spider_closed(spider, 'xxx')
+    response = extension.spider_closed(spider, 'xxx')
 
     assert response is None
 
@@ -377,7 +377,7 @@ def test_spider_closed_other_reason(tmpdir):
     spider = spider_with_files_store(tmpdir)
     extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    response = yield extension.spider_closed(spider, 'xxx')
+    response = extension.spider_closed(spider, 'xxx')
 
     assert response is None
 
