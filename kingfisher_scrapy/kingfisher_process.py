@@ -1,3 +1,5 @@
+from urllib.parse import urljoin
+
 import treq
 
 
@@ -19,4 +21,4 @@ class Client:
         return self._post('/api/v1/submit/end_collection_store/', data)
 
     def _post(self, path, data, **kwargs):
-        return treq.post(f'{self.url}{path}', headers=self.headers, data=data, **kwargs)
+        return treq.post(urljoin(self.url, path), headers=self.headers, data=data, **kwargs)
