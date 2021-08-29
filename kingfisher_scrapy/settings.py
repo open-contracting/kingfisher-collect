@@ -112,7 +112,7 @@ KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
 KINGFISHER_API2_URL = os.getenv('KINGFISHER_API2_URL')
 RABBIT_URL = os.getenv("RABBIT_URL")
 RABBIT_EXCHANGE_NAME = os.getenv("RABBIT_EXCHANGE_NAME")
-RABBIT_PUBLISH_KEY = os.getenv("RABBIT_PUBLISH_KEY")
+RABBIT_ROUTING_KEY = os.getenv("RABBIT_ROUTING_KEY")
 
 # If Kingfisher Process can read Kingfisher Collect's `FILES_STORE`, then Kingfisher Collect can send file paths
 # instead of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.

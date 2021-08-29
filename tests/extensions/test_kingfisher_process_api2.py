@@ -159,7 +159,7 @@ def test_item_scraped_rabbit(tmpdir):
         "KINGFISHER_API2_URL": "anything",
         "RABBIT_URL": "xxx",
         "RABBIT_EXCHANGE_NAME": "xxx",
-        "RABBIT_PUBLISH_KEY": "xxx",
+        "RABBIT_ROUTING_KEY": "xxx",
     }
 
     spider = spider_with_files_store(tmpdir, settings=settings)

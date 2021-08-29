@@ -467,12 +467,12 @@ class KingfisherProcessAPI2:
     ITEMS_SENT_RABBIT = 'kingfisher_process_items_sent_rabbit'
     ITEMS_FAILED_RABBIT = 'kingfisher_process_items_failed_rabbit'
 
-    def __init__(self, url, stats, rabbit_url=None, rabbit_exchange_name=None, rabbit_publish_key=None):
+    def __init__(self, url, stats, rabbit_url=None, rabbit_exchange_name=None, rabbit_routing_key=None):
         self.url = url
         self.stats = stats
         self.rabbit_url = rabbit_url
         self.rabbit_exchange_name = rabbit_exchange_name
-        self.rabbit_publish_key = rabbit_publish_key
+        self.rabbit_routing_key = rabbit_routing_key
 
         # The collection ID is set by the spider_opened handler.
         self.collection_id = None
@@ -485,7 +485,7 @@ class KingfisherProcessAPI2:
         url = crawler.settings['KINGFISHER_API2_URL']
         rabbit_url = crawler.settings['RABBIT_URL']
         rabbit_exchange_name = crawler.settings['RABBIT_EXCHANGE_NAME']
-        rabbit_publish_key = crawler.settings['RABBIT_PUBLISH_KEY']
+        rabbit_routing_key = crawler.settings['RABBIT_ROUTING_KEY']
 
         if not url:
             raise NotConfigured('KINGFISHER_API2_URL is not set.')
@@ -493,7 +493,7 @@ class KingfisherProcessAPI2:
         if crawler.settings['DATABASE_URL']:
             raise NotConfigured('DATABASE_URL is set.')
 
-        extension = cls(url, crawler.stats, rabbit_url, rabbit_exchange_name, rabbit_publish_key)
+        extension = cls(url, crawler.stats, rabbit_url, rabbit_exchange_name, rabbit_routing_key)
         crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
@@ -589,7 +589,7 @@ class KingfisherProcessAPI2:
     def _publish_to_rabbit(self, message):
         self.channel.basic_publish(
             exchange=self.rabbit_exchange_name,
-            routing_key=self.rabbit_publish_key,
+            routing_key=self.rabbit_routing_key,
             body=json.dumps(message),
             # https://www.rabbitmq.com/publishers.html#message-properties
             properties=pika.BasicProperties(delivery_mode=2, content_type='application/json')
