@@ -9,7 +9,7 @@ from scrapy.http import Request, Response
 from twisted.python.failure import Failure
 
 from kingfisher_scrapy.extensions import FilesStore, KingfisherProcessAPI
-from kingfisher_scrapy.items import FileError, FileItem
+from kingfisher_scrapy.items import FileError, FileItem, PluckedItem
 from tests import spider_with_crawler, spider_with_files_store
 
 
@@ -50,7 +50,7 @@ def test_from_crawler_with_database_url():
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00', settings={
         'KINGFISHER_API_URI': 'test',
         'KINGFISHER_API_KEY': 'test',
-        'DATABASE_URL': 'test'
+        'DATABASE_URL': 'test',
     })
 
     with pytest.raises(NotConfigured) as excinfo:
@@ -195,6 +195,19 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, c
             assert caplog.records[0].message == message
 
 
+def test_item_scraped_plucked_item():
+    spider = spider_with_files_store(tmpdir)
+    extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+
+    item = PluckedItem({
+        'value': '123',
+    })
+
+    response = yield extension.item_scraped(item, spider)
+
+    assert response is None
+
+
 @pytest_twisted.inlineCallbacks
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
@@ -332,6 +345,19 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
             assert caplog.records[0].name == 'test'
             assert caplog.records[0].levelname == 'WARNING'
             assert caplog.records[0].message == message
+
+
+@pytest.mark.parametrize('attribute', ['pluck', 'keep_collection_open'])
+@pytest_twisted.inlineCallbacks
+def test_spider_closed_return(attribute, tmpdir):
+    spider = spider_with_files_store(tmpdir)
+    setattr(spider, attribute, True)
+
+    extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+
+    response = yield extension.spider_closed(spider, 'xxx')
+
+    assert response is None
 
 
 @pytest_twisted.inlineCallbacks
