@@ -107,14 +107,10 @@ SENTRY_DSN = os.getenv('SENTRY_DSN')
 KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
 KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
 
-# To send items to Kingfisher Process (version 2).
+# To send items to Kingfisher Process (version 2). If the API has basic authentication, add the username and password
+# to the URL, like http://user:pass@localhost:8000
 KINGFISHER_API2_URL = os.getenv('KINGFISHER_API2_URL')
-KINGFISHER_API2_USERNAME = os.getenv('KINGFISHER_API2_USERNAME')
-KINGFISHER_API2_PASSWORD = os.getenv('KINGFISHER_API2_PASSWORD')
-RABBIT_HOST = os.getenv("RABBIT_HOST")
-RABBIT_PORT = os.getenv("RABBIT_PORT")
-RABBIT_USERNAME = os.getenv("RABBIT_USERNAME")
-RABBIT_PASSWORD = os.getenv("RABBIT_PASSWORD")
+RABBIT_URL = os.getenv("RABBIT_URL")
 RABBIT_EXCHANGE_NAME = os.getenv("RABBIT_EXCHANGE_NAME")
 RABBIT_PUBLISH_KEY = os.getenv("RABBIT_PUBLISH_KEY")
 

@@ -4,13 +4,14 @@ import json
 import logging
 import os
 from datetime import datetime
+from urllib.parse import parse_qs, urlencode, urljoin, urlsplit
 
 import ijson
+import pika
 import psycopg2
 import requests
 import sentry_sdk
 from ocdskit.combine import merge
-from pika import BasicProperties, BlockingConnection, ConnectionParameters, PlainCredentials
 from psycopg2 import sql
 from scrapy import signals
 from scrapy.exceptions import NotConfigured, StopDownload
@@ -215,12 +216,12 @@ class DatabaseStore:
                 default_from_date = None
 
             if not spider.from_date or spider.from_date == default_from_date:
-                self.logger.info(f'Getting the date from which to resume the crawl from the {spider.name} table')
+                self.logger.info('Getting the date from which to resume the crawl from the %s table', spider.name)
                 self.execute("SELECT max(data->>'date')::timestamptz FROM {table}", table=spider.name)
                 from_date = self.cursor.fetchone()[0]
                 if from_date:
                     formatted_from_date = datetime.strftime(from_date, spider.date_format)
-                    self.logger.info(f'Resuming the crawl from {formatted_from_date}')
+                    self.logger.info('Resuming the crawl from %s', formatted_from_date)
                     spider.from_date = datetime.strptime(formatted_from_date, spider.date_format)
 
             self.connection.commit()
@@ -248,13 +249,13 @@ class DatabaseStore:
             data = merge(data)
 
         filename = os.path.join(crawl_directory, 'data.csv')
-        self.logger.info(f'Writing the JSON data to the {filename} CSV file')
+        self.logger.info('Writing the JSON data to the %s CSV file', filename)
         with open(filename, 'w') as f:
             writer = csv.writer(f)
             for item in data:
                 writer.writerow([json.dumps(item, default=util.default)])
 
-        self.logger.info(f'Replacing the JSON data in the {spider.name} table')
+        self.logger.info('Replacing the JSON data in the %s table', spider.name)
         self.connection = psycopg2.connect(self.database_url)
         self.cursor = self.connection.cursor()
         try:
@@ -426,7 +427,7 @@ class KingfisherProcessAPI:
             # Same condition as `Response.raise_for_status` in requests module.
             # https://github.com/psf/requests/blob/28cc1d237b8922a2dcbd1ed95782a7f1751f475b/requests/models.py#L920
             if 400 <= response.code < 600:
-                spider.logger.warning(f'{method} failed ({infix}) with status code: {response.code}')
+                spider.logger.warning('%s failed (%s) with status code: %d', method, infix, response.code)
             # A return value is provided to ease testing.
             return response
 
@@ -454,6 +455,162 @@ class KingfisherProcessAPI:
         return data
 
 
+class KingfisherProcessAPI2:
+    """
+    If the ``KINGFISHER_API2_URL`` environment variable or configuration setting is set,
+    then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
+    """
+
+    ITEMS_SENT_POST = 'kingfisher_process_items_sent_post'
+    ITEMS_FAILED_POST = 'kingfisher_process_items_failed_post'
+
+    ITEMS_SENT_RABBIT = 'kingfisher_process_items_sent_rabbit'
+    ITEMS_FAILED_RABBIT = 'kingfisher_process_items_failed_rabbit'
+
+    def __init__(self, url, stats, rabbit_url=None, rabbit_exchange_name=None, rabbit_publish_key=None):
+        self.url = url
+        self.stats = stats
+        self.rabbit_url = rabbit_url
+        self.rabbit_exchange_name = rabbit_exchange_name
+        self.rabbit_publish_key = rabbit_publish_key
+
+        # The collection ID is set by the spider_opened handler.
+        self.collection_id = None
+
+        if rabbit_url:
+            self.channel = self._get_rabbit_channel()
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        url = crawler.settings['KINGFISHER_API2_URL']
+        rabbit_url = crawler.settings['RABBIT_URL']
+        rabbit_exchange_name = crawler.settings['RABBIT_EXCHANGE_NAME']
+        rabbit_publish_key = crawler.settings['RABBIT_PUBLISH_KEY']
+
+        if not url:
+            raise NotConfigured('KINGFISHER_API2_URL is not set.')
+
+        if crawler.settings['DATABASE_URL']:
+            raise NotConfigured('DATABASE_URL is set.')
+
+        extension = cls(url, crawler.stats, rabbit_url, rabbit_exchange_name, rabbit_publish_key)
+        crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+        crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
+
+        return extension
+
+    def spider_opened(self, spider):
+        """
+        Sends an API request to create a collection in Kingfisher Process.
+        """
+        # This request must be synchronous, to have the collection ID for the item_scraped handler.
+        response = self._post_synchronous(spider, 'api/v1/create_collection', {
+            'source_id': spider.name,
+            'data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
+            'note': spider.note,
+            'sample': spider.sample,
+            'compile': True,
+            'upgrade': spider.ocds_version == '1.0',
+            'check': True,
+        })
+
+        if response.ok:
+            self.collection_id = response.json()['collection_id']
+            spider.logger.info('Created collection %d in Kingfisher Process', self.collection_id)
+        else:
+            spider.logger.error('Failed to create collection. API status code: %d', response.status_code)
+
+    def spider_closed(self, spider, reason):
+        """
+        Sends an API request to close the collection in Kingfisher Process.
+        """
+        if spider.pluck or spider.keep_collection_open:
+            return
+
+        if not self.collection_id:
+            return
+
+        response = self._post_synchronous(spider, 'api/v1/close_collection', {
+            'collection_id': self.collection_id,
+            'reason': reason,
+            'stats': json.loads(json.dumps(self.stats.get_stats(), default=str))  # for datetime objects
+        })
+
+        if response.ok:
+            spider.logger.info('Closed collection %d in Kingfisher Process', self.collection_id)
+        else:
+            spider.logger.error('Failed to close collection. API status code: %d', response.status_code)
+
+    def item_scraped(self, item, spider):
+        """
+        Sends either a RabbitMQ or API request to store the file in Kingfisher Process.
+        """
+        if isinstance(item, PluckedItem):
+            return
+
+        if not self.collection_id:
+            return
+
+        data = {
+            'collection_id': self.collection_id,
+            'path': os.path.join(item.get('files_store', ''), item.get('path', '')),
+            'url': item.get('url', None)
+        }
+
+        if isinstance(item, FileError):
+            data['errors'] = json.dumps(item.get('errors', None))
+
+        if self.rabbit_url:
+            try:
+                self._publish_to_rabbit(data)
+                self.stats.inc_value(self.ITEMS_SENT_RABBIT)
+            except Exception as e:
+                self.stats.inc_value(self.ITEMS_FAILED_RABBIT)
+                spider.logger.error('Failed to publish message to RabbitMQ: %s', e)
+        else:
+            response = self._post_synchronous(spider, 'api/v1/create_collection_file', data)
+            if response.ok:
+                self.stats.inc_value(self.ITEMS_SENT_POST)
+                spider.logger.debug('Created collection file in Kingfisher Process')
+            else:
+                self.stats.inc_value(self.ITEMS_FAILED_POST)
+                spider.logger.error('Failed to create collection file. API status code: %d', response.status_code)
+
+    def _post_synchronous(self, spider, path, data):
+        """
+        POSTs synchronous API requests to Kingfisher Process.
+        """
+        url = urljoin(self.url, path)
+        spider.logger.debug('Sending synchronous request to Kingfisher Process at %s with %s', url, data)
+        return requests.post(url, json=data)
+
+    # This method is extracted so that it can be mocked in tests.
+    def _publish_to_rabbit(self, message):
+        self.channel.basic_publish(
+            exchange=self.rabbit_exchange_name,
+            routing_key=self.rabbit_publish_key,
+            body=json.dumps(message),
+            # https://www.rabbitmq.com/publishers.html#message-properties
+            properties=pika.BasicProperties(delivery_mode=2, content_type='application/json')
+        )
+
+    # This method is extracted so that it can be mocked in tests.
+    def _get_rabbit_channel(self):
+        parsed = urlsplit(self.rabbit_url)
+        query = parse_qs(parsed.query)
+        # NOTE: Heartbeat should not be disabled.
+        # https://github.com/open-contracting/data-registry/issues/140
+        query.update({'blocked_connection_timeout': 1800, 'heartbeat': 0})
+
+        connection = pika.BlockingConnection(pika.URLParameters(parsed._replace(query=urlencode(query)).geturl()))
+
+        channel = connection.channel()
+        channel.exchange_declare(exchange=self.rabbit_exchange_name, durable=True, exchange_type='direct')
+
+        return channel
+
+
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry
 class SentryLogging:
     """
@@ -470,226 +627,3 @@ class SentryLogging:
         extension = cls()
         sentry_sdk.init(sentry_dsn)
         return extension
-
-
-class KingfisherProcessAPI2:
-    ITEMS_SENT_KEY_POST = "kingfisher_process_items_sent_post"
-    ITEMS_FAILED_KEY_POST = "kingfisher_process_items_failed_post"
-
-    ITEMS_SENT_KEY_RABBIT = "kingfisher_process_items_sent_rabbit"
-    ITEMS_FAILED_KEY_RABBIT = "kingfisher_process_items_failed_rabbit"
-
-    """
-    If the ``KINGFISHER_API2_URL`` environment variable or configuration setting is set,
-    then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
-    """
-    def __init__(self,
-                 url,
-                 username,
-                 password,
-                 stats,
-                 rabbit_host,
-                 rabbit_port,
-                 rabbit_username,
-                 rabbit_password,
-                 rabbit_exchange,
-                 rabbit_publish_key):
-
-        self.url = url
-        self.username = username
-        self.password = password
-
-        self.collection_id = None
-        self.spider = None
-        self.stats = stats
-
-        self.rabbit_enabled = False
-        if rabbit_host:
-            self.rabbit_enabled = True
-            self.rabbit_exchange = rabbit_exchange
-            self.rabbit_publish_key = rabbit_publish_key
-
-            self.channel = self._get_rabbit_channel(rabbit_host,
-                                                    rabbit_port,
-                                                    rabbit_username,
-                                                    rabbit_password,
-                                                    rabbit_exchange)
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        url = crawler.settings['KINGFISHER_API2_URL']
-        username = crawler.settings['KINGFISHER_API2_USERNAME']
-        password = crawler.settings['KINGFISHER_API2_PASSWORD']
-
-        rabbit_host = crawler.settings['RABBIT_HOST']
-        rabbit_port = crawler.settings['RABBIT_PORT']
-        rabbit_username = crawler.settings['RABBIT_USERNAME']
-        rabbit_password = crawler.settings['RABBIT_PASSWORD']
-        rabbit_exchange = crawler.settings['RABBIT_EXCHANGE_NAME']
-        rabbit_publish_key = crawler.settings['RABBIT_PUBLISH_KEY']
-
-        stats = crawler.stats
-        stats.set_value(KingfisherProcessAPI2.ITEMS_SENT_KEY_POST, 0)
-        stats.set_value(KingfisherProcessAPI2.ITEMS_FAILED_KEY_POST, 0)
-        stats.set_value(KingfisherProcessAPI2.ITEMS_SENT_KEY_RABBIT, 0)
-        stats.set_value(KingfisherProcessAPI2.ITEMS_FAILED_KEY_RABBIT, 0)
-
-        if not url:
-            raise NotConfigured('KINGFISHER_API2_URL is not set.')
-
-        if (username and not password) or (password and not username):
-            raise NotConfigured('Both KINGFISHER_API2_USERNAME and KINGFISHER_API2_PASSWORD must be set.')
-
-        extension = cls(url,
-                        username,
-                        password,
-                        stats,
-                        rabbit_host,
-                        rabbit_port,
-                        rabbit_username,
-                        rabbit_password,
-                        rabbit_exchange,
-                        rabbit_publish_key)
-
-        crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
-        crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
-        crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
-
-        return extension
-
-    def spider_opened(self, spider):
-        """
-        Sends an API request to start the collection in Kingfisher Process.
-        """
-        self.spider = spider
-
-        data = {
-            "source_id": spider.name,
-            "data_version": spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            "note": spider.note,
-            "sample": spider.sample,
-            "compile": True,
-            "upgrade": spider.ocds_version == '1.0',
-            "check": True,
-        }
-
-        response = self._post_sync("api/v1/create_collection", data)
-
-        if not response.ok:
-            spider.logger.warning(
-                'Failed to POST create_collection. API status code: {}'.format(response.status_code))
-        else:
-            response_data = response.json()
-            self.collection_id = response_data["collection_id"]
-            spider.logger.info("Created collection in Kingfisher process with id {}".format(self.collection_id))
-
-    def spider_closed(self, spider, reason):
-        """
-        Sends an API request to close the collection.
-        """
-        if not self.collection_id:
-            # something went wrong in create collection file
-            spider.logger.warning("No files were sent over to Kingfisher Process. Integration failed.")
-            return
-
-        # https://docs.scrapy.org/en/latest/topics/signals.html#spider-closed
-        if spider.pluck or spider.keep_collection_open:
-            return
-
-        data = {
-            "collection_id": self.collection_id,
-            "reason": reason,
-            "stats": json.loads(json.dumps(self.stats.get_stats(), default=str))
-        }
-
-        response = self._post_sync("api/v1/close_collection", data)
-        if not response.ok:
-            spider.logger.warning(
-                "Failed to post close collection. API status code: {}".format(response.status_code))
-        else:
-            spider.logger.info("Closed collection in Kingfisher process with id {}".format(self.collection_id))
-
-    def item_scraped(self, item, spider):
-        """
-        Sends an API request to store the file in Kingfisher Process.
-        """
-        if not self.collection_id:
-            # probably create collection failed, skip
-            return
-
-        if isinstance(item, PluckedItem):
-            return
-
-        data = {
-            "collection_id": self.collection_id,
-            "path": os.path.join(item.get("files_store", ""), item.get("path", "")),
-            "url": item.get("url", None)
-        }
-
-        if isinstance(item, FileError):
-            # in case of error send info about it to api
-            data["errors"] = json.dumps(item.get("errors", None))
-
-        if self.rabbit_enabled:
-            try:
-                self._publish_to_rabbit(data)
-                self.stats.inc_value(KingfisherProcessAPI2.ITEMS_SENT_KEY_RABBIT)
-            except Exception as e:
-                self.stats.inc_value(KingfisherProcessAPI2.ITEMS_FAILED_KEY_RABBIT)
-                spider.logger.error("Unable to publish message to Rabbit %s", e)
-        else:
-            response = self._post_sync("api/v1/create_collection_file", data)
-            if not response.ok:
-                self.stats.inc_value(KingfisherProcessAPI2.ITEMS_FAILED_KEY_POST)
-                spider.logger.warning("Failed to POST create_collection_file. API status code: {}".format(
-                    response.status_code))
-            else:
-                self.stats.inc_value(KingfisherProcessAPI2.ITEMS_SENT_KEY_POST)
-                spider.logger.debug("Sent POST to create collection file.")
-
-    def _post_sync(self, url, data):
-        """
-        Posts synchronous requests to Kingfisher Process' API, adding authentication if needed.
-        """
-        kwargs = {}
-        if self.username and self.password:
-            kwargs['auth'] = (self.username, self.password)
-
-        self.spider.logger.debug("Sent sync request to kingfisher process url {}/{} with data {}".format(
-            self.url, url, data))
-        return requests.post("{}/{}".format(self.url, url), json=data, **kwargs)
-
-    def _publish_to_rabbit(self, message):
-        self.channel.basic_publish(
-            exchange=self.rabbit_exchange,
-            routing_key=self.rabbit_publish_key,
-            body=json.dumps(message),
-            properties=BasicProperties(delivery_mode=2),
-        )
-
-    def _get_rabbit_channel(self,
-                            rabbit_host,
-                            rabbit_port,
-                            rabbit_username,
-                            rabbit_password,
-                            rabbit_exchange):
-
-        # connect to messaging
-        credentials = PlainCredentials(rabbit_username, rabbit_password)
-
-        connection = BlockingConnection(
-            ConnectionParameters(
-                host=rabbit_host,
-                port=rabbit_port,
-                credentials=credentials,
-                blocked_connection_timeout=1800,
-                heartbeat=0,
-            )
-        )
-
-        rabbit_channel = connection.channel()
-
-        # declare durable exchange
-        rabbit_channel.exchange_declare(exchange=rabbit_exchange, durable="true", exchange_type="direct")
-
-        return rabbit_channel
