@@ -472,8 +472,7 @@ class SentryLogging:
         return extension
 
 
-class KingfisherProcessNGAPI:
-
+class KingfisherProcessAPI2:
     ITEMS_SENT_KEY_POST = "kingfisher_process_items_sent_post"
     ITEMS_FAILED_KEY_POST = "kingfisher_process_items_failed_post"
 
@@ -481,7 +480,7 @@ class KingfisherProcessNGAPI:
     ITEMS_FAILED_KEY_RABBIT = "kingfisher_process_items_failed_rabbit"
 
     """
-    If the ``KINGFISHER_NG_API_URL`` environment variable or configuration setting is set,
+    If the ``KINGFISHER_API2_URL`` environment variable or configuration setting is set,
     then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
     """
     def __init__(self,
@@ -518,28 +517,28 @@ class KingfisherProcessNGAPI:
 
     @classmethod
     def from_crawler(cls, crawler):
-        url = crawler.settings['KINGFISHER_NG_API_URL']
-        username = crawler.settings['KINGFISHER_NG_API_USERNAME']
-        password = crawler.settings['KINGFISHER_NG_API_PASSWORD']
+        url = crawler.settings['KINGFISHER_API2_URL']
+        username = crawler.settings['KINGFISHER_API2_USERNAME']
+        password = crawler.settings['KINGFISHER_API2_PASSWORD']
 
-        rabbit_host = crawler.settings['KINGFISHER_NG_RABBIT_HOST']
-        rabbit_port = crawler.settings['KINGFISHER_NG_RABBIT_PORT']
-        rabbit_username = crawler.settings['KINGFISHER_NG_RABBIT_USERNAME']
-        rabbit_password = crawler.settings['KINGFISHER_NG_RABBIT_PASSWORD']
-        rabbit_exchange = crawler.settings['KINGFISHER_NG_RABBIT_EXCHANGE']
-        rabbit_publish_key = crawler.settings['KINGFISHER_NG_RABBIT_PUBLISH_KEY']
+        rabbit_host = crawler.settings['RABBIT_HOST']
+        rabbit_port = crawler.settings['RABBIT_PORT']
+        rabbit_username = crawler.settings['RABBIT_USERNAME']
+        rabbit_password = crawler.settings['RABBIT_PASSWORD']
+        rabbit_exchange = crawler.settings['RABBIT_EXCHANGE_NAME']
+        rabbit_publish_key = crawler.settings['RABBIT_PUBLISH_KEY']
 
         stats = crawler.stats
-        stats.set_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY_POST, 0)
-        stats.set_value(KingfisherProcessNGAPI.ITEMS_FAILED_KEY_POST, 0)
-        stats.set_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY_RABBIT, 0)
-        stats.set_value(KingfisherProcessNGAPI.ITEMS_FAILED_KEY_RABBIT, 0)
+        stats.set_value(KingfisherProcessAPI2.ITEMS_SENT_KEY_POST, 0)
+        stats.set_value(KingfisherProcessAPI2.ITEMS_FAILED_KEY_POST, 0)
+        stats.set_value(KingfisherProcessAPI2.ITEMS_SENT_KEY_RABBIT, 0)
+        stats.set_value(KingfisherProcessAPI2.ITEMS_FAILED_KEY_RABBIT, 0)
 
         if not url:
-            raise NotConfigured('KINGFISHER_NG_API_URL is not set.')
+            raise NotConfigured('KINGFISHER_API2_URL is not set.')
 
         if (username and not password) or (password and not username):
-            raise NotConfigured('Both KINGFISHER_NG_API_USERNAME and KINGFISHER_NG_API_PASSWORD must be set.')
+            raise NotConfigured('Both KINGFISHER_API2_USERNAME and KINGFISHER_API2_PASSWORD must be set.')
 
         extension = cls(url,
                         username,
@@ -634,18 +633,18 @@ class KingfisherProcessNGAPI:
         if self.rabbit_enabled:
             try:
                 self._publish_to_rabbit(data)
-                self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY_RABBIT)
+                self.stats.inc_value(KingfisherProcessAPI2.ITEMS_SENT_KEY_RABBIT)
             except Exception as e:
-                self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_FAILED_KEY_RABBIT)
+                self.stats.inc_value(KingfisherProcessAPI2.ITEMS_FAILED_KEY_RABBIT)
                 spider.logger.error("Unable to publish message to Rabbit %s", e)
         else:
             response = self._post_sync("api/v1/create_collection_file", data)
             if not response.ok:
-                self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_FAILED_KEY_POST)
+                self.stats.inc_value(KingfisherProcessAPI2.ITEMS_FAILED_KEY_POST)
                 spider.logger.warning("Failed to POST create_collection_file. API status code: {}".format(
                     response.status_code))
             else:
-                self.stats.inc_value(KingfisherProcessNGAPI.ITEMS_SENT_KEY_POST)
+                self.stats.inc_value(KingfisherProcessAPI2.ITEMS_SENT_KEY_POST)
                 spider.logger.debug("Sent POST to create collection file.")
 
     def _post_sync(self, url, data):
