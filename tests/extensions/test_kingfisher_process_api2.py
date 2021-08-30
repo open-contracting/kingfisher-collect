@@ -90,14 +90,16 @@ def test_from_crawler_with_database_url():
 
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('note', [None, 'Started by NAME.'])
+@pytest.mark.parametrize('crawl_time', [None, '2020-01-01T00:00:00'])
 @pytest.mark.parametrize('ocds_version,upgrade', [('1.0', True), (None, False)])
 @pytest.mark.parametrize('status_code,levelname,message', [
     (200, 'INFO', 'Created collection 1 in Kingfisher Process'),
     (500, 'ERROR', 'Failed to create collection. API status code: 500'),
 ])
-def test_spider_opened(sample, is_sample, note, ocds_version, upgrade, status_code, levelname, message, tmpdir,
-                       caplog):
-    spider = spider_with_files_store(tmpdir, sample=sample, note=note, ocds_version=ocds_version)
+def test_spider_opened(sample, is_sample, note, crawl_time, ocds_version, upgrade, status_code, levelname, message,
+                       tmpdir, caplog):
+    spider = spider_with_files_store(tmpdir, sample=sample, note=note, crawl_time=crawl_time,
+                                     ocds_version=ocds_version)
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
 
@@ -106,20 +108,20 @@ def test_spider_opened(sample, is_sample, note, ocds_version, upgrade, status_co
         extension._post_synchronous = MagicMock(return_value=response)
         extension.spider_opened(spider)
 
+    expected = {
+        'source_id': 'test',
+        'data_version': '2001-02-03 04:05:06',
+        'note': note,
+        'sample': is_sample,
+        'compile': True,
+        'upgrade': upgrade,
+        'check': True
+    }
+    if crawl_time:
+        expected['data_version'] = '2020-01-01 00:00:00'
+
     extension._post_synchronous.assert_called_once()
-    extension._post_synchronous.assert_called_with(
-        spider,
-        'api/v1/create_collection',
-        {
-            'source_id': 'test',
-            'data_version': '2001-02-03 04:05:06',
-            'note': note,
-            'sample': is_sample,
-            'compile': True,
-            'upgrade': upgrade,
-            'check': True
-        }
-    )
+    extension._post_synchronous.assert_called_with(spider, 'api/v1/create_collection', expected)
 
     assert len(caplog.records) == 1
     assert caplog.records[0].name == 'test'
