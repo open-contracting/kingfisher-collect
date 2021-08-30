@@ -82,6 +82,11 @@ All spiders support these arguments:
    * - ``sample``
      - Set the number of files and file items to download.
      - integer
+   * - ``path``
+     - Path components to append to each URL, if filters are implemented within the path. See also: :ref:`filter`.
+     - string
+   * - ``qs:*``
+     - Query string parameters to append to each URL, for example: ``qs:parameter1=value1``. See also: :ref:`filter`.
 
 ..
    If you add or rename a spider argument, remember to update `ScrapyLogFile.is_complete()` in:

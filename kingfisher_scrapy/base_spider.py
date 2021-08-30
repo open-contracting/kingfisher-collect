@@ -73,30 +73,52 @@ class BaseSpider(scrapy.Spider):
     root_path = ''
     dont_truncate = False
 
-    def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
-                 keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None,
-                 compile_releases=None, path=None, *args, **kwargs):
+    def __init__(self, sample=None, path=None, from_date=None, until_date=None, crawl_time=None, note=None,
+                 keep_collection_open=None, compile_releases=None, package_pointer=None, release_pointer=None,
+                 truncate=None, *args, **kwargs):
+        """
+        :param sample: the number of items to download (``'true'`` means ``1``; ``'false'`` and ``None`` mean no limit)
+        :param path: path components to append to the URLs yielded by the ``start_requests`` method (see :ref:`filter`)
+        :param from_date: the date from which to download data (see :ref:`spider-arguments`)
+        :param until_date: the date until which to download data (see :ref:`spider-arguments`)
+        :param crawl_time: override the crawl's start time (see :ref:`increment`)
+        :param note: a note to add to the collection in Kingfisher Process
+        :param keep_collection_open: whether to close the collection in Kingfisher Process when the crawl is finished
+        :param compile_releases: whether to create compiled releases from individual releases when using the
+                                 :class:`~kingfisher_scrapy.extensions.DatabaseStore` extension
+        :param package_pointer: the JSON Pointer to the value in the package (see the :ref:`pluck` command)
+        :param release_pointer: the JSON Pointer to the value in the release (see the :ref:`pluck` command)
+        :param truncate: the number of characters to which the value is truncated (see the :ref:`pluck` command)
+        """
+
         super().__init__(*args, **kwargs)
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
-        if sample == 'true' or sample is True:
+
+        # Related to filtering data from the source.
+        if sample == 'true':
             self.sample = 1
-        elif sample == 'false' or sample is False:
+        elif sample == 'false':
             self.sample = None
         else:
             self.sample = sample
-        self.note = note
         self.from_date = from_date
         self.until_date = until_date
+
+        # Related to incremental crawls.
         self.crawl_time = crawl_time
+
+        # Related to Kingfisher Process.
+        self.note = note
         self.keep_collection_open = keep_collection_open == 'true'
-        # Pluck-related arguments.
+
+        # Related to the DatabaseStore extension.
+        self.compile_releases = compile_releases == 'true'
+
+        # Related to the pluck command.
         self.package_pointer = package_pointer
         self.release_pointer = release_pointer
         self.truncate = int(truncate) if truncate else None
-
-        # DatabaseStore-related argument.
-        self.compile_releases = compile_releases == 'true'
 
         self.query_string_parameters = {}
         for key, value in kwargs.items():
@@ -132,6 +154,7 @@ class BaseSpider(scrapy.Spider):
             'compile_releases': compile_releases,
         }
         spider_arguments.update(kwargs)
+
         self.logger.info('Spider arguments: %r', spider_arguments)
 
     @classmethod

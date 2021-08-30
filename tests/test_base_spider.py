@@ -11,15 +11,13 @@ from tests import spider_with_crawler
 
 
 @pytest.mark.parametrize('sample,expected', [
+    ('3', 3),
     ('true', 1),
     ('false', None),
-    (True, 1),
-    (False, None),
     (None, None),
-    (3, 3)
 ])
 def test_sample(sample, expected):
-    spider = BaseSpider(name='test', sample=sample)
+    spider = spider_with_crawler(sample=sample)
 
     assert spider.sample == expected
 
