@@ -73,9 +73,12 @@ class BaseSpider(scrapy.Spider):
     root_path = ''
     dont_truncate = False
 
+    # Not to be overridden by sub-classes.
+    available_steps = {'compile', 'check'}
+
     def __init__(self, sample=None, path=None, from_date=None, until_date=None, crawl_time=None, note=None,
-                 keep_collection_open=None, compile_releases=None, package_pointer=None, release_pointer=None,
-                 truncate=None, *args, **kwargs):
+                 keep_collection_open=None, steps=None, compile_releases=None, package_pointer=None,
+                 release_pointer=None, truncate=None, *args, **kwargs):
         """
         :param sample: the number of items to download (``'true'`` means ``1``; ``'false'`` and ``None`` mean no limit)
         :param path: path components to append to the URLs yielded by the ``start_requests`` method (see :ref:`filter`)
@@ -111,6 +114,10 @@ class BaseSpider(scrapy.Spider):
         # Related to Kingfisher Process.
         self.note = note
         self.keep_collection_open = keep_collection_open == 'true'
+        if steps is None:
+            self.steps = self.available_steps
+        else:
+            self.steps = set(steps.split(',')) & self.available_steps
 
         # Related to the DatabaseStore extension.
         self.compile_releases = compile_releases == 'true'

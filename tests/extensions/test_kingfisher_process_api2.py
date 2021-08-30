@@ -90,15 +90,16 @@ def test_from_crawler_with_database_url():
 
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('note', [None, 'Started by NAME.'])
+@pytest.mark.parametrize('steps', [None, 'compile,check,invalid', 'compile', 'check'])
 @pytest.mark.parametrize('crawl_time', [None, '2020-01-01T00:00:00'])
 @pytest.mark.parametrize('ocds_version,upgrade', [('1.0', True), (None, False)])
 @pytest.mark.parametrize('status_code,levelname,message', [
     (200, 'INFO', 'Created collection 1 in Kingfisher Process'),
     (500, 'ERROR', 'Failed to create collection. API status code: 500'),
 ])
-def test_spider_opened(sample, is_sample, note, crawl_time, ocds_version, upgrade, status_code, levelname, message,
-                       tmpdir, caplog):
-    spider = spider_with_files_store(tmpdir, sample=sample, note=note, crawl_time=crawl_time,
+def test_spider_opened(sample, is_sample, note, crawl_time, ocds_version, upgrade, steps, status_code, levelname,
+                       message, tmpdir, caplog):
+    spider = spider_with_files_store(tmpdir, sample=sample, note=note, steps=steps, crawl_time=crawl_time,
                                      ocds_version=ocds_version)
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -113,10 +114,12 @@ def test_spider_opened(sample, is_sample, note, crawl_time, ocds_version, upgrad
         'data_version': '2001-02-03 04:05:06',
         'note': note,
         'sample': is_sample,
-        'compile': True,
         'upgrade': upgrade,
-        'check': True
     }
+    if steps != 'check':
+        expected['compile'] = True
+    if steps != 'compile':
+        expected['check'] = True
     if crawl_time:
         expected['data_version'] = '2020-01-01 00:00:00'
 

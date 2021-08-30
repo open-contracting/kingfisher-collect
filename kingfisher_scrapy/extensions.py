@@ -507,16 +507,19 @@ class KingfisherProcessAPI2:
         """
         Sends an API request to create a collection in Kingfisher Process.
         """
-        # This request must be synchronous, to have the collection ID for the item_scraped handler.
-        response = self._post_synchronous(spider, 'api/v1/create_collection', {
+        data = {
             'source_id': spider.name,
             'data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
             'note': spider.note,
             'sample': bool(spider.sample),
-            'compile': True,
             'upgrade': spider.ocds_version == '1.0',
-            'check': True,
-        })
+        }
+
+        for step in spider.steps:
+            data[step] = True
+
+        # This request must be synchronous, to have the collection ID for the item_scraped handler.
+        response = self._post_synchronous(spider, 'api/v1/create_collection', data)
 
         if response.ok:
             self.collection_id = response.json()['collection_id']
