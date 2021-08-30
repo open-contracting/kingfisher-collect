@@ -48,7 +48,7 @@ class Pluck(ScrapyCommand):
         skipped = defaultdict(list)
         running = []
         for spider_name in self.crawler_process.spider_loader.list():
-            if not args and spider_name != 'fail' or spider_name in args:
+            if not args or spider_name in args:
                 spidercls = self.crawler_process.spider_loader.load(spider_name)
                 if not args and hasattr(spidercls, 'skip_pluck'):
                     skipped[spidercls.skip_pluck].append(spider_name)

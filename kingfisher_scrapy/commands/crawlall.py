@@ -2,7 +2,6 @@ from scrapy.commands import ScrapyCommand
 from scrapy.exceptions import UsageError
 
 EXCEPTIONS = {
-    'fail',
     # Require authentication
     'openopps',
     'paraguay_dncp_records',
