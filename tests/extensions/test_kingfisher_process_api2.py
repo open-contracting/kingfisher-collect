@@ -187,11 +187,11 @@ def test_spider_closed_missing_collection_id(tmpdir):
 
 
 @pytest.mark.parametrize('initializer,filename,kwargs', items_scraped)
-@pytest.mark.parametrize('status_code,levelname,message', [
-    (200, 'DEBUG', 'Created collection file in Kingfisher Process'),
-    (500, 'ERROR', 'Failed to create collection file. API status code: 500'),
+@pytest.mark.parametrize('status_code,levelname,message,infix', [
+    (200, 'DEBUG', 'Created collection file in Kingfisher Process', 'sent'),
+    (500, 'ERROR', 'Failed to create collection file. API status code: 500', 'failed'),
 ])
-def test_item_scraped(initializer, filename, kwargs, status_code, levelname, message, tmpdir, caplog):
+def test_item_scraped(initializer, filename, kwargs, status_code, levelname, message, infix, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir)
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -223,6 +223,8 @@ def test_item_scraped(initializer, filename, kwargs, status_code, levelname, mes
     extension._post_synchronous.assert_called_once()
     extension._post_synchronous.assert_called_with(spider, 'api/v1/create_collection_file', expected)
 
+    assert extension.stats.get_value(f'kingfisher_process_items_{infix}_post') == 1
+
     assert len(caplog.records) == 1
     assert caplog.records[0].name == 'test'
     assert caplog.records[0].levelname == levelname
@@ -230,8 +232,8 @@ def test_item_scraped(initializer, filename, kwargs, status_code, levelname, mes
 
 
 @pytest.mark.parametrize('initializer,filename,kwargs', items_scraped)
-@pytest.mark.parametrize('raises', [(True, False)])
-def test_item_scraped_rabbit(initializer, filename, kwargs, raises, tmpdir, caplog):
+@pytest.mark.parametrize('raises,infix', [(False, 'sent'), (True, 'failed')])
+def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdir, caplog):
     KingfisherProcessAPI2._get_rabbit_channel = MagicMock(return_value='return')
 
     spider = spider_with_files_store(tmpdir, settings={
@@ -268,6 +270,8 @@ def test_item_scraped_rabbit(initializer, filename, kwargs, raises, tmpdir, capl
 
     extension._publish_to_rabbit.assert_called_once()
     extension._publish_to_rabbit.assert_called_with(expected)
+
+    assert extension.stats.get_value(f'kingfisher_process_items_{infix}_rabbit') == 1
 
     if raises:
         assert len(caplog.records) == 1
