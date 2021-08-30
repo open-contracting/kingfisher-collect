@@ -10,6 +10,7 @@ class UKContractsFinder(IndexSpider):
     name = 'uk_contracts_finder'
 
     # BaseSpider
+    ocds_version = '1.0'  # uses deprecated fields
     root_path = 'results.item'
 
     # SimpleSpider
