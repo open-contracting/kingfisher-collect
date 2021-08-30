@@ -129,6 +129,10 @@ If you are integrating with :doc:`Kingfisher Process<kingfisher_process>`, remem
 
     scrapy crawl spider_name -a keep_collection_open=true
 
+.. seealso::
+
+   :class:`~kingfisher_scrapy.extensions.DatabaseStore` extension
+
 .. _proxy:
 
 Use a proxy
