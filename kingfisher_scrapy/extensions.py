@@ -108,13 +108,6 @@ class FilesStore:
         return os.path.join(spider_directory, spider.get_start_time('%Y%m%d_%H%M%S'))
 
     @classmethod
-    def absolute_crawl_directory(cls, spider, files_store_directory):
-        """
-        Returns the crawl's absolute directory.
-        """
-        return os.path.join(files_store_directory, cls.relative_crawl_directory(spider))
-
-    @classmethod
     def from_crawler(cls, crawler):
         directory = crawler.settings['FILES_STORE']
 
@@ -183,15 +176,12 @@ class DatabaseStore:
     To perform incremental updates, the OCDS data in the crawl directory must not be deleted between crawls.
     """
 
-    connection = None
-    cursor = None
-    files_store_directory = None
-
-    logger = logging.getLogger(__name__)
-
     def __init__(self, database_url, files_store_directory):
         self.database_url = database_url
         self.files_store_directory = files_store_directory
+
+        self.connection = None
+        self.cursor = None
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -224,12 +214,12 @@ class DatabaseStore:
                 default_from_date = None
 
             if not spider.from_date or spider.from_date == default_from_date:
-                self.logger.info('Getting the date from which to resume the crawl from the %s table', spider.name)
+                spider.logger.info('Getting the date from which to resume the crawl from the %s table', spider.name)
                 self.execute("SELECT max(data->>'date')::timestamptz FROM {table}", table=spider.name)
                 from_date = self.cursor.fetchone()[0]
                 if from_date:
                     formatted_from_date = datetime.strftime(from_date, spider.date_format)
-                    self.logger.info('Resuming the crawl from %s', formatted_from_date)
+                    spider.logger.info('Resuming the crawl from %s', formatted_from_date)
                     spider.from_date = datetime.strptime(formatted_from_date, spider.date_format)
 
             self.connection.commit()
@@ -248,22 +238,22 @@ class DatabaseStore:
         else:
             prefix = 'records.item.compiledRelease'
 
-        crawl_directory = FilesStore.absolute_crawl_directory(spider, self.files_store_directory)
-        self.logger.info(f"Reading the {crawl_directory} crawl directory with the {prefix or 'empty'} prefix")
+        crawl_directory = os.path.join(self.files_store_directory, FilesStore.relative_crawl_directory(spider))
+        spider.logger.info('Reading the %s crawl directory with the %s prefix', crawl_directory, prefix or 'empty')
 
         data = self.yield_items_from_directory(crawl_directory, prefix)
         if spider.compile_releases:
-            self.logger.info('Creating compiled releases')
+            spider.logger.info('Creating compiled releases')
             data = merge(data)
 
         filename = os.path.join(crawl_directory, 'data.csv')
-        self.logger.info('Writing the JSON data to the %s CSV file', filename)
+        spider.logger.info('Writing the JSON data to the %s CSV file', filename)
         with open(filename, 'w') as f:
             writer = csv.writer(f)
             for item in data:
                 writer.writerow([json.dumps(item, default=util.default)])
 
-        self.logger.info('Replacing the JSON data in the %s table', spider.name)
+        spider.logger.info('Replacing the JSON data in the %s table', spider.name)
         self.connection = psycopg2.connect(self.database_url)
         self.cursor = self.connection.cursor()
         try:
@@ -285,7 +275,7 @@ class DatabaseStore:
     def yield_items_from_directory(self, crawl_directory, prefix=''):
         for dir_entry in os.scandir(crawl_directory):
             if dir_entry.name.endswith('.json'):
-                with open(dir_entry.path) as f:
+                with open(dir_entry.path, 'rb') as f:
                     yield from ijson.items(f, prefix)
 
     # Copied from kingfisher-summarize
