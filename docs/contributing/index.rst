@@ -202,6 +202,7 @@ API reference
    base_spider.rst
    downloadermiddlewares.rst
    spidermiddlewares.rst
+   pipelines.rst
    extensions.rst
    util.rst
    exceptions.rst
