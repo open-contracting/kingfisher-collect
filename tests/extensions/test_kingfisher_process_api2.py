@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 from unittest.mock import MagicMock
 
 import pytest
@@ -46,7 +46,7 @@ class Response():
         return self.content
 
 
-@pytest.mark.skipif(not rabbit_url, reason='RABBIT_URL must be set')
+@pytest.mark.skipif(not rabbit_url and not os.getenv('CI'), reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('url,boolean', [(rabbit_url, True), ('', False)])
 def test_from_crawler(url, boolean):
     spider = spider_with_crawler(settings={

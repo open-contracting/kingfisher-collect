@@ -11,6 +11,7 @@ from kingfisher_scrapy.extensions import DatabaseStore, FilesStore
 from tests import spider_with_crawler
 
 database_url = os.getenv('KINGFISHER_COLLECT_DATABASE_URL')
+skip_test_if = not database_url and not os.getenv('CI')
 
 
 def test_from_crawler_missing_arguments():
@@ -28,7 +29,7 @@ def test_from_crawler_missing_arguments():
     assert str(excinfo.value) == 'FILES_STORE is not set.'
 
 
-@pytest.mark.skipif(not database_url, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
+@pytest.mark.skipif(skip_test_if, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
 @pytest.mark.parametrize('from_date,default_from_date,date_format', [
     (None, None, None),
     ('2020-01-01', None, 'date'),
@@ -60,7 +61,7 @@ def test_spider_opened_first_time(caplog, tmpdir, from_date, default_from_date, 
         connection.close()
 
 
-@pytest.mark.skipif(not database_url, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
+@pytest.mark.skipif(skip_test_if, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
 def test_spider_closed_error(caplog, tmpdir):
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00',
                                  settings={'DATABASE_URL': database_url, 'FILES_STORE': tmpdir})
@@ -72,7 +73,7 @@ def test_spider_closed_error(caplog, tmpdir):
     assert not caplog.records
 
 
-@pytest.mark.skipif(not database_url, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
+@pytest.mark.skipif(skip_test_if, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
 @pytest.mark.parametrize('data,data_type,sample,compile_releases', [
     (b'{"releases": [{"date": "2021-05-26T10:00:00Z"}]}', 'release_package', None, False),
     (b'{"releases": [{"date": "2021-05-26T10:00:00Z"}]}', 'release_package', 1, False),
@@ -140,7 +141,7 @@ def test_spider_closed(caplog, tmpdir, data, data_type, sample, compile_releases
         connection.close()
 
 
-@pytest.mark.skipif(not database_url, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
+@pytest.mark.skipif(skip_test_if, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
 def test_spider_opened_with_data(caplog, tmpdir):
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00',
                                  settings={'DATABASE_URL': database_url, 'FILES_STORE': tmpdir})
