@@ -309,3 +309,31 @@ def test_item_scraped_missing_collection_id(tmpdir):
     extension.item_scraped(item, spider)
 
     extension._post_synchronous.assert_not_called()
+
+
+def test_item_scraped_path(tmpdir):
+    with tmpdir.as_cwd():
+        spider = spider_with_files_store('subdir')
+
+        extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
+        extension.collection_id = 1
+
+        item = spider.build_file(
+            file_name='file.json',
+            url='https://example.com/remote.json',
+            data=b'{"key": "value"}',
+            data_type='release_package',
+        )
+
+        store_extension = FilesStore.from_crawler(spider.crawler)
+        store_extension.item_scraped(item, spider)
+
+        extension._post_synchronous = MagicMock(return_value=Response())
+        extension.item_scraped(item, spider)
+
+        extension._post_synchronous.assert_called_once()
+        extension._post_synchronous.assert_called_with(spider, 'api/v1/create_collection_file', {
+            'collection_id': 1,
+            'url': 'https://example.com/remote.json',
+            'path': tmpdir.join('subdir', 'test', '20010203_040506', 'file.json'),
+        })
