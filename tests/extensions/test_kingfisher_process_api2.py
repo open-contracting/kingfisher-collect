@@ -1,194 +1,311 @@
 import os
+import logging
 from unittest.mock import MagicMock
 
 import pytest
 from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import FilesStore, KingfisherProcessAPI2
-from tests import spider_with_crawler, spider_with_files_store
+from kingfisher_scrapy.items import FileError, FileItem, PluckedItem
+from tests import ExpectedError, spider_with_crawler, spider_with_files_store
+
+rabbit_url = os.getenv('RABBIT_URL')
+
+items_scraped = [
+    ('build_file', 'file.json', {
+        'file_name': 'file.json',
+        'url': 'https://example.com/remote.json',
+        'data': b'{"key": "value"}',
+        'data_type': 'release_package',
+    }),
+    (FileItem, 'file-1.json', {
+        'number': 1,
+        'file_name': 'file.json',
+        'url': 'https://example.com/remote.json',
+        'data': b'{"key": "value"}',
+        'data_type': 'release_package',
+    }),
+    (FileError, 'file.json', {
+        'file_name': 'file.json',
+        'url': 'https://example.com/remote.json',
+        'errors': {'http_code': 500},
+    }),
+]
 
 
-class Response(object):
+class Response():
+    def __init__(self, status_code=200, content=None):
+        self.status_code = status_code
+        self.content = content
+
+    @property
+    def ok(self):
+        return not(400 <= self.status_code < 600)
+
     def json(self):
-        return self.json_response
+        return self.content
 
 
-def test_from_crawler():
+@pytest.mark.skipif(not rabbit_url, reason='RABBIT_URL must be set')
+@pytest.mark.parametrize('url,boolean', [(rabbit_url, True), ('', False)])
+def test_from_crawler(url, boolean):
     spider = spider_with_crawler(settings={
-        'KINGFISHER_API2_URL': 'http://xxx:password@httpbin.org/anything',
+        'KINGFISHER_API2_URL': 'http://httpbin.org/anything/',
+        'RABBIT_URL': url,
+        'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test_1.0',
+        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_1.0_api',
     })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
 
-    assert extension.url == 'http://xxx:password@httpbin.org/anything'
+    assert extension.rabbit_url == url
+    assert extension.rabbit_exchange_name == 'kingfisher_process_test_1.0'
+    assert extension.rabbit_routing_key == 'kingfisher_process_test_1.0_api'
+    assert extension.collection_id is None
+    assert bool(extension.channel) is boolean
 
 
-def test_from_crawler_missing_url():
+def test_from_crawler_missing_arguments():
     spider = spider_with_crawler(settings={
-        "KINGFISHER_API_URL": "missing",
+        'KINGFISHER_API2_URL': None,
     })
 
     with pytest.raises(NotConfigured) as excinfo:
         KingfisherProcessAPI2.from_crawler(spider.crawler)
 
-    assert str(excinfo.value) == "KINGFISHER_API2_URL is not set."
+    assert str(excinfo.value) == 'KINGFISHER_API2_URL is not set.'
 
 
-def test_spider_opened(tmpdir):
-    spider = spider_with_files_store(tmpdir, settings={
-        'KINGFISHER_API2_URL': 'http://example.com',
+def test_from_crawler_with_database_url():
+    spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00', settings={
+        'KINGFISHER_API2_URL': 'http://httpbin.org/anything/',
+        'DATABASE_URL': 'test',
     })
+
+    with pytest.raises(NotConfigured) as excinfo:
+        KingfisherProcessAPI2.from_crawler(spider.crawler)
+
+    assert str(excinfo.value) == 'DATABASE_URL is set.'
+
+
+@pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
+@pytest.mark.parametrize('note', [None, 'Started by NAME.'])
+@pytest.mark.parametrize('ocds_version,upgrade', [('1.0', True), (None, False)])
+@pytest.mark.parametrize('status_code,levelname,message', [
+    (200, 'INFO', 'Created collection 1 in Kingfisher Process'),
+    (500, 'ERROR', 'Failed to create collection. API status code: 500'),
+])
+def test_spider_opened(sample, is_sample, note, ocds_version, upgrade, status_code, levelname, message, tmpdir,
+                       caplog):
+    spider = spider_with_files_store(tmpdir, sample=sample, note=note, ocds_version=ocds_version)
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
 
-    response = Response()
-    response.ok = True
-    response.json_response = {"collection_id": "1"}
-    extension._post_synchronous = MagicMock(return_value=response)
-    extension.spider_opened(spider)
+    with caplog.at_level(logging.DEBUG):
+        response = Response(status_code=status_code, content={'collection_id': 1})
+        extension._post_synchronous = MagicMock(return_value=response)
+        extension.spider_opened(spider)
 
+    extension._post_synchronous.assert_called_once()
     extension._post_synchronous.assert_called_with(
         spider,
         'api/v1/create_collection',
         {
             'source_id': 'test',
             'data_version': '2001-02-03 04:05:06',
-            'note': None,
-            'sample': None,
+            'note': note,
+            'sample': is_sample,
             'compile': True,
-            'upgrade': False,
+            'upgrade': upgrade,
             'check': True
         }
     )
 
+    assert len(caplog.records) == 1
+    assert caplog.records[0].name == 'test'
+    assert caplog.records[0].levelname == levelname
+    assert caplog.records[0].getMessage() == message
 
-def test_spider_closed(tmpdir):
+
+@pytest.mark.parametrize('status_code,levelname,message', [
+    (200, 'INFO', 'Closed collection 1 in Kingfisher Process'),
+    (500, 'ERROR', 'Failed to close collection. API status code: 500'),
+])
+def test_spider_closed(status_code, levelname, message, tmpdir, caplog):
+    spider = spider_with_files_store(tmpdir)
+
+    extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
+    extension.collection_id = 1
+
+    with caplog.at_level(logging.DEBUG):
+        response = Response(status_code=status_code)
+        extension._post_synchronous = MagicMock(return_value=response)
+        extension.spider_closed(spider, 'xxx')
+
+    extension._post_synchronous.assert_called_once()
+    extension._post_synchronous.assert_called_with(
+        spider,
+        'api/v1/close_collection',
+        {
+            'collection_id': 1,
+            'reason': 'xxx',
+            'stats': {
+                'start_time': '2001-02-03 04:05:06',
+            },
+        }
+    )
+
+    assert len(caplog.records) == 1
+    assert caplog.records[0].name == 'test'
+    assert caplog.records[0].levelname == levelname
+    assert caplog.records[0].message == message
+
+
+@pytest.mark.parametrize('attribute', ['pluck', 'keep_collection_open'])
+def test_spider_closed_return(attribute, tmpdir):
+    spider = spider_with_files_store(tmpdir)
+    setattr(spider, attribute, True)
+
+    extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
+    extension.collection_id = 1
+
+    extension._post_synchronous = MagicMock(return_value=Response())
+    extension.spider_closed(spider, 'xxx')
+
+    extension._post_synchronous.assert_not_called()
+
+
+def test_spider_closed_missing_collection_id(tmpdir):
+    spider = spider_with_files_store(tmpdir)
+
+    extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
+
+    extension._post_synchronous = MagicMock(return_value=Response())
+    extension.spider_closed(spider, 'xxx')
+
+    extension._post_synchronous.assert_not_called()
+
+
+@pytest.mark.parametrize('initializer,filename,kwargs', items_scraped)
+@pytest.mark.parametrize('status_code,levelname,message', [
+    (200, 'DEBUG', 'Created collection file in Kingfisher Process'),
+    (500, 'ERROR', 'Failed to create collection file. API status code: 500'),
+])
+def test_item_scraped(initializer, filename, kwargs, status_code, levelname, message, tmpdir, caplog):
+    spider = spider_with_files_store(tmpdir)
+
+    extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
+    extension.collection_id = 1
+
+    if isinstance(initializer, str):
+        item = getattr(spider, initializer)(**kwargs)
+    else:
+        item = initializer(**kwargs)
+
+    store_extension = FilesStore.from_crawler(spider.crawler)
+    store_extension.item_scraped(item, spider)
+
+    with caplog.at_level(logging.DEBUG):
+        response = Response(status_code=status_code)
+        extension._post_synchronous = MagicMock(return_value=response)
+        extension.item_scraped(item, spider)
+
+    expected = {
+        'collection_id': 1,
+        'url': 'https://example.com/remote.json',
+    }
+
+    if initializer is FileError:
+        expected['errors'] = '{"http_code": 500}'
+    else:
+        expected['path'] = tmpdir.join('test', '20010203_040506', filename)
+
+    extension._post_synchronous.assert_called_once()
+    extension._post_synchronous.assert_called_with(spider, 'api/v1/create_collection_file', expected)
+
+    assert len(caplog.records) == 1
+    assert caplog.records[0].name == 'test'
+    assert caplog.records[0].levelname == levelname
+    assert caplog.records[0].message == message
+
+
+@pytest.mark.parametrize('initializer,filename,kwargs', items_scraped)
+@pytest.mark.parametrize('raises', [(True, False)])
+def test_item_scraped_rabbit(initializer, filename, kwargs, raises, tmpdir, caplog):
+    KingfisherProcessAPI2._get_rabbit_channel = MagicMock(return_value='return')
+
     spider = spider_with_files_store(tmpdir, settings={
-        'KINGFISHER_API2_URL': 'http://example.com',
+        'RABBIT_URL': 'xxx',
+        'RABBIT_EXCHANGE_NAME': 'xxx',
+        'RABBIT_ROUTING_KEY': 'xxx',
     })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
     extension.collection_id = 1
 
-    # item_scraped
-    item = spider.build_file(
-        file_name='file.json',
-        url='https://example.com/remote.json',
-        data=b'{"key": "value"}',
-        data_type='release_package',
-    )
+    if isinstance(initializer, str):
+        item = getattr(spider, initializer)(**kwargs)
+    else:
+        item = initializer(**kwargs)
 
     store_extension = FilesStore.from_crawler(spider.crawler)
     store_extension.item_scraped(item, spider)
 
-    response = Response()
-    response.ok = True
-    response.json_response = '{"collection_id":"1"}'
-
-    extension._post_synchronous = MagicMock(return_value=response)
+    extension._publish_to_rabbit = MagicMock(return_value=Response())
+    if raises:
+        extension._publish_to_rabbit.side_effect = ExpectedError('message')
     extension.item_scraped(item, spider)
 
-    # spider_closed
-    response = Response()
-    response.ok = True
-    response.json_response = '{"collection_id":"1"}'
-
-    extension._post_synchronous = MagicMock(return_value=response)
-    extension.spider_closed(spider, "done")
-
-    call_args = extension._post_synchronous.call_args
-    call = call_args[0]
-
-    assert call[0] == spider
-    assert call[1] == "api/v1/close_collection"
-    assert call[2] == {
+    expected = {
         'collection_id': 1,
-        'reason': 'done',
-        'stats': {
-            # 'kingfisher_process_items_failed_post': 0,
-            'kingfisher_process_items_sent_post': 1,
-            # 'kingfisher_process_items_sent_rabbit': 0,
-            # 'kingfisher_process_items_failed_rabbit': 0,
-            'start_time': '2001-02-03 04:05:06',
-        },
-    }
-
-
-def test_item_scraped(tmpdir):
-    settings = {
-        "KINGFISHER_API_LOCAL_DIRECTORY": str(tmpdir.join('xxx')),
-        'KINGFISHER_API2_URL': 'http://example.com',
-    }
-
-    spider = spider_with_files_store(tmpdir, settings=settings)
-    extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
-    extension.collection_id = 1
-
-    item = spider.build_file(
-        file_name='file.json',
-        url='https://example.com/remote.json',
-        data=b'{"key": "value"}',
-        data_type='release_package',
-    )
-
-    store_extension = FilesStore.from_crawler(spider.crawler)
-    store_extension.item_scraped(item, spider)
-
-    response = Response()
-    response.ok = True
-    response.json_response = '{"collection_id":"1"}'
-
-    extension._post_synchronous = MagicMock(return_value=response)
-    extension.item_scraped(item, spider)
-
-    call_args = extension._post_synchronous.call_args
-    call = call_args[0]
-
-    assert call[0] == spider
-    assert call[1] == "api/v1/create_collection_file"
-    assert call[2] == {
-        'collection_id': 1,
-        'path': os.path.join(item['files_store'], item['path']),
         'url': 'https://example.com/remote.json',
     }
 
+    if initializer is FileError:
+        expected['errors'] = '{"http_code": 500}'
+    else:
+        expected['path'] = tmpdir.join('test', '20010203_040506', filename)
 
-def test_item_scraped_rabbit(tmpdir):
-    settings = {
-        "KINGFISHER_API_LOCAL_DIRECTORY": str(tmpdir.join("xxx")),
-        "KINGFISHER_API2_URL": "anything",
-        "RABBIT_URL": "xxx",
-        "RABBIT_EXCHANGE_NAME": "xxx",
-        "RABBIT_ROUTING_KEY": "xxx",
-    }
+    extension._publish_to_rabbit.assert_called_once()
+    extension._publish_to_rabbit.assert_called_with(expected)
 
-    spider = spider_with_files_store(tmpdir, settings=settings)
-    KingfisherProcessAPI2._get_rabbit_channel = MagicMock(return_value=None)
+    if raises:
+        assert len(caplog.records) == 1
+        assert caplog.records[0].name == 'test'
+        assert caplog.records[0].levelname == 'ERROR'
+        assert caplog.records[0].message == 'Failed to publish message to RabbitMQ: message'
+    else:
+        assert len(caplog.records) == 0
+
+    assert extension.channel is not None
+
+
+def test_item_scraped_plucked_item(tmpdir):
+    spider = spider_with_files_store(tmpdir)
+
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
     extension.collection_id = 1
 
-    item = spider.build_file(
-        file_name='file.json',
-        url='https://example.com/remote.json',
-        data=b'{"key": "value"}',
-        data_type='release_package',
-    )
+    item = PluckedItem({
+        'value': '123',
+    })
 
-    store_extension = FilesStore.from_crawler(spider.crawler)
-    store_extension.item_scraped(item, spider)
-
-    response = Response()
-    response.ok = True
-    response.json_response = '{"collection_id":"1"}'
-
-    extension._publish_to_rabbit = MagicMock(return_value=response)
+    extension._post_synchronous = MagicMock(return_value=Response())
     extension.item_scraped(item, spider)
 
-    call_args = extension._publish_to_rabbit.call_args
-    call = call_args[0]
+    extension._post_synchronous.assert_not_called()
 
-    assert call[0] == {
-        'collection_id': 1,
-        'path': os.path.join(item['files_store'], item['path']),
-        'url': 'https://example.com/remote.json',
-    }
+
+def test_item_scraped_missing_collection_id(tmpdir):
+    spider = spider_with_files_store(tmpdir)
+
+    extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
+
+    item = PluckedItem({
+        'value': '123',
+    })
+
+    extension._post_synchronous = MagicMock(return_value=Response())
+    extension.item_scraped(item, spider)
+
+    extension._post_synchronous.assert_not_called()

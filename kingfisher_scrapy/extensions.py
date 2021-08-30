@@ -25,6 +25,10 @@ from kingfisher_scrapy.util import _pluck_filename, get_file_name_and_extension
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 class Pluck:
+    """
+    Appends one data value from one plucked item to a file. See the :ref:`pluck` command.
+    """
+
     def __init__(self, directory, max_bytes):
         self.directory = directory
         self.max_bytes = max_bytes
@@ -85,6 +89,10 @@ class Pluck:
 
 
 class FilesStore:
+    """
+    Writes items' data to individual files in a directory. See the :ref:`how-it-works` documentation.
+    """
+
     def __init__(self, directory):
         self.directory = directory
 
@@ -307,6 +315,10 @@ class DatabaseStore:
 
 
 class ItemCount:
+    """
+    Adds a count to the crawl stats for each type of item scraped.
+    """
+
     def __init__(self, stats):
         self.stats = stats
 
@@ -479,6 +491,8 @@ class KingfisherProcessAPI2:
 
         if rabbit_url:
             self.channel = self._get_rabbit_channel()
+        else:
+            self.channel = None
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -509,7 +523,7 @@ class KingfisherProcessAPI2:
             'source_id': spider.name,
             'data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
             'note': spider.note,
-            'sample': spider.sample,
+            'sample': bool(spider.sample),
             'compile': True,
             'upgrade': spider.ocds_version == '1.0',
             'check': True,
@@ -544,7 +558,7 @@ class KingfisherProcessAPI2:
 
     def item_scraped(self, item, spider):
         """
-        Sends either a RabbitMQ or API request to store the file in Kingfisher Process.
+        Sends either a RabbitMQ or API request to store the file, file item or file error in Kingfisher Process.
         """
         if isinstance(item, PluckedItem):
             return
@@ -554,12 +568,13 @@ class KingfisherProcessAPI2:
 
         data = {
             'collection_id': self.collection_id,
-            'path': os.path.join(item.get('files_store', ''), item.get('path', '')),
-            'url': item.get('url', None)
+            'url': item['url'],
         }
 
         if isinstance(item, FileError):
-            data['errors'] = json.dumps(item.get('errors', None))
+            data['errors'] = json.dumps(item['errors'])
+        else:
+            data['path'] = os.path.join(item['files_store'], item['path'])
 
         if self.rabbit_url:
             try:
