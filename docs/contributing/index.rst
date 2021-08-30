@@ -145,6 +145,7 @@ Read the `Scrapy documentation <https://docs.scrapy.org/en/latest/>`__. In parti
 -  `Item pipeline <https://docs.scrapy.org/en/latest/topics/item-pipeline.html>`__
 -  `Extensions <https://docs.scrapy.org/en/latest/topics/extensions.html>`__ and `signals <https://docs.scrapy.org/en/latest/topics/signals.html>`__
 -  `Downloader middleware <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html>`__
+-  `Spider middleware <https://docs.scrapy.org/en/latest/topics/spider-middleware.html>`__
 
 The :doc:`../cli` follows the guidance for `running multiple spiders in the same process <https://docs.scrapy.org/en/latest/topics/practices.html#running-multiple-spiders-in-the-same-process>`__.
 
@@ -162,11 +163,12 @@ The Scrapy framework is very flexible. To maintain a good separation of concerns
    -  Raise a :class:`~kingfisher_scrapy.exceptions.AccessTokenError` exception in a request's callback, if the maximum number of attempts to retrieve an access token is reached
    -  Raise any other exception, to be caught by a `spider_error <https://docs.scrapy.org/en/latest/topics/signals.html#spider-error>`__ handler in an extension
 
--  A downloader middleware's responsibility is to process requests, before they are sent to the internet, and responses, before they are processed by the spider. It should only:
+-  A downloader middleware's responsibility is to process requests yielded by the spider, before they are sent to the internet, and to process responses from the internet, before they are passed to the spider. It should only:
 
-   -  Yield a request, for example :class:`~kingfisher_scrapy.middlewares.ParaguayAuthMiddleware`
-   -  Return a Deferred, for example :class:`~kingfisher_scrapy.middlewares.DelayedRequestMiddleware`
-   -  Yield items, for example :class:`~kingfisher_scrapy.middlewares.AddPackageMiddleware`
+   -  Return a request, for example :class:`~kingfisher_scrapy.downloadermiddlewares.ParaguayAuthMiddleware`
+   -  Return a Deferred, for example :class:`~kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware`
+
+-  A spider middleware's responsibility is to process items yielded by the spider. It should only yield items, for example :class:`~kingfisher_scrapy.spidermiddlewares.RootPathMiddleware`.
 
 -  An item pipeline's responsibility is to clean, validate, filter, modify or substitute items. It should only:
 
@@ -198,7 +200,8 @@ API reference
 .. toctree::
 
    base_spider.rst
+   downloadermiddlewares.rst
+   spidermiddlewares.rst
    extensions.rst
    util.rst
    exceptions.rst
-   middlewares.rst

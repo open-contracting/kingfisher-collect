@@ -53,23 +53,23 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'kingfisher_scrapy.middlewares.MyCustomSpiderMiddleware': 543,
+#    'kingfisher_scrapy.spidermiddlewares.MyCustomSpiderMiddleware': 543,
 #}
 SPIDER_MIDDLEWARES = {
     # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#topics-spider-middleware-setting
     # `process_spider_output` is invoked in decreasing order.
-    'kingfisher_scrapy.middlewares.ConcatenatedJSONMiddleware': 600,
-    'kingfisher_scrapy.middlewares.LineDelimitedMiddleware': 500,
-    'kingfisher_scrapy.middlewares.RootPathMiddleware': 400,
-    'kingfisher_scrapy.middlewares.AddPackageMiddleware': 300,
-    'kingfisher_scrapy.middlewares.ResizePackageMiddleware': 200,
-    'kingfisher_scrapy.middlewares.ReadDataMiddleware': 100
+    'kingfisher_scrapy.spidermiddlewares.ConcatenatedJSONMiddleware': 600,
+    'kingfisher_scrapy.spidermiddlewares.LineDelimitedMiddleware': 500,
+    'kingfisher_scrapy.spidermiddlewares.RootPathMiddleware': 400,
+    'kingfisher_scrapy.spidermiddlewares.AddPackageMiddleware': 300,
+    'kingfisher_scrapy.spidermiddlewares.ResizePackageMiddleware': 200,
+    'kingfisher_scrapy.spidermiddlewares.ReadDataMiddleware': 100
 }
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'kingfisher_scrapy.middlewares.DelayedRequestMiddleware': 543,
+    'kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware': 543,
 }
 
 # Enable or disable extensions
