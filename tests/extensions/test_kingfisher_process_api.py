@@ -10,11 +10,7 @@ from twisted.python.failure import Failure
 
 from kingfisher_scrapy.extensions import FilesStore, KingfisherProcessAPI
 from kingfisher_scrapy.items import FileError, FileItem, PluckedItem
-from tests import spider_with_crawler, spider_with_files_store
-
-
-class ExpectedError(Exception):
-    pass
+from tests import ExpectedError, spider_with_crawler, spider_with_files_store
 
 
 def test_from_crawler():
@@ -152,10 +148,10 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, c
 
         item = FileItem({
             'number': 1,
-            'file_name': 'data.json',
+            'file_name': 'file.json',
+            'url': 'https://example.com/remote.json',
             'data': b'{"key": "value"}',
             'data_type': 'release_package',
-            'url': 'https://example.com/remote.json',
             'encoding': encoding,
         })
 
@@ -167,7 +163,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, c
             'collection_data_version': '2001-02-03 04:05:06',
             'collection_sample': str(is_sample),
             'collection_ocds_version': '1.1',
-            'file_name': 'data.json',
+            'file_name': 'file.json',
             'url': 'https://example.com/remote.json',
             # Specific to FileItem.
             'data_type': 'release_package',
@@ -193,19 +189,6 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, c
             assert caplog.records[0].name == 'test'
             assert caplog.records[0].levelname == 'WARNING'
             assert caplog.records[0].message == message
-
-
-def test_item_scraped_plucked_item(tmpdir):
-    spider = spider_with_files_store(tmpdir)
-    extension = KingfisherProcessAPI.from_crawler(spider.crawler)
-
-    item = PluckedItem({
-        'value': '123',
-    })
-
-    response = extension.item_scraped(item, spider)
-
-    assert response is None
 
 
 @pytest_twisted.inlineCallbacks
@@ -253,6 +236,20 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
             assert caplog.records[0].name == 'test'
             assert caplog.records[0].levelname == 'WARNING'
             assert caplog.records[0].message == message
+
+
+@pytest_twisted.inlineCallbacks
+def test_item_scraped_plucked_item(tmpdir):
+    spider = spider_with_files_store(tmpdir)
+    extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+
+    item = PluckedItem({
+        'value': '123',
+    })
+
+    response = yield extension.item_scraped(item, spider)
+
+    assert response is None
 
 
 @pytest_twisted.inlineCallbacks
@@ -347,15 +344,15 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
             assert caplog.records[0].message == message
 
 
-@pytest.mark.parametrize('attribute', ['pluck', 'keep_collection_open'])
 @pytest_twisted.inlineCallbacks
+@pytest.mark.parametrize('attribute', ['pluck', 'keep_collection_open'])
 def test_spider_closed_return(attribute, tmpdir):
     spider = spider_with_files_store(tmpdir)
     setattr(spider, attribute, True)
 
     extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    response = extension.spider_closed(spider, 'xxx')
+    response = yield extension.spider_closed(spider, 'xxx')
 
     assert response is None
 
@@ -366,7 +363,7 @@ def test_spider_closed_exception(tmpdir, caplog):
         mocked.side_effect = ExpectedError
 
         spider = spider_with_files_store(tmpdir)
-        extension = KingfisherProcessAPI.from_crawler(spider.crawler)
+        extension = yield KingfisherProcessAPI.from_crawler(spider.crawler)
 
         with pytest.raises(ExpectedError):
             yield extension.spider_closed(spider, 'finished')
@@ -377,7 +374,7 @@ def test_spider_closed_other_reason(tmpdir):
     spider = spider_with_files_store(tmpdir)
     extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-    response = extension.spider_closed(spider, 'xxx')
+    response = yield extension.spider_closed(spider, 'xxx')
 
     assert response is None
 

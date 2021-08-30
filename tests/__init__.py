@@ -7,6 +7,10 @@ from scrapy.utils.test import get_crawler
 from kingfisher_scrapy.base_spider import BaseSpider
 
 
+class ExpectedError(Exception):
+    pass
+
+
 def response_fixture(meta=None, url_path='', **kwargs):
     if meta is None:
         meta = {'file_name': 'test'}
@@ -30,6 +34,7 @@ def spider_with_files_store(files_store, settings=None, **kwargs):
         'FILES_STORE': files_store,
         'KINGFISHER_API_URI': 'http://httpbin.org/anything/',
         'KINGFISHER_API_KEY': 'xxx',
+        'KINGFISHER_API2_URL': 'http://httpbin.org/anything/',
     }
     if settings:
         crawler_settings.update(settings)
