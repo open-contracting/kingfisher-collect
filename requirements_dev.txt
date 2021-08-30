@@ -77,6 +77,19 @@ flattentool==0.14.0
     # via -r requirements.txt
 greenlet==0.4.17
     # via pytest-twisted
+h2==3.2.0
+    # via
+    #   -r requirements.txt
+    #   scrapy
+    #   twisted
+hpack==3.0.0
+    # via
+    #   -r requirements.txt
+    #   h2
+hyperframe==5.2.0
+    # via
+    #   -r requirements.txt
+    #   h2
 hyperlink==19.0.0
     # via
     #   -r requirements.txt
@@ -183,6 +196,10 @@ pip-tools==5.5.0
     # via -r requirements_dev.in
 pluggy==0.13.1
     # via pytest
+priority==1.3.0
+    # via
+    #   -r requirements.txt
+    #   twisted
 protego==0.1.16
     # via
     #   -r requirements.txt
@@ -267,7 +284,7 @@ schema==0.7.2
     # via
     #   -r requirements.txt
     #   flattentool
-scrapy==2.3.0
+scrapy==2.5.0
     # via
     #   -r requirements.txt
     #   scrapyd
@@ -301,7 +318,7 @@ six==1.13.0
     #   w3lib
 treq==20.9.0
     # via -r requirements.txt
-twisted[tls]==20.3.0
+twisted[http2,tls]==20.3.0
     # via
     #   -r requirements.txt
     #   scrapy
