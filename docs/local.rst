@@ -18,6 +18,8 @@ When ready, open a shell, and run:
    cd kingfisher-collect
    pip install -r requirements.txt
 
+To extract data from RAR files, you must have the ``unrar`` or `unar <https://theunarchiver.com/command-line>`__ command-line utility.
+
 The next steps assume that you have changed to the ``kingfisher-collect`` directory (the ``cd`` command above).
 
 .. _configure:
