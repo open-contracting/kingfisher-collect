@@ -257,13 +257,13 @@ class BaseSpider(scrapy.Spider):
         Returns a FileItem item to yield.
         """
         return FileItem({
-                    'number': number,
-                    'file_name': item['file_name'],
-                    'data': data,
-                    'data_type': item['data_type'],
-                    'url': item['url'],
-                    'encoding': item['encoding'],
-                })
+            'number': number,
+            'file_name': item['file_name'],
+            'data': data,
+            'data_type': item['data_type'],
+            'url': item['url'],
+            'encoding': item['encoding'],
+        })
 
     def build_file_error_from_response(self, response, **kwargs):
         """
@@ -404,7 +404,7 @@ class CompressedFileSpider(BaseSpider):
                 'data': data,
                 'data_type': self.data_type,
                 'url': response.request.url,
-                'encoding': self.encoding
+                'encoding': self.encoding,
             })
 
             number += 1
