@@ -14,7 +14,6 @@ class UKContractsFinder(IndexSpider):
 
     # SimpleSpider
     data_type = 'release_package'
-    encoding = 'iso-8859-1'
 
     # IndexSpider
     total_pages_pointer = '/maxPage'

@@ -21,33 +21,45 @@ browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,
 
 class BaseSpider(scrapy.Spider):
     """
-    -  If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for `Kingfisher
-       Process integration <https://github.com/open-contracting/kingfisher-collect/issues/411>`__.
-    -  If the spider supports ``from_date`` and ``until_date`` spider arguments:
+    With respect to the data's source:
 
-       -  Set a ``date_format`` class attribute to "date", "datetime", "year" or "year-month".
+    -  If the spider needs to parse the JSON response in its ``parse`` method, set ``dont_truncate = True``.
+    -  If the source can support ``from_date`` and ``until_date`` spider arguments:
+
+       -  Set a ``date_format`` class attribute to "date", "datetime", "year" or "year-month" (default "date").
        -  Set a ``default_from_date`` class attribute to a date ("YYYY-MM-DD"), datetime ("YYYY-MM-DDTHH:MM:SS"),
           year ("YYYY") or year-month ("YYYY-MM").
        -  If the source stopped publishing, set a ``default_until_date`` class attribute to a date or datetime.
 
-    -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set a
-       ``default_from_date`` class attribute as above.
-    -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
-    -  If a spider collects data as CSV or XLSX files, add a ``unflatten = True`` class attribute to convert each
-       item to json files in the Unflatten pipeline class using the ``unflatten`` command from Flatten Tool.
-       If you need to set more arguments for the unflatten command, set a ``unflatten_args`` dict with them.
-    -  If the data is not formatted as OCDS (record, release, record package or release package), set a ``root_path``
-       class attribute to the path to the OCDS data.
+    -  If the spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
+       ``date_format`` and ``default_from_date`` class attributes as above.
+
+    .. tip::
+
+        If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set,
+        then ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
+        ``get_default_until_date()`` return value (which is the current time, by default).
+
+    With respect to the data's format:
+
+    -  If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for `Kingfisher
+       Process integration <https://github.com/open-contracting/kingfisher-collect/issues/411>`__.
+    -  If the data is a concatenated JSON, add a ``concatenated_json = True`` class attribute.
+    -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
+    -  If the data embeds OCDS data within other objects or arrays, set a ``root_path`` class attribute to the path to
+       the OCDS data, e.g. ``'releasePackage'`` or ``'results.item'``.
     -  If the JSON file is line-delimited and the root path is to a JSON array, set a ``root_path_max_length`` class
        attribute to the maximum length of the JSON array at the root path.
-    -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
-    -  If the data is a concatenated JSON, add a ``concatenated_json = True`` class attribute.
+    -  If the data is in CSV or XLSX format, add a ``unflatten = True`` class attribute to convert it to JSON using
+       Flatten Tool's ``unflatten`` function. To pass arguments to ``unflatten``, set a ``unflatten_args`` dict.
 
-    If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
-    ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
-    ``get_default_until_date()`` return value (which is the current time, by default).
+    .. note::
 
-    If the spider needs to parse the JSON response in its ``parse`` method, set ``dont_truncate = True``.
+       ``concatenated_json = True`` is not compatible with ``line_delimited = True``.
+
+    With respect to support for Kingfisher Collect's features:
+
+    -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
     """
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S', 'year': '%Y', 'year-month': '%Y-%m'}
 
@@ -261,13 +273,13 @@ class BaseSpider(scrapy.Spider):
         Returns a FileItem item to yield.
         """
         return FileItem({
-                    'number': number,
-                    'file_name': item['file_name'],
-                    'data': data,
-                    'data_type': item['data_type'],
-                    'url': item['url'],
-                    'encoding': item['encoding'],
-                })
+            'number': number,
+            'file_name': item['file_name'],
+            'data': data,
+            'data_type': item['data_type'],
+            'url': item['url'],
+            'encoding': item['encoding'],
+        })
 
     def build_file_error_from_response(self, response, **kwargs):
         """
@@ -352,7 +364,6 @@ class CompressedFileSpider(BaseSpider):
     .. note::
 
        ``resize_package = True`` is not compatible with ``line_delimited = True`` or ``root_path``.
-       ``concatenated_json = True`` is not compatible with ``line_delimited = True``.
     """
 
     # BaseSpider
@@ -408,7 +419,7 @@ class CompressedFileSpider(BaseSpider):
                 'data': data,
                 'data_type': self.data_type,
                 'url': response.request.url,
-                'encoding': self.encoding
+                'encoding': self.encoding,
             })
 
             number += 1

@@ -34,7 +34,7 @@ class OpenOpps(BaseSpider):
     download_delay = 1
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
-            'kingfisher_scrapy.middlewares.OpenOppsAuthMiddleware': 543,
+            'kingfisher_scrapy.downloadermiddlewares.OpenOppsAuthMiddleware': 543,
         },
     }
 

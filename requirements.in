@@ -4,11 +4,13 @@ jsonpointer
 jsonschema
 ocdskit
 ocdsmerge
+pika
 psycopg2
 rarfile
+requests
 rfc3987
-scrapyd
 Scrapy>=2
+scrapyd
 scrapyd-client
 sentry-sdk
 treq

@@ -4,7 +4,7 @@ from scrapy.core.downloader import DownloaderMiddlewareManager
 from twisted.internet.defer import Deferred
 from twisted.trial.unittest import TestCase
 
-from kingfisher_scrapy.middlewares import DelayedRequestMiddleware
+from kingfisher_scrapy.downloadermiddlewares import DelayedRequestMiddleware
 from tests import spider_with_crawler
 
 
