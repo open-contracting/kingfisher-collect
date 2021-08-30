@@ -11,7 +11,7 @@ requests
 rfc3987
 Scrapy>=2
 scrapyd
-scrapyd-client
+-e git+https://github.com/open-contracting/scrapyd-client.git#egg=scrapyd-client
 sentry-sdk
 treq
 twisted
