@@ -1,3 +1,5 @@
+from io import BytesIO
+
 import pytest
 from flattentool.input import BadXLSXZipFile
 from openpyxl import Workbook
@@ -22,11 +24,14 @@ def test_process_item_csv():
 
 
 def test_process_item_xlsx():
+    io = BytesIO()
+    Workbook().save(io)
+
     spider = spider_with_crawler(unflatten=True)
     pipeline = Unflatten()
     item = File({
         'file_name': 'test.xlsx',
-        'data': save_virtual_workbook(Workbook()),
+        'data': io.getvalue(),
         'data_type': 'release_package',
         'url': 'http://test.com/test.xlsx',
     })
