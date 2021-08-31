@@ -25,7 +25,6 @@ class MexicoAdministracionPublicaFederalAPI(IndexSpider):
     count_pointer = '/pagination/total'
     limit = '/pagination/pageSize'
     use_page = True
-    formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
         url = 'https://api.datos.gob.mx/v2/contratacionesabiertas'

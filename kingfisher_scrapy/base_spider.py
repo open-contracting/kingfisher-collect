@@ -15,7 +15,7 @@ from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, UnknownArchiveFormatError
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.util import (add_path_components, add_query_string, get_file_name_and_extension,
-                                    handle_http_error)
+                                    handle_http_error, parameters)
 
 browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
@@ -594,8 +594,9 @@ class IndexSpider(SimpleSpider):
            configure the spider to send a ``page`` query string parameter instead of a pair of ``limit`` and ``offset``
            query string parameters. The spider then yields a request for each offset/page.
 
-    #. Set a ``formatter`` class attribute to set the file name as in
-       :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`.
+    #. Set ``formatter`` to set the file name like in :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`.
+       If ``total_pages_pointer`` or ``use_page`` is set, it defaults to ``parameters(<param_page>)``. Otherwise, if
+       ``count_pointer`` is set and ``use_page`` is not set, it defaults to ``parameters(<param_offset>)``.
     #. Write a ``start_requests`` method to yield the initial URL. The request's ``callback`` parameter should be set
        to ``self.parse_list``.
 
@@ -634,15 +635,21 @@ class IndexSpider(SimpleSpider):
             self.range_generator = self.pages_from_total_range_generator
             if not hasattr(self, 'url_builder'):
                 self.url_builder = self.pages_url_builder
+            if not hasattr(self, 'formatter'):
+                self.formatter = parameters(self.param_page)
         elif hasattr(self, 'count_pointer') and self.count_pointer:
             if hasattr(self, 'use_page') and self.use_page:
                 self.range_generator = self.page_size_range_generator
                 if not hasattr(self, 'url_builder'):
                     self.url_builder = self.pages_url_builder
+                if not hasattr(self, 'formatter'):
+                    self.formatter = parameters(self.param_page)
             else:
                 self.range_generator = self.limit_offset_range_generator
                 if not hasattr(self, 'url_builder'):
                     self.url_builder = self.limit_offset_url_builder
+                if not hasattr(self, 'formatter'):
+                    self.formatter = parameters(self.param_offset)
 
     @handle_http_error
     def parse_list(self, response, **kwargs):

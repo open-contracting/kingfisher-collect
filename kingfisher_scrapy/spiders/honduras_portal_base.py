@@ -10,7 +10,6 @@ class HondurasPortalBase(IndexSpider):
 
     # IndexSpider
     total_pages_pointer = '/pages'
-    formatter = staticmethod(parameters('page'))
 
     available_publishers = ['oncae', 'sefin']
 

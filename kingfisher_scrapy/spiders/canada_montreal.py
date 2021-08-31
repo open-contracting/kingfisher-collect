@@ -22,7 +22,6 @@ class CanadaMontreal(IndexSpider):
     # IndexSpider
     count_pointer = '/meta/count'
     limit = 10000
-    formatter = staticmethod(parameters('offset'))
 
     def start_requests(self):
         url = f'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit={self.limit}'

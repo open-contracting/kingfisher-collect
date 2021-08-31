@@ -1,7 +1,6 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import IndexSpider
-from kingfisher_scrapy.util import parameters
 
 
 class UKContractsFinder(IndexSpider):
@@ -20,7 +19,6 @@ class UKContractsFinder(IndexSpider):
 
     # IndexSpider
     total_pages_pointer = '/maxPage'
-    formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
         url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=desc'

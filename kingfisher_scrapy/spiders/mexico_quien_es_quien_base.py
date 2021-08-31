@@ -13,7 +13,6 @@ class MexicoQuienEsQuienBase(IndexSpider):
     # IndexSpider
     count_pointer = '/data/index/contracts/count'
     limit = 1000
-    formatter = staticmethod(parameters('offset'))
     yield_list_results = False
 
     def start_requests(self):

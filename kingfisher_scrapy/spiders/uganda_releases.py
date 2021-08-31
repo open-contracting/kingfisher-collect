@@ -39,7 +39,6 @@ class Uganda(IndexSpider):
 
     # IndexSpider
     total_pages_pointer = '/data/last_page'
-    formatter = staticmethod(parameters('page'))
     base_url = 'https://gpppapi.com/adminapi/public/api/pdes'
     yield_list_results = False
 
