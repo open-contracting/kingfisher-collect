@@ -22,8 +22,7 @@ TEST_CASES = [
         'data_type': 'release_package',
         'total_pages_pointer': '/results',
         'formatter': staticmethod(parameters('page')),
-        'additional_params': {'pageSize': 10},
-    }, '{"results": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)&pageSize=10',
+    }, '{"results": 10}', 'http://example.com?pageSize=10', r'http://example\.com\?pageSize=10&page=(\d+)',
         [str(x) for x in range(2, 11)]),
     # mexico_administracion_publica_federal
     ({
@@ -47,12 +46,11 @@ TEST_CASES = [
         'data_type': 'release_package',
         'formatter': staticmethod(parameters('pageNumber')),
         'param_page': 'pageNumber',
-        'additional_params': {'step': 10},
         'yield_list_results': False,
-        'base_url': 'http://example.com/ocds',
+        'base_url': 'http://example.com/ocds?step=10',
         'range_generator': lambda _self, data, response: range(ceil(int(response.text) / 10)),
         'url_builder': lambda _self, value, data, response: _self.pages_url_builder(value, data, response),
-    }, '100', 'http://example.com', r'http://example\.com/ocds\?pageNumber=(\d+)&step=10',
+    }, '100', 'http://example.com', r'http://example\.com/ocds\?step=10&pageNumber=(\d+)',
         [str(x) for x in range(0, 10)])
 ]
 
@@ -86,5 +84,5 @@ def test_urls(spider_args, start_request_response, initial_url, results_pattern,
     regexp = re.compile(results_pattern)
     for request, expected_param in zip(range_to_evaluate, expected):
         match = regexp.match(request.url)
-        assert match is not None
+        assert match is not None, f'{request.url!r} !~ {regexp!r}'
         assert match.group(1) == expected_param

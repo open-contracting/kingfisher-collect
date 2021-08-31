@@ -604,8 +604,7 @@ class IndexSpider(SimpleSpider):
     ``range_generator``, and returns a URL to request. See the ``kenya_makueni`` spider for an example.
 
     The names of the query string parameters 'page', 'limit' and 'offset' are customizable. Define the ``param_page``,
-    ``param_limit`` and ``param_offset`` class attributes to set the custom names. Additional query string parameters
-    can be added by defining ``additional_params``, which should be a dict.
+    ``param_limit`` and ``param_offset`` class attributes to set the custom names.
 
     Th base URL is calculated from the initial URL yielded by ``start_requests``. If you need a different base URL for
     subsequent requests, define the ``base_url`` class attribute.
@@ -624,7 +623,6 @@ class IndexSpider(SimpleSpider):
         self.param_page = getattr(self, 'param_page', 'page')
         self.param_limit = getattr(self, 'param_limit', 'limit')
         self.param_offset = getattr(self, 'param_offset', 'offset')
-        self.additional_params = getattr(self, 'additional_params', {})
         self.base_url = getattr(self, 'base_url', '')
         self.yield_list_results = getattr(self, 'yield_list_results', True)
 
@@ -701,7 +699,6 @@ class IndexSpider(SimpleSpider):
 
     def _build_url(self, params):
         url_params = params.copy()
-        url_params.update(self.additional_params)
         return util.replace_parameters(self.base_url, **url_params)
 
 
