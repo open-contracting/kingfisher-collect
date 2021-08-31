@@ -510,8 +510,9 @@ class KingfisherProcessAPI2:
         data = {
             'source_id': spider.name,
             'data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
-            'note': spider.note,
             'sample': bool(spider.sample),
+            'note': spider.note,
+            'job': getattr(spider, '_job', None),
             'upgrade': spider.ocds_version == '1.0',
         }
 
