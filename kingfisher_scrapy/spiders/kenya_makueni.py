@@ -25,9 +25,8 @@ class KenyaMakueni(IndexSpider):
     limit = 10
     formatter = staticmethod(parameters('pageNumber'))
     param_page = 'pageNumber'
-    additional_params = {'pageSize': limit}
     yield_list_results = False
-    base_url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all'
+    base_url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize=10'
 
     def start_requests(self):
         yield scrapy.Request(
