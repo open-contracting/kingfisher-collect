@@ -615,16 +615,15 @@ class IndexSpider(SimpleSpider):
     If the results are in ascending chronological order, set the ``chronological_order`` class attribute to ``'asc'``.
     """
 
+    param_page = 'page'
+    param_limit = 'limit'
+    param_offset = 'offset'
+    base_url = ''
+    yield_list_results = True
     chronological_order = 'desc'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        self.param_page = getattr(self, 'param_page', 'page')
-        self.param_limit = getattr(self, 'param_limit', 'limit')
-        self.param_offset = getattr(self, 'param_offset', 'offset')
-        self.base_url = getattr(self, 'base_url', '')
-        self.yield_list_results = getattr(self, 'yield_list_results', True)
 
         if hasattr(self, 'total_pages_pointer') and self.total_pages_pointer:
             self.range_generator = self.pages_from_total_range_generator
