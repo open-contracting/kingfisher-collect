@@ -1,3 +1,5 @@
+import scrapy
+
 from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.util import parameters
 
@@ -21,8 +23,8 @@ class UKContractsFinder(IndexSpider):
     formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
-        url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=desc&page=1'
-        yield self.build_request(url, formatter=parameters('page'), callback=self.parse_list)
+        url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=desc'
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
     def parse(self, response, **kwargs):
         if self.is_http_success(response):

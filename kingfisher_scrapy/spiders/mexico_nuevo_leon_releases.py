@@ -1,3 +1,5 @@
+import scrapy
+
 from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components
 
@@ -21,7 +23,5 @@ class MexicoNuevoLeonReleases(CompressedFileSpider):
     file_name_must_contain = 'ReleasePackage'
 
     def start_requests(self):
-        yield self.build_request(
-            'http://si.nl.gob.mx/acceso/DatosAbiertos/JSONsInfraestructuraAbierta.rar',
-            formatter=components(-1)
-        )
+        url = 'http://si.nl.gob.mx/acceso/DatosAbiertos/JSONsInfraestructuraAbierta.rar'
+        yield scrapy.Request(url, meta={'file_name': 'all.rar'})
