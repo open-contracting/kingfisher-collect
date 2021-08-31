@@ -20,3 +20,7 @@ class MissingNextLinkError(KingfisherScrapyError):
 
 class UnknownArchiveFormatError(KingfisherScrapyError):
     """Raised if the archive format of a file can't be determined from the filename"""
+
+
+class IncoherentConfigurationError(KingfisherScrapyError):
+    """Raised if a spider is misconfigured by a developer"""

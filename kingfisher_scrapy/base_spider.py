@@ -12,7 +12,8 @@ from jsonpointer import resolve_pointer
 from rarfile import RarFile
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, UnknownArchiveFormatError
+from kingfisher_scrapy.exceptions import (IncoherentConfigurationError, MissingNextLinkError, SpiderArgumentError,
+                                          UnknownArchiveFormatError)
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.util import (add_path_components, add_query_string, get_file_name_and_extension,
                                     handle_http_error, parameters)
@@ -631,14 +632,26 @@ class IndexSpider(SimpleSpider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if hasattr(self, 'total_pages_pointer') and self.total_pages_pointer:
+        has_total_pages_pointer = hasattr(self, 'total_pages_pointer')
+        has_count_pointer = hasattr(self, 'count_pointer')
+        has_range_generator = hasattr(self, 'range_generator')
+        set_use_page = hasattr(self, 'use_page') and self.use_page
+
+        if not (has_total_pages_pointer ^ has_count_pointer ^ has_range_generator):
+            raise IncoherentConfigurationError(
+                'Exactly one of total_pages_pointer, count_pointer or range_generator must be set.')
+        if set_use_page and not has_count_pointer:
+            raise IncoherentConfigurationError(
+                'use_page = True has no effect unless count_pointer is set.')
+
+        if has_total_pages_pointer:
             self.range_generator = self.pages_from_total_range_generator
             if not hasattr(self, 'url_builder'):
                 self.url_builder = self.pages_url_builder
             if not hasattr(self, 'formatter'):
                 self.formatter = parameters(self.param_page)
-        elif hasattr(self, 'count_pointer') and self.count_pointer:
-            if hasattr(self, 'use_page') and self.use_page:
+        elif has_count_pointer:
+            if set_use_page:
                 self.range_generator = self.page_size_range_generator
                 if not hasattr(self, 'url_builder'):
                     self.url_builder = self.pages_url_builder
