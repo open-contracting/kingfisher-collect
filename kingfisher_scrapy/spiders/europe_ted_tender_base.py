@@ -28,8 +28,7 @@ class EuropeTedTenderBase(IndexSpider):
     formatter = staticmethod(parameters('page'))
     param_page = 'page'
     yield_list_results = False
-
-    base_url = 'http://www.tenderbase.eu/api/releases/?&page={page}'
+    base_url = 'http://www.tenderbase.eu/api/releases/'
 
     def start_requests(self):
         yield scrapy.Request(

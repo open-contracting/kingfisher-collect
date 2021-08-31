@@ -27,7 +27,6 @@ class KenyaMakueni(IndexSpider):
     param_page = 'pageNumber'
     additional_params = {'pageSize': limit}
     yield_list_results = False
-
     base_url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all'
 
     def start_requests(self):
