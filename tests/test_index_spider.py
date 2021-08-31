@@ -41,6 +41,14 @@ TEST_CASES = [
         'formatter': staticmethod(parameters('offset')),
     }, '{"total": 50}', 'http://example.com', r'http://example\.com\?limit=10&offset=(\d+)',
         [str(x) for x in range(10, 50, 10)]),
+    # canada_montreal, but with a JSON Pointer for limit
+    ({
+        'data_type': 'release_package',
+        'count_pointer': '/total',
+        'limit': '/limit',
+        'formatter': staticmethod(parameters('offset')),
+    }, '{"total": 50, "limit": 10}', 'http://example.com', r'http://example\.com\?limit=10&offset=(\d+)',
+        [str(x) for x in range(10, 50, 10)]),
     # kenya_makueni
     ({
         'data_type': 'release_package',

@@ -624,7 +624,7 @@ class IndexSpider(SimpleSpider):
     param_offset = 'offset'
     base_url = ''
     yield_list_results = True
-    parse_list_loader = json.loads
+    parse_list_loader = staticmethod(json.loads)
     chronological_order = 'desc'
 
     def __init__(self, *args, **kwargs):
@@ -673,14 +673,15 @@ class IndexSpider(SimpleSpider):
         count = resolve_pointer(data, self.count_pointer)
         # If `yield_list_results` is `True` (default), the response is parsed is `parse_list`.
         if self.yield_list_results:
-            start = self.limit
+            start = limit
         else:
             start = 0
         return range(start, count, limit)
 
     def limit_offset_url_builder(self, value, data, response):
+        limit = self._resolve_limit(data)
         return self._build_url({
-            self.param_limit: self.limit,
+            self.param_limit: limit,
             self.param_offset: value,
         })
 
