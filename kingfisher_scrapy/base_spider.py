@@ -696,11 +696,14 @@ class IndexSpider(SimpleSpider):
         return int(self.limit)
 
     def _set_base_url(self, url):
-        self.base_url = util.replace_parameters(url, page=None, limit=None, offset=None)
+        self.base_url = util.replace_parameters(url, **{
+            self.param_page: None,
+            self.param_limit: None,
+            self.param_offset: None,
+        })
 
     def _build_url(self, params):
-        url_params = params.copy()
-        return util.replace_parameters(self.base_url, **url_params)
+        return util.replace_parameters(self.base_url, **params.copy())
 
 
 class BigFileSpider(SimpleSpider):
