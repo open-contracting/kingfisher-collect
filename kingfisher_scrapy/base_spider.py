@@ -649,7 +649,7 @@ class IndexSpider(SimpleSpider):
         if self.yield_list_results:
             yield from self.parse(response)
         if not self.base_url:
-            self._set_base_url(response.request.url)
+            self.base_url = response.request.url
         data = self.parse_list_loader(response.text)
         for priority, value in enumerate(self.range_generator(data, response)):
             # Requests with a higher priority value will execute earlier and we want the newest pages first.
@@ -695,13 +695,6 @@ class IndexSpider(SimpleSpider):
         if isinstance(self.limit, str) and self.limit.startswith('/'):
             return resolve_pointer(data, self.limit)
         return int(self.limit)
-
-    def _set_base_url(self, url):
-        self.base_url = util.replace_parameters(url, **{
-            self.param_page: None,
-            self.param_limit: None,
-            self.param_offset: None,
-        })
 
     def _build_url(self, params):
         return util.replace_parameters(self.base_url, **params.copy())
