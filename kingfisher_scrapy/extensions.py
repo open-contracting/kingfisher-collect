@@ -118,6 +118,11 @@ class FilesStore:
 
         return extension
 
+    def spider_opened(self, spider):
+        if hasattr(spider, '_job'):
+            path = os.path.join(self.relative_crawl_directory(spider), 'scrapyd-job.txt')
+            self._write_file(path, spider._job)
+
     def item_scraped(self, item, spider):
         """
         If the item is a File or FileItem, writes its data to the filename in the crawl's directory.
@@ -133,7 +138,6 @@ class FilesStore:
             file_name = f"{name}-{item['number']}.{extension}"
 
         path = os.path.join(self.relative_crawl_directory(spider), file_name)
-
         self._write_file(path, item['data'])
 
         item['path'] = path

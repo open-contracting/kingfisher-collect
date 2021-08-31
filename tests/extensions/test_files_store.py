@@ -19,6 +19,24 @@ def test_from_crawler_missing_arguments():
     assert str(excinfo.value) == 'FILES_STORE is not set.'
 
 
+@pytest.mark.parametrize('job', [None, '7df53218f37a11eb80dd0c9d92c523cb'])
+def test_spider_opened(job, tmpdir):
+    spider = spider_with_files_store(tmpdir)
+    if job:
+        spider._job = job
+
+    extension = FilesStore.from_crawler(spider.crawler)
+    extension.spider_opened(spider)
+
+    path = tmpdir.join('test', '20010203_040506', 'scrapyd-job.txt')
+
+    if job:
+        with open(path)as f:
+            assert f.read() == job
+    else:
+        assert not os.path.exists(path)
+
+
 @pytest.mark.parametrize('sample,path', [
     (None, os.path.join('test', '20010203_040506', 'file.json')),
     ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
