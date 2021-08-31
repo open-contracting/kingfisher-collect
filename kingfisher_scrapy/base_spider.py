@@ -1,4 +1,5 @@
 import codecs
+import json
 import os
 from abc import abstractmethod
 from datetime import datetime
@@ -612,6 +613,9 @@ class IndexSpider(SimpleSpider):
     By default, responses passed to ``parse_list`` are passed to the ``parse`` method from which items are yielded. If
     the responses passed to ``parse_list`` contain no OCDS data, set ``yield_list_results`` to ``False``.
 
+    By default, responses passed to ``parse_list`` are parsed as JSON data. To change the parser of these responses,
+    set a ``parse_list_loader`` class attribute to a function.
+
     If the results are in ascending chronological order, set the ``chronological_order`` class attribute to ``'asc'``.
     """
 
@@ -620,6 +624,7 @@ class IndexSpider(SimpleSpider):
     param_offset = 'offset'
     base_url = ''
     yield_list_results = True
+    parse_list_loader = json.loads
     chronological_order = 'desc'
 
     def __init__(self, *args, **kwargs):
@@ -645,10 +650,7 @@ class IndexSpider(SimpleSpider):
             yield from self.parse(response)
         if not self.base_url:
             self._set_base_url(response.request.url)
-        try:
-            data = response.json()
-        except ValueError:
-            data = None
+        data = self.parse_list_loader(response.text)
         for priority, value in enumerate(self.range_generator(data, response)):
             # Requests with a higher priority value will execute earlier and we want the newest pages first.
             # https://doc.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request

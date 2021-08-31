@@ -26,6 +26,7 @@ class KenyaMakueni(IndexSpider):
     formatter = staticmethod(parameters('pageNumber'))
     param_page = 'pageNumber'
     yield_list_results = False
+    parse_list_loader = int
     base_url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize=10'
 
     def start_requests(self):
@@ -36,7 +37,7 @@ class KenyaMakueni(IndexSpider):
         )
 
     def range_generator(self, data, response):
-        return range(ceil(int(response.text) / self.limit))
+        return range(ceil(data / self.limit))
 
     def url_builder(self, value, data, response):
         return self.pages_url_builder(value, data, response)
