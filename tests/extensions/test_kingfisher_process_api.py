@@ -102,7 +102,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, directory, o
             'url': 'https://example.com/remote.json',
             # Specific to File.
             'data_type': 'release_package',
-            'encoding': encoding,
+            'encoding': 'utf-8',
         }
         if note:
             form['collection_note'] = note
@@ -167,7 +167,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, c
             'url': 'https://example.com/remote.json',
             # Specific to FileItem.
             'data_type': 'release_package',
-            'encoding': encoding,
+            'encoding': 'utf-8',
             'number': '1',
             'data': '{"key": "value"}',
         }
