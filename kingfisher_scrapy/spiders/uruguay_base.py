@@ -19,5 +19,5 @@ class UruguayBase(PeriodicSpider):
         return components(-2)
 
     @abstractmethod
-    def parse_list(self):
+    def parse_list(self, response):
         pass
