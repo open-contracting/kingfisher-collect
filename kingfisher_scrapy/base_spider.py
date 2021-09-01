@@ -617,7 +617,7 @@ class IndexSpider(SimpleSpider):
     ``param_limit`` and ``param_offset`` class attributes to set the custom names.
 
     If a different URL is used for the initial request than for later requests, set the ``base_url`` class attribute
-    to the base URL of later requests. In this case, results are not yielded from the response passed to ``parse_list``.
+    to the base URL of later requests. In this case, results aren't yielded from the response passed to ``parse_list``.
     """
 
     use_page = False

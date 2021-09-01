@@ -11,13 +11,19 @@ class ConcatenatedJSONMiddleware:
     If the spider's ``concatenated_json`` class attribute is ``True``, yields each object of the File as a FileItem.
     Otherwise, yields the original item.
     """
+
     def process_spider_output(self, response, result, spider):
+        """
+        :returns: a generator of FileItem objects, in which the ``data`` field is parsed JSON
+        """
         for item in result:
             if not isinstance(item, File) or not spider.concatenated_json:
                 yield item
                 continue
 
             data = item['data']
+
+            # ijson can read from bytes or a file-like object (or from str with a warning).
             for number, obj in enumerate(ijson.items(data, '', multiple_values=True), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
@@ -33,6 +39,9 @@ class LineDelimitedMiddleware:
     """
 
     def process_spider_output(self, response, result, spider):
+        """
+        :returns: a generator of FileItem objects, in which the ``data`` field is bytes
+        """
         for item in result:
             if not isinstance(item, File) or not spider.line_delimited:
                 yield item
@@ -42,15 +51,12 @@ class LineDelimitedMiddleware:
 
             # Data can be bytes or a file-like object.
             if isinstance(data, bytes):
-                data = data.decode(encoding=item['encoding']).splitlines(True)
+                data = data.splitlines(True)
 
             for number, line in enumerate(data, 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
-
-                if isinstance(line, bytes):
-                    line = line.decode(encoding=item['encoding'])
 
                 yield spider.build_file_item(number, line, item)
 
@@ -62,6 +68,9 @@ class RootPathMiddleware:
     """
 
     def process_spider_output(self, response, result, spider):
+        """
+        :returns: a generator of FileItem objects, in which the ``data`` field is parsed JSON
+        """
         for item in result:
             if not isinstance(item, (File, FileItem)) or not spider.root_path:
                 yield item
@@ -97,6 +106,9 @@ class AddPackageMiddleware:
     """
 
     def process_spider_output(self, response, result, spider):
+        """
+        :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
+        """
         for item in result:
             if not isinstance(item, (File, FileItem)) or item['data_type'] not in ('release', 'record'):
                 yield item
@@ -125,6 +137,9 @@ class ResizePackageMiddleware:
     """
 
     def process_spider_output(self, response, result, spider):
+        """
+        :returns: a generator of FileItem objects, in which the ``data`` field is a string
+        """
         for item in result:
             if not isinstance(item, File) or not getattr(spider, 'resize_package', False):
                 yield item
@@ -169,10 +184,14 @@ class ReadDataMiddleware:
     Otherwise, yields the original item.
     """
     def process_spider_output(self, response, result, spider):
+        """
+        :returns: a generator of FileItem objects, in which the ``data`` field is bytes or str, based on the file mode
+        """
         for item in result:
             if not isinstance(item, File) or not hasattr(item['data'], 'read'):
                 yield item
                 continue
+
             data = item['data'].read()
             item['data'].close()
             item['data'] = data
