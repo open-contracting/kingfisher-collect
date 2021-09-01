@@ -730,7 +730,7 @@ class IndexSpider(SimpleSpider):
             return resolve_pointer(data, self.limit)
         return int(self.limit)
 
-    def _build_url(self, params):
+    def _build_url(self, response, params):
         return util.replace_parameters(self.base_url or response.request.url, **params.copy())
 
 
