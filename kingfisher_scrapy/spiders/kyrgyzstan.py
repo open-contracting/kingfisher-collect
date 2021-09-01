@@ -12,6 +12,7 @@ class Kyrgyzstan(LinksSpider):
       The planning endpoint is not implemented because is not completely in OCDS.
     Bulk download documentation
       http://ocds.zakupki.gov.kg/dashboard/weekly and then to 'API & EXPORT'.
+      Direct access to http://ocds.zakupki.gov.kg/api-export doesn't work.
     Swagger API documentation
       https://app.swaggerhub.com/apis/DPAteam/export-api-documentation/1.0
     """
