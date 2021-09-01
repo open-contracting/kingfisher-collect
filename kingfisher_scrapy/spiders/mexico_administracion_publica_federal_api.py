@@ -27,6 +27,7 @@ class MexicoAdministracionPublicaFederalAPI(IndexSpider):
     use_page = True
 
     def start_requests(self):
+        # The pageSize query string parameter can be increased, but large values (like 10000) cause service failure.
         url = 'https://api.datos.gob.mx/v2/contratacionesabiertas'
         # The pages are in reverse chronological order.
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
