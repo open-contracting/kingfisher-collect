@@ -122,6 +122,7 @@ class AddPackageMiddleware:
             data = item['data']
 
             # If the spider's ``root_path`` class attribute is non-empty, then the JSON data is already parsed.
+            # NOTE: The middleware lacks support for file-like objects.
             if not isinstance(data, dict):
                 data = json.loads(data, encoding=item['encoding'])
 
@@ -137,12 +138,14 @@ class AddPackageMiddleware:
 
 class ResizePackageMiddleware:
     """
-    If the spider's ``resize_package`` class attribute is ``True``, splits the package into multiple packages.
+    If the spider's ``resize_package`` class attribute is ``True``, splits the package into packages of 100 items each.
     Otherwise, yields the original item.
     """
 
     def process_spider_output(self, response, result, spider):
         """
+        The spider must yield items whose ``data`` field has ``package`` and ``data`` keys.
+
         :returns: a generator of FileItem objects, in which the ``data`` field is a string
         """
         for item in result:
@@ -185,12 +188,12 @@ class ResizePackageMiddleware:
 
 class ReadDataMiddleware:
     """
-    If the item's ``data`` value is a file pointer, reads it.
+    If the item's ``data`` value is a file pointer, as with ``CompressedFileSpider``, reads it and closes it.
     Otherwise, yields the original item.
     """
     def process_spider_output(self, response, result, spider):
         """
-        :returns: a generator of FileItem objects, in which the ``data`` field is bytes or str, based on the file mode
+        :returns: a generator of FileItem objects, in which the ``data`` field is bytes
         """
         for item in result:
             if not isinstance(item, File) or not hasattr(item['data'], 'read'):

@@ -393,7 +393,8 @@ class CompressedFileSpider(BaseSpider):
 
     .. note::
 
-       ``resize_package = True`` is not compatible with ``line_delimited = True`` or ``root_path``.
+       ``concatenated_json = True``, ``line_delimited = True``, ``root_path``, ``data_type = 'release'`` and
+       ``data_type = 'record'`` are not supported if ``resize_package = True``.
     """
 
     # BaseSpider
@@ -751,6 +752,10 @@ class BigFileSpider(SimpleSpider):
 
             def start_requests(self):
                 yield self.build_request('https://example.com/api/package.json', formatter=components(-1)
+
+    .. note::
+
+       ``concatenated_json = True``, ``line_delimited = True`` and ``root_path`` are not supported.
     """
 
     resize_package = True
