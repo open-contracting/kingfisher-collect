@@ -308,7 +308,7 @@ class BaseSpider(scrapy.Spider):
             'data': data,
             'data_type': item['data_type'],
             'url': item['url'],
-            'encoding': item['encoding'],
+            'encoding': item.get('encoding', 'utf-8'),
         })
 
     def build_file_error_from_response(self, response, **kwargs):

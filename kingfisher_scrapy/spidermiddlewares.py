@@ -7,7 +7,7 @@ from kingfisher_scrapy.items import File, FileItem
 
 
 def ijson_items(item, data, *args, **kwargs):
-    if 'encoding' in item and item['encoding'] != 'utf-8':
+    if item.get('encoding', 'utf-8') != 'utf-8':
         data = data.decode(item['encoding']).encode('utf-8')
         # The file items built from this item are UTF-8 encoded.
         item['encoding'] = 'utf-8'
@@ -129,11 +129,12 @@ class AddPackageMiddleware:
                 continue
 
             data = item['data']
+            if hasattr(data, 'read'):
+                data = data.read()
 
             # If the spider's ``root_path`` class attribute is non-empty, then the JSON data is already parsed.
-            # NOTE: The middleware lacks support for file-like objects.
             if not isinstance(data, dict):
-                data = json.loads(data, encoding=item['encoding'])
+                data = json.loads(data, encoding=item.get('encoding', 'utf-8'))
 
             if item['data_type'] == 'release':
                 key = 'releases'
@@ -145,6 +146,7 @@ class AddPackageMiddleware:
             yield item
 
 
+# NOTE: This middleware lacks support for non-UTF-8 JSON.
 class ResizePackageMiddleware:
     """
     If the spider's ``resize_package`` class attribute is ``True``, splits the package into packages of 100 items each.

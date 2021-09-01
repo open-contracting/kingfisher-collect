@@ -51,20 +51,22 @@ def test_passthrough(middleware_class, item):
     assert item == returned_item
 
 
-@pytest.mark.parametrize('middleware_class,attribute,value,expected', [
-    (ConcatenatedJSONMiddleware, 'concatenated_json', True, {'results': [{'ocid': 'abc'}]}),
-    (LineDelimitedMiddleware, 'line_delimited', True, b'{"results":[{"ocid": "abc"}]}'),
-    (RootPathMiddleware, 'root_path', 'results.item', {'ocid': 'abc'}),
+@pytest.mark.parametrize('middleware_class,attribute,value,override', [
+    (ConcatenatedJSONMiddleware, 'concatenated_json', True, {'data': {'a': [{'b': 'c'}]}, 'number': 1}),
+    (LineDelimitedMiddleware, 'line_delimited', True, {'data': b'{"a":[{"b": "c"}]}', 'number': 1}),
+    (RootPathMiddleware, 'root_path', 'a.item', {'data': {'b': 'c'}, 'number': 1}),
+    (AddPackageMiddleware, 'data_type', 'release',
+     {'data': {'releases': [{'a': [{'b': 'c'}]}], 'version': '1.1'}, 'data_type': 'release_package'}),
     # ResizePackageMiddleware is only used with CompressedFileSpider and BigFileSpider.
     # ReadDataMiddleware is only used with file-like objects.
 ])
-def test_bytes_or_file(middleware_class, attribute, value, expected, tmpdir):
+def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
     spider = spider_with_crawler()
     setattr(spider, attribute, value)
 
     middleware = middleware_class()
 
-    data = b'{"results":[{"ocid": "abc"}]}'
+    data = b'{"a":[{"b": "c"}]}'
     bytes_item = File({
         'file_name': 'test.json',
         'data': data,
@@ -88,14 +90,15 @@ def test_bytes_or_file(middleware_class, attribute, value, expected, tmpdir):
 
     assert len(transformed_items) == 2
     for item in transformed_items:
-        assert item == {
+        expected = {
             'file_name': 'test.json',
-            'data': expected,
             'data_type': 'release',
             'url': 'http://test.com',
             'encoding': 'utf-8',
-            'number': 1,
         }
+        expected.update(override)
+
+        assert item == expected
 
 
 @pytest.mark.parametrize('middleware_class,attribute,value,expected', [
