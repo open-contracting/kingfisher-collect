@@ -50,7 +50,8 @@ jobs:
         if: always()
         env:
           KINGFISHER_COLLECT_DATABASE_URL: postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
-          RABBIT_URL: amqp://localhost:${{ job.services.rabbitmq.ports[5672] }}
+          # Use 127.0.0.1 to avoid log messages about IPv6.
+          RABBIT_URL: amqp://127.0.0.1:${{ job.services.rabbitmq.ports[5672] }}
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github

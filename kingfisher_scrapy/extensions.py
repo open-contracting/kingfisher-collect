@@ -475,16 +475,27 @@ class KingfisherProcessAPI2:
         self.url = url
         self.stats = stats
         self.rabbit_url = rabbit_url
-        self.rabbit_exchange_name = rabbit_exchange_name
-        self.rabbit_routing_key = rabbit_routing_key
+        self.exchange = rabbit_exchange_name
+        self.routing_key = rabbit_routing_key
 
         # The collection ID is set by the spider_opened handler.
         self.collection_id = None
+        self.channel = None
 
         if rabbit_url:
-            self.channel = self._get_rabbit_channel()
-        else:
-            self.channel = None
+            parsed = urlsplit(rabbit_url)
+            query = parse_qs(parsed.query)
+            # NOTE: Heartbeat should not be disabled.
+            # https://github.com/open-contracting/data-registry/issues/140
+            query.update({'blocked_connection_timeout': 1800, 'heartbeat': 0})
+
+            connection = pika.BlockingConnection(pika.URLParameters(parsed._replace(query=urlencode(query)).geturl()))
+
+            self.channel = connection.channel()
+            self.channel.exchange_declare(exchange=self.exchange, durable=True, exchange_type='direct')
+
+            self.channel.queue_declare(durable=True, queue=self.routing_key)
+            self.channel.queue_bind(exchange=self.exchange, queue=self.routing_key, routing_key=self.routing_key)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -598,32 +609,9 @@ class KingfisherProcessAPI2:
 
     # This method is extracted so that it can be mocked in tests.
     def _publish_to_rabbit(self, message):
-        self.channel.basic_publish(
-            exchange=self.rabbit_exchange_name,
-            routing_key=self.rabbit_routing_key,
-            body=json.dumps(message),
-            # https://www.rabbitmq.com/publishers.html#message-properties
-            properties=pika.BasicProperties(delivery_mode=2, content_type='application/json')
-        )
-
-    # This method is extracted so that it can be mocked in tests.
-    def _get_rabbit_channel(self):
-        parsed = urlsplit(self.rabbit_url)
-        query = parse_qs(parsed.query)
-        # NOTE: Heartbeat should not be disabled.
-        # https://github.com/open-contracting/data-registry/issues/140
-        query.update({'blocked_connection_timeout': 1800, 'heartbeat': 0})
-
-        connection = pika.BlockingConnection(pika.URLParameters(parsed._replace(query=urlencode(query)).geturl()))
-
-        channel = connection.channel()
-        channel.exchange_declare(exchange=self.rabbit_exchange_name, durable=True, exchange_type='direct')
-
-        channel.queue_declare(durable=True, queue=self.rabbit_routing_key)
-        channel.queue_bind(exchange=self.rabbit_exchange_name, queue=self.rabbit_routing_key,
-                           routing_key=self.rabbit_routing_key)
-
-        return channel
+        # https://www.rabbitmq.com/publishers.html#message-properties
+        self.channel.basic_publish(exchange=self.exchange, routing_key=self.routing_key, body=json.dumps(message),
+                                   properties=pika.BasicProperties(delivery_mode=2, content_type='application/json'))
 
 
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry

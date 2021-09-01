@@ -1,5 +1,7 @@
+import json
 import logging
 import os
+import time
 from unittest.mock import MagicMock
 
 import pytest
@@ -59,8 +61,8 @@ def test_from_crawler(url, boolean):
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
 
     assert extension.rabbit_url == url
-    assert extension.rabbit_exchange_name == 'kingfisher_process_test_1.0'
-    assert extension.rabbit_routing_key == 'kingfisher_process_test_1.0_api'
+    assert extension.exchange == 'kingfisher_process_test_1.0'
+    assert extension.routing_key == 'kingfisher_process_test_1.0_api'
     assert extension.collection_id is None
     assert bool(extension.channel) is boolean
 
@@ -243,16 +245,17 @@ def test_item_scraped(initializer, filename, kwargs, status_code, levelname, mes
 @pytest.mark.parametrize('initializer,filename,kwargs', items_scraped)
 @pytest.mark.parametrize('raises,infix', [(False, 'sent'), (True, 'failed')])
 def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdir, caplog):
-    KingfisherProcessAPI2._get_rabbit_channel = MagicMock(return_value='return')
-
     spider = spider_with_files_store(tmpdir, settings={
-        'RABBIT_URL': 'xxx',
-        'RABBIT_EXCHANGE_NAME': 'xxx',
-        'RABBIT_ROUTING_KEY': 'xxx',
+        'RABBIT_URL': rabbit_url,
+        'RABBIT_EXCHANGE_NAME': 'kingfisher_collect_test_1.0',
+        'RABBIT_ROUTING_KEY': 'kingfisher_collect_test_1.0_api',
     })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
     extension.collection_id = 1
+
+    # To be sure we consume the message we sent.
+    kwargs['url'] += str(time.time())
 
     if isinstance(initializer, str):
         item = getattr(spider, initializer)(**kwargs)
@@ -262,14 +265,15 @@ def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdi
     store_extension = FilesStore.from_crawler(spider.crawler)
     store_extension.item_scraped(item, spider)
 
-    extension._publish_to_rabbit = MagicMock(return_value=Response())
     if raises:
+        extension._publish_to_rabbit = MagicMock(return_value=Response())
         extension._publish_to_rabbit.side_effect = ExpectedError('message')
+
     extension.item_scraped(item, spider)
 
     expected = {
         'collection_id': 1,
-        'url': 'https://example.com/remote.json',
+        'url': kwargs['url'],
     }
 
     if initializer is FileError:
@@ -277,8 +281,9 @@ def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdi
     else:
         expected['path'] = tmpdir.join('test', '20010203_040506', filename)
 
-    extension._publish_to_rabbit.assert_called_once()
-    extension._publish_to_rabbit.assert_called_with(expected)
+    if raises:
+        extension._publish_to_rabbit.assert_called_once()
+        extension._publish_to_rabbit.assert_called_with(expected)
 
     assert extension.stats.get_value(f'kingfisher_process_items_{infix}_rabbit') == 1
 
@@ -288,9 +293,11 @@ def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdi
         assert caplog.records[0].levelname == 'ERROR'
         assert caplog.records[0].message == 'Failed to publish message to RabbitMQ: message'
     else:
-        assert len(caplog.records) == 0
+        method_frame, header_frame, body = extension.channel.basic_get('kingfisher_collect_test_1.0_api')
+        extension.channel.basic_ack(method_frame.delivery_tag)
 
-    assert extension.channel is not None
+        assert len(caplog.records) == 0
+        assert json.loads(body) == expected
 
 
 def test_item_scraped_plucked_item(tmpdir):
