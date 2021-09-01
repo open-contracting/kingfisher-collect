@@ -1,5 +1,4 @@
 import codecs
-import json
 import os
 from abc import abstractmethod
 from datetime import datetime
@@ -535,22 +534,20 @@ class PeriodicSpider(SimpleSpider):
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls
     #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM")
     #. If the source stopped publishing, set a ``default_until_date`` class attribute to a year or year-month
-    #. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
-       :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
+    #. Optionally, set a ``start_requests_callback`` class attribute to a method's name as a string - otherwise, it
+       defaults to :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
 
     If ``sample`` is set, the data from the most recent year or month is retrieved.
     """
 
     # PeriodicSpider requires date parameters to be always set.
     date_required = True
+    start_requests_callback = 'parse'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if hasattr(self, 'start_requests_callback'):
-            self.start_requests_callback = getattr(self, self.start_requests_callback)
-        else:
-            self.start_requests_callback = self.parse
+        self.start_requests_callback = getattr(self, self.start_requests_callback)
 
     def start_requests(self):
         start = self.from_date
@@ -596,8 +593,8 @@ class IndexSpider(SimpleSpider):
            query string parameters. The spider then yields a request for each offset/page.
 
     #. Set ``formatter`` to set the file name like in :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`.
-       If ``total_pages_pointer`` or ``use_page`` is set, it defaults to ``parameters(<param_page>)``. Otherwise, if
-       ``count_pointer`` is set and ``use_page`` is not set, it defaults to ``parameters(<param_offset>)``.
+       If ``total_pages_pointer`` or ``use_page = True``, it defaults to ``parameters(<param_page>)``. Otherwise, if
+       ``count_pointer`` is set and ``use_page = False``, it defaults to ``parameters(<param_offset>)``.
     #. Write a ``start_requests`` method to yield the initial URL. The request's ``callback`` parameter should be set
        to ``self.parse_list``.
 
@@ -606,41 +603,46 @@ class IndexSpider(SimpleSpider):
     ``range_generator`` should return page numbers or offset numbers. ``url_builder`` receives a page or offset from
     ``range_generator``, and returns a URL to request. See the ``kenya_makueni`` spider for an example.
 
+    If the ``page`` query string parameter is zero-indexed, set ``start_page = 0``.
+
+    If the results are in ascending chronological order, set ``chronological_order = 'asc'``.
+
+    The ``parse_list`` method parses responses as JSON data. To change the parser of these responses - for example,
+    to check for an error response, or to extract the page count from an HTML page - override the ``parse_list_loader``
+    method. If this method returns a ``FileError``, then ``parse_list`` yields it and returns.
+
+    Otherwise, results are yielded from all responses by :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`. To
+    change this method, set a ``parse_list_callback`` class attribute to a method's name as a string.
+
     The names of the query string parameters 'page', 'limit' and 'offset' are customizable. Define the ``param_page``,
     ``param_limit`` and ``param_offset`` class attributes to set the custom names.
 
-    Th base URL is calculated from the initial URL yielded by ``start_requests``. If you need a different base URL for
-    subsequent requests, define the ``base_url`` class attribute.
-
-    By default, responses passed to ``parse_list`` are passed to the ``parse`` method from which items are yielded. If
-    the responses passed to ``parse_list`` contain no OCDS data, set ``yield_list_results`` to ``False``.
-
-    By default, responses passed to ``parse_list`` are parsed as JSON data. To change the parser of these responses,
-    set a ``parse_list_loader`` class attribute to a function.
-
-    If the results are in ascending chronological order, set the ``chronological_order`` class attribute to ``'asc'``.
+    If a different URL is used for the initial request than for later requests, set the ``base_url`` class attribute
+    to the base URL of later requests. In this case, results are not yielded from the response passed to ``parse_list``.
     """
 
+    use_page = False
+    start_page = 1
+    chronological_order = 'desc'
+    parse_list_callback = 'parse'
     param_page = 'page'
     param_limit = 'limit'
     param_offset = 'offset'
     base_url = ''
-    yield_list_results = True
-    parse_list_loader = staticmethod(json.loads)
-    chronological_order = 'desc'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.parse_list_callback = getattr(self, self.parse_list_callback)
+
         has_total_pages_pointer = hasattr(self, 'total_pages_pointer')
         has_count_pointer = hasattr(self, 'count_pointer')
         has_range_generator = hasattr(self, 'range_generator')
-        set_use_page = hasattr(self, 'use_page') and self.use_page
 
         if not (has_total_pages_pointer ^ has_count_pointer ^ has_range_generator):
             raise IncoherentConfigurationError(
                 'Exactly one of total_pages_pointer, count_pointer or range_generator must be set.')
-        if set_use_page and not has_count_pointer:
+        if self.use_page and not has_count_pointer:
             raise IncoherentConfigurationError(
                 'use_page = True has no effect unless count_pointer is set.')
 
@@ -651,7 +653,7 @@ class IndexSpider(SimpleSpider):
             if not hasattr(self, 'formatter'):
                 self.formatter = parameters(self.param_page)
         elif has_count_pointer:
-            if set_use_page:
+            if self.use_page:
                 self.range_generator = self.page_size_range_generator
                 if not hasattr(self, 'url_builder'):
                     self.url_builder = self.pages_url_builder
@@ -665,42 +667,51 @@ class IndexSpider(SimpleSpider):
                     self.formatter = parameters(self.param_offset)
 
     @handle_http_error
-    def parse_list(self, response, **kwargs):
-        if self.yield_list_results:
-            yield from self.parse(response)
+    def parse_list(self, response):
+        data = self.parse_list_loader(response)
+        if isinstance(data, FileError):
+            yield data
+            return
+
         if not self.base_url:
-            self.base_url = response.request.url
-        data = self.parse_list_loader(response.text)
+            yield from self.parse_list_callback(response)
+
         for priority, value in enumerate(self.range_generator(data, response)):
             # Requests with a higher priority value will execute earlier and we want the newest pages first.
             # https://doc.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request
             if self.chronological_order == 'desc':
                 priority *= -1
             yield self.build_request(self.url_builder(value, data, response), formatter=self.formatter,
-                                     priority=priority, **kwargs)
+                                     priority=priority, callback=self.parse_list_callback)
+
+    def parse_list_loader(self, response):
+        return response.json()
 
     def pages_from_total_range_generator(self, data, response):
         pages = resolve_pointer(data, self.total_pages_pointer)
-        return range(2, pages + 1)
+        if self.base_url:
+            start = 0
+        else:
+            start = 1
+        return range(self.start_page + start, self.start_page + pages)
 
     def pages_url_builder(self, value, data, response):
-        return self._build_url({
+        return self._build_url(response, {
             self.param_page: value,
         })
 
     def limit_offset_range_generator(self, data, response):
         limit = self._resolve_limit(data)
         count = resolve_pointer(data, self.count_pointer)
-        # If `yield_list_results` is `True` (default), the response is parsed is `parse_list`.
-        if self.yield_list_results:
-            start = limit
-        else:
+        if self.base_url:
             start = 0
+        else:
+            start = limit
         return range(start, count, limit)
 
     def limit_offset_url_builder(self, value, data, response):
         limit = self._resolve_limit(data)
-        return self._build_url({
+        return self._build_url(response, {
             self.param_limit: limit,
             self.param_offset: value,
         })
@@ -708,8 +719,11 @@ class IndexSpider(SimpleSpider):
     def page_size_range_generator(self, data, response):
         limit = self._resolve_limit(data)
         count = resolve_pointer(data, self.count_pointer)
-        # Assumes the first page is page 1, not page 0.
-        return range(2, ceil(count / limit) + 1)
+        if self.base_url:
+            start = 0
+        else:
+            start = 1
+        return range(self.start_page + start, self.start_page + ceil(count / limit))
 
     def _resolve_limit(self, data):
         if isinstance(self.limit, str) and self.limit.startswith('/'):
@@ -717,7 +731,7 @@ class IndexSpider(SimpleSpider):
         return int(self.limit)
 
     def _build_url(self, params):
-        return util.replace_parameters(self.base_url, **params.copy())
+        return util.replace_parameters(self.base_url or response.request.url, **params.copy())
 
 
 class BigFileSpider(SimpleSpider):

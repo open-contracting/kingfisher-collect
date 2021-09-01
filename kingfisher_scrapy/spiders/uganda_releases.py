@@ -39,16 +39,11 @@ class Uganda(IndexSpider):
 
     # IndexSpider
     total_pages_pointer = '/data/last_page'
-    base_url = 'https://gpppapi.com/adminapi/public/api/pdes'
-    yield_list_results = False
+    parse_list_callback = 'parse_data'
 
     def start_requests(self):
-        yield scrapy.Request(
-            self.base_url,
-            meta={'file_name': 'page-1.json'},
-            callback=self.parse_list,
-            cb_kwargs={'callback': self.parse_data}
-        )
+        url = 'https://gpppapi.com/adminapi/public/api/pdes'
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_data(self, response):
