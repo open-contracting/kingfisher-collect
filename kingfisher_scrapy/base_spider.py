@@ -24,7 +24,6 @@ class BaseSpider(scrapy.Spider):
     """
     With respect to the data's source:
 
-    -  If the spider needs to parse the JSON response in its ``parse`` method, set ``dont_truncate = True``.
     -  If the source can support ``from_date`` and ``until_date`` spider arguments:
 
        -  Set a ``date_format`` class attribute to "date", "datetime", "year" or "year-month" (default "date").
@@ -34,6 +33,7 @@ class BaseSpider(scrapy.Spider):
 
     -  If the spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
        ``date_format`` and ``default_from_date`` class attributes as above.
+    -  If the spider needs to parse the JSON response in its ``parse`` method, set ``dont_truncate = True``.
 
     .. tip::
 
@@ -43,8 +43,7 @@ class BaseSpider(scrapy.Spider):
 
     With respect to the data's format:
 
-    -  If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for `Kingfisher
-       Process integration <https://github.com/open-contracting/kingfisher-collect/issues/411>`__.
+    -  If the data is not encoded using UTF-8, set an ``encoding`` class attribute to its encoding.
     -  If the data is a concatenated JSON, add a ``concatenated_json = True`` class attribute.
     -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
     -  If the data embeds OCDS data within other objects or arrays, set a ``root_path`` class attribute to the path to
@@ -53,6 +52,8 @@ class BaseSpider(scrapy.Spider):
        ``root_path_max_length`` class attribute to the maximum length of the JSON array at the root path.
     -  If the data is in CSV or XLSX format, add a ``unflatten = True`` class attribute to convert it to JSON using
        Flatten Tool's ``unflatten`` function. To pass arguments to ``unflatten``, set a ``unflatten_args`` dict.
+    -  If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for the
+       :ref:`Kingfisher Process<kingfisher-process>` extension.
 
     With respect to support for Kingfisher Collect's features:
 
@@ -60,15 +61,19 @@ class BaseSpider(scrapy.Spider):
     """
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S', 'year': '%Y', 'year-month': '%Y-%m'}
 
-    ocds_version = '1.1'
+    # Regarding the data source.
     date_format = 'date'
     date_required = False
-    unflatten = False
-    unflatten_args = {}
+    dont_truncate = False
+
+    # Regarding the data format.
+    encoding = 'utf-8'
     concatenated_json = False
     line_delimited = False
     root_path = ''
-    dont_truncate = False
+    unflatten = False
+    unflatten_args = {}
+    ocds_version = '1.1'
 
     # Not to be overridden by sub-classes.
     available_steps = {'compile', 'check'}
@@ -286,7 +291,7 @@ class BaseSpider(scrapy.Spider):
             kwargs['data'] = body
         return self.build_file(**kwargs)
 
-    def build_file(self, *, file_name=None, url=None, data=None, data_type=None, encoding='utf-8'):
+    def build_file(self, *, file_name=None, url=None, data=None, data_type=None):
         """
         Returns a File item to yield.
         """
@@ -295,7 +300,6 @@ class BaseSpider(scrapy.Spider):
             'data': data,
             'data_type': data_type,
             'url': url,
-            'encoding': encoding,
         })
 
     def build_file_item(self, number, data, item):
@@ -308,7 +312,6 @@ class BaseSpider(scrapy.Spider):
             'data': data,
             'data_type': item['data_type'],
             'url': item['url'],
-            'encoding': item.get('encoding', 'utf-8'),
         })
 
     def build_file_error_from_response(self, response, **kwargs):
@@ -340,7 +343,6 @@ class SimpleSpider(BaseSpider):
 
     #. Inherit from ``SimpleSpider``
     #. Set a ``data_type`` class attribute to the data type of the responses
-    #. Optionally, set an ``encoding`` class attribute to the encoding of the responses (default UTF-8)
     #. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
 
     .. code-block:: python
@@ -359,11 +361,9 @@ class SimpleSpider(BaseSpider):
                 yield scrapy.Request('https://example.com/api/package.json', meta={'file_name': 'all.json'})
     """
 
-    encoding = 'utf-8'
-
     @handle_http_error
     def parse(self, response):
-        yield self.build_file_from_response(response, data_type=self.data_type, encoding=self.encoding)
+        yield self.build_file_from_response(response, data_type=self.data_type)
 
 
 class CompressedFileSpider(BaseSpider):
@@ -373,7 +373,6 @@ class CompressedFileSpider(BaseSpider):
 
     #. Inherit from ``CompressedFileSpider``
     #. Set a ``data_type`` class attribute to the data type of the compressed files
-    #. Optionally, set an ``encoding`` class attribute to the encoding of the compressed files (default UTF-8)
     #. Optionally, add a ``resize_package = True`` class attribute to split large packages (e.g. greater than 100MB)
     #. Write a ``start_requests`` method to request the archive files
 
@@ -400,7 +399,6 @@ class CompressedFileSpider(BaseSpider):
     # BaseSpider
     dont_truncate = True
 
-    encoding = 'utf-8'
     resize_package = False
     file_name_must_contain = ''
 
@@ -450,7 +448,6 @@ class CompressedFileSpider(BaseSpider):
                 'data': data,
                 'data_type': self.data_type,
                 'url': response.request.url,
-                'encoding': self.encoding,
             })
 
             number += 1
@@ -592,6 +589,7 @@ class IndexSpider(SimpleSpider):
            configure the spider to send a ``page`` query string parameter instead of a pair of ``limit`` and ``offset``
            query string parameters. The spider then yields a request for each offset/page.
 
+    #. If the ``page`` query string parameter is zero-indexed, set ``start_page = 0``.
     #. Set ``formatter`` to set the file name like in :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`.
        If ``total_pages_pointer`` or ``use_page = True``, it defaults to ``parameters(<param_page>)``. Otherwise, if
        ``count_pointer`` is set and ``use_page = False``, it defaults to ``parameters(<param_offset>)``.
@@ -602,8 +600,6 @@ class IndexSpider(SimpleSpider):
     a separate URL that does not return JSON), you need to define ``range_generator`` and ``url_builder`` methods.
     ``range_generator`` should return page numbers or offset numbers. ``url_builder`` receives a page or offset from
     ``range_generator``, and returns a URL to request. See the ``kenya_makueni`` spider for an example.
-
-    If the ``page`` query string parameter is zero-indexed, set ``start_page = 0``.
 
     If the results are in ascending chronological order, set ``chronological_order = 'asc'``.
 

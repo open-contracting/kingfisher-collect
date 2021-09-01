@@ -47,21 +47,23 @@ Since many class attributes that control a spider's behavior, please put the cla
       # Any other class attributes from Scrapy, including `download_delay`, `download_timeout`, `user_agent`, `custom_settings`
 
       # BaseSpider
-      ocds_version = '1.0'
       date_format = 'datetime'
       default_from_date = '2000-01-01T00:00:00'
       default_until_date = '2010-01-01T00:00:00'
       date_required = True
-      unflatten = True
-      unflatten_args = {}
+      dont_truncate = True
+      encoding = 'iso-8859-1'
+      concatenated_json = True
       line_delimited = True
       root_path = 'item'
       root_path_max_length = 1
+      unflatten = True
+      unflatten_args = {}
+      ocds_version = '1.0'
       skip_pluck = 'A reason'
 
       # SimpleSpider
       data_type = 'release_package'
-      encoding = 'iso-8859-1'
 
       # CompressedFileSpider
       resize_package = True
@@ -80,13 +82,14 @@ Since many class attributes that control a spider's behavior, please put the cla
       count_pointer = '/meta/count'
       limit = 1000
       use_page = True
+      start_page = 0
       formatter = staticmethod(parameters('pageNumber'))
+      chronological_order = 'asc'
+      parse_list_callback = 'parse_custom'
       param_page = 'pageNumber'
       param_limit = 'customLimit'
       param_offset = = 'customOffset'
-      additional_params = {'pageSize': 1000}
       base_url = 'https://example.com/elsewhere'
-      yield_list_results = False
 
 Test the spider
 ~~~~~~~~~~~~~~~

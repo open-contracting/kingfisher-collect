@@ -51,8 +51,7 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
     response.request.url = 'https://example.com/remote.json'
     response.request.meta = {'file_name': 'file.json'}
 
-    item = spider.build_file_from_response(response, file_name='file.json', data_type='release_package',
-                                           encoding='iso-8859-1')
+    item = spider.build_file_from_response(response, file_name='file.json', data_type='release_package')
     extension.item_scraped(item, spider)
 
     with open(tmpdir.join(path)) as f:
@@ -68,7 +67,7 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
 ])
 @pytest.mark.parametrize('data', [b'{"key": "value"}', {"key": "value"}])
 @pytest.mark.parametrize('item,expected_file_name', [
-    (File({'file_name': 'file.json', 'encoding': 'iso-8859-1'}), 'file.json'),
+    (File({'file_name': 'file.json'}), 'file.json'),
     (FileItem({'number': 1, 'file_name': 'file.json'}), 'file-1.json')
 ])
 def test_item_scraped_with_file_and_file_item(sample, directory, data, item, expected_file_name, tmpdir):

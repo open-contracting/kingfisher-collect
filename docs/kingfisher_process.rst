@@ -1,3 +1,5 @@
+.. _kingfisher-process:
+
 Integrate with Kingfisher Process
 =================================
 

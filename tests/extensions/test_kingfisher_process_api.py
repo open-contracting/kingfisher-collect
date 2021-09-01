@@ -61,11 +61,11 @@ def test_from_crawler_with_database_url():
     ('true', True, os.path.join('test_sample', '20010203_040506', 'file.json')),
 ])
 @pytest.mark.parametrize('note', ['', 'Started by NAME.'])
-@pytest.mark.parametrize('encoding,encoding2', [(None, 'utf-8'), ('iso-8859-1', 'iso-8859-1')])
+@pytest.mark.parametrize('encoding', ['utf-8', 'iso-8859-1'])
 @pytest.mark.parametrize('ok', [True, False])
 @pytest.mark.parametrize('directory', [True, False])
 @pytest.mark.parametrize('crawl_time', [None, '2020-01-01T00:00:00'])
-def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, directory, ok, crawl_time, tmpdir,
+def test_item_scraped_file(sample, is_sample, path, note, encoding, directory, ok, crawl_time, tmpdir,
                            caplog):
     with patch('treq.response._Response.code', new_callable=PropertyMock) as mocked:
         mocked.return_value = 200 if ok else 400
@@ -73,18 +73,18 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
         settings = {}
         if directory:
             settings['KINGFISHER_API_LOCAL_DIRECTORY'] = str(tmpdir.join('xxx'))
+
         spider = spider_with_files_store(tmpdir, settings=settings, sample=sample, note=note, crawl_time=crawl_time)
+        spider.encoding = encoding
+
         extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
         kwargs = {}
-        if encoding:
-            kwargs['encoding'] = encoding
         item = spider.build_file(
             file_name='file.json',
             url='https://example.com/remote.json',
             data=b'{"key": "value"}',
             data_type='release_package',
-            **kwargs,
         )
 
         store_extension = FilesStore.from_crawler(spider.crawler)
@@ -103,7 +103,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, encoding2, d
             'url': 'https://example.com/remote.json',
             # Specific to File.
             'data_type': 'release_package',
-            'encoding': encoding2,
+            'encoding': encoding,
         }
         if note:
             form['collection_note'] = note
@@ -144,6 +144,8 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, c
         mocked.return_value = 200 if ok else 400
 
         spider = spider_with_files_store(tmpdir, sample=sample, note=note)
+        spider.encoding = encoding
+
         extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
         item = FileItem({
@@ -152,7 +154,6 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, c
             'url': 'https://example.com/remote.json',
             'data': b'{"key": "value"}',
             'data_type': 'release_package',
-            'encoding': encoding,
         })
 
         response = yield extension.item_scraped(item, spider)

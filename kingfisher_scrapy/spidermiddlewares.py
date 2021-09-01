@@ -6,11 +6,9 @@ from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileItem
 
 
-def ijson_items(item, data, *args, **kwargs):
-    if item.get('encoding', 'utf-8') != 'utf-8':
-        data = data.decode(item['encoding']).encode('utf-8')
-        # The file items built from this item are UTF-8 encoded.
-        item['encoding'] = 'utf-8'
+def ijson_items(spider, data, *args, **kwargs):
+    if spider.encoding != 'utf-8':
+        data = data.decode(spider.encoding).encode('utf-8')
 
     return ijson.items(data, *args, **kwargs)
 
@@ -33,7 +31,7 @@ class ConcatenatedJSONMiddleware:
             data = item['data']
 
             # ijson can read from bytes or a file-like object.
-            for number, obj in enumerate(ijson_items(item, data, '', multiple_values=True), 1):
+            for number, obj in enumerate(ijson_items(spider, data, '', multiple_values=True), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
@@ -90,7 +88,7 @@ class RootPathMiddleware:
             if isinstance(data, (dict, list)):
                 data = json.dumps(data, default=util.default).encode()
 
-            for number, obj in enumerate(ijson_items(item, data, spider.root_path), 1):
+            for number, obj in enumerate(ijson_items(spider, data, spider.root_path), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
@@ -134,7 +132,7 @@ class AddPackageMiddleware:
 
             # If the spider's ``root_path`` class attribute is non-empty, then the JSON data is already parsed.
             if not isinstance(data, dict):
-                data = json.loads(data, encoding=item.get('encoding', 'utf-8'))
+                data = json.loads(data, encoding=spider.encoding)
 
             if item['data_type'] == 'release':
                 key = 'releases'

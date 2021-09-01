@@ -402,7 +402,7 @@ class KingfisherProcessAPI:
             return self._request(spider, 'create_file_error', item['url'], data)
 
         data['data_type'] = item['data_type']
-        data['encoding'] = item.get('encoding', 'utf-8')
+        data['encoding'] = spider.encoding
         if spider.note:
             data['collection_note'] = spider.note
 

@@ -72,7 +72,6 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
         'data': data,
         'data_type': 'release',
         'url': 'http://test.com',
-        'encoding': 'utf-8',
     })
 
     path = tmpdir.join('test.json')
@@ -82,7 +81,6 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
         'data': path.open('rb'),
         'data_type': 'release',
         'url': 'http://test.com',
-        'encoding': 'utf-8',
     })
 
     generator = middleware.process_spider_output(None, [bytes_item, file_item], spider)
@@ -94,7 +92,6 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
             'file_name': 'test.json',
             'data_type': 'release',
             'url': 'http://test.com',
-            'encoding': 'utf-8',
         }
         expected.update(override)
 
@@ -108,6 +105,7 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
 def test_encoding(middleware_class, attribute, value, expected, tmpdir):
     spider = spider_with_crawler()
     setattr(spider, attribute, value)
+    spider.encoding = 'iso-8859-1'
 
     middleware = middleware_class()
 
@@ -116,7 +114,6 @@ def test_encoding(middleware_class, attribute, value, expected, tmpdir):
         'data': b'{"name": "ALCALD\xcdA MUNICIPIO DE TIB\xda"}',
         'data_type': 'release',
         'url': 'http://test.com',
-        'encoding': 'iso-8859-1',
     })
 
     generator = middleware.process_spider_output(None, [item], spider)
@@ -129,7 +126,6 @@ def test_encoding(middleware_class, attribute, value, expected, tmpdir):
             'data': expected,
             'data_type': 'release',
             'url': 'http://test.com',
-            'encoding': 'utf-8',
             'number': 1,
         }
 
@@ -156,7 +152,6 @@ def test_add_package_middleware(data_type, data, root_path):
         'data': data,
         'data_type': data_type,
         'url': 'http://test.com',
-        'encoding': 'utf-8',
     })
 
     generator = root_path_middleware.process_spider_output(None, [item], spider)
@@ -167,7 +162,6 @@ def test_add_package_middleware(data_type, data, root_path):
     expected = {
         'file_name': 'test.json',
         'url': 'http://test.com',
-        'encoding': 'utf-8',
     }
     if root_path:
         expected['number'] = 1
@@ -208,13 +202,12 @@ def test_resize_package_middleware(sample, len_items, len_releases):
     assert len(transformed_items) == len_items
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
-        assert len(item) == 6
+        assert len(item) == 5
         assert item['file_name'] == 'archive-test.json'
         assert item['url'] == 'http://example.com'
         assert item['number'] == i
         assert len(json.loads(item['data'])['releases']) == len_releases
         assert item['data_type'] == 'release_package'
-        assert item['encoding'] == 'utf-8'
 
 
 @pytest.mark.parametrize('middleware_class,attribute,separator', [
@@ -255,7 +248,6 @@ def test_json_streaming_middleware(middleware_class, attribute, separator, sampl
             'number': i,
             'data': data,
             'data_type': 'release_package',
-            'encoding': 'utf-8',
         }
 
 
@@ -289,13 +281,12 @@ def test_json_streaming_middleware_with_root_path_middleware(middleware_class, a
     assert len(transformed_items) == 1
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
-        assert len(item) == 6
+        assert len(item) == 5
         assert item['file_name'] == f'test.json'
         assert item['url'] == 'http://example.com'
         assert item['number'] == i
         assert item['data'] == {'key': i}
         assert item['data_type'] == 'release_package'
-        assert item['encoding'] == 'utf-8'
 
 
 @pytest.mark.parametrize('middleware_class,attribute,value', [
@@ -340,7 +331,6 @@ def test_json_streaming_middleware_with_compressed_file_spider(middleware_class,
             'number': i,
             'data': data,
             'data_type': 'release_package',
-            'encoding': 'utf-8',
         }
 
 

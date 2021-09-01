@@ -63,7 +63,6 @@ def test_parse_200():
         'url': 'http://example.com',
         'data': body,
         'data_type': 'release_package',
-        'encoding': 'utf-8',
     }
 
     assert type(request) is Request

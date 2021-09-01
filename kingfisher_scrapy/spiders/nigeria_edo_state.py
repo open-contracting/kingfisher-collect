@@ -43,4 +43,4 @@ class NigeriaEdoState(SimpleSpider):
                     releases.append(release[key])
                     del release[key]
         data['releases'].extend(releases)
-        yield self.build_file_from_response(response, data=data, data_type=self.data_type, encoding=self.encoding)
+        yield self.build_file_from_response(response, data=data, data_type=self.data_type)
