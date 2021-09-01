@@ -187,20 +187,23 @@ def test_add_package_middleware(data_type, data, root_path):
 
 
 @pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), (5, 5, 5)])
-def test_resize_package_middleware(sample, len_items, len_releases):
+@pytest.mark.parametrize('encoding,character', [('utf-8', b'\xc3\x9a'), ('iso-8859-1', b'\xda')])
+def test_resize_package_middleware(sample, len_items, len_releases, encoding, character):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.resize_package = True
+    spider.encoding = encoding
 
     middleware = ResizePackageMiddleware()
 
-    package = {'releases': []}
+    package = {'publisher': {'name': 'TIBÚ'}, 'releases': []}
     for i in range(200):
-        package['releases'].append({'key': 'value'})
+        package['releases'].append({'key': 'TIBÚ'})
 
     io = BytesIO()
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
-        zipfile.writestr('test.json', json.dumps(package))
+        data = json.dumps(package, ensure_ascii=False).encode()
+        zipfile.writestr('test.json', data.replace(b'\xc3\x9a', character))
 
     response = response_fixture(body=io.getvalue(), meta={'file_name': 'archive.zip'})
     generator = spider.parse(response)
