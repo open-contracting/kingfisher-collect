@@ -154,7 +154,7 @@ class FilesStore:
 
         with open(path, mode) as f:
             if isinstance(data, (bytes, str)):
-                f.write(data)
+                f.write(data)  # NOTE: needs to be UTF-8
             else:
                 json.dump(data, f, default=util.default)
 
@@ -408,7 +408,7 @@ class KingfisherProcessAPI:
 
         if isinstance(item, FileItem):
             data['number'] = item['number']
-            if isinstance(item['data'], (str, bytes)):
+            if isinstance(item['data'], (bytes, str)):
                 data['data'] = item['data']
             else:
                 data['data'] = json.dumps(item['data'], default=util.default)

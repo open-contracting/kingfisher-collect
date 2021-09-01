@@ -177,7 +177,7 @@ class ResizePackageMiddleware:
                     return
 
                 package['releases'] = filter(None, items)
-                data = json.dumps(package, default=util.default)
+                data = json.dumps(package, default=util.default).encode()
 
                 yield spider.build_file_item(number, data, item)
 
