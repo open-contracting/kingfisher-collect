@@ -6,9 +6,28 @@ from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileItem
 
 
+class Transcoder():
+    def __init__(self, file, encoding):
+        self.file = file
+        self.encoding = encoding
+
+    def read(self, buf_size):
+        data = self.file.read(buf_size)
+        if self.encoding != 'utf-8':
+            return transcode(data, self.encoding)
+        return data
+
+
+def transcode(data, encoding):
+    return data.decode(encoding).encode()
+
+
 def ijson_items(spider, data, *args, **kwargs):
     if spider.encoding != 'utf-8':
-        data = data.decode(spider.encoding).encode('utf-8')
+        if hasattr(data, 'read'):
+            data = Transcoder(data, spider.encoding)
+        else:
+            data = transcode(data, spider.encoding)
 
     return ijson.items(data, *args, **kwargs)
 

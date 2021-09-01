@@ -75,7 +75,7 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
     })
 
     path = tmpdir.join('test.json')
-    path.write(data)
+    path.write(data, 'wb')
     file_item = File({
         'file_name': 'test.json',
         'data': path.open('rb'),
@@ -109,17 +109,27 @@ def test_encoding(middleware_class, attribute, value, expected, tmpdir):
 
     middleware = middleware_class()
 
-    item = File({
+    data = b'{"name": "ALCALD\xcdA MUNICIPIO DE TIB\xda"}'
+    bytes_item = File({
         'file_name': 'test.json',
-        'data': b'{"name": "ALCALD\xcdA MUNICIPIO DE TIB\xda"}',
+        'data': data,
         'data_type': 'release',
         'url': 'http://test.com',
     })
 
-    generator = middleware.process_spider_output(None, [item], spider)
+    path = tmpdir.join('test.json')
+    path.write(data, 'wb')
+    file_item = File({
+        'file_name': 'test.json',
+        'data': path.open('rb'),
+        'data_type': 'release',
+        'url': 'http://test.com',
+    })
+
+    generator = middleware.process_spider_output(None, [bytes_item, file_item], spider)
     transformed_items = list(generator)
 
-    assert len(transformed_items) == 1
+    assert len(transformed_items) == 2
     for item in transformed_items:
         assert item == {
             'file_name': 'test.json',
@@ -206,6 +216,7 @@ def test_resize_package_middleware(sample, len_items, len_releases):
         assert item['file_name'] == 'archive-test.json'
         assert item['url'] == 'http://example.com'
         assert item['number'] == i
+        assert isinstance(item['data'], bytes)
         assert len(json.loads(item['data'])['releases']) == len_releases
         assert item['data_type'] == 'release_package'
 
