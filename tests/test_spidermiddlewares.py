@@ -223,24 +223,28 @@ def test_json_streaming_middleware(middleware_class, attribute, separator, sampl
         }
 
 
-def test_concatenated_json_middleware_with_root_path_middleware():
+@pytest.mark.parametrize('middleware_class,attribute,value', [
+    (ConcatenatedJSONMiddleware, 'concatenated_json', True),
+    (LineDelimitedMiddleware, 'line_delimited', True),
+])
+def test_json_streaming_middleware_with_root_path_middleware(middleware_class, attribute, value):
     spider = spider_with_crawler(spider_class=SimpleSpider)
     spider.data_type = 'release_package'
-    spider.concatenated_json = True
+    setattr(spider, attribute, value)
     spider.root_path = 'results.item'
     spider.root_path_max_length = 1
 
-    concatenated_json_middleware = ConcatenatedJSONMiddleware()
+    stream_middleware = middleware_class()
     root_path_middleware = RootPathMiddleware()
 
     content = []
     for i in range(1, 21):
-        content.append('{"results": [{"key": %s}]}' % i)
+        content.append('{"results": [{"key": %s}]}\n' % i)
 
     response = response_fixture(body=''.join(content), meta={'file_name': 'test.json'})
     generator = spider.parse(response)
     item = next(generator)
-    generator = concatenated_json_middleware.process_spider_output(response, [item], spider)
+    generator = stream_middleware.process_spider_output(response, [item], spider)
     item = next(generator)
 
     generator = root_path_middleware.process_spider_output(response, [item], spider)
