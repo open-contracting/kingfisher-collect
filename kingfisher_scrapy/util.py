@@ -196,7 +196,7 @@ def items(events, prefix, map_type=None, skip_key=None):
 
 def default(obj):
     """
-    Dumps JSON to a string, and returns it.
+    Dumps JSON to a string, converting decimals and iterables, and returns it.
     """
     if isinstance(obj, Decimal):
         return float(obj)
@@ -207,6 +207,24 @@ def default(obj):
     else:
         return list(iterable)
     return json.JSONEncoder().default(obj)
+
+
+def json_dumps(obj, **kwargs):
+    """
+    Dumps JSON to string, using an extended JSON encoder.
+
+    Use this method for JSON data read by ijson, which uses decimals for JSON numbers.
+    """
+    return json.dumps(obj, default=default)
+
+
+def json_dump(obj, f, **kwargs):
+    """
+    Dumps JSON to a file, using an extended JSON encoder.
+
+    Use this method for JSON data read by ijson, which uses decimals for JSON numbers.
+    """
+    return json.dump(obj, f, default=default)
 
 
 # See `grouper` recipe: https://docs.python.org/3.8/library/itertools.html#recipes

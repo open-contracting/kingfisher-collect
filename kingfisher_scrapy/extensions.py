@@ -156,7 +156,7 @@ class FilesStore:
             if isinstance(data, (bytes, str)):
                 f.write(data)  # NOTE: needs to be UTF-8
             else:
-                json.dump(data, f, default=util.default)
+                util.json_dump(data, f)
 
 
 class DatabaseStore:
@@ -254,7 +254,7 @@ class DatabaseStore:
         with open(filename, 'w') as f:
             writer = csv.writer(f)
             for item in data:
-                writer.writerow([json.dumps(item, default=util.default)])
+                writer.writerow([util.json_dumps(item)])
 
         spider.logger.info('Replacing the JSON data in the %s table', spider.name)
         self.connection = psycopg2.connect(self.database_url)
@@ -411,7 +411,7 @@ class KingfisherProcessAPI:
             if isinstance(item['data'], (bytes, str)):
                 data['data'] = item['data']
             else:
-                data['data'] = json.dumps(item['data'], default=util.default)
+                data['data'] = util.json_dumps(item['data'])
 
             return self._request(spider, 'create_file_item', item['url'], data)
 

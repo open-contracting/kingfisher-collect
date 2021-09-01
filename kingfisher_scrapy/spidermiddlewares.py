@@ -109,7 +109,7 @@ class RootPathMiddleware:
             data = item['data']
 
             if isinstance(data, (dict, list)):
-                data = json.dumps(data, default=util.default).encode()
+                data = util.json_dumps(data).encode()
 
             for number, obj in enumerate(transcode(spider, ijson.items, data, spider.root_path), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
@@ -200,7 +200,7 @@ class ResizePackageMiddleware:
                     return
 
                 package['releases'] = filter(None, items)
-                data = json.dumps(package, default=util.default).encode()
+                data = util.json_dumps(package).encode()
 
                 yield spider.build_file_item(number, data, item)
 
