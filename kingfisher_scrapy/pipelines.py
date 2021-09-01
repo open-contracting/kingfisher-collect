@@ -15,6 +15,7 @@ from ocdsmerge.util import get_release_schema_url, get_tags
 from scrapy.exceptions import DropItem
 
 from kingfisher_scrapy.items import File, FileItem, PluckedItem
+from kingfisher_scrapy.util import transcode
 
 
 def _json_loads(basename):
@@ -100,7 +101,7 @@ class Pluck:
                 value = _resolve_pointer(item['data'], pointer)
             else:
                 try:
-                    value = next(ijson.items(item['data'], pointer[1:].replace('/', '.')))
+                    value = next(transcode(spider, ijson.items, item['data'], pointer[1:].replace('/', '.')))
                 except StopIteration:
                     value = f'error: {pointer} not found'
                 except ijson.common.IncompleteJSONError as e:
@@ -119,7 +120,7 @@ class Pluck:
             if isinstance(item['data'], dict):
                 data = item['data']
             else:
-                data = json.loads(item['data'])
+                data = json.loads(item['data'], encoding=spider.encoding)  # encoding argument is removed in Python 3.9
 
             if item['data_type'].startswith('release'):
                 releases = data['releases']

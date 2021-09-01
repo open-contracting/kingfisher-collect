@@ -227,6 +227,36 @@ def json_dump(obj, f, **kwargs):
     return json.dump(obj, f, default=default)
 
 
+class TranscodeFile():
+    def __init__(self, file, encoding):
+        self.file = file
+        self.encoding = encoding
+
+    def read(self, buf_size):
+        """
+        Re-encodes bytes read from the file to UTF-8.
+        """
+        data = self.file.read(buf_size)
+        return transcode_bytes(data, self.encoding)
+
+
+def transcode_bytes(data, encoding):
+    """
+    Re-encodes bytes to UTF-8.
+    """
+    return data.decode(encoding).encode()
+
+
+def transcode(spider, function, data, *args, **kwargs):
+    if spider.encoding != 'utf-8':
+        if hasattr(data, 'read'):
+            data = TranscodeFile(data, spider.encoding)
+        else:
+            data = transcode_bytes(data, spider.encoding)
+
+    return function(data, *args, **kwargs)
+
+
 # See `grouper` recipe: https://docs.python.org/3.8/library/itertools.html#recipes
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n

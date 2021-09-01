@@ -79,7 +79,6 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, directory, o
 
         extension = KingfisherProcessAPI.from_crawler(spider.crawler)
 
-        kwargs = {}
         item = spider.build_file(
             file_name='file.json',
             url='https://example.com/remote.json',

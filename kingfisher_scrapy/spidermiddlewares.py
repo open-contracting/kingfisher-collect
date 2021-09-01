@@ -6,36 +6,6 @@ from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileItem
 
 
-class TranscodeFile():
-    def __init__(self, file, encoding):
-        self.file = file
-        self.encoding = encoding
-
-    def read(self, buf_size):
-        """
-        Re-encodes bytes read from the file to UTF-8.
-        """
-        data = self.file.read(buf_size)
-        return transcode_bytes(data, self.encoding)
-
-
-def transcode_bytes(data, encoding):
-    """
-    Re-encodes bytes to UTF-8.
-    """
-    return data.decode(encoding).encode()
-
-
-def transcode(spider, function, data, *args, **kwargs):
-    if spider.encoding != 'utf-8':
-        if hasattr(data, 'read'):
-            data = TranscodeFile(data, spider.encoding)
-        else:
-            data = transcode_bytes(data, spider.encoding)
-
-    return function(data, *args, **kwargs)
-
-
 class ConcatenatedJSONMiddleware:
     """
     If the spider's ``concatenated_json`` class attribute is ``True``, yields each object of the File as a FileItem.
@@ -54,7 +24,7 @@ class ConcatenatedJSONMiddleware:
             data = item['data']
 
             # ijson can read from bytes or a file-like object.
-            for number, obj in enumerate(transcode(spider, ijson.items, data, '', multiple_values=True), 1):
+            for number, obj in enumerate(util.transcode(spider, ijson.items, data, '', multiple_values=True), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
@@ -111,7 +81,7 @@ class RootPathMiddleware:
             if isinstance(data, (dict, list)):
                 data = util.json_dumps(data).encode()
 
-            for number, obj in enumerate(transcode(spider, ijson.items, data, spider.root_path), 1):
+            for number, obj in enumerate(util.transcode(spider, ijson.items, data, spider.root_path), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
@@ -192,7 +162,7 @@ class ResizePackageMiddleware:
                 size = 100
 
             package = self._get_package_metadata(spider, data['package'], 'releases', item['data_type'])
-            iterable = transcode(spider, ijson.items, data['data'], 'releases.item')
+            iterable = util.transcode(spider, ijson.items, data['data'], 'releases.item')
             # We yield release packages containing a maximum of 100 releases.
             for number, items in enumerate(util.grouper(iterable, size), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
@@ -215,7 +185,7 @@ class ResizePackageMiddleware:
         """
         package = {}
         if 'package' in data_type:
-            for item in util.items(transcode(spider, ijson.parse, data), '', skip_key=skip_key):
+            for item in util.items(util.transcode(spider, ijson.parse, data), '', skip_key=skip_key):
                 package.update(item)
         return package
 
