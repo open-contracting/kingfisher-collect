@@ -37,7 +37,7 @@ from tests import response_fixture, spider_with_crawler
     FileError({
         'file_name': 'test.json',
         'url': 'http://test.com',
-        'errors': ''
+        'errors': '',
     }),
 ])
 def test_passthrough(middleware_class, item):
@@ -70,7 +70,7 @@ def test_bytes_or_file(middleware_class, attribute, value, expected, tmpdir):
         'data': data,
         'data_type': 'release',
         'url': 'http://test.com',
-        'encoding': 'utf-8'
+        'encoding': 'utf-8',
     })
 
     path = tmpdir.join('test.json')
@@ -80,13 +80,46 @@ def test_bytes_or_file(middleware_class, attribute, value, expected, tmpdir):
         'data': path.open('rb'),
         'data_type': 'release',
         'url': 'http://test.com',
-        'encoding': 'utf-8'
+        'encoding': 'utf-8',
     })
 
     generator = middleware.process_spider_output(None, [bytes_item, file_item], spider)
     transformed_items = list(generator)
 
     assert len(transformed_items) == 2
+    for item in transformed_items:
+        assert item == {
+            'file_name': 'test.json',
+            'data': expected,
+            'data_type': 'release',
+            'url': 'http://test.com',
+            'encoding': 'utf-8',
+            'number': 1,
+        }
+
+
+@pytest.mark.parametrize('middleware_class,attribute,value,expected', [
+    (ConcatenatedJSONMiddleware, 'concatenated_json', True, {'name': 'ALCALDÍA MUNICIPIO DE TIBÚ'}),
+    (RootPathMiddleware, 'root_path', 'name', 'ALCALDÍA MUNICIPIO DE TIBÚ'),
+])
+def test_encoding(middleware_class, attribute, value, expected, tmpdir):
+    spider = spider_with_crawler()
+    setattr(spider, attribute, value)
+
+    middleware = middleware_class()
+
+    item = File({
+        'file_name': 'test.json',
+        'data': b'{"name": "ALCALD\xcdA MUNICIPIO DE TIB\xda"}',
+        'data_type': 'release',
+        'url': 'http://test.com',
+        'encoding': 'iso-8859-1',
+    })
+
+    generator = middleware.process_spider_output(None, [item], spider)
+    transformed_items = list(generator)
+
+    assert len(transformed_items) == 1
     for item in transformed_items:
         assert item == {
             'file_name': 'test.json',
@@ -120,7 +153,7 @@ def test_add_package_middleware(data_type, data, root_path):
         'data': data,
         'data_type': data_type,
         'url': 'http://test.com',
-        'encoding': 'utf-8'
+        'encoding': 'utf-8',
     })
 
     generator = root_path_middleware.process_spider_output(None, [item], spider)
@@ -219,7 +252,7 @@ def test_json_streaming_middleware(middleware_class, attribute, separator, sampl
             'number': i,
             'data': data,
             'data_type': 'release_package',
-            'encoding': 'utf-8'
+            'encoding': 'utf-8',
         }
 
 
@@ -304,7 +337,7 @@ def test_json_streaming_middleware_with_compressed_file_spider(middleware_class,
             'number': i,
             'data': data,
             'data_type': 'release_package',
-            'encoding': 'utf-8'
+            'encoding': 'utf-8',
         }
 
 

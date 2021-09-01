@@ -6,6 +6,15 @@ from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileItem
 
 
+def ijson_items(item, data, *args, **kwargs):
+    if 'encoding' in item and item['encoding'] != 'utf-8':
+        data = data.decode(item['encoding']).encode('utf-8')
+        # The file items built from this item are UTF-8 encoded.
+        item['encoding'] = 'utf-8'
+
+    return ijson.items(data, *args, **kwargs)
+
+
 class ConcatenatedJSONMiddleware:
     """
     If the spider's ``concatenated_json`` class attribute is ``True``, yields each object of the File as a FileItem.
@@ -23,8 +32,8 @@ class ConcatenatedJSONMiddleware:
 
             data = item['data']
 
-            # ijson can read from bytes or a file-like object (or from str with a warning).
-            for number, obj in enumerate(ijson.items(data, '', multiple_values=True), 1):
+            # ijson can read from bytes or a file-like object.
+            for number, obj in enumerate(ijson_items(item, data, '', multiple_values=True), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
@@ -81,7 +90,7 @@ class RootPathMiddleware:
             if isinstance(data, (dict, list)):
                 data = json.dumps(data, default=util.default).encode()
 
-            for number, obj in enumerate(ijson.items(data, spider.root_path), 1):
+            for number, obj in enumerate(ijson_items(item, data, spider.root_path), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
