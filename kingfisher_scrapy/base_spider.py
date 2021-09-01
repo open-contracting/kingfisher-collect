@@ -54,10 +54,6 @@ class BaseSpider(scrapy.Spider):
     -  If the data is in CSV or XLSX format, add a ``unflatten = True`` class attribute to convert it to JSON using
        Flatten Tool's ``unflatten`` function. To pass arguments to ``unflatten``, set a ``unflatten_args`` dict.
 
-    .. note::
-
-       ``concatenated_json = True`` is not compatible with ``line_delimited = True``.
-
     With respect to support for Kingfisher Collect's features:
 
     -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
@@ -69,8 +65,8 @@ class BaseSpider(scrapy.Spider):
     date_required = False
     unflatten = False
     unflatten_args = {}
-    line_delimited = False
     concatenated_json = False
+    line_delimited = False
     root_path = ''
     dont_truncate = False
 
@@ -96,6 +92,9 @@ class BaseSpider(scrapy.Spider):
         """
 
         super().__init__(*args, **kwargs)
+
+        if self.concatenated_json and self.line_delimited:
+            raise IncoherentConfigurationError('concatenated_json = True is incompatible with line_delimited = True.')
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
 
