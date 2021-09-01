@@ -14,10 +14,11 @@ from tests import response_fixture, spider_with_crawler
 
 @pytest.mark.parametrize('middleware_class', [
     AddPackageMiddleware,
+    ConcatenatedJSONMiddleware,
     LineDelimitedMiddleware,
+    ReadDataMiddleware,
     ResizePackageMiddleware,
     RootPathMiddleware,
-    ReadDataMiddleware,
 ])
 @pytest.mark.parametrize('item', [
     File({
@@ -26,13 +27,20 @@ from tests import response_fixture, spider_with_crawler
         'data_type': 'release_package',
         'url': 'http://test.com',
     }),
+    FileItem({
+        'file_name': 'test',
+        'data': 'data',
+        'data_type': 'release_package',
+        'url': 'http://test.com',
+        'number': 1,
+    }),
     FileError({
         'file_name': 'test',
         'url': 'http://test.com',
         'errors': ''
     }),
 ])
-def test_yield_items(middleware_class, item):
+def test_passthrough(middleware_class, item):
     spider = spider_with_crawler()
 
     middleware = middleware_class()
@@ -53,7 +61,7 @@ def test_yield_items(middleware_class, item):
     ('release_package', b'[{"releases":[{"ocid": "abc"}], "uri": "test"}]', 'item'),
     ('record_package', b'[{"records":[{"ocid": "abc"}], "uri": "test"}]', 'item'),
 ])
-def test_data_types(data_type, data, root_path):
+def test_add_package_middleware(data_type, data, root_path):
     spider = spider_with_crawler()
     spider.root_path = root_path
 
@@ -91,8 +99,8 @@ def test_data_types(data_type, data, root_path):
     assert item == expected
 
 
-@pytest.mark.parametrize('sample,len_releases,file_name', [(None, 100, 'test'), (5, 5, 'test')])
-def test_parse_release_package(sample, len_releases, file_name):
+@pytest.mark.parametrize('sample,len_releases,file_name', [(None, 100, 'test'), (5, 5, 'test2')])
+def test_resize_package_middleware(sample, len_releases, file_name):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.resize_package = True
@@ -127,7 +135,7 @@ def test_parse_release_package(sample, len_releases, file_name):
 
 @pytest.mark.parametrize('delimited_type', ['line', 'concatenated'])
 @pytest.mark.parametrize('sample', [None, 5])
-def test_custom_delimited_json_middleware(sample, delimited_type):
+def test_json_streaming_middleware(sample, delimited_type):
     spider = spider_with_crawler(spider_class=SimpleSpider, sample=sample)
     spider.data_type = 'release_package'
     if delimited_type == 'line':
@@ -155,7 +163,7 @@ def test_custom_delimited_json_middleware(sample, delimited_type):
         if delimited_type == 'concatenated':
             data = {'key': i}
         else:
-            data = '{"key": %s}\n' % i
+            data = ('{"key": %s}\n' % i).encode()
         assert item == {
             'file_name': 'test.json',
             'url': 'http://example.com',
@@ -167,7 +175,42 @@ def test_custom_delimited_json_middleware(sample, delimited_type):
 
 
 @pytest.mark.parametrize('sample', [None, 5])
-def test_line_delimited_json_middleware_compressed(sample):
+def test_concatenated_json_middleware_with_root_path_middleware(sample):
+    spider = spider_with_crawler(spider_class=SimpleSpider, sample=sample)
+    spider.data_type = 'release_package'
+    spider.concatenated_json = True
+    spider.root_path = 'results.item'
+    spider.root_path_max_length = 1
+
+    concatenated_json_middleware = ConcatenatedJSONMiddleware()
+    root_path_middleware = RootPathMiddleware()
+
+    content = []
+    for i in range(1, 21):
+        content.append('{"results": [{"key": %s}]}' % i)
+
+    response = response_fixture(body=''.join(content), meta={'file_name': 'test.json'})
+    generator = spider.parse(response)
+    item = next(generator)
+    generator = concatenated_json_middleware.process_spider_output(response, [item], spider)
+    item = next(generator)
+
+    generator = root_path_middleware.process_spider_output(response, [item], spider)
+    transformed_items = list(generator)
+
+    for i, item in enumerate(transformed_items, 1):
+        assert type(item) is FileItem
+        assert len(item) == 6
+        assert item['file_name'] == f'test.json'
+        assert item['url'] == 'http://example.com'
+        assert item['number'] == i
+        assert item['data'] == {'key': i}
+        assert item['data_type'] == 'release_package'
+        assert item['encoding'] == 'utf-8'
+
+
+@pytest.mark.parametrize('sample', [None, 5])
+def test_line_delimited_middleware_with_compressed_file_spider(sample):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.line_delimited = True
@@ -195,13 +238,13 @@ def test_line_delimited_json_middleware_compressed(sample):
             'file_name': 'test-test.json',
             'url': 'http://example.com',
             'number': i,
-            'data': '{"key": %s}\n' % i,
+            'data': ('{"key": %s}\n' % i).encode(),
             'data_type': 'release_package',
             'encoding': 'utf-8'
         }
 
 
-def test_read_decompressed_middleware():
+def test_read_data_middleware():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = 'release_package'
 

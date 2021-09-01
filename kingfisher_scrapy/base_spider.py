@@ -49,8 +49,8 @@ class BaseSpider(scrapy.Spider):
     -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
     -  If the data embeds OCDS data within other objects or arrays, set a ``root_path`` class attribute to the path to
        the OCDS data, e.g. ``'releasePackage'`` or ``'results.item'``.
-    -  If the JSON file is line-delimited and the root path is to a JSON array, set a ``root_path_max_length`` class
-       attribute to the maximum length of the JSON array at the root path.
+    -  If the JSON file is concatenated JSON or line-delimited JSON and the root path is to a JSON array, set a
+       ``root_path_max_length`` class attribute to the maximum length of the JSON array at the root path.
     -  If the data is in CSV or XLSX format, add a ``unflatten = True`` class attribute to convert it to JSON using
        Flatten Tool's ``unflatten`` function. To pass arguments to ``unflatten``, set a ``unflatten_args`` dict.
 
