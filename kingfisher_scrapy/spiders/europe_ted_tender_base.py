@@ -1,9 +1,6 @@
-from math import ceil
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import IndexSpider
-from kingfisher_scrapy.util import parameters
 
 
 class EuropeTedTenderBase(IndexSpider):
@@ -38,4 +35,4 @@ class EuropeTedTenderBase(IndexSpider):
         yield scrapy.Request(url, meta={'file_name': 'count.json'}, callback=self.parse_list)
 
     def parse_list_loader(self, response):
-      return int(response.xpath('//div[@class="container my-4"]//span/span/text()').get())
+        return int(response.xpath('//div[@class="container my-4"]//span/span/text()').get())

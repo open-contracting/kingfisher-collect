@@ -33,10 +33,11 @@ class Portugal(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
+        # Presently, only one URL matches:
+        # https://dados.gov.pt/s/resources/ocds-portal-base-www-base-gov-pt/20210415-224406/base2-pt-ocds-202004.zip
         data = response.json()
         for item in data['data']:
             for resource in item['resources']:
                 description = resource['description']
                 if description and 'ocds' in description.lower():
-                    # Presently, only one URL matches.
                     yield self.build_request(resource['url'], formatter=components(-2))

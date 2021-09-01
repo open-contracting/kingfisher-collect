@@ -1,7 +1,6 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import CompressedFileSpider
-from kingfisher_scrapy.util import components
 
 
 class MexicoNuevoLeonReleases(CompressedFileSpider):

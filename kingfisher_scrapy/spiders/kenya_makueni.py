@@ -1,9 +1,6 @@
-from math import ceil
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import IndexSpider
-from kingfisher_scrapy.util import parameters
 
 
 class KenyaMakueni(IndexSpider):
@@ -23,7 +20,7 @@ class KenyaMakueni(IndexSpider):
 
     # IndexSpider
     count_pointer = ''
-    limit = 1000 # > 1000 causes "must be between 1 and 1000"
+    limit = 1000  # > 1000 causes "must be between 1 and 1000"
     use_page = True
     start_page = 0
     param_page = 'pageNumber'
