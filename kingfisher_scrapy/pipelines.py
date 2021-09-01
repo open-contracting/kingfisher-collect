@@ -83,6 +83,7 @@ class Sample:
             spider.crawler.engine.downloader.total_concurrency = 1
 
 
+# NOTE: This item pipeline lacks support for non-UTF-8 JSON.
 class Pluck:
     """
     Extracts a value from the item and returns it as a plucked item.

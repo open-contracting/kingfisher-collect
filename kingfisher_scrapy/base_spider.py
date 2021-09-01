@@ -49,8 +49,8 @@ class BaseSpider(scrapy.Spider):
     -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
     -  If the data embeds OCDS data within other objects or arrays, set a ``root_path`` class attribute to the path to
        the OCDS data, e.g. ``'releasePackage'`` or ``'results.item'``.
-    -  If the JSON file is line-delimited and the root path is to a JSON array, set a ``root_path_max_length`` class
-       attribute to the maximum length of the JSON array at the root path.
+    -  If the JSON file is concatenated JSON or line-delimited JSON and the root path is to a JSON array, set a
+       ``root_path_max_length`` class attribute to the maximum length of the JSON array at the root path.
     -  If the data is in CSV or XLSX format, add a ``unflatten = True`` class attribute to convert it to JSON using
        Flatten Tool's ``unflatten`` function. To pass arguments to ``unflatten``, set a ``unflatten_args`` dict.
 
@@ -308,7 +308,7 @@ class BaseSpider(scrapy.Spider):
             'data': data,
             'data_type': item['data_type'],
             'url': item['url'],
-            'encoding': item['encoding'],
+            'encoding': item.get('encoding', 'utf-8'),
         })
 
     def build_file_error_from_response(self, response, **kwargs):
@@ -393,7 +393,8 @@ class CompressedFileSpider(BaseSpider):
 
     .. note::
 
-       ``resize_package = True`` is not compatible with ``line_delimited = True`` or ``root_path``.
+       ``concatenated_json = True``, ``line_delimited = True``, ``root_path``, ``data_type = 'release'`` and
+       ``data_type = 'record'`` are not supported if ``resize_package = True``.
     """
 
     # BaseSpider
@@ -617,7 +618,7 @@ class IndexSpider(SimpleSpider):
     ``param_limit`` and ``param_offset`` class attributes to set the custom names.
 
     If a different URL is used for the initial request than for later requests, set the ``base_url`` class attribute
-    to the base URL of later requests. In this case, results are not yielded from the response passed to ``parse_list``.
+    to the base URL of later requests. In this case, results aren't yielded from the response passed to ``parse_list``.
     """
 
     use_page = False
@@ -751,6 +752,10 @@ class BigFileSpider(SimpleSpider):
 
             def start_requests(self):
                 yield self.build_request('https://example.com/api/package.json', formatter=components(-1)
+
+    .. note::
+
+       ``concatenated_json = True``, ``line_delimited = True`` and ``root_path`` are not supported.
     """
 
     resize_package = True

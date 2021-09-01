@@ -24,7 +24,6 @@ class Portugal(CompressedFileSpider):
 
     # SimpleSpider
     data_type = 'record_package'
-    encoding = 'iso-8859-1'
 
     def start_requests(self):
         # A CKAN API JSON response.
