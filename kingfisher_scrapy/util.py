@@ -9,7 +9,7 @@ from urllib.parse import parse_qs, quote, urlencode, urljoin, urlsplit
 from ijson import ObjectBuilder, utils
 
 
-def _pluck_filename(opts):
+def pluck_filename(opts):
     if opts.package_pointer:
         parts = ['pluck', 'package', opts.package_pointer[1:].replace('/', '-')]
     else:

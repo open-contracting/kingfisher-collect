@@ -19,7 +19,6 @@ from twisted.python.failure import Failure
 from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
-from kingfisher_scrapy.util import _pluck_filename, get_file_name_and_extension
 
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
@@ -83,7 +82,7 @@ class Pluck:
         self._write(spider, f'closed: {reason}')
 
     def _write(self, spider, value):
-        with open(os.path.join(self.directory, _pluck_filename(spider)), 'a+') as f:
+        with open(os.path.join(self.directory, util.pluck_filename(spider)), 'a+') as f:
             f.write(f'{value},{spider.name}\n')
 
 
@@ -134,7 +133,7 @@ class FilesStore:
 
         file_name = item['file_name']
         if isinstance(item, FileItem):
-            name, extension = get_file_name_and_extension(file_name)
+            name, extension = util.get_file_name_and_extension(file_name)
             file_name = f"{name}-{item['number']}.{extension}"
 
         path = os.path.join(self.relative_crawl_directory(spider), file_name)

@@ -6,7 +6,7 @@ from collections import defaultdict
 from scrapy.commands import ScrapyCommand
 from scrapy.exceptions import UsageError
 
-from kingfisher_scrapy.util import _pluck_filename
+from kingfisher_scrapy.util import pluck_filename
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ class Pluck(ScrapyCommand):
         if opts.max_bytes:
             self.settings.set('KINGFISHER_PLUCK_MAX_BYTES', opts.max_bytes)
 
-        filename = _pluck_filename(opts)
+        filename = pluck_filename(opts)
         if os.path.isfile(filename):
             os.unlink(filename)
 
