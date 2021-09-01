@@ -7,6 +7,8 @@ class UKContractsFinder(IndexSpider):
     """
     Domain
       Contracts Finder
+    API documentation
+      https://www.contractsfinder.service.gov.uk/apidocumentation/home
     """
     name = 'uk_contracts_finder'
 
@@ -21,7 +23,9 @@ class UKContractsFinder(IndexSpider):
     total_pages_pointer = '/maxPage'
 
     def start_requests(self):
-        url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=desc'
+        # page = 0 causes "Incorrect request [page must be a number greater than 0]".
+        # size > 100 causes "Incorrect request [size must be a number greater than 0 and maximum is 100]".
+        url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=desc&size=100'
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
     def parse(self, response, **kwargs):
