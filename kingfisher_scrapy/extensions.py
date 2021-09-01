@@ -619,6 +619,10 @@ class KingfisherProcessAPI2:
         channel = connection.channel()
         channel.exchange_declare(exchange=self.rabbit_exchange_name, durable=True, exchange_type='direct')
 
+        channel.queue_declare(durable=True, queue=self.rabbit_routing_key)
+        channel.queue_bind(exchange=self.rabbit_exchange_name, queue=self.rabbit_routing_key,
+                           routing_key=self.rabbit_routing_key)
+
         return channel
 
 
