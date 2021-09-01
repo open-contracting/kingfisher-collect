@@ -153,7 +153,7 @@ class FilesStore:
 
         with open(path, mode) as f:
             if isinstance(data, (bytes, str)):
-                f.write(data)  # NOTE: needs to be UTF-8
+                f.write(data)  # NOTE: should be UTF-8
             else:
                 util.json_dump(data, f)
 
@@ -401,7 +401,7 @@ class KingfisherProcessAPI:
             return self._request(spider, 'create_file_error', item['url'], data)
 
         data['data_type'] = item['data_type']
-        data['encoding'] = spider.encoding
+        data['encoding'] = 'utf-8'
         if spider.note:
             data['collection_note'] = spider.note
 
