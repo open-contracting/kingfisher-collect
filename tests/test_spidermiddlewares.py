@@ -55,6 +55,7 @@ def test_passthrough(middleware_class, item):
     (ConcatenatedJSONMiddleware, 'concatenated_json', True, {'results': [{'ocid': 'abc'}]}),
     (LineDelimitedMiddleware, 'line_delimited', True, b'{"results":[{"ocid": "abc"}]}'),
     (RootPathMiddleware, 'root_path', 'results.item', {'ocid': 'abc'}),
+    # ResizePackageMiddleware is only used with CompressedFileSpider and BigFileSpider.
     # ReadDataMiddleware is only used with file-like objects.
 ])
 def test_bytes_or_file(middleware_class, attribute, value, expected, tmpdir):
@@ -257,13 +258,17 @@ def test_concatenated_json_middleware_with_root_path_middleware():
         assert item['encoding'] == 'utf-8'
 
 
+@pytest.mark.parametrize('middleware_class,attribute,value', [
+    (ConcatenatedJSONMiddleware, 'concatenated_json', True),
+    (LineDelimitedMiddleware, 'line_delimited', True),
+])
 @pytest.mark.parametrize('sample', [None, 5])
-def test_line_delimited_middleware_with_compressed_file_spider(sample):
+def test_json_streaming_middleware_with_compressed_file_spider(middleware_class, attribute, value, sample):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
-    spider.line_delimited = True
+    setattr(spider, attribute, value)
 
-    middleware = LineDelimitedMiddleware()
+    stream_middleware = middleware_class()
 
     content = []
     for i in range(1, 21):
@@ -277,7 +282,7 @@ def test_line_delimited_middleware_with_compressed_file_spider(sample):
     generator = spider.parse(response)
     item = next(generator)
 
-    generator = middleware.process_spider_output(response, [item], spider)
+    generator = stream_middleware.process_spider_output(response, [item], spider)
     transformed_items = list(generator)
 
     length = sample if sample else 20
@@ -285,11 +290,15 @@ def test_line_delimited_middleware_with_compressed_file_spider(sample):
     assert len(transformed_items) == length
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
+        if attribute == 'concatenated_json':
+            data = {'key': i}
+        else:
+            data = ('{"key": %s}\n' % i).encode()
         assert item == {
             'file_name': 'archive-test.json',
             'url': 'http://example.com',
             'number': i,
-            'data': ('{"key": %s}\n' % i).encode(),
+            'data': data,
             'data_type': 'release_package',
             'encoding': 'utf-8'
         }
