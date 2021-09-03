@@ -1,9 +1,8 @@
-import scrapy
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import handle_http_error, parameters
 
-from kingfisher_scrapy.base_spider import IndexSpider
 
-
-class KenyaMakueni(IndexSpider):
+class KenyaMakueni(SimpleSpider):
     """
     Domain
       Makueni County
@@ -18,14 +17,21 @@ class KenyaMakueni(IndexSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    # IndexSpider
-    count_pointer = ''
-    limit = 1000  # > 1000 causes "must be between 1 and 1000"
-    use_page = True
-    start_page = 0
-    param_page = 'pageNumber'
-    base_url = f'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={limit}'
+    step = 100
+    url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={0}&pageNumber={1}'
 
     def start_requests(self):
-        url = f'https://opencontracting.makueni.go.ke/api/ocds/release/count?pageSize=1000'
-        yield scrapy.Request(url, meta={'file_name': 'count.json'}, callback=self.parse_list)
+        yield self.build_request(self.url.format(self.step, 0),
+                                 self.get_formatter(), meta={'page': 0}, callback=self.parse_list)
+
+    @handle_http_error
+    def parse_list(self, response):
+        page = response.request.meta['page']
+        yield self.build_file_from_response(response, data_type=self.data_type)
+
+        if len(response.json()) > 0:
+            yield self.build_request(self.url.format(self.step, page + 1),
+                                     self.get_formatter(), meta={'page': page + 1}, callback=self.parse_list)
+
+    def get_formatter(self):
+        return parameters('pageNumber')
