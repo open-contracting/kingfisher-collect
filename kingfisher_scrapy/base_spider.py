@@ -479,6 +479,9 @@ class LinksSpider(SimpleSpider):
             # SimpleSpider
             data_type = 'release_package'
 
+            # LinksSpider
+            next_page_formatter = staticmethod(parameters('page'))
+
             def start_requests(self):
                 yield scrapy.Request('https://example.com/api/packages.json', meta={'file_name': 'page-1.json'})
 
