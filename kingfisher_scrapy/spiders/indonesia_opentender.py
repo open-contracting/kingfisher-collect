@@ -17,6 +17,12 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
 
     name = 'indonesia_opentender'
 
+    custom_settings = {
+      'SPIDER_MIDDLEWARES': {
+          'kingfisher_scrapy.spidermiddlewares.RetryDataErrorMiddleware': 50,
+      }
+    }
+
     # BaseSpider
     date_format = 'year'
     default_from_date = '2008'
