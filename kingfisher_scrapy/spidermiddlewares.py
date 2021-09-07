@@ -1,4 +1,7 @@
+import copy
 import json
+from collections import defaultdict
+from zipfile import BadZipFile
 
 import ijson
 
@@ -208,3 +211,28 @@ class ReadDataMiddleware:
             item['data'].close()
             item['data'] = data
             yield item
+
+
+class RetryDataErrorMiddleware:
+    """
+    # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#scrapy.spidermiddlewares.SpiderMiddleware.process_spider_exception
+    This method is called when a spider or process_spider_output() method (from a previous spider middleware) raises an exception.
+    Currently, if a BadZipFile exception is received, it retries the request up to 3 times per URL, otherwise returns None for scrapy continuing 
+    processing the exception.
+    """
+    retries = defaultdict(int)
+
+    def process_spider_exception(self, response, exception, spider):
+        if isinstance(exception, BadZipFile):
+            print(self.retries)
+            if self.retries[response.request.url] > 3:
+                spider.logger.error('Gave up retrying %(request)s (failed %(failures)d times): HTTP %(status)d',
+                              {'request': response.request, 'failures': self.retries[response.request.url], 'status': response.status})
+                yield None
+            request = copy.copy(response.request)
+            request.dont_filter = True
+            self.retries[response.request.url]+=1
+            spider.logger.debug('Retrying %(request)s (failed %(failures)d times) error %(error)s HTTP %(status)d',
+                    {'request': response.request, 'failures': self.retries[response.request.url], 'error': exception, 
+                    'status': response.status})
+            yield request
