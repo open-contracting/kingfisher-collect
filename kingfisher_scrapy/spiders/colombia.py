@@ -24,6 +24,7 @@ class Colombia(LinksSpider):
 
     # BaseSpider
     default_from_date = '2011-01-01'
+    date_required = True
 
     # SimpleSpider
     data_type = 'release_package'
@@ -32,8 +33,7 @@ class Colombia(LinksSpider):
     next_page_formatter = staticmethod(parameters('_id'))
 
     def start_requests(self):
-        url = 'http://apiocds.colombiacompra.gov.co/apiCCE2.0/rest/releases'
-        if self.from_date and self.until_date:
-            url += f'/dates/{self.from_date.strftime(self.date_format)}/{self.until_date.strftime(self.date_format)}'
+        url = 'http://apiocds.colombiacompra.gov.co/apiCCE2.0/rest/releases/dates/' \
+              f'{self.from_date.strftime(self.date_format)}/{self.until_date.strftime(self.date_format)}'
 
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'})
