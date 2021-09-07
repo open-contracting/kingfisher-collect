@@ -18,7 +18,7 @@ class Colombia(LinksSpider):
     API documentation
       https://www.colombiacompra.gov.co/transparencia/api
     Swagger API documentation
-      https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/
+      https://apiocds.colombiacompra.gov.co/apiCCE2.0/
     """
     name = 'colombia'
 
@@ -32,7 +32,7 @@ class Colombia(LinksSpider):
     next_page_formatter = staticmethod(parameters('_id'))
 
     def start_requests(self):
-        url = 'https://apiocds.colombiacompra.gov.co:8443/apiCCE2.0/rest/releases'
+        url = 'http://apiocds.colombiacompra.gov.co/apiCCE2.0/rest/releases'
         if self.from_date and self.until_date:
             url += f'/dates/{self.from_date.strftime(self.date_format)}/{self.until_date.strftime(self.date_format)}'
 
