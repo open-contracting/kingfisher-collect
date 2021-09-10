@@ -33,7 +33,7 @@ class Colombia(LinksSpider):
     next_page_formatter = staticmethod(parameters('_id'))
 
     def start_requests(self):
-        url = 'http://apiocds.colombiacompra.gov.co/apiCCE2.0/rest/releases/dates/' \
+        url = 'https://apiocds.colombiacompra.gov.co/apiCCE2.0/rest/releases/dates/' \
               f'{self.from_date.strftime(self.date_format)}/{self.until_date.strftime(self.date_format)}'
 
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'})
