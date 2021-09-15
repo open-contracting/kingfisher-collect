@@ -1,6 +1,6 @@
 import json
 from io import BytesIO
-from zipfile import ZIP_DEFLATED, ZipFile
+from zipfile import ZIP_DEFLATED, ZipFile, BadZipFile
 
 import pytest
 
@@ -8,7 +8,7 @@ from kingfisher_scrapy.base_spider import CompressedFileSpider, SimpleSpider
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.spidermiddlewares import (AddPackageMiddleware, ConcatenatedJSONMiddleware,
                                                  LineDelimitedMiddleware, ReadDataMiddleware, ResizePackageMiddleware,
-                                                 RootPathMiddleware)
+                                                 RootPathMiddleware, RetryDataErrorMiddleware)
 from tests import response_fixture, spider_with_crawler
 
 
@@ -367,3 +367,24 @@ def test_read_data_middleware():
 
     assert len(transformed_items) == 1
     assert transformed_items[0]['data'] == b'{}'
+
+
+@pytest.mark.parametrize('exception', [BadZipFile(), Exception()])
+def test_retry_data_error_middleware(exception):
+    spider = spider_with_crawler()
+    response = response_fixture()
+    middleware = RetryDataErrorMiddleware()
+
+    generator = middleware.process_spider_exception(response, exception, spider)
+
+    if isinstance(exception, BadZipFile):
+        request = next(generator)
+        assert request.dont_filter
+        assert request.meta['retries'] == 1
+        assert request.url == response.request.url
+        response.request.meta['retries'] = 3
+        generator = middleware.process_spider_exception(response, exception, spider)
+        assert not list(generator)
+
+    else:
+        assert not list(generator)

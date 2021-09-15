@@ -1,5 +1,4 @@
 import json
-from collections import defaultdict
 from zipfile import BadZipFile
 
 import ijson
@@ -222,7 +221,7 @@ class RetryDataErrorMiddleware:
     def process_spider_exception(self, response, exception, spider):
         if isinstance(exception, BadZipFile):
             retries = response.request.meta.get('retries', 0) + 1
-            if retries >= 3:
+            if retries > 3:
                 spider.logger.error('Gave up retrying %(request)s (failed %(failures)d times): %(exception)s',
                                     {'request': response.request, 'failures': retries,
                                      'status': response.status})
