@@ -4,7 +4,7 @@ from kingfisher_scrapy.spiders.nigeria_cross_river_base import NigeriaCrossRiver
 class NigeriaCrossRiverReleases(NigeriaCrossRiverBase):
     """
     Domain
-      Cross River Nigeria
+      Cross River State
     Spider arguments
       from_date
         Download only data from this month onward (YYYY-MM format). Defaults to '2020-02'.

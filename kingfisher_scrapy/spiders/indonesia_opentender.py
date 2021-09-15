@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import components, handle_http_error, join, paramete
 class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     """
        Domain
-         Open Tender
+         Opentender.net
        Spider arguments
          from_date
            Download only data from this year onward (YYYY format). Defaults to '2008'.

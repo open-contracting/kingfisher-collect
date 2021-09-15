@@ -6,7 +6,7 @@ from kingfisher_scrapy.base_spider import IndexSpider
 class EuropeTedTenderBase(IndexSpider):
     """
     Domain
-      TenderBase
+      Tenders Electronic Daily (TED) by TenderBase
     API endpoints
       Get releases by page
         Link

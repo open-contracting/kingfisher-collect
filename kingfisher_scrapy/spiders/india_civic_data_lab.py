@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class IndiaCivicDataLab(SimpleSpider):
     """
     Domain
-      Civic Data Lab India
+      CivicDataLab
     Bulk download documentation
       https://github.com/CivicDataLab/himachal-pradesh-health-procurement-OCDS/
     """

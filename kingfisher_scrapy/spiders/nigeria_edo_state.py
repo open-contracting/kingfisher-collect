@@ -7,10 +7,10 @@ from kingfisher_scrapy.util import handle_http_error
 class NigeriaEdoState(SimpleSpider):
     """
     Domain
-      Edo State Open Contracting Portal - Nigeria
+      Edo State Open Contracting Data Standards Portal
     Caveats
       The release list has additional numbered keys with tender, award and contract releases as values. This spider
-      removes the numbered keys and append the releases into the release list
+      removes the numbered keys and append the releases into the release list.
     Bulk download documentation
       http://edpms.edostate.gov.ng/ocds/
     """

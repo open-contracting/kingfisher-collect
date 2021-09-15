@@ -9,7 +9,7 @@ from kingfisher_scrapy.util import components, handle_http_error, join
 class Zambia(CompressedFileSpider):
     """
     Domain
-      Zambia Public Procurement Authority
+      Zambia Public Procurement Authority (ZPPA)
     Spider arguments
       from_date
         Download only data from this month onward (YYYY-MM format).

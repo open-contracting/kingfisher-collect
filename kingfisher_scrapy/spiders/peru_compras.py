@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import handle_http_error, parameters
 class PeruCompras(SimpleSpider):
     """
     Domain
-      Peru Compras - Contracts from Framework Agreements
+      Peru Compras (contracts within framework agreements)
     Spider arguments
       from_date
         Download only data from this date onward (YYYY-MM-DD format). Defaults to '2017-01-01'.
