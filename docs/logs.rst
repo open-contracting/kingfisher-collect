@@ -201,6 +201,19 @@ Then, filter for and read the message(s) in which the exception is logged.
    scheduler/unserializable
      Collected if the `SCHEDULER_DEBUG <https://docs.scrapy.org/en/latest/topics/settings.html#scheduler-debug>`__ setting is ``True``.
 
+Read the number of duplicate requests
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  ``dupefilter/filtered``
+
+Spiders should not send duplicate requests. A duplicate request might indicate a bug in the spider's implementation.
+
+Presently, only the first duplicate request is logged. The line looks like:
+
+.. code-block:: none
+
+   2020-01-10 12:34:56 [scrapy.dupefilters] DEBUG: Filtered duplicate request: <GET http://...> (referer: http://...)
+
 .. _log-file-error-items:
 
 4. Check for FileError items
