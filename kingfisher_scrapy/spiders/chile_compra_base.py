@@ -6,7 +6,7 @@ from kingfisher_scrapy.items import FileError
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
+class ChileCompraBase(IndexSpider, PeriodicSpider):
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
