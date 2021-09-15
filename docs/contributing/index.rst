@@ -70,7 +70,7 @@ Since many class attributes that control a spider's behavior, please put the cla
       file_name_must_contain = '-'
 
       # LinksSpider
-      next_page_formatter = staticmethod(parameters('page'))
+      formatter = staticmethod(parameters('page'))
       next_pointer = '/next_page/uri'
 
       # PeriodicSpider

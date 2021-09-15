@@ -27,7 +27,7 @@ class DominicanRepublicPortal(LinksSpider):
     data_type = 'release_package'
 
     # LinksSpider
-    next_page_formatter = staticmethod(parameters('page'))
+    formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
         url = 'http://148.101.176.123:48080/ocdsdr/api/v1/releases'

@@ -12,7 +12,7 @@ from tests import response_fixture, spider_with_crawler
 
 def test_next_link():
     spider = spider_with_crawler(spider_class=LinksSpider)
-    spider.next_page_formatter = lambda url: 'next.json'
+    spider.formatter = lambda url: 'next.json'
 
     request = spider.next_link(response_fixture(body=b'{"links": {"next": "http://example.com/next"}}'))
 
@@ -50,7 +50,7 @@ def test_parse_404():
 def test_parse_200():
     spider = spider_with_crawler(spider_class=LinksSpider)
     spider.data_type = 'release_package'
-    spider.next_page_formatter = lambda url: 'next.json'
+    spider.formatter = lambda url: 'next.json'
     body = b'{"links": {"next": "http://example.com/next"}}'
 
     generator = spider.parse(response_fixture(body=body))

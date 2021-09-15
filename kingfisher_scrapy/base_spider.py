@@ -460,7 +460,7 @@ class LinksSpider(SimpleSpider):
 
     #. Inherit from ``LinksSpider``
     #. Set a ``data_type`` class attribute to the data type of the API responses
-    #. Set a ``next_page_formatter`` class attribute to set the file name like in
+    #. Set a ``formatter`` class attribute to set the file name like in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
     #. Write a ``start_requests`` method to request the first page of API results
     #. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
@@ -480,7 +480,7 @@ class LinksSpider(SimpleSpider):
             data_type = 'release_package'
 
             # LinksSpider
-            next_page_formatter = staticmethod(parameters('page'))
+            formatter = staticmethod(parameters('page'))
 
             def start_requests(self):
                 yield scrapy.Request('https://example.com/api/packages.json', meta={'file_name': 'page-1.json'})
@@ -506,7 +506,7 @@ class LinksSpider(SimpleSpider):
         data = response.json()
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
-            return self.build_request(url, formatter=self.next_page_formatter, **kwargs)
+            return self.build_request(url, formatter=self.formatter, **kwargs)
 
         for filter_argument in self.filter_arguments:
             if getattr(self, filter_argument, None):

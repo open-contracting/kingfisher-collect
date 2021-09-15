@@ -31,7 +31,7 @@ class Colombia(LinksSpider):
     data_type = 'release_package'
 
     # LinksSpider
-    next_page_formatter = staticmethod(parameters('_id'))
+    formatter = staticmethod(parameters('_id'))
 
     def start_requests(self):
         url = 'https://apiocds.colombiacompra.gov.co/apiCCE2.0/rest/releases/dates/' \
