@@ -11,6 +11,28 @@ Learn the data source's access methods
 
 Read its API documentation or bulk download documentation. Navigate the API, in your browser or with ``curl``. Inspect its responses, to determine where the OCDS data is located, and whether it includes information like pagination links, total pages or total results.
 
+Choose a spider name
+~~~~~~~~~~~~~~~~~~~~
+
+Lowercase and join the components below with underscores. Replace any spaces with underscores.
+
+For a jurisdiction-specific publication:
+
+-  Country name. Do not use acronyms, like "uk". If in doubt, follow `ISO 3166-1 <https://en.wikipedia.org/wiki/ISO_3166-1>`__. For example: Kyrgyzstan, not Kyrgyz Republic. For a non-country like the European Union, use the relevant geography, like "europe".
+-  Subdivision name. Do not use acronyms, like "nsw". Omit the subdivision type, like "state", unless it is typically included, like in Nigeria. If in doubt, follow `ISO 3166-2 <https://en.wikipedia.org/wiki/ISO_3166-2>`__.
+-  System name, if needed. Acronyms are allowed, like "agetic".
+-  Publisher name, if needed. Required if the publisher is not a government.
+-  Disambiguator, if needed. For example: "historical".
+-  Access method, if needed: "bulk" or "api".
+-  OCDS format, if needed: "releases", "records", "release packages" or "record packages".
+
+For a multi-jurisdiction publication:
+
+-  Organization name
+-  Disambiguator
+
+If you create a new base class, omit the components that are not shared, and add "base" to the end. For example, the ``afghanistan_packages_base.py`` file contains the base class for the ``afghanistan_record_packages`` and ``afghanistan_release_packages`` spiders.
+
 Choose a base class
 ~~~~~~~~~~~~~~~~~~~
 
