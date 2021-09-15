@@ -11,6 +11,9 @@ from kingfisher_scrapy.base_spider import PeriodicSpider
 
 logger = logging.getLogger(__name__)
 
+# Exceptions for MexicoINAIAPI and UKFTS.
+word_boundary_re = re.compile(r'(?<=[a-z])(?=[A-Z])|(?<=.)(?=[A-Z][a-z])|(?<=MexicoINAI)|(?<=UK)')
+
 
 class CheckAll(ScrapyCommand):
     def short_desc(self):
@@ -68,6 +71,12 @@ class Checker:
     def check(self):
         class_name = self.cls.__name__
         docstring = self.cls.__doc__
+
+        basename = os.path.splitext(os.path.basename(self.module.__file__))[0]
+        expected_basename = re.sub(word_boundary_re, '_', class_name).lower()
+
+        if basename != expected_basename:
+            self.log('error', 'class name %s and file name %s (%s) do not match', class_name, basename, expected_basename)
 
         if class_name.endswith('Base') and class_name != 'EuropeTedTenderBase' or class_name.startswith('Digiwhist'):
             if docstring:
