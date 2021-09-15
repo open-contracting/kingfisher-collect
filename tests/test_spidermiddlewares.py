@@ -379,12 +379,14 @@ def test_retry_data_error_middleware(exception):
 
     if isinstance(exception, BadZipFile):
         request = next(generator)
-        assert request.dont_filter
+
+        assert request.dont_filter is True
         assert request.meta['retries'] == 1
         assert request.url == response.request.url
+
         response.request.meta['retries'] = 3
         generator = middleware.process_spider_exception(response, exception, spider)
-        assert not list(generator)
 
+        assert not list(generator)
     else:
         assert not list(generator)

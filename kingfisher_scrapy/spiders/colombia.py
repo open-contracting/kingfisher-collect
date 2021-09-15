@@ -24,7 +24,7 @@ class Colombia(LinksSpider):
 
     # BaseSpider
     default_from_date = '2011-01-01'
-    # The endpoint without date parameters also works but is slower
+    # The endpoint without date parameters also works but is slower.
     date_required = True
 
     # SimpleSpider

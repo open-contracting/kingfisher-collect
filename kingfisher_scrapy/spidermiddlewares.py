@@ -223,13 +223,11 @@ class RetryDataErrorMiddleware:
             retries = response.request.meta.get('retries', 0) + 1
             if retries > 3:
                 spider.logger.error('Gave up retrying %(request)s (failed %(failures)d times): %(exception)s',
-                                    {'request': response.request, 'failures': retries,
-                                     'status': response.status})
-                return None
+                                    {'request': response.request, 'failures': retries, 'exception': exception})
+                return
             request = response.request.copy()
             request.dont_filter = True
             request.meta['retries'] = retries
             spider.logger.debug('Retrying %(request)s (failed %(failures)d times): %(exception)s',
-                                {'request': response.request, 'failures': retries,
-                                 'exception': exception})
+                                {'request': response.request, 'failures': retries, 'exception': exception})
             yield request
