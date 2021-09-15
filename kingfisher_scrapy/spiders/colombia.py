@@ -10,11 +10,9 @@ class Colombia(LinksSpider):
       Colombia Compra Eficiente (CCE)
     Spider arguments
       from_date
-        Download only data from this date onward (YYYY-MM-DD format).
-        If ``until_date`` is provided, defaults to '2011-01-01'.
+        Download only data from this date onward (YYYY-MM-DD format). Defaults to '2011-01-01'.
       until_date
-        Download only data until this date (YYYY-MM-DD format).
-        If ``from_date`` is provided, defaults to today.
+        Download only data until this date (YYYY-MM-DD format). Defaults to today.
     API documentation
       https://www.colombiacompra.gov.co/transparencia/api
     Swagger API documentation
