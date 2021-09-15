@@ -56,7 +56,7 @@ class Openopps(BaseSpider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(OpenOpps, cls).from_crawler(crawler, *args, **kwargs)
+        spider = super(Openopps, cls).from_crawler(crawler, *args, **kwargs)
 
         spider.username = crawler.settings.get('KINGFISHER_OPENOPPS_USERNAME')
         spider.password = crawler.settings.get('KINGFISHER_OPENOPPS_PASSWORD')

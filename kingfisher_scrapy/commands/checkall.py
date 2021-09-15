@@ -76,7 +76,7 @@ class Checker:
         expected_basename = re.sub(word_boundary_re, '_', class_name).lower()
 
         if basename != expected_basename:
-            self.log('error', 'class name %s and file name %s (%s) do not match', class_name, basename, expected_basename)
+            self.log('error', 'class %s and file %s (%s) do not match', class_name, basename, expected_basename)
 
         if class_name.endswith('Base') and class_name != 'EuropeTedTenderBase' or class_name.startswith('Digiwhist'):
             if docstring:
@@ -122,11 +122,11 @@ class Checker:
             if spider_argument not in spider_arguments:
                 self.log('warning', 'missing "%s" spider argument documentation', spider_argument)
 
-        for class_attribute, spider_argument in self.conditional_spider_arguments.items():
-            if hasattr(self.cls, class_attribute) and spider_argument not in spider_arguments:
-                self.log('warning', 'missing "%s" spider argument (%s is set)', spider_argument, class_attribute)
-            if not hasattr(self.cls, class_attribute) and spider_argument in spider_arguments:
-                self.log('warning', 'unexpected "%s" spider argument (%s is not set)', spider_argument, class_attribute)
+        for cls_attribute, spider_argument in self.conditional_spider_arguments.items():
+            if hasattr(self.cls, cls_attribute) and spider_argument not in spider_arguments:
+                self.log('warning', 'missing "%s" spider argument (%s is set)', spider_argument, cls_attribute)
+            if not hasattr(self.cls, cls_attribute) and spider_argument in spider_arguments:
+                self.log('warning', 'unexpected "%s" spider argument (%s is not set)', spider_argument, cls_attribute)
 
         def default_from_date(cls):
             return repr(getattr(cls, 'default_from_date', None))
