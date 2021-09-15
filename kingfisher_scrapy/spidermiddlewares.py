@@ -1,4 +1,3 @@
-import copy
 import json
 from collections import defaultdict
 from zipfile import BadZipFile
@@ -219,19 +218,19 @@ class RetryDataErrorMiddleware:
     exception, then the response was truncated.
     """
     # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#scrapy.spidermiddlewares.SpiderMiddleware.process_spider_exception
-    retries = defaultdict(int)
 
     def process_spider_exception(self, response, exception, spider):
         if isinstance(exception, BadZipFile):
-            if self.retries[response.request.url] >= 3:
-                spider.logger.error('Gave up retrying %(request)s (failed %(failures)d times): HTTP %(status)d',
-                                    {'request': response.request, 'failures': self.retries[response.request.url],
+            retries = response.request.meta.get('retries', 0) + 1
+            if retries >= 3:
+                spider.logger.error('Gave up retrying %(request)s (failed %(failures)d times): %(exception)s',
+                                    {'request': response.request, 'failures': retries,
                                      'status': response.status})
                 return None
-            request = copy.copy(response.request)
+            request = response.request.copy()
             request.dont_filter = True
-            self.retries[response.request.url] += 1
+            request.meta['retries'] = retries
             spider.logger.debug('Retrying %(request)s (failed %(failures)d times): %(exception)s',
-                                {'request': response.request, 'failures': self.retries[response.request.url],
+                                {'request': response.request, 'failures': retries,
                                  'exception': exception})
             yield request
