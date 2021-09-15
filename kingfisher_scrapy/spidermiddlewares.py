@@ -1,4 +1,5 @@
 import json
+from zipfile import BadZipFile
 
 import ijson
 
@@ -208,3 +209,25 @@ class ReadDataMiddleware:
             item['data'].close()
             item['data'] = data
             yield item
+
+
+class RetryDataErrorMiddleware:
+    """
+    Retries a request for a ZIP file up to 3 times, on the assumption that, if the spider raises a ``BadZipFile``
+    exception, then the response was truncated.
+    """
+    # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#scrapy.spidermiddlewares.SpiderMiddleware.process_spider_exception
+
+    def process_spider_exception(self, response, exception, spider):
+        if isinstance(exception, BadZipFile):
+            retries = response.request.meta.get('retries', 0) + 1
+            if retries > 3:
+                spider.logger.error('Gave up retrying %(request)s (failed %(failures)d times): %(exception)s',
+                                    {'request': response.request, 'failures': retries, 'exception': exception})
+                return
+            request = response.request.copy()
+            request.dont_filter = True
+            request.meta['retries'] = retries
+            spider.logger.debug('Retrying %(request)s (failed %(failures)d times): %(exception)s',
+                                {'request': response.request, 'failures': retries, 'exception': exception})
+            yield request

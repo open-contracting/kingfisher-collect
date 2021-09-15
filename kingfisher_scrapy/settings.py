@@ -63,7 +63,8 @@ SPIDER_MIDDLEWARES = {
     'kingfisher_scrapy.spidermiddlewares.RootPathMiddleware': 400,
     'kingfisher_scrapy.spidermiddlewares.AddPackageMiddleware': 300,
     'kingfisher_scrapy.spidermiddlewares.ResizePackageMiddleware': 200,
-    'kingfisher_scrapy.spidermiddlewares.ReadDataMiddleware': 100
+    'kingfisher_scrapy.spidermiddlewares.ReadDataMiddleware': 100,
+    'kingfisher_scrapy.spidermiddlewares.RetryDataErrorMiddleware': 50,
 }
 
 # Enable or disable downloader middlewares
