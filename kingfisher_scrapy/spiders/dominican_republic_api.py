@@ -4,7 +4,7 @@ from kingfisher_scrapy.base_spider import LinksSpider
 from kingfisher_scrapy.util import parameters
 
 
-class DominicanRepublicPortal(LinksSpider):
+class DominicanRepublicAPI(LinksSpider):
     """
     Domain
       Dirección General de Contrataciones Públicas (DGCP)

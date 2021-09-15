@@ -9,7 +9,7 @@ from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
 from kingfisher_scrapy.util import parameters
 
 
-class OpenOpps(BaseSpider):
+class Openopps(BaseSpider):
     """
     Domain
       OpenOpps

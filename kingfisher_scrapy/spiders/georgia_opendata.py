@@ -3,7 +3,7 @@ import scrapy
 from kingfisher_scrapy.base_spider import CompressedFileSpider
 
 
-class GeorgiaOpenData(CompressedFileSpider):
+class GeorgiaOpendata(CompressedFileSpider):
     """
     Domain
       State Procurement Agency (SPA)

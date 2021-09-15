@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoGuanajuato(MexicoINAIBase):
+class MexicoGuanajuatoIACIP(MexicoINAIBase):
     """
     Domain
       Instituto de Acceso a la Información Pública para el Estado de Guanajuato (IACIP)

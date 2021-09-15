@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoVeracruz(MexicoINAIBase):
+class MexicoVeracruzIVAI(MexicoINAIBase):
     """
     Domain
       Instituto Veracruzano de Acceso a la Información y Protección de Datos Personales

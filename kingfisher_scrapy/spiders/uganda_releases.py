@@ -4,7 +4,7 @@ from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.util import components, handle_http_error, join, parameters
 
 
-class Uganda(IndexSpider):
+class UgandaReleases(IndexSpider):
     """
     Domain
       Government Procurement Portal (GPP) of Public Procurement and Disposal of Public Assets Authority (PPDA)
