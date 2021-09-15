@@ -1,6 +1,6 @@
 import json
 from io import BytesIO
-from zipfile import ZIP_DEFLATED, ZipFile, BadZipFile
+from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
 
 import pytest
 
@@ -8,7 +8,7 @@ from kingfisher_scrapy.base_spider import CompressedFileSpider, SimpleSpider
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.spidermiddlewares import (AddPackageMiddleware, ConcatenatedJSONMiddleware,
                                                  LineDelimitedMiddleware, ReadDataMiddleware, ResizePackageMiddleware,
-                                                 RootPathMiddleware, RetryDataErrorMiddleware)
+                                                 RetryDataErrorMiddleware, RootPathMiddleware)
 from tests import response_fixture, spider_with_crawler
 
 
