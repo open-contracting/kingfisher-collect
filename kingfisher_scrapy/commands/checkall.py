@@ -68,8 +68,7 @@ class Checker:
         class_name = self.cls.__name__
         docstring = self.cls.__doc__
 
-        if (class_name.endswith('Base') or class_name.startswith('Digiwhist') or class_name in ('Fail',))\
-                and class_name != 'EuropeTedTenderBase':
+        if class_name.endswith('Base') and class_name != 'EuropeTedTenderBase' or class_name.startswith('Digiwhist'):
             if docstring:
                 self.log('error', 'unexpected docstring')
             return
