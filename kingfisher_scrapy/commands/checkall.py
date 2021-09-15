@@ -11,8 +11,8 @@ from kingfisher_scrapy.base_spider import PeriodicSpider
 
 logger = logging.getLogger(__name__)
 
-# Exceptions for MexicoINAIAPI and UKFTS.
-word_boundary_re = re.compile(r'(?<=[a-z])(?=[A-Z])|(?<=.)(?=[A-Z][a-z])|(?<=MexicoINAI)|(?<=UK)')
+# Exceptions for HondurasCoST, MexicoINAIAPI and UKFTS.
+word_boundary_re = re.compile(r'(?<=[a-z])(?=[A-Z])(?!ST$)|(?<=.)(?=[A-Z][a-z])|(?<=MexicoINAI)|(?<=UK)')
 
 
 class CheckAll(ScrapyCommand):
