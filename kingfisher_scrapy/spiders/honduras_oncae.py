@@ -37,6 +37,7 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'http://200.13.162.79/datosabiertos/{}'
+    formatter = staticmethod(components(-1))
 
     available_systems = ['HC1', 'CE', 'DDC']
 
@@ -52,6 +53,3 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
             if self.system and system != self.system:
                 continue
             yield self.pattern.format(f"{system}/{system}_datos_{date}_json.zip")
-
-    def get_formatter(self):
-        return components(-1)

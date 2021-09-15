@@ -17,6 +17,8 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
 
     name = 'indonesia_opentender'
 
+    base_url = 'https://opentender.net/api/'
+
     # BaseSpider
     date_format = 'year'
     default_from_date = '2008'
@@ -24,9 +26,9 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    base_url = 'https://opentender.net/api/'
     # PeriodicSpider
     pattern = base_url + 'master/lpse?year={}'
+    formatter = staticmethod(components(-1))
     start_requests_callback = 'parse_list'
 
     @handle_http_error
@@ -42,6 +44,3 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
                 url = f'{self.base_url}tender/export-ocds-batch?year={year}&lpse={code}'
                 yield self.build_request(url, formatter=join(components(-1),
                                                              parameters('year', 'lpse'), extension='zip'))
-
-    def get_formatter(self):
-        return components(-1)

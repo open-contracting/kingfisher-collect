@@ -460,7 +460,7 @@ class LinksSpider(SimpleSpider):
 
     #. Inherit from ``LinksSpider``
     #. Set a ``data_type`` class attribute to the data type of the API responses
-    #. Set a ``next_page_formatter`` class attribute to set the file name as in
+    #. Set a ``next_page_formatter`` class attribute to set the file name like in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
     #. Write a ``start_requests`` method to request the first page of API results
     #. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
@@ -530,8 +530,8 @@ class PeriodicSpider(SimpleSpider):
 
           pattern = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
 
-    #. Implement a ``get_formatter`` method to return the formatter to use in
-       :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls
+    #. Set a ``formatter`` class attribute to set the file name like in
+       :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
     #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM")
     #. If the source stopped publishing, set a ``default_until_date`` class attribute to a year or year-month
     #. Optionally, set a ``start_requests_callback`` class attribute to a method's name as a string - otherwise, it
@@ -560,7 +560,7 @@ class PeriodicSpider(SimpleSpider):
 
         for date in date_range:
             for number, url in enumerate(self.build_urls(date)):
-                yield self.build_request(url, self.get_formatter(), callback=self.start_requests_callback,
+                yield self.build_request(url, formatter=self.formatter, callback=self.start_requests_callback,
                                          priority=number * -1)
 
     def build_urls(self, date):
@@ -568,13 +568,6 @@ class PeriodicSpider(SimpleSpider):
         Yields one or more URLs for the given date.
         """
         yield self.pattern.format(date)
-
-    @abstractmethod
-    def get_formatter(self):
-        """
-        Returns the formatter to use in :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls.
-        """
-        pass
 
 
 class IndexSpider(SimpleSpider):

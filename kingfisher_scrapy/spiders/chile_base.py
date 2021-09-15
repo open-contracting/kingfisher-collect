@@ -19,12 +19,12 @@ class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
     # PeriodicSpider
     # The path parameters are {system}/{year}/{month}/{offset}/{limit}.
     pattern = 'http://api.mercadopublico.cl/APISOCDS/OCDS/{0}/{1.year:d}/{1.month:02d}/{2}/{3}'
+    formatter = staticmethod(components(-4, -1))
     start_requests_callback = 'parse_list'
 
     # IndexSpider
     count_pointer = '/pagination/total'
     limit = 100
-    formatter = staticmethod(components(-4, -1))
     parse_list_callback = 'parse_page'
 
     available_systems = {
@@ -46,9 +46,6 @@ class ChileCompraBaseSpider(IndexSpider, PeriodicSpider):
             if self.system and system != self.system:
                 continue
             yield self.pattern.format(self.available_systems[system], date, 0, self.limit)
-
-    def get_formatter(self):
-        return components(-4, -1)
 
     @handle_http_error
     def parse(self, response):

@@ -10,5 +10,5 @@ class MexicoINAIBase(PeriodicSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    def get_formatter(self):
-        return components(-1)
+    # PeriodicSpider
+    formatter = staticmethod(components(-1))

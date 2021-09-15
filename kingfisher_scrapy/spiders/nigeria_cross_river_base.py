@@ -12,8 +12,8 @@ class NigeriaCrossRiverBase(PeriodicSpider):
     date_format = 'year-month'
     default_from_date = '2020-02'
 
-    def get_formatter(self):
-        return join(components(-1), parameters('year', 'month'))
+    # PeriodicSpider
+    formatter = staticmethod(join(components(-1), parameters('year', 'month')))
 
     @abstractmethod
     def build_urls(self, date):
