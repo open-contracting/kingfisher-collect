@@ -18,18 +18,16 @@ class KenyaMakueni(SimpleSpider):
     data_type = 'release_package'
 
     def start_requests(self):
-        yield from self.request_page()
+        yield from self.request_page(0)
 
     @handle_http_error
     def parse(self, response):
         yield from super().parse(response)
 
-        if len(response.json()) > 0:
+        if response.json():
             page = response.request.meta['page']
             yield from self.request_page(page + 1)
 
-    def request_page(self, page=0):
-        step = 1000
-        url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={0}&pageNumber={1}'
-
-        yield self.build_request(url.format(step, page), parameters('pageNumber'), meta={'page': page})
+    def request_page(self, page):
+        url = f'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize=1000&pageNumber={page}'
+        yield self.build_request(url, parameters('pageNumber'), meta={'page': page})
