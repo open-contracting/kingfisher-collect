@@ -215,16 +215,15 @@ class ReadDataMiddleware:
 
 class RetryDataErrorMiddleware:
     """
-    # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#scrapy.spidermiddlewares.SpiderMiddleware.process_spider_exception
-    This method is called when a spider or process_spider_output() method (from a previous spider middleware) raises
-    an exception. Currently, if a BadZipFile exception is received, it retries the request up to 3 times per URL,
-    otherwise returns None for scrapy continuing processing the exception.
+    Retries a request for a ZIP file up to 3 times, on the assumption that, if the spider raises a ``BadZipFile``
+    exception, then the response was truncated.
     """
+    # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#scrapy.spidermiddlewares.SpiderMiddleware.process_spider_exception
     retries = defaultdict(int)
 
     def process_spider_exception(self, response, exception, spider):
         if isinstance(exception, BadZipFile):
-            if self.retries[response.request.url] > 3:
+            if self.retries[response.request.url] >= 3:
                 spider.logger.error('Gave up retrying %(request)s (failed %(failures)d times): HTTP %(status)d',
                                     {'request': response.request, 'failures': self.retries[response.request.url],
                                      'status': response.status})
@@ -232,7 +231,7 @@ class RetryDataErrorMiddleware:
             request = copy.copy(response.request)
             request.dont_filter = True
             self.retries[response.request.url] += 1
-            spider.logger.debug('Retrying %(request)s (failed %(failures)d times) error %(error)s HTTP %(status)d',
+            spider.logger.debug('Retrying %(request)s (failed %(failures)d times): %(exception)s',
                                 {'request': response.request, 'failures': self.retries[response.request.url],
-                                 'error': exception, 'status': response.status})
+                                 'exception': exception})
             yield request
