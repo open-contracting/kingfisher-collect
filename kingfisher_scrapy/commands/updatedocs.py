@@ -17,7 +17,7 @@ class UpdateDocs(ScrapyCommand):
 
         def _keyfunc(module):
             module_name = module.__name__.rsplit('.', 1)[-1]
-            if module_name.startswith(('costa_rica', 'dominican_republic')):
+            if module_name.startswith(('costa_rica', 'czech_republic', 'dominican_republic', 'united_kingdom')):
                 return '_'.join(module_name.split('_', 2)[:2])
             return module_name.split('_', 1)[0]
 
