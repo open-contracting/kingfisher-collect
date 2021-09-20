@@ -207,7 +207,7 @@ Bolivia
 Canada
 ------
 
-.. autoclass:: kingfisher_scrapy.spiders.canada_buyandsell.CanadaBuyAndSell
+.. autoclass:: kingfisher_scrapy.spiders.canada_buyandsell.CanadaBuyandsell
    :no-members:
 
 .. code-block:: bash
@@ -540,7 +540,7 @@ Dominican Republic
 
    scrapy crawl dominican_republic
 
-.. autoclass:: kingfisher_scrapy.spiders.dominican_republic_api.DominicanRepublicPortal
+.. autoclass:: kingfisher_scrapy.spiders.dominican_republic_api.DominicanRepublicAPI
    :no-members:
 
 .. code-block:: bash
@@ -580,7 +580,7 @@ France
 Georgia
 -------
 
-.. autoclass:: kingfisher_scrapy.spiders.georgia_opendata.GeorgiaOpenData
+.. autoclass:: kingfisher_scrapy.spiders.georgia_opendata.GeorgiaOpendata
    :no-members:
 
 .. code-block:: bash
@@ -750,7 +750,7 @@ Mexico
 
    scrapy crawl mexico_administracion_publica_federal_bulk
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_durango_idaip.MexicoDurango
+.. autoclass:: kingfisher_scrapy.spiders.mexico_durango_idaip.MexicoDurangoIDAIP
    :no-members:
 
 .. code-block:: bash
@@ -764,7 +764,7 @@ Mexico
 
    scrapy crawl mexico_grupo_aeroporto
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_guanajuato_iacip.MexicoGuanajuato
+.. autoclass:: kingfisher_scrapy.spiders.mexico_guanajuato_iacip.MexicoGuanajuatoIACIP
    :no-members:
 
 .. code-block:: bash
@@ -778,7 +778,7 @@ Mexico
 
    scrapy crawl mexico_inai_api
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_inai_infoem.MexicoINFOEM
+.. autoclass:: kingfisher_scrapy.spiders.mexico_inai_infoem.MexicoINAIINFOEM
    :no-members:
 
 .. code-block:: bash
@@ -820,21 +820,21 @@ Mexico
 
    scrapy crawl mexico_quien_es_quien_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_veracruz_ivai.MexicoVeracruz
+.. autoclass:: kingfisher_scrapy.spiders.mexico_veracruz_ivai.MexicoVeracruzIVAI
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl mexico_veracruz_ivai
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_yucatan_inaip.MexicoYucatan
+.. autoclass:: kingfisher_scrapy.spiders.mexico_yucatan_inaip.MexicoYucatanINAIP
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl mexico_yucatan_inaip
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_zacatecas_izai.MexicoZacatecas
+.. autoclass:: kingfisher_scrapy.spiders.mexico_zacatecas_izai.MexicoZacatecasIZAI
    :no-members:
 
 .. code-block:: bash
@@ -902,7 +902,7 @@ Nigeria
 
    scrapy crawl nigeria_abia_state
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_anambra_state_records.NigeriaAnambraState
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_anambra_state_records.NigeriaAnambraStateRecords
    :no-members:
 
 .. code-block:: bash
@@ -951,14 +951,14 @@ Nigeria
 
    scrapy crawl nigeria_edo_state
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_records.NigeriaKadunaStateBudeshiRecords
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_records.NigeriaKadunaStateRecords
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl nigeria_kaduna_state_records
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_releases.NigeriaKadunaStateBudeshiReleases
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_releases.NigeriaKadunaStateReleases
    :no-members:
 
 .. code-block:: bash
@@ -975,7 +975,7 @@ Nigeria
 Openopps
 --------
 
-.. autoclass:: kingfisher_scrapy.spiders.openopps.OpenOpps
+.. autoclass:: kingfisher_scrapy.spiders.openopps.Openopps
    :no-members:
 
 .. code-block:: bash
@@ -1100,7 +1100,7 @@ Tanzania
 Uganda
 ------
 
-.. autoclass:: kingfisher_scrapy.spiders.uganda_releases.Uganda
+.. autoclass:: kingfisher_scrapy.spiders.uganda_releases.UgandaReleases
    :no-members:
 
 .. code-block:: bash
