@@ -8,7 +8,6 @@ from kingfisher_scrapy.util import components, handle_http_error, join, paramete
 
 
 class NigeriaCrossRiverBase(SimpleSpider):
-    # SimpleSpider
     base_url = 'http://ocdsapi.dppib-crsgov.org/api/ocdsAPI/'
 
     # BaseSpider
