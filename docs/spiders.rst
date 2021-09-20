@@ -207,7 +207,7 @@ Bolivia
 Canada
 ------
 
-.. autoclass:: kingfisher_scrapy.spiders.canada_buyandsell.CanadaBuyAndSell
+.. autoclass:: kingfisher_scrapy.spiders.canada_buyandsell.CanadaBuyandsell
    :no-members:
 
 .. code-block:: bash
