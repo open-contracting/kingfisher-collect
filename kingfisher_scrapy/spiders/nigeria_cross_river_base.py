@@ -21,6 +21,7 @@ class NigeriaCrossRiverBase(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
+        formatter = join(components(-1), parameters('year', 'month'))
         for item in response.json():
             date = datetime(item['year'], item['month'], 1)
 
@@ -28,7 +29,7 @@ class NigeriaCrossRiverBase(SimpleSpider):
                 if not (self.from_date <= date <= self.until_date):
                     continue
 
-            yield self.build_request(self.build_url(date), formatter=join(components(-1), parameters('year', 'month')))
+            yield self.build_request(self.build_url(date), formatter=formatter)
 
     @abstractmethod
     def build_url(self, date):

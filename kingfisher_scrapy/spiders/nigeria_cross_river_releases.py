@@ -11,7 +11,7 @@ class NigeriaCrossRiverReleases(NigeriaCrossRiverBase):
         If ``until_date`` is provided, defaults to '2019-08'.
       until_date
         Download only data until this month (YYYY-MM format).
-        If ``from_date`` is provided, defaults to the current month
+        If ``from_date`` is provided, defaults to the current month.
     API documentation
       http://ocdsapi.dppib-crsgov.org/Help
     """
