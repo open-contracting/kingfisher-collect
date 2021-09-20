@@ -46,7 +46,7 @@ coverage==5.0.3
     # via
     #   coveralls
     #   pytest-cov
-coveralls==3.0.0
+coveralls==3.2.0
     # via -r requirements_dev.in
 cryptography==3.4.6
     # via

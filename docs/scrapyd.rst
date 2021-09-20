@@ -47,7 +47,7 @@ On your local machine, :ref:`install Kingfisher Collect<install>`.
 Configure Kingfisher Collect
 ----------------------------
 
-Create a ``~/.config/scrapy.cfg`` file using the template below, and set the ``url`` variable to point to the remote server:
+Create a `~/.config/scrapy.cfg <https://github.com/scrapy/scrapyd-client#targets>`__ file using the template below, and set the ``url`` variable to point to the remote server:
 
 .. code-block:: ini
 
