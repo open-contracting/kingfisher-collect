@@ -13,21 +13,23 @@ class NigeriaCrossRiverBase(SimpleSpider):
 
     # BaseSpider
     date_format = 'year-month'
-    default_from_date = '2021-02'
-
-    formatter = staticmethod(join(components(-1), parameters('year', 'month')))
+    default_from_date = '2019-08'
 
     def start_requests(self):
-        url = 'http://ocdsapi.dppib-crsgov.org/api/ocdsAPI/getAvailableReleasesSummary'
-        yield scrapy.Request(url, meta={'file_name': 'list.json'})
+        url = self.base_url + 'getAvailableReleasesSummary'
+        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
-    def parse(self, response):
+    def parse_list(self, response):
         for item in response.json():
             date = datetime(item['year'], item['month'], 1)
-            for number, url in enumerate(self.build_urls(date)):
-                yield self.build_request(url, formatter=self.formatter, callback=super().parse, priority=number * -1)
+
+            if self.from_date and self.until_date:
+                if not (self.from_date <= date <= self.until_date):
+                    continue
+
+            yield self.build_request(self.build_url(date), formatter=join(components(-1), parameters('year', 'month')))
 
     @abstractmethod
-    def build_urls(self, date):
+    def build_url(self, date):
         pass
