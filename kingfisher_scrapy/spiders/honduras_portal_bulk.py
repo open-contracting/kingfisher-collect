@@ -1,9 +1,13 @@
-from kingfisher_scrapy.base_spider import PeriodicSpider
+from datetime import datetime
+
+import scrapy
+
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
-class HondurasPortalBulk(PeriodicSpider):
+class HondurasPortalBulk(SimpleSpider):
     """
     Domain
       Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Secretaria de Finanzas de Honduras (SEFIN)
@@ -41,39 +45,48 @@ class HondurasPortalBulk(PeriodicSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    # PeriodicSpider
-    pattern = 'http://www.contratacionesabiertas.gob.hn/api/v1/descargas/{}'
-    formatter = staticmethod(components(-1))
+    available_publishers = {'oncae': 'Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Honduras',
+                            'sefin': 'Secretaria de Finanzas de Honduras'}
+    available_systems = {'HC1': 'HonduCompras 1.0 - Módulo de Difusión de Compras y Contrataciones',
+                         'CE': 'Catálogo Electrónico',
+                         'DDC': 'Módulo de Difusión Directa de Contratos'}
 
-    available_publishers = {'oncae': 'oficina_normativa', 'sefin': 'secretaria_de_fin_HN.SIAFI2'}
-    available_systems = {'HC1': 'honducompras-1', 'CE': 'catalogo-electronico', 'DDC': 'difusion-directa-contrato'}
+    def start_requests(self):
+        url = 'http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json'
+        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @classmethod
     def from_crawler(cls, crawler, publisher=None, system=None, *args, **kwargs):
         spider = super().from_crawler(crawler, publisher=publisher, system=system, *args, **kwargs)
-        if publisher and spider.publisher not in spider.available_publishers:
+        if publisher and spider.publisher not in spider.available_publishers.keys():
             raise SpiderArgumentError(f'spider argument `publisher`: {spider.publisher!r} not recognized')
 
         if system:
             if spider.publisher != 'oncae':
                 raise SpiderArgumentError(f'spider argument `system` is not supported for publisher: '
                                           f'{spider.publisher!r}')
-            if spider.system not in spider.available_systems:
+            if spider.system not in spider.available_systems.keys():
                 raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
 
         return spider
 
-    def build_urls(self, date):
-        for publisher in self.available_publishers:
-            if self.publisher and publisher != self.publisher:
+    @handle_http_error
+    def parse_list(self, response):
+        formatter = components(-1)
+
+        for item in response.json():
+            publisher = item['publicador']
+            if self.publisher and publisher != self.available_publishers.get(self.publisher):
                 continue
 
-            if publisher == 'oncae':
-                for system in self.available_systems:
-                    if self.system and system != self.system:
-                        continue
-                    yield self.pattern.format(f"{self.available_publishers[publisher]}_"
-                                              f"{self.available_systems[system]}_{date.year}_{date.month:02d}.json")
-            else:
-                yield self.pattern.format(f"{self.available_publishers[publisher]}_"
-                                          f"{date.year}_{date.month:02d}.json")
+            if publisher == self.available_publishers['oncae']:
+                system = item['sistema']
+                if self.system and system != self.available_systems.get(self.system):
+                    continue
+
+            date = datetime(int(item['year']), int(item['month']), 1)
+            if self.from_date and self.until_date:
+                if not (self.from_date <= date <= self.until_date):
+                    continue
+
+            yield self.build_request(item['urls']['json'], formatter=formatter)
