@@ -58,20 +58,41 @@ class HondurasPortalBulk(SimpleSpider):
     @classmethod
     def from_crawler(cls, crawler, publisher=None, system=None, *args, **kwargs):
         spider = super().from_crawler(crawler, publisher=publisher, system=system, *args, **kwargs)
-        if publisher and spider.publisher not in spider.available_publishers.keys():
+        if publisher and spider.publisher not in spider.available_publishers:
             raise SpiderArgumentError(f'spider argument `publisher`: {spider.publisher!r} not recognized')
 
         if system:
             if spider.publisher != 'oncae':
                 raise SpiderArgumentError(f'spider argument `system` is not supported for publisher: '
                                           f'{spider.publisher!r}')
-            if spider.system not in spider.available_systems.keys():
+            if spider.system not in spider.available_systems:
                 raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
 
         return spider
 
     @handle_http_error
     def parse_list(self, response):
+        # The system names are:
+        #    - oficina_normativa_honducompras-1
+        #    - oficina_normativa_catalogo-electronico
+        #    - oficina_normativa_difusion-directa-contrato
+        #    - secretaria_de_fin_HN.SIAFI2
+        #
+        # An example of expected data is:
+        # [
+        #   {
+        #    "urls": {
+        #      "csv": "https://www.contratacionesabiertas.gob.hn/api/v1/descargas/<system_name>_<year>_<month>.zip",
+        #      "md5": "https://www.contratacionesabiertas.gob.hn/api/v1/descargas/<system_name>_<year>_<month>.md5",
+        #      "json": "https://www.contratacionesabiertas.gob.hn/api/v1/descargas/<system_name>_<year>_<month>.json",
+        #       "xlsx": "https://www.contratacionesabiertas.gob.hn/api/v1/descargas/<system_name>_<year>_<month>.xlsx"
+        #    },
+        #    "year": "values between 2005 to the current year",
+        #    "month": "values between 1 and 12",
+        #    "sistema": "already covered in the available_system dict values",
+        #    "publicador": "already covered in the available_publishers dict values"
+        #   }, ...
+        # ]
         formatter = components(-1)
 
         for item in response.json():
@@ -84,8 +105,8 @@ class HondurasPortalBulk(SimpleSpider):
                 if self.system and system != self.available_systems.get(self.system):
                     continue
 
-            date = datetime(int(item['year']), int(item['month']), 1)
             if self.from_date and self.until_date:
+                date = datetime(int(item['year']), int(item['month']), 1)
                 if not (self.from_date <= date <= self.until_date):
                     continue
 
