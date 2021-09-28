@@ -778,12 +778,12 @@ Mexico
 
    scrapy crawl mexico_inai_api
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_inai_infoem.MexicoINAIINFOEM
+.. autoclass:: kingfisher_scrapy.spiders.mexico_infoem.MexicoINFOEM
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl mexico_inai_infoem
+   scrapy crawl mexico_infoem
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_records.MexicoNuevoLeonRecords
    :no-members:

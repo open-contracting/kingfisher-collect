@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoINAIINFOEM(MexicoINAIBase):
+class MexicoINFOEM(MexicoINAIBase):
     """
     Domain
       Instituto de Transparencia, Acceso a la Información Pública y
