@@ -923,19 +923,19 @@ Nigeria
 
    scrapy crawl nigeria_budeshi_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_cross_river_records.NigeriaCrossRiverRecords
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_cross_river_state_records.NigeriaCrossRiverStateRecords
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl nigeria_cross_river_records
+   scrapy crawl nigeria_cross_river_state_records
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_cross_river_releases.NigeriaCrossRiverReleases
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_cross_river_state_releases.NigeriaCrossRiverStateReleases
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl nigeria_cross_river_releases
+   scrapy crawl nigeria_cross_river_state_releases
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_ebonyi_state.NigeriaEbonyiState
    :no-members:

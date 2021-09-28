@@ -1,7 +1,7 @@
-from kingfisher_scrapy.spiders.nigeria_cross_river_base import NigeriaCrossRiverBase
+from kingfisher_scrapy.spiders.nigeria_cross_river_state_base import NigeriaCrossRiverStateBase
 
 
-class NigeriaCrossRiverRecords(NigeriaCrossRiverBase):
+class NigeriaCrossRiverStateReleases(NigeriaCrossRiverStateBase):
     """
     Domain
       Cross River State
@@ -15,10 +15,10 @@ class NigeriaCrossRiverRecords(NigeriaCrossRiverBase):
     API documentation
       http://ocdsapi.dppib-crsgov.org/Help
     """
-    name = 'nigeria_cross_river_state_records'
+    name = 'nigeria_cross_river_state_releases'
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = 'release_package'
 
     def build_url(self, date):
-        return self.base_url + 'getRecordPackage?year={0.year:d}&month={0.month:02d}'.format(date)
+        return self.base_url + 'getReleasePackage?year={0.year:d}&month={0.month:02d}'.format(date)
