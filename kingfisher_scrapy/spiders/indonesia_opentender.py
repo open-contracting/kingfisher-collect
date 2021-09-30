@@ -28,12 +28,12 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
 
     base_url = 'https://opentender.net/api/'
     # PeriodicSpider
-    pattern = base_url + 'master/lpse?year={}'
+    pattern = base_url + 'master/lpse?year={}&format=json'
     start_requests_callback = 'parse_list'
 
     @handle_http_error
     def parse_list(self, response):
-        data = json.loads(response.xpath('//*[@id="content"]/div[2]/div[4]/pre/text()').get())
+        data = response.json()
         year = response.request.url.split('=')[1]
         requested_codes = []
         for item in data['data']:
