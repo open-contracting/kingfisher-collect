@@ -34,7 +34,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     @handle_http_error
     def parse_list(self, response):
         data = response.json()
-        year =  get_parameter_value(response.request.url, 'year')
+        year = get_parameter_value(response.request.url, 'year')
         requested_codes = []
         for item in data['data']:
             code = item['code']
