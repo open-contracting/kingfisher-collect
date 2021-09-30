@@ -27,6 +27,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     base_url = 'https://opentender.net/api/'
     # PeriodicSpider
     pattern = base_url + 'master/lpse?year={}&format=json'
+    formatter = join(components(-1))
     start_requests_callback = 'parse_list'
 
     @handle_http_error
