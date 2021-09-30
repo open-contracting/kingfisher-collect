@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spider import CompressedFileSpider, PeriodicSpider
-from kingfisher_scrapy.util import components, handle_http_error, join, parameters
+from kingfisher_scrapy.util import components, get_parameter_value, handle_http_error, join, parameters
 
 
 class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
@@ -28,12 +28,13 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
 
     # PeriodicSpider
     pattern = base_url + 'master/lpse?year={}&format=json'
+    formatter = staticmethod(components(-1))
     start_requests_callback = 'parse_list'
 
     @handle_http_error
     def parse_list(self, response):
         data = response.json()
-        year = response.request.url.split('=')[1]
+        year =  get_parameter_value(response.request.url, 'year')
         requested_codes = []
         for item in data['data']:
             code = item['code']
