@@ -28,7 +28,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
 
     # PeriodicSpider
     pattern = base_url + 'master/lpse?year={}&format=json'
-    formatter = join(components(-1))
+    formatter = staticmethod(components(-1))
     start_requests_callback = 'parse_list'
 
     @handle_http_error
