@@ -1,3 +1,5 @@
+import json
+
 from kingfisher_scrapy.base_spider import CompressedFileSpider, PeriodicSpider
 from kingfisher_scrapy.util import components, handle_http_error, join, parameters
 
@@ -31,7 +33,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = response.json()
+        data = json.loads(response.xpath('//*[@id="content"]/div[2]/div[4]/pre/text()').get())
         year = response.request.url.split('=')[1]
         requested_codes = []
         for item in data['data']:
