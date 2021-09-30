@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoYucatan(MexicoINAIBase):
+class MexicoYucatanINAIP(MexicoINAIBase):
     """
     Domain
       Instituto Estatal de Transparencia, Acceso a la Información Pública y Protección de Datos Personales

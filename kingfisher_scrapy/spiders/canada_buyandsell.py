@@ -2,7 +2,7 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import components
 
 
-class CanadaBuyAndSell(SimpleSpider):
+class CanadaBuyandsell(SimpleSpider):
     """
     Domain
       Public Works and Government Services Canada

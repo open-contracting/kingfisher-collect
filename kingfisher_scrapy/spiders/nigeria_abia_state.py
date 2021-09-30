@@ -21,11 +21,9 @@ class NigeriaAbiaState(PeriodicSpider):
     default_from_date = '2018'
     default_until_date = '2021'
 
-    # PeriodicSpider
-    pattern = 'http://abiaeprocurement.ab.gov.ng/media/ocds{}.json'
-
     # SimpleSpider
     data_type = 'release_package'
 
-    def get_formatter(self):
-        return components(-1)
+    # PeriodicSpider
+    pattern = 'http://abiaeprocurement.ab.gov.ng/media/ocds{}.json'
+    formatter = staticmethod(components(-1))

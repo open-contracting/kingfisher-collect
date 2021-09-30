@@ -1,6 +1,5 @@
 import codecs
 import os
-from abc import abstractmethod
 from datetime import datetime
 from io import BytesIO
 from math import ceil
@@ -11,80 +10,126 @@ from jsonpointer import resolve_pointer
 from rarfile import RarFile
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.exceptions import MissingNextLinkError, SpiderArgumentError, UnknownArchiveFormatError
+from kingfisher_scrapy.exceptions import (IncoherentConfigurationError, MissingNextLinkError, SpiderArgumentError,
+                                          UnknownArchiveFormatError)
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.util import (add_path_components, add_query_string, get_file_name_and_extension,
-                                    handle_http_error)
+                                    handle_http_error, parameters)
 
 browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
 
 class BaseSpider(scrapy.Spider):
     """
-    -  If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for `Kingfisher
-       Process integration <https://github.com/open-contracting/kingfisher-collect/issues/411>`__.
-    -  If the spider supports ``from_date`` and ``until_date`` spider arguments:
+    With respect to the data's source:
 
-       -  Set a ``date_format`` class attribute to "date", "datetime", "year" or "year-month".
+    -  If the source can support ``from_date`` and ``until_date`` spider arguments:
+
+       -  Set a ``date_format`` class attribute to "date", "datetime", "year" or "year-month" (default "date").
        -  Set a ``default_from_date`` class attribute to a date ("YYYY-MM-DD"), datetime ("YYYY-MM-DDTHH:MM:SS"),
           year ("YYYY") or year-month ("YYYY-MM").
        -  If the source stopped publishing, set a ``default_until_date`` class attribute to a date or datetime.
 
-    -  If a spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set a
-       ``default_from_date`` class attribute as above.
-    -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
-    -  If a spider collects data as CSV or XLSX files, add a ``unflatten = True`` class attribute to convert each
-       item to json files in the Unflatten pipeline class using the ``unflatten`` command from Flatten Tool.
-       If you need to set more arguments for the unflatten command, set a ``unflatten_args`` dict with them.
-    -  If the data is not formatted as OCDS (record, release, record package or release package), set a ``root_path``
-       class attribute to the path to the OCDS data.
-    -  If the JSON file is line-delimited and the root path is to a JSON array, set a ``root_path_max_length`` class
-       attribute to the maximum length of the JSON array at the root path.
-    -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
+    -  If the spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
+       ``date_format`` and ``default_from_date`` class attributes as above.
+    -  If the spider needs to parse the JSON response in its ``parse`` method, set ``dont_truncate = True``.
+
+    .. tip::
+
+        If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set,
+        then ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
+        ``get_default_until_date()`` return value (which is the current time, by default).
+
+    With respect to the data's format:
+
+    -  If the data is not encoded using UTF-8, set an ``encoding`` class attribute to its encoding.
     -  If the data is a concatenated JSON, add a ``concatenated_json = True`` class attribute.
+    -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
+    -  If the data embeds OCDS data within other objects or arrays, set a ``root_path`` class attribute to the path to
+       the OCDS data, e.g. ``'releasePackage'`` or ``'results.item'``.
+    -  If the JSON file is concatenated JSON or line-delimited JSON and the root path is to a JSON array, set a
+       ``root_path_max_length`` class attribute to the maximum length of the JSON array at the root path.
+    -  If the data is in CSV or XLSX format, add a ``unflatten = True`` class attribute to convert it to JSON using
+       Flatten Tool's ``unflatten`` function. To pass arguments to ``unflatten``, set a ``unflatten_args`` dict.
+    -  If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for the
+       :ref:`Kingfisher Process<kingfisher-process>` extension.
 
-    If ``date_required`` is ``True``, or if either the ``from_date`` or ``until_date`` spider arguments are set, then
-    ``from_date`` defaults to the ``default_from_date`` class attribute, and ``until_date`` defaults to the
-    ``get_default_until_date()`` return value (which is the current time, by default).
+    With respect to support for Kingfisher Collect's features:
 
-    If the spider needs to parse the JSON response in its ``parse`` method, set ``dont_truncate = True``.
+    -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
     """
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S', 'year': '%Y', 'year-month': '%Y-%m'}
 
-    ocds_version = '1.1'
+    # Regarding the data source.
     date_format = 'date'
     date_required = False
-    unflatten = False
-    unflatten_args = {}
-    line_delimited = False
-    concatenated_json = False
-    root_path = ''
     dont_truncate = False
 
-    def __init__(self, sample=None, note=None, from_date=None, until_date=None, crawl_time=None,
-                 keep_collection_open=None, package_pointer=None, release_pointer=None, truncate=None,
-                 compile_releases=None, path=None, *args, **kwargs):
+    # Regarding the data format.
+    encoding = 'utf-8'
+    concatenated_json = False
+    line_delimited = False
+    root_path = ''
+    unflatten = False
+    unflatten_args = {}
+    ocds_version = '1.1'
+
+    # Not to be overridden by sub-classes.
+    available_steps = {'compile', 'check'}
+
+    def __init__(self, sample=None, path=None, from_date=None, until_date=None, crawl_time=None, note=None,
+                 keep_collection_open=None, steps=None, compile_releases=None, package_pointer=None,
+                 release_pointer=None, truncate=None, *args, **kwargs):
+        """
+        :param sample: the number of items to download (``'true'`` means ``1``; ``'false'`` and ``None`` mean no limit)
+        :param path: path components to append to the URLs yielded by the ``start_requests`` method (see :ref:`filter`)
+        :param from_date: the date from which to download data (see :ref:`spider-arguments`)
+        :param until_date: the date until which to download data (see :ref:`spider-arguments`)
+        :param crawl_time: override the crawl's start time (see :ref:`increment`)
+        :param note: a note to add to the collection in Kingfisher Process
+        :param keep_collection_open: whether to close the collection in Kingfisher Process when the crawl is finished
+        :param compile_releases: whether to create compiled releases from individual releases when using the
+                                 :class:`~kingfisher_scrapy.extensions.DatabaseStore` extension
+        :param package_pointer: the JSON Pointer to the value in the package (see the :ref:`pluck` command)
+        :param release_pointer: the JSON Pointer to the value in the release (see the :ref:`pluck` command)
+        :param truncate: the number of characters to which the value is truncated (see the :ref:`pluck` command)
+        """
+
         super().__init__(*args, **kwargs)
 
+        if self.concatenated_json and self.line_delimited:
+            raise IncoherentConfigurationError('concatenated_json = True is incompatible with line_delimited = True.')
+
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
-        if sample == 'true' or sample is True:
+
+        # Related to filtering data from the source.
+        if sample == 'true':
             self.sample = 1
-        elif sample == 'false' or sample is False:
+        elif sample == 'false':
             self.sample = None
         else:
             self.sample = sample
-        self.note = note
         self.from_date = from_date
         self.until_date = until_date
+
+        # Related to incremental crawls.
         self.crawl_time = crawl_time
+
+        # Related to Kingfisher Process.
+        self.note = note
         self.keep_collection_open = keep_collection_open == 'true'
-        # Pluck-related arguments.
+        if steps is None:
+            self.steps = self.available_steps
+        else:
+            self.steps = set(steps.split(',')) & self.available_steps
+
+        # Related to the DatabaseStore extension.
+        self.compile_releases = compile_releases == 'true'
+
+        # Related to the pluck command.
         self.package_pointer = package_pointer
         self.release_pointer = release_pointer
         self.truncate = int(truncate) if truncate else None
-
-        # DatabaseStore-related argument.
-        self.compile_releases = compile_releases == 'true'
 
         self.query_string_parameters = {}
         for key, value in kwargs.items():
@@ -120,6 +165,7 @@ class BaseSpider(scrapy.Spider):
             'compile_releases': compile_releases,
         }
         spider_arguments.update(kwargs)
+
         self.logger.info('Spider arguments: %r', spider_arguments)
 
     @classmethod
@@ -244,7 +290,7 @@ class BaseSpider(scrapy.Spider):
             kwargs['data'] = body
         return self.build_file(**kwargs)
 
-    def build_file(self, *, file_name=None, url=None, data=None, data_type=None, encoding='utf-8'):
+    def build_file(self, *, file_name=None, url=None, data=None, data_type=None):
         """
         Returns a File item to yield.
         """
@@ -253,7 +299,6 @@ class BaseSpider(scrapy.Spider):
             'data': data,
             'data_type': data_type,
             'url': url,
-            'encoding': encoding,
         })
 
     def build_file_item(self, number, data, item):
@@ -261,13 +306,12 @@ class BaseSpider(scrapy.Spider):
         Returns a FileItem item to yield.
         """
         return FileItem({
-                    'number': number,
-                    'file_name': item['file_name'],
-                    'data': data,
-                    'data_type': item['data_type'],
-                    'url': item['url'],
-                    'encoding': item['encoding'],
-                })
+            'number': number,
+            'file_name': item['file_name'],
+            'data': data,
+            'data_type': item['data_type'],
+            'url': item['url'],
+        })
 
     def build_file_error_from_response(self, response, **kwargs):
         """
@@ -298,7 +342,6 @@ class SimpleSpider(BaseSpider):
 
     #. Inherit from ``SimpleSpider``
     #. Set a ``data_type`` class attribute to the data type of the responses
-    #. Optionally, set an ``encoding`` class attribute to the encoding of the responses (default UTF-8)
     #. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
 
     .. code-block:: python
@@ -317,11 +360,9 @@ class SimpleSpider(BaseSpider):
                 yield scrapy.Request('https://example.com/api/package.json', meta={'file_name': 'all.json'})
     """
 
-    encoding = 'utf-8'
-
     @handle_http_error
     def parse(self, response):
-        yield self.build_file_from_response(response, data_type=self.data_type, encoding=self.encoding)
+        yield self.build_file_from_response(response, data_type=self.data_type)
 
 
 class CompressedFileSpider(BaseSpider):
@@ -331,7 +372,6 @@ class CompressedFileSpider(BaseSpider):
 
     #. Inherit from ``CompressedFileSpider``
     #. Set a ``data_type`` class attribute to the data type of the compressed files
-    #. Optionally, set an ``encoding`` class attribute to the encoding of the compressed files (default UTF-8)
     #. Optionally, add a ``resize_package = True`` class attribute to split large packages (e.g. greater than 100MB)
     #. Write a ``start_requests`` method to request the archive files
 
@@ -351,14 +391,13 @@ class CompressedFileSpider(BaseSpider):
 
     .. note::
 
-       ``resize_package = True`` is not compatible with ``line_delimited = True`` or ``root_path``.
-       ``concatenated_json = True`` is not compatible with ``line_delimited = True``.
+       ``concatenated_json = True``, ``line_delimited = True``, ``root_path``, ``data_type = 'release'`` and
+       ``data_type = 'record'`` are not supported if ``resize_package = True``.
     """
 
     # BaseSpider
     dont_truncate = True
 
-    encoding = 'utf-8'
     resize_package = False
     file_name_must_contain = ''
 
@@ -408,7 +447,6 @@ class CompressedFileSpider(BaseSpider):
                 'data': data,
                 'data_type': self.data_type,
                 'url': response.request.url,
-                'encoding': self.encoding
             })
 
             number += 1
@@ -421,7 +459,7 @@ class LinksSpider(SimpleSpider):
 
     #. Inherit from ``LinksSpider``
     #. Set a ``data_type`` class attribute to the data type of the API responses
-    #. Set a ``next_page_formatter`` class attribute to set the file name as in
+    #. Set a ``formatter`` class attribute to set the file name like in
        :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
     #. Write a ``start_requests`` method to request the first page of API results
     #. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
@@ -439,6 +477,9 @@ class LinksSpider(SimpleSpider):
 
             # SimpleSpider
             data_type = 'release_package'
+
+            # LinksSpider
+            formatter = staticmethod(parameters('page'))
 
             def start_requests(self):
                 yield scrapy.Request('https://example.com/api/packages.json', meta={'file_name': 'page-1.json'})
@@ -464,7 +505,7 @@ class LinksSpider(SimpleSpider):
         data = response.json()
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
-            return self.build_request(url, formatter=self.next_page_formatter, **kwargs)
+            return self.build_request(url, formatter=self.formatter, **kwargs)
 
         for filter_argument in self.filter_arguments:
             if getattr(self, filter_argument, None):
@@ -488,26 +529,24 @@ class PeriodicSpider(SimpleSpider):
 
           pattern = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
 
-    #. Implement a ``get_formatter`` method to return the formatter to use in
-       :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls
+    #. Set a ``formatter`` class attribute to set the file name like in
+       :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`
     #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM")
     #. If the source stopped publishing, set a ``default_until_date`` class attribute to a year or year-month
-    #. Optionally, set a ``start_requests_callback`` class attribute to a method's name - otherwise, it defaults to
-       :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
+    #. Optionally, set a ``start_requests_callback`` class attribute to a method's name as a string - otherwise, it
+       defaults to :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`
 
     If ``sample`` is set, the data from the most recent year or month is retrieved.
     """
 
     # PeriodicSpider requires date parameters to be always set.
     date_required = True
+    start_requests_callback = 'parse'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if hasattr(self, 'start_requests_callback'):
-            self.start_requests_callback = getattr(self, self.start_requests_callback)
-        else:
-            self.start_requests_callback = self.parse
+        self.start_requests_callback = getattr(self, self.start_requests_callback)
 
     def start_requests(self):
         start = self.from_date
@@ -520,7 +559,7 @@ class PeriodicSpider(SimpleSpider):
 
         for date in date_range:
             for number, url in enumerate(self.build_urls(date)):
-                yield self.build_request(url, self.get_formatter(), callback=self.start_requests_callback,
+                yield self.build_request(url, formatter=self.formatter, callback=self.start_requests_callback,
                                          priority=number * -1)
 
     def build_urls(self, date):
@@ -528,13 +567,6 @@ class PeriodicSpider(SimpleSpider):
         Yields one or more URLs for the given date.
         """
         yield self.pattern.format(date)
-
-    @abstractmethod
-    def get_formatter(self):
-        """
-        Returns the formatter to use in :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request` calls.
-        """
-        pass
 
 
 class IndexSpider(SimpleSpider):
@@ -552,8 +584,10 @@ class IndexSpider(SimpleSpider):
            configure the spider to send a ``page`` query string parameter instead of a pair of ``limit`` and ``offset``
            query string parameters. The spider then yields a request for each offset/page.
 
-    #. Set a ``formatter`` class attribute to set the file name as in
-       :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`.
+    #. If the ``page`` query string parameter is zero-indexed, set ``start_page = 0``.
+    #. Set ``formatter`` to set the file name like in :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_request`.
+       If ``total_pages_pointer`` or ``use_page = True``, it defaults to ``parameters(<param_page>)``. Otherwise, if
+       ``count_pointer`` is set and ``use_page = False``, it defaults to ``parameters(<param_offset>)``.
     #. Write a ``start_requests`` method to yield the initial URL. The request's ``callback`` parameter should be set
        to ``self.parse_list``.
 
@@ -562,106 +596,133 @@ class IndexSpider(SimpleSpider):
     ``range_generator`` should return page numbers or offset numbers. ``url_builder`` receives a page or offset from
     ``range_generator``, and returns a URL to request. See the ``kenya_makueni`` spider for an example.
 
+    If the results are in ascending chronological order, set ``chronological_order = 'asc'``.
+
+    The ``parse_list`` method parses responses as JSON data. To change the parser of these responses - for example,
+    to check for an error response, or to extract the page count from an HTML page - override the ``parse_list_loader``
+    method. If this method returns a ``FileError``, then ``parse_list`` yields it and returns.
+
+    Otherwise, results are yielded from all responses by :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`. To
+    change this method, set a ``parse_list_callback`` class attribute to a method's name as a string.
+
     The names of the query string parameters 'page', 'limit' and 'offset' are customizable. Define the ``param_page``,
-    ``param_limit`` and ``param_offset`` class attributes to set the custom names. Additional query string parameters
-    can be added by defining ``additional_params``, which should be a dict.
+    ``param_limit`` and ``param_offset`` class attributes to set the custom names.
 
-    Th base URL is calculated from the initial URL yielded by ``start_requests``. If you need a different base URL for
-    subsequent requests, define the ``base_url`` class attribute.
-
-    By default, responses passed to ``parse_list`` are passed to the ``parse`` method from which items are yielded. If
-    the responses passed to ``parse_list`` contain no OCDS data, set ``yield_list_results`` to ``False``.
-
-    If the results are in ascending chronological order, set the ``chronological_order`` class attribute to ``'asc'``.
+    If a different URL is used for the initial request than for later requests, set the ``base_url`` class attribute
+    to the base URL of later requests. In this case, results aren't yielded from the response passed to ``parse_list``.
     """
 
+    use_page = False
+    start_page = 1
     chronological_order = 'desc'
+    parse_list_callback = 'parse'
+    param_page = 'page'
+    param_limit = 'limit'
+    param_offset = 'offset'
+    base_url = ''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.param_page = getattr(self, 'param_page', 'page')
-        self.param_limit = getattr(self, 'param_limit', 'limit')
-        self.param_offset = getattr(self, 'param_offset', 'offset')
-        self.additional_params = getattr(self, 'additional_params', {})
-        self.base_url = getattr(self, 'base_url', '')
-        self.yield_list_results = getattr(self, 'yield_list_results', True)
+        self.parse_list_callback = getattr(self, self.parse_list_callback)
 
-        if hasattr(self, 'total_pages_pointer') and self.total_pages_pointer:
+        has_total_pages_pointer = hasattr(self, 'total_pages_pointer')
+        has_count_pointer = hasattr(self, 'count_pointer')
+        has_range_generator = hasattr(self, 'range_generator')
+
+        if not (has_total_pages_pointer ^ has_count_pointer ^ has_range_generator):
+            raise IncoherentConfigurationError(
+                'Exactly one of total_pages_pointer, count_pointer or range_generator must be set.')
+        if self.use_page and not has_count_pointer:
+            raise IncoherentConfigurationError(
+                'use_page = True has no effect unless count_pointer is set.')
+
+        if has_total_pages_pointer:
             self.range_generator = self.pages_from_total_range_generator
             if not hasattr(self, 'url_builder'):
                 self.url_builder = self.pages_url_builder
-        elif hasattr(self, 'count_pointer') and self.count_pointer:
-            if hasattr(self, 'use_page') and self.use_page:
+            if not hasattr(self, 'formatter'):
+                self.formatter = parameters(self.param_page)
+        elif has_count_pointer:
+            if self.use_page:
                 self.range_generator = self.page_size_range_generator
                 if not hasattr(self, 'url_builder'):
                     self.url_builder = self.pages_url_builder
+                if not hasattr(self, 'formatter'):
+                    self.formatter = parameters(self.param_page)
             else:
                 self.range_generator = self.limit_offset_range_generator
                 if not hasattr(self, 'url_builder'):
                     self.url_builder = self.limit_offset_url_builder
+                if not hasattr(self, 'formatter'):
+                    self.formatter = parameters(self.param_offset)
 
     @handle_http_error
-    def parse_list(self, response, **kwargs):
-        if self.yield_list_results:
-            yield from self.parse(response)
+    def parse_list(self, response):
+        data = self.parse_list_loader(response)
+        if isinstance(data, FileError):
+            yield data
+            return
+
         if not self.base_url:
-            self._set_base_url(response.request.url)
-        try:
-            data = response.json()
-        except ValueError:
-            data = None
+            yield from self.parse_list_callback(response)
+
         for priority, value in enumerate(self.range_generator(data, response)):
             # Requests with a higher priority value will execute earlier and we want the newest pages first.
             # https://doc.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request
             if self.chronological_order == 'desc':
                 priority *= -1
             yield self.build_request(self.url_builder(value, data, response), formatter=self.formatter,
-                                     priority=priority, **kwargs)
+                                     priority=priority, callback=self.parse_list_callback)
+
+    def parse_list_loader(self, response):
+        return response.json()
 
     def pages_from_total_range_generator(self, data, response):
         pages = resolve_pointer(data, self.total_pages_pointer)
-        return range(2, pages + 1)
+        if self.base_url:
+            start = 0
+        else:
+            start = 1
+        return range(self.start_page + start, self.start_page + pages)
 
     def pages_url_builder(self, value, data, response):
-        return self._build_url({
+        return self._build_url(response, {
             self.param_page: value,
         })
 
     def limit_offset_range_generator(self, data, response):
         limit = self._resolve_limit(data)
         count = resolve_pointer(data, self.count_pointer)
-        # If `yield_list_results` is `True` (default), the response is parsed is `parse_list`.
-        if self.yield_list_results:
-            start = self.limit
-        else:
+        if self.base_url:
             start = 0
+        else:
+            start = limit
         return range(start, count, limit)
 
     def limit_offset_url_builder(self, value, data, response):
-        return self._build_url({
-            self.param_limit: self.limit,
+        limit = self._resolve_limit(data)
+        return self._build_url(response, {
+            self.param_limit: limit,
             self.param_offset: value,
         })
 
     def page_size_range_generator(self, data, response):
         limit = self._resolve_limit(data)
         count = resolve_pointer(data, self.count_pointer)
-        # Assumes the first page is page 1, not page 0.
-        return range(2, ceil(count / limit) + 1)
+        if self.base_url:
+            start = 0
+        else:
+            start = 1
+        return range(self.start_page + start, self.start_page + ceil(count / limit))
 
     def _resolve_limit(self, data):
         if isinstance(self.limit, str) and self.limit.startswith('/'):
             return resolve_pointer(data, self.limit)
         return int(self.limit)
 
-    def _set_base_url(self, url):
-        self.base_url = util.replace_parameters(url, page=None, limit=None, offset=None)
-
-    def _build_url(self, params):
-        url_params = params.copy()
-        url_params.update(self.additional_params)
-        return util.replace_parameters(self.base_url, **url_params)
+    def _build_url(self, response, params):
+        return util.replace_parameters(self.base_url or response.request.url, **params.copy())
 
 
 class BigFileSpider(SimpleSpider):
@@ -682,6 +743,10 @@ class BigFileSpider(SimpleSpider):
 
             def start_requests(self):
                 yield self.build_request('https://example.com/api/package.json', formatter=components(-1)
+
+    .. note::
+
+       ``concatenated_json = True``, ``line_delimited = True`` and ``root_path`` are not supported.
     """
 
     resize_package = True

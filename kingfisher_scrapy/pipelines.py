@@ -15,6 +15,7 @@ from ocdsmerge.util import get_release_schema_url, get_tags
 from scrapy.exceptions import DropItem
 
 from kingfisher_scrapy.items import File, FileItem, PluckedItem
+from kingfisher_scrapy.util import transcode
 
 
 def _json_loads(basename):
@@ -22,6 +23,12 @@ def _json_loads(basename):
 
 
 class Validate:
+    """
+    Drops duplicate files based on ``file_name`` and file items based on ``file_name`` and ``number``.
+
+    :raises jsonschema.ValidationError: if the item is invalid
+    """
+
     def __init__(self):
         self.validators = {}
         self.files = set()
@@ -52,7 +59,7 @@ class Validate:
 
 class Sample:
     """
-    Drop items and close the spider once the sample size is reached.
+    Drops items and closes the spider once the sample size is reached.
     """
 
     def __init__(self):
@@ -78,6 +85,10 @@ class Sample:
 
 
 class Pluck:
+    """
+    Extracts a value from the item and returns it as a plucked item.
+    """
+
     def process_item(self, item, spider):
         if not spider.pluck:
             return item
@@ -89,7 +100,7 @@ class Pluck:
                 value = _resolve_pointer(item['data'], pointer)
             else:
                 try:
-                    value = next(ijson.items(item['data'], pointer[1:].replace('/', '.')))
+                    value = next(transcode(spider, ijson.items, item['data'], pointer[1:].replace('/', '.')))
                 except StopIteration:
                     value = f'error: {pointer} not found'
                 except ijson.common.IncompleteJSONError as e:
@@ -108,7 +119,7 @@ class Pluck:
             if isinstance(item['data'], dict):
                 data = item['data']
             else:
-                data = json.loads(item['data'])
+                data = json.loads(item['data'], encoding=spider.encoding)  # encoding argument is removed in Python 3.9
 
             if item['data_type'].startswith('release'):
                 releases = data['releases']
@@ -131,6 +142,10 @@ class Pluck:
 
 
 class Unflatten:
+    """
+    Converts an item's data from CSV/XLSX to JSON, using the ``unflatten`` command from Flatten Tool.
+    """
+
     def process_item(self, item, spider):
         if not spider.unflatten or not isinstance(item, (File, FileItem)):
             return item

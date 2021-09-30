@@ -11,15 +11,13 @@ from tests import spider_with_crawler
 
 
 @pytest.mark.parametrize('sample,expected', [
+    ('3', 3),
     ('true', 1),
     ('false', None),
-    (True, 1),
-    (False, None),
     (None, None),
-    (3, 3)
 ])
 def test_sample(sample, expected):
-    spider = BaseSpider(name='test', sample=sample)
+    spider = spider_with_crawler(sample=sample)
 
     assert spider.sample == expected
 
@@ -48,15 +46,13 @@ def test_build_file_from_response():
     response.request.url = 'https://example.com/remote.json'
     response.request.meta = {'file_name': 'file.json'}
 
-    actual = spider.build_file_from_response(response, file_name='file.json', data_type='release_package',
-                                             encoding='iso-8859-1')
+    actual = spider.build_file_from_response(response, file_name='file.json', data_type='release_package')
 
     assert actual == File({
         'file_name': 'file.json',
         'data': b'{"key": "value"}',
         "data_type": 'release_package',
         "url": 'https://example.com/remote.json',
-        'encoding': 'iso-8859-1',
     })
 
 
@@ -66,15 +62,13 @@ def test_build_file():
     data = b'{"key": "value"}'
     url = 'https://example.com/remote.json'
 
-    actual = spider.build_file(file_name='file.json', url=url, data=data, data_type='release_package',
-                               encoding='iso-8859-1')
+    actual = spider.build_file(file_name='file.json', url=url, data=data, data_type='release_package')
 
     assert actual == File({
         'file_name': 'file.json',
         'data': b'{"key": "value"}',
         "data_type": 'release_package',
         "url": 'https://example.com/remote.json',
-        'encoding': 'iso-8859-1',
     })
 
 

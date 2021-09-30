@@ -1,19 +1,6 @@
 from scrapy.commands import ScrapyCommand
 from scrapy.exceptions import UsageError
 
-EXCEPTIONS = {
-    'fail',
-    # Require authentication
-    'openopps',
-    'paraguay_dncp_records',
-    'paraguay_dncp_releases',
-    'paraguay_hacienda',
-}
-
-
-def yield_nothing(*args, **kwargs):
-    yield
-
 
 class CrawlAll(ScrapyCommand):
     def syntax(self):
@@ -53,7 +40,7 @@ class CrawlAll(ScrapyCommand):
         self.settings.set('EXTENSIONS', extensions)
 
         for spider_name in self.crawler_process.spider_loader.list():
-            if not args and spider_name not in EXCEPTIONS or spider_name in args:
+            if not args or spider_name in args:
                 spidercls = self.crawler_process.spider_loader.load(spider_name)
                 self.crawler_process.crawl(spidercls, **kwargs)
 

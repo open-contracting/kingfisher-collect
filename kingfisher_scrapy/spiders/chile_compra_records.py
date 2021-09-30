@@ -1,8 +1,8 @@
-from kingfisher_scrapy.spiders.chile_base import ChileCompraBaseSpider
+from kingfisher_scrapy.spiders.chile_compra_base import ChileCompraBase
 from kingfisher_scrapy.util import components
 
 
-class ChileCompraRecords(ChileCompraBaseSpider):
+class ChileCompraRecords(ChileCompraBase):
     """
     Domain
       ChileCompra

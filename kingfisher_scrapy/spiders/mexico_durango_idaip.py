@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoDurango(MexicoINAIBase):
+class MexicoDurangoIDAIP(MexicoINAIBase):
     """
     Domain
       Instituto Duranguense de Acceso a la Información y de Protección de Datos Personales (IDAIP)

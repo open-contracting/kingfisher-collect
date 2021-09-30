@@ -20,7 +20,7 @@ class UKFTSTest(LinksSpider):
     data_type = 'release_package'
 
     # LinksSpider
-    next_page_formatter = staticmethod(parameters('cursor'))
+    formatter = staticmethod(parameters('cursor'))
 
     def start_requests(self):
         # This URL was provided by the publisher and is not the production URL.

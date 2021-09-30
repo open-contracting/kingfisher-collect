@@ -1,7 +1,7 @@
-from kingfisher_scrapy.spiders.paraguay_dncp_base import ParaguayDNCPBaseSpider
+from kingfisher_scrapy.spiders.paraguay_dncp_base import ParaguayDNCPBase
 
 
-class ParaguayDNCPRecords(ParaguayDNCPBaseSpider):
+class ParaguayDNCPRecords(ParaguayDNCPBase):
     """
     Domain
       Dirección Nacional de Contrataciones Públicas (DNCP)

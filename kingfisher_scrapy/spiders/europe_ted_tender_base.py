@@ -1,15 +1,12 @@
-from math import ceil
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import IndexSpider
-from kingfisher_scrapy.util import parameters
 
 
 class EuropeTedTenderBase(IndexSpider):
     """
     Domain
-      TenderBase
+      Tenders Electronic Daily (TED) by TenderBase
     API endpoints
       Get releases by page
         Link
@@ -20,27 +17,22 @@ class EuropeTedTenderBase(IndexSpider):
     """
     name = 'europe_ted_tender_base'
 
+    # BaseSpider
+    root_path = 'item'
+
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = 'release'
 
     # IndexSpider
-    limit = 10
-    formatter = staticmethod(parameters('page'))
-    param_page = 'page'
-    yield_list_results = False
-
-    base_url = 'http://www.tenderbase.eu/api/releases/?&page={page}'
+    count_pointer = ''
+    limit = 10  # unknown page size parameter
+    use_page = True
+    start_page = 0
+    base_url = 'http://www.tenderbase.eu/api/releases/'
 
     def start_requests(self):
-        yield scrapy.Request(
-            'http://www.tenderbase.eu/releases/',
-            meta={'file_name': 'count.json'},
-            callback=self.parse_list
-        )
+        url = 'http://www.tenderbase.eu/releases/'
+        yield scrapy.Request(url, meta={'file_name': 'count.json'}, callback=self.parse_list)
 
-    def range_generator(self, data, response):
-        count_releases = response.xpath('//div[@class="container my-4"]//span/span/text()').get()
-        return range(ceil(int(count_releases) / self.limit))
-
-    def url_builder(self, value, data, response):
-        return self.pages_url_builder(value, data, response)
+    def parse_list_loader(self, response):
+        return int(response.xpath('//div[@class="container my-4"]//span/span/text()').get())

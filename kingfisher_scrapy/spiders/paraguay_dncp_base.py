@@ -8,10 +8,10 @@ from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
 from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameters
 
 
-class ParaguayDNCPBaseSpider(SimpleSpider):
+class ParaguayDNCPBase(SimpleSpider):
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
-            'kingfisher_scrapy.middlewares.ParaguayAuthMiddleware': 543,
+            'kingfisher_scrapy.downloadermiddlewares.ParaguayAuthMiddleware': 543,
         },
         'CONCURRENT_REQUESTS': 1,
     }
@@ -131,7 +131,7 @@ class ParaguayDNCPBaseSpider(SimpleSpider):
         """ Tells if the access token will expire soon (required by
         ParaguayAuthMiddleware)
         """
-        if time_diff.total_seconds() < ParaguayDNCPBaseSpider.request_time_limit * 60:
+        if time_diff.total_seconds() < ParaguayDNCPBase.request_time_limit * 60:
             return False
         self.logger.info('Time_diff: %s', time_diff.total_seconds())
         return True

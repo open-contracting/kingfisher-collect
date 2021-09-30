@@ -18,6 +18,8 @@ When ready, open a shell, and run:
    cd kingfisher-collect
    pip install -r requirements.txt
 
+To extract data from RAR files, you must have the ``unrar`` or `unar <https://theunarchiver.com/command-line>`__ command-line utility.
+
 The next steps assume that you have changed to the ``kingfisher-collect`` directory (the ``cd`` command above).
 
 .. _configure:
@@ -126,6 +128,10 @@ If you are integrating with :doc:`Kingfisher Process<kingfisher_process>`, remem
 .. code-block:: bash
 
     scrapy crawl spider_name -a keep_collection_open=true
+
+.. seealso::
+
+   :class:`~kingfisher_scrapy.extensions.DatabaseStore` extension
 
 .. _proxy:
 

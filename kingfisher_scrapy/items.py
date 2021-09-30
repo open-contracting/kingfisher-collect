@@ -12,7 +12,6 @@ class Item(scrapy.Item):
 class File(Item):
     data = scrapy.Field()
     data_type = scrapy.Field()
-    encoding = scrapy.Field()
 
     # Added by the FilesStore extension, for the KingfisherProcessAPI extension to read the file.
     path = scrapy.Field()
@@ -23,7 +22,6 @@ class FileItem(Item):
     number = scrapy.Field()
     data = scrapy.Field()
     data_type = scrapy.Field()
-    encoding = scrapy.Field()
 
     # Added by the FilesStore extension, for the KingfisherProcessAPI extension to read the file.
     path = scrapy.Field()

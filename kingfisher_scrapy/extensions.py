@@ -1,12 +1,14 @@
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 import csv
 import json
-import logging
 import os
 from datetime import datetime
+from urllib.parse import parse_qs, urlencode, urljoin, urlsplit
 
 import ijson
+import pika
 import psycopg2
+import requests
 import sentry_sdk
 from ocdskit.combine import merge
 from psycopg2 import sql
@@ -17,11 +19,14 @@ from twisted.python.failure import Failure
 from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from kingfisher_scrapy.kingfisher_process import Client
-from kingfisher_scrapy.util import _pluck_filename, get_file_name_and_extension
 
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 class Pluck:
+    """
+    Appends one data value from one plucked item to a file. See the :ref:`pluck` command.
+    """
+
     def __init__(self, directory, max_bytes):
         self.directory = directory
         self.max_bytes = max_bytes
@@ -77,11 +82,15 @@ class Pluck:
         self._write(spider, f'closed: {reason}')
 
     def _write(self, spider, value):
-        with open(os.path.join(self.directory, _pluck_filename(spider)), 'a+') as f:
+        with open(os.path.join(self.directory, util.pluck_filename(spider)), 'a+') as f:
             f.write(f'{value},{spider.name}\n')
 
 
 class FilesStore:
+    """
+    Writes items' data to individual files in a directory. See the :ref:`how-it-works` documentation.
+    """
+
     def __init__(self, directory):
         self.directory = directory
 
@@ -97,13 +106,6 @@ class FilesStore:
         return os.path.join(spider_directory, spider.get_start_time('%Y%m%d_%H%M%S'))
 
     @classmethod
-    def absolute_crawl_directory(cls, spider, files_store_directory):
-        """
-        Returns the crawl's absolute directory.
-        """
-        return os.path.join(files_store_directory, cls.relative_crawl_directory(spider))
-
-    @classmethod
     def from_crawler(cls, crawler):
         directory = crawler.settings['FILES_STORE']
 
@@ -114,6 +116,11 @@ class FilesStore:
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
 
         return extension
+
+    def spider_opened(self, spider):
+        if hasattr(spider, '_job'):
+            path = os.path.join(self.relative_crawl_directory(spider), 'scrapyd-job.txt')
+            self._write_file(path, spider._job)
 
     def item_scraped(self, item, spider):
         """
@@ -126,11 +133,10 @@ class FilesStore:
 
         file_name = item['file_name']
         if isinstance(item, FileItem):
-            name, extension = get_file_name_and_extension(file_name)
+            name, extension = util.get_file_name_and_extension(file_name)
             file_name = f"{name}-{item['number']}.{extension}"
 
         path = os.path.join(self.relative_crawl_directory(spider), file_name)
-
         self._write_file(path, item['data'])
 
         item['path'] = path
@@ -147,9 +153,9 @@ class FilesStore:
 
         with open(path, mode) as f:
             if isinstance(data, (bytes, str)):
-                f.write(data)
+                f.write(data)  # NOTE: should be UTF-8
             else:
-                json.dump(data, f, default=util.default)
+                util.json_dump(data, f)
 
 
 class DatabaseStore:
@@ -172,15 +178,12 @@ class DatabaseStore:
     To perform incremental updates, the OCDS data in the crawl directory must not be deleted between crawls.
     """
 
-    connection = None
-    cursor = None
-    files_store_directory = None
-
-    logger = logging.getLogger(__name__)
-
     def __init__(self, database_url, files_store_directory):
         self.database_url = database_url
         self.files_store_directory = files_store_directory
+
+        self.connection = None
+        self.cursor = None
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -213,12 +216,12 @@ class DatabaseStore:
                 default_from_date = None
 
             if not spider.from_date or spider.from_date == default_from_date:
-                self.logger.info(f'Getting the date from which to resume the crawl from the {spider.name} table')
+                spider.logger.info('Getting the date from which to resume the crawl from the %s table', spider.name)
                 self.execute("SELECT max(data->>'date')::timestamptz FROM {table}", table=spider.name)
                 from_date = self.cursor.fetchone()[0]
                 if from_date:
                     formatted_from_date = datetime.strftime(from_date, spider.date_format)
-                    self.logger.info(f'Resuming the crawl from {formatted_from_date}')
+                    spider.logger.info('Resuming the crawl from %s', formatted_from_date)
                     spider.from_date = datetime.strptime(formatted_from_date, spider.date_format)
 
             self.connection.commit()
@@ -237,22 +240,22 @@ class DatabaseStore:
         else:
             prefix = 'records.item.compiledRelease'
 
-        crawl_directory = FilesStore.absolute_crawl_directory(spider, self.files_store_directory)
-        self.logger.info(f"Reading the {crawl_directory} crawl directory with the {prefix or 'empty'} prefix")
+        crawl_directory = os.path.join(self.files_store_directory, FilesStore.relative_crawl_directory(spider))
+        spider.logger.info('Reading the %s crawl directory with the %s prefix', crawl_directory, prefix or 'empty')
 
         data = self.yield_items_from_directory(crawl_directory, prefix)
         if spider.compile_releases:
-            self.logger.info('Creating compiled releases')
+            spider.logger.info('Creating compiled releases')
             data = merge(data)
 
         filename = os.path.join(crawl_directory, 'data.csv')
-        self.logger.info(f'Writing the JSON data to the {filename} CSV file')
+        spider.logger.info('Writing the JSON data to the %s CSV file', filename)
         with open(filename, 'w') as f:
             writer = csv.writer(f)
             for item in data:
-                writer.writerow([json.dumps(item, default=util.default)])
+                writer.writerow([util.json_dumps(item)])
 
-        self.logger.info(f'Replacing the JSON data in the {spider.name} table')
+        spider.logger.info('Replacing the JSON data in the %s table', spider.name)
         self.connection = psycopg2.connect(self.database_url)
         self.cursor = self.connection.cursor()
         try:
@@ -274,7 +277,7 @@ class DatabaseStore:
     def yield_items_from_directory(self, crawl_directory, prefix=''):
         for dir_entry in os.scandir(crawl_directory):
             if dir_entry.name.endswith('.json'):
-                with open(dir_entry.path) as f:
+                with open(dir_entry.path, 'rb') as f:
                     yield from ijson.items(f, prefix)
 
     # Copied from kingfisher-summarize
@@ -304,6 +307,10 @@ class DatabaseStore:
 
 
 class ItemCount:
+    """
+    Adds a count to the crawl stats for each type of item scraped.
+    """
+
     def __init__(self, stats):
         self.stats = stats
 
@@ -394,16 +401,16 @@ class KingfisherProcessAPI:
             return self._request(spider, 'create_file_error', item['url'], data)
 
         data['data_type'] = item['data_type']
-        data['encoding'] = item.get('encoding', 'utf-8')
+        data['encoding'] = 'utf-8'
         if spider.note:
             data['collection_note'] = spider.note
 
         if isinstance(item, FileItem):
             data['number'] = item['number']
-            if isinstance(item['data'], (str, bytes)):
+            if isinstance(item['data'], (bytes, str)):
                 data['data'] = item['data']
             else:
-                data['data'] = json.dumps(item['data'], default=util.default)
+                data['data'] = util.json_dumps(item['data'])
 
             return self._request(spider, 'create_file_item', item['url'], data)
 
@@ -424,7 +431,7 @@ class KingfisherProcessAPI:
             # Same condition as `Response.raise_for_status` in requests module.
             # https://github.com/psf/requests/blob/28cc1d237b8922a2dcbd1ed95782a7f1751f475b/requests/models.py#L920
             if 400 <= response.code < 600:
-                spider.logger.warning(f'{method} failed ({infix}) with status code: {response.code}')
+                spider.logger.warning('%s failed (%s) with status code: %d', method, infix, response.code)
             # A return value is provided to ease testing.
             return response
 
@@ -450,6 +457,161 @@ class KingfisherProcessAPI:
                 errors = {'twisted': str(errors)}
             data['errors'] = json.dumps(errors)
         return data
+
+
+class KingfisherProcessAPI2:
+    """
+    If the ``KINGFISHER_API2_URL`` environment variable or configuration setting is set,
+    then messages are sent to a Kingfisher Process API for the ``item_scraped`` and ``spider_closed`` signals.
+    """
+
+    ITEMS_SENT_POST = 'kingfisher_process_items_sent_post'
+    ITEMS_FAILED_POST = 'kingfisher_process_items_failed_post'
+
+    ITEMS_SENT_RABBIT = 'kingfisher_process_items_sent_rabbit'
+    ITEMS_FAILED_RABBIT = 'kingfisher_process_items_failed_rabbit'
+
+    def __init__(self, url, stats, rabbit_url=None, rabbit_exchange_name=None, rabbit_routing_key=None):
+        self.url = url
+        self.stats = stats
+        self.rabbit_url = rabbit_url
+        self.exchange = rabbit_exchange_name
+        self.routing_key = rabbit_routing_key
+
+        # The collection ID is set by the spider_opened handler.
+        self.collection_id = None
+        self.channel = None
+
+        if rabbit_url:
+            parsed = urlsplit(rabbit_url)
+            query = parse_qs(parsed.query)
+            # NOTE: Heartbeat should not be disabled.
+            # https://github.com/open-contracting/data-registry/issues/140
+            query.update({'blocked_connection_timeout': 1800, 'heartbeat': 0})
+
+            connection = pika.BlockingConnection(pika.URLParameters(parsed._replace(query=urlencode(query)).geturl()))
+
+            self.channel = connection.channel()
+            self.channel.exchange_declare(exchange=self.exchange, durable=True, exchange_type='direct')
+
+            self.channel.queue_declare(durable=True, queue=self.routing_key)
+            self.channel.queue_bind(exchange=self.exchange, queue=self.routing_key, routing_key=self.routing_key)
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        url = crawler.settings['KINGFISHER_API2_URL']
+        rabbit_url = crawler.settings['RABBIT_URL']
+        rabbit_exchange_name = crawler.settings['RABBIT_EXCHANGE_NAME']
+        rabbit_routing_key = crawler.settings['RABBIT_ROUTING_KEY']
+
+        if not url:
+            raise NotConfigured('KINGFISHER_API2_URL is not set.')
+
+        if crawler.settings['DATABASE_URL']:
+            raise NotConfigured('DATABASE_URL is set.')
+
+        extension = cls(url, crawler.stats, rabbit_url, rabbit_exchange_name, rabbit_routing_key)
+        crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+        crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
+
+        return extension
+
+    def spider_opened(self, spider):
+        """
+        Sends an API request to create a collection in Kingfisher Process.
+        """
+        data = {
+            'source_id': spider.name,
+            'data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
+            'sample': bool(spider.sample),
+            'note': spider.note,
+            'job': getattr(spider, '_job', None),
+            'upgrade': spider.ocds_version == '1.0',
+        }
+
+        for step in spider.steps:
+            data[step] = True
+
+        # This request must be synchronous, to have the collection ID for the item_scraped handler.
+        response = self._post_synchronous(spider, 'api/v1/create_collection', data)
+
+        if response.ok:
+            self.collection_id = response.json()['collection_id']
+            spider.logger.info('Created collection %d in Kingfisher Process', self.collection_id)
+        else:
+            spider.logger.error('Failed to create collection. API status code: %d', response.status_code)
+
+    def spider_closed(self, spider, reason):
+        """
+        Sends an API request to close the collection in Kingfisher Process.
+        """
+        if spider.pluck or spider.keep_collection_open:
+            return
+
+        if not self.collection_id:
+            return
+
+        response = self._post_synchronous(spider, 'api/v1/close_collection', {
+            'collection_id': self.collection_id,
+            'reason': reason,
+            'stats': json.loads(json.dumps(self.stats.get_stats(), default=str))  # for datetime objects
+        })
+
+        if response.ok:
+            spider.logger.info('Closed collection %d in Kingfisher Process', self.collection_id)
+        else:
+            spider.logger.error('Failed to close collection. API status code: %d', response.status_code)
+
+    def item_scraped(self, item, spider):
+        """
+        Sends either a RabbitMQ or API request to store the file, file item or file error in Kingfisher Process.
+        """
+        if isinstance(item, PluckedItem):
+            return
+
+        if not self.collection_id:
+            return
+
+        data = {
+            'collection_id': self.collection_id,
+            'url': item['url'],
+        }
+
+        if isinstance(item, FileError):
+            data['errors'] = json.dumps(item['errors'])
+        else:
+            data['path'] = os.path.abspath(os.path.join(item['files_store'], item['path']))
+
+        if self.rabbit_url:
+            try:
+                self._publish_to_rabbit(data)
+                self.stats.inc_value(self.ITEMS_SENT_RABBIT)
+            except Exception as e:
+                self.stats.inc_value(self.ITEMS_FAILED_RABBIT)
+                spider.logger.error('Failed to publish message to RabbitMQ: %s', e)
+        else:
+            response = self._post_synchronous(spider, 'api/v1/create_collection_file', data)
+            if response.ok:
+                self.stats.inc_value(self.ITEMS_SENT_POST)
+                spider.logger.debug('Created collection file in Kingfisher Process')
+            else:
+                self.stats.inc_value(self.ITEMS_FAILED_POST)
+                spider.logger.error('Failed to create collection file. API status code: %d', response.status_code)
+
+    def _post_synchronous(self, spider, path, data):
+        """
+        POSTs synchronous API requests to Kingfisher Process.
+        """
+        url = urljoin(self.url, path)
+        spider.logger.debug('Sending synchronous request to Kingfisher Process at %s with %s', url, data)
+        return requests.post(url, json=data)
+
+    # This method is extracted so that it can be mocked in tests.
+    def _publish_to_rabbit(self, message):
+        # https://www.rabbitmq.com/publishers.html#message-properties
+        self.channel.basic_publish(exchange=self.exchange, routing_key=self.routing_key, body=json.dumps(message),
+                                   properties=pika.BasicProperties(delivery_mode=2, content_type='application/json'))
 
 
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry

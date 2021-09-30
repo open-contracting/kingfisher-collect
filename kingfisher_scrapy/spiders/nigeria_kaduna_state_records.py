@@ -1,8 +1,8 @@
-from kingfisher_scrapy.spiders.nigeria_kaduna_state_base import NigeriaKadunaStateBudeshiBase
+from kingfisher_scrapy.spiders.nigeria_kaduna_state_base import NigeriaKadunaStateBase
 from kingfisher_scrapy.util import components
 
 
-class NigeriaKadunaStateBudeshiRecords(NigeriaKadunaStateBudeshiBase):
+class NigeriaKadunaStateRecords(NigeriaKadunaStateBase):
     """
     Domain
         Budeshi Nigeria - Kaduna State

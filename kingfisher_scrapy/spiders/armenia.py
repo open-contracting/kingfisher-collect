@@ -22,7 +22,7 @@ class Armenia(LinksSpider):
     data_type = 'release_package'
 
     # LinksSpider
-    next_page_formatter = staticmethod(parameters('offset'))
+    formatter = staticmethod(parameters('offset'))
     next_pointer = '/next_page/uri'
 
     def start_requests(self):

@@ -63,7 +63,7 @@ def test_process_item_release_pointer(data_type, data):
     pipeline = Pluck()
     item = File({
         'file_name': 'test',
-        'data': json.dumps(data),
+        'data': json.dumps(data).encode(),
         'data_type': data_type,
         'url': 'http://test.com',
     })
@@ -78,7 +78,7 @@ def test_process_item_package_pointer(data_type, data):
     pipeline = Pluck()
     item = File({
         'file_name': 'test',
-        'data': json.dumps(data),
+        'data': json.dumps(data).encode(),
         'data_type': data_type,
         'url': 'http://test.com',
     })
@@ -93,7 +93,7 @@ def test_process_item_nonexistent_pointer(kwargs):
     pipeline = Pluck()
     item = File({
         'file_name': 'test',
-        'data': json.dumps(release_package),
+        'data': json.dumps(release_package).encode(),
         'data_type': 'release_package',
         'url': 'http://test.com',
     })
@@ -107,7 +107,7 @@ def test_process_item_non_package_data_type():
     pipeline = Pluck()
     item = File({
         'file_name': 'test',
-        'data': json.dumps(releases[0]),
+        'data': json.dumps(releases[0]).encode(),
         'data_type': 'release',
         'url': 'http://test.com',
     })

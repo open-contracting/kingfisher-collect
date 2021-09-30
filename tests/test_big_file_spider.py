@@ -19,11 +19,10 @@ def test_parse_release_package(sample, len_items, len_releases):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item) == 5
+    assert len(item) == 4
     assert item['file_name'] == 'test.json'
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'release_package'
-    assert item['encoding'] == 'utf-8'
     assert item['data']['package'] is not None
     assert item['data']['data'] is not None
 

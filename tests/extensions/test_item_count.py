@@ -25,7 +25,6 @@ def test_item_scraped_file_item(caplog):
         'data': b'{"key": "value"}',
         'data_type': 'release_package',
         'url': 'https://example.com/remote.json',
-        'encoding': 'utf-8',
     })
 
     item_extension.item_scraped(item, spider)

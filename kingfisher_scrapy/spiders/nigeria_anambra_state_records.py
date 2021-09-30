@@ -4,10 +4,10 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class NigeriaAnambraState(SimpleSpider):
+class NigeriaAnambraStateRecords(SimpleSpider):
     """
     Domain
-      Anambra State - Nigeria
+      Anambra State
     API documentation
       http://www.mepbdp.org.ng/ocds/api
     """

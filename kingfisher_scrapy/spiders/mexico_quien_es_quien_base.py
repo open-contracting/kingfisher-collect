@@ -1,7 +1,6 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import IndexSpider
-from kingfisher_scrapy.util import parameters
 
 
 class MexicoQuienEsQuienBase(IndexSpider):
@@ -12,13 +11,8 @@ class MexicoQuienEsQuienBase(IndexSpider):
 
     # IndexSpider
     count_pointer = '/data/index/contracts/count'
-    limit = 1000
-    formatter = staticmethod(parameters('offset'))
-    yield_list_results = False
+    limit = 1000  # >= 10000 causes "Search size is bigger than 10000. Elasticsearch does not allow it."
 
     def start_requests(self):
-        yield scrapy.Request(
-            'https://api.quienesquien.wiki/v3/sources',
-            meta={'file_name': 'list.json'},
-            callback=self.parse_list
-        )
+        url = 'https://api.quienesquien.wiki/v3/sources'
+        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)

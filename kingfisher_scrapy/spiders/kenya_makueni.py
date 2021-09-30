@@ -1,17 +1,13 @@
-from math import ceil
-
-import scrapy
-
-from kingfisher_scrapy.base_spider import IndexSpider
-from kingfisher_scrapy.util import parameters
+from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
-class KenyaMakueni(IndexSpider):
+class KenyaMakueni(SimpleSpider):
     """
     Domain
       Makueni County
     Swagger API documentation
-      https://opencontracting.makueni.go.ke/swagger-ui.html#/ocds-controller
+      https://opencontracting.makueni.go.ke/swagger-ui/#/ocds-controller
     """
     name = 'kenya_makueni'
 
@@ -21,24 +17,17 @@ class KenyaMakueni(IndexSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    # IndexSpider
-    limit = 10
-    formatter = staticmethod(parameters('pageNumber'))
-    param_page = 'pageNumber'
-    additional_params = {'pageSize': limit}
-    yield_list_results = False
-
-    base_url = 'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize={limit}&pageNumber={page}'
-
     def start_requests(self):
-        yield scrapy.Request(
-            'https://opencontracting.makueni.go.ke/api/ocds/release/count',
-            meta={'file_name': 'count.json'},
-            callback=self.parse_list
-        )
+        yield from self.request_page(0)
 
-    def range_generator(self, data, response):
-        return range(ceil(int(response.text) / self.limit))
+    @handle_http_error
+    def parse(self, response):
+        yield from super().parse(response)
 
-    def url_builder(self, value, data, response):
-        return self.pages_url_builder(value, data, response)
+        if response.json():
+            page = response.request.meta['page']
+            yield from self.request_page(page + 1)
+
+    def request_page(self, page):
+        url = f'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize=1000&pageNumber={page}'
+        yield self.build_request(url, parameters('pageNumber'), meta={'page': page})
