@@ -951,6 +951,13 @@ Nigeria
 
    scrapy crawl nigeria_edo_state
 
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_gombe_state.NigeriaGombeState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_gombe_state
+
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_records.NigeriaKadunaStateRecords
    :no-members:
 
