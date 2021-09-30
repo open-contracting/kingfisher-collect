@@ -36,9 +36,6 @@
             "release_package"
           ]
         },
-        "encoding": {
-          "type": "string"
-        },
         "data": {
           "minLength": 1
         }

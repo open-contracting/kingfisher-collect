@@ -43,6 +43,7 @@ class HondurasPortalBulk(PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'http://www.contratacionesabiertas.gob.hn/api/v1/descargas/{}'
+    formatter = staticmethod(components(-1))
 
     available_publishers = {'oncae': 'oficina_normativa', 'sefin': 'secretaria_de_fin_HN.SIAFI2'}
     available_systems = {'HC1': 'honducompras-1', 'CE': 'catalogo-electronico', 'DDC': 'difusion-directa-contrato'}
@@ -76,6 +77,3 @@ class HondurasPortalBulk(PeriodicSpider):
             else:
                 yield self.pattern.format(f"{self.available_publishers[publisher]}_"
                                           f"{date.year}_{date.month:02d}.json")
-
-    def get_formatter(self):
-        return components(-1)

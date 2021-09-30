@@ -1,101 +1,10 @@
-# https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import json
-from datetime import datetime
+from zipfile import BadZipFile
 
 import ijson
-import scrapy
-from twisted.internet import reactor
-from twisted.internet.defer import Deferred
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileItem
-
-
-class ParaguayAuthMiddleware:
-    """
-    Downloader middleware that manages API authentication for Paraguay scrapers.
-
-    Both DNCP (procurement authority) and Hacienda (finance ministry) use an authentication protocol based on OAuth 2.
-
-    This middleware helps us to manage the protocol, which consists on acquiring an access token every x minutes
-    (usually 15) and sending the token on each request. The acquisition method of the token is delegated to the spider,
-    since each publisher has their own credentials and requirements.
-
-    Apparently, a Downloader Middleware is the best place to set HTTP Request Headers (see
-    https://docs.scrapy.org/en/latest/topics/architecture.html), but it's not enough for this case :(.
-    Tokens should be generated and assigned just before sending a request, but Scrapy does not provide any way to do
-    this, which in turn means that sometimes we accidently send expired tokens. For now, the issue seems to be avoided
-    by setting the number of concurrent requests to 1, at cost of download speed.
-    """
-
-    def __init__(self, spider):
-        spider.logger.info('Initialized authentication middleware with spider: %s.', spider.name)
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls(crawler.spider)
-
-    def process_request(self, request, spider):
-        if 'auth' in request.meta and request.meta['auth'] is False:
-            return
-        if spider.auth_failed:
-            spider.logger.error('Fatal: no authentication token, stopping now...')
-            spider.crawler.stop()
-            raise scrapy.exceptions.IgnoreRequest()
-        request.headers['Authorization'] = spider.access_token
-        if self._expires_soon(spider):
-            # SAVE the last request to continue after getting the token
-            spider.last_request = request
-            # spider MUST implement the request_access_token method
-            return spider.request_access_token()
-
-    def process_response(self, request, response, spider):
-        if response.status == 401 or response.status == 429:
-            spider.logger.info('Time transcurred: %s', (datetime.now() - spider.start_time).total_seconds())
-            spider.logger.info('%s returned for request to %s', response.status, request.url)
-            if not spider.access_token == request.headers['Authorization'] and self._expires_soon(spider):
-                # SAVE the last request to continue after getting the token
-                spider.last_request = request
-                # spider MUST implement the request_access_token method
-                return spider.request_access_token()
-            request.headers['Authorization'] = spider.access_token
-            return request
-        return response
-
-    @staticmethod
-    def _expires_soon(spider):
-        if spider.start_time and spider.access_token:
-            # The spider must implement the expires_soon method.
-            return spider.expires_soon(datetime.now() - spider.start_time)
-        return True
-
-
-class OpenOppsAuthMiddleware:
-    """
-    Downloader middleware that intercepts requests and adds the token for OpenOpps scraper.
-    """
-
-    @staticmethod
-    def process_request(request, spider):
-        if 'token_request' in request.meta and request.meta['token_request']:
-            return
-        request.headers['Authorization'] = spider.access_token
-
-
-# https://github.com/ArturGaspar/scrapy-delayed-requests/blob/master/scrapy_delayed_requests.py
-class DelayedRequestMiddleware:
-    """
-    Downloader middleware that allows for delaying a request by a set 'wait_time' number of seconds.
-
-    A delayed request is useful when an API fails and works again after waiting a few minutes.
-    """
-
-    def process_request(self, request, spider):
-        delay = request.meta.get('wait_time', None)
-        if delay:
-            d = Deferred()
-            reactor.callLater(delay, d.callback, None)
-            return d
 
 
 class ConcatenatedJSONMiddleware:
@@ -103,14 +12,20 @@ class ConcatenatedJSONMiddleware:
     If the spider's ``concatenated_json`` class attribute is ``True``, yields each object of the File as a FileItem.
     Otherwise, yields the original item.
     """
+
     def process_spider_output(self, response, result, spider):
+        """
+        :returns: a generator of FileItem objects, in which the ``data`` field is parsed JSON
+        """
         for item in result:
             if not isinstance(item, File) or not spider.concatenated_json:
                 yield item
                 continue
 
             data = item['data']
-            for number, obj in enumerate(ijson.items(data, '', multiple_values=True), 1):
+
+            # ijson can read from bytes or a file-like object.
+            for number, obj in enumerate(util.transcode(spider, ijson.items, data, '', multiple_values=True), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
@@ -125,6 +40,9 @@ class LineDelimitedMiddleware:
     """
 
     def process_spider_output(self, response, result, spider):
+        """
+        :returns: a generator of FileItem objects, in which the ``data`` field is bytes
+        """
         for item in result:
             if not isinstance(item, File) or not spider.line_delimited:
                 yield item
@@ -134,15 +52,12 @@ class LineDelimitedMiddleware:
 
             # Data can be bytes or a file-like object.
             if isinstance(data, bytes):
-                data = data.decode(encoding=item['encoding']).splitlines(True)
+                data = data.splitlines(True)
 
             for number, line in enumerate(data, 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
-
-                if isinstance(line, bytes):
-                    line = line.decode(encoding=item['encoding'])
 
                 yield spider.build_file_item(number, line, item)
 
@@ -154,6 +69,9 @@ class RootPathMiddleware:
     """
 
     def process_spider_output(self, response, result, spider):
+        """
+        :returns: a generator of FileItem objects, in which the ``data`` field is parsed JSON
+        """
         for item in result:
             if not isinstance(item, (File, FileItem)) or not spider.root_path:
                 yield item
@@ -161,7 +79,10 @@ class RootPathMiddleware:
 
             data = item['data']
 
-            for number, obj in enumerate(ijson.items(data, spider.root_path), 1):
+            if isinstance(data, (dict, list)):
+                data = util.json_dumps(data).encode()
+
+            for number, obj in enumerate(util.transcode(spider, ijson.items, data, spider.root_path), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
@@ -169,13 +90,15 @@ class RootPathMiddleware:
                 if isinstance(item, File):
                     yield spider.build_file_item(number, obj, item)
                 else:
-                    # If the JSON file is line-delimited and the root path is to a JSON array, then this method will
+                    # If the input data was a JSON stream and the root path is to a JSON array, then this method will
                     # need to yield multiple FileItems for each input FileItem. To do so, the input FileItem's number
-                    # is multiplied by the maximum length of the JSON array, to avoid duplicate numbers. Note that, to
-                    # be stored by Kingfisher Process, the number must be within PostgreSQL's integer range.
+                    # is multiplied by the maximum length of the JSON array, to avoid duplicate numbers.
                     #
                     # If this is the case, then, on the spider, set a ``root_path_max_length`` class attribute to the
                     # maximum length of the JSON array at the root path.
+                    #
+                    # Note that, to be stored by Kingfisher Process, the final number must be within PostgreSQL's
+                    # integer range.
                     #
                     # https://www.postgresql.org/docs/11/datatype-numeric.html
                     yield spider.build_file_item((item['number'] - 1) * spider.root_path_max_length + number,
@@ -189,16 +112,21 @@ class AddPackageMiddleware:
     """
 
     def process_spider_output(self, response, result, spider):
+        """
+        :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
+        """
         for item in result:
             if not isinstance(item, (File, FileItem)) or item['data_type'] not in ('release', 'record'):
                 yield item
                 continue
 
             data = item['data']
+            if hasattr(data, 'read'):
+                data = data.read()
 
             # If the spider's ``root_path`` class attribute is non-empty, then the JSON data is already parsed.
             if not isinstance(data, dict):
-                data = json.loads(data, encoding=item['encoding'])
+                data = json.loads(data, encoding=spider.encoding)  # encoding argument is removed in Python 3.9
 
             if item['data_type'] == 'release':
                 key = 'releases'
@@ -212,34 +140,42 @@ class AddPackageMiddleware:
 
 class ResizePackageMiddleware:
     """
-    If the spider's ``resize_package`` class attribute is ``True``, splits the package into multiple packages.
+    If the spider's ``resize_package`` class attribute is ``True``, splits the package into packages of 100 items each.
     Otherwise, yields the original item.
     """
 
     def process_spider_output(self, response, result, spider):
+        """
+        The spider must yield items whose ``data`` field has ``package`` and ``data`` keys.
+
+        :returns: a generator of FileItem objects, in which the ``data`` field is a string
+        """
         for item in result:
             if not isinstance(item, File) or not getattr(spider, 'resize_package', False):
                 yield item
                 continue
+
+            data = item['data']
 
             if spider.sample:
                 size = spider.sample
             else:
                 size = 100
 
-            package = self._get_package_metadata(item['data']['package'], 'releases', item['data_type'])
+            package = self._get_package_metadata(spider, data['package'], 'releases', item['data_type'])
+            iterable = util.transcode(spider, ijson.items, data['data'], 'releases.item')
             # We yield release packages containing a maximum of 100 releases.
-            for number, items in enumerate(util.grouper(ijson.items(item['data']['data'], 'releases.item'), size), 1):
+            for number, items in enumerate(util.grouper(iterable, size), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
 
                 package['releases'] = filter(None, items)
-                data = json.dumps(package, default=util.default)
+                data = util.json_dumps(package).encode()
 
                 yield spider.build_file_item(number, data, item)
 
-    def _get_package_metadata(self, data, skip_key, data_type):
+    def _get_package_metadata(self, spider, data, skip_key, data_type):
         """
         Returns the package metadata from a file object.
 
@@ -250,22 +186,48 @@ class ResizePackageMiddleware:
         """
         package = {}
         if 'package' in data_type:
-            for item in util.items(ijson.parse(data), '', skip_key=skip_key):
+            for item in util.items(util.transcode(spider, ijson.parse, data), '', skip_key=skip_key):
                 package.update(item)
         return package
 
 
 class ReadDataMiddleware:
     """
-    If the item's ``data`` value is a file pointer, reads it.
+    If the item's ``data`` value is a file pointer, as with ``CompressedFileSpider``, reads it and closes it.
     Otherwise, yields the original item.
     """
     def process_spider_output(self, response, result, spider):
+        """
+        :returns: a generator of FileItem objects, in which the ``data`` field is bytes
+        """
         for item in result:
             if not isinstance(item, File) or not hasattr(item['data'], 'read'):
                 yield item
                 continue
+
             data = item['data'].read()
             item['data'].close()
             item['data'] = data
             yield item
+
+
+class RetryDataErrorMiddleware:
+    """
+    Retries a request for a ZIP file up to 3 times, on the assumption that, if the spider raises a ``BadZipFile``
+    exception, then the response was truncated.
+    """
+    # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#scrapy.spidermiddlewares.SpiderMiddleware.process_spider_exception
+
+    def process_spider_exception(self, response, exception, spider):
+        if isinstance(exception, BadZipFile):
+            retries = response.request.meta.get('retries', 0) + 1
+            if retries > 3:
+                spider.logger.error('Gave up retrying %(request)s (failed %(failures)d times): %(exception)s',
+                                    {'request': response.request, 'failures': retries, 'exception': exception})
+                return
+            request = response.request.copy()
+            request.dont_filter = True
+            request.meta['retries'] = retries
+            spider.logger.debug('Retrying %(request)s (failed %(failures)d times): %(exception)s',
+                                {'request': response.request, 'failures': retries, 'exception': exception})
+            yield request

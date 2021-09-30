@@ -19,7 +19,7 @@ class GeorgiaReleases(LinksSpider):
     data_type = 'release_package'
 
     # LinksSpider
-    next_page_formatter = staticmethod(parameters('page'))
+    formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
         url = 'https://odapi.spa.ge/api/releases.json'

@@ -47,28 +47,30 @@ Since many class attributes that control a spider's behavior, please put the cla
       # Any other class attributes from Scrapy, including `download_delay`, `download_timeout`, `user_agent`, `custom_settings`
 
       # BaseSpider
-      ocds_version = '1.0'
       date_format = 'datetime'
       default_from_date = '2000-01-01T00:00:00'
       default_until_date = '2010-01-01T00:00:00'
       date_required = True
-      unflatten = True
-      unflatten_args = {}
+      dont_truncate = True
+      encoding = 'iso-8859-1'
+      concatenated_json = True
       line_delimited = True
       root_path = 'item'
       root_path_max_length = 1
+      unflatten = True
+      unflatten_args = {}
+      ocds_version = '1.0'
       skip_pluck = 'A reason'
 
       # SimpleSpider
       data_type = 'release_package'
-      encoding = 'iso-8859-1'
 
       # CompressedFileSpider
       resize_package = True
       file_name_must_contain = '-'
 
       # LinksSpider
-      next_page_formatter = staticmethod(parameters('page'))
+      formatter = staticmethod(parameters('page'))
       next_pointer = '/next_page/uri'
 
       # PeriodicSpider
@@ -80,13 +82,14 @@ Since many class attributes that control a spider's behavior, please put the cla
       count_pointer = '/meta/count'
       limit = 1000
       use_page = True
+      start_page = 0
       formatter = staticmethod(parameters('pageNumber'))
+      chronological_order = 'asc'
+      parse_list_callback = 'parse_custom'
       param_page = 'pageNumber'
       param_limit = 'customLimit'
       param_offset = = 'customOffset'
-      additional_params = {'pageSize': 1000}
       base_url = 'https://example.com/elsewhere'
-      yield_list_results = False
 
 Test the spider
 ~~~~~~~~~~~~~~~
@@ -145,6 +148,7 @@ Read the `Scrapy documentation <https://docs.scrapy.org/en/latest/>`__. In parti
 -  `Item pipeline <https://docs.scrapy.org/en/latest/topics/item-pipeline.html>`__
 -  `Extensions <https://docs.scrapy.org/en/latest/topics/extensions.html>`__ and `signals <https://docs.scrapy.org/en/latest/topics/signals.html>`__
 -  `Downloader middleware <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html>`__
+-  `Spider middleware <https://docs.scrapy.org/en/latest/topics/spider-middleware.html>`__
 
 The :doc:`../cli` follows the guidance for `running multiple spiders in the same process <https://docs.scrapy.org/en/latest/topics/practices.html#running-multiple-spiders-in-the-same-process>`__.
 
@@ -162,11 +166,12 @@ The Scrapy framework is very flexible. To maintain a good separation of concerns
    -  Raise a :class:`~kingfisher_scrapy.exceptions.AccessTokenError` exception in a request's callback, if the maximum number of attempts to retrieve an access token is reached
    -  Raise any other exception, to be caught by a `spider_error <https://docs.scrapy.org/en/latest/topics/signals.html#spider-error>`__ handler in an extension
 
--  A downloader middleware's responsibility is to process requests, before they are sent to the internet, and responses, before they are processed by the spider. It should only:
+-  A downloader middleware's responsibility is to process requests yielded by the spider, before they are sent to the internet, and to process responses from the internet, before they are passed to the spider. It should only:
 
-   -  Yield a request, for example :class:`~kingfisher_scrapy.middlewares.ParaguayAuthMiddleware`
-   -  Return a Deferred, for example :class:`~kingfisher_scrapy.middlewares.DelayedRequestMiddleware`
-   -  Yield items, for example :class:`~kingfisher_scrapy.middlewares.AddPackageMiddleware`
+   -  Return a request, for example :class:`~kingfisher_scrapy.downloadermiddlewares.ParaguayAuthMiddleware`
+   -  Return a Deferred, for example :class:`~kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware`
+
+-  A spider middleware's responsibility is to process items yielded by the spider. It should only yield items, for example :class:`~kingfisher_scrapy.spidermiddlewares.RootPathMiddleware`.
 
 -  An item pipeline's responsibility is to clean, validate, filter, modify or substitute items. It should only:
 
@@ -198,7 +203,9 @@ API reference
 .. toctree::
 
    base_spider.rst
+   downloadermiddlewares.rst
+   spidermiddlewares.rst
+   pipelines.rst
    extensions.rst
    util.rst
    exceptions.rst
-   middlewares.rst

@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoZacatecas(MexicoINAIBase):
+class MexicoZacatecasIZAI(MexicoINAIBase):
     """
     Domain
       Instituto Zacatecano de Transparencia y Acceso a la Información (IZAI)

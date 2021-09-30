@@ -27,6 +27,4 @@ class NepalPortal(PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'http://ppip.gov.np/bulk-download/{}'
-
-    def get_formatter(self):
-        return components(-1)
+    formatter = staticmethod(components(-1))

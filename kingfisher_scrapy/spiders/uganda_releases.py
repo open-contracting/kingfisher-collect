@@ -4,7 +4,7 @@ from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.util import components, handle_http_error, join, parameters
 
 
-class Uganda(IndexSpider):
+class UgandaReleases(IndexSpider):
     """
     Domain
       Government Procurement Portal (GPP) of Public Procurement and Disposal of Public Assets Authority (PPDA)
@@ -39,17 +39,11 @@ class Uganda(IndexSpider):
 
     # IndexSpider
     total_pages_pointer = '/data/last_page'
-    formatter = staticmethod(parameters('page'))
-    base_url = 'https://gpppapi.com/adminapi/public/api/pdes'
-    yield_list_results = False
+    parse_list_callback = 'parse_data'
 
     def start_requests(self):
-        yield scrapy.Request(
-            self.base_url,
-            meta={'file_name': 'page-1.json'},
-            callback=self.parse_list,
-            cb_kwargs={'callback': self.parse_data}
-        )
+        url = 'https://gpppapi.com/adminapi/public/api/pdes'
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_data(self, response):

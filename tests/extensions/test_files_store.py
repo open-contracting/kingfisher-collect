@@ -19,6 +19,24 @@ def test_from_crawler_missing_arguments():
     assert str(excinfo.value) == 'FILES_STORE is not set.'
 
 
+@pytest.mark.parametrize('job', [None, '7df53218f37a11eb80dd0c9d92c523cb'])
+def test_spider_opened(job, tmpdir):
+    spider = spider_with_files_store(tmpdir)
+    if job:
+        spider._job = job
+
+    extension = FilesStore.from_crawler(spider.crawler)
+    extension.spider_opened(spider)
+
+    path = tmpdir.join('test', '20010203_040506', 'scrapyd-job.txt')
+
+    if job:
+        with open(path)as f:
+            assert f.read() == job
+    else:
+        assert not os.path.exists(path)
+
+
 @pytest.mark.parametrize('sample,path', [
     (None, os.path.join('test', '20010203_040506', 'file.json')),
     ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
@@ -33,8 +51,7 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
     response.request.url = 'https://example.com/remote.json'
     response.request.meta = {'file_name': 'file.json'}
 
-    item = spider.build_file_from_response(response, file_name='file.json', data_type='release_package',
-                                           encoding='iso-8859-1')
+    item = spider.build_file_from_response(response, file_name='file.json', data_type='release_package')
     extension.item_scraped(item, spider)
 
     with open(tmpdir.join(path)) as f:
@@ -50,7 +67,7 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
 ])
 @pytest.mark.parametrize('data', [b'{"key": "value"}', {"key": "value"}])
 @pytest.mark.parametrize('item,expected_file_name', [
-    (File({'file_name': 'file.json', 'encoding': 'iso-8859-1'}), 'file.json'),
+    (File({'file_name': 'file.json'}), 'file.json'),
     (FileItem({'number': 1, 'file_name': 'file.json'}), 'file-1.json')
 ])
 def test_item_scraped_with_file_and_file_item(sample, directory, data, item, expected_file_name, tmpdir):

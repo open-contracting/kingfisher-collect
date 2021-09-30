@@ -17,7 +17,7 @@ class AfghanistanReleasePackages(AfghanistanPackagesBase):
     """
     name = 'afghanistan_release_packages'
 
+    base_url = 'https://ocds.ageops.net/api/ocds/release-package/dates'
+
     # SimpleSpider
     data_type = 'release_package'
-
-    base_url = 'https://ocds.ageops.net/api/ocds/release-package/dates'

@@ -21,15 +21,15 @@ class Australia(LinksSpider):
     name = 'australia'
 
     # BaseSpider
-    default_from_date = '2004-01-01T00:00:00'
     date_format = 'datetime'
+    default_from_date = '2004-01-01T00:00:00'
     date_required = True
 
     # SimpleSpider
     data_type = 'release_package'
 
     # LinksSpider
-    next_page_formatter = staticmethod(parameters('cursor'))
+    formatter = staticmethod(parameters('cursor'))
 
     def start_requests(self):
         url = f'https://api.tenders.gov.au/ocds/findByDates/contractPublished/' \

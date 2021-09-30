@@ -42,6 +42,7 @@ class IndonesiaBandung(PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'https://birms.bandung.go.id/api/packages/year/{}'
+    formatter = staticmethod(components(-1))
     start_requests_callback = 'parse_list'
 
     @handle_http_error
@@ -50,12 +51,9 @@ class IndonesiaBandung(PeriodicSpider):
         for item in data['data']:
             url = item['uri']
             if url:
-                yield self.build_request(url, self.get_formatter())
+                yield self.build_request(url, formatter=self.formatter)
         else:
             next_page_url = data.get('next_page_url')
             if next_page_url:
-                yield self.build_request(next_page_url, formatter=join(self.get_formatter(), parameters('page')),
+                yield self.build_request(next_page_url, formatter=join(self.formatter, parameters('page')),
                                          callback=self.parse_list)
-
-    def get_formatter(self):
-        return components(-1)

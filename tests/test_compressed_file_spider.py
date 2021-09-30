@@ -24,10 +24,10 @@ def test_parse():
     item = next(generator)
 
     assert type(item) is File
+    assert len(item) == 4
     assert item['file_name'] == 'test-test.json'
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'release_package'
-    assert item['encoding'] == 'utf-8'
     assert item['data'] is not None
     assert 'package' not in item['data']
 
@@ -54,11 +54,10 @@ def test_parse_line_delimited(sample, len_items, file_name):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item) == 5
+    assert len(item) == 4
     assert item['file_name'] == f'{file_name}-test.json'
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'release_package'
-    assert item['encoding'] == 'utf-8'
     assert item['data'] is not None
     assert 'package' not in item['data']
 
@@ -85,11 +84,10 @@ def test_parse_release_package(sample, len_items, len_releases, file_name):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item) == 5
+    assert len(item) == 4
     assert item['file_name'] == f'{file_name}-test.json'
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'release_package'
-    assert item['encoding'] == 'utf-8'
     assert item['data']['package'] is not None
     assert item['data']['data'] is not None
 
@@ -125,11 +123,10 @@ def test_parse_rar_file():
     item = next(generator)
 
     assert type(item) is File
-    assert len(item) == 5
+    assert len(item) == 4
     assert item['file_name'] == 'test-test.json'
     assert item['url'] == 'http://example.com'
     assert item['data_type'] == 'release_package'
-    assert item['encoding'] == 'utf-8'
     assert item['data'] is not None
     assert 'package' not in item['data']
 

@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import handle_http_error
 class Croatia(CompressedFileSpider):
     """
         Domain
-          Electronic Public Procurement Classifieds of the Republic of Croatia
+          Elektronički oglasnik javne nabave (Electronic public procurement notices)
         Bulk download documentation
           https://eojn.nn.hr/SPIN/application/ipn/Oglasnik/PreuzimanjeUgovoraOCD.aspx
     """

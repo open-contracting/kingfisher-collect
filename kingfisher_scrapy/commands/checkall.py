@@ -1,4 +1,5 @@
 import logging
+import os.path
 import re
 from textwrap import dedent
 
@@ -9,6 +10,9 @@ from scrapy.utils.spider import iter_spider_classes
 from kingfisher_scrapy.base_spider import PeriodicSpider
 
 logger = logging.getLogger(__name__)
+
+# Exceptions for HondurasCoST, MexicoINAIAPI and UKFTS.
+word_boundary_re = re.compile(r'(?<=[a-z])(?=[A-Z])(?!ST$)|(?<=.)(?=[A-Z][a-z])|(?<=MexicoINAI)|(?<=UK)')
 
 
 class CheckAll(ScrapyCommand):
@@ -61,15 +65,20 @@ class Checker:
         self.cls = cls
         self.module = module
 
-    def log(self, level, message):
-        getattr(logger, level)('%s.%s: %s', self.module.__name__, self.cls.__name__, message)
+    def log(self, level, message, *args):
+        getattr(logger, level)(f'%s.%s: {message}', self.module.__name__, self.cls.__name__, *args)
 
     def check(self):
         class_name = self.cls.__name__
         docstring = self.cls.__doc__
 
-        if (class_name.endswith('Base') or class_name.startswith('Digiwhist') or class_name in ('Fail',))\
-                and class_name != 'EuropeTedTenderBase':
+        basename = os.path.splitext(os.path.basename(self.module.__file__))[0]
+        expected_basename = re.sub(word_boundary_re, '_', class_name).lower()
+
+        if basename != expected_basename:
+            self.log('error', 'class %s and file %s (%s) do not match', class_name, basename, expected_basename)
+
+        if class_name.endswith('Base') and class_name != 'EuropeTedTenderBase' or class_name.startswith('Digiwhist'):
             if docstring:
                 self.log('error', 'unexpected docstring')
             return
@@ -111,13 +120,13 @@ class Checker:
 
         for spider_argument in expected_spider_arguments:
             if spider_argument not in spider_arguments:
-                self.log('warning', f'missing "{spider_argument}" spider argument documentation')
+                self.log('warning', 'missing "%s" spider argument documentation', spider_argument)
 
-        for class_attribute, spider_argument in self.conditional_spider_arguments.items():
-            if hasattr(self.cls, class_attribute) and spider_argument not in spider_arguments:
-                self.log('warning', f'missing "{spider_argument}" spider argument ({class_attribute} is set)')
-            if not hasattr(self.cls, class_attribute) and spider_argument in spider_arguments:
-                self.log('warning', f'unexpected "{spider_argument}" spider argument ({class_attribute} is not set)')
+        for cls_attribute, spider_argument in self.conditional_spider_arguments.items():
+            if hasattr(self.cls, cls_attribute) and spider_argument not in spider_arguments:
+                self.log('warning', 'missing "%s" spider argument (%s is set)', spider_argument, cls_attribute)
+            if not hasattr(self.cls, cls_attribute) and spider_argument in spider_arguments:
+                self.log('warning', 'unexpected "%s" spider argument (%s is not set)', spider_argument, cls_attribute)
 
         def default_from_date(cls):
             return repr(getattr(cls, 'default_from_date', None))
@@ -149,17 +158,17 @@ class Checker:
 
         unexpected = set(items) - set(known_items)
         if unexpected:
-            self.log('error', f"unexpected {name}: {', '.join(unexpected)}")
+            self.log('error', 'unexpected %s: %s', name, ', '.join(unexpected))
 
         disordered = set(items) & set(known_items)
         if disordered:
-            self.log('error', f"out-of-order {name}: {', '.join(disordered)}")
+            self.log('error', 'out-of-order %s: %s', name, ', '.join(disordered))
 
     def check_date_spider_argument(self, spider_argument, spider_arguments, default, format_string):
         if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
             if self.cls.__name__ in ('ColombiaBulk', 'PortugalRecords', 'PortugalReleases',
-                                     'ScotlandPublicContracts', 'Uganda'):
+                                     'ScotlandPublicContracts', 'UgandaReleases'):
                 level = 'info'
             else:
                 level = 'warning'
@@ -188,4 +197,4 @@ class Checker:
 
             expected = format_string.format(period=period, format=format_, default=default(self.cls))
             if spider_arguments[spider_argument] != expected:
-                self.log(level, f"\n{spider_arguments[spider_argument]!r} !=\n{expected!r}")
+                self.log(level, '\n%r !=\n%r', spider_arguments[spider_argument], expected)

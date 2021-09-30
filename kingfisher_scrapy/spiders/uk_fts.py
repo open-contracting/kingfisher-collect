@@ -28,7 +28,7 @@ class UKFTS(LinksSpider):
     data_type = 'release_package'
 
     # LinksSpider
-    next_page_formatter = staticmethod(parameters('cursor'))
+    formatter = staticmethod(parameters('cursor'))
 
     def start_requests(self):
         url = 'https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages'

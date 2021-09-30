@@ -9,7 +9,7 @@ from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
 from kingfisher_scrapy.util import parameters
 
 
-class OpenOpps(BaseSpider):
+class Openopps(BaseSpider):
     """
     Domain
       OpenOpps
@@ -34,7 +34,7 @@ class OpenOpps(BaseSpider):
     download_delay = 1
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
-            'kingfisher_scrapy.middlewares.OpenOppsAuthMiddleware': 543,
+            'kingfisher_scrapy.downloadermiddlewares.OpenOppsAuthMiddleware': 543,
         },
     }
 
@@ -56,7 +56,7 @@ class OpenOpps(BaseSpider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(OpenOpps, cls).from_crawler(crawler, *args, **kwargs)
+        spider = super(Openopps, cls).from_crawler(crawler, *args, **kwargs)
 
         spider.username = crawler.settings.get('KINGFISHER_OPENOPPS_USERNAME')
         spider.password = crawler.settings.get('KINGFISHER_OPENOPPS_PASSWORD')

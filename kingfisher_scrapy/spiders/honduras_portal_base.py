@@ -2,7 +2,6 @@ import scrapy
 
 from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.util import parameters
 
 
 class HondurasPortalBase(IndexSpider):
@@ -10,7 +9,6 @@ class HondurasPortalBase(IndexSpider):
 
     # IndexSpider
     total_pages_pointer = '/pages'
-    formatter = staticmethod(parameters('page'))
 
     available_publishers = ['oncae', 'sefin']
 
@@ -23,7 +21,7 @@ class HondurasPortalBase(IndexSpider):
         return spider
 
     def start_requests(self):
-        url = self.url
+        url = self.start_url  # from a sub-class
         if self.publisher:
             url = f'{url}&publisher={self.publisher}'
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)

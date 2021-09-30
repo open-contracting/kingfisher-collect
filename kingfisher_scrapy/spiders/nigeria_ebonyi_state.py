@@ -22,9 +22,7 @@ class NigeriaEbonyiState(PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'http://ebonyieprocure.eb.gov.ng/media/ocds{}.json'
+    formatter = staticmethod(components(-1))
 
     # SimpleSpider
     data_type = 'release_package'
-
-    def get_formatter(self):
-        return components(-1)

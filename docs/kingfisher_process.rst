@@ -1,9 +1,14 @@
+.. _kingfisher-process:
+
 Integrate with Kingfisher Process
 =================================
 
 Besides storing the scraped data on disk, you can also send them to an instance of `Kingfisher Process <https://kingfisher-process.readthedocs.io/>`_ for processing.
 
-To do that, you need to deploy an instance of Kingfisher Process, including its `web app <https://kingfisher-process.readthedocs.io/en/latest/web.html#web-app>`__. Then, set the following either as environment variables or as Scrapy settings in ``kingfisher_scrapy.settings.py``:
+Version 1
+---------
+
+You need to deploy an instance of Kingfisher Process, including its `web app <https://kingfisher-process.readthedocs.io/en/latest/web.html#web-app>`__. Then, set the following either as environment variables or as Scrapy settings in ``kingfisher_scrapy.settings.py``:
 
 ``KINGFISHER_API_URI``
   The URL from which Kingfisher Process' `web app <https://kingfisher-process.readthedocs.io/en/latest/web.html#web-app>`_ is served. Do not include a trailing slash.

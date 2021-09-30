@@ -1,13 +1,12 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import IndexSpider
-from kingfisher_scrapy.util import parameters
 
 
 class CanadaMontreal(IndexSpider):
     """
     Domain
-      Montréal, Québec
+      Ville de Montréal (City of Montreal)
     API documentation
       http://donnees.ville.montreal.qc.ca/dataset/contrats-et-subventions-api
     """
@@ -21,8 +20,7 @@ class CanadaMontreal(IndexSpider):
 
     # IndexSpider
     count_pointer = '/meta/count'
-    limit = 10000
-    formatter = staticmethod(parameters('offset'))
+    limit = 10000  # > 10000 causes "Too many records requested. Set parameter LIMIT lower"
 
     def start_requests(self):
         url = f'https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit={self.limit}'

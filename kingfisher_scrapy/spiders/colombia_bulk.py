@@ -76,7 +76,7 @@ class ColombiaBulk(CompressedFileSpider):
                     continue
 
             if self.from_date and self.until_date:
-                # URL looks like https://apiocds.colombiacompra.gov.co:8443/ArchivosSECOP/Archivos/SI2011.zip
+                # URL looks like https://apiocds.colombiacompra.gov.co/ArchivosSECOP/Archivos/SI2011.zip
                 year = int(url[-8:-4])
                 if not (self.from_date.year <= year <= self.until_date.year):
                     continue

@@ -27,6 +27,7 @@ class ScotlandPublicContracts(PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={:%m-%Y}&outputType=0&noticeType={}'
+    formatter = staticmethod(parameters('noticeType', 'dateFrom'))
 
     notice_types = [
         1,  # OJEU - F1 - Prior Information Notice
@@ -55,6 +56,3 @@ class ScotlandPublicContracts(PeriodicSpider):
     def build_urls(self, date):
         for notice_type in self.notice_types:
             yield self.pattern.format(date, notice_type)
-
-    def get_formatter(self):
-        return parameters('noticeType', 'dateFrom')

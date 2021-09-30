@@ -1,28 +1,32 @@
+import scrapy
+
 from kingfisher_scrapy.base_spider import IndexSpider
-from kingfisher_scrapy.util import parameters
 
 
 class UKContractsFinder(IndexSpider):
     """
     Domain
       Contracts Finder
+    API documentation
+      https://www.contractsfinder.service.gov.uk/apidocumentation/home
     """
     name = 'uk_contracts_finder'
 
     # BaseSpider
+    ocds_version = '1.0'  # uses deprecated fields
     root_path = 'results.item'
 
     # SimpleSpider
     data_type = 'release_package'
-    encoding = 'iso-8859-1'
 
     # IndexSpider
     total_pages_pointer = '/maxPage'
-    formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
-        url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=desc&page=1'
-        yield self.build_request(url, formatter=parameters('page'), callback=self.parse_list)
+        # page = 0 causes "Incorrect request [page must be a number greater than 0]".
+        # size > 100 causes "Incorrect request [size must be a number greater than 0 and maximum is 100]".
+        url = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?order=desc&size=100'
+        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
     def parse(self, response, **kwargs):
         if self.is_http_success(response):

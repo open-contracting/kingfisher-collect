@@ -22,7 +22,7 @@ class GeorgiaRecords(LinksSpider):
     data_type = 'record_package'
 
     # LinksSpider
-    next_page_formatter = staticmethod(parameters('page'))
+    formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
         url = 'https://odapi.spa.ge/api/records.json'

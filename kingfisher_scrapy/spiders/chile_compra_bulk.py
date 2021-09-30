@@ -35,6 +35,7 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'https://ocds.blob.core.windows.net/ocds/{0.year:d}{0.month:02d}.zip'
+    formatter = staticmethod(components(-1))
 
     def build_file(self, file_name=None, url=None, data=None, **kwargs):
         json_data = json.loads(data)
@@ -52,6 +53,3 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
             })
         else:
             return super().build_file(file_name=file_name, url=url, data=data, **kwargs)
-
-    def get_formatter(self):
-        return components(-1)
