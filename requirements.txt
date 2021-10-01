@@ -4,8 +4,6 @@
 #
 #    pip-compile
 #
--e git+https://github.com/open-contracting/scrapyd-client.git#egg=scrapyd-client
-    # via -r requirements.in
 attrs==19.3.0
     # via
     #   automat
@@ -165,6 +163,8 @@ scrapy==2.5.0
     #   -r requirements.in
     #   scrapyd
     #   scrapyd-client
+scrapyd-client==1.2.0
+    # via -r requirements.in
 scrapyd==1.2.1
     # via -r requirements.in
 sentry-sdk==1.0.0
@@ -183,7 +183,6 @@ six==1.13.0
     #   pyopenssl
     #   pyrsistent
     #   scrapyd
-    #   scrapyd-client
     #   treq
     #   w3lib
 treq==20.9.0
@@ -207,6 +206,7 @@ w3lib==1.21.0
     #   itemloaders
     #   parsel
     #   scrapy
+    #   scrapyd-client
 xmltodict==0.12.0
     # via flattentool
 zipp==3.4.1
