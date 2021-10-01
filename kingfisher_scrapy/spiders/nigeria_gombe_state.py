@@ -11,13 +11,13 @@ class NigeriaGombeState(SimpleSpider):
     """
     name = 'nigeria_gombe_state'
     user_agent = browser_user_agent
-    base_url = 'http://gombe.stateopencontracting.com/{}'
+    base_url = 'http://gombe.stateopencontracting.com/'
 
     # SimpleSpider
     data_type = 'release_package'
 
     def start_requests(self):
-        url = self.base_url.format('Other-Basic/Report/Json-Report')
+        url = f'{self.base_url}Other-Basic/Report/Json-Report'
         yield scrapy.Request(url, meta={'file_name': 'page-0.html', 'page': 0}, callback=self.parse_list)
 
     @handle_http_error
@@ -25,4 +25,4 @@ class NigeriaGombeState(SimpleSpider):
         pattern = '//table[@id="dnn_ctr561_no_JsonReport_DGno_Proc_PlanningPublished"]'\
                   '//tr[position()>1]/td[position()=1 and string-length(text())>1]/text()'
         for item in response.xpath(pattern).getall():
-            yield self.build_request(self.base_url.format(f'ocdsjson.ashx?ocid={item}'), formatter=parameters('ocid'))
+            yield self.build_request(f'{self.base_url}ocdsjson.ashx?ocid={item}', formatter=parameters('ocid'))
