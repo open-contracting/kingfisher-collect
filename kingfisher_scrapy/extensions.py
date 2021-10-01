@@ -538,6 +538,8 @@ class KingfisherProcessAPI2:
 
         if response.ok:
             self.collection_id = response.json()['collection_id']
+            # WARNING! If this log message is changed, then a regular expression in data_registry/cbom/task/scrape.py
+            # in the open-contracting/data-registry repository must be updated to match.
             spider.logger.info('Created collection %d in Kingfisher Process', self.collection_id)
         else:
             spider.logger.error('Failed to create collection. API status code: %d', response.status_code)
