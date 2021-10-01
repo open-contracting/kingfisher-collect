@@ -13,9 +13,11 @@ class HondurasPortalBulk(SimpleSpider):
       Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Secretaria de Finanzas de Honduras (SEFIN)
     Spider arguments
       from_date
-        Download only data from this month onward (YYYY-MM format). Defaults to '2005-11'.
+        Download only data from this month onward (YYYY-MM format).
+        If ``until_date`` is provided, defaults to '2005-11'.
       until_date
-        Download only data until this month (YYYY-MM format). Defaults to the current month.
+        Download only data until this month (YYYY-MM format).
+        If ``from_date`` is provided, defaults to the current month.
       publisher
         Filter by publisher:
 
