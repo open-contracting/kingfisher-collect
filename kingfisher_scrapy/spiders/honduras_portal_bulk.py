@@ -72,29 +72,22 @@ class HondurasPortalBulk(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        # The system names are:
-        #    - oficina_normativa_honducompras-1
-        #    - oficina_normativa_catalogo-electronico
-        #    - oficina_normativa_difusion-directa-contrato
-        #    - secretaria_de_fin_HN.SIAFI2
-        #
-        # An example of expected data is:
+        formatter = components(-1)
+        # An example of expected response is:
         # [
         #   {
         #    "urls": {
-        #      "csv": "https://www.contratacionesabiertas.gob.hn/api/v1/descargas/<system_name>_<year>_<month>.zip",
-        #      "md5": "https://www.contratacionesabiertas.gob.hn/api/v1/descargas/<system_name>_<year>_<month>.md5",
-        #      "json": "https://www.contratacionesabiertas.gob.hn/api/v1/descargas/<system_name>_<year>_<month>.json",
-        #       "xlsx": "https://www.contratacionesabiertas.gob.hn/api/v1/descargas/<system_name>_<year>_<month>.xlsx"
+        #      "csv": "...",
+        #      "md5": "...",
+        #      "json": "...",
+        #      "xlsx": "..."
         #    },
         #    "year": "values between 2005 to the current year",
         #    "month": "values between 1 and 12",
-        #    "sistema": "already covered in the available_system dict values",
-        #    "publicador": "already covered in the available_publishers dict values"
+        #    "sistema": "values from available_system",
+        #    "publicador": "values from available_publishers"
         #   }, ...
         # ]
-        formatter = components(-1)
-
         for item in response.json():
             publisher = item['publicador']
             if self.publisher and publisher != self.available_publishers.get(self.publisher):
