@@ -785,6 +785,13 @@ Mexico
 
    scrapy crawl mexico_infoem
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_cotai.MexicoNuevoLeonCOTAI
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_nuevo_leon_cotai
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_records.MexicoNuevoLeonRecords
    :no-members:
 
