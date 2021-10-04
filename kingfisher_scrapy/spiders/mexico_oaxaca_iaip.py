@@ -13,7 +13,7 @@ class MexicoOaxacaIAIPO(MexicoINAIBase):
     API documentation
       http://contratacionesabiertas-iaipoaxaca-org.mx:4000/contratacionesabiertas/datosabiertos
     """
-    name = 'mexico_oaxaca_iaipo'
+    name = 'mexico_oaxaca_iaip'
 
     # BaseSpider
     default_from_date = '2021'
