@@ -778,6 +778,13 @@ Mexico
 
    scrapy crawl mexico_inai_api
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_infocdmx.MexicoINFOCDMX
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_infocdmx
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_infoem.MexicoINFOEM
    :no-members:
 
@@ -806,7 +813,7 @@ Mexico
 
    scrapy crawl mexico_nuevo_leon_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_oaxaca_iaip.MexicoOaxacaIAIP
+.. autoclass:: kingfisher_scrapy.spiders.mexico_oaxaca_iaip.MexicoOaxacaIAIPO
    :no-members:
 
 .. code-block:: bash
