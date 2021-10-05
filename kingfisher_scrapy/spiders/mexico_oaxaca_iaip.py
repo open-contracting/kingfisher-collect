@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoOaxacaIAIPO(MexicoINAIBase):
+class MexicoOaxacaIAIP(MexicoINAIBase):
     """
     Domain
       Instituto de Acceso a la Información Publica y Protección de Datos Personales del Estado de Oaxaca (IAIPOXACA)
