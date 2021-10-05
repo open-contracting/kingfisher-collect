@@ -778,14 +778,14 @@ Mexico
 
    scrapy crawl mexico_inai_api
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_infocdmx.MexicoINFOCDMX
+.. autoclass:: kingfisher_scrapy.spiders.mexico_infocdmx.MexicoMexicoCityINFOCDMX
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl mexico_infocdmx
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_infoem.MexicoINFOEM
+.. autoclass:: kingfisher_scrapy.spiders.mexico_infoem.MexicoMexicoStateINFOEM
    :no-members:
 
 .. code-block:: bash
