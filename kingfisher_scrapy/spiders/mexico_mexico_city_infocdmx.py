@@ -4,8 +4,8 @@ from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 class MexicoMexicoCityINFOCDMX(MexicoINAIBase):
     """
     Domain
-      Instituto de Transparencia, Acceso a la Información Pública, Protección de Datos Personales y Rendición de Cuentas
-      de la Ciudad de México (INFOCDMX)
+      Instituto de Transparencia, Acceso a la Información Pública, Protección de Datos Personales y Rendición de
+      Cuentas de la Ciudad de México (INFOCDMX)
     Spider arguments
       from_date
         Download only data from this year onward (YYYY format). Defaults to '2019'.
