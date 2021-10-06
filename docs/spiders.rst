@@ -820,7 +820,7 @@ Mexico
 
    scrapy crawl mexico_nuevo_leon_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_oaxaca_iaip.MexicoOaxacaIAIPO
+.. autoclass:: kingfisher_scrapy.spiders.mexico_oaxaca_iaip.MexicoOaxacaIAIP
    :no-members:
 
 .. code-block:: bash
