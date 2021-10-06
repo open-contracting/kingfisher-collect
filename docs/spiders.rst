@@ -262,6 +262,13 @@ Colombia
 
    scrapy crawl colombia
 
+.. autoclass:: kingfisher_scrapy.spiders.colombia_ani_records.ColombiaANIRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl colombia_ani_records
+
 .. autoclass:: kingfisher_scrapy.spiders.colombia_bulk.ColombiaBulk
    :no-members:
 
@@ -806,7 +813,7 @@ Mexico
 
    scrapy crawl mexico_nuevo_leon_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_oaxaca_iaip.MexicoOaxacaIAIP
+.. autoclass:: kingfisher_scrapy.spiders.mexico_oaxaca_iaip.MexicoOaxacaIAIPO
    :no-members:
 
 .. code-block:: bash
