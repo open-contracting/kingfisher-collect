@@ -262,6 +262,13 @@ Colombia
 
    scrapy crawl colombia
 
+.. autoclass:: kingfisher_scrapy.spiders.colombia_ani_records.ColombiaANIRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl colombia_ani_records
+
 .. autoclass:: kingfisher_scrapy.spiders.colombia_bulk.ColombiaBulk
    :no-members:
 
