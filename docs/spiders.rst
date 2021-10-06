@@ -785,12 +785,19 @@ Mexico
 
    scrapy crawl mexico_inai_api
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_infoem.MexicoINFOEM
+.. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_city_infocdmx.MexicoMexicoCityINFOCDMX
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl mexico_infoem
+   scrapy crawl mexico_mexico_city_infocdmx
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_state_infoem.MexicoMexicoStateINFOEM
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_mexico_state_infoem
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_cotai.MexicoNuevoLeonCOTAI
    :no-members:
