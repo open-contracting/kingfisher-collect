@@ -16,7 +16,7 @@ class MexicoMexicoCityINFOCDMX(MexicoINAIBase):
       https://dashboard.infocdmx.org.mx/contratacionesabiertas/datosabiertos
     """
     name = 'mexico_mexico_city_infocdmx'
-    user_agent = browser_user_agent
+    user_agent = browser_user_agent  # to avoid Internal Server Error
 
     # BaseSpider
     default_from_date = '2019'
