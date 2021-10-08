@@ -1,3 +1,4 @@
+from kingfisher_scrapy.base_spider import browser_user_agent
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
@@ -15,6 +16,7 @@ class MexicoMexicoCityINFOCDMX(MexicoINAIBase):
       https://dashboard.infocdmx.org.mx/contratacionesabiertas/datosabiertos
     """
     name = 'mexico_mexico_city_infocdmx'
+    user_agent = browser_user_agent
 
     # BaseSpider
     default_from_date = '2019'
