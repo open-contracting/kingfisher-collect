@@ -20,7 +20,7 @@ class DigiwhistBase(BaseSpider):
     def start_requests(self):
         # See scrapy.spiders.Spider.start_requests
         for url in self.start_urls:
-            yield scrapy.Request(url, dont_filter=True, meta={'file_name': 'file.tar.gz'})
+            yield scrapy.Request(url, meta={'file_name': 'file.tar.gz'})
 
     @handle_http_error
     def parse(self, response):
