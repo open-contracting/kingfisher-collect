@@ -986,6 +986,13 @@ Nigeria
 
    scrapy crawl nigeria_edo_state
 
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_ekiti_state.NigeriaEkitiState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_ekiti_state
+
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_gombe_state.NigeriaGombeState
    :no-members:
 
