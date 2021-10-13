@@ -8,8 +8,9 @@ from kingfisher_scrapy.util import handle_http_error
 
 class NigeriaPortalBase(SimpleSpider):
     user_agent = browser_user_agent
+
+    # BaseSpider
     concatenated_json = True
-    base_url = ''
 
     def start_requests(self):
         yield scrapy.Request(self.base_url, meta={'file_name': 'page-0.html', 'page': 0}, callback=self.parse_list)
