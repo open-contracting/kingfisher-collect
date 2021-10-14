@@ -1,10 +1,10 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import CompressedFileSpider
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class ArgentinaBuenosAires(CompressedFileSpider):
+class ArgentinaBuenosAires(SimpleSpider):
     """
     Domain
       Ciudad de Buenos Aires
@@ -19,11 +19,11 @@ class ArgentinaBuenosAires(CompressedFileSpider):
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
 
-    # SimpleSpider
-    data_type = 'release_package'
+    # BaseSpider
+    root_path = 'main.item'
 
-    # CompressedFileSpider
-    resize_package = True
+    # SimpleSpider
+    data_type = 'release'
 
     def start_requests(self):
         # A CKAN API JSON response.
