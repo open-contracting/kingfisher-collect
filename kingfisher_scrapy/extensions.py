@@ -475,29 +475,34 @@ class KingfisherProcessAPI2:
                  rabbit_routing_key=None):
         self.url = url
         self.stats = stats
-        self.rabbit_url = rabbit_url
         self.exchange = rabbit_exchange_name
         self.queue = rabbit_queue_name
         self.routing_key = rabbit_routing_key
 
         # The collection ID is set by the spider_opened handler.
         self.collection_id = None
+        self.connection = None
+        self.rabbit_url = None
         self.channel = None
 
         if rabbit_url:
+            # Add query string parameters to the RabbitMQ URL.
             parsed = urlsplit(rabbit_url)
             query = parse_qs(parsed.query)
             # NOTE: Heartbeat should not be disabled.
             # https://github.com/open-contracting/data-registry/issues/140
             query.update({'blocked_connection_timeout': 1800, 'heartbeat': 0})
+            self.rabbit_url = parsed._replace(query=urlencode(query)).geturl()
 
-            connection = pika.BlockingConnection(pika.URLParameters(parsed._replace(query=urlencode(query)).geturl()))
-
-            self.channel = connection.channel()
+            self.open_connection_and_channel()
             self.channel.exchange_declare(exchange=self.exchange, durable=True, exchange_type='direct')
 
             self.channel.queue_declare(durable=True, queue=self.queue)
             self.channel.queue_bind(exchange=self.exchange, queue=self.queue, routing_key=self.routing_key)
+
+    def open_connection_and_channel(self):
+        self.connection = pika.BlockingConnection(pika.URLParameters(self.rabbit_url))
+        self.channel = self.connection.channel()
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -614,9 +619,16 @@ class KingfisherProcessAPI2:
 
     # This method is extracted so that it can be mocked in tests.
     def _publish_to_rabbit(self, message):
-        # https://www.rabbitmq.com/publishers.html#message-properties
-        self.channel.basic_publish(exchange=self.exchange, routing_key=self.routing_key, body=json.dumps(message),
-                                   properties=pika.BasicProperties(delivery_mode=2, content_type='application/json'))
+        try:
+            self.channel.basic_publish(
+                exchange=self.exchange,
+                routing_key=self.routing_key,
+                body=json.dumps(message),
+                # https://www.rabbitmq.com/publishers.html#message-properties
+                properties=pika.BasicProperties(delivery_mode=2, content_type='application/json')
+            )
+        except pika.exceptions.ChannelWrongStateError:
+            self.open_connection_and_channel()
 
 
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry
