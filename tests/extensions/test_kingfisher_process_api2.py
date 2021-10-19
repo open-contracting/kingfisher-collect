@@ -55,6 +55,7 @@ def test_from_crawler(url, boolean):
         'KINGFISHER_API2_URL': 'http://httpbin.org/anything/',
         'RABBIT_URL': url,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test_1.0',
+        'RABBIT_QUEUE_NAME': 'kingfisher_process_test_1.0_api_loader',
         'RABBIT_ROUTING_KEY': 'kingfisher_process_test_1.0_api',
     })
 
@@ -62,6 +63,7 @@ def test_from_crawler(url, boolean):
 
     assert extension.rabbit_url == url
     assert extension.exchange == 'kingfisher_process_test_1.0'
+    assert extension.queue == 'kingfisher_process_test_1.0_api_loader'
     assert extension.routing_key == 'kingfisher_process_test_1.0_api'
     assert extension.collection_id is None
     assert bool(extension.channel) is boolean
@@ -248,6 +250,7 @@ def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdi
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': rabbit_url,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_collect_test_1.0',
+        'RABBIT_QUEUE_NAME': 'kingfisher_process_test_1.0_api_loader',
         'RABBIT_ROUTING_KEY': 'kingfisher_collect_test_1.0_api',
     })
 
