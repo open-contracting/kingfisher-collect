@@ -627,6 +627,8 @@ class KingfisherProcessAPI2:
                 # https://www.rabbitmq.com/publishers.html#message-properties
                 properties=pika.BasicProperties(delivery_mode=2, content_type='application/json')
             )
+        # This error will have been caused by another error, which might have been caught and logged by pika in a
+        # separate thread: for example, if RabbitMQ crashes due to insufficient memory, the connection is reset.
         except pika.exceptions.ChannelWrongStateError:
             self.open_connection_and_channel()
 
