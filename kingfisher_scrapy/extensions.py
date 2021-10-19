@@ -594,7 +594,7 @@ class KingfisherProcessAPI2:
                 self.stats.inc_value(self.ITEMS_SENT_RABBIT)
             except Exception as e:
                 self.stats.inc_value(self.ITEMS_FAILED_RABBIT)
-                spider.logger.error('Failed to publish message to RabbitMQ: %s', e)
+                spider.logger.error('Failed to publish message to RabbitMQ (%s): %s', type(e).__name__, e)
         else:
             response = self._post_synchronous(spider, 'api/v1/create_collection_file', data)
             if response.ok:
