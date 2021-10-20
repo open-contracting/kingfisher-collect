@@ -49,19 +49,24 @@ class Response():
 
 
 @pytest.mark.skipif(not rabbit_url and not os.getenv('CI'), reason='RABBIT_URL must be set')
-@pytest.mark.parametrize('url,boolean', [(rabbit_url, True), ('', False)])
-def test_from_crawler(url, boolean):
+@pytest.mark.parametrize('url,expected,boolean', [
+    (rabbit_url, f'{rabbit_url}?blocked_connection_timeout=1800&heartbeat=0', True),
+    ('', None, False),
+])
+def test_from_crawler(url, expected, boolean):
     spider = spider_with_crawler(settings={
         'KINGFISHER_API2_URL': 'http://httpbin.org/anything/',
         'RABBIT_URL': url,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test_1.0',
+        'RABBIT_QUEUE_NAME': 'kingfisher_process_test_1.0_api_loader',
         'RABBIT_ROUTING_KEY': 'kingfisher_process_test_1.0_api',
     })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
 
-    assert extension.rabbit_url == url
+    assert extension.rabbit_url == expected
     assert extension.exchange == 'kingfisher_process_test_1.0'
+    assert extension.queue == 'kingfisher_process_test_1.0_api_loader'
     assert extension.routing_key == 'kingfisher_process_test_1.0_api'
     assert extension.collection_id is None
     assert bool(extension.channel) is boolean
@@ -247,8 +252,9 @@ def test_item_scraped(initializer, filename, kwargs, status_code, levelname, mes
 def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': rabbit_url,
-        'RABBIT_EXCHANGE_NAME': 'kingfisher_collect_test_1.0',
-        'RABBIT_ROUTING_KEY': 'kingfisher_collect_test_1.0_api',
+        'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test_1.0',
+        'RABBIT_QUEUE_NAME': 'kingfisher_process_test_1.0_api_loader',
+        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_1.0_api',
     })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -291,9 +297,9 @@ def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdi
         assert len(caplog.records) == 1
         assert caplog.records[0].name == 'test'
         assert caplog.records[0].levelname == 'ERROR'
-        assert caplog.records[0].message == 'Failed to publish message to RabbitMQ: message'
+        assert caplog.records[0].message == 'Failed to publish message to RabbitMQ (ExpectedError): message'
     else:
-        method_frame, header_frame, body = extension.channel.basic_get('kingfisher_collect_test_1.0_api')
+        method_frame, header_frame, body = extension.channel.basic_get('kingfisher_process_test_1.0_api_loader')
         extension.channel.basic_ack(method_frame.delivery_tag)
 
         assert len(caplog.records) == 0
