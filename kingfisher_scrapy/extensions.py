@@ -594,12 +594,24 @@ class KingfisherProcessAPI2:
             data['path'] = os.path.abspath(os.path.join(item['files_store'], item['path']))
 
         if self.rabbit_url:
-            try:
-                self._publish_to_rabbit(data)
-                self.stats.inc_value(self.ITEMS_SENT_RABBIT)
-            except Exception as e:
+            for attempt in range(1, 4):
+                try:
+                    self._publish_to_rabbit(data)
+                # This error is caused by another error, which might have been caught and logged by pika in another
+                # thread: for example, if RabbitMQ crashes due to insufficient memory, the connection is reset.
+                except pika.exceptions.ChannelWrongStateError as e:
+                    spider.logger.warning('Retrying to publish message to RabbitMQ (failed %d times): %s', attempt, e)
+                    self.open_connection_and_channel()
+                except Exception as e:
+                    spider.logger.error('Failed to publish message to RabbitMQ: %s: %s', type(e).__name__, e)
+                    self.stats.inc_value(self.ITEMS_FAILED_RABBIT)
+                    break
+                else:
+                    self.stats.inc_value(self.ITEMS_SENT_RABBIT)
+                    break
+            else:
+                spider.logger.error('Failed to publish message to RabbitMQ (failed 3 times)')
                 self.stats.inc_value(self.ITEMS_FAILED_RABBIT)
-                spider.logger.error('Failed to publish message to RabbitMQ (%s): %s', type(e).__name__, e)
         else:
             response = self._post_synchronous(spider, 'api/v1/create_collection_file', data)
             if response.ok:
@@ -619,18 +631,9 @@ class KingfisherProcessAPI2:
 
     # This method is extracted so that it can be mocked in tests.
     def _publish_to_rabbit(self, message):
-        try:
-            self.channel.basic_publish(
-                exchange=self.exchange,
-                routing_key=self.routing_key,
-                body=json.dumps(message),
-                # https://www.rabbitmq.com/publishers.html#message-properties
-                properties=pika.BasicProperties(delivery_mode=2, content_type='application/json')
-            )
-        # This error will have been caused by another error, which might have been caught and logged by pika in a
-        # separate thread: for example, if RabbitMQ crashes due to insufficient memory, the connection is reset.
-        except pika.exceptions.ChannelWrongStateError:
-            self.open_connection_and_channel()
+        # https://www.rabbitmq.com/publishers.html#message-properties
+        self.channel.basic_publish(exchange=self.exchange, routing_key=self.routing_key, body=json.dumps(message),
+                                   properties=pika.BasicProperties(delivery_mode=2, content_type='application/json'))
 
 
 # https://stackoverflow.com/questions/25262765/handle-all-exception-in-scrapy-with-sentry
