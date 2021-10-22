@@ -1,8 +1,8 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import handle_http_error, join, components, parameters, replace_parameters, \
-    append_path_components
+from kingfisher_scrapy.util import (append_path_components, components, handle_http_error, join, parameters,
+                                    replace_parameters)
 
 
 class Ukraine(SimpleSpider):
@@ -46,9 +46,14 @@ class Ukraine(SimpleSpider):
             data['data']['ocid'] = data['data']['id']
             # the data looks like:
             # {
-            #   "data": { tender fields }
+            #   "data": {
+            #     "id": "..",
+            #     "date": "...",
+            #     "tenderID": "",
+            #     tender fields
+            #    }
             # }
-            data = {'tender': data['data']}
+            data = {'tender': data['data'], 'date': data['data']['date'], 'id': data['data']['id']}
         else:
             # the Ukraine publication doesn't have an ocid, but the tender_id field in the contract JSON
             # can be used as one, as it is the same as tender.id in the tender JSON and therefore can be used to link
@@ -56,7 +61,11 @@ class Ukraine(SimpleSpider):
             data['data']['ocid'] = data['data']['tender_id']
             # the data looks like:
             # {
-            #   "data": { contract fields }
+            #   "data": {
+            #     "id": "",
+            #     "contractID": "",
+            #     contract fields
+            #    }
             # }
-            data = {'contracts': [data['data']]}
+            data = {'contracts': [data['data']], 'id': data['data']['id']}
         yield self.build_file_from_response(response, data=data, data_type=self.data_type)
