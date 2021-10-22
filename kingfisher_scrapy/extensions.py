@@ -603,7 +603,7 @@ class KingfisherProcessAPI2:
                     spider.logger.warning('Retrying to publish message to RabbitMQ (failed %d times): %s', attempt, e)
                     self.open_connection_and_channel()
                 except Exception as e:
-                    spider.logger.error('Failed to publish message to RabbitMQ: %s: %s', type(e).__name__, e)
+                    spider.logger.exception('Failed to publish message to RabbitMQ')
                     self.stats.inc_value(self.ITEMS_FAILED_RABBIT)
                     break
                 else:
