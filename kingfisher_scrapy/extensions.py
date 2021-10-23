@@ -602,7 +602,7 @@ class KingfisherProcessAPI2:
                 except pika.exceptions.ChannelWrongStateError as e:
                     spider.logger.warning('Retrying to publish message to RabbitMQ (failed %d times): %s', attempt, e)
                     self.open_connection_and_channel()
-                except Exception as e:
+                except Exception:
                     spider.logger.exception('Failed to publish message to RabbitMQ')
                     self.stats.inc_value(self.ITEMS_FAILED_RABBIT)
                     break
