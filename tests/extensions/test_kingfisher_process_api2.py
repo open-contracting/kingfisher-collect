@@ -297,7 +297,7 @@ def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdi
         assert len(caplog.records) == 1
         assert caplog.records[0].name == 'test'
         assert caplog.records[0].levelname == 'ERROR'
-        assert caplog.records[0].message == 'Failed to publish message to RabbitMQ: ExpectedError: message'
+        assert caplog.records[0].message == 'Failed to publish message to RabbitMQ'
     else:
         method_frame, header_frame, body = extension.channel.basic_get('kingfisher_process_test_1.0_api_loader')
         extension.channel.basic_ack(method_frame.delivery_tag)
