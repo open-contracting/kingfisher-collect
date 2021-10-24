@@ -471,12 +471,10 @@ class KingfisherProcessAPI2:
     ITEMS_SENT_RABBIT = 'kingfisher_process_items_sent_rabbit'
     ITEMS_FAILED_RABBIT = 'kingfisher_process_items_failed_rabbit'
 
-    def __init__(self, url, stats, rabbit_url=None, rabbit_exchange_name=None, rabbit_queue_name=None,
-                 rabbit_routing_key=None):
+    def __init__(self, url, stats, rabbit_url=None, rabbit_exchange_name=None, rabbit_routing_key=None):
         self.url = url
         self.stats = stats
         self.exchange = rabbit_exchange_name
-        self.queue = rabbit_queue_name
         self.routing_key = rabbit_routing_key
 
         # The collection ID is set by the spider_opened handler.
@@ -497,9 +495,6 @@ class KingfisherProcessAPI2:
             self.open_connection_and_channel()
             self.channel.exchange_declare(exchange=self.exchange, durable=True, exchange_type='direct')
 
-            self.channel.queue_declare(durable=True, queue=self.queue)
-            self.channel.queue_bind(exchange=self.exchange, queue=self.queue, routing_key=self.routing_key)
-
     def open_connection_and_channel(self):
         self.connection = pika.BlockingConnection(pika.URLParameters(self.rabbit_url))
         self.channel = self.connection.channel()
@@ -509,7 +504,6 @@ class KingfisherProcessAPI2:
         url = crawler.settings['KINGFISHER_API2_URL']
         rabbit_url = crawler.settings['RABBIT_URL']
         rabbit_exchange_name = crawler.settings['RABBIT_EXCHANGE_NAME']
-        rabbit_queue_name = crawler.settings['RABBIT_QUEUE_NAME']
         rabbit_routing_key = crawler.settings['RABBIT_ROUTING_KEY']
 
         if not url:
@@ -518,7 +512,7 @@ class KingfisherProcessAPI2:
         if crawler.settings['DATABASE_URL']:
             raise NotConfigured('DATABASE_URL is set.')
 
-        extension = cls(url, crawler.stats, rabbit_url, rabbit_exchange_name, rabbit_queue_name, rabbit_routing_key)
+        extension = cls(url, crawler.stats, rabbit_url, rabbit_exchange_name, rabbit_routing_key)
         crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)

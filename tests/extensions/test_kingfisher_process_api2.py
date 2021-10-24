@@ -58,7 +58,6 @@ def test_from_crawler(url, expected, boolean):
         'KINGFISHER_API2_URL': 'http://httpbin.org/anything/',
         'RABBIT_URL': url,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test_1.0',
-        'RABBIT_QUEUE_NAME': 'kingfisher_process_test_1.0_api_loader',
         'RABBIT_ROUTING_KEY': 'kingfisher_process_test_1.0_api',
     })
 
@@ -66,7 +65,6 @@ def test_from_crawler(url, expected, boolean):
 
     assert extension.rabbit_url == expected
     assert extension.exchange == 'kingfisher_process_test_1.0'
-    assert extension.queue == 'kingfisher_process_test_1.0_api_loader'
     assert extension.routing_key == 'kingfisher_process_test_1.0_api'
     assert extension.collection_id is None
     assert bool(extension.channel) is boolean
@@ -253,12 +251,17 @@ def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdi
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': rabbit_url,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test_1.0',
-        'RABBIT_QUEUE_NAME': 'kingfisher_process_test_1.0_api_loader',
         'RABBIT_ROUTING_KEY': 'kingfisher_process_test_1.0_api',
     })
 
+    queue = 'kingfisher_process_test_1.0_api_loader'
+
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
     extension.collection_id = 1
+
+    extension.channel.queue_declare(durable=True, queue=queue)
+    extension.channel.queue_bind(exchange='kingfisher_process_test_1.0', queue=queue,
+                                 routing_key='kingfisher_process_test_1.0_api')
 
     # To be sure we consume the message we sent.
     kwargs['url'] += str(time.time())
@@ -299,7 +302,7 @@ def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdi
         assert caplog.records[0].levelname == 'ERROR'
         assert caplog.records[0].message == 'Failed to publish message to RabbitMQ'
     else:
-        method_frame, header_frame, body = extension.channel.basic_get('kingfisher_process_test_1.0_api_loader')
+        method_frame, header_frame, body = extension.channel.basic_get(queue)
         extension.channel.basic_ack(method_frame.delivery_tag)
 
         assert len(caplog.records) == 0
