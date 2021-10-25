@@ -4,7 +4,7 @@ from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class Portugal(CompressedFileSpider):
+class PortugalBulk(CompressedFileSpider):
     """
     Domain
       Instituto dos Mercados Públicos, do Imobiliário e da Construção (IMPIC)
@@ -15,7 +15,7 @@ class Portugal(CompressedFileSpider):
     Swagger API documentation
       https://dados.gov.pt/pt/apidoc/#/datasets
     """
-    name = 'portugal'
+    name = 'portugal_bulk'
     download_timeout = 9999
 
     # BaseSpider
