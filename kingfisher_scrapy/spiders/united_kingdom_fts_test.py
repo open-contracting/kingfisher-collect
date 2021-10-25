@@ -4,14 +4,14 @@ from kingfisher_scrapy.base_spider import LinksSpider
 from kingfisher_scrapy.util import parameters
 
 
-class UKFTSTest(LinksSpider):
+class UnitedKingdomFTSTest(LinksSpider):
     """
     Domain
       Find a Tender Service (FTS)
     Caveats
       This spider uses a test service that returns test data. For getting real data see ``uk_fts`` instead.
     """
-    name = 'uk_fts_test'
+    name = 'united_kingdom_fts_test'
 
     # BaseSpider
     skip_pluck = 'Already covered (see code for details)'  # uk_fts

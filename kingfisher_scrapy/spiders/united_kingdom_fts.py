@@ -4,7 +4,7 @@ from kingfisher_scrapy.base_spider import LinksSpider
 from kingfisher_scrapy.util import handle_http_error, parameters
 
 
-class UKFTS(LinksSpider):
+class UnitedKingdomFTS(LinksSpider):
     """
     Domain
       Find a Tender Service (FTS)
@@ -18,7 +18,7 @@ class UKFTS(LinksSpider):
     API documentation
       https://www.find-tender.service.gov.uk/apidocumentation/1.0/GET-ocdsReleasePackages
     """
-    name = 'uk_fts'
+    name = 'united_kingdom_fts'
 
     # BaseSpider
     date_format = 'datetime'
