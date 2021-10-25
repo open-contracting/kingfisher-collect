@@ -6,14 +6,14 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class PakistanPPRAReleases(SimpleSpider):
+class PakistanPPRAAPI(SimpleSpider):
     """
     Domain
       Pakistan Public Procurement Regulatory Authority (PPRA)
     API documentation
       https://www.ppra.org.pk/api/
     """
-    name = 'pakistan_ppra_releases'
+    name = 'pakistan_ppra_api'
 
     # SimpleSpider
     data_type = 'release_package'
