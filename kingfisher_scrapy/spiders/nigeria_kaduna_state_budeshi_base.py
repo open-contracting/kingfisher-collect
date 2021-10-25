@@ -7,7 +7,7 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_http_error
 
 
-class NigeriaKadunaStateBase(SimpleSpider):
+class NigeriaKadunaStateBudeshiBase(SimpleSpider):
     base_url = 'https://www.budeshi.ng/kadppa/api/'
 
     def start_requests(self):
