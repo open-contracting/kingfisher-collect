@@ -1,8 +1,8 @@
-from kingfisher_scrapy.spiders.chile_compra_base import ChileCompraBase
+from kingfisher_scrapy.spiders.chile_compra_base import ChileCompraAPIBase
 from kingfisher_scrapy.util import components
 
 
-class ChileCompraReleases(ChileCompraBase):
+class ChileCompraAPIReleases(ChileCompraAPIBase):
     """
     Domain
       ChileCompra
@@ -22,7 +22,7 @@ class ChileCompraReleases(ChileCompraBase):
     Swagger API documentation
       https://desarrolladores.mercadopublico.cl/docs/services/5a9ed02f718ed712f4403e75/operations/data-listaa-omes-agno-mes
     """
-    name = 'chile_compra_releases'
+    name = 'chile_compra_api_releases'
 
     # SimpleSpider
     data_type = 'release_package'
