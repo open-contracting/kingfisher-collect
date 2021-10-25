@@ -2,14 +2,14 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import handle_http_error, parameters
 
 
-class AustraliaNSW(SimpleSpider):
+class AustraliaNewSouthWales(SimpleSpider):
     """
     Domain
       New South Wales (NSW)
     API documentation
       https://github.com/NSW-eTendering/NSW-eTendering-API/blob/master/README.md
     """
-    name = 'australia_nsw'
+    name = 'australia_new_south_wales'
 
     # SimpleSpider
     data_type = 'release_package'
