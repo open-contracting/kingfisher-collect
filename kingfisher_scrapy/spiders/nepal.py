@@ -2,7 +2,7 @@ from kingfisher_scrapy.base_spider import PeriodicSpider
 from kingfisher_scrapy.util import components
 
 
-class NepalPortal(PeriodicSpider):
+class Nepal(PeriodicSpider):
     """
     Domain
       Public Procurement Monitoring Office (PPMO)
@@ -14,7 +14,7 @@ class NepalPortal(PeriodicSpider):
     Bulk download documentation
       http://ppip.gov.np/downloads
     """
-    name = 'nepal_portal'
+    name = 'nepal'
 
     # BaseSpider
     ocds_version = '1.0'
