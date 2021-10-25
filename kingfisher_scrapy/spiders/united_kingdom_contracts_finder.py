@@ -3,14 +3,14 @@ import scrapy
 from kingfisher_scrapy.base_spider import IndexSpider
 
 
-class UKContractsFinder(IndexSpider):
+class UnitedKingdomContractsFinder(IndexSpider):
     """
     Domain
       Contracts Finder
     API documentation
       https://www.contractsfinder.service.gov.uk/apidocumentation/home
     """
-    name = 'uk_contracts_finder'
+    name = 'united_kingdom_contracts_finder'
 
     # BaseSpider
     ocds_version = '1.0'  # uses deprecated fields
