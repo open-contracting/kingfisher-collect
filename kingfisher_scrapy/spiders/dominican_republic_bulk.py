@@ -6,7 +6,7 @@ from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class DominicanRepublic(CompressedFileSpider):
+class DominicanRepublicBulk(CompressedFileSpider):
     """
     Domain
       Dirección General de Contrataciones Públicas (DGCP)
@@ -20,7 +20,7 @@ class DominicanRepublic(CompressedFileSpider):
     Bulk download documentation
       https://www.dgcp.gob.do/estandar-mundial-ocds/
     """
-    name = 'dominican_republic'
+    name = 'dominican_republic_bulk'
     date_format = 'year'
     default_from_date = '2018'
 
