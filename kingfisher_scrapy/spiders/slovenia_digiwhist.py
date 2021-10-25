@@ -1,6 +1,6 @@
 from kingfisher_scrapy.spiders.digiwhist_base import DigiwhistBase
 
 
-class DigiwhistSlovenia(DigiwhistBase):
-    name = 'digiwhist_slovenia'
+class SloveniaDigiwhist(DigiwhistBase):
+    name = 'slovenia_digiwhist'
     start_urls = ['https://opentender.eu/data/files/SI_ocds_data.json.tar.gz']
