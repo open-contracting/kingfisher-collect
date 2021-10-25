@@ -4,7 +4,7 @@ from kingfisher_scrapy.base_spider import IndexSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
 
 
-class HondurasPortalBase(IndexSpider):
+class HondurasPortalAPIBase(IndexSpider):
     download_delay = 0.9
 
     # IndexSpider

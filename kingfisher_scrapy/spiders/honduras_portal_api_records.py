@@ -1,7 +1,7 @@
-from kingfisher_scrapy.spiders.honduras_portal_base import HondurasPortalBase
+from kingfisher_scrapy.spiders.honduras_portal_api_base import HondurasPortalAPIBase
 
 
-class HondurasPortalReleases(HondurasPortalBase):
+class HondurasPortalAPIRecords(HondurasPortalAPIBase):
     """
     Domain
       Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Secretaria de Finanzas de Honduras (SEFIN)
@@ -18,12 +18,13 @@ class HondurasPortalReleases(HondurasPortalBase):
     Swagger API documentation
       http://www.contratacionesabiertas.gob.hn/servicio/
     """
-    name = 'honduras_portal_releases'
+    name = 'honduras_portal_api_records'
 
     # BaseSpider
-    root_path = 'releasePackage'
+    root_path = 'recordPackage'
+    skip_pluck = 'Already covered (see code for details)'  # honduras_portal_api_releases
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = 'record_package'
 
-    start_url = 'http://www.contratacionesabiertas.gob.hn/api/v1/release/?format=json'
+    start_url = 'http://www.contratacionesabiertas.gob.hn/api/v1/record/?format=json'
