@@ -20,7 +20,7 @@ class NigeriaEdoState(SimpleSpider):
     data_type = 'release_package'
 
     def start_requests(self):
-        url = 'http://edpms.edostate.gov.ng/ocds/bulkjson.php'
+        url = 'https://edpms.edostate.gov.ng/ocds/bulkjson.php'
         yield scrapy.Request(url, meta={'file_name': 'all.json'})
 
     @handle_http_error

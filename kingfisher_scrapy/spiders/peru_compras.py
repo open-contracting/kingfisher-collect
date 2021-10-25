@@ -17,14 +17,14 @@ class PeruCompras(SimpleSpider):
 
     name = 'peru_compras'
 
+    base_url = 'https://www.catalogos.perucompras.gob.pe/ConsultaOrdenesPub'
+
     # BaseSpider
     date_required = True
     default_from_date = '2017-01-01'
 
     # SimpleSpider
     data_type = 'release_package'
-
-    base_url = 'https://www.catalogos.perucompras.gob.pe/ConsultaOrdenesPub'
 
     def start_requests(self):
         url = f'{self.base_url}/obtenerFiltros'

@@ -29,16 +29,14 @@ class ColombiaBulk(CompressedFileSpider):
       https://www.colombiacompra.gov.co/transparencia/datos-json
     """
     name = 'colombia_bulk'
-    date_format = 'year'
-    default_from_date = '2011'
-    available_systems = {'SECOP1': 'SI', 'SECOP2': 'SECOP2', 'TVEC': 'TVEC'}
-
     download_timeout = 99999
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
 
     # BaseSpider
+    date_format = 'year'
+    default_from_date = '2011'
     line_delimited = True
     root_path = 'Release'
     root_path_max_length = 1
@@ -47,6 +45,8 @@ class ColombiaBulk(CompressedFileSpider):
     # SimpleSpider
     data_type = 'release'
     encoding = 'iso-8859-1'
+
+    available_systems = {'SECOP1': 'SI', 'SECOP2': 'SECOP2', 'TVEC': 'TVEC'}
 
     @classmethod
     def from_crawler(cls, crawler, system=None, *args, **kwargs):

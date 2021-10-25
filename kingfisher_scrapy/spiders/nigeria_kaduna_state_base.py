@@ -8,7 +8,6 @@ from kingfisher_scrapy.util import handle_http_error
 
 
 class NigeriaKadunaStateBase(SimpleSpider):
-    # SimpleSpider
     base_url = 'https://www.budeshi.ng/kadppa/api/'
 
     def start_requests(self):

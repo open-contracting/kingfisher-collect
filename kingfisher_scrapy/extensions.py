@@ -474,28 +474,30 @@ class KingfisherProcessAPI2:
     def __init__(self, url, stats, rabbit_url=None, rabbit_exchange_name=None, rabbit_routing_key=None):
         self.url = url
         self.stats = stats
-        self.rabbit_url = rabbit_url
         self.exchange = rabbit_exchange_name
         self.routing_key = rabbit_routing_key
 
         # The collection ID is set by the spider_opened handler.
         self.collection_id = None
+        self.connection = None
+        self.rabbit_url = None
         self.channel = None
 
         if rabbit_url:
+            # Add query string parameters to the RabbitMQ URL.
             parsed = urlsplit(rabbit_url)
             query = parse_qs(parsed.query)
             # NOTE: Heartbeat should not be disabled.
             # https://github.com/open-contracting/data-registry/issues/140
             query.update({'blocked_connection_timeout': 1800, 'heartbeat': 0})
+            self.rabbit_url = parsed._replace(query=urlencode(query)).geturl()
 
-            connection = pika.BlockingConnection(pika.URLParameters(parsed._replace(query=urlencode(query)).geturl()))
-
-            self.channel = connection.channel()
+            self.open_connection_and_channel()
             self.channel.exchange_declare(exchange=self.exchange, durable=True, exchange_type='direct')
 
-            self.channel.queue_declare(durable=True, queue=self.routing_key)
-            self.channel.queue_bind(exchange=self.exchange, queue=self.routing_key, routing_key=self.routing_key)
+    def open_connection_and_channel(self):
+        self.connection = pika.BlockingConnection(pika.URLParameters(self.rabbit_url))
+        self.channel = self.connection.channel()
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -538,6 +540,8 @@ class KingfisherProcessAPI2:
 
         if response.ok:
             self.collection_id = response.json()['collection_id']
+            # WARNING! If this log message is changed, then a regular expression in data_registry/cbom/task/scrape.py
+            # in the open-contracting/data-registry repository must be updated to match.
             spider.logger.info('Created collection %d in Kingfisher Process', self.collection_id)
         else:
             spider.logger.error('Failed to create collection. API status code: %d', response.status_code)
@@ -584,12 +588,24 @@ class KingfisherProcessAPI2:
             data['path'] = os.path.abspath(os.path.join(item['files_store'], item['path']))
 
         if self.rabbit_url:
-            try:
-                self._publish_to_rabbit(data)
-                self.stats.inc_value(self.ITEMS_SENT_RABBIT)
-            except Exception as e:
+            for attempt in range(1, 4):
+                try:
+                    self._publish_to_rabbit(data)
+                # This error is caused by another error, which might have been caught and logged by pika in another
+                # thread: for example, if RabbitMQ crashes due to insufficient memory, the connection is reset.
+                except pika.exceptions.ChannelWrongStateError as e:
+                    spider.logger.warning('Retrying to publish message to RabbitMQ (failed %d times): %s', attempt, e)
+                    self.open_connection_and_channel()
+                except Exception:
+                    spider.logger.exception('Failed to publish message to RabbitMQ')
+                    self.stats.inc_value(self.ITEMS_FAILED_RABBIT)
+                    break
+                else:
+                    self.stats.inc_value(self.ITEMS_SENT_RABBIT)
+                    break
+            else:
+                spider.logger.error('Failed to publish message to RabbitMQ (failed 3 times)')
                 self.stats.inc_value(self.ITEMS_FAILED_RABBIT)
-                spider.logger.error('Failed to publish message to RabbitMQ: %s', e)
         else:
             response = self._post_synchronous(spider, 'api/v1/create_collection_file', data)
             if response.ok:

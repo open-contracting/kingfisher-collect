@@ -1,17 +1,23 @@
-from kingfisher_scrapy.base_spider import PeriodicSpider
+from datetime import datetime
+
+import scrapy
+
+from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
-class HondurasPortalBulk(PeriodicSpider):
+class HondurasPortalBulk(SimpleSpider):
     """
     Domain
       Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Secretaria de Finanzas de Honduras (SEFIN)
     Spider arguments
       from_date
-        Download only data from this month onward (YYYY-MM format). Defaults to '2005-11'.
+        Download only data from this month onward (YYYY-MM format).
+        If ``until_date`` is provided, defaults to '2005-11'.
       until_date
-        Download only data until this month (YYYY-MM format). Defaults to the current month.
+        Download only data until this month (YYYY-MM format).
+        If ``from_date`` is provided, defaults to the current month.
       publisher
         Filter by publisher:
 
@@ -41,12 +47,15 @@ class HondurasPortalBulk(PeriodicSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    # PeriodicSpider
-    pattern = 'http://www.contratacionesabiertas.gob.hn/api/v1/descargas/{}'
-    formatter = staticmethod(components(-1))
+    available_publishers = {'oncae': 'Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Honduras',
+                            'sefin': 'Secretaria de Finanzas de Honduras'}
+    available_systems = {'HC1': 'HonduCompras 1.0 - Módulo de Difusión de Compras y Contrataciones',
+                         'CE': 'Catálogo Electrónico',
+                         'DDC': 'Módulo de Difusión Directa de Contratos'}
 
-    available_publishers = {'oncae': 'oficina_normativa', 'sefin': 'secretaria_de_fin_HN.SIAFI2'}
-    available_systems = {'HC1': 'honducompras-1', 'CE': 'catalogo-electronico', 'DDC': 'difusion-directa-contrato'}
+    def start_requests(self):
+        url = 'http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json'
+        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @classmethod
     def from_crawler(cls, crawler, publisher=None, system=None, *args, **kwargs):
@@ -63,17 +72,37 @@ class HondurasPortalBulk(PeriodicSpider):
 
         return spider
 
-    def build_urls(self, date):
-        for publisher in self.available_publishers:
-            if self.publisher and publisher != self.publisher:
+    @handle_http_error
+    def parse_list(self, response):
+        formatter = components(-1)
+        # An example of expected response is:
+        # [
+        #   {
+        #    "urls": {
+        #      "csv": "...",
+        #      "md5": "...",
+        #      "json": "...",
+        #      "xlsx": "..."
+        #    },
+        #    "year": "values between 2005 to the current year",
+        #    "month": "values between 1 and 12",
+        #    "sistema": "values from available_system",
+        #    "publicador": "values from available_publishers"
+        #   }, ...
+        # ]
+        for item in response.json():
+            publisher = item['publicador']
+            if self.publisher and publisher != self.available_publishers.get(self.publisher):
                 continue
 
-            if publisher == 'oncae':
-                for system in self.available_systems:
-                    if self.system and system != self.system:
-                        continue
-                    yield self.pattern.format(f"{self.available_publishers[publisher]}_"
-                                              f"{self.available_systems[system]}_{date.year}_{date.month:02d}.json")
-            else:
-                yield self.pattern.format(f"{self.available_publishers[publisher]}_"
-                                          f"{date.year}_{date.month:02d}.json")
+            if publisher == self.available_publishers['oncae']:
+                system = item['sistema']
+                if self.system and system != self.available_systems.get(self.system):
+                    continue
+
+            if self.from_date and self.until_date:
+                date = datetime(int(item['year']), int(item['month']), 1)
+                if not (self.from_date <= date <= self.until_date):
+                    continue
+
+            yield self.build_request(item['urls']['json'], formatter=formatter)
