@@ -16,7 +16,6 @@ class Ukraine(SimpleSpider):
       https://prozorro-api-docs.readthedocs.io/uk/latest/tendering/index.html
     """
     name = 'ukraine'
-    base_url = 'https://public.api.openprocurement.org/api/0/'
 
     # BaseSpider
     encoding = 'utf-16'
@@ -24,8 +23,9 @@ class Ukraine(SimpleSpider):
     ocds_version = '1.0'
 
     def start_requests(self):
-        for stage in ['tenders', 'contracts']:
-            yield scrapy.Request(f'{self.base_url}{stage}', meta={'file_name': 'list.json'}, callback=self.parse_list)
+        base_url = 'https://public.api.openprocurement.org/api/0/'
+        for stage in ('tenders', 'contracts'):
+            yield scrapy.Request(f'{base_url}{stage}', meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
@@ -42,9 +42,8 @@ class Ukraine(SimpleSpider):
     def parse(self, response):
         data = response.json()
         if 'tenders' in response.request.url:
-            # the Ukraine publication doesn't have an ocid, but the id field in the tender JSON can be used as one
-            data['data']['ocid'] = data['data']['id']
-            # the data looks like:
+            # The Ukraine publication doesn't have an ocid, but the id field in the tender JSON can be used as one.
+            # The data looks like:
             # {
             #   "data": {
             #     "id": "..",
@@ -53,13 +52,13 @@ class Ukraine(SimpleSpider):
             #     tender fields
             #    }
             # }
-            data = {'tender': data['data'], 'date': data['data']['date'], 'id': data['data']['id']}
+            data = {'tender': data['data'], 'date': data['data']['date'], 'id': data['data']['tenderID'],
+                    'ocid': data['data']['id']}
         else:
-            # the Ukraine publication doesn't have an ocid, but the tender_id field in the contract JSON
+            # The Ukraine publication doesn't have an ocid, but the tender_id field in the contract JSON
             # can be used as one, as it is the same as tender.id in the tender JSON and therefore can be used to link
             # both.
-            data['data']['ocid'] = data['data']['tender_id']
-            # the data looks like:
+            # The data looks like:
             # {
             #   "data": {
             #     "id": "",
@@ -67,5 +66,6 @@ class Ukraine(SimpleSpider):
             #     contract fields
             #    }
             # }
-            data = {'contracts': [data['data']], 'id': data['data']['id']}
+            data = {'contracts': [data['data']], 'id': data['data']['id'], 'ocid': data['data']['tender_id'],
+                    'date': data['data']['dateUpdated']}
         yield self.build_file_from_response(response, data=data, data_type=self.data_type)
