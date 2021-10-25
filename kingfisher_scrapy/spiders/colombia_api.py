@@ -4,7 +4,7 @@ from kingfisher_scrapy.base_spider import LinksSpider
 from kingfisher_scrapy.util import parameters
 
 
-class Colombia(LinksSpider):
+class ColombiaAPI(LinksSpider):
     """
     Domain
       Colombia Compra Eficiente (CCE)
@@ -18,7 +18,7 @@ class Colombia(LinksSpider):
     Swagger API documentation
       https://apiocds.colombiacompra.gov.co/apiCCE2.0/
     """
-    name = 'colombia'
+    name = 'colombia_api'
 
     # BaseSpider
     default_from_date = '2011-01-01'
