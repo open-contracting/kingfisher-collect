@@ -52,8 +52,12 @@ class Ukraine(SimpleSpider):
             #     tender fields
             #    }
             # }
-            data = {'tender': data['data'], 'date': data['data']['date'], 'id': data['data']['tenderID'],
-                    'ocid': data['data']['id']}
+            data = {
+                'id': data['data']['tenderID'],
+                'ocid': data['data']['id'],
+                'date': data['data']['dateModified'],
+                'tender': data['data'],
+            }
         else:
             # The Ukraine publication doesn't have an ocid, but the tender_id field in the contract JSON
             # can be used as one, as it is the same as tender.id in the tender JSON and therefore can be used to link
@@ -66,6 +70,10 @@ class Ukraine(SimpleSpider):
             #     contract fields
             #    }
             # }
-            data = {'contracts': [data['data']], 'id': data['data']['id'], 'ocid': data['data']['tender_id'],
-                    'date': data['data']['dateUpdated']}
+            data = {
+                'id': data['data']['id'],
+                'ocid': data['data']['tender_id'],
+                'date': data['data']['dateModified'],
+                'contracts': [data['data']],
+            }
         yield self.build_file_from_response(response, data=data, data_type=self.data_type)
