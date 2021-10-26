@@ -1180,6 +1180,16 @@ Uk
 
    scrapy crawl uk_fts_test
 
+Ukraine
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.ukraine.Ukraine
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl ukraine
+
 Uruguay
 -------
 
