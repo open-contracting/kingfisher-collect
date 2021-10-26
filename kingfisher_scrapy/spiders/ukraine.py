@@ -10,8 +10,8 @@ class Ukraine(SimpleSpider):
     Domain
       ProZorro OpenProcurement API
     Caveats
-      The API returns OCDS-like tenders and contracts objects, however an ocid is not set. Therefore, as part of this
-      spider, the tender.id is used and added as the ocid.
+      The API returns OCDS-like contracting processes data, however an ocid is not set. Therefore, as part of this
+      spider, the data.tenderID is used as the ocid and the data.id + data.dateModified fields are used and release.id
     API documentation
       https://prozorro-api-docs.readthedocs.io/uk/latest/tendering/index.html
     """
@@ -23,9 +23,11 @@ class Ukraine(SimpleSpider):
     ocds_version = '1.0'
 
     def start_requests(self):
-        base_url = 'https://public.api.openprocurement.org/api/0/'
-        for stage in ('tenders', 'contracts'):
-            yield scrapy.Request(f'{base_url}{stage}', meta={'file_name': 'list.json'}, callback=self.parse_list)
+        # A https://public.api.openprocurement.org/api/0/contracts endpoint also exists but the data returned from
+        # there is already included in the tenders endpoint. If we would like to join both, the tender_id field from
+        # the contract endpoint can be used with the id field from the tender endpoint.
+        url = 'https://public.api.openprocurement.org/api/0/tenders'
+        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
@@ -41,39 +43,33 @@ class Ukraine(SimpleSpider):
     @handle_http_error
     def parse(self, response):
         data = response.json()
-        if 'tenders' in response.request.url:
-            # The Ukraine publication doesn't have an ocid, but the id field in the tender JSON can be used as one.
-            # The data looks like:
-            # {
-            #   "data": {
-            #     "id": "..",
-            #     "date": "...",
-            #     "tenderID": "",
-            #     tender fields
-            #    }
-            # }
-            data = {
-                'id': data['data']['tenderID'],
-                'ocid': data['data']['id'],
-                'date': data['data']['dateModified'],
-                'tender': data['data'],
-            }
-        else:
-            # The Ukraine publication doesn't have an ocid, but the tender_id field in the contract JSON
-            # can be used as one, as it is the same as tender.id in the tender JSON and therefore can be used to link
-            # both.
-            # The data looks like:
-            # {
-            #   "data": {
-            #     "id": "",
-            #     "contractID": "",
-            #     contract fields
-            #    }
-            # }
-            data = {
-                'id': data['data']['id'],
-                'ocid': data['data']['tender_id'],
-                'date': data['data']['dateModified'],
-                'contracts': [data['data']],
-            }
-        yield self.build_file_from_response(response, data=data, data_type=self.data_type)
+        # The data looks like:
+        # {
+        #   "data": {
+        #     "id": "..",
+        #     "dateModified": "...",
+        #     "tenderID": "",
+        #     other tender fields,
+        #     "awards": ...,
+        #     "contracts": ...
+        #    }
+        # }
+
+        awards = data['data'].pop('awards', None)
+        contracts = data['data'].pop('contracts', None)
+
+        ocds_data = {
+            # The data.id field corresponds to the internal identifier. The data.dateModified is concatenated to ensure
+            # the id's uniqueness.
+            'id': f"{data['data']['id']}-{data['data']['dateModified']}",
+            # The data.tenderID field corresponds to the official identifier.
+            'ocid': data['data']['tenderID'],
+            'date': data['data']['dateModified'],
+            'tender': data['data'],
+        }
+        if contracts:
+            ocds_data['contracts'] = contracts
+        if awards:
+            ocds_data['awards'] = awards
+
+        yield self.build_file_from_response(response, data=ocds_data, data_type=self.data_type)
