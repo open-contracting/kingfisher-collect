@@ -1,6 +1,6 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import browser_user_agent, SimpleSpider
+from kingfisher_scrapy.base_spider import SimpleSpider, browser_user_agent
 from kingfisher_scrapy.util import (append_path_components, components, handle_http_error, join, parameters,
                                     replace_parameters)
 
