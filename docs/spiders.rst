@@ -785,19 +785,19 @@ Mexico
 
    scrapy crawl mexico_inai_api
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_city_infocdmx.MexicoMexicoCityINFOCDMX
+.. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_city_info.MexicoMexicoCityINFO
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl mexico_mexico_city_infocdmx
+   scrapy crawl mexico_mexico_city_info
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_state_infoem.MexicoMexicoStateINFOEM
+.. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_state_info.MexicoMexicoStateINFO
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl mexico_mexico_state_infoem
+   scrapy crawl mexico_mexico_state_info
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_cotai.MexicoNuevoLeonCOTAI
    :no-members:
