@@ -1,6 +1,6 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.base_spider import browser_user_agent, SimpleSpider
 from kingfisher_scrapy.util import (append_path_components, components, handle_http_error, join, parameters,
                                     replace_parameters)
 
@@ -16,6 +16,7 @@ class Ukraine(SimpleSpider):
       https://prozorro-api-docs.readthedocs.io/uk/latest/tendering/index.html
     """
     name = 'ukraine'
+    user_agent = browser_user_agent # to avoid HTTP 412 errors
 
     # BaseSpider
     encoding = 'utf-16'
