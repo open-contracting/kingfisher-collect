@@ -11,8 +11,8 @@ class MexicoINAIBase(SimpleSpider):
 
     #. Set a ``domain_pattern`` class attribute to assign the portal domain with {} in the end of the string
     """
-    fiscal_years_api = '/edca/fiscalYears'
-    contracts_api = '/edca/contractingprocess/{}'
+    fiscal_years_api = 'edca/fiscalYears'
+    contracts_api = 'edca/contractingprocess/{}'
 
     # BaseSpider
     root_path = 'arrayReleasePackage.item'
