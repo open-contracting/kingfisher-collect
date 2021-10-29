@@ -12,15 +12,24 @@ class Ukraine(SimpleSpider):
     Caveats
       The API returns OCDS-like contracting processes data, however an ocid is not set. Therefore, as part of this
       spider, the data.tenderID is used as the ocid and the data.id + data.dateModified fields are used and release.id
+    Spider arguments
+      from_date
+        Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
     API documentation
       https://prozorro-api-docs.readthedocs.io/uk/latest/tendering/index.html
     """
     name = 'ukraine'
     user_agent = browser_user_agent  # to avoid HTTP 412 errors
+    # To avoid too many open files error in KingfisherProcessAPI extension.
+    custom_settings = {
+        'CONCURRENT_REQUESTS': 1,
+    }
+    download_delay = 0.5
 
     # BaseSpider
     encoding = 'utf-16'
     data_type = 'release'
+    date_format = 'datetime'
     ocds_version = '1.0'
 
     def start_requests(self):
@@ -28,6 +37,8 @@ class Ukraine(SimpleSpider):
         # there is already included in the tenders endpoint. If we would like to join both, the tender_id field from
         # the contract endpoint can be used with the id field from the tender endpoint.
         url = 'https://public.api.openprocurement.org/api/0/tenders'
+        if self.from_date:
+            url = f'{url}?offset={self.from_date.strftime(self.date_format)}'
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
