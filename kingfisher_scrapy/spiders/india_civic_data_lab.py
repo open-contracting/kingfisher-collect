@@ -1,7 +1,9 @@
+from base64 import b64decode
+
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import handle_http_error
 
 
 class IndiaCivicDataLab(SimpleSpider):
@@ -24,14 +26,37 @@ class IndiaCivicDataLab(SimpleSpider):
     data_type = 'release_package'
 
     def start_requests(self):
-        url = 'https://github.com/CivicDataLab/himachal-pradesh-health-procurement-OCDS'
-        yield scrapy.Request(url, meta={'file_name': 'list.html'}, callback=self.parse_list)
+        url = 'https://api.github.com/repos/CivicDataLab/himachal-pradesh-health-procurement-OCDS/git/trees/master'
+        yield scrapy.Request(url, meta={'file_name': 'response.json'}, callback=self.parse_file_list)
 
     @handle_http_error
-    def parse_list(self, response):
-        for path in response.xpath('//div[@role="rowheader"]/span/a/@href').getall():
-            if path.endswith('.xlsx'):
-                yield self.build_request(
-                    f'https://github.com{path}?raw=true',
-                    formatter=components(-1)
-                )
+    def parse_file_list(self, response):
+        data = response.json()
+        # The data looks like:
+        # {
+        #   "sha": ...
+        #   "url": ...
+        #   "tree": [ ... ],
+        #   "truncated": ...
+        # }
+
+        for node in data['tree']:
+            file_name = node['path']
+            if file_name.endswith('.xlsx'):
+                yield scrapy.Request(node['url'], meta={'file_name': file_name}, callback=self.parse_file_content)
+
+    @handle_http_error
+    def parse_file_content(self, response):
+        data = response.json()
+        # The data looks like:
+        # {
+        #   "sha": ...
+        #   "node_id": ...
+        #   "size": ...
+        #   "url": ...
+        #   "content": ...
+        #   "encoding": "base64"
+        # }
+
+        file_content = b64decode(data['content'])
+        yield self.build_file_from_response(response, data=file_content, data_type=self.data_type)
