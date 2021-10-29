@@ -20,6 +20,7 @@ class Italy(SimpleSpider):
         yield scrapy.Request(
             # From https://www.appaltipop.it/it/download
             'https://www.appaltipop.it/_next/data/LxpUO4Pg-S_nnq33fzaED/it/tenders.json',
+            meta={'file_name': 'tenders.json'},
             callback=self.parse_list
         )
 
