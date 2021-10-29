@@ -1,8 +1,8 @@
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 import csv
 import json
-import os
 import logging
+import os
 from datetime import datetime
 from urllib.parse import parse_qs, urlencode, urljoin, urlsplit
 
