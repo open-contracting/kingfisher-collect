@@ -2,6 +2,7 @@
 import csv
 import json
 import os
+import logging
 from datetime import datetime
 from urllib.parse import parse_qs, urlencode, urljoin, urlsplit
 
@@ -482,6 +483,9 @@ class KingfisherProcessAPI2:
         self.connection = None
         self.rabbit_url = None
         self.channel = None
+
+        # To avoid DEBUG-level messages from pika
+        logging.getLogger('pika').setLevel(logging.WARNING)
 
         if rabbit_url:
             # Add query string parameters to the RabbitMQ URL.
