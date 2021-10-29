@@ -18,14 +18,26 @@ class Italy(SimpleSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            'https://www.appaltipop.it/it/download',
-            meta={'file_name': 'list.html'},
+            'https://www.appaltipop.it/_next/data/LxpUO4Pg-S_nnq33fzaED/it/tenders.json',
+            meta={'file_name': 'tenders.json'},
             callback=self.parse_list
         )
 
     @handle_http_error
     def parse_list(self, response):
-        html_urls = response.xpath('//a/@href').getall()
-        for html_url in html_urls:
-            if '.json' in html_url:
-                yield self.build_request(html_url, formatter=components(-2))
+        data = response.json()
+        # The data looks like:
+        # {
+        #   "pageProps": {
+        #       other fields,
+        #       "buyers": [ ... ],
+        #       other fields
+        #    },
+        #   "__N_SSG": ...
+        # }
+
+        for buyer in data['pageProps']['buyers']:
+            resource = buyer['appaltipop:releases/0/buyer/dataSource/resources'][0]
+            filepath = resource['appaltipop:releases/0/buyer/resource/url']
+            url = f'https://raw.githubusercontent.com/ondata/appaltipop/master/{filepath}'
+            yield self.build_request(url, formatter=components(-2))
