@@ -21,3 +21,4 @@ class Ghana(EuropeDynamicSpiderBase):
 
     url = 'https://www.ghaneps.gov.gh/ocds/services/recordpackage/getrecordpackagelist'
 
+
