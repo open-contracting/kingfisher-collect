@@ -13,12 +13,9 @@ class Ghana(EuropeDynamicSpiderBase):
             Download only data until this month (YYYY-MM format).
             If ``from_date`` is provided, defaults to the current month.
     """
-
     name = 'ghana'
 
     # BaseSpider
     default_from_date = '2019-07'
 
     url = 'https://www.ghaneps.gov.gh/ocds/services/recordpackage/getrecordpackagelist'
-
-
