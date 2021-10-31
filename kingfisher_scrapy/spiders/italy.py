@@ -42,6 +42,6 @@ class Italy(SimpleSpider):
             resource = buyer['appaltipop:releases/0/buyer/dataSource/resources'][0]
 
             # The JSON file path looks like 'data/IT-CF-01232710374/ocds.json'
-            filepath = resource['appaltipop:releases/0/buyer/resource/url']
-            url = f'https://raw.githubusercontent.com/ondata/appaltipop/master/{filepath}'
+            file_path = resource['appaltipop:releases/0/buyer/resource/url']
+            url = f'https://raw.githubusercontent.com/ondata/appaltipop/master/{file_path}'
             yield self.build_request(url, formatter=components(-2))
