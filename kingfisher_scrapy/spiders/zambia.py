@@ -19,4 +19,4 @@ class Zambia(EuropeDynamicBase):
     # BaseSpider
     ocds_version = '1.0'
 
-    url = 'https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackagelist'
+    base_url = 'https://www.zppa.org.zm'

@@ -18,4 +18,4 @@ class Ghana(EuropeDynamicBase):
     # BaseSpider
     default_from_date = '2019-07'
 
-    url = 'https://www.ghaneps.gov.gh/ocds/services/recordpackage/getrecordpackagelist'
+    base_url = 'https://www.ghaneps.gov.gh'
