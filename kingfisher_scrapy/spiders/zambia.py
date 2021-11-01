@@ -1,7 +1,7 @@
-from kingfisher_scrapy.spiders.europe_dynamic_spider_base import EuropeDynamicSpiderBase
+from kingfisher_scrapy.spiders.europe_dynamic_base import EuropeDynamicBase
 
 
-class Zambia(EuropeDynamicSpiderBase):
+class Zambia(EuropeDynamicBase):
     """
     Domain
       Zambia Public Procurement Authority (ZPPA)

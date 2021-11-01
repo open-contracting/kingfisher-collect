@@ -1,7 +1,7 @@
-from kingfisher_scrapy.spiders.europe_dynamic_spider_base import EuropeDynamicSpiderBase
+from kingfisher_scrapy.spiders.europe_dynamic_base import EuropeDynamicBase
 
 
-class Ghana(EuropeDynamicSpiderBase):
+class Ghana(EuropeDynamicBase):
     """
        Domain
          Ghana Electronic Procurement System (GHANEPS)

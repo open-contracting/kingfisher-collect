@@ -6,7 +6,7 @@ from kingfisher_scrapy.base_spider import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error, join
 
 
-class EuropeDynamicSpiderBase(CompressedFileSpider):
+class EuropeDynamicBase(CompressedFileSpider):
     # SimpleSpider
     data_type = 'record_package'
     date_format = 'year-month'
