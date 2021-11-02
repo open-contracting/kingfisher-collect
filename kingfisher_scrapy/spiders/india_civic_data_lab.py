@@ -1,5 +1,3 @@
-from base64 import b64decode
-
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
