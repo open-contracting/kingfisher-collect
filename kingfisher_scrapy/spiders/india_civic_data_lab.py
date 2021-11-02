@@ -12,6 +12,7 @@ class IndiaCivicDataLab(SimpleSpider):
       https://github.com/CivicDataLab/himachal-pradesh-health-procurement-OCDS/
     """
     name = 'india_civic_data_lab'
+    github_repo = 'CivicDataLab/himachal-pradesh-health-procurement-OCDS'
 
     # BaseSpider
     unflatten = True
@@ -23,17 +24,14 @@ class IndiaCivicDataLab(SimpleSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    # GitHub repository
-    github_repo = 'CivicDataLab/himachal-pradesh-health-procurement-OCDS'
-
     def start_requests(self):
         url = f'https://api.github.com/repos/{self.github_repo}/git/trees/master'
         yield scrapy.Request(url, meta={'file_name': 'response.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
-        # The parser uses the GitHub API to list the files from the repository and
-        # then downloads them with a non-API url to avoid quota/rate limitations
+        # Use the GitHub API to list the files in the repository, and then download the files using a non-API method,
+        # to avoid quota/rate limits.
 
         data = response.json()
         # The data looks like:
