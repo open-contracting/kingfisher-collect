@@ -25,12 +25,18 @@ class IndiaCivicDataLab(SimpleSpider):
     # SimpleSpider
     data_type = 'release_package'
 
+    # GitHub repository
+    github_repo = 'CivicDataLab/himachal-pradesh-health-procurement-OCDS'
+
     def start_requests(self):
-        url = 'https://api.github.com/repos/CivicDataLab/himachal-pradesh-health-procurement-OCDS/git/trees/master'
-        yield scrapy.Request(url, meta={'file_name': 'response.json'}, callback=self.parse_file_list)
+        url = f'https://api.github.com/repos/{self.github_repo}/git/trees/master'
+        yield scrapy.Request(url, meta={'file_name': 'response.json'}, callback=self.parse_list)
 
     @handle_http_error
-    def parse_file_list(self, response):
+    def parse_list(self, response):
+        # The parser uses the GitHub API to list the files from the repository and
+        # then downloads them with a non-API url to avoid quota/rate limitations
+
         data = response.json()
         # The data looks like:
         # {
@@ -43,20 +49,5 @@ class IndiaCivicDataLab(SimpleSpider):
         for node in data['tree']:
             file_name = node['path']
             if file_name.endswith('.xlsx'):
-                yield scrapy.Request(node['url'], meta={'file_name': file_name}, callback=self.parse_file_content)
-
-    @handle_http_error
-    def parse_file_content(self, response):
-        data = response.json()
-        # The data looks like:
-        # {
-        #   "sha": ...
-        #   "node_id": ...
-        #   "size": ...
-        #   "url": ...
-        #   "content": ...
-        #   "encoding": "base64"
-        # }
-
-        file_content = b64decode(data['content'])
-        yield self.build_file_from_response(response, data=file_content, data_type=self.data_type)
+                url = f'https://github.com/{self.github_repo}/raw/master/{file_name}?raw=true'
+                yield scrapy.Request(url, meta={'file_name': file_name})
