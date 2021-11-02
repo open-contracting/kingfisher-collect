@@ -87,10 +87,7 @@ All spiders support these arguments:
      - string
    * - ``qs:*``
      - Query string parameters to append to each URL, for example: ``qs:parameter1=value1``. See also: :ref:`filter`.
-
-..
-   If you add or rename a spider argument, remember to update `ScrapyLogFile.is_complete()` in:
-   https://github.com/open-contracting/kingfisher-archive/blob/main/ocdskingfisherarchive/scrapy_log_file.py
+     - string
 
 Some spiders support these arguments:
 
