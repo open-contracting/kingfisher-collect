@@ -12,6 +12,7 @@ class IndiaCivicDataLab(SimpleSpider):
       https://github.com/CivicDataLab/himachal-pradesh-health-procurement-OCDS/
     """
     name = 'india_civic_data_lab'
+
     github_repo = 'CivicDataLab/himachal-pradesh-health-procurement-OCDS'
 
     # BaseSpider
