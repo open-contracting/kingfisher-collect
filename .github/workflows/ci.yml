@@ -41,7 +41,9 @@ jobs:
       - run: curl -s -S --retry 3 $BASEDIR/tests/install.sh | bash -
       - run: pip install -r requirements_dev.txt
       - run: curl -s -S --retry 3 $BASEDIR/tests/script.sh | bash -
-      - run: STANDARD_MAINTENANCE_SCRIPTS_IGNORE=scrapyd,scrapyd-client pytest /tmp/test_requirements.py
+      - env:
+          STANDARD_MAINTENANCE_SCRIPTS_IGNORE: scrapyd,scrapyd-client
+        run: pytest /tmp/test_requirements.py
       - run: shasum -c requirements.txt.sha256
       # Specify tests/ directory to avoid "ModuleNotFoundError: No module named 'sphinx_rtd_theme'" from docs/conf.py.
       - run: pytest --cov kingfisher_scrapy tests
