@@ -589,7 +589,7 @@ class KingfisherProcessAPI2:
         if isinstance(item, FileError):
             data['errors'] = json.dumps(item['errors'])
         else:
-            data['path'] = os.path.abspath(os.path.join(item['files_store'], item['path']))
+            data['path'] = item['path']
 
         if self.rabbit_url:
             for attempt in range(1, 4):
