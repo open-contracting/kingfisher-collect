@@ -232,4 +232,4 @@ class RetryDataErrorMiddleware:
                                 {'request': response.request, 'failures': retries, 'exception': exception})
             yield request
         else:
-           raise exception
+            raise exception
