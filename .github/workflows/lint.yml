@@ -1,0 +1,26 @@
+name: Lint
+on: [push, pull_request]
+env:
+  BASEDIR: https://raw.githubusercontent.com/open-contracting/standard-maintenance-scripts/main
+jobs:
+  build:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt', 'setup.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - run: curl -s -S --retry 3 $BASEDIR/tests/install.sh | bash -
+      - run: curl -s -S --retry 3 $BASEDIR/tests/script.sh | bash -
+      - run: pip install -r requirements_dev.txt
+      - env:
+          STANDARD_MAINTENANCE_SCRIPTS_IGNORE: scrapyd,scrapyd-client
+        run: pytest /tmp/test_requirements.py
+      - run: shasum -c requirements.txt.sha256

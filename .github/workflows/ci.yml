@@ -1,7 +1,5 @@
 name: CI
 on: [push, pull_request]
-env:
-  BASEDIR: https://raw.githubusercontent.com/open-contracting/standard-maintenance-scripts/main
 jobs:
   build:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
@@ -29,29 +27,22 @@ jobs:
           - 5672/tcp
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v2
         with:
           python-version: 3.6
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements_dev.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt', 'setup.py') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      - run: curl -s -S --retry 3 $BASEDIR/tests/install.sh | bash -
       - run: pip install -r requirements_dev.txt
-      - run: curl -s -S --retry 3 $BASEDIR/tests/script.sh | bash -
-      - env:
-          STANDARD_MAINTENANCE_SCRIPTS_IGNORE: scrapyd,scrapyd-client
-        run: pytest /tmp/test_requirements.py
-      - run: shasum -c requirements.txt.sha256
       # Specify tests/ directory to avoid "ModuleNotFoundError: No module named 'sphinx_rtd_theme'" from docs/conf.py.
-      - run: pytest --cov kingfisher_scrapy tests
-        if: always()
-        env:
+      - env:
           KINGFISHER_COLLECT_DATABASE_URL: postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
           # Use 127.0.0.1 to avoid log messages about IPv6.
           RABBIT_URL: amqp://127.0.0.1:${{ job.services.rabbitmq.ports[5672] }}
+        run: pytest --cov kingfisher_scrapy tests
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github
