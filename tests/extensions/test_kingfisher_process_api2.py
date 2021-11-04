@@ -232,7 +232,7 @@ def test_item_scraped(initializer, filename, kwargs, status_code, levelname, mes
     if initializer is FileError:
         expected['errors'] = '{"http_code": 500}'
     else:
-        expected['path'] = tmpdir.join('test', '20010203_040506', filename)
+        expected['path'] = os.path.join('test', '20010203_040506', filename)
 
     extension._post_synchronous.assert_called_once()
     extension._post_synchronous.assert_called_with(spider, 'api/v1/create_collection_file', expected)
@@ -288,7 +288,7 @@ def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdi
     if initializer is FileError:
         expected['errors'] = '{"http_code": 500}'
     else:
-        expected['path'] = tmpdir.join('test', '20010203_040506', filename)
+        expected['path'] = os.path.join('test', '20010203_040506', filename)
 
     if raises:
         extension._publish_to_rabbit.assert_called_once()
@@ -364,5 +364,5 @@ def test_item_scraped_path(tmpdir):
         extension._post_synchronous.assert_called_with(spider, 'api/v1/create_collection_file', {
             'collection_id': 1,
             'url': 'https://example.com/remote.json',
-            'path': tmpdir.join('subdir', 'test', '20010203_040506', 'file.json'),
+            'path': os.path.join('test', '20010203_040506', 'file.json'),
         })
