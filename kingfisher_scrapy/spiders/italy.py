@@ -27,7 +27,6 @@ class Italy(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-
         data = response.json()
         # The data looks like:
         # {
