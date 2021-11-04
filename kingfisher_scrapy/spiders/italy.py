@@ -10,7 +10,7 @@ class Italy(SimpleSpider):
       AppaltiPOP
     Bulk download documentation
       https://www.appaltipop.it/it/download
-    API documentation
+    Swagger API documentation
       https://www.appaltipop.it/api/v1/
     """
     name = 'italy'
