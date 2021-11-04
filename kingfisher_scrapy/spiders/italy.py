@@ -10,6 +10,8 @@ class Italy(SimpleSpider):
       AppaltiPOP
     Bulk download documentation
       https://www.appaltipop.it/it/download
+    API documentation
+      https://www.appaltipop.it/api/v1/
     """
     name = 'italy'
 
@@ -18,28 +20,25 @@ class Italy(SimpleSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            # From https://www.appaltipop.it/it/download
-            'https://www.appaltipop.it/_next/data/LxpUO4Pg-S_nnq33fzaED/it/tenders.json',
-            meta={'file_name': 'tenders.json'},
+            'https://www.appaltipop.it/api/v1/buyers',
+            meta={'file_name': 'buyers.json'},
             callback=self.parse_list
         )
 
     @handle_http_error
     def parse_list(self, response):
+
         data = response.json()
         # The data looks like:
         # {
-        #   "pageProps": {
-        #       other fields,
-        #       "buyers": [ ... ],
-        #       other fields
-        #    },
-        #   "__N_SSG": ...
+        #   "total": { ... },
+        #   max_score: ...,
+        #   hits: [ ... ]
         # }
 
-        for buyer in data['pageProps']['buyers']:
+        for buyer in data['hits']:
             # The first resource in the list is the OCDS JSON, the second one a XLSX file
-            resource = buyer['appaltipop:releases/0/buyer/dataSource/resources'][0]
+            resource = buyer['_source']['appaltipop:releases/0/buyer/dataSource/resources'][0]
 
             # The JSON file path looks like 'data/IT-CF-01232710374/ocds.json'
             file_path = resource['appaltipop:releases/0/buyer/resource/url']
