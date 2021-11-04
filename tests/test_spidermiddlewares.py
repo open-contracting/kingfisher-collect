@@ -389,5 +389,5 @@ def test_retry_data_error_middleware(exception):
 
         assert not list(generator)
     else:
-        with pytest.raises(Exception):
-          list(generator)
+      with pytest.raises(Exception):
+        list(generator)
