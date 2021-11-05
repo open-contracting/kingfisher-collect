@@ -1,0 +1,19 @@
+import scrapy
+
+from kingfisher_scrapy.base_spider import SimpleSpider
+
+
+class NigeriaOyoStateSpider(SimpleSpider):
+    """
+    Domain
+      Nigeria Oyo State Open Contracting Portal
+    """
+    name = 'nigeria_oyo_state'
+
+    # SimpleSpider
+    data_type = 'release_package'
+
+    def start_requests(self):
+        # From https://ocdsoyo.oyostate.gov.ng/projects.php
+        url = 'https://ocdsoyo.oyostate.gov.ng/json_formation.php'
+        yield scrapy.Request(url, meta={'file_name': 'all.json'})
