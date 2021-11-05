@@ -435,7 +435,7 @@ class KingfisherProcessAPI:
                 spider.logger.warning('%s failed (%s) with status code: %d', method, infix, response.code)
             # A return value is provided to ease testing.
             return response
-        
+
         def log_for_exception(error):
             spider.logger.warning('%s failed (%s) with exception: %d', method, infix, error.getTraceback())
 
