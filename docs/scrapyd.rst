@@ -91,7 +91,7 @@ To make the list of spiders easier to read, pipe the response through ``python -
 
    curl 'http://localhost:6800/listspiders.json?project=kingfisher' | python -m json.tool
 
-The spiders' names might be ambiguous. If you're unsure which spider to run, you can compare their names to the list of `OCDS publishers <https://www.open-contracting.org/worldwide/#/table>`__, or `contact the OCDS Helpdesk <data@open-contracting.org>`__.
+The spiders' names might be ambiguous. If you're unsure which spider to run, you can find more information about them on the :doc:`spiders` page, or `contact the OCDS Helpdesk <data@open-contracting.org>`__.
 
 To run a spider (that is, to schedule a "crawl"), use `Scrapyd's schedule.json API endpoint <https://scrapyd.readthedocs.io/en/stable/api.html#schedule-json>`__:
 
