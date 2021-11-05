@@ -90,17 +90,15 @@ All spiders support these arguments:
      - string
 
 .. note::
-   Depending on the source, a file could be:
+
+   If a source publishes release packages or record packages, the ``sample`` argument refers to the number of packages to download. 
  
-   - A release package
-   - A record package
-   In that case, the sample argument will refer to the number of packages to download. 
+   However, if a source publishes files that either:
  
-   However, if a single file:
- 
-   - Contains multiple packages, or
-   - Contains multiple records or releases not packaged within a package
-   Each file will be split into multiple file items, and the sample argument will refer to the number of releases or records.
+   - Contain multiple release packages or record packages
+   - Contain multiple releases or records that are not within a package
+
+   Each file will be split into multiple file items. In this case, the ``sample`` argument refers to the number of file items (packages, releases or records) to download.
 
 Some spiders support these arguments:
 
