@@ -36,14 +36,9 @@ class IndiaCivicDataLab(SimpleSpider):
         # then downloads them with a non-API url to avoid quota/rate limitations
 
         data = response.json()
-        # GitHub Tree API documentation
         # https://docs.github.com/en/rest/reference/git#get-a-tree
-
-        # If truncated is true in the response then the repository has exceeded
-        # the maximum number of items can GitHub Tree API do handle
         if data['truncated']:
-            self.logger.error('Truncated results in GitHub Tree API request.')
-            raise Exception()
+            raise KingfisherScrapyError('Truncated results returned when querying the file list from GitHub')
 
         for node in data['tree']:
             file_name = node['path']
