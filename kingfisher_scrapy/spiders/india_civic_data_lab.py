@@ -1,6 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.exceptions import KingfisherScrapyError
 from kingfisher_scrapy.util import handle_http_error
 
 
@@ -35,13 +36,9 @@ class IndiaCivicDataLab(SimpleSpider):
         # to avoid quota/rate limits.
 
         data = response.json()
-        # The data looks like:
-        # {
-        #   "sha": ...
-        #   "url": ...
-        #   "tree": [ ... ],
-        #   "truncated": ...
-        # }
+        # https://docs.github.com/en/rest/reference/git#get-a-tree
+        if data['truncated']:
+            raise KingfisherScrapyError('Truncated results returned when querying the file list from GitHub')
 
         for node in data['tree']:
             file_name = node['path']
