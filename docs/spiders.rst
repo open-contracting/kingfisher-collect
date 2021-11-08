@@ -1011,7 +1011,7 @@ Nigeria
 
    scrapy crawl nigeria_kaduna_state_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_oyo_state.NigeriaOyoStateSpider
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_oyo_state.NigeriaOyoState
    :no-members:
 
 .. code-block:: bash
