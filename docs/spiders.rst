@@ -89,6 +89,17 @@ All spiders support these arguments:
      - Query string parameters to append to each URL, for example: ``qs:parameter1=value1``. See also: :ref:`filter`.
      - string
 
+.. note::
+
+   If a source publishes release packages or record packages, the ``sample`` argument refers to the number of packages to download. 
+ 
+   However, if a source publishes files that either:
+ 
+   - Contain multiple release packages or record packages
+   - Contain multiple releases or records that are not within a package
+
+   Each file will be split into multiple file items. In this case, the ``sample`` argument refers to the number of file items (packages, releases or records) to download.
+
 Some spiders support these arguments:
 
 .. list-table::

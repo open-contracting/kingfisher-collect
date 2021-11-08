@@ -50,7 +50,7 @@ To list the spiders, run:
 
     scrapy list
 
-The spiders' names might be ambiguous. If you're unsure which spider to run, you can compare their names to the list of `OCDS publishers <https://www.open-contracting.org/worldwide/#/table>`__, or `contact the OCDS Helpdesk <data@open-contracting.org>`__.
+The spiders' names might be ambiguous. If you're unsure which spider to run, you can find more information about them on the :doc:`spiders` page, or `contact the OCDS Helpdesk <data@open-contracting.org>`__.
 
 To run a spider (that is, to start a "crawl"), replace ``spider_name`` below with the name of a spider from ``scrapy list`` above:
 
