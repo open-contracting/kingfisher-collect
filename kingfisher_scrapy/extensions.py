@@ -499,7 +499,7 @@ class KingfisherProcessAPI2:
             # NOTE: Heartbeat should not be disabled.
             # https://github.com/open-contracting/data-registry/issues/140
             query.update({'blocked_connection_timeout': 1800, 'heartbeat': 0})
-            self.rabbit_url = parsed._replace(query=urlencode(query)).geturl()
+            self.rabbit_url = parsed._replace(query=urlencode(query, doseq=True)).geturl()
 
             self.open_connection_and_channel()
             self.channel.exchange_declare(exchange=self.exchange, durable=True, exchange_type='direct')
