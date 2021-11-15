@@ -8,8 +8,11 @@ class NigeriaEnuguState(SimpleSpider):
     """
     Domain
       Nigeria Enugu State Open Contracting Portal
+    Bulk download documentation
+      https://dueprocess.en.gov.ng/ocds_report.php
     """
     name = 'nigeria_enugu_state'
+
     base_url = 'https://dueprocess.en.gov.ng/'
 
     # SimpleSpider
