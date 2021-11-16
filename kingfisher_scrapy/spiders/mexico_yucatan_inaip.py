@@ -17,7 +17,7 @@ class MexicoYucatanINAIP(MexicoINAIBase):
       https://contratacionesabiertas.inaipyucatan.org.mx/contratacionesabiertas/datosabiertos#
     """
     name = 'mexico_yucatan_inaip'
-    domain_pattern = 'https://captura.contratacionesabiertas.inaipyucatan.org.mx/{}'
+    base_url = 'https://captura.contratacionesabiertas.inaipyucatan.org.mx'
 
     # BaseSpider
     default_from_date = '2020'

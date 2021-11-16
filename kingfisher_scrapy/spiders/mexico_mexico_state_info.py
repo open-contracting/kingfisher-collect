@@ -17,7 +17,7 @@ class MexicoMexicoStateINFO(MexicoINAIBase):
       http://www.infoem.org.mx:4000/contratacionesabiertas/datosabiertos
     """
     name = 'mexico_mexico_state_info'
-    domain_pattern = 'http://infoem.org.mx:3000/{}'
+    base_url = 'http://infoem.org.mx:3000'
 
     # BaseSpider
     default_from_date = '2021'

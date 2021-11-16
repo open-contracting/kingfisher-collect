@@ -6,14 +6,13 @@ from kingfisher_scrapy.util import components, handle_http_error, join
 
 class MexicoINAIBase(SimpleSpider):
     """
-    The spiders corresponding to the institutions that work with INAI can inherit from this class. It assumes that all
-    responses have the same data type and api pattern.
+    This class makes it easy to collect data from an API that implements the `Mexico INAI Contrataciones Abiertas
+    platform <https://github.com/datosabiertosmx/contrataciones-abiertas-infraestructura>`__:
 
-    #. Set a ``domain_pattern`` class attribute to assign the portal domain with {} in the end of the string
+    #. Inherit from ``MexicoINAIBase``
+    #. Set a ``base_url`` class attribute with the portal's domain
+    #. Set a ``default_from_date`` class attribute with the initial year to scrape when a ``until_date`` argument is set
     """
-    fiscal_years_api = 'edca/fiscalYears'
-    contracts_api = 'edca/contractingprocess/{}'
-
     # BaseSpider
     root_path = 'arrayReleasePackage.item'
     date_format = 'year'
@@ -23,7 +22,7 @@ class MexicoINAIBase(SimpleSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            self.domain_pattern.format(self.fiscal_years_api),
+            f'{self.base_url}/edca/fiscalYears',
             meta={'file_name': 'list.json'},
             callback=self.parse_list
         )
@@ -48,5 +47,5 @@ class MexicoINAIBase(SimpleSpider):
             if self.from_date and self.until_date:
                 if not (self.from_date.year <= fiscal_year <= self.until_date.year):
                     continue
-            yield self.build_request(self.domain_pattern.format(self.contracts_api.format(fiscal_year)),
+            yield self.build_request(f'{self.base_url}/edca/contractingprocess/{fiscal_year}',
                                      formatter=join(components(-1)))

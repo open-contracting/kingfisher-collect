@@ -16,7 +16,7 @@ class MexicoZacatecasIZAI(MexicoINAIBase):
       https://contratacionesabiertas.izai.org.mx/contratacionesabiertas/datosabiertos
     """
     name = 'mexico_zacatecas_izai'
-    domain_pattern = 'http://128.199.8.41:3000/{}'
+    base_url = 'http://128.199.8.41:3000'
 
     # BaseSpider
     default_from_date = '2016'

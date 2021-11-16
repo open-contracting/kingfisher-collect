@@ -16,7 +16,7 @@ class MexicoNuevoLeonCOTAI(MexicoINAIBase):
       http://201.149.38.218:4000/contratacionesabiertas/datosabiertos
     """
     name = 'mexico_nuevo_leon_cotai'
-    domain_pattern = 'http://201.149.38.218:3000/{}'
+    base_url = 'http://201.149.38.218:3000'
 
     # BaseSpider
     default_from_date = '2020'

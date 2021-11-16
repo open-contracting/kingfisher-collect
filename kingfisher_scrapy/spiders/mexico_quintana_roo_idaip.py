@@ -16,7 +16,7 @@ class MexicoQuintanaRooIDAIP(MexicoINAIBase):
       http://conab.idaipqroo.org.mx:4000/contratacionesabiertas/datosabiertos
     """
     name = 'mexico_quintana_roo_idaip'
-    domain_pattern = 'http://conab.idaipqroo.org.mx:3000/{}'
+    base_url = 'http://conab.idaipqroo.org.mx:3000'
 
     # BaseSpider
     default_from_date = '2020'
