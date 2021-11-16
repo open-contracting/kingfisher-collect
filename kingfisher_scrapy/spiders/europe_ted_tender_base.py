@@ -3,7 +3,7 @@ import scrapy
 from kingfisher_scrapy.base_spider import IndexSpider
 
 
-class EuropeTedTenderBase(IndexSpider):
+class EuropeTEDTenderBase(IndexSpider):
     """
     Domain
       Tenders Electronic Daily (TED) by TenderBase
