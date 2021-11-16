@@ -11,7 +11,8 @@ class MexicoINAIBase(SimpleSpider):
 
     #. Inherit from ``MexicoINAIBase``
     #. Set a ``base_url`` class attribute with the portal's domain
-    #. Set a ``default_from_date`` class attribute with the initial year to scrape when a ``until_date`` argument is set
+    #. Set a ``default_from_date`` class attribute with the initial year to scrape when a ``until_date`` argument is
+    set
     """
     # BaseSpider
     root_path = 'arrayReleasePackage.item'
