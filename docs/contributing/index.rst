@@ -37,6 +37,10 @@ It is not required for the name to be minimal. For example, ``uganda_releases`` 
 
 If you create a new base class, omit the components that are not shared, and add "base" to the end. For example, the ``afghanistan_packages_base.py`` file contains the base class for the ``afghanistan_record_packages`` and ``afghanistan_release_packages`` spiders.
 
+.. note::
+
+   The primary goal is for users to easily find the relevant spider. Keeping the name short and avoiding repetition is a secondary goal. For example, for ``mexico_veracruz_ivai``, the ``v`` in ``ivai`` repeats ``veracruz``, and for ``mexico_mexico_state_infoem``, the ``em`` in ``infoem`` repeats ``mexico_state`` (Estado de México), but abbreviating the ``ivai`` or ``infoem`` acronyms would be less familiar and recognizable to users.
+
 Choose a base class
 ~~~~~~~~~~~~~~~~~~~
 
