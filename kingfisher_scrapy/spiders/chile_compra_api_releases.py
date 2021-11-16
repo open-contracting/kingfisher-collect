@@ -1,4 +1,4 @@
-from kingfisher_scrapy.spiders.chile_compra_base import ChileCompraAPIBase
+from kingfisher_scrapy.spiders.chile_compra_api_base import ChileCompraAPIBase
 from kingfisher_scrapy.util import components
 
 
