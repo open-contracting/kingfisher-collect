@@ -428,7 +428,7 @@ Europe
 
    scrapy crawl europe_ted_digiwhist
 
-.. autoclass:: kingfisher_scrapy.spiders.europe_ted_tender_base.EuropeTedTenderBase
+.. autoclass:: kingfisher_scrapy.spiders.europe_ted_tender_base.EuropeTEDTenderBase
    :no-members:
 
 .. code-block:: bash
@@ -1240,6 +1240,16 @@ Uganda
 
    scrapy crawl uganda_releases
 
+Ukraine
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.ukraine.Ukraine
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl ukraine
+
 United Kingdom
 --------------
 
@@ -1270,16 +1280,6 @@ United Kingdom
 .. code-block:: bash
 
    scrapy crawl united_kingdom_fts_test
-
-Ukraine
--------
-
-.. autoclass:: kingfisher_scrapy.spiders.ukraine.Ukraine
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl ukraine
 
 Uruguay
 -------
