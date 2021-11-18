@@ -2,7 +2,7 @@ from kingfisher_scrapy.base_spider import browser_user_agent
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoMexicoCityINFO(MexicoINAIBase):
+class MexicoMexicoCityINFOCDMX(MexicoINAIBase):
     """
     Domain
       Instituto de Transparencia, Acceso a la Información Pública, Protección de Datos Personales y Rendición de
@@ -17,7 +17,7 @@ class MexicoMexicoCityINFO(MexicoINAIBase):
     API documentation
       https://dashboard.infocdmx.org.mx/contratacionesabiertas/datosabiertos
     """
-    name = 'mexico_mexico_city_info'
+    name = 'mexico_mexico_city_infocdmx'
     user_agent = browser_user_agent  # to avoid Internal Server Error
     base_url = 'https://contratacionesabiertas.infocdmx.org.mx:3000'
 

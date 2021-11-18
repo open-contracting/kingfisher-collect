@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoMexicoStateINFO(MexicoINAIBase):
+class MexicoMexicoStateINFOEM(MexicoINAIBase):
     """
     Domain
       Instituto de Transparencia, Acceso a la Información Pública y Protección de Datos Personales del Estado de México
@@ -16,7 +16,7 @@ class MexicoMexicoStateINFO(MexicoINAIBase):
     API documentation
       http://www.infoem.org.mx:4000/contratacionesabiertas/datosabiertos
     """
-    name = 'mexico_mexico_state_info'
+    name = 'mexico_mexico_state_infoem'
     base_url = 'http://infoem.org.mx:3000'
 
     # BaseSpider
