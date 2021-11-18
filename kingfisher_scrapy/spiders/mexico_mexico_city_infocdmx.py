@@ -9,9 +9,11 @@ class MexicoMexicoCityINFOCDMX(MexicoINAIBase):
       Cuentas de la Ciudad de México (INFOCDMX)
     Spider arguments
       from_date
-        Download only data from this year onward (YYYY format). Defaults to '2019'.
+        Download only data from this year onward (YYYY format).
+        If ``until_date`` is provided, defaults to '2019'.
       until_date
-        Download only data until this year (YYYY format). Defaults to '2021'.
+        Download only data until this year (YYYY format).
+        If ``from_date`` is provided, defaults to the current year.
     API documentation
       https://dashboard.infocdmx.org.mx/contratacionesabiertas/datosabiertos
     """
@@ -20,7 +22,6 @@ class MexicoMexicoCityINFOCDMX(MexicoINAIBase):
 
     # BaseSpider
     default_from_date = '2019'
-    default_until_date = '2021'
 
-    # PeriodicSpider
-    pattern = 'https://contratacionesabiertas.infocdmx.org.mx:3000/edca/contractingprocess/{}'
+    # MexicoINAIBase
+    base_url = 'https://contratacionesabiertas.infocdmx.org.mx:3000'

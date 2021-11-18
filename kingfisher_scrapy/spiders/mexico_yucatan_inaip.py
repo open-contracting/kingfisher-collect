@@ -8,9 +8,11 @@ class MexicoYucatanINAIP(MexicoINAIBase):
       (INAIP) - Yucatán
     Spider arguments
       from_date
-        Download only data from this year onward (YYYY format). Defaults to '2020'.
+        Download only data from this year onward (YYYY format).
+        If ``until_date`` is provided, defaults to '2020'.
       until_date
-        Download only data until this year (YYYY format). Defaults to '2020'.
+        Download only data until this year (YYYY format).
+        If ``from_date`` is provided, defaults to the current year.
     API documentation
       https://contratacionesabiertas.inaipyucatan.org.mx/contratacionesabiertas/datosabiertos#
     """
@@ -18,7 +20,6 @@ class MexicoYucatanINAIP(MexicoINAIBase):
 
     # BaseSpider
     default_from_date = '2020'
-    default_until_date = '2020'
 
-    # PeriodicSpider
-    pattern = 'https://captura.contratacionesabiertas.inaipyucatan.org.mx/edca/contractingprocess/{}'
+    # MexicoINAIBase
+    base_url = 'https://captura.contratacionesabiertas.inaipyucatan.org.mx'

@@ -7,9 +7,11 @@ class MexicoZacatecasIZAI(MexicoINAIBase):
       Instituto Zacatecano de Transparencia y Acceso a la Información (IZAI)
     Spider arguments
       from_date
-        Download only data from this year onward (YYYY format). Defaults to '2016'.
+        Download only data from this year onward (YYYY format).
+        If ``until_date`` is provided, defaults to '2016'.
       until_date
-        Download only data until this year (YYYY format). Defaults to '2021'.
+        Download only data until this year (YYYY format).
+        If ``from_date`` is provided, defaults to the current year.
     API documentation
       https://contratacionesabiertas.izai.org.mx/contratacionesabiertas/datosabiertos
     """
@@ -17,7 +19,6 @@ class MexicoZacatecasIZAI(MexicoINAIBase):
 
     # BaseSpider
     default_from_date = '2016'
-    default_until_date = '2021'
 
-    # PeriodicSpider
-    pattern = 'http://128.199.8.41:3000/edca/contractingprocess/{}'
+    # MexicoINAIBase
+    base_url = 'http://128.199.8.41:3000'
