@@ -16,7 +16,9 @@ class MexicoOaxacaIAIP(MexicoINAIBase):
       http://contratacionesabiertas-iaipoaxaca-org.mx:4000/contratacionesabiertas/datosabiertos
     """
     name = 'mexico_oaxaca_iaip'
-    base_url = 'http://contratacionesabiertas-iaipoaxaca-org.mx:3000'
 
     # BaseSpider
     default_from_date = '2021'
+
+    # MexicoINAIBase
+    base_url = 'http://contratacionesabiertas-iaipoaxaca-org.mx:3000'

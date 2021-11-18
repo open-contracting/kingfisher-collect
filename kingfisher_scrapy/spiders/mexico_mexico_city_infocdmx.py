@@ -19,7 +19,9 @@ class MexicoMexicoCityINFOCDMX(MexicoINAIBase):
     """
     name = 'mexico_mexico_city_infocdmx'
     user_agent = browser_user_agent  # to avoid Internal Server Error
-    base_url = 'https://contratacionesabiertas.infocdmx.org.mx:3000'
 
     # BaseSpider
     default_from_date = '2019'
+
+    # MexicoINAIBase
+    base_url = 'https://contratacionesabiertas.infocdmx.org.mx:3000'

@@ -13,6 +13,20 @@ class MexicoINAIBase(SimpleSpider):
     #. Set a ``base_url`` class attribute with the portal's domain
     #. Set a ``default_from_date`` class attribute with the initial year to scrape when a ``until_date`` argument is
     set
+
+    .. code-block:: python
+
+        from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
+
+        class MySpider(MexicoINAIBase):
+            name = 'my_spider'
+
+            # BaseSpider
+            default_from_date = '2020'
+
+            # MexicoINAIBase
+            base_url = 'http://base-url'
+
     """
     # BaseSpider
     root_path = 'arrayReleasePackage.item'
@@ -21,12 +35,13 @@ class MexicoINAIBase(SimpleSpider):
     # SimpleSpider
     data_type = 'release_package'
 
+    @property
+    def base_url(self):
+        raise NotImplementedError
+
     def start_requests(self):
-        yield scrapy.Request(
-            f'{self.base_url}/edca/fiscalYears',
-            meta={'file_name': 'list.json'},
-            callback=self.parse_list
-        )
+        yield scrapy.Request(f'{self.base_url}/edca/fiscalYears', meta={'file_name': 'list.json'},
+                             callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

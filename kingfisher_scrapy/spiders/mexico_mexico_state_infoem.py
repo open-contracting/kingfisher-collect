@@ -17,7 +17,9 @@ class MexicoMexicoStateINFOEM(MexicoINAIBase):
       http://www.infoem.org.mx:4000/contratacionesabiertas/datosabiertos
     """
     name = 'mexico_mexico_state_infoem'
-    base_url = 'http://infoem.org.mx:3000'
 
     # BaseSpider
     default_from_date = '2021'
+
+    # MexicoINAIBase
+    base_url = 'http://infoem.org.mx:3000'

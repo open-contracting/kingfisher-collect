@@ -16,7 +16,9 @@ class MexicoDurangoIDAIP(MexicoINAIBase):
       http://contratacionesabiertas.idaip.org.mx/contratacionesabiertas/datosabiertos
     """
     name = 'mexico_durango_idaip'
-    base_url = 'http://74.208.135.52:3000'
 
     # BaseSpider
     default_from_date = '2020'
+
+    # MexicoINAIBase
+    base_url = 'http://74.208.135.52:3000'

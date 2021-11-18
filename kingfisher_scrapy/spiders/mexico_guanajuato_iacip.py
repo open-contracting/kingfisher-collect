@@ -16,7 +16,9 @@ class MexicoGuanajuatoIACIP(MexicoINAIBase):
       http://contratacionesabiertas.iacipgto.mx:4000/contratacionesabiertas/datosabiertos
     """
     name = 'mexico_guanajuato_iacip'
-    base_url = 'http://162.214.71.135:3000'
 
     # BaseSpider
     default_from_date = '2021'
+
+    # MexicoINAIBase
+    base_url = 'http://162.214.71.135:3000'
