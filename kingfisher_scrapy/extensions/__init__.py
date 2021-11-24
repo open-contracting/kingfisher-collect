@@ -4,3 +4,4 @@ from .item_count import ItemCount  # noqa: F401
 from .kingfisher_process_api import KingfisherProcessAPI  # noqa: F401
 from .kingfisher_process_api2 import KingfisherProcessAPI2  # noqa: F401
 from .pluck import Pluck  # noqa: F401
+from .sentry_logging import SentryLogging  # noqa: F401
