@@ -33,6 +33,6 @@ class Kyrgyzstan(LinksSpider):
     def start_requests(self):
         url = 'http://ocds.zakupki.gov.kg/api/tendering'
         if self.from_date:
-            # The API requires the timezone and seconds in the since parameter
+            # The API requires the timezone and seconds in the since parameter.
             url = f'{url}?since={self.from_date.strftime(self.date_format)}.00%2B06:00'
-        yield scrapy.Request(url, meta={'file_name': 'offset-0.json'})
+        yield scrapy.Request(url, meta={'file_name': 'start.json'})
