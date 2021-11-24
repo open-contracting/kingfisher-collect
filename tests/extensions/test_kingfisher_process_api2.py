@@ -12,6 +12,7 @@ from kingfisher_scrapy.items import FileError, FileItem, PluckedItem
 from tests import ExpectedError, spider_with_crawler, spider_with_files_store
 
 rabbit_url = os.getenv('RABBIT_URL')
+skip_test_if = not rabbit_url and not os.getenv('CI')
 
 items_scraped = [
     ('build_file', 'file.json', {
@@ -48,7 +49,7 @@ class Response():
         return self.content
 
 
-@pytest.mark.skipif(not rabbit_url and not os.getenv('CI'), reason='RABBIT_URL must be set')
+@pytest.mark.skipif(skip_test_if, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('url,expected,boolean', [
     (rabbit_url, f'{rabbit_url}?blocked_connection_timeout=1800&heartbeat=0', True),
     ('', None, False),
@@ -245,6 +246,7 @@ def test_item_scraped(initializer, filename, kwargs, status_code, levelname, mes
     assert caplog.records[0].message == message
 
 
+@pytest.mark.skipif(skip_test_if, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('initializer,filename,kwargs', items_scraped)
 @pytest.mark.parametrize('raises,infix', [(False, 'sent'), (True, 'failed')])
 def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdir, caplog):
