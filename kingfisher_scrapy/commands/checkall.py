@@ -78,7 +78,7 @@ class Checker:
         if basename != expected_basename and class_name != 'PakistanPPRAAPI':
             self.log('error', 'class %s and file %s (%s) do not match', class_name, basename, expected_basename)
 
-        if class_name.endswith('Base') and class_name != 'EuropeTedTenderBase' or class_name.endswith('Digiwhist'):
+        if class_name.endswith('Base') and class_name != 'EuropeTEDTenderBase' or class_name.endswith('Digiwhist'):
             if docstring:
                 self.log('error', 'unexpected docstring')
             return
