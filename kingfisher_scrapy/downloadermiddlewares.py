@@ -2,6 +2,7 @@
 from datetime import datetime
 
 import scrapy
+from scrapy.exceptions import IgnoreRequest
 from twisted.internet import reactor
 from twisted.internet.defer import Deferred
 
@@ -34,9 +35,8 @@ class ParaguayAuthMiddleware:
         if 'auth' in request.meta and request.meta['auth'] is False:
             return
         if spider.auth_failed:
-            spider.logger.error('Fatal: no authentication token, stopping now...')
-            spider.crawler.stop()
-            raise scrapy.exceptions.IgnoreRequest()
+            spider.crawler.engine.close_spider(spider, 'auth_failed')
+            raise IgnoreRequest("Max attempts to get an access token reached. Stopping crawl...")
         request.headers['Authorization'] = spider.access_token
         if self._expires_soon(spider):
             # SAVE the last request to continue after getting the token
