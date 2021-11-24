@@ -1,7 +1,6 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 from datetime import datetime
 
-import scrapy
 from scrapy.exceptions import IgnoreRequest
 from twisted.internet import reactor
 from twisted.internet.defer import Deferred

@@ -267,7 +267,7 @@ def get_file_name_and_extension(filename):
     """
     Given a ``filename`` returns its name and extension in two separate strings
     >>> get_file_name_and_extension('test.json')
-    'test', 'json'
+    ('test', 'json')
     """
     name, extension = splitext(filename)
     extension = extension[1:].lower()
