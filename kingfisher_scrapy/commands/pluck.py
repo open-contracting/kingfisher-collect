@@ -36,7 +36,7 @@ class Pluck(ScrapyCommand):
         # Disable Telnet extensions.
         self.settings.set('EXTENSIONS', {
             'scrapy.extensions.telnet.TelnetConsole': None,
-            'kingfisher_scrapy.extensions.pluck.Pluck': 1,
+            'kingfisher_scrapy.extensions.Pluck': 1,
         })
         if opts.max_bytes:
             self.settings.set('KINGFISHER_PLUCK_MAX_BYTES', opts.max_bytes)
