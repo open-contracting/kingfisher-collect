@@ -4,6 +4,7 @@ import re
 from textwrap import dedent
 
 from scrapy.commands import ScrapyCommand
+from scrapy.exceptions import NotSupported
 from scrapy.utils.misc import walk_modules
 from scrapy.utils.spider import iter_spider_classes
 
@@ -193,7 +194,7 @@ class Checker:
                 period = 'year'
                 format_ = 'YYYY'
             else:
-                raise NotImplementedError(f'checkall: date_format "{self.cls.date_format}" not implemented')
+                raise NotSupported(f'checkall: date_format "{self.cls.date_format}" not implemented')
 
             expected = format_string.format(period=period, format=format_, default=default(self.cls))
             if spider_arguments[spider_argument] != expected:
