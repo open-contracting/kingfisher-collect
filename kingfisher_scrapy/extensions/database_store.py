@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 
 import ijson
-import psycopg2
+import psycopg2.sql
 from ocdskit.combine import merge
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
