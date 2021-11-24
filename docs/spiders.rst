@@ -635,6 +635,13 @@ Italy
 
    scrapy crawl italy
 
+.. autoclass:: kingfisher_scrapy.spiders.italy_anac.ItalyANAC
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl italy_anac
+
 .. autoclass:: kingfisher_scrapy.spiders.italy_digiwhist.ItalyDigiwhist
    :no-members:
 
