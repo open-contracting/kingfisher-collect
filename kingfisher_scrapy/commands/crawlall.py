@@ -27,7 +27,7 @@ class CrawlAll(ScrapyCommand):
         if opts.dry_run:
             kwargs['sample'] = 1
         else:
-            extensions['kingfisher_scrapy.extensions.FilesStore'] = 100
+            extensions['kingfisher_scrapy.extensions.files_store.FilesStore'] = 100
 
         if opts.sample:
             kwargs['sample'] = opts.sample

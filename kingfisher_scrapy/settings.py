@@ -79,15 +79,15 @@ DOWNLOADER_MIDDLEWARES = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
 EXTENSIONS = {
-    'kingfisher_scrapy.extensions.SentryLogging': -1,
-    'kingfisher_scrapy.extensions.Pluck': 1,
+    'kingfisher_scrapy.extensions.sentry_logging.SentryLogging': -1,
+    'kingfisher_scrapy.extensions.pluck.Pluck': 1,
     # `FilesStore` must run before `KingfisherProcessAPI`, because the file needs to be written before the
     # request is sent to Kingfisher Process.
-    'kingfisher_scrapy.extensions.FilesStore': 100,
-    'kingfisher_scrapy.extensions.KingfisherProcessAPI': 500,
-    'kingfisher_scrapy.extensions.KingfisherProcessAPI2': 501,
-    'kingfisher_scrapy.extensions.ItemCount': 600,
-    'kingfisher_scrapy.extensions.DatabaseStore': 700,
+    'kingfisher_scrapy.extensions.files_store.FilesStore': 100,
+    'kingfisher_scrapy.extensions.kingfisher_process_api.KingfisherProcessAPI': 500,
+    'kingfisher_scrapy.extensions.kingfisher_process_api2.KingfisherProcessAPI2': 501,
+    'kingfisher_scrapy.extensions.item_count.ItemCount': 600,
+    'kingfisher_scrapy.extensions.database_store.DatabaseStore': 700,
 }
 
 # Configure item pipelines
