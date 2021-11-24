@@ -1,5 +1,9 @@
 """
 This spider deliberately generates HTTP errors. You can use this to test whether errors are recorded properly.
+
+.. code-block:: bash
+
+   python -m scrapy crawl fail -s SPIDER_MODULES=tests.spiders
 """
 import scrapy
 
@@ -8,9 +12,6 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 
 class Fail(SimpleSpider):
     name = 'fail'
-
-    # BaseSpider
-    skip_pluck = 'Not a real spider'
 
     # SimpleSpider
     data_type = 'release_package'

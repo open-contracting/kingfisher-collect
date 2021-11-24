@@ -1,9 +1,11 @@
+import logging
+import traceback
+
+logger = logging.getLogger(__name__)
+
+
 class KingfisherScrapyError(Exception):
     """Base class for exceptions from within this application"""
-
-
-class SpiderArgumentError(KingfisherScrapyError):
-    """Raised when a spider argument's value is invalid"""
 
 
 class MissingEnvVarError(KingfisherScrapyError):
@@ -22,5 +24,16 @@ class UnknownArchiveFormatError(KingfisherScrapyError):
     """Raised when the archive format of a file can't be determined from the filename"""
 
 
-class IncoherentConfigurationError(KingfisherScrapyError):
-    """Raised when a spider is misconfigured by a developer"""
+class SpiderInitializationError(KingfisherScrapyError):
+    """Base class for exceptions that occur before a spider is initialized"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        logger.error('%s\n%s', str(self), traceback.format_stack()[-2].rstrip())
+
+
+class SpiderArgumentError(SpiderInitializationError):
+    """Raised when a spider argument's value is invalid, from its from_crawler class method"""
+
+
+class IncoherentConfigurationError(SpiderInitializationError):
+    """Raised when a spider is misconfigured by a developer, from its __init__ method"""
