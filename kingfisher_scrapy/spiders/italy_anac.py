@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class ItalyANAC(SimpleSpider):
     """
     Domain
-       Italy ANAC
+       Autorità Nazionale Anticorruzione
     API documentation
         https://dati.anticorruzione.it/opendata/about
     Bulk download documentation
