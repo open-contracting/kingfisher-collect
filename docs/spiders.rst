@@ -628,19 +628,19 @@ Ireland
 Italy
 -----
 
-.. autoclass:: kingfisher_scrapy.spiders.italy.Italy
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl italy
-
 .. autoclass:: kingfisher_scrapy.spiders.italy_anac.ItalyANAC
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl italy_anac
+
+.. autoclass:: kingfisher_scrapy.spiders.italy_appalti_pop.ItalyAppaltiPOP
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl italy_appalti_pop
 
 .. autoclass:: kingfisher_scrapy.spiders.italy_digiwhist.ItalyDigiwhist
    :no-members:

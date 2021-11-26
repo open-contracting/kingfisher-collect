@@ -4,7 +4,7 @@ from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class Italy(SimpleSpider):
+class ItalyAppaltiPOP(SimpleSpider):
     """
     Domain
       AppaltiPOP
@@ -13,7 +13,7 @@ class Italy(SimpleSpider):
     Swagger API documentation
       https://www.appaltipop.it/api/v1/
     """
-    name = 'italy'
+    name = 'italy_appalti_pop'
 
     # SimpleSpider
     data_type = 'release_package'
