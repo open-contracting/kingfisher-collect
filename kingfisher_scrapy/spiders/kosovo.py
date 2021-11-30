@@ -1,7 +1,7 @@
 from datetime import timedelta
 
-from kingfisher_scrapy.util import parameters, handle_http_error
 from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class Kosovo(SimpleSpider):
