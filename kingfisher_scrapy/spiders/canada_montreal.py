@@ -1,6 +1,6 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import IndexSpider
+from kingfisher_scrapy.base_spider import IndexSpider, browser_user_agent
 
 
 class CanadaMontreal(IndexSpider):
@@ -11,6 +11,9 @@ class CanadaMontreal(IndexSpider):
       http://donnees.ville.montreal.qc.ca/dataset/contrats-et-subventions-api
     """
     name = 'canada_montreal'
+    # Publisher uses Cloudflare (CF-Cache-Status and CF-RAY response headers).
+    # Cloudflare responds with HTTP 520 if request headers use default user agent.
+    user_agent = browser_user_agent
 
     # BaseSpider
     ocds_version = '1.0'
