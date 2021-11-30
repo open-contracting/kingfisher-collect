@@ -428,13 +428,6 @@ Europe
 
    scrapy crawl europe_ted_digiwhist
 
-.. autoclass:: kingfisher_scrapy.spiders.europe_ted_tender_base.EuropeTEDTenderBase
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl europe_ted_tender_base
-
 Finland
 -------
 
