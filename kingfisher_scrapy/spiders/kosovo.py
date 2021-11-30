@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from build.lib.kingfisher_scrapy.util import parameters
+from kingfisher_scrapy.util import parameters
 from kingfisher_scrapy.base_spider import SimpleSpider
 
 
