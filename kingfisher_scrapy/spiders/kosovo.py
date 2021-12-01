@@ -1,5 +1,7 @@
+from datetime import timedelta
+
 from kingfisher_scrapy.base_spider import SimpleSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class Kosovo(SimpleSpider):
@@ -8,37 +10,38 @@ class Kosovo(SimpleSpider):
       Public Procurement Regulatory Commission
     Spider arguments
       from_date
-        Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
-        If ``until_date`` is provided, defaults to '2000-01-01T00:00:00'.
+        Download only data with a tender period end date from this time onward (YYYY-MM-DD format).
+        Defaults to '2000-01-01'.
       until_date
-        Download only data until this time (YYYY-MM-DDThh:mm:ss format).
-        If ``from_date`` is provided, defaults to now.
+        Download only data with a tender period end date until this time (YYYY-MM-DD format). Defaults to now.
+        Note: This date is non-inclusive.
     API documentation
-      https://ocdskrpp-test.rks-gov.net/Help
+      https://ocdskrpp.rks-gov.net/Help
     """
     name = 'kosovo'
 
     # BaseSpider
-    date_format = 'datetime'
-    default_from_date = '2000-01-01T00:00:00'
-    root_path = 'item'
+    date_format = 'date'
+    date_required = True
+    default_from_date = '2000-01-01'
 
     # SimpleSpider
-    data_type = 'release'
+    data_type = 'release_package'
 
     def start_requests(self):
-        stages = ['Award', 'Tender', 'Bid']
-        url = 'https://ocdskrpp-test.rks-gov.net/krppAPI/{}'
-        headers = {'accept': 'application/json', 'Content-Type': 'application/json'}
+        # The API is slow even with short periods, so we request one day at a time.
+        delta = self.until_date - self.from_date
+        for days in reversed(range(delta.days + 1)):
+            start = self.from_date + timedelta(days=days - 1)
+            end = self.from_date + timedelta(days=days)
+            url = 'https://ocdskrpp.rks-gov.net/krppapi/tenderrelease?endDateFrom=' \
+                  f'{start.strftime("%Y-%m-%d")}&endDateEnd={end.strftime("%Y-%m-%d")}'
 
-        if self.from_date and self.until_date:
-            from_date = self.from_date.strftime(self.date_format)
-            until_date = self.until_date.strftime(self.date_format)
-            url = f'{url}?endDateFrom={from_date}&endDateEnd={until_date}'
+            yield self.build_request(url, formatter=parameters('endDateFrom', 'endDateEnd'))
 
-        for stage in stages:
-            yield self.build_request(
-                url.format(stage),
-                headers=headers,
-                formatter=components(-1)
-            )
+    @handle_http_error
+    def parse(self, response):
+        data = response.json()
+        # The API returns a release package with an empty releases array if no releases were found.
+        if data['releases']:
+            yield self.build_file_from_response(response, data_type=self.data_type)
