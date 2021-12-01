@@ -32,9 +32,9 @@ class Kosovo(SimpleSpider):
         # The API is slow even with short periods, so we request one day at a time.
         delta = self.until_date - self.from_date
         for days in reversed(range(delta.days + 1)):
-            start = self.from_date + timedelta(days=days-1)
+            start = self.from_date + timedelta(days=days - 1)
             end = self.from_date + timedelta(days=days)
-            url = f'https://ocdskrpp.rks-gov.net/krppapi/tenderrelease?endDateFrom=' \
+            url = 'https://ocdskrpp.rks-gov.net/krppapi/tenderrelease?endDateFrom=' \
                   f'{start.strftime("%Y-%m-%d")}&endDateEnd={end.strftime("%Y-%m-%d")}'
 
             yield self.build_request(url, formatter=parameters('endDateFrom', 'endDateEnd'))
