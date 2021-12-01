@@ -10,9 +10,11 @@ class Kosovo(SimpleSpider):
       Public Procurement Regulatory Commission
     Spider arguments
       from_date
-        Download only data from this time onward (YYYY-MM-DD format). Defaults to '2000-01-01'.
+        Download only data with a tender period end date from this time onward (YYYY-MM-DD format).
+        Defaults to '2000-01-01'.
       until_date
-        Download only data until this time (YYYY-MM-DD format). Defaults to now.
+        Download only data with a tender period end date until this time (YYYY-MM-DD format). Defaults to now.
+        Note: This date is non-inclusive.
     API documentation
       https://ocdskrpp.rks-gov.net/Help
     """

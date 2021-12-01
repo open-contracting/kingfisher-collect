@@ -168,7 +168,7 @@ class Checker:
     def check_date_spider_argument(self, spider_argument, spider_arguments, default, format_string):
         if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
-            if self.cls.__name__ in ('ColombiaBulk', 'PortugalRecords', 'PortugalReleases',
+            if self.cls.__name__ in ('ColombiaBulk', 'Kosovo', 'PortugalRecords', 'PortugalReleases',
                                      'ScotlandPublicContracts', 'UgandaReleases'):
                 level = 'info'
             else:
