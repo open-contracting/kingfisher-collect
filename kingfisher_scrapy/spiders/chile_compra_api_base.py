@@ -53,6 +53,9 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         if isinstance(data, FileError):
             yield data
             return
+        # Some results have an illegal unicode character which produces an error when saving the JSON in a database.
+        data = response.text.replace(r'\u0000', '')
+        response = response.replace(body=data)
 
         yield from super().parse(response)
 
