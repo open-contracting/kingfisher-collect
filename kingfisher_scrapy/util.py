@@ -215,7 +215,7 @@ def json_dumps(obj, **kwargs):
 
     Use this method for JSON data read by ijson, which uses decimals for JSON numbers.
     """
-    return json.dumps(obj, default=default)
+    return json.dumps(obj, default=default, **kwargs)
 
 
 def json_dump(obj, f, **kwargs):
