@@ -107,7 +107,7 @@ class DatabaseStore:
         with open(filename, 'w') as f:
             writer = csv.writer(f)
             for item in data:
-                writer.writerow([util.json_dumps(item, ensure_ascii=False).replace(r'/u0000', '')])
+                writer.writerow([util.json_dumps(item, ensure_ascii=False).replace(r'\u0000', '')])
 
         spider.logger.info('Replacing the JSON data in the %s table', spider.name)
         self.connection = psycopg2.connect(self.database_url)
