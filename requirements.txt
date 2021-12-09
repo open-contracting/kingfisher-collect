@@ -184,7 +184,6 @@ six==1.13.0
     #   pyrsistent
     #   scrapyd
     #   treq
-    #   url-normalize
     #   w3lib
 treq==20.9.0
     # via -r requirements.in
