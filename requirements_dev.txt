@@ -204,7 +204,7 @@ protego==0.1.16
     # via
     #   -r requirements.txt
     #   scrapy
-psycopg2==2.8.6
+psycopg2==2.9.2
     # via -r requirements.txt
 py==1.10.0
     # via pytest
