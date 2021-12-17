@@ -408,6 +408,13 @@ Ecuador
 
    scrapy crawl ecuador_emergency
 
+.. autoclass:: kingfisher_scrapy.spiders.ecuador_sercop.EcuadorSERCOP
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl ecuador_sercop
+
 Estonia
 -------
 
