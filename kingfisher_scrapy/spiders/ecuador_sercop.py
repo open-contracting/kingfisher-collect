@@ -21,6 +21,7 @@ class EcuadorSERCOP(CompressedFileSpider, PeriodicSpider):
     # BaseSpider
     date_format = 'year-month'
     default_from_date = '2015-01'
+    root_path = 'item'
 
     # SimpleSpider
     data_type = 'release_package'
