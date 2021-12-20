@@ -841,6 +841,13 @@ Mexico
 
    scrapy crawl mexico_quintana_roo_idaip
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_sinaloa_ceaip.MexicoSinaloaCEAIP
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_sinaloa_ceaip
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_veracruz_ivai.MexicoVeracruzIVAI
    :no-members:
 
