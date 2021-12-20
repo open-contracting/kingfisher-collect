@@ -4,7 +4,7 @@ from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 class MexicoSinaloaCEAIP(MexicoINAIBase):
     """
     Domain
-      Comisión Estatal para el Acceso a la Información Pública
+      Comisión Estatal para el Acceso a la Información Pública (CEAIP)
     Spider arguments
       from_date
         Download only data from this year onward (YYYY format).
