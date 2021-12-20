@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 
-class MexicoPueblaITAIP(MexicoINAIBase):
+class MexicoPueblaITAIPUE(MexicoINAIBase):
     """
     Domain
       Instituto de Transparencia, Acceso a la Información Pública y Protección de Datos Personales del Estado de Puebla
@@ -15,7 +15,7 @@ class MexicoPueblaITAIP(MexicoINAIBase):
     API documentation
       http://189.240.12.27:4000/contratacionesabiertas/datosabiertos/
     """
-    name = 'mexico_puebla_itaip'
+    name = 'mexico_puebla_itaipue'
 
     # BaseSpider
     default_from_date = '2021'

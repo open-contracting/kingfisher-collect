@@ -820,12 +820,12 @@ Mexico
 
    scrapy crawl mexico_plataforma_digital_nacional
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_puebla_itaip.MexicoPueblaITAIP
+.. autoclass:: kingfisher_scrapy.spiders.mexico_puebla_itaipue.MexicoPueblaITAIPUE
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl mexico_puebla_itaip
+   scrapy crawl mexico_puebla_itaipue
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien_records.MexicoQuienEsQuienRecords
    :no-members:
