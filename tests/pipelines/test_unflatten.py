@@ -3,6 +3,7 @@ from io import BytesIO
 import pytest
 from flattentool.input import BadXLSXZipFile
 from openpyxl import Workbook
+from scrapy.exceptions import NotSupported
 
 from kingfisher_scrapy.items import File
 from kingfisher_scrapy.pipelines import Unflatten
@@ -48,7 +49,7 @@ def test_process_item_extension_error():
         'url': 'http://test.com/file',
     })
 
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(NotSupported):
         pipeline.process_item(item, spider)
 
 

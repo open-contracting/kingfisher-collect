@@ -12,7 +12,7 @@ from flattentool import unflatten
 from jsonschema import FormatChecker
 from jsonschema.validators import Draft4Validator, RefResolver
 from ocdsmerge.util import get_release_schema_url, get_tags
-from scrapy.exceptions import DropItem
+from scrapy.exceptions import DropItem, NotSupported
 
 from kingfisher_scrapy.items import File, FileItem, PluckedItem
 from kingfisher_scrapy.util import transcode
@@ -158,8 +158,8 @@ class Unflatten:
             item['file_name'] = item['file_name'][:-5] + '.json'
             input_format = 'xlsx'
         else:
-            raise NotImplementedError(f"the file '{input_name}' has no extension or is not CSV or XLSX, "
-                                      f"obtained from: {item['url']}")
+            extension = os.path.splitext(input_name)[1]
+            raise NotSupported(f"Unsupported extension '{extension}' of {input_name} from {item['url']}")
 
         spider_ocds_version = spider.ocds_version.replace('.', '__')
         for tag in reversed(get_tags()):
@@ -167,7 +167,7 @@ class Unflatten:
                 schema = get_release_schema_url(tag)
                 break
         else:
-            raise NotImplementedError(f"no schema found for '{spider_ocds_version}'")
+            raise NotSupported(f"Unsupported version '{spider_ocds_version}' from {spider.ocds_version}")
 
         with tempfile.TemporaryDirectory() as directory:
             input_path = os.path.join(directory, input_name)

@@ -215,7 +215,7 @@ def json_dumps(obj, **kwargs):
 
     Use this method for JSON data read by ijson, which uses decimals for JSON numbers.
     """
-    return json.dumps(obj, default=default)
+    return json.dumps(obj, default=default, **kwargs)
 
 
 def json_dump(obj, f, **kwargs):
@@ -267,7 +267,7 @@ def get_file_name_and_extension(filename):
     """
     Given a ``filename`` returns its name and extension in two separate strings
     >>> get_file_name_and_extension('test.json')
-    'test', 'json'
+    ('test', 'json')
     """
     name, extension = splitext(filename)
     extension = extension[1:].lower()

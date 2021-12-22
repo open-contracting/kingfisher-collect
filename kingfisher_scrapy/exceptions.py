@@ -3,24 +3,24 @@ class KingfisherScrapyError(Exception):
 
 
 class SpiderArgumentError(KingfisherScrapyError):
-    """Raised when a spider argument's value is invalid"""
+    """Raised when a spider argument's value is invalid, from a spider's from_crawler method"""
 
 
 class MissingEnvVarError(KingfisherScrapyError):
-    """Raised when a required environment variable is missing"""
-
-
-class AccessTokenError(KingfisherScrapyError):
-    """Raised when the maximum number of attempts to retrieve an access token is reached"""
-
-
-class MissingNextLinkError(KingfisherScrapyError):
-    """Raised when a next link is not found on the first page of results"""
-
-
-class UnknownArchiveFormatError(KingfisherScrapyError):
-    """Raised if the archive format of a file can't be determined from the filename"""
+    """Raised when a required environment variable is missing, from a spider's from_crawler method"""
 
 
 class IncoherentConfigurationError(KingfisherScrapyError):
-    """Raised if a spider is misconfigured by a developer"""
+    """Raised when a spider is misconfigured by a developer, from a spider's __init__ method"""
+
+
+class AccessTokenError(KingfisherScrapyError):
+    """Raised when the maximum number of attempts to retrieve an access token is reached, from a spider callback"""
+
+
+class MissingNextLinkError(KingfisherScrapyError):
+    """Raised when a next link is not found on the first page of results, from a spider callback"""
+
+
+class UnknownArchiveFormatError(KingfisherScrapyError):
+    """Raised when the archive format of a file can't be determined from the filename, from a spider callback"""

@@ -20,11 +20,6 @@ class Ukraine(SimpleSpider):
     """
     name = 'ukraine'
     user_agent = browser_user_agent  # to avoid HTTP 412 errors
-    # To avoid too many open files error in KingfisherProcessAPI extension.
-    custom_settings = {
-        'CONCURRENT_REQUESTS': 1,
-    }
-    download_delay = 0.5
 
     # BaseSpider
     encoding = 'utf-16'

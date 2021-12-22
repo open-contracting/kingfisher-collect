@@ -10,6 +10,9 @@ class Kyrgyzstan(LinksSpider):
       Ministry of Finance
     Caveats
       The planning endpoint is not implemented because is not completely in OCDS.
+    Spider arguments
+      from_date
+        Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
     Bulk download documentation
       http://ocds.zakupki.gov.kg/dashboard/weekly and then to 'API & EXPORT'.
       Direct access to http://ocds.zakupki.gov.kg/api-export doesn't work.
@@ -18,6 +21,9 @@ class Kyrgyzstan(LinksSpider):
     """
     name = 'kyrgyzstan'
 
+    # BaseSpider
+    date_format = 'datetime'
+
     # SimpleSpider
     data_type = 'release_package'
 
@@ -25,4 +31,8 @@ class Kyrgyzstan(LinksSpider):
     formatter = staticmethod(parameters('offset'))
 
     def start_requests(self):
-        yield scrapy.Request('http://ocds.zakupki.gov.kg/api/tendering', meta={'file_name': 'offset-0.json'})
+        url = 'http://ocds.zakupki.gov.kg/api/tendering'
+        if self.from_date:
+            # The API requires the timezone and seconds in the since parameter.
+            url = f'{url}?since={self.from_date.strftime(self.date_format)}.00%2B06:00'
+        yield scrapy.Request(url, meta={'file_name': 'start.json'})

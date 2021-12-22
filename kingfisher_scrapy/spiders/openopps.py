@@ -93,12 +93,10 @@ class Openopps(BaseSpider):
                 # For reauthenticating request, set to False and continue
                 self.reauthenticating = False
             else:
-                self.logger.error(
-                    f'Authentication failed. Status code: {response.status}. {response.text}')
+                self.logger.error('Authentication failed. Status code: %s. %s', response.status, response.text)
                 raise AccessTokenError()
         else:
-            self.logger.error(
-                f'Authentication failed. Status code: {response.status}. {response.text}')
+            self.logger.error('Authentication failed. Status code: %s. %s', response.status, response.text)
             raise AccessTokenError()
 
     def start_requests_pages(self):

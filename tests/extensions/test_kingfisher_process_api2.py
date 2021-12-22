@@ -12,6 +12,7 @@ from kingfisher_scrapy.items import FileError, FileItem, PluckedItem
 from tests import ExpectedError, spider_with_crawler, spider_with_files_store
 
 rabbit_url = os.getenv('RABBIT_URL')
+skip_test_if = not rabbit_url and not os.getenv('CI')
 
 items_scraped = [
     ('build_file', 'file.json', {
@@ -48,7 +49,7 @@ class Response():
         return self.content
 
 
-@pytest.mark.skipif(not rabbit_url and not os.getenv('CI'), reason='RABBIT_URL must be set')
+@pytest.mark.skipif(skip_test_if, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('url,expected,boolean', [
     (rabbit_url, f'{rabbit_url}?blocked_connection_timeout=1800&heartbeat=0', True),
     ('', None, False),
@@ -57,15 +58,15 @@ def test_from_crawler(url, expected, boolean):
     spider = spider_with_crawler(settings={
         'KINGFISHER_API2_URL': 'http://httpbin.org/anything/',
         'RABBIT_URL': url,
-        'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test_1.0',
-        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_1.0_api',
+        'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
     })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
 
     assert extension.rabbit_url == expected
-    assert extension.exchange == 'kingfisher_process_test_1.0'
-    assert extension.routing_key == 'kingfisher_process_test_1.0_api'
+    assert extension.exchange == 'kingfisher_process_test'
+    assert extension.routing_key == 'kingfisher_process_test_api'
     assert extension.collection_id is None
     assert bool(extension.channel) is boolean
 
@@ -232,7 +233,7 @@ def test_item_scraped(initializer, filename, kwargs, status_code, levelname, mes
     if initializer is FileError:
         expected['errors'] = '{"http_code": 500}'
     else:
-        expected['path'] = tmpdir.join('test', '20010203_040506', filename)
+        expected['path'] = os.path.join('test', '20010203_040506', filename)
 
     extension._post_synchronous.assert_called_once()
     extension._post_synchronous.assert_called_with(spider, 'api/v1/create_collection_file', expected)
@@ -245,23 +246,24 @@ def test_item_scraped(initializer, filename, kwargs, status_code, levelname, mes
     assert caplog.records[0].message == message
 
 
+@pytest.mark.skipif(skip_test_if, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('initializer,filename,kwargs', items_scraped)
 @pytest.mark.parametrize('raises,infix', [(False, 'sent'), (True, 'failed')])
 def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': rabbit_url,
-        'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test_1.0',
-        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_1.0_api',
+        'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
     })
 
-    queue = 'kingfisher_process_test_1.0_api_loader'
+    queue = 'kingfisher_process_test_api_loader'
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
     extension.collection_id = 1
 
-    extension.channel.queue_declare(durable=True, queue=queue)
-    extension.channel.queue_bind(exchange='kingfisher_process_test_1.0', queue=queue,
-                                 routing_key='kingfisher_process_test_1.0_api')
+    extension.channel.queue_declare(queue=queue, durable=True)
+    extension.channel.queue_bind(exchange='kingfisher_process_test', queue=queue,
+                                 routing_key='kingfisher_process_test_api')
 
     # To be sure we consume the message we sent.
     kwargs['url'] += str(time.time())
@@ -288,7 +290,7 @@ def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdi
     if initializer is FileError:
         expected['errors'] = '{"http_code": 500}'
     else:
-        expected['path'] = tmpdir.join('test', '20010203_040506', filename)
+        expected['path'] = os.path.join('test', '20010203_040506', filename)
 
     if raises:
         extension._publish_to_rabbit.assert_called_once()
@@ -364,5 +366,5 @@ def test_item_scraped_path(tmpdir):
         extension._post_synchronous.assert_called_with(spider, 'api/v1/create_collection_file', {
             'collection_id': 1,
             'url': 'https://example.com/remote.json',
-            'path': tmpdir.join('subdir', 'test', '20010203_040506', 'file.json'),
+            'path': os.path.join('test', '20010203_040506', 'file.json'),
         })

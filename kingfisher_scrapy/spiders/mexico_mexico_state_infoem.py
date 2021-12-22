@@ -8,9 +8,11 @@ class MexicoMexicoStateINFOEM(MexicoINAIBase):
       y Municipios (INFOEM)
     Spider arguments
       from_date
-        Download only data from this year onward (YYYY format). Defaults to '2021'.
+        Download only data from this year onward (YYYY format).
+        If ``until_date`` is provided, defaults to '2021'.
       until_date
-        Download only data until this year (YYYY format). Defaults to '2021'.
+        Download only data until this year (YYYY format).
+        If ``from_date`` is provided, defaults to the current year.
     API documentation
       http://www.infoem.org.mx:4000/contratacionesabiertas/datosabiertos
     """
@@ -18,7 +20,6 @@ class MexicoMexicoStateINFOEM(MexicoINAIBase):
 
     # BaseSpider
     default_from_date = '2021'
-    default_until_date = '2021'
 
-    # PeriodicSpider
-    pattern = 'http://infoem.org.mx:3000/edca/contractingprocess/{}'
+    # MexicoINAIBase
+    base_url = 'http://infoem.org.mx:3000'

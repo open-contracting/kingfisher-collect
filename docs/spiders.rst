@@ -87,10 +87,18 @@ All spiders support these arguments:
      - string
    * - ``qs:*``
      - Query string parameters to append to each URL, for example: ``qs:parameter1=value1``. See also: :ref:`filter`.
+     - string
 
-..
-   If you add or rename a spider argument, remember to update `ScrapyLogFile.is_complete()` in:
-   https://github.com/open-contracting/kingfisher-archive/blob/main/ocdskingfisherarchive/scrapy_log_file.py
+.. note::
+
+   If a source publishes release packages or record packages, the ``sample`` argument refers to the number of packages to download. 
+ 
+   However, if a source publishes files that either:
+ 
+   - Contain multiple release packages or record packages
+   - Contain multiple releases or records that are not within a package
+
+   Each file will be split into multiple file items. In this case, the ``sample`` argument refers to the number of file items (packages, releases or records) to download.
 
 Some spiders support these arguments:
 
@@ -187,12 +195,32 @@ Australia
 
    scrapy crawl australia
 
-.. autoclass:: kingfisher_scrapy.spiders.australia_nsw.AustraliaNSW
+.. autoclass:: kingfisher_scrapy.spiders.australia_new_south_wales.AustraliaNewSouthWales
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl australia_nsw
+   scrapy crawl australia_new_south_wales
+
+Austria
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.austria_digiwhist.AustriaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl austria_digiwhist
+
+Belgium
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.belgium_digiwhist.BelgiumDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl belgium_digiwhist
 
 Bolivia
 -------
@@ -203,6 +231,16 @@ Bolivia
 .. code-block:: bash
 
    scrapy crawl bolivia_agetic
+
+Bulgaria
+--------
+
+.. autoclass:: kingfisher_scrapy.spiders.bulgaria_digiwhist.BulgariaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl bulgaria_digiwhist
 
 Canada
 ------
@@ -231,6 +269,20 @@ Canada
 Chile
 -----
 
+.. autoclass:: kingfisher_scrapy.spiders.chile_compra_api_records.ChileCompraAPIRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl chile_compra_api_records
+
+.. autoclass:: kingfisher_scrapy.spiders.chile_compra_api_releases.ChileCompraAPIReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl chile_compra_api_releases
+
 .. autoclass:: kingfisher_scrapy.spiders.chile_compra_bulk.ChileCompraBulk
    :no-members:
 
@@ -238,29 +290,8 @@ Chile
 
    scrapy crawl chile_compra_bulk
 
-.. autoclass:: kingfisher_scrapy.spiders.chile_compra_records.ChileCompraRecords
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl chile_compra_records
-
-.. autoclass:: kingfisher_scrapy.spiders.chile_compra_releases.ChileCompraReleases
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl chile_compra_releases
-
 Colombia
 --------
-
-.. autoclass:: kingfisher_scrapy.spiders.colombia.Colombia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl colombia
 
 .. autoclass:: kingfisher_scrapy.spiders.colombia_ani_records.ColombiaANIRecords
    :no-members:
@@ -268,6 +299,13 @@ Colombia
 .. code-block:: bash
 
    scrapy crawl colombia_ani_records
+
+.. autoclass:: kingfisher_scrapy.spiders.colombia_api.ColombiaAPI
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl colombia_api
 
 .. autoclass:: kingfisher_scrapy.spiders.colombia_bulk.ColombiaBulk
    :no-members:
@@ -303,249 +341,48 @@ Croatia
 
    scrapy crawl croatia
 
+.. autoclass:: kingfisher_scrapy.spiders.croatia_digiwhist.CroatiaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl croatia_digiwhist
+
+Cyprus
+------
+
+.. autoclass:: kingfisher_scrapy.spiders.cyprus_digiwhist.CyprusDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl cyprus_digiwhist
+
+Czech Republic
+--------------
+
+.. autoclass:: kingfisher_scrapy.spiders.czech_republic_digiwhist.CzechRepublicDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl czech_republic_digiwhist
+
+Denmark
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.denmark_digiwhist.DenmarkDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl denmark_digiwhist
+
 Digiwhist
 ---------
 
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_austria.DigiwhistAustria
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_austria
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_belgium.DigiwhistBelgium
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_belgium
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_bulgaria.DigiwhistBulgaria
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_bulgaria
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_croatia.DigiwhistCroatia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_croatia
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_cyprus.DigiwhistCyprus
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_cyprus
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_czech_republic.DigiwhistCzechRepublic
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_czech_republic
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_denmark.DigiwhistDenmark
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_denmark
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_estonia.DigiwhistEstonia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_estonia
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_finland.DigiwhistFinland
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_finland
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_france.DigiwhistFrance
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_france
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_georgia.DigiwhistGeorgia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_georgia
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_germany.DigiwhistGermany
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_germany
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_greece.DigiwhistGreece
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_greece
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_hungary.DigiwhistHungary
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_hungary
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_iceland.DigiwhistIceland
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_iceland
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_ireland.DigiwhistIreland
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_ireland
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_italy.DigiwhistItaly
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_italy
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_latvia.DigiwhistLatvia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_latvia
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_lithuania.DigiwhistLithuania
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_lithuania
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_luxembourg.DigiwhistLuxembourg
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_luxembourg
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_malta.DigiwhistMalta
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_malta
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_netherlands.DigiwhistNetherlands
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_netherlands
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_norway.DigiwhistNorway
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_norway
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_poland.DigiwhistPoland
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_poland
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_portugal.DigiwhistPortugal
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_portugal
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_romania.DigiwhistRomania
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_romania
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_slovakia.DigiwhistSlovakia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_slovakia
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_slovenia.DigiwhistSlovenia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_slovenia
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_spain.DigiwhistSpain
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_spain
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_sweden.DigiwhistSweden
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_sweden
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_switzerland.DigiwhistSwitzerland
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_switzerland
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_ted.DigiwhistTED
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_ted
-
-.. autoclass:: kingfisher_scrapy.spiders.digiwhist_united_kingdom.DigiwhistUnitedKingdom
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl digiwhist_united_kingdom
-
 Dominican Republic
 ------------------
-
-.. autoclass:: kingfisher_scrapy.spiders.dominican_republic.DominicanRepublic
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl dominican_republic
 
 .. autoclass:: kingfisher_scrapy.spiders.dominican_republic_api.DominicanRepublicAPI
    :no-members:
@@ -553,6 +390,13 @@ Dominican Republic
 .. code-block:: bash
 
    scrapy crawl dominican_republic_api
+
+.. autoclass:: kingfisher_scrapy.spiders.dominican_republic_bulk.DominicanRepublicBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl dominican_republic_bulk
 
 Ecuador
 -------
@@ -564,15 +408,42 @@ Ecuador
 
    scrapy crawl ecuador_emergency
 
-Europe
-------
-
-.. autoclass:: kingfisher_scrapy.spiders.europe_ted_tender_base.EuropeTedTenderBase
+.. autoclass:: kingfisher_scrapy.spiders.ecuador_sercop.EcuadorSERCOP
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl europe_ted_tender_base
+   scrapy crawl ecuador_sercop
+
+Estonia
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.estonia_digiwhist.EstoniaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl estonia_digiwhist
+
+Europe
+------
+
+.. autoclass:: kingfisher_scrapy.spiders.europe_ted_digiwhist.EuropeTEDDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl europe_ted_digiwhist
+
+Finland
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.finland_digiwhist.FinlandDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl finland_digiwhist
 
 France
 ------
@@ -584,8 +455,22 @@ France
 
    scrapy crawl france
 
+.. autoclass:: kingfisher_scrapy.spiders.france_digiwhist.FranceDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl france_digiwhist
+
 Georgia
 -------
+
+.. autoclass:: kingfisher_scrapy.spiders.georgia_digiwhist.GeorgiaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl georgia_digiwhist
 
 .. autoclass:: kingfisher_scrapy.spiders.georgia_opendata.GeorgiaOpendata
    :no-members:
@@ -608,6 +493,16 @@ Georgia
 
    scrapy crawl georgia_releases
 
+Germany
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.germany_digiwhist.GermanyDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl germany_digiwhist
+
 Ghana
 -----
 
@@ -617,6 +512,16 @@ Ghana
 .. code-block:: bash
 
    scrapy crawl ghana
+
+Greece
+------
+
+.. autoclass:: kingfisher_scrapy.spiders.greece_digiwhist.GreeceDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl greece_digiwhist
 
 Honduras
 --------
@@ -642,6 +547,20 @@ Honduras
 
    scrapy crawl honduras_oncae
 
+.. autoclass:: kingfisher_scrapy.spiders.honduras_portal_api_records.HondurasPortalAPIRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl honduras_portal_api_records
+
+.. autoclass:: kingfisher_scrapy.spiders.honduras_portal_api_releases.HondurasPortalAPIReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl honduras_portal_api_releases
+
 .. autoclass:: kingfisher_scrapy.spiders.honduras_portal_bulk.HondurasPortalBulk
    :no-members:
 
@@ -649,19 +568,25 @@ Honduras
 
    scrapy crawl honduras_portal_bulk
 
-.. autoclass:: kingfisher_scrapy.spiders.honduras_portal_records.HondurasPortalRecords
+Hungary
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.hungary_digiwhist.HungaryDigiwhist
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl honduras_portal_records
+   scrapy crawl hungary_digiwhist
 
-.. autoclass:: kingfisher_scrapy.spiders.honduras_portal_releases.HondurasPortalReleases
+Iceland
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.iceland_digiwhist.IcelandDigiwhist
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl honduras_portal_releases
+   scrapy crawl iceland_digiwhist
 
 India
 -----
@@ -690,15 +615,39 @@ Indonesia
 
    scrapy crawl indonesia_opentender
 
-Italy
------
+Ireland
+-------
 
-.. autoclass:: kingfisher_scrapy.spiders.italy.Italy
+.. autoclass:: kingfisher_scrapy.spiders.ireland_digiwhist.IrelandDigiwhist
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl italy
+   scrapy crawl ireland_digiwhist
+
+Italy
+-----
+
+.. autoclass:: kingfisher_scrapy.spiders.italy_anac.ItalyANAC
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl italy_anac
+
+.. autoclass:: kingfisher_scrapy.spiders.italy_appalti_pop.ItalyAppaltiPOP
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl italy_appalti_pop
+
+.. autoclass:: kingfisher_scrapy.spiders.italy_digiwhist.ItalyDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl italy_digiwhist
 
 Kenya
 -----
@@ -730,6 +679,36 @@ Kyrgyzstan
 
    scrapy crawl kyrgyzstan
 
+Latvia
+------
+
+.. autoclass:: kingfisher_scrapy.spiders.latvia_digiwhist.LatviaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl latvia_digiwhist
+
+Lithuania
+---------
+
+.. autoclass:: kingfisher_scrapy.spiders.lithuania_digiwhist.LithuaniaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl lithuania_digiwhist
+
+Luxembourg
+----------
+
+.. autoclass:: kingfisher_scrapy.spiders.luxembourg_digiwhist.LuxembourgDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl luxembourg_digiwhist
+
 Malta
 -----
 
@@ -739,6 +718,13 @@ Malta
 .. code-block:: bash
 
    scrapy crawl malta
+
+.. autoclass:: kingfisher_scrapy.spiders.malta_digiwhist.MaltaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl malta_digiwhist
 
 Mexico
 ------
@@ -834,6 +820,13 @@ Mexico
 
    scrapy crawl mexico_plataforma_digital_nacional
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_puebla_itaipue.MexicoPueblaITAIPUE
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_puebla_itaipue
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien_records.MexicoQuienEsQuienRecords
    :no-members:
 
@@ -854,6 +847,13 @@ Mexico
 .. code-block:: bash
 
    scrapy crawl mexico_quintana_roo_idaip
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_sinaloa_ceaip.MexicoSinaloaCEAIP
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_sinaloa_ceaip
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_veracruz_ivai.MexicoVeracruzIVAI
    :no-members:
@@ -903,6 +903,13 @@ Moldova
 Nepal
 -----
 
+.. autoclass:: kingfisher_scrapy.spiders.nepal.Nepal
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nepal
+
 .. autoclass:: kingfisher_scrapy.spiders.nepal_dhangadhi.NepalDhangadhi
    :no-members:
 
@@ -910,12 +917,15 @@ Nepal
 
    scrapy crawl nepal_dhangadhi
 
-.. autoclass:: kingfisher_scrapy.spiders.nepal_portal.NepalPortal
+Netherlands
+-----------
+
+.. autoclass:: kingfisher_scrapy.spiders.netherlands_digiwhist.NetherlandsDigiwhist
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl nepal_portal
+   scrapy crawl netherlands_digiwhist
 
 Nicaragua
 ---------
@@ -993,6 +1003,13 @@ Nigeria
 
    scrapy crawl nigeria_ekiti_state
 
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_enugu_state.NigeriaEnuguState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_enugu_state
+
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_gombe_state.NigeriaGombeState
    :no-members:
 
@@ -1000,19 +1017,26 @@ Nigeria
 
    scrapy crawl nigeria_gombe_state
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_records.NigeriaKadunaStateRecords
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_budeshi_records.NigeriaKadunaStateBudeshiRecords
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl nigeria_kaduna_state_records
+   scrapy crawl nigeria_kaduna_state_budeshi_records
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_releases.NigeriaKadunaStateReleases
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_budeshi_releases.NigeriaKadunaStateBudeshiReleases
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl nigeria_kaduna_state_releases
+   scrapy crawl nigeria_kaduna_state_budeshi_releases
+
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_oyo_state.NigeriaOyoState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_oyo_state
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_portal.NigeriaPortal
    :no-members:
@@ -1020,6 +1044,16 @@ Nigeria
 .. code-block:: bash
 
    scrapy crawl nigeria_portal
+
+Norway
+------
+
+.. autoclass:: kingfisher_scrapy.spiders.norway_digiwhist.NorwayDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl norway_digiwhist
 
 Openopps
 --------
@@ -1034,19 +1068,19 @@ Openopps
 Pakistan
 --------
 
+.. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_api.PakistanPPRAAPI
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl pakistan_ppra_api
+
 .. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_bulk.PakistanPPRABulk
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl pakistan_ppra_bulk
-
-.. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_releases.PakistanPPRAReleases
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl pakistan_ppra_releases
 
 Paraguay
 --------
@@ -1082,15 +1116,32 @@ Peru
 
    scrapy crawl peru_compras
 
-Portugal
---------
+Poland
+------
 
-.. autoclass:: kingfisher_scrapy.spiders.portugal.Portugal
+.. autoclass:: kingfisher_scrapy.spiders.poland_digiwhist.PolandDigiwhist
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl portugal
+   scrapy crawl poland_digiwhist
+
+Portugal
+--------
+
+.. autoclass:: kingfisher_scrapy.spiders.portugal_bulk.PortugalBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl portugal_bulk
+
+.. autoclass:: kingfisher_scrapy.spiders.portugal_digiwhist.PortugalDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl portugal_digiwhist
 
 .. autoclass:: kingfisher_scrapy.spiders.portugal_records.PortugalRecords
    :no-members:
@@ -1106,6 +1157,16 @@ Portugal
 
    scrapy crawl portugal_releases
 
+Romania
+-------
+
+.. autoclass:: kingfisher_scrapy.spiders.romania_digiwhist.RomaniaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl romania_digiwhist
+
 Scotland
 --------
 
@@ -1115,6 +1176,16 @@ Scotland
 .. code-block:: bash
 
    scrapy crawl scotland_public_contracts
+
+Slovakia
+--------
+
+.. autoclass:: kingfisher_scrapy.spiders.slovakia_digiwhist.SlovakiaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl slovakia_digiwhist
 
 Slovenia
 --------
@@ -1126,8 +1197,22 @@ Slovenia
 
    scrapy crawl slovenia
 
+.. autoclass:: kingfisher_scrapy.spiders.slovenia_digiwhist.SloveniaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl slovenia_digiwhist
+
 Spain
 -----
+
+.. autoclass:: kingfisher_scrapy.spiders.spain_digiwhist.SpainDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl spain_digiwhist
 
 .. autoclass:: kingfisher_scrapy.spiders.spain_zaragoza.SpainZaragoza
    :no-members:
@@ -1135,6 +1220,26 @@ Spain
 .. code-block:: bash
 
    scrapy crawl spain_zaragoza
+
+Sweden
+------
+
+.. autoclass:: kingfisher_scrapy.spiders.sweden_digiwhist.SwedenDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl sweden_digiwhist
+
+Switzerland
+-----------
+
+.. autoclass:: kingfisher_scrapy.spiders.switzerland_digiwhist.SwitzerlandDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl switzerland_digiwhist
 
 Tanzania
 --------
@@ -1156,30 +1261,6 @@ Uganda
 
    scrapy crawl uganda_releases
 
-Uk
---
-
-.. autoclass:: kingfisher_scrapy.spiders.uk_contracts_finder.UKContractsFinder
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl uk_contracts_finder
-
-.. autoclass:: kingfisher_scrapy.spiders.uk_fts.UKFTS
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl uk_fts
-
-.. autoclass:: kingfisher_scrapy.spiders.uk_fts_test.UKFTSTest
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl uk_fts_test
-
 Ukraine
 -------
 
@@ -1189,6 +1270,37 @@ Ukraine
 .. code-block:: bash
 
    scrapy crawl ukraine
+
+United Kingdom
+--------------
+
+.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_contracts_finder.UnitedKingdomContractsFinder
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl united_kingdom_contracts_finder
+
+.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_digiwhist.UnitedKingdomDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl united_kingdom_digiwhist
+
+.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_fts.UnitedKingdomFTS
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl united_kingdom_fts
+
+.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_fts_test.UnitedKingdomFTSTest
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl united_kingdom_fts_test
 
 Uruguay
 -------

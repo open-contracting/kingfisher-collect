@@ -17,7 +17,7 @@ class NigeriaPortalBase(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        self.logger.debug('Crawled page {}'.format(response.xpath('//td[@colspan="8"]/span/text()').get()))
+        self.logger.debug('Crawled page %s', response.xpath('//td[@colspan="8"]/span/text()').get())
 
         page = response.request.meta['page']
 

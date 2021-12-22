@@ -4,6 +4,7 @@ import re
 from textwrap import dedent
 
 from scrapy.commands import ScrapyCommand
+from scrapy.exceptions import NotSupported
 from scrapy.utils.misc import walk_modules
 from scrapy.utils.spider import iter_spider_classes
 
@@ -75,10 +76,10 @@ class Checker:
         basename = os.path.splitext(os.path.basename(self.module.__file__))[0]
         expected_basename = re.sub(word_boundary_re, '_', class_name).lower()
 
-        if basename != expected_basename:
+        if basename != expected_basename and class_name != 'PakistanPPRAAPI':
             self.log('error', 'class %s and file %s (%s) do not match', class_name, basename, expected_basename)
 
-        if class_name.endswith('Base') and class_name != 'EuropeTedTenderBase' or class_name.startswith('Digiwhist'):
+        if class_name.endswith('Base') and class_name != 'EuropeTEDTenderBase' or class_name.endswith('Digiwhist'):
             if docstring:
                 self.log('error', 'unexpected docstring')
             return
@@ -167,7 +168,7 @@ class Checker:
     def check_date_spider_argument(self, spider_argument, spider_arguments, default, format_string):
         if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
-            if self.cls.__name__ in ('ColombiaBulk', 'PortugalRecords', 'PortugalReleases',
+            if self.cls.__name__ in ('ColombiaBulk', 'Kosovo', 'PortugalRecords', 'PortugalReleases',
                                      'ScotlandPublicContracts', 'UgandaReleases'):
                 level = 'info'
             else:
@@ -193,7 +194,7 @@ class Checker:
                 period = 'year'
                 format_ = 'YYYY'
             else:
-                raise NotImplementedError(f'checkall: date_format "{self.cls.date_format}" not implemented')
+                raise NotSupported(f'checkall: date_format "{self.cls.date_format}" not implemented')
 
             expected = format_string.format(period=period, format=format_, default=default(self.cls))
             if spider_arguments[spider_argument] != expected:

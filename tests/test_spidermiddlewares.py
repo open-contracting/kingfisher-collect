@@ -296,7 +296,7 @@ def test_json_streaming_middleware_with_root_path_middleware(middleware_class, a
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
         assert len(item) == 5
-        assert item['file_name'] == f'test.json'
+        assert item['file_name'] == 'test.json'
         assert item['url'] == 'http://example.com'
         assert item['number'] == i
         assert item['data'] == {'key': i}
@@ -389,4 +389,5 @@ def test_retry_data_error_middleware(exception):
 
         assert not list(generator)
     else:
-        assert not list(generator)
+        with pytest.raises(Exception):
+            list(generator)

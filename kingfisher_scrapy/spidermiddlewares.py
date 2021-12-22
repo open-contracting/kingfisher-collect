@@ -231,3 +231,5 @@ class RetryDataErrorMiddleware:
             spider.logger.debug('Retrying %(request)s (failed %(failures)d times): %(exception)s',
                                 {'request': response.request, 'failures': retries, 'exception': exception})
             yield request
+        else:
+            raise exception

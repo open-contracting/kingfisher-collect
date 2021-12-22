@@ -6,7 +6,7 @@ from kingfisher_scrapy.base_spider import CompressedFileSpider
 class MexicoNuevoLeonReleases(CompressedFileSpider):
     """
     Domain
-      Secretaría de Infraestructura del Gobierno del Estado de Nuevo León
+      Secretaría de Movilidad y Planeación Urbana de Nuevo León
     Bulk download documentation
       http://si.nl.gob.mx/transparencia/acerca-del-proyecto
     """
