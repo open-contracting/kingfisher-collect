@@ -16,7 +16,7 @@ class DominicanRepublicAPI(LinksSpider):
         Download only data until this date (YYYY-MM-DD format).
         If ``from_date`` is provided, defaults to today.
     API documentation
-      http://148.101.176.123:48080/ocdsdr/docs
+      http://api.dgcp.gob.do/ocdsdr/docs
     """
     name = 'dominican_republic_api'
 
@@ -30,7 +30,7 @@ class DominicanRepublicAPI(LinksSpider):
     formatter = staticmethod(parameters('page'))
 
     def start_requests(self):
-        url = 'http://148.101.176.123:48080/ocdsdr/api/v1/releases'
+        url = 'http://api.dgcp.gob.do/ocdsdr/api/v1/releases'
         if self.from_date and self.until_date:
             from_date = self.from_date.strftime(self.date_format)
             until_date = self.until_date.strftime(self.date_format)
