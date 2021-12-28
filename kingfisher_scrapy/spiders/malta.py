@@ -21,4 +21,3 @@ class Malta(EuropeDynamicBase):
     default_from_date = '2019-10'
 
     base_url = 'http://demowww.etenders.gov.mt'
-
