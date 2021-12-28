@@ -1,4 +1,5 @@
 import datetime
+from urllib.parse import urlsplit
 
 import scrapy
 
@@ -22,10 +23,11 @@ class EuropeDynamicBase(CompressedFileSpider):
     def parse_list(self, response):
         urls = response.json()['packagesPerMonth']
         for url in reversed(urls):
+            path = urlsplit(url).path
             if self.from_date and self.until_date:
                 # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
                 year, month = map(int, url.rsplit('/', 2)[1:])
                 url_date = datetime.datetime(year, month, 1)
                 if not (self.from_date <= url_date <= self.until_date):
                     continue
-            yield self.build_request(url, formatter=join(components(-2), extension='zip'))
+            yield self.build_request(self.base_url+path, formatter=join(components(-2), extension='zip'))
