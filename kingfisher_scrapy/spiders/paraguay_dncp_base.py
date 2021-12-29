@@ -1,11 +1,12 @@
 import json
-from datetime import datetime
+from calendar import monthrange
+from datetime import datetime, timedelta
 
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
-from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameters
+from kingfisher_scrapy.util import components, date_range_by_month, handle_http_error, parameters, replace_parameters
 
 
 class ParaguayDNCPBase(SimpleSpider):
@@ -45,17 +46,25 @@ class ParaguayDNCPBase(SimpleSpider):
         return spider
 
     def start_requests(self):
-        url = f'{self.base_url}/search/processes?tipo_fecha=fecha_release&' \
-              f'fecha_desde={self.from_date.strftime(self.date_format)}-04:00&' \
-              f'fecha_hasta={self.until_date.strftime(self.date_format)}-04:00'
+        date_list = [[i, i.replace(day=monthrange(i.year, i.month)[1])]
+                     for i in date_range_by_month(self.from_date, self.until_date)]
 
-        yield self.build_request(
-            url,
-            formatter=parameters('fecha_desde'),
-            # send duplicate requests when the token expired and in the continuation of last_request saved.
-            dont_filter=True,
-            callback=self.parse_pages
-        )
+        date_list[0][1] = self.until_date
+        date_list[-1][0] = self.from_date
+        for from_date_, until_date_ in reversed(date_list):
+            until_date_ = until_date_ + timedelta(hours=23, minutes=59, seconds=59)
+            url = f'{self.base_url}/search/processes?tipo_fecha=fecha_release&' \
+                  f'fecha_desde={from_date_.strftime(self.date_format)}-04:00&' \
+                  f'fecha_hasta={until_date_.strftime(self.date_format)}-04:00'
+
+            print(url)
+            yield self.build_request(
+                url,
+                formatter=parameters('fecha_desde'),
+                # send duplicate requests when the token expired and in the continuation of last_request saved.
+                dont_filter=True,
+                callback=self.parse_pages
+            )
 
     def request_access_token(self):
         """ Requests a new access token """
