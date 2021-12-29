@@ -1,7 +1,7 @@
-from kingfisher_scrapy.spiders.europe_dynamic_base import EuropeDynamicBase
+from kingfisher_scrapy.spiders.europe_dynamic_base import EuropeanDynamicsBase
 
 
-class Malta(EuropeDynamicBase):
+class Malta(EuropeanDynamicsBase):
     """
     Domain
       Malta
@@ -20,4 +20,5 @@ class Malta(EuropeDynamicBase):
     # BaseSpider
     default_from_date = '2019-10'
 
+    # EuropeanDynamicsBase
     base_url = 'http://demowww.etenders.gov.mt'

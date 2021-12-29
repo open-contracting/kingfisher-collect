@@ -1,7 +1,7 @@
-from kingfisher_scrapy.spiders.europe_dynamic_base import EuropeDynamicBase
+from kingfisher_scrapy.spiders.europe_dynamic_base import EuropeanDynamicsBase
 
 
-class Zambia(EuropeDynamicBase):
+class Zambia(EuropeanDynamicsBase):
     """
     Domain
       Zambia Public Procurement Authority (ZPPA)
@@ -19,4 +19,5 @@ class Zambia(EuropeDynamicBase):
     # BaseSpider
     ocds_version = '1.0'
 
+    # EuropeanDynamicsBase
     base_url = 'https://www.zppa.org.zm'
