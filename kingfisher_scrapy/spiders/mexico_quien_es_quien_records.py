@@ -1,8 +1,8 @@
 from json import dumps
 
-
 from kingfisher_scrapy.spiders.mexico_quien_es_quien_base import MexicoQuienEsQuienBase
 from kingfisher_scrapy.util import handle_http_error
+
 
 class MexicoQuienEsQuienRecords(MexicoQuienEsQuienBase):
     """
