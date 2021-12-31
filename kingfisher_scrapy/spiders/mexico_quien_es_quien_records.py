@@ -23,8 +23,6 @@ class MexicoQuienEsQuienRecords(MexicoQuienEsQuienBase):
 
     @handle_http_error
     def parse(self, response):
-        # data looks like ...
-        # and should looks like ..
         data = response.json()
 
         if 'records' in data['data'][0]:
