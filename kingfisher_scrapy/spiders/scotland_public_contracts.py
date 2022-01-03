@@ -59,7 +59,7 @@ class ScotlandPublicContracts(PeriodicSpider):
     
     def parse(self, response):
         data = response.json()
-        # some responses are a package without a list of releases
+        # Some responses are a package without a list of releases.
         if 'releases' not in data:
             yield self.build_file_error_from_response(response, errors=data)
         else:
