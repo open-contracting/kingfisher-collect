@@ -56,7 +56,7 @@ class ScotlandPublicContracts(PeriodicSpider):
     def build_urls(self, date):
         for notice_type in self.notice_types:
             yield self.pattern.format(date, notice_type)
-    
+
     def parse(self, response):
         data = response.json()
         # Some responses are a package without a list of releases.
