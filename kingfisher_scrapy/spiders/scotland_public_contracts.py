@@ -1,7 +1,7 @@
 from datetime import date
 
 from kingfisher_scrapy.base_spider import PeriodicSpider
-from kingfisher_scrapy.util import parameters
+from kingfisher_scrapy.util import parameters, handle_http_error
 
 
 class ScotlandPublicContracts(PeriodicSpider):
@@ -57,6 +57,7 @@ class ScotlandPublicContracts(PeriodicSpider):
         for notice_type in self.notice_types:
             yield self.pattern.format(date, notice_type)
 
+    @handle_http_error
     def parse(self, response):
         data = response.json()
         # Some responses are a package without a list of releases.
