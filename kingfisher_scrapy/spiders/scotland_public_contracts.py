@@ -1,7 +1,7 @@
 from datetime import date
 
 from kingfisher_scrapy.base_spider import PeriodicSpider
-from kingfisher_scrapy.util import parameters, handle_http_error
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class ScotlandPublicContracts(PeriodicSpider):
