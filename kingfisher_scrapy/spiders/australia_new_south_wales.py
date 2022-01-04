@@ -11,14 +11,15 @@ class AustraliaNewSouthWales(SimpleSpider):
     """
     name = 'australia_new_south_wales'
 
+    base_url = 'https://www.tenders.nsw.gov.au/?event=public.api.'
+
     # SimpleSpider
     data_type = 'release_package'
 
     def start_requests(self):
-        pattern = 'https://tenders.nsw.gov.au/?event=public.api.{}.search&ResultsPerPage=1000'
         for release_type in ('planning', 'tender', 'contract'):
             yield self.build_request(
-                pattern.format(release_type),
+                f'{self.base_url}{release_type}.search&ResultsPerPage=1000',
                 formatter=parameters('event'),
                 meta={'release_type': release_type},
                 callback=self.parse_list
@@ -41,19 +42,19 @@ class AustraliaNewSouthWales(SimpleSpider):
             if release_type == 'planning':
                 uuid = release['tender']['plannedProcurementUUID']
                 yield self.build_request(
-                    'https://tenders.nsw.gov.au/?event=public.api.planning.view&PlannedProcurementUUID=' + uuid,
+                    f'{self.base_url}planning.view&PlannedProcurementUUID={uuid}',
                     formatter=parameters('event', 'PlannedProcurementUUID')
                 )
             elif release_type == 'tender':
                 uuid = release['tender']['RFTUUID']
                 yield self.build_request(
-                    'https://tenders.nsw.gov.au/?event=public.api.tender.view&RFTUUID=' + uuid,
+                    f'{self.base_url}tender.view&RFTUUID={uuid}',
                     formatter=parameters('event', 'RFTUUID')
                 )
             elif release_type == 'contract':
                 for award in release['awards']:
                     uuid = award['CNUUID']
                     yield self.build_request(
-                        'https://tenders.nsw.gov.au/?event=public.api.contract.view&CNUUID=' + uuid,
+                        f'{self.base_url}contract.view&CNUUID={uuid}',
                         formatter=parameters('event', 'CNUUID')
                     )
