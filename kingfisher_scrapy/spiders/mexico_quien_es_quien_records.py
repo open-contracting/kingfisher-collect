@@ -1,4 +1,4 @@
-from json import dumps
+import json
 
 from kingfisher_scrapy.spiders.mexico_quien_es_quien_base import MexicoQuienEsQuienBase
 from kingfisher_scrapy.util import handle_http_error
@@ -19,9 +19,6 @@ class MexicoQuienEsQuienRecords(MexicoQuienEsQuienBase):
     """
     name = 'mexico_quien_es_quien_records'
 
-    # BaseSpider
-    root_path = None  # The parse method already transforms the output with a record package at the root.
-
     # SimpleSpider
     data_type = 'record_package'
 
@@ -34,12 +31,10 @@ class MexicoQuienEsQuienRecords(MexicoQuienEsQuienBase):
         data = response.json()
         # The first entry of the array is a record package with 'records' as an object. The remaining entries
         # are records. We use the package metadata to wrap all the records into a single record package.
-        if 'records' in data['data'][0]:
-            package = data['data'][0].copy()
-            package['uri'] = None
-            package['publishedDate'] = None
-            package['records'] = [data['data'][0]['records']]
-            for record in data['data'][1:]:
-                package['records'].append(record)
-            response = response.replace(body=dumps(package))
+        package = data['data'][0].copy()
+        del package['uri']
+        del package['publishedDate']
+        package['records'] = [package['records']]
+        package['records'].extend(data['data'][1:])
+        response = response.replace(body=json.dumps(package))
         yield self.build_file_from_response(response, data_type=self.data_type)
