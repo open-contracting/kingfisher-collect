@@ -8,6 +8,10 @@ class MexicoQuienEsQuienRecords(MexicoQuienEsQuienBase):
     """
     Domain
       QuiénEsQuién.Wiki
+    Caveats
+      The 'record' endpoint returns a 'data' array with the first entry as a record package and the subsequent ones
+      as records. This spider transform the output to package all the records within a package using the first package
+      metadata. The 'uri' and 'publicationDate' record package metadata fields are removed.
     API documentation
       https://qqwapi-elastic.readthedocs.io/es/latest/
     Swagger API documentation
@@ -16,14 +20,14 @@ class MexicoQuienEsQuienRecords(MexicoQuienEsQuienBase):
     name = 'mexico_quien_es_quien_records'
 
     # BaseSpider
-    root_path = None  # The parse method already fixes the output to make it a correct record package
+    root_path = None  # The parse method already transforms the output with a record package at the root.
 
     # SimpleSpider
     data_type = 'record_package'
 
     # IndexSpider
     base_url = 'https://api.quienesquien.wiki/v3/record'
-    limit = 100  # Decrease the limit so the output file is not too big
+    limit = 100  # Decrease the limit so the output file is not too big.
 
     @handle_http_error
     def parse(self, response):
