@@ -39,7 +39,8 @@ class ParaguayAuthMiddleware:
         request.headers['Authorization'] = spider.access_token
         if self._expires_soon(spider):
             # SAVE the last request to continue after getting the token
-            spider.last_request = request
+            spider.last_requests.append(request)
+            spider.logger.info('Saving request for after getting the token: %s', request.url)
             # spider MUST implement the request_access_token method
             return spider.request_access_token()
 
@@ -49,7 +50,8 @@ class ParaguayAuthMiddleware:
             spider.logger.info('%s returned for request to %s', response.status, request.url)
             if not spider.access_token == request.headers['Authorization'] and self._expires_soon(spider):
                 # SAVE the last request to continue after getting the token
-                spider.last_request = request
+                spider.last_requests.append(request)
+                spider.logger.info('Saving request for after getting the token: %s', request.url)
                 # spider MUST implement the request_access_token method
                 return spider.request_access_token()
             request.headers['Authorization'] = spider.access_token
