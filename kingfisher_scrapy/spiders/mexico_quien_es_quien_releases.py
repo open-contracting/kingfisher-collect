@@ -12,6 +12,9 @@ class MexicoQuienEsQuienReleases(MexicoQuienEsQuienBase):
     """
     name = 'mexico_quien_es_quien_releases'
 
+    # BaseSpider
+    root_path = 'data.item'
+
     # SimpleSpider
     data_type = 'release'
 
