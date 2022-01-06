@@ -1,12 +1,12 @@
 import json
-from calendar import monthrange
+
 from datetime import datetime, timedelta
 
 import scrapy
 
 from kingfisher_scrapy.base_spider import SimpleSpider
 from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
-from kingfisher_scrapy.util import components, date_range_by_month, handle_http_error, parameters, replace_parameters
+from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameters
 
 
 class ParaguayDNCPBase(SimpleSpider):
@@ -57,7 +57,8 @@ class ParaguayDNCPBase(SimpleSpider):
 
     def urls_builder(self):
         days_interval = 30
-        # ElasticSearch doesn't allow searches sizes bigger than 10000. To avoid that, we request one month at the time.
+        # ElasticSearch doesn't allow searches sizes bigger than 10000.
+        # To avoid that, we request one month at the time.
         days_to_iterate = timedelta(days=days_interval)
         end_date = self.until_date
         start_date = self.from_date
