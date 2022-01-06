@@ -23,11 +23,11 @@ class ParaguayDNCPBase(SimpleSpider):
     date_required = True
 
     # request limits: since we can't control when Scrapy decides to send a
-    # request, values here are slighly less than real limits.
+    # request, values here are slightly less than real limits.
     start_time = None
     access_token = None
     auth_failed = False
-    last_request = None
+    last_requests = []
     request_time_limit = 13  # in minutes
     base_url = 'https://contrataciones.gov.py/datos/api/v3/doc'
     auth_url = f'{base_url}/oauth/token'
@@ -46,25 +46,32 @@ class ParaguayDNCPBase(SimpleSpider):
         return spider
 
     def start_requests(self):
-        date_list = [[i, i.replace(day=monthrange(i.year, i.month)[1])]
-                     for i in date_range_by_month(self.from_date, self.until_date)]
-
-        date_list[0][1] = self.until_date
-        date_list[-1][0] = self.from_date
-        for from_date_, until_date_ in reversed(date_list):
-            until_date_ = until_date_ + timedelta(hours=23, minutes=59, seconds=59)
-            url = f'{self.base_url}/search/processes?tipo_fecha=fecha_release&' \
-                  f'fecha_desde={from_date_.strftime(self.date_format)}-04:00&' \
-                  f'fecha_hasta={until_date_.strftime(self.date_format)}-04:00'
-
-            print(url)
+        for url in self.urls_builder():
             yield self.build_request(
                 url,
                 formatter=parameters('fecha_desde'),
-                # send duplicate requests when the token expired and in the continuation of last_request saved.
+                # send duplicate requests when the token expired and in the continuation of last_requests saved.
                 dont_filter=True,
                 callback=self.parse_pages
             )
+
+    def urls_builder(self):
+        days_interval = 30
+        # ElasticSearch doesn't allow searches sizes bigger than 10000. To avoid that, we request one month at the time.
+        days_to_iterate = timedelta(days=days_interval)
+        end_date = self.until_date
+        start_date = self.from_date
+        # In reverse chronological order
+        while end_date > self.from_date:
+            if (end_date - start_date).days > days_interval:
+                start_date = (end_date - days_to_iterate).replace(hour=0, minute=0, second=0)
+            else:
+                start_date = self.from_date
+            url = f'{self.base_url}/search/processes?tipo_fecha=fecha_release&' \
+                  f'fecha_desde={start_date.strftime(self.date_format)}-04:00&' \
+                  f'fecha_hasta={end_date.strftime(self.date_format)}-04:00&items_per_page=500'
+            end_date = (start_date - timedelta(1)).replace(hour=23, minute=59, second=59)
+            yield url
 
     def request_access_token(self):
         """ Requests a new access token """
@@ -91,7 +98,9 @@ class ParaguayDNCPBase(SimpleSpider):
                 self.logger.info('New access token: %s', token)
                 self.access_token = token
                 # continue scraping where it stopped after getting the token
-                yield self.last_request
+                for request in self.last_requests:
+                    yield request
+                self.last_requests = []
             else:
                 attempt = response.request.meta['attempt']
                 if attempt == self.max_attempts:
