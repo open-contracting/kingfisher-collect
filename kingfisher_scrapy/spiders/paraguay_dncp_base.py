@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import scrapy
 
@@ -22,11 +22,11 @@ class ParaguayDNCPBase(SimpleSpider):
     date_required = True
 
     # request limits: since we can't control when Scrapy decides to send a
-    # request, values here are slighly less than real limits.
+    # request, values here are slightly less than real limits.
     start_time = None
     access_token = None
     auth_failed = False
-    last_request = None
+    last_requests = []
     request_time_limit = 13  # in minutes
     base_url = 'https://contrataciones.gov.py/datos/api/v3/doc'
     auth_url = f'{base_url}/oauth/token'
@@ -45,17 +45,31 @@ class ParaguayDNCPBase(SimpleSpider):
         return spider
 
     def start_requests(self):
-        url = f'{self.base_url}/search/processes?tipo_fecha=fecha_release&' \
-              f'fecha_desde={self.from_date.strftime(self.date_format)}-04:00&' \
-              f'fecha_hasta={self.until_date.strftime(self.date_format)}-04:00'
+        for url in self.urls_builder():
+            yield self.build_request(
+                url,
+                formatter=parameters('fecha_desde'),
+                # send duplicate requests when the token expired and in the continuation of last_requests saved.
+                dont_filter=True,
+                callback=self.parse_pages
+            )
 
-        yield self.build_request(
-            url,
-            formatter=parameters('fecha_desde'),
-            # send duplicate requests when the token expired and in the continuation of last_request saved.
-            dont_filter=True,
-            callback=self.parse_pages
-        )
+    def urls_builder(self):
+        # ElasticSearch doesn't allow search sizes greater than 10000, so we request one month at the time.
+        interval = timedelta(days=30)
+        end_date = self.until_date
+        # In reverse chronological order
+        while end_date > self.from_date:
+            # If there is less than or equal to one interval left, start from the `from_date`.
+            if end_date - self.from_date <= interval:
+                start_date = self.from_date
+            else:
+                start_date = end_date - interval
+            url = f'{self.base_url}/search/processes?tipo_fecha=fecha_release&' \
+                  f'fecha_desde={start_date.strftime(self.date_format)}-04:00&' \
+                  f'fecha_hasta={end_date.strftime(self.date_format)}-04:00&items_per_page=10000'
+            end_date = start_date - timedelta(seconds=1)
+            yield url
 
     def request_access_token(self):
         """ Requests a new access token """
@@ -82,7 +96,8 @@ class ParaguayDNCPBase(SimpleSpider):
                 self.logger.info('New access token: %s', token)
                 self.access_token = token
                 # continue scraping where it stopped after getting the token
-                yield self.last_request
+                while self.last_requests:
+                    yield self.last_requests.pop(0)
             else:
                 attempt = response.request.meta['attempt']
                 if attempt == self.max_attempts:
