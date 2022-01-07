@@ -55,22 +55,20 @@ class ParaguayDNCPBase(SimpleSpider):
             )
 
     def urls_builder(self):
-        days_interval = 30
-        # ElasticSearch doesn't allow searches sizes bigger than 10000.
-        # To avoid that, we request one month at the time.
-        days_to_iterate = timedelta(days=days_interval)
+        # ElasticSearch doesn't allow search sizes greater than 10000, so we request one month at the time.
+        interval = timedelta(days=30)
         end_date = self.until_date
-        start_date = self.from_date
         # In reverse chronological order
         while end_date > self.from_date:
-            if (end_date - start_date).days > days_interval:
-                start_date = (end_date - days_to_iterate).replace(hour=0, minute=0, second=0)
-            else:
+            # If there is less than or equal to one interval left, start from the `from_date`.
+            if end_date - self.from_date <= interval:
                 start_date = self.from_date
+            else:
+                start_date = (end_date - interval).replace(hour=0, minute=0, second=0)
             url = f'{self.base_url}/search/processes?tipo_fecha=fecha_release&' \
                   f'fecha_desde={start_date.strftime(self.date_format)}-04:00&' \
                   f'fecha_hasta={end_date.strftime(self.date_format)}-04:00&items_per_page=500'
-            end_date = (start_date - timedelta(1)).replace(hour=23, minute=59, second=59)
+            end_date = (start_date - timedelta(days=1)).replace(hour=23, minute=59, second=59)
             yield url
 
     def request_access_token(self):
@@ -98,9 +96,8 @@ class ParaguayDNCPBase(SimpleSpider):
                 self.logger.info('New access token: %s', token)
                 self.access_token = token
                 # continue scraping where it stopped after getting the token
-                for request in self.last_requests:
-                    yield request
-                self.last_requests = []
+                while self.last_requests:
+                    yield self.last_requests.pop(0)
             else:
                 attempt = response.request.meta['attempt']
                 if attempt == self.max_attempts:
