@@ -64,11 +64,11 @@ class ParaguayDNCPBase(SimpleSpider):
             if end_date - self.from_date <= interval:
                 start_date = self.from_date
             else:
-                start_date = (end_date - interval).replace(hour=0, minute=0, second=0)
+                start_date = end_date - interval
             url = f'{self.base_url}/search/processes?tipo_fecha=fecha_release&' \
                   f'fecha_desde={start_date.strftime(self.date_format)}-04:00&' \
-                  f'fecha_hasta={end_date.strftime(self.date_format)}-04:00&items_per_page=500'
-            end_date = (start_date - timedelta(days=1)).replace(hour=23, minute=59, second=59)
+                  f'fecha_hasta={end_date.strftime(self.date_format)}-04:00&items_per_page=10000'
+            end_date = start_date - timedelta(seconds=1)
             yield url
 
     def request_access_token(self):
