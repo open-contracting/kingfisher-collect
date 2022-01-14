@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 class Pluck(ScrapyCommand):
-    def syntax(self):
-        return '[options] [spider ...]'
-
     def short_desc(self):
         return 'Pluck one data value per publisher'
+
+    def syntax(self):
+        return '[options] [spider ...]'
 
     def add_options(self, parser):
         ScrapyCommand.add_options(self, parser)

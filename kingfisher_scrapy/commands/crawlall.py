@@ -3,11 +3,11 @@ from scrapy.exceptions import UsageError
 
 
 class CrawlAll(ScrapyCommand):
-    def syntax(self):
-        return '[options] [spider ...]'
-
     def short_desc(self):
         return 'Run all spiders'
+
+    def syntax(self):
+        return '[options] [spider ...]'
 
     def add_options(self, parser):
         ScrapyCommand.add_options(self, parser)

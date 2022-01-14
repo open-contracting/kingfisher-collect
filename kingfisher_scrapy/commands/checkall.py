@@ -18,7 +18,7 @@ word_boundary_re = re.compile(r'(?<=[a-z])(?=[A-Z])(?!ST$)|(?<=.)(?=[A-Z][a-z])|
 
 class CheckAll(ScrapyCommand):
     def short_desc(self):
-        return 'Checks that spiders are documented and well-implemented'
+        return 'Check that spiders are documented and well-implemented'
 
     def run(self, args, opts):
         for module in walk_modules('kingfisher_scrapy.spiders'):
