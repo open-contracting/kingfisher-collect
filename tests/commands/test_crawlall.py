@@ -11,5 +11,5 @@ def test_command(crawl, caplog):
     with pytest.raises(SystemExit):
         execute(['scrapy', 'crawlall', '--dry-run'])
 
-    assert len(crawl.mock_calls) > 0
+    assert crawl.call_count > 0
     assert len(caplog.records) > 0
