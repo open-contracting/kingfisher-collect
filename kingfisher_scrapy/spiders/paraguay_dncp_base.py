@@ -55,8 +55,8 @@ class ParaguayDNCPBase(SimpleSpider):
             )
 
     def urls_builder(self):
-        # ElasticSearch doesn't allow search sizes greater than 10000, so we request one month at the time.
-        interval = timedelta(days=30)
+        # ElasticSearch doesn't allow search sizes greater than 10000, so we request half-month at the time.
+        interval = timedelta(days=15)
         end_date = self.until_date
         # In reverse chronological order
         while end_date > self.from_date:
