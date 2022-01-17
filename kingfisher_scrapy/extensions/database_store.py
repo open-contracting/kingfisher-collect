@@ -25,11 +25,14 @@ class DatabaseStore:
 
     When the spider is closed, this extension reads the data written by the FilesStore extension to the crawl directory
     that matches the ``crawl_time`` spider argument. If the ``compile_releases`` spider argument is set, it creates
-    compiled releases. If the spider returns records and ``compile_releases`` is set, the extension uses
-    records.releases to generate the compile release. Records without releases or with linked releases will fail.
-    Then, it recreates the table, and inserts either the compiled releases, the individual releases
-    in release packages (if the spider returns releases), or the compiled releases in record packages (if the spider
-    returns records).
+    compiled releases, using individual releases. Then, it recreates the table, and inserts either the compiled
+    releases if the ``compile_releases`` spider argument is set, the individual releases in release packages (if the
+    spider returns releases), or the compiled releases in record packages (if the spider returns records).
+
+    .. warning::
+
+       If the ``compile_releases`` spider argument is set, spiders that return records without embedded releases are
+       not supported. If it isn't set, then spiders that return records without compiled releases are not supported.
 
     To perform incremental updates, the OCDS data in the crawl directory must not be deleted between crawls.
     """
