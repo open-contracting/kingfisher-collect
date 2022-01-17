@@ -91,9 +91,9 @@ class DatabaseStore:
 
         if spider.compile_releases:
             if 'release' in spider.data_type:
-              prefix = ''
+                prefix = ''
             else:
-              prefix = 'records.item.releases.item'
+                prefix = 'records.item.releases.item'
         elif 'release' in spider.data_type:
             prefix = 'releases.item'
         else:
