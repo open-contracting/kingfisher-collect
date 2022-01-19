@@ -79,6 +79,7 @@ def test_spider_closed_error(caplog, tmpdir):
     (b'{"releases": [{"date": "2021-05-26T10:00:00Z"}]}', 'release_package', 1, False),
     (b'{"releases": [{"ocid":"1", "date": "2021-05-26T10:00:00Z"}]}', 'release_package', None, True),
     (b'{"records": [{"compiledRelease": {"date": "2021-05-26T10:00:00Z"}}]}', 'record_package', None, False),
+    (b'{"records": [{"releases": [{"ocid":"1", "date": "2021-05-26T10:00:00Z"}]}]}', 'record_package', None, True),
 ])
 def test_spider_closed(caplog, tmpdir, data, data_type, sample, compile_releases):
     caplog.set_level(logging.INFO)
@@ -116,7 +117,10 @@ def test_spider_closed(caplog, tmpdir, data, data_type, sample, compile_releases
         assert max_date == expected_date
 
         if compile_releases:
-            prefix = 'empty'
+            if data_type == 'release_package':
+                prefix = 'empty'
+            else:
+                prefix = 'records.item.releases.item'
         elif data_type == 'release_package':
             prefix = 'releases.item'
         else:
