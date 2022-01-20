@@ -70,11 +70,11 @@ class ParaguayDNCPBase(SimpleSpider):
             url_base = f'{self.base_url}/search/processes?fecha_desde={start_date.strftime(self.date_format)}-04:00' \
                        f'&fecha_hasta={end_date.strftime(self.date_format)}-04:00&items_per_page=10000 '
             # We request the active or successful tenders by using the "publicacion_llamado" filter.
-            url = f'{url_base}&tipo_fecha=publicacion_llamado'
-            # And the planned ones with the "fecha_release" and tender.id="planned" filters.
-            url_planning = f'{url_base}&tender.id="planned"&tipo_fecha=fecha_release'
+            url_tender = f'{url_base}&tipo_fecha=publicacion_llamado'
+            # And the planned ones with the "fecha_release" and tender.id=planned filters.
+            url_planning = f'{url_base}&tender.id=planned&tipo_fecha=fecha_release'
             end_date = start_date - timedelta(seconds=1)
-            yield from [url, url_planning]
+            yield from [url_tender, url_planning]
 
     def request_access_token(self):
         """ Requests a new access token """
