@@ -1,4 +1,4 @@
-Base Classes
+Base Spiders
 ------------
 
 .. toctree::
