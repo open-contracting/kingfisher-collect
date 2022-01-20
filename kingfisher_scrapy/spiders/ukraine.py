@@ -1,9 +1,8 @@
 import scrapy
 
-from kingfisher_scrapy.base_spiders.base_spider import browser_user_agent
 from kingfisher_scrapy.base_spiders.simple_spider import SimpleSpider
-from kingfisher_scrapy.util import (append_path_components, components, handle_http_error, join, parameters,
-                                    replace_parameters)
+from kingfisher_scrapy.util import (append_path_components, browser_user_agent, components, handle_http_error, join,
+                                    parameters, replace_parameters)
 
 
 class Ukraine(SimpleSpider):

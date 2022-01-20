@@ -1,7 +1,7 @@
 import scrapy
 
-from kingfisher_scrapy.base_spiders.base_spider import browser_user_agent
 from kingfisher_scrapy.base_spiders.index_spider import IndexSpider
+from kingfisher_scrapy.util import browser_user_agent
 
 
 class CanadaMontreal(IndexSpider):
