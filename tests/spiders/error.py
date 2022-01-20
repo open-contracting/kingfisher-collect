@@ -7,7 +7,7 @@ This spider raises exceptions in different methods. You can use this to test whe
 """
 import scrapy
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spiders.base_spider import BaseSpider
 from kingfisher_scrapy.exceptions import IncoherentConfigurationError, SpiderArgumentError
 
 

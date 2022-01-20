@@ -1,6 +1,7 @@
 from datetime import date
 
-from kingfisher_scrapy.base_spider import IndexSpider, PeriodicSpider
+from kingfisher_scrapy.base_spiders.index_spider import IndexSpider
+from kingfisher_scrapy.base_spiders.periodic_spider import PeriodicSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
 from kingfisher_scrapy.items import FileError
 from kingfisher_scrapy.util import components, handle_http_error

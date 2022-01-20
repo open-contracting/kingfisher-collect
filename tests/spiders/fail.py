@@ -7,7 +7,7 @@ This spider deliberately generates HTTP errors. You can use this to test whether
 """
 import scrapy
 
-from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.base_spiders.simple_spider import SimpleSpider
 
 
 class Fail(SimpleSpider):

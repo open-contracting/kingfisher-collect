@@ -4,7 +4,8 @@ from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
 
 import pytest
 
-from kingfisher_scrapy.base_spider import CompressedFileSpider, SimpleSpider
+from kingfisher_scrapy.base_spiders.compressed_file_spider import CompressedFileSpider
+from kingfisher_scrapy.base_spiders.simple_spider import SimpleSpider
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.spidermiddlewares import (AddPackageMiddleware, ConcatenatedJSONMiddleware,
                                                  LineDelimitedMiddleware, ReadDataMiddleware, ResizePackageMiddleware,

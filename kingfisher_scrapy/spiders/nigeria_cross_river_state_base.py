@@ -3,7 +3,7 @@ from datetime import datetime
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import SimpleSpider
+from kingfisher_scrapy.base_spiders.simple_spider import SimpleSpider
 from kingfisher_scrapy.util import components, handle_http_error, join, parameters
 
 

@@ -1,6 +1,6 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import LinksSpider
+from kingfisher_scrapy.base_spiders.links_spider import LinksSpider
 from kingfisher_scrapy.util import parameters
 
 

@@ -1,4 +1,5 @@
-from kingfisher_scrapy.base_spider import CompressedFileSpider, PeriodicSpider
+from kingfisher_scrapy.base_spiders.compressed_file_spider import CompressedFileSpider
+from kingfisher_scrapy.base_spiders.periodic_spider import PeriodicSpider
 from kingfisher_scrapy.util import components, get_parameter_value, handle_http_error, join, parameters
 
 

@@ -1,6 +1,6 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import LinksSpider
+from kingfisher_scrapy.base_spiders.links_spider import LinksSpider
 from kingfisher_scrapy.util import get_parameter_value, parameters, replace_parameters
 
 MILLISECONDS_PER_DAY = 86400000

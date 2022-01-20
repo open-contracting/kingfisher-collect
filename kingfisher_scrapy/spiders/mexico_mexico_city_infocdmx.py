@@ -1,4 +1,4 @@
-from kingfisher_scrapy.base_spider import browser_user_agent
+from kingfisher_scrapy.base_spiders.base_spider import browser_user_agent
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 
 

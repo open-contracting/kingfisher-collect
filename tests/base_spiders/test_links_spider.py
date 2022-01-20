@@ -4,7 +4,7 @@ import pytest
 from scrapy.http import Request
 from scrapy.utils.trackref import NoneType
 
-from kingfisher_scrapy.base_spider import LinksSpider
+from kingfisher_scrapy.base_spiders.links_spider import LinksSpider
 from kingfisher_scrapy.exceptions import MissingNextLinkError
 from kingfisher_scrapy.items import File, FileError
 from tests import response_fixture, spider_with_crawler
