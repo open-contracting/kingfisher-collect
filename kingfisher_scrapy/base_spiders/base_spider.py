@@ -9,6 +9,7 @@ from kingfisher_scrapy.util import add_path_components, add_query_string
 
 browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
 
+
 class BaseSpider(scrapy.Spider):
     """
     With respect to the data's source:

@@ -25,7 +25,8 @@ class IndexSpider(SimpleSpider):
            query string parameters. The spider then yields a request for each offset/page.
 
     #. If the ``page`` query string parameter is zero-indexed, set ``start_page = 0``.
-    #. Set ``formatter`` to set the file name like in :meth:`~kingfisher_scrapy.base_spiders.base_spider.BaseSpider.build_request`.
+    #. Set ``formatter`` to set the file name like in
+    :meth:`~kingfisher_scrapy.base_spiders.base_spider.BaseSpider.build_request`.
        If ``total_pages_pointer`` or ``use_page = True``, it defaults to ``parameters(<param_page>)``. Otherwise, if
        ``count_pointer`` is set and ``use_page = False``, it defaults to ``parameters(<param_offset>)``.
     #. Write a ``start_requests`` method to yield the initial URL. The request's ``callback`` parameter should be set
