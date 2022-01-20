@@ -1,7 +1,8 @@
-Base Spiders
-------------
+Base Spider Classes
+-------------------
 
 .. toctree::
+
    base_spider.rst
    big_file_spider.rst
    compressed_file_spider.rst
