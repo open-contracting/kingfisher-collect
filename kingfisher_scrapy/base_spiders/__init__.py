@@ -1,7 +1,8 @@
 """
-isort:skip_file
-Skip isort as we need to use this order to avoid circular dependencies
+isort:skip_file to avoid circular dependencies.
+https://github.com/PyCQA/isort#skip-processing-of-imports-outside-of-configuration
 """
+
 from .base_spider import BaseSpider  # noqa: F401
 from .compressed_file_spider import CompressedFileSpider  # noqa: F401
 from .simple_spider import SimpleSpider  # noqa: F401
