@@ -4,7 +4,7 @@ import pytest
 import scrapy
 from scrapy.http import TextResponse
 
-from kingfisher_scrapy.base_spiders.base_spider import BaseSpider
+from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
 from kingfisher_scrapy.items import File
 from tests import spider_with_crawler

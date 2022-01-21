@@ -1,6 +1,6 @@
 from jsonpointer import resolve_pointer
 
-from kingfisher_scrapy.base_spiders.simple_spider import SimpleSpider
+from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import MissingNextLinkError
 from kingfisher_scrapy.util import handle_http_error
 
@@ -13,7 +13,7 @@ class LinksSpider(SimpleSpider):
     #. Inherit from ``LinksSpider``
     #. Set a ``data_type`` class attribute to the data type of the API responses
     #. Set a ``formatter`` class attribute to set the file name like in
-       :meth:`~kingfisher_scrapy.base_spiders.base_spider.BaseSpider.build_request`
+       :meth:`~kingfisher_scrapy.base_spiders.BaseSpider.build_request`
     #. Write a ``start_requests`` method to request the first page of API results
     #. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
 
@@ -23,7 +23,7 @@ class LinksSpider(SimpleSpider):
 
         import scrapy
 
-        from kingfisher_scrapy.base_spiders.links_spider import LinksSpider
+        from kingfisher_scrapy.base_spiders import LinksSpider
 
         class MySpider(LinksSpider):
             name = 'my_spider'

@@ -2,7 +2,7 @@ import re
 
 import scrapy
 
-from kingfisher_scrapy.base_spiders.simple_spider import SimpleSpider
+from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.util import browser_user_agent, handle_http_error
 
 

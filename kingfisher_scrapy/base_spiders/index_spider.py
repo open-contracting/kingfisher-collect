@@ -3,7 +3,7 @@ from math import ceil
 from jsonpointer import resolve_pointer
 
 from kingfisher_scrapy import util
-from kingfisher_scrapy.base_spiders.simple_spider import SimpleSpider
+from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import IncoherentConfigurationError
 from kingfisher_scrapy.items import FileError
 from kingfisher_scrapy.util import handle_http_error, parameters
@@ -25,8 +25,7 @@ class IndexSpider(SimpleSpider):
            query string parameters. The spider then yields a request for each offset/page.
 
     #. If the ``page`` query string parameter is zero-indexed, set ``start_page = 0``.
-    #. Set ``formatter`` to set the file name like in
-    :meth:`~kingfisher_scrapy.base_spiders.base_spider.BaseSpider.build_request`.
+    #. Set ``formatter`` to set the file name like in :meth:`~kingfisher_scrapy.base_spiders.BaseSpider.build_request`.
        If ``total_pages_pointer`` or ``use_page = True``, it defaults to ``parameters(<param_page>)``. Otherwise, if
        ``count_pointer`` is set and ``use_page = False``, it defaults to ``parameters(<param_offset>)``.
     #. Write a ``start_requests`` method to yield the initial URL. The request's ``callback`` parameter should be set
@@ -43,7 +42,7 @@ class IndexSpider(SimpleSpider):
     to check for an error response, or to extract the page count from an HTML page - override the ``parse_list_loader``
     method. If this method returns a ``FileError``, then ``parse_list`` yields it and returns.
 
-    Otherwise, results are yielded from all responses by :meth:`~kingfisher_scrapy.base_spider.SimpleSpider.parse`. To
+    Otherwise, results are yielded from all responses by :meth:`~kingfisher_scrapy.SimpleSpider.parse`. To
     change this method, set a ``parse_list_callback`` class attribute to a method's name as a string.
 
     The names of the query string parameters 'page', 'limit' and 'offset' are customizable. Define the ``param_page``,

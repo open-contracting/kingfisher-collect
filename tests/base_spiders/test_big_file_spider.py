@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from kingfisher_scrapy.base_spiders.big_file_spider import BigFileSpider
+from kingfisher_scrapy.base_spiders import BigFileSpider
 from kingfisher_scrapy.items import File
 from tests import response_fixture, spider_with_crawler
 

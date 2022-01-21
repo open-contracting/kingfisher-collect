@@ -1,6 +1,6 @@
 import scrapy
 
-from kingfisher_scrapy.base_spiders.simple_spider import SimpleSpider
+from kingfisher_scrapy.base_spiders import SimpleSpider
 
 
 class ColombiaANIRecords(SimpleSpider):

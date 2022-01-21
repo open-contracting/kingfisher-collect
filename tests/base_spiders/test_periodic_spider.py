@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from kingfisher_scrapy.base_spiders.periodic_spider import PeriodicSpider
+from kingfisher_scrapy.base_spiders import PeriodicSpider
 from kingfisher_scrapy.util import components, date_range_by_month, date_range_by_year
 from tests import spider_with_crawler
 

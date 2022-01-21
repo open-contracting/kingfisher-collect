@@ -6,7 +6,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 import pytest
 
-from kingfisher_scrapy.base_spiders.compressed_file_spider import CompressedFileSpider
+from kingfisher_scrapy.base_spiders import CompressedFileSpider
 from kingfisher_scrapy.items import File
 from tests import response_fixture, spider_with_crawler
 

@@ -1,4 +1,4 @@
-from kingfisher_scrapy.base_spiders.base_spider import BaseSpider
+from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.util import handle_http_error
 
 
@@ -14,7 +14,7 @@ class SimpleSpider(BaseSpider):
 
         import scrapy
 
-        from kingfisher_scrapy.base_spiders.simple_spider import SimpleSpider
+        from kingfisher_scrapy.base_spiders import SimpleSpider
 
         class MySpider(SimpleSpider):
             name = 'my_spider'

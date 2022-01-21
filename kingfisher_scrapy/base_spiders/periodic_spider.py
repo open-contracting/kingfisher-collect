@@ -1,5 +1,5 @@
 from kingfisher_scrapy import util
-from kingfisher_scrapy.base_spiders.simple_spider import SimpleSpider
+from kingfisher_scrapy.base_spiders import SimpleSpider
 
 
 class PeriodicSpider(SimpleSpider):
@@ -17,7 +17,7 @@ class PeriodicSpider(SimpleSpider):
           pattern = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
 
     #. Set a ``formatter`` class attribute to set the file name like in
-       :meth:`~kingfisher_scrapy.base_spiders.base_spider.BaseSpider.build_request`
+       :meth:`~kingfisher_scrapy.base_spiders.BaseSpider.build_request`
     #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM")
     #. If the source stopped publishing, set a ``default_until_date`` class attribute to a year or year-month
     #. Optionally, set a ``start_requests_callback`` class attribute to a method's name as a string - otherwise, it

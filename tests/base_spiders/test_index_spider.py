@@ -5,7 +5,7 @@ import pytest
 from scrapy import Request
 from scrapy.http import TextResponse
 
-from kingfisher_scrapy.base_spiders.index_spider import IndexSpider
+from kingfisher_scrapy.base_spiders import IndexSpider
 from kingfisher_scrapy.util import parameters
 from tests import spider_with_crawler
 

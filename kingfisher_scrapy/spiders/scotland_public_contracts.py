@@ -1,6 +1,6 @@
 from datetime import date
 
-from kingfisher_scrapy.base_spiders.periodic_spider import PeriodicSpider
+from kingfisher_scrapy.base_spiders import PeriodicSpider
 from kingfisher_scrapy.util import handle_http_error, parameters
 
 

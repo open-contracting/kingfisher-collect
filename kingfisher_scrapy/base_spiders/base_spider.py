@@ -225,7 +225,7 @@ class BaseSpider(scrapy.Spider):
 
         If the last component of a URL's path is unique, use it as the file name. For example:
 
-        >>> from kingfisher_scrapy.base_spiders.base_spider import BaseSpider
+        >>> from kingfisher_scrapy.base_spiders import BaseSpider
         >>> from kingfisher_scrapy.util import components
         >>> url = 'https://example.com/package.json'
         >>> formatter = components(-1)

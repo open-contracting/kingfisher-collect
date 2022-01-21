@@ -1,4 +1,4 @@
-from kingfisher_scrapy.base_spiders.simple_spider import SimpleSpider
+from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.util import handle_http_error
 
 
@@ -12,7 +12,7 @@ class BigFileSpider(SimpleSpider):
 
     .. code-block:: python
 
-        from kingfisher_scrapy.base_spiders_big_file_spider import BigFileSpider
+        from kingfisher_scrapy.base_spiders import BigFileSpider
         from kingfisher_scrapy.util import components
 
         class MySpider(BigFileSpider):

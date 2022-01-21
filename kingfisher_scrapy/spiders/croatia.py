@@ -1,6 +1,6 @@
 import scrapy
 
-from kingfisher_scrapy.base_spiders.compressed_file_spider import CompressedFileSpider
+from kingfisher_scrapy.base_spiders import CompressedFileSpider
 from kingfisher_scrapy.util import browser_user_agent, handle_http_error
 
 

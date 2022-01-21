@@ -3,7 +3,7 @@ from urllib.parse import urlsplit
 
 import scrapy
 
-from kingfisher_scrapy.base_spiders.compressed_file_spider import CompressedFileSpider
+from kingfisher_scrapy.base_spiders import CompressedFileSpider
 from kingfisher_scrapy.util import components, handle_http_error, join
 
 

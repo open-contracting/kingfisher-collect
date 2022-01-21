@@ -4,7 +4,7 @@ from zipfile import ZipFile
 
 from rarfile import RarFile
 
-from kingfisher_scrapy.base_spiders.base_spider import BaseSpider
+from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.exceptions import UnknownArchiveFormatError
 from kingfisher_scrapy.items import File
 from kingfisher_scrapy.util import get_file_name_and_extension, handle_http_error
@@ -22,7 +22,7 @@ class CompressedFileSpider(BaseSpider):
 
     .. code-block:: python
 
-        from kingfisher_scrapy.base_spiders.compressed_file_spider import CompressedFileSpider
+        from kingfisher_scrapy.base_spiders import CompressedFileSpider
         from kingfisher_scrapy.util import components
 
         class MySpider(CompressedFileSpider):
