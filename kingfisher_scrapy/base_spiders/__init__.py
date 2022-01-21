@@ -1,3 +1,7 @@
+"""
+isort:skip_file
+Skip isort as we need to use this order to avoid circular dependencies
+"""
 from .base_spider import BaseSpider  # noqa: F401
 from .compressed_file_spider import CompressedFileSpider  # noqa: F401
 from .simple_spider import SimpleSpider  # noqa: F401
