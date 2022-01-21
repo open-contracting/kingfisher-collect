@@ -1,5 +1,4 @@
-from kingfisher_scrapy.base_spiders import CompressedFileSpider
-from kingfisher_scrapy.base_spiders import PeriodicSpider
+from kingfisher_scrapy.base_spiders import CompressedFileSpider, PeriodicSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
 from kingfisher_scrapy.util import components
 
