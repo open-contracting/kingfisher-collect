@@ -18,7 +18,7 @@ class KenyaMakueni(SimpleSpider):
     data_type = 'release_package'
 
     def start_requests(self):
-        yield from self.request_page(0)
+        yield self.build_page_request(0)
 
     @handle_http_error
     def parse(self, response):
@@ -26,8 +26,8 @@ class KenyaMakueni(SimpleSpider):
 
         if response.json():
             page = response.request.meta['page']
-            yield from self.request_page(page + 1)
+            yield self.build_page_request(page + 1)
 
-    def request_page(self, page):
+    def build_page_request(self, page):
         url = f'https://opencontracting.makueni.go.ke/api/ocds/package/all?pageSize=1000&pageNumber={page}'
-        yield self.build_request(url, parameters('pageNumber'), meta={'page': page})
+        return self.build_request(url, parameters('pageNumber'), meta={'page': page})
