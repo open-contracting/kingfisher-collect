@@ -34,7 +34,7 @@ class IndexSpider(SimpleSpider):
     If neither ``total_pages_pointer`` nor ``count_pointer`` can be used to create the URLs (e.g. if you need to query
     a separate URL that does not return JSON), you need to define ``range_generator`` and ``url_builder`` methods.
     ``range_generator`` should return page numbers or offset numbers. ``url_builder`` receives a page or offset from
-    ``range_generator``, and returns a URL to request. See the ``kenya_makueni`` spider for an example.
+    ``range_generator``, and returns a URL to request.
 
     If the results are in ascending chronological order, set ``chronological_order = 'asc'``.
 

@@ -4,8 +4,9 @@ from kingfisher_scrapy.util import handle_http_error
 
 class BigFileSpider(SimpleSpider):
     """
-    This class makes it easy to collect data from sources that provide big JSON files as a release package.
-    Each big file is resized to multiple small files that the current version of Kingfisher process is able to process.
+    This class makes it easy to collect data from a source that publishes very large release packages. Each release
+    package is split into smaller packages, each containing 100 releases. Users can then process the files without
+    using an iterative parser and without having memory issues.
 
     #. Inherit from ``BigFileSpider``
     #. Write a ``start_requests`` method to request the archive files
