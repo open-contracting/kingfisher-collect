@@ -2,8 +2,8 @@ import re
 
 import scrapy
 
-from kingfisher_scrapy.base_spider import SimpleSpider, browser_user_agent
-from kingfisher_scrapy.util import handle_http_error
+from kingfisher_scrapy.base_spiders import SimpleSpider
+from kingfisher_scrapy.util import browser_user_agent, handle_http_error
 
 
 class NigeriaPortalBase(SimpleSpider):

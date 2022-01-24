@@ -44,15 +44,15 @@ If you create a new base class, omit the components that are not shared, and add
 Choose a base class
 ~~~~~~~~~~~~~~~~~~~
 
-Access methods for OCDS data are very similar. Spiders therefore share a lot of logic by inheriting from one of the :doc:`base_spider` classes:
+Access methods for OCDS data are very similar. Spiders therefore share a lot of logic by inheriting from one of the :doc:`base_spiders/index`:
 
--  :class:`~kingfisher_scrapy.base_spider.IndexSpider`: Use if the API includes the total number of results or pages in its response.
--  :class:`~kingfisher_scrapy.base_spider.PeriodicSpider`: Use if the bulk downloads or API methods accept a year or a year and month as a query string parameter or URL path component.
--  :class:`~kingfisher_scrapy.base_spider.LinksSpider`: Use if the API implements `pagination <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__.
--  :class:`~kingfisher_scrapy.base_spider.CompressedFileSpider`: Use if the bulk downloads are ZIP or RAR files.
--  :class:`~kingfisher_scrapy.base_spider.BigFileSpider`: Use if the downloads include a big JSON file as a release package that can not be processed in Kingfisher Process.
--  :class:`~kingfisher_scrapy.base_spider.SimpleSpider`: Use in almost all other cases. ``IndexSpider``, ``PeriodicSpider`` and ``LinksSpider`` are child classes of this class.
--  :class:`~kingfisher_scrapy.base_spider.BaseSpider`: All spiders inherit, directly or indirectly, from this class, which in turn inherits from `scrapy.Spider <https://docs.scrapy.org/en/latest/topics/spiders.html>`__. Use if none of the above can be used.
+-  :class:`~kingfisher_scrapy.base_spiders.index_spider.IndexSpider`: Use if the API includes the total number of results or pages in its response.
+-  :class:`~kingfisher_scrapy.base_spiders.periodic_spider.PeriodicSpider`: Use if the bulk downloads or API methods accept a year or a year and month as a query string parameter or URL path component.
+-  :class:`~kingfisher_scrapy.base_spiders.links_spider.LinksSpider`: Use if the API implements `pagination <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__.
+-  :class:`~kingfisher_scrapy.base_spiders.compressed_file_spider.CompressedFileSpider`: Use if the bulk downloads are ZIP or RAR files.
+-  :class:`~kingfisher_scrapy.base_spiders.big_file_spider.BigFileSpider`: Use if the downloads include a big JSON file as a release package that can not be processed in Kingfisher Process.
+-  :class:`~kingfisher_scrapy.base_spiders.simple_spider.SimpleSpider`: Use in almost all other cases. ``IndexSpider``, ``PeriodicSpider`` and ``LinksSpider`` are child classes of this class.
+-  :class:`~kingfisher_scrapy.base_spiders.base_spider.BaseSpider`: All spiders inherit, directly or indirectly, from this class, which in turn inherits from `scrapy.Spider <https://docs.scrapy.org/en/latest/topics/spiders.html>`__. Use if none of the above can be used.
 
 Write the spider
 ~~~~~~~~~~~~~~~~
@@ -231,8 +231,7 @@ API reference
 -------------
 
 .. toctree::
-
-   base_spider.rst
+   base_spiders/index.rst
    downloadermiddlewares.rst
    spidermiddlewares.rst
    pipelines.rst

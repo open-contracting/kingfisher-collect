@@ -8,7 +8,7 @@ from scrapy.exceptions import NotSupported
 from scrapy.utils.misc import walk_modules
 from scrapy.utils.spider import iter_spider_classes
 
-from kingfisher_scrapy.base_spider import PeriodicSpider
+from kingfisher_scrapy.base_spiders import PeriodicSpider
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import IndexSpider
+from kingfisher_scrapy.base_spiders import IndexSpider
 
 
 class UnitedKingdomContractsFinder(IndexSpider):

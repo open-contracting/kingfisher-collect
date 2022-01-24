@@ -1,6 +1,6 @@
 import json
 
-from kingfisher_scrapy.base_spider import CompressedFileSpider, PeriodicSpider
+from kingfisher_scrapy.base_spiders import CompressedFileSpider, PeriodicSpider
 from kingfisher_scrapy.items import FileError
 from kingfisher_scrapy.util import components
 

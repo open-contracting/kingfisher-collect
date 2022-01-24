@@ -1,6 +1,6 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import CompressedFileSpider
+from kingfisher_scrapy.base_spiders import CompressedFileSpider
 
 
 class MexicoNuevoLeonReleases(CompressedFileSpider):

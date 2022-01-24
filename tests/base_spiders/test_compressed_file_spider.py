@@ -6,7 +6,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 import pytest
 
-from kingfisher_scrapy.base_spider import CompressedFileSpider
+from kingfisher_scrapy.base_spiders import CompressedFileSpider
 from kingfisher_scrapy.items import File
 from tests import response_fixture, spider_with_crawler
 
@@ -115,7 +115,7 @@ def test_parse_rar_file():
     spider.data_type = 'release_package'
 
     # the rar library does'nt support the write mode so we use a static rar file
-    rar_file_path = os.path.join(pathlib.Path(__file__).parent.absolute(), 'data', 'test.rar')
+    rar_file_path = os.path.join(pathlib.Path(__file__).parent.parent.absolute(), 'data', 'test.rar')
     with open(rar_file_path, 'rb') as f:
         io = BytesIO(f.read())
     response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.rar'})

@@ -6,7 +6,7 @@ import pytest
 from scrapy import Request
 from scrapy.exceptions import StopDownload
 
-from kingfisher_scrapy.base_spider import BaseSpider, CompressedFileSpider
+from kingfisher_scrapy.base_spiders import BaseSpider, CompressedFileSpider
 from kingfisher_scrapy.extensions import Pluck
 from kingfisher_scrapy.items import PluckedItem
 from tests import spider_with_crawler

@@ -4,7 +4,7 @@ from scrapy import Request
 from scrapy.http import TextResponse
 from scrapy.utils.test import get_crawler
 
-from kingfisher_scrapy.base_spider import BaseSpider
+from kingfisher_scrapy.base_spiders import BaseSpider
 
 
 class ExpectedError(Exception):

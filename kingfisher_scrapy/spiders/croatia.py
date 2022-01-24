@@ -1,7 +1,7 @@
 import scrapy
 
-from kingfisher_scrapy.base_spider import CompressedFileSpider, browser_user_agent
-from kingfisher_scrapy.util import handle_http_error
+from kingfisher_scrapy.base_spiders import CompressedFileSpider
+from kingfisher_scrapy.util import browser_user_agent, handle_http_error
 
 
 class Croatia(CompressedFileSpider):
