@@ -1,4 +1,4 @@
-from kingfisher_scrapy.spiders.europe_dynamic_base import EuropeanDynamicsBase
+from kingfisher_scrapy.spiders.european_dynamics_base import EuropeanDynamicsBase
 
 
 class Malta(EuropeanDynamicsBase):

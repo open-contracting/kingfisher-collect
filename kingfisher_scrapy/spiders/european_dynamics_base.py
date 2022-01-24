@@ -18,7 +18,7 @@ class EuropeanDynamicsBase(CompressedFileSpider):
 
     .. code-block:: python
 
-        from kingfisher_scrapy.spiders.europe_dynamic_base import EuropeanDynamicsBase
+        from kingfisher_scrapy.spiders.european_dynamics_base import EuropeanDynamicsBase
 
         class MySpider(EuropeanDynamicsBase):
             name = 'my_spider'
