@@ -46,3 +46,4 @@ As you can see, the ``data`` directory contains a ``zambia`` spider directory (m
    cli.rst
    kingfisher_process.rst
    contributing/index.rst
+   history.rst
