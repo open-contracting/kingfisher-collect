@@ -899,13 +899,6 @@ Moldova
 
    scrapy crawl moldova_old
 
-.. autoclass:: kingfisher_scrapy.spiders.moldova_positive_initiative.MoldovaPositiveInitiative
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl moldova_positive_initiative
-
 Nepal
 ~~~~~
 
