@@ -36,7 +36,7 @@ class UpdateDocs(ScrapyCommand):
                 if key == 'spiders':
                     continue
 
-                f.write(f"\n{key.replace('_', ' ').title()}\n{'-' * len(key)}\n")
+                f.write(f"\n{key.replace('_', ' ').title()}\n{'~' * len(key)}\n")
 
                 for module in group:
                     for cls in iter_spider_classes(module):

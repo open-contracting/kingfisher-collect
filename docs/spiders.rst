@@ -125,10 +125,13 @@ Some spiders support these arguments:
      - Download data from this system.
      - See spider
 
+Available data sources by country
+---------------------------------
+
 .. Do not edit past this line. Instead, run: `scrapy updatedocs`
 
 Afghanistan
------------
+~~~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.afghanistan_record_packages.AfghanistanRecordPackages
    :no-members:
@@ -159,7 +162,7 @@ Afghanistan
    scrapy crawl afghanistan_releases
 
 Argentina
----------
+~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.argentina_buenos_aires.ArgentinaBuenosAires
    :no-members:
@@ -176,7 +179,7 @@ Argentina
    scrapy crawl argentina_vialidad
 
 Armenia
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.armenia.Armenia
    :no-members:
@@ -186,7 +189,7 @@ Armenia
    scrapy crawl armenia
 
 Australia
----------
+~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.australia.Australia
    :no-members:
@@ -203,7 +206,7 @@ Australia
    scrapy crawl australia_new_south_wales
 
 Austria
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.austria_digiwhist.AustriaDigiwhist
    :no-members:
@@ -213,7 +216,7 @@ Austria
    scrapy crawl austria_digiwhist
 
 Belgium
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.belgium_digiwhist.BelgiumDigiwhist
    :no-members:
@@ -223,7 +226,7 @@ Belgium
    scrapy crawl belgium_digiwhist
 
 Bolivia
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.bolivia_agetic.BoliviaAgetic
    :no-members:
@@ -233,7 +236,7 @@ Bolivia
    scrapy crawl bolivia_agetic
 
 Bulgaria
---------
+~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.bulgaria_digiwhist.BulgariaDigiwhist
    :no-members:
@@ -243,7 +246,7 @@ Bulgaria
    scrapy crawl bulgaria_digiwhist
 
 Canada
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.canada_buyandsell.CanadaBuyandsell
    :no-members:
@@ -267,7 +270,7 @@ Canada
    scrapy crawl canada_quebec
 
 Chile
------
+~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.chile_compra_api_records.ChileCompraAPIRecords
    :no-members:
@@ -291,7 +294,7 @@ Chile
    scrapy crawl chile_compra_bulk
 
 Colombia
---------
+~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.colombia_ani_records.ColombiaANIRecords
    :no-members:
@@ -315,7 +318,7 @@ Colombia
    scrapy crawl colombia_bulk
 
 Costa Rica
-----------
+~~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.costa_rica_poder_judicial_records.CostaRicaPoderJudicialRecords
    :no-members:
@@ -332,7 +335,7 @@ Costa Rica
    scrapy crawl costa_rica_poder_judicial_releases
 
 Croatia
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.croatia.Croatia
    :no-members:
@@ -349,7 +352,7 @@ Croatia
    scrapy crawl croatia_digiwhist
 
 Cyprus
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.cyprus_digiwhist.CyprusDigiwhist
    :no-members:
@@ -359,7 +362,7 @@ Cyprus
    scrapy crawl cyprus_digiwhist
 
 Czech Republic
---------------
+~~~~~~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.czech_republic_digiwhist.CzechRepublicDigiwhist
    :no-members:
@@ -369,7 +372,7 @@ Czech Republic
    scrapy crawl czech_republic_digiwhist
 
 Denmark
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.denmark_digiwhist.DenmarkDigiwhist
    :no-members:
@@ -379,10 +382,10 @@ Denmark
    scrapy crawl denmark_digiwhist
 
 Digiwhist
----------
+~~~~~~~~~
 
 Dominican Republic
-------------------
+~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.dominican_republic_api.DominicanRepublicAPI
    :no-members:
@@ -399,7 +402,7 @@ Dominican Republic
    scrapy crawl dominican_republic_bulk
 
 Ecuador
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.ecuador_emergency.EcuadorEmergency
    :no-members:
@@ -416,7 +419,7 @@ Ecuador
    scrapy crawl ecuador_sercop
 
 Estonia
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.estonia_digiwhist.EstoniaDigiwhist
    :no-members:
@@ -426,7 +429,7 @@ Estonia
    scrapy crawl estonia_digiwhist
 
 Europe
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.europe_ted_digiwhist.EuropeTEDDigiwhist
    :no-members:
@@ -435,8 +438,11 @@ Europe
 
    scrapy crawl europe_ted_digiwhist
 
+European
+~~~~~~~~
+
 Finland
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.finland_digiwhist.FinlandDigiwhist
    :no-members:
@@ -446,7 +452,7 @@ Finland
    scrapy crawl finland_digiwhist
 
 France
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.france.France
    :no-members:
@@ -463,7 +469,7 @@ France
    scrapy crawl france_digiwhist
 
 Georgia
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.georgia_digiwhist.GeorgiaDigiwhist
    :no-members:
@@ -494,7 +500,7 @@ Georgia
    scrapy crawl georgia_releases
 
 Germany
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.germany_digiwhist.GermanyDigiwhist
    :no-members:
@@ -504,7 +510,7 @@ Germany
    scrapy crawl germany_digiwhist
 
 Ghana
------
+~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.ghana.Ghana
    :no-members:
@@ -514,7 +520,7 @@ Ghana
    scrapy crawl ghana
 
 Greece
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.greece_digiwhist.GreeceDigiwhist
    :no-members:
@@ -524,7 +530,7 @@ Greece
    scrapy crawl greece_digiwhist
 
 Honduras
---------
+~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.honduras_cost.HondurasCoST
    :no-members:
@@ -569,7 +575,7 @@ Honduras
    scrapy crawl honduras_portal_bulk
 
 Hungary
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.hungary_digiwhist.HungaryDigiwhist
    :no-members:
@@ -579,7 +585,7 @@ Hungary
    scrapy crawl hungary_digiwhist
 
 Iceland
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.iceland_digiwhist.IcelandDigiwhist
    :no-members:
@@ -589,7 +595,7 @@ Iceland
    scrapy crawl iceland_digiwhist
 
 India
------
+~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.india_civic_data_lab.IndiaCivicDataLab
    :no-members:
@@ -599,7 +605,7 @@ India
    scrapy crawl india_civic_data_lab
 
 Indonesia
----------
+~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.indonesia_bandung.IndonesiaBandung
    :no-members:
@@ -616,7 +622,7 @@ Indonesia
    scrapy crawl indonesia_opentender
 
 Ireland
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.ireland_digiwhist.IrelandDigiwhist
    :no-members:
@@ -626,7 +632,7 @@ Ireland
    scrapy crawl ireland_digiwhist
 
 Italy
------
+~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.italy_anac.ItalyANAC
    :no-members:
@@ -650,7 +656,7 @@ Italy
    scrapy crawl italy_digiwhist
 
 Kenya
------
+~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.kenya_makueni.KenyaMakueni
    :no-members:
@@ -660,7 +666,7 @@ Kenya
    scrapy crawl kenya_makueni
 
 Kosovo
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.kosovo.Kosovo
    :no-members:
@@ -670,7 +676,7 @@ Kosovo
    scrapy crawl kosovo
 
 Kyrgyzstan
-----------
+~~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.kyrgyzstan.Kyrgyzstan
    :no-members:
@@ -680,7 +686,7 @@ Kyrgyzstan
    scrapy crawl kyrgyzstan
 
 Latvia
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.latvia_digiwhist.LatviaDigiwhist
    :no-members:
@@ -690,7 +696,7 @@ Latvia
    scrapy crawl latvia_digiwhist
 
 Lithuania
----------
+~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.lithuania_digiwhist.LithuaniaDigiwhist
    :no-members:
@@ -700,7 +706,7 @@ Lithuania
    scrapy crawl lithuania_digiwhist
 
 Luxembourg
-----------
+~~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.luxembourg_digiwhist.LuxembourgDigiwhist
    :no-members:
@@ -710,7 +716,7 @@ Luxembourg
    scrapy crawl luxembourg_digiwhist
 
 Malta
------
+~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.malta.Malta
    :no-members:
@@ -727,7 +733,7 @@ Malta
    scrapy crawl malta_digiwhist
 
 Mexico
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_administracion_publica_federal_api.MexicoAdministracionPublicaFederalAPI
    :no-members:
@@ -877,7 +883,7 @@ Mexico
    scrapy crawl mexico_zacatecas_izai
 
 Moldova
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.moldova.Moldova
    :no-members:
@@ -893,15 +899,8 @@ Moldova
 
    scrapy crawl moldova_old
 
-.. autoclass:: kingfisher_scrapy.spiders.moldova_positive_initiative.MoldovaPositiveInitiative
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl moldova_positive_initiative
-
 Nepal
------
+~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.nepal.Nepal
    :no-members:
@@ -918,7 +917,7 @@ Nepal
    scrapy crawl nepal_dhangadhi
 
 Netherlands
------------
+~~~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.netherlands_digiwhist.NetherlandsDigiwhist
    :no-members:
@@ -928,7 +927,7 @@ Netherlands
    scrapy crawl netherlands_digiwhist
 
 Nicaragua
----------
+~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.nicaragua_solid_waste.NicaraguaSolidWaste
    :no-members:
@@ -938,7 +937,7 @@ Nicaragua
    scrapy crawl nicaragua_solid_waste
 
 Nigeria
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_abia_state.NigeriaAbiaState
    :no-members:
@@ -1046,7 +1045,7 @@ Nigeria
    scrapy crawl nigeria_portal
 
 Norway
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.norway_digiwhist.NorwayDigiwhist
    :no-members:
@@ -1056,7 +1055,7 @@ Norway
    scrapy crawl norway_digiwhist
 
 Openopps
---------
+~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.openopps.Openopps
    :no-members:
@@ -1066,7 +1065,7 @@ Openopps
    env KINGFISHER_OPENOPPS_USERNAME=... KINGFISHER_OPENOPPS_PASSWORD=... scrapy crawl openopps
 
 Pakistan
---------
+~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_api.PakistanPPRAAPI
    :no-members:
@@ -1083,7 +1082,7 @@ Pakistan
    scrapy crawl pakistan_ppra_bulk
 
 Paraguay
---------
+~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.paraguay_dncp_records.ParaguayDNCPRecords
    :no-members:
@@ -1107,7 +1106,7 @@ Paraguay
    env KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN=... KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET=... scrapy crawl paraguay_hacienda
 
 Peru
-----
+~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.peru_compras.PeruCompras
    :no-members:
@@ -1117,7 +1116,7 @@ Peru
    scrapy crawl peru_compras
 
 Poland
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.poland_digiwhist.PolandDigiwhist
    :no-members:
@@ -1127,7 +1126,7 @@ Poland
    scrapy crawl poland_digiwhist
 
 Portugal
---------
+~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.portugal_bulk.PortugalBulk
    :no-members:
@@ -1158,7 +1157,7 @@ Portugal
    scrapy crawl portugal_releases
 
 Romania
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.romania_digiwhist.RomaniaDigiwhist
    :no-members:
@@ -1168,7 +1167,7 @@ Romania
    scrapy crawl romania_digiwhist
 
 Scotland
---------
+~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.scotland_public_contracts.ScotlandPublicContracts
    :no-members:
@@ -1178,7 +1177,7 @@ Scotland
    scrapy crawl scotland_public_contracts
 
 Slovakia
---------
+~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.slovakia_digiwhist.SlovakiaDigiwhist
    :no-members:
@@ -1188,7 +1187,7 @@ Slovakia
    scrapy crawl slovakia_digiwhist
 
 Slovenia
---------
+~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.slovenia.Slovenia
    :no-members:
@@ -1205,7 +1204,7 @@ Slovenia
    scrapy crawl slovenia_digiwhist
 
 Spain
------
+~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.spain_digiwhist.SpainDigiwhist
    :no-members:
@@ -1222,7 +1221,7 @@ Spain
    scrapy crawl spain_zaragoza
 
 Sweden
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.sweden_digiwhist.SwedenDigiwhist
    :no-members:
@@ -1232,7 +1231,7 @@ Sweden
    scrapy crawl sweden_digiwhist
 
 Switzerland
------------
+~~~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.switzerland_digiwhist.SwitzerlandDigiwhist
    :no-members:
@@ -1242,7 +1241,7 @@ Switzerland
    scrapy crawl switzerland_digiwhist
 
 Tanzania
---------
+~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.tanzania_zabuni.TanzaniaZabuni
    :no-members:
@@ -1252,7 +1251,7 @@ Tanzania
    scrapy crawl tanzania_zabuni
 
 Uganda
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.uganda_releases.UgandaReleases
    :no-members:
@@ -1262,7 +1261,7 @@ Uganda
    scrapy crawl uganda_releases
 
 Ukraine
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.ukraine.Ukraine
    :no-members:
@@ -1272,7 +1271,7 @@ Ukraine
    scrapy crawl ukraine
 
 United Kingdom
---------------
+~~~~~~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.united_kingdom_contracts_finder.UnitedKingdomContractsFinder
    :no-members:
@@ -1303,7 +1302,7 @@ United Kingdom
    scrapy crawl united_kingdom_fts_test
 
 Uruguay
--------
+~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.uruguay_historical.UruguayHistorical
    :no-members:
@@ -1327,7 +1326,7 @@ Uruguay
    scrapy crawl uruguay_releases
 
 Zambia
-------
+~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.zambia.Zambia
    :no-members:
