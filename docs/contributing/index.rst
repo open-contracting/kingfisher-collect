@@ -11,6 +11,13 @@ Learn the data source's access methods
 
 Read its API documentation or bulk download documentation. Navigate the API, in your browser or with ``curl``. Inspect its responses, to determine where the OCDS data is located, and whether it includes information like pagination links, total pages or total results.
 
+.. note::
+
+   Please inform the helpdesk analyst of the following, so that it can be reported as feedback to the publisher:
+   
+   -  If there is no documentation about access methods
+   -  If the release package or record package is *not* at the top-level of the JSON data
+
 Choose a spider name
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -64,6 +71,16 @@ After choosing a base class, read its documentation, as well as its parent class
 -  Have a look at the :mod:`~kingfisher_scrapy.util` module, which contains useful functions, notably :func:`~kingfisher_scrapy.util.handle_http_error`.
 
 After writing the spider, add a docstring for :ref:`spider metadata<spider-metadata>`.
+
+.. note::
+
+   If you encountered any challenges, make a note in the docstring, and inform the helpdesk analyst, so that it can be reported as feedback to the publisher. Examples:
+
+   -  Requests sometimes fail (e.g. timeout or error), but succeed on retry.
+   -  Some requests always fail (e.g. for a specific date).
+   -  Error responses are returned with an HTTP 200 status code, instead of a status code in the range 400-599.
+   -  The JSON data is encoded as ISO-8859-1, instead of UTF-8 per `RFC 8259 <https://datatracker.ietf.org/doc/html/rfc8259#section-8.1>`__.
+   -  The number of results is limited to 10,000.
 
 Since there are many class attributes that control a spider's behavior, please put the class attributes in this order, including comments with class names:
 
@@ -138,7 +155,7 @@ Test the spider
 
 #. :doc:`Check the log for errors and warnings<../logs>`
 #. Check whether the data is as expected, in format and number
-#. Integrate it with `Kingfisher Process<../kingfisher_process>` and check for errors and warnings in its logs
+#. Integrate it with :doc:`Kingfisher Process<../kingfisher_process>` and check for errors and warnings in its logs
 
 Scrapy offers some debugging features that we haven't used yet:
 
