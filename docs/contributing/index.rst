@@ -82,7 +82,7 @@ After writing the spider, add a docstring for :ref:`spider metadata<spider-metad
    -  The JSON data is encoded as ISO-8859-1, instead of UTF-8 per `RFC 8259 <https://datatracker.ietf.org/doc/html/rfc8259#section-8.1>`__.
    -  The number of results is limited to 10,000.
 
-Since many class attributes that control a spider's behavior, please put the class attributes in this order, including comments with class names:
+Since there are many class attributes that control a spider's behavior, please put the class attributes in this order, including comments with class names:
 
 .. code-block:: python
 
