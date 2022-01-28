@@ -65,7 +65,7 @@ After choosing a base class, read its documentation, as well as its parent class
 
 After writing the spider, add a docstring for :ref:`spider metadata<spider-metadata>`.
 
-Since many class attributes that control a spider's behavior, please put the class attributes in this order, including comments with class names:
+Since there are many class attributes that control a spider's behavior, please put the class attributes in this order, including comments with class names:
 
 .. code-block:: python
 
