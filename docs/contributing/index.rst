@@ -11,6 +11,10 @@ Learn the data source's access methods
 
 Read its API documentation or bulk download documentation. Navigate the API, in your browser or with ``curl``. Inspect its responses, to determine where the OCDS data is located, and whether it includes information like pagination links, total pages or total results.
 
+.. note::
+
+   When doing this, check if the release or record packages are at the top-level of the JSON data. If not, please inform the analyst so this can be reported to the publisher.
+
 Choose a spider name
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -138,7 +142,7 @@ Test the spider
 
 #. :doc:`Check the log for errors and warnings<../logs>`
 #. Check whether the data is as expected, in format and number
-#. Integrate it with `Kingfisher Process<../kingfisher_process>` and check for errors and warnings in its logs
+#. Integrate it with :doc:`Kingfisher Process<../kingfisher_process>` and check for errors and warnings in its logs
 
 Scrapy offers some debugging features that we haven't used yet:
 
