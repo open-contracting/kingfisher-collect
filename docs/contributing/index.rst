@@ -13,7 +13,10 @@ Read its API documentation or bulk download documentation. Navigate the API, in 
 
 .. note::
 
-   When doing this, check if the release or record packages are at the top-level of the JSON data. If not, please inform the analyst so this can be reported to the publisher.
+   Please inform the helpdesk analyst of the following, so that it can be reported as feedback to the publisher:
+   
+   -  If there is no documentation about access methods
+   -  If the release package or record package is *not* at the top-level of the JSON data
 
 Choose a spider name
 ~~~~~~~~~~~~~~~~~~~~
