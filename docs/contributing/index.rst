@@ -72,6 +72,16 @@ After choosing a base class, read its documentation, as well as its parent class
 
 After writing the spider, add a docstring for :ref:`spider metadata<spider-metadata>`.
 
+.. note::
+
+   If you encountered any challenges, make a note in the docstring, and inform the helpdesk analyst, so that it can be reported as feedback to the publisher. Examples:
+
+   -  Requests sometimes fail (e.g. timeout or error), but succeed on retry.
+   -  Some requests always fail (e.g. for a specific date).
+   -  Error responses are returned with an HTTP 200 status code, instead of a status code in the range 400-599.
+   -  The JSON data is encoded as ISO-8859-1, instead of UTF-8 per `RFC 8259 <https://datatracker.ietf.org/doc/html/rfc8259#section-8.1>`__.
+   -  The number of results is limited to 10,000.
+
 Since many class attributes that control a spider's behavior, please put the class attributes in this order, including comments with class names:
 
 .. code-block:: python
