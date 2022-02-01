@@ -48,7 +48,7 @@ hpack==3.0.0
     # via h2
 hyperframe==5.2.0
     # via h2
-hyperlink==19.0.0
+hyperlink==21.0.0
     # via
     #   treq
     #   twisted
@@ -183,9 +183,8 @@ six==1.13.0
     #   pyopenssl
     #   pyrsistent
     #   scrapyd
-    #   treq
     #   w3lib
-treq==20.9.0
+treq==22.1.0
     # via -r requirements.in
 twisted[http2,tls]==20.3.0
     # via

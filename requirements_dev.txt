@@ -90,7 +90,7 @@ hyperframe==5.2.0
     # via
     #   -r requirements.txt
     #   h2
-hyperlink==19.0.0
+hyperlink==21.0.0
     # via
     #   -r requirements.txt
     #   treq
@@ -316,12 +316,11 @@ six==1.13.0
     #   pyopenssl
     #   pyrsistent
     #   scrapyd
-    #   treq
     #   url-normalize
     #   w3lib
 tomli==1.2.3
     # via pep517
-treq==20.9.0
+treq==22.1.0
     # via -r requirements.txt
 twisted[http2,tls]==20.3.0
     # via
