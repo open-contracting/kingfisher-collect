@@ -112,7 +112,7 @@ importlib-metadata==4.5.0
     #   pep517
     #   pluggy
     #   pytest
-incremental==17.5.0
+incremental==21.3.0
     # via
     #   -r requirements.txt
     #   treq
@@ -232,10 +232,6 @@ pydispatcher==2.0.5
     #   scrapy
 pyflakes==2.1.1
     # via flake8
-pyhamcrest==1.9.0
-    # via
-    #   -r requirements.txt
-    #   twisted
 pyopenssl==19.1.0
     # via
     #   -r requirements.txt
@@ -312,7 +308,6 @@ six==1.13.0
     #   packaging
     #   parsel
     #   protego
-    #   pyhamcrest
     #   pyopenssl
     #   pyrsistent
     #   scrapyd
@@ -322,7 +317,7 @@ tomli==1.2.3
     # via pep517
 treq==22.1.0
     # via -r requirements.txt
-twisted[http2,tls]==20.3.0
+twisted[http2,tls]==22.1.0
     # via
     #   -r requirements.txt
     #   scrapy
@@ -332,6 +327,7 @@ typing-extensions==3.10.0.0
     # via
     #   -r requirements.txt
     #   importlib-metadata
+    #   twisted
 url-normalize==1.4.3
     # via
     #   -r requirements.txt

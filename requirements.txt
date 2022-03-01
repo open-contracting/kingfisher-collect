@@ -63,7 +63,7 @@ ijson==3.1.1
     #   ocdskit
 importlib-metadata==4.5.0
     # via jsonschema
-incremental==17.5.0
+incremental==21.3.0
     # via
     #   treq
     #   twisted
@@ -130,8 +130,6 @@ pycparser==2.19
     # via cffi
 pydispatcher==2.0.5
     # via scrapy
-pyhamcrest==1.9.0
-    # via twisted
 pyopenssl==19.1.0
     # via
     #   scrapy
@@ -179,21 +177,22 @@ six==1.13.0
     #   jsonschema
     #   parsel
     #   protego
-    #   pyhamcrest
     #   pyopenssl
     #   pyrsistent
     #   scrapyd
     #   w3lib
 treq==22.1.0
     # via -r requirements.in
-twisted[http2,tls]==20.3.0
+twisted[http2,tls]==22.1.0
     # via
     #   -r requirements.in
     #   scrapy
     #   scrapyd
     #   treq
 typing-extensions==3.10.0.0
-    # via importlib-metadata
+    # via
+    #   importlib-metadata
+    #   twisted
 url-normalize==1.4.3
     # via requests-cache
 urllib3==1.26.5
