@@ -11,8 +11,8 @@ class CrawlAll(ScrapyCommand):
 
     def add_options(self, parser):
         ScrapyCommand.add_options(self, parser)
-        parser.add_option('--dry-run', action='store_true', help='Runs the spiders without writing any files')
-        parser.add_option('--sample', type=int, help='The number of files to write')
+        parser.add_argument('--dry-run', action='store_true', help='Runs the spiders without writing any files')
+        parser.add_argument('--sample', type=int, help='The number of files to write')
 
     def run(self, args, opts):
         if not (bool(opts.dry_run) ^ bool(opts.sample)):
