@@ -38,16 +38,10 @@ defusedxml==0.6.0
     # via odfpy
 et-xmlfile==1.0.1
     # via openpyxl
+filelock==3.4.1
+    # via tldextract
 flattentool==0.14.0
     # via -r requirements.in
-h2==3.2.0
-    # via
-    #   scrapy
-    #   twisted
-hpack==3.0.0
-    # via h2
-hyperframe==5.2.0
-    # via h2
 hyperlink==21.0.0
     # via
     #   treq
@@ -56,6 +50,7 @@ idna==2.8
     # via
     #   hyperlink
     #   requests
+    #   tldextract
     #   twisted
 ijson==3.1.1
     # via
@@ -114,8 +109,6 @@ parsel==1.5.2
     #   scrapy
 pika==1.2.0
     # via -r requirements.in
-priority==1.3.0
-    # via twisted
 protego==0.1.16
     # via scrapy
 psycopg2==2.9.2
@@ -148,15 +141,19 @@ requests==2.25.1
     #   ocdsextensionregistry
     #   ocdsmerge
     #   requests-cache
+    #   requests-file
     #   scrapyd-client
+    #   tldextract
     #   treq
 requests-cache==0.6.3
     # via ocdsextensionregistry
+requests-file==1.5.1
+    # via tldextract
 rfc3987==1.3.8
     # via -r requirements.in
 schema==0.7.2
     # via flattentool
-scrapy==2.5.1
+scrapy==2.6.1
     # via
     #   -r requirements.in
     #   scrapyd
@@ -179,11 +176,14 @@ six==1.13.0
     #   protego
     #   pyopenssl
     #   pyrsistent
+    #   requests-file
     #   scrapyd
     #   w3lib
+tldextract==3.1.2
+    # via scrapy
 treq==22.1.0
     # via -r requirements.in
-twisted[http2,tls]==22.1.0
+twisted[tls]==22.2.0
     # via
     #   -r requirements.in
     #   scrapy

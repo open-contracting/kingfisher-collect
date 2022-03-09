@@ -71,25 +71,16 @@ et-xmlfile==1.0.1
     # via
     #   -r requirements.txt
     #   openpyxl
+filelock==3.4.1
+    # via
+    #   -r requirements.txt
+    #   tldextract
 flake8==3.7.9
     # via -r requirements_dev.in
 flattentool==0.14.0
     # via -r requirements.txt
 greenlet==0.4.17
     # via pytest-twisted
-h2==3.2.0
-    # via
-    #   -r requirements.txt
-    #   scrapy
-    #   twisted
-hpack==3.0.0
-    # via
-    #   -r requirements.txt
-    #   h2
-hyperframe==5.2.0
-    # via
-    #   -r requirements.txt
-    #   h2
 hyperlink==21.0.0
     # via
     #   -r requirements.txt
@@ -100,6 +91,7 @@ idna==2.8
     #   -r requirements.txt
     #   hyperlink
     #   requests
+    #   tldextract
     #   twisted
 ijson==3.1.1
     # via
@@ -199,10 +191,6 @@ pip-tools==6.4.0
     # via -r requirements_dev.in
 pluggy==0.13.1
     # via pytest
-priority==1.3.0
-    # via
-    #   -r requirements.txt
-    #   twisted
 protego==0.1.16
     # via
     #   -r requirements.txt
@@ -272,19 +260,25 @@ requests==2.25.1
     #   ocdsextensionregistry
     #   ocdsmerge
     #   requests-cache
+    #   requests-file
     #   scrapyd-client
+    #   tldextract
     #   treq
 requests-cache==0.6.3
     # via
     #   -r requirements.txt
     #   ocdsextensionregistry
+requests-file==1.5.1
+    # via
+    #   -r requirements.txt
+    #   tldextract
 rfc3987==1.3.8
     # via -r requirements.txt
 schema==0.7.2
     # via
     #   -r requirements.txt
     #   flattentool
-scrapy==2.5.1
+scrapy==2.6.1
     # via
     #   -r requirements.txt
     #   scrapyd
@@ -310,14 +304,19 @@ six==1.13.0
     #   protego
     #   pyopenssl
     #   pyrsistent
+    #   requests-file
     #   scrapyd
     #   url-normalize
     #   w3lib
+tldextract==3.1.2
+    # via
+    #   -r requirements.txt
+    #   scrapy
 tomli==1.2.3
     # via pep517
 treq==22.1.0
     # via -r requirements.txt
-twisted[http2,tls]==22.1.0
+twisted[tls]==22.2.0
     # via
     #   -r requirements.txt
     #   scrapy
