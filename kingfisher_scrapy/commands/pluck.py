@@ -23,7 +23,8 @@ class Pluck(ScrapyCommand):
         parser.add_argument('-p', '--package-pointer', help='The JSON Pointer to the value in the package')
         parser.add_argument('-r', '--release-pointer', help='The JSON Pointer to the value in the release')
         parser.add_argument('-t', '--truncate', type=int, help='Truncate the value to this number of characters')
-        parser.add_argument('--max-bytes', type=int, help='Stop downloading an OCDS file after reading this many bytes')
+        parser.add_argument('--max-bytes', type=int,
+                            help='Stop downloading an OCDS file after reading this many bytes')
 
     def run(self, args, opts):
         if not (bool(opts.package_pointer) ^ bool(opts.release_pointer)):
