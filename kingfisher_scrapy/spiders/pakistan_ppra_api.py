@@ -15,6 +15,9 @@ class PakistanPPRAAPI(SimpleSpider):
     """
     name = 'pakistan_ppra_api'
 
+    # BaseSpider
+    skip_pluck = 'Already covered (see code for details)'  # pakistan_ppra_releases
+
     # SimpleSpider
     data_type = 'release_package'
 
