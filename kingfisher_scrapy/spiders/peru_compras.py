@@ -52,8 +52,11 @@ class PeruCompras(SimpleSpider):
 
     @handle_http_error
     def parse(self, response):
+        '''
+        The JSON data sometimes contains unescaped carriage and newline characters
+        '''
         data = response.text
-        # Replace CR LF characters with spaces to prevent invalid JSON errors within strings
+        # Replace CR and LF characters with spaces to prevent invalid JSON errors within strings
         data = data.replace('\r', ' ').replace('\n', ' ')
         response = response.replace(body=data)
         yield from super().parse(response)
