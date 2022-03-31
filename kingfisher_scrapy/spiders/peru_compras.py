@@ -8,6 +8,8 @@ class PeruCompras(SimpleSpider):
     """
     Domain
       Peru Compras (contracts within framework agreements)
+    Caveats
+        The JSON data sometimes contains unescaped carriage and newline characters.
     Spider arguments
       from_date
         Download only data from this date onward (YYYY-MM-DD format). Defaults to '2017-01-01'.
@@ -52,9 +54,6 @@ class PeruCompras(SimpleSpider):
 
     @handle_http_error
     def parse(self, response):
-        '''
-        The JSON data sometimes contains unescaped carriage and newline characters
-        '''
         data = response.text
         # Replace CR and LF characters with spaces to prevent invalid JSON errors within strings
         data = data.replace('\r', ' ').replace('\n', ' ')
