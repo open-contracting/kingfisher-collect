@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import PeriodicSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class NigeriaEbonyiState(PeriodicSpider):
@@ -26,3 +26,11 @@ class NigeriaEbonyiState(PeriodicSpider):
 
     # SimpleSpider
     data_type = 'release_package'
+
+    @handle_http_error
+    def parse(self, response):
+        data = response.text
+        # Remove tab characters to prevent invalid JSON errors within strings
+        data = data.replace('\t', '')
+        response = response.replace(body=data)
+        yield from super().parse(response)
