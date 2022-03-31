@@ -1,5 +1,3 @@
-import json
-
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
@@ -54,7 +52,8 @@ class PeruCompras(SimpleSpider):
 
     @handle_http_error
     def parse(self, response):
-        # Replace newline characters within strings with a space to prevent invalid JSON string
-        data = response.text.replace('\n', ' ')
-        response = response.replace(body=json.dumps(data))
-        yield self.build_file_from_response(response, data_type=self.data_type)
+        data = response.text
+        # Replace CR LF characters with spaces to prevent invalid JSON errors within strings
+        data = data.replace('\r', ' ').replace('\n', ' ')
+        response = response.replace(body=data)
+        yield from super().parse(response)
