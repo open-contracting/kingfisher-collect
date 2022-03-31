@@ -1,3 +1,5 @@
+import json
+
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
@@ -49,3 +51,10 @@ class PeruCompras(SimpleSpider):
                     f'?pAcuerdo={framework_id}&pFechaIni={from_date}&pFechaFin={until_date}',
                     formatter=parameters('pAcuerdo')
                 )
+
+    @handle_http_error
+    def parse(self, response):
+        # Replace newline characters within strings with a space to prevent invalid JSON string
+        data = response.text.replace('\n', ' ')
+        response = response.replace(body=json.dumps(data))
+        yield self.build_file_from_response(response, data_type=self.data_type)
