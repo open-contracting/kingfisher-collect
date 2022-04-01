@@ -31,8 +31,6 @@ class NigeriaEbonyiState(PeriodicSpider):
 
     @handle_http_error
     def parse(self, response):
-        data = response.text
-        # Remove tab characters to prevent invalid JSON errors within strings
-        data = data.replace('\t', ' ')
-        response = response.replace(body=data)
+        # Replace unescaped tab characters within strings.
+        response = response.replace(body=response.text.replace('\t', ' '))
         yield from super().parse(response)
