@@ -14,10 +14,9 @@ class UnitedKingdomContractsFinder(IndexSpider):
 
     # BaseSpider
     ocds_version = '1.0'  # uses deprecated fields
-    root_path = 'results.item'
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = 'record_package'
 
     # IndexSpider
     total_pages_pointer = '/maxPage'
@@ -30,7 +29,11 @@ class UnitedKingdomContractsFinder(IndexSpider):
 
     def parse(self, response, **kwargs):
         if self.is_http_success(response):
-            yield from super().parse(response)
+            for result in response.json()['results']:
+                for release in result['releases']:
+                    ocid = release["ocid"]
+                    url = f'https://www.contractsfinder.service.gov.uk/Published/OCDS/Record/{ocid}'
+                    yield scrapy.Request(url, meta={'file_name': f'{ocid}.json'}, callback=super().parse)
         else:
             request = response.request.copy()
             wait_time = int(response.headers.get('Retry-After', 1))
