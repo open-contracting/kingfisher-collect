@@ -22,4 +22,3 @@ class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
                 ocid = release["ocid"]
                 url = f'https://www.contractsfinder.service.gov.uk/Published/OCDS/Record/{ocid}'
                 yield scrapy.Request(url, meta={'file_name': f'{ocid}.json'}, callback=super().parse)
-

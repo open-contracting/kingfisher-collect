@@ -1,5 +1,3 @@
-import scrapy
-
 from kingfisher_scrapy.spiders.united_kingdom_contracts_finder_base import \
     UnitedKingdomContractsFinderBase
 
