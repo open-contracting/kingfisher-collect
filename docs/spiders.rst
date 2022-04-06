@@ -1273,12 +1273,12 @@ Ukraine
 United Kingdom
 ~~~~~~~~~~~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_contracts_finder.UnitedKingdomContractsFinder
+.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_contracts_finder_releases.UnitedKingdomContractsFinderReleases
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl united_kingdom_contracts_finder
+   scrapy crawl united_kingdom_contracts_finder_releases
 
 .. autoclass:: kingfisher_scrapy.spiders.united_kingdom_digiwhist.UnitedKingdomDigiwhist
    :no-members:

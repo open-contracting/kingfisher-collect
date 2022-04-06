@@ -3,21 +3,9 @@ import scrapy
 from kingfisher_scrapy.base_spiders import IndexSpider
 
 
-class UnitedKingdomContractsFinder(IndexSpider):
-    """
-    Domain
-      Contracts Finder
-    API documentation
-      https://www.contractsfinder.service.gov.uk/apidocumentation/home
-    """
-    name = 'united_kingdom_contracts_finder'
-
+class UnitedKingdomContractsFinderBase(IndexSpider):
     # BaseSpider
     ocds_version = '1.0'  # uses deprecated fields
-    root_path = 'results.item'
-
-    # SimpleSpider
-    data_type = 'release_package'
 
     # IndexSpider
     total_pages_pointer = '/maxPage'
