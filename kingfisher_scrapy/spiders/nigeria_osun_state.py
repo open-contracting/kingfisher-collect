@@ -24,7 +24,7 @@ class NigeriaOsunState(SimpleSpider):
     @handle_http_error
     def parse_list(self, response):
         for url in response.xpath('//table[@id="contractTable"]/tbody/tr/td[2]/a/@href').getall():
-            # The URLs looks like
+            # The URLs look like
             # https://egp.osunstate.gov.ng/existing_award_details.php?id=ocds-xwwr9a-000103-OS/HLT/02
             ocid = get_parameter_value(url, 'id').replace('/', '_')
             yield self.build_request(f'{self.base_url}media/{ocid}.json', formatter=components(-1))
