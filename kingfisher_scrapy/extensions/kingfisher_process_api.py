@@ -122,7 +122,7 @@ class KingfisherProcessAPI:
             return response
 
         def log_for_exception(exception):
-            spider.logger.warning('%s failed (%s) with exception: %d', method, infix, exception.getTraceback())
+            spider.logger.warning('%s failed (%s) with exception: %s', method, infix, exception.getTraceback())
             raise exception
 
         d = getattr(self.client, method)(*args)
