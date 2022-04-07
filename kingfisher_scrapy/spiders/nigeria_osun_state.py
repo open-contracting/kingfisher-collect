@@ -9,7 +9,7 @@ class NigeriaOsunState(SimpleSpider):
     Domain
       Nigeria Osun State Open Contracting Portal
     Bulk download documentation
-      https://egp.osunstate.gov.ng/awarded_contracts.php#
+      https://egp.osunstate.gov.ng/awarded_contracts.php
     """
     name = 'nigeria_osun_state'
     base_url = 'https://egp.osunstate.gov.ng/'
