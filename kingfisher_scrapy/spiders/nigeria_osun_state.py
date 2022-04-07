@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import handle_http_error, components, get_parameter_value
+from kingfisher_scrapy.util import components, get_parameter_value, handle_http_error
 
 
 class NigeriaOsunState(SimpleSpider):
