@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+addopts = '--doctest-modules'
+
+[tool.coverage.run]
+omit = ['*/kingfisher_scrapy/spiders/*']
