@@ -1030,6 +1030,13 @@ Nigeria
 
    scrapy crawl nigeria_kaduna_state_budeshi_releases
 
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_osun_state.NigeriaOsunState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_osun_state
+
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_oyo_state.NigeriaOyoState
    :no-members:
 
