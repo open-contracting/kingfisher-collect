@@ -1,4 +1,3 @@
-import warnings
 from datetime import datetime
 
 import pytest
@@ -45,7 +44,7 @@ def test_start_requests_http_error(spider_name):
                 assert item['file_name']
                 assert item['url']
     except MissingEnvVarError as e:
-        warnings.warn(f'{spidercls.name}: {e}')
+        pytest.skip(f'{spidercls.name}: {e}')
 
 
 @pytest.mark.parametrize('spider_name', runner.spider_loader.list())
