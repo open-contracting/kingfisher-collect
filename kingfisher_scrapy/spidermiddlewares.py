@@ -1,5 +1,4 @@
 import json
-import sys
 from zipfile import BadZipFile
 
 import ijson
