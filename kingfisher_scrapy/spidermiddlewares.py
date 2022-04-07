@@ -1,4 +1,5 @@
 import json
+import sys
 from zipfile import BadZipFile
 
 import ijson
@@ -126,7 +127,7 @@ class AddPackageMiddleware:
 
             # If the spider's ``root_path`` class attribute is non-empty, then the JSON data is already parsed.
             if not isinstance(data, dict):
-                data = json.loads(data, encoding=spider.encoding)  # encoding argument is removed in Python 3.9
+                data = json.loads(data)
 
             if item['data_type'] == 'release':
                 key = 'releases'

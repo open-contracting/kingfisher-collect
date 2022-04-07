@@ -119,7 +119,7 @@ class Pluck:
             if isinstance(item['data'], dict):
                 data = item['data']
             else:
-                data = json.loads(item['data'], encoding=spider.encoding)  # encoding argument is removed in Python 3.9
+                data = json.loads(item['data'])
 
             if item['data_type'].startswith('release'):
                 releases = data['releases']
