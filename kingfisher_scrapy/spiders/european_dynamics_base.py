@@ -8,7 +8,6 @@ from kingfisher_scrapy.util import components, handle_http_error, join
 
 
 class EuropeanDynamicsBase(CompressedFileSpider):
-
     """
     This class makes it easy to collect data from an European Dynamics' Electronic Procurement API:
 
@@ -28,12 +27,13 @@ class EuropeanDynamicsBase(CompressedFileSpider):
 
             # EuropeanDynamicsBase
             base_url = 'http://base-url'
-
     """
 
     # SimpleSpider
     data_type = 'record_package'
     date_format = 'year-month'
+
+    # base_url must be provided by subclasses.
 
     def start_requests(self):
         yield scrapy.Request(

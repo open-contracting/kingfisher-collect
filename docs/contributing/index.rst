@@ -92,7 +92,7 @@ Since there are many class attributes that control a spider's behavior, please p
       The typical docstring.
       """
       name = 'new_spider'
-      # Any other class attributes from Scrapy, including `download_delay`, `download_timeout`, `user_agent`, `custom_settings`
+      # ... Any other class attributes from Scrapy, including `download_delay`, `download_timeout`, `user_agent`, `custom_settings`
 
       # BaseSpider
       date_format = 'datetime'
@@ -138,6 +138,8 @@ Since there are many class attributes that control a spider's behavior, please p
       param_limit = 'customLimit'
       param_offset = = 'customOffset'
       base_url = 'https://example.com/elsewhere'
+
+      # ... Any other class attributes specific to this spider.
 
 Test the spider
 ~~~~~~~~~~~~~~~

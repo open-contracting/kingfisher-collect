@@ -1,4 +1,5 @@
 import json
+from abc import abstractmethod
 from datetime import datetime, timedelta
 
 import scrapy
@@ -142,10 +143,9 @@ class ParaguayDNCPBase(SimpleSpider):
                 callback=self.parse_pages
             )
 
+    @abstractmethod
     def get_files_to_download(self, content):
-        """ Override this
-        """
-        yield from ()
+        pass
 
     def expires_soon(self, time_diff):
         """ Tells if the access token will expire soon (required by

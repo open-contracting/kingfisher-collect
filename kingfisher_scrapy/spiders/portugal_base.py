@@ -14,9 +14,10 @@ class PortugalBase(LinksSpider):
     # We will wait 1, 2, 4, 8, 16 minutes (31 minutes total).
     max_retries = 5
     initial_wait_time = 60
+    # start_url must be provided by subclasses.
 
     def start_requests(self):
-        url = self.url
+        url = self.start_url
         if self.from_date and self.until_date:
             url = f'{url}?contractStartDate={self.from_date.strftime(self.date_format)}' \
                   f'&contractEndDate={self.until_date.strftime(self.date_format)}'

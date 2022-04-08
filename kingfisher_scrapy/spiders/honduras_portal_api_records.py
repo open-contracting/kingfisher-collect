@@ -27,4 +27,5 @@ class HondurasPortalAPIRecords(HondurasPortalAPIBase):
     # SimpleSpider
     data_type = 'record_package'
 
+    # HondurasPortalAPIBase
     start_url = 'http://www.contratacionesabiertas.gob.hn/api/v1/record/?format=json'

@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from datetime import date
 
 from kingfisher_scrapy.base_spiders import IndexSpider, PeriodicSpider
@@ -76,6 +77,10 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
             #   "urlPlanning": "https://apis.mercadopublico.cl/OCDS/data/planning/2359-2-LE19"
             # }
             yield from self.handle_item(item)
+
+    @abstractmethod
+    def handle_item(self, item):
+        pass
 
     # from IndexSpider
     def parse_list_loader(self, response):
