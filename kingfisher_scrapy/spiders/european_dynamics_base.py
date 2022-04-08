@@ -27,12 +27,13 @@ class EuropeanDynamicsBase(CompressedFileSpider):
 
             # EuropeanDynamicsBase
             base_url = 'http://base-url'
-
     """
 
     # SimpleSpider
     data_type = 'record_package'
     date_format = 'year-month'
+
+    # base_url must be provided by subclasses.
 
     def start_requests(self):
         yield scrapy.Request(
