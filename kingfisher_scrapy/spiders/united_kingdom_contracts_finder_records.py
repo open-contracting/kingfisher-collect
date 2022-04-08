@@ -10,8 +10,8 @@ class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
     """
     name = 'united_kingdom_contracts_finder_records'
 
-    # UnitedKingdomContractsFinderBase
-    parse_data_callback = 'parse'
-
     # SimpleSpider
     data_type = 'record_package'
+
+    # UnitedKingdomContractsFinderBase
+    parse_data_callback = 'parse'

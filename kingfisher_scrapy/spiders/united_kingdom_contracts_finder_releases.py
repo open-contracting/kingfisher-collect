@@ -13,11 +13,11 @@ class UnitedKingdomContractsFinderReleases(UnitedKingdomContractsFinderBase):
     """
     name = 'united_kingdom_contracts_finder_releases'
 
-    # # UnitedKingdomContractsFinderBase
-    parse_data_callback = 'parse_data'
-
     # SimpleSpider
     data_type = 'release_package'
+
+    # UnitedKingdomContractsFinderBase
+    parse_data_callback = 'parse_data'
 
     def parse_data(self, response):
         if self.is_http_success(response):

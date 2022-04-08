@@ -5,13 +5,16 @@ from kingfisher_scrapy.util import components
 
 
 class UnitedKingdomContractsFinderBase(IndexSpider):
-    uk_base_url = 'https://www.contractsfinder.service.gov.uk'
     # BaseSpider
     ocds_version = '1.0'  # uses deprecated fields
 
     # IndexSpider
     parse_list_callback = 'build_urls'
     total_pages_pointer = '/maxPage'
+
+    # Avoid conflict with IndexSpider's `base_url`.
+    uk_base_url = 'https://www.contractsfinder.service.gov.uk'
+    # parse_data_callback must be provided by subclasses.
 
     def start_requests(self):
         # page = 0 causes "Incorrect request [page must be a number greater than 0]".
