@@ -15,9 +15,6 @@ class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
     # SimpleSpider
     data_type = 'record_package'
 
-    def parse(self, response):
-        for result in response.json()['results']:
-            for release in result['releases']:
-                ocid = release["ocid"]
-                url = f'https://www.contractsfinder.service.gov.uk/Published/OCDS/Record/{ocid}'
-                yield scrapy.Request(url, meta={'file_name': f'{ocid}.json'}, callback=super().parse)
+    # IndexSpider
+    parse_list_callback = 'build_urls'
+
