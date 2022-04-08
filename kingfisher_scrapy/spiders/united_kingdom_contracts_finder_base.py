@@ -53,3 +53,4 @@ class UnitedKingdomContractsFinderBase(IndexSpider):
                               'wait_time': wait_time}, extra={'spider': self})
 
             yield request
+git
