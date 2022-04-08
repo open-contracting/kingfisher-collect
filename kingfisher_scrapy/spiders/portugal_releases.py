@@ -20,4 +20,5 @@ class PortugalReleases(PortugalBase):
     # SimpleSpider
     data_type = 'release_package'
 
-    url = 'http://www.base.gov.pt/api/Release/GetReleases'
+    # PortugalBase
+    start_url = 'http://www.base.gov.pt/api/Release/GetReleases'

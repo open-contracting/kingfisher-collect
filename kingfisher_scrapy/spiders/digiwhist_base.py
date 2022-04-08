@@ -16,6 +16,7 @@ class DigiwhistBase(BaseSpider):
     """
     # BaseSpider
     line_delimited = True
+    # start_urls must be provided by subclasses.
 
     def start_requests(self):
         # See scrapy.spiders.Spider.start_requests

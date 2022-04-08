@@ -23,4 +23,5 @@ class PortugalRecords(PortugalBase):
     # SimpleSpider
     data_type = 'record_package'
 
-    url = 'http://www.base.gov.pt/api/Record/GetRecords'
+    # PortugalBase
+    start_url = 'http://www.base.gov.pt/api/Record/GetRecords'

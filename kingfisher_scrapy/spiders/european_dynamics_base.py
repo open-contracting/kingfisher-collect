@@ -8,7 +8,6 @@ from kingfisher_scrapy.util import components, handle_http_error, join
 
 
 class EuropeanDynamicsBase(CompressedFileSpider):
-
     """
     This class makes it easy to collect data from an European Dynamics' Electronic Procurement API:
 

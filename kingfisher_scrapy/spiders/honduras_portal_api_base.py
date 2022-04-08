@@ -11,6 +11,7 @@ class HondurasPortalAPIBase(IndexSpider):
     total_pages_pointer = '/pages'
 
     available_publishers = ['oncae', 'sefin']
+    # start_url must be provided by subclasses.
 
     @classmethod
     def from_crawler(cls, crawler, publisher=None, *args, **kwargs):
@@ -21,7 +22,7 @@ class HondurasPortalAPIBase(IndexSpider):
         return spider
 
     def start_requests(self):
-        url = self.start_url  # from a sub-class
+        url = self.start_url
         if self.publisher:
             url = f'{url}&publisher={self.publisher}'
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
