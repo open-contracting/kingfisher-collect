@@ -12,6 +12,8 @@ class NigeriaPortalBase(SimpleSpider):
     # BaseSpider
     concatenated_json = True
 
+    # base_url must be provided by subclasses.
+
     def start_requests(self):
         yield scrapy.Request(self.base_url, meta={'file_name': 'page-0.html', 'page': 0}, callback=self.parse_list)
 
