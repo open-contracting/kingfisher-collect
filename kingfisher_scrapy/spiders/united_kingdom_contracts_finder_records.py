@@ -15,4 +15,3 @@ class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
 
     # IndexSpider
     parse_list_callback = 'build_urls'
-
