@@ -183,7 +183,7 @@ tldextract==3.1.2
     # via scrapy
 treq==22.1.0
     # via -r requirements.in
-twisted[tls]==22.2.0
+twisted[tls]==22.4.0
     # via
     #   -r requirements.in
     #   scrapy
