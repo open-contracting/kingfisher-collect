@@ -24,7 +24,8 @@ class UnitedKingdomContractsFinderBase(IndexSpider):
 
     def build_retry_request(self, response):
         request = response.request.copy()
-        wait_time = int(response.headers.get('Retry-After', 1))
+        # https://www.contractsfinder.service.gov.uk/apidocumentation/Notices/1/GET-Published-OCDS-Record
+        wait_time = 300
         request.meta['wait_time'] = wait_time
         request.dont_filter = True
         self.logger.info('Retrying %(request)s in %(wait_time)ds: HTTP %(status)d',
