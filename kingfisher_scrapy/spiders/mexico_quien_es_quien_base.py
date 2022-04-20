@@ -4,7 +4,7 @@ from kingfisher_scrapy.base_spiders import IndexSpider
 
 
 class MexicoQuienEsQuienBase(IndexSpider):
-    download_delay = 0.9
+    download_delay = 1
 
     # IndexSpider
     count_pointer = '/data/index/contracts/count'

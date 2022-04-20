@@ -22,10 +22,10 @@ class ParaguayHacienda(BaseSpider):
     """
     name = 'paraguay_hacienda'
     custom_settings = {
+        'CONCURRENT_REQUESTS': 1,
         'DOWNLOADER_MIDDLEWARES': {
             'kingfisher_scrapy.downloadermiddlewares.ParaguayAuthMiddleware': 543,
         },
-        'CONCURRENT_REQUESTS': 1,
     }
 
     start_time = None

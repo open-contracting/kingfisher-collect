@@ -7,7 +7,7 @@ class NigeriaPortal(NigeriaPortalBase):
       Nigeria Open Contracting Portal (NOCOPO) of Bureau of Public Procurement (BPP)
     """
     name = 'nigeria_portal'
-    download_delay = 0.9
+    download_delay = 1
 
     # SimpleSpider
     data_type = 'release_package'

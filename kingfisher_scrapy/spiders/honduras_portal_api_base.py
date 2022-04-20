@@ -5,7 +5,7 @@ from kingfisher_scrapy.exceptions import SpiderArgumentError
 
 
 class HondurasPortalAPIBase(IndexSpider):
-    download_delay = 0.9
+    download_delay = 1
 
     # IndexSpider
     total_pages_pointer = '/pages'

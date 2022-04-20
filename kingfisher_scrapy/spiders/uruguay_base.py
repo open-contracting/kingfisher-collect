@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import components
 
 
 class UruguayBase(PeriodicSpider):
-    download_delay = 0.9
+    download_delay = 1
 
     # BaseSpider
     date_format = 'year-month'

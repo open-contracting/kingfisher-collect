@@ -12,7 +12,7 @@ class Croatia(CompressedFileSpider):
           https://eojn.nn.hr/SPIN/application/ipn/Oglasnik/PreuzimanjeUgovoraOCD.aspx
     """
     name = 'croatia'
-    download_delay = 0.9
+    download_delay = 1
     user_agent = browser_user_agent
 
     # SimpleSpider

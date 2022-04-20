@@ -11,10 +11,10 @@ from kingfisher_scrapy.util import components, handle_http_error, parameters, re
 
 class ParaguayDNCPBase(SimpleSpider):
     custom_settings = {
+        'CONCURRENT_REQUESTS': 1,
         'DOWNLOADER_MIDDLEWARES': {
             'kingfisher_scrapy.downloadermiddlewares.ParaguayAuthMiddleware': 543,
         },
-        'CONCURRENT_REQUESTS': 1,
     }
 
     # BaseSpider
