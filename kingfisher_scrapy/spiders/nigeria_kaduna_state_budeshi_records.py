@@ -1,5 +1,4 @@
 from kingfisher_scrapy.spiders.nigeria_budeshi_records import NigeriaBudeshiRecords
-from kingfisher_scrapy.util import components
 
 
 class NigeriaKadunaStateBudeshiRecords(NigeriaBudeshiRecords):
