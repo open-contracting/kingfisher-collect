@@ -56,7 +56,7 @@ class ParaguayAuthMiddleware:
             raise IgnoreRequest("Max attempts to get an access token reached. Stopping crawl...")
         request.headers['Authorization'] = spider.access_token
         if self._expires_soon(spider):
-            return spider.add_request_to_backlog_and_build_access_token_request(spider, request)
+            return self.add_request_to_backlog_and_build_access_token_request(spider, request)
 
     def process_response(self, request, response, spider):
         if response.status == 401 or response.status == 429:
