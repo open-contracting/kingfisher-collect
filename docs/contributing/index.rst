@@ -83,6 +83,8 @@ After writing the spider, add a docstring for :ref:`spider metadata<spider-metad
    -  The JSON data sometimes contains unescaped newline characters within strings.
    -  The number of results is limited to 10,000.
 
+If you need to use any class attributes from Scrapy – like `download_delay`, `download_timeout`, `user_agent` or `custom_settings` – add a comment to explain why the specific value was used. That way, it is easier to check whether these configurations are still needed in the future.
+
 Since there are many class attributes that control a spider's behavior, please put the class attributes in this order, including comments with class names:
 
 .. code-block:: python
