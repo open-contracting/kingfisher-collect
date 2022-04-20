@@ -25,4 +25,4 @@ class UnitedKingdomContractsFinderReleases(UnitedKingdomContractsFinderBase):
                 for release in result['releases']:
                     yield self.build_request(release['url'], formatter=components(-1))
         else:
-            return self.build_retry_request(response)
+            return self.build_retry_request_or_file_error(response)
