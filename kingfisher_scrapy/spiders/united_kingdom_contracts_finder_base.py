@@ -5,9 +5,11 @@ from kingfisher_scrapy.util import components
 
 
 class UnitedKingdomContractsFinderBase(IndexSpider):
+    # The API has unpredictable and undocumented "too many requests" logic.
     custom_settings = {
         'CONCURRENT_REQUESTS': 1,
     }
+
     # BaseSpider
     ocds_version = '1.0'  # uses deprecated fields
 
