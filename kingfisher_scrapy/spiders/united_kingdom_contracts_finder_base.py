@@ -5,6 +5,9 @@ from kingfisher_scrapy.util import components
 
 
 class UnitedKingdomContractsFinderBase(IndexSpider):
+    custom_settings = {
+        'CONCURRENT_REQUESTS': 1,
+    }
     # BaseSpider
     ocds_version = '1.0'  # uses deprecated fields
 
