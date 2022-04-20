@@ -21,6 +21,24 @@ class ParaguayAuthMiddleware:
     Tokens should be generated and assigned just before sending a request, but Scrapy does not provide any way to do
     this, which in turn means that sometimes we accidently send expired tokens. For now, the issue seems to be avoided
     by setting the number of concurrent requests to 1, at cost of download speed.
+
+    .. code-block:: python
+
+        class Paraguay:
+            name = 'paraguay'
+
+            # ParaguayAuthMiddleware
+            access_token = None
+            access_token_scheduled_at = None
+            # The maximum age is less than the API's limit, since we don't precisely control Scrapy's scheduler.
+            access_token_maximum_age = 14 * 60
+            access_token_request_failed = False
+            requests_backlog = []
+
+            def build_access_token_request(self):
+                self.access_token_scheduled_at = datetime.now()
+
+                return scrapy.Request("https://example.com")
     """
 
     def __init__(self, spider):
@@ -33,36 +51,36 @@ class ParaguayAuthMiddleware:
     def process_request(self, request, spider):
         if 'auth' in request.meta and request.meta['auth'] is False:
             return
-        if spider.auth_failed:
-            spider.crawler.engine.close_spider(spider, 'auth_failed')
+        if spider.access_token_request_failed:
+            spider.crawler.engine.close_spider(spider, 'access_token_request_failed')
             raise IgnoreRequest("Max attempts to get an access token reached. Stopping crawl...")
         request.headers['Authorization'] = spider.access_token
         if self._expires_soon(spider):
-            # SAVE the last request to continue after getting the token
-            spider.last_requests.append(request)
-            spider.logger.info('Saving request for after getting the token: %s', request.url)
-            # spider MUST implement the request_access_token method
-            return spider.request_access_token()
+            return self.add_request_to_backlog_and_build_access_token_request(spider, request)
 
     def process_response(self, request, response, spider):
         if response.status == 401 or response.status == 429:
-            spider.logger.info('Time transcurred: %s', (datetime.now() - spider.start_time).total_seconds())
+            age = (datetime.now() - spider.access_token_scheduled_at).total_seconds()
+            spider.logger.info('Access token age: %ss', age)
             spider.logger.info('%s returned for request to %s', response.status, request.url)
             if not spider.access_token == request.headers['Authorization'] and self._expires_soon(spider):
-                # SAVE the last request to continue after getting the token
-                spider.last_requests.append(request)
-                spider.logger.info('Saving request for after getting the token: %s', request.url)
-                # spider MUST implement the request_access_token method
-                return spider.request_access_token()
+                return self.add_request_to_backlog_and_build_access_token_request(spider, request)
             request.headers['Authorization'] = spider.access_token
             return request
         return response
 
+    def add_request_to_backlog_and_build_access_token_request(self, spider, request):
+        spider.requests_backlog.append(request)
+        spider.logger.info('Added request to backlog until token received: %s', request.url)
+        return spider.build_access_token_request()
+
     @staticmethod
     def _expires_soon(spider):
-        if spider.start_time and spider.access_token:
-            # The spider must implement the expires_soon method.
-            return spider.expires_soon(datetime.now() - spider.start_time)
+        if spider.access_token and spider.access_token_scheduled_at:
+            age = (datetime.now() - spider.access_token_scheduled_at).total_seconds()
+            if age < spider.access_token_maximum_age:
+                return False
+            spider.logger.info('Access token age: %ss', age)
         return True
 
 
