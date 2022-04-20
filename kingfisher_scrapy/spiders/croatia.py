@@ -6,10 +6,10 @@ from kingfisher_scrapy.util import browser_user_agent, handle_http_error
 
 class Croatia(CompressedFileSpider):
     """
-        Domain
-          Elektronički oglasnik javne nabave (Electronic public procurement notices)
-        Bulk download documentation
-          https://eojn.nn.hr/SPIN/application/ipn/Oglasnik/PreuzimanjeUgovoraOCD.aspx
+    Domain
+      Elektronički oglasnik javne nabave (Electronic public procurement notices)
+    Bulk download documentation
+      https://eojn.nn.hr/SPIN/application/ipn/Oglasnik/PreuzimanjeUgovoraOCD.aspx
     """
     name = 'croatia'
     download_delay = 1

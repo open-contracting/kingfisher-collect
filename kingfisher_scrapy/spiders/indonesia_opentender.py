@@ -4,15 +4,15 @@ from kingfisher_scrapy.util import components, get_parameter_value, handle_http_
 
 class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     """
-       Domain
-         Opentender.net
-       Spider arguments
-         from_date
-           Download only data from this year onward (YYYY format). Defaults to '2008'.
-         until_date
-           Download only data until this year (YYYY format). Defaults to the current year.
-       Bulk download documentation
-         https://v3.opentender.net/#/ocds
+    Domain
+      Opentender.net
+    Spider arguments
+      from_date
+        Download only data from this year onward (YYYY format). Defaults to '2008'.
+      until_date
+        Download only data until this year (YYYY format). Defaults to the current year.
+    Bulk download documentation
+      https://v3.opentender.net/#/ocds
     """
 
     name = 'indonesia_opentender'
