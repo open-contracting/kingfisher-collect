@@ -130,37 +130,6 @@ Available data sources by country
 
 .. Do not edit past this line. Instead, run: `scrapy updatedocs`
 
-Afghanistan
-~~~~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.afghanistan_record_packages.AfghanistanRecordPackages
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl afghanistan_record_packages
-
-.. autoclass:: kingfisher_scrapy.spiders.afghanistan_records.AfghanistanRecords
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl afghanistan_records
-
-.. autoclass:: kingfisher_scrapy.spiders.afghanistan_release_packages.AfghanistanReleasePackages
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl afghanistan_release_packages
-
-.. autoclass:: kingfisher_scrapy.spiders.afghanistan_releases.AfghanistanReleases
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl afghanistan_releases
-
 Argentina
 ~~~~~~~~~
 
@@ -606,13 +575,6 @@ India
 
 Indonesia
 ~~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.indonesia_bandung.IndonesiaBandung
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl indonesia_bandung
 
 .. autoclass:: kingfisher_scrapy.spiders.indonesia_opentender.IndonesiaOpentender
    :no-members:
