@@ -21,10 +21,10 @@ class DominicanRepublicBulk(CompressedFileSpider):
       https://www.dgcp.gob.do/estandar-mundial-ocds/
     """
     name = 'dominican_republic_bulk'
-    date_format = 'year'
-    default_from_date = '2018'
 
     # BaseSpider
+    date_format = 'year'
+    default_from_date = '2018'
     skip_pluck = 'Already covered (see code for details)'  # dominican_republic_api
 
     # SimpleSpider

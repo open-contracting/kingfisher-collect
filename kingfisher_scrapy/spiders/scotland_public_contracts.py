@@ -29,6 +29,7 @@ class ScotlandPublicContracts(PeriodicSpider):
     pattern = 'https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={:%m-%Y}&outputType=0&noticeType={}'
     formatter = staticmethod(parameters('noticeType', 'dateFrom'))
 
+    # Local
     notice_types = [
         1,  # OJEU - F1 - Prior Information Notice
         2,  # OJEU - F2 - Contract Notice

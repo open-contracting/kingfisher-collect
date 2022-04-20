@@ -21,10 +21,10 @@ class AfghanistanReleases(SimpleSpider):
       https://ocds.ageops.net/
     """
     name = 'afghanistan_releases'
-    default_from_date = '2018-12-12'
     download_delay = 1.5
 
     # BaseSpider
+    default_from_date = '2018-12-12'
     skip_pluck = 'Already covered (see code for details)'  # afghanistan_release_packages
 
     # SimpleSpider
@@ -37,9 +37,8 @@ class AfghanistanReleases(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        urls = response.json()
         # A JSON array of URL strings, in reverse chronological order.
-        for url in urls:
+        for url in response.json():
             if self.from_date and self.until_date:
                 # URL looks like https://ocds.ageops.net/api/ocds/releases/2020-05-30
                 date = datetime.strptime(components(-1)(url), self.date_format)
@@ -49,7 +48,6 @@ class AfghanistanReleases(SimpleSpider):
 
     @handle_http_error
     def parse_release_list(self, response):
-        urls = response.json()
-        for url in urls:
+        for url in response.json():
             # URL looks like https://ocds.ageops.net/api/release/5c10b7d67e0a947b1461057e
             yield self.build_request(url, formatter=components(-1))

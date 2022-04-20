@@ -27,6 +27,7 @@ class HondurasIAIP(SimpleSpider):
     # SimpleSpider
     data_type = 'release_package'
 
+    # Local
     available_portals = ['covid19', 'huracanes', 'oficio']
 
     @classmethod
@@ -48,11 +49,11 @@ class HondurasIAIP(SimpleSpider):
         for portal in self.available_portals:
             if self.portal and self.portal != portal:
                 continue
-            # each portal is a list of objects with the file name and its CSV, excel and JSON URL representation, eg:
+            # Each portal is an array of objects with the filename and its CSV, Excel and JSON URL representations:
+            #
             # "portal": [ {"nombreArchivo": "name", "excel": "URL", "csv": "URL", "json": "URL"} ]
-            portal_urls = response.json()[portal]
-            for file_urls_object in portal_urls:
-                json_url = file_urls_object['json']
-                # the URLs include releases and compile releases, but we only download releases packages.
-                if 'COMPILED' not in json_url.upper():
-                    yield self.build_request(json_url, formatter=components(-1))
+            for item in response.json()[portal]:
+                url = item['json']
+                # Retrieve URLs for packages of individual releases, not of compiled releases.
+                if 'compiled' not in url.lower():
+                    yield self.build_request(url, formatter=components(-1))

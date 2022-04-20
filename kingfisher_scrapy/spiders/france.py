@@ -23,8 +23,7 @@ class France(BigFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = response.json()
-        for resource in data['resources']:
+        for resource in response.json()['resources']:
             description = resource['description']
             if description and 'ocds' in description.lower():
                 yield self.build_request(resource['url'], formatter=components(-2))

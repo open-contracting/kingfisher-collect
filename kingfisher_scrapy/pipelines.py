@@ -152,10 +152,10 @@ class Unflatten:
 
         input_name = item['file_name']
         if input_name.endswith('.csv'):
-            item['file_name'] = item['file_name'][:-4] + '.json'
+            item['file_name'] = f'{item["file_name"][:-4]}.json'
             input_format = 'csv'
         elif input_name.endswith('.xlsx'):
-            item['file_name'] = item['file_name'][:-5] + '.json'
+            item['file_name'] = f'{item["file_name"][:-5]}.json'
             input_format = 'xlsx'
         else:
             extension = os.path.splitext(input_name)[1]

@@ -26,10 +26,6 @@ class BoliviaAgetic(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = response.json()
-        for resource in data['result']['resources']:
+        for resource in response.json()['result']['resources']:
             if 'ocds' in resource['description']:
-                yield self.build_request(
-                    resource['url'],
-                    formatter=components(-1)
-                )
+                yield self.build_request(resource['url'], formatter=components(-1))

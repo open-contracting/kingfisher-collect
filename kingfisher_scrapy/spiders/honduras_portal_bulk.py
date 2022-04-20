@@ -47,11 +47,16 @@ class HondurasPortalBulk(SimpleSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    available_publishers = {'oncae': 'Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Honduras',
-                            'sefin': 'Secretaria de Finanzas de Honduras'}
-    available_systems = {'HC1': 'HonduCompras 1.0 - Módulo de Difusión de Compras y Contrataciones',
-                         'CE': 'Catálogo Electrónico',
-                         'DDC': 'Módulo de Difusión Directa de Contratos'}
+    # Local
+    available_publishers = {
+        'oncae': 'Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Honduras',
+        'sefin': 'Secretaria de Finanzas de Honduras',
+    }
+    available_systems = {
+        'HC1': 'HonduCompras 1.0 - Módulo de Difusión de Compras y Contrataciones',
+        'CE': 'Catálogo Electrónico',
+        'DDC': 'Módulo de Difusión Directa de Contratos',
+    }
 
     def start_requests(self):
         url = 'http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json'

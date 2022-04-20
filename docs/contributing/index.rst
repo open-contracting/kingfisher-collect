@@ -139,6 +139,7 @@ Since there are many class attributes that control a spider's behavior, please p
       param_offset = = 'customOffset'
       base_url = 'https://example.com/elsewhere'
 
+      # Local
       # ... Any other class attributes specific to this spider.
 
 Test the spider

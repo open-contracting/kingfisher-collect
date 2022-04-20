@@ -11,6 +11,7 @@ class PortugalBase(LinksSpider):
     # LinksSpider
     formatter = staticmethod(parameters('offset'))
 
+    # Local
     # We will wait 1, 2, 4, 8, 16 minutes (31 minutes total).
     max_retries = 5
     initial_wait_time = 60

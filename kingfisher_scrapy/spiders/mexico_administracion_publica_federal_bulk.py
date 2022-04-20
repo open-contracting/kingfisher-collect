@@ -30,8 +30,7 @@ class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = response.json()
-        for result in data['result']['results']:
+        for result in response.json()['result']['results']:
             for resource in result['resources']:
                 if resource['name'].endswith('JSON.') and resource['format'].upper() == 'JSON':
                     yield self.build_request(resource['url'], formatter=components(-1))

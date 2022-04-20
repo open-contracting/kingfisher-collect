@@ -17,22 +17,21 @@ class TanzaniaZabuni(SimpleSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    url = 'https://app.zabuni.co.tz/api/releases/{}'
+    url_prefix = 'https://app.zabuni.co.tz/api/releases/'
 
     def start_requests(self):
         stages = ['tender', 'award', 'contract']
         for stage in stages:
             yield scrapy.Request(
-                self.url.format(stage),
+                f'{self.url_prefix}{stage}',
                 meta={'file_name': 'list.json', 'stage': stage},
                 callback=self.parse_list
             )
 
     @handle_http_error
     def parse_list(self, response):
-        releases = response.json()['releases']
-        for release in releases:
+        for release in response.json()['releases']:
             yield self.build_request(
-                self.url.format(f"{release['ocid']}/{response.request.meta['stage']}"),
+                f'{self.url_prefix}{release["ocid"]}/{response.request.meta["stage"]}',
                 formatter=components(-2)
             )

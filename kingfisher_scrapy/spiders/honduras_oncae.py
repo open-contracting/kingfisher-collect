@@ -39,6 +39,7 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
     pattern = 'http://200.13.162.79/datosabiertos/{}'
     formatter = staticmethod(components(-1))
 
+    # Local
     available_systems = ['HC1', 'CE', 'DDC']
 
     @classmethod

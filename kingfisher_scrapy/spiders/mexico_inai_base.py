@@ -26,7 +26,6 @@ class MexicoINAIBase(SimpleSpider):
 
             # MexicoINAIBase
             base_url = 'http://base-url'
-
     """
     # BaseSpider
     root_path = 'arrayReleasePackage.item'
@@ -43,7 +42,6 @@ class MexicoINAIBase(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        fiscal_years = response.json()['fiscalYears']
         # The response looks like:
         # {
         #   "fiscalYears": [
@@ -56,10 +54,9 @@ class MexicoINAIBase(SimpleSpider):
         #     }
         #   ]
         # }
-        for fiscal_year_object in fiscal_years:
-            fiscal_year = fiscal_year_object['year']
+        for item in response.json()['fiscalYears']:
+            year = item['year']
             if self.from_date and self.until_date:
-                if not (self.from_date.year <= fiscal_year <= self.until_date.year):
+                if not (self.from_date.year <= year <= self.until_date.year):
                     continue
-            yield self.build_request(f'{self.base_url}/edca/contractingprocess/{fiscal_year}',
-                                     formatter=join(components(-1)))
+            yield self.build_request(f'{self.base_url}/edca/contractingprocess/{year}', formatter=join(components(-1)))

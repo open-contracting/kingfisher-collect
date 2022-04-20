@@ -44,8 +44,7 @@ class EuropeanDynamicsBase(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        urls = response.json()['packagesPerMonth']
-        for number, url in enumerate(reversed(urls)):
+        for number, url in enumerate(reversed(response.json()['packagesPerMonth'])):
             path = urlsplit(url).path
             if self.from_date and self.until_date:
                 # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7

@@ -49,8 +49,8 @@ class Ukraine(SimpleSpider):
 
     @handle_http_error
     def parse(self, response):
-        data = response.json()
-        # The data looks like:
+        data = response.json()['data']
+        # The response looks like:
         # {
         #   "data": {
         #     "id": "..",
@@ -62,17 +62,16 @@ class Ukraine(SimpleSpider):
         #    }
         # }
 
-        awards = data['data'].pop('awards', None)
-        contracts = data['data'].pop('contracts', None)
+        awards = data.pop('awards', None)
+        contracts = data.pop('contracts', None)
 
         ocds_data = {
-            # The data.id field corresponds to the internal identifier. The data.dateModified is concatenated to ensure
-            # the id's uniqueness.
-            'id': f"{data['data']['id']}-{data['data']['dateModified']}",
-            # The data.tenderID field corresponds to the official identifier.
-            'ocid': data['data']['tenderID'],
-            'date': data['data']['dateModified'],
-            'tender': data['data'],
+            # `id` is an internal identifier. `dateModified` is appended to ensure the id's uniqueness.
+            'id': f"{data['id']}-{data['dateModified']}",
+            # `tenderID` is the official identifier.
+            'ocid': data['tenderID'],
+            'date': data['dateModified'],
+            'tender': data,
         }
         if contracts:
             ocds_data['contracts'] = contracts

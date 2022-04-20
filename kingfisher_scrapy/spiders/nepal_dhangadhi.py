@@ -28,9 +28,7 @@ class NepalDhangadhi(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        pattern = 'https://admin.ims.susasan.org/ocds/json/dhangadhi-{}.json'
-        data = response.json()
-        for number, item in enumerate(reversed(data['data']['fiscal_years'])):
+        for number, item in enumerate(reversed(response.json()['data']['fiscal_years'])):
             # A URL might redirect to https://admin.ims.susasan.org/login
-            yield self.build_request(pattern.format(item['name']), formatter=components(-1),
-                                     meta={'dont_redirect': True}, priority=number * -1)
+            yield self.build_request(f'https://admin.ims.susasan.org/ocds/json/dhangadhi-{item["name"]}.json',
+                                     formatter=components(-1), meta={'dont_redirect': True}, priority=number * -1)

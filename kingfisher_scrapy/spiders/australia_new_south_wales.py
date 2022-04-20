@@ -11,15 +11,16 @@ class AustraliaNewSouthWales(SimpleSpider):
     """
     name = 'australia_new_south_wales'
 
-    base_url = 'https://www.tenders.nsw.gov.au/?event=public.api.'
-
     # SimpleSpider
     data_type = 'release_package'
+
+    # Local
+    url_prefix = 'https://www.tenders.nsw.gov.au/?event=public.api.'
 
     def start_requests(self):
         for release_type in ('planning', 'tender', 'contract'):
             yield self.build_request(
-                f'{self.base_url}{release_type}.search&ResultsPerPage=1000',
+                f'{self.url_prefix}{release_type}.search&ResultsPerPage=1000',
                 formatter=parameters('event'),
                 meta={'release_type': release_type},
                 callback=self.parse_list
@@ -42,19 +43,19 @@ class AustraliaNewSouthWales(SimpleSpider):
             if release_type == 'planning':
                 uuid = release['tender']['plannedProcurementUUID']
                 yield self.build_request(
-                    f'{self.base_url}planning.view&PlannedProcurementUUID={uuid}',
+                    f'{self.url_prefix}planning.view&PlannedProcurementUUID={uuid}',
                     formatter=parameters('event', 'PlannedProcurementUUID')
                 )
             elif release_type == 'tender':
                 uuid = release['tender']['RFTUUID']
                 yield self.build_request(
-                    f'{self.base_url}tender.view&RFTUUID={uuid}',
+                    f'{self.url_prefix}tender.view&RFTUUID={uuid}',
                     formatter=parameters('event', 'RFTUUID')
                 )
             elif release_type == 'contract':
                 for award in release['awards']:
                     uuid = award['CNUUID']
                     yield self.build_request(
-                        f'{self.base_url}contract.view&CNUUID={uuid}',
+                        f'{self.url_prefix}contract.view&CNUUID={uuid}',
                         formatter=parameters('event', 'CNUUID')
                     )

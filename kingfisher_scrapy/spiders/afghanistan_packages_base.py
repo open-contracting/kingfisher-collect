@@ -19,8 +19,7 @@ class AfghanistanPackagesBase(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        urls = response.json()
-        for url in urls:
+        for url in response.json():
             if self.from_date and self.until_date:
                 # URL looks like https://ocds.ageops.net/api/ocds/release-package/2021-03-29
                 date = datetime.strptime(components(-1)(url), self.date_format)
@@ -30,7 +29,6 @@ class AfghanistanPackagesBase(SimpleSpider):
 
     @handle_http_error
     def parse_release_list(self, response):
-        urls = response.xpath('//a/text()').getall()
-        for url in urls:
+        for url in response.xpath('//a/text()').getall():
             if 'https://ocds.ageops.net/api/' in url:
                 yield self.build_request(url.strip(), formatter=components(-2))

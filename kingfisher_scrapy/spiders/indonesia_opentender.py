@@ -17,7 +17,8 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
 
     name = 'indonesia_opentender'
 
-    base_url = 'https://opentender.net/api/'
+    # Must be set before `pattern`, so we can't follow the standard order.
+    url_prefix = 'https://opentender.net/api/'
 
     # BaseSpider
     date_format = 'year'
@@ -27,20 +28,21 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     data_type = 'release_package'
 
     # PeriodicSpider
-    pattern = base_url + 'master/lpse?year={}&format=json'
+    pattern = url_prefix + 'master/lpse?year={}&format=json'
     formatter = staticmethod(components(-1))
     start_requests_callback = 'parse_list'
 
     @handle_http_error
     def parse_list(self, response):
-        data = response.json()
         year = get_parameter_value(response.request.url, 'year')
-        requested_codes = []
-        for item in data['data']:
+        codes_seen = set()
+        for item in response.json()['data']:
             code = item['code']
-            # there are some duplicated codes
-            if code and code not in requested_codes:
-                requested_codes.append(code)
-                url = f'{self.base_url}tender/export-ocds-batch?year={year}&lpse={code}'
-                yield self.build_request(url, formatter=join(components(-1),
-                                                             parameters('year', 'lpse'), extension='zip'))
+            # There are duplicate codes.
+            if code and code not in codes_seen:
+                codes_seen.add(code)
+                url = f'{self.url_prefix}tender/export-ocds-batch?year={year}&lpse={code}'
+                yield self.build_request(
+                    url,
+                    formatter=join(components(-1), parameters('year', 'lpse'), extension='zip')
+                )

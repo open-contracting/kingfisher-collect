@@ -27,7 +27,6 @@ class AfghanistanRecords(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        urls = response.json()
-        for url in urls:
+        for url in response.json():
             # URL looks like https://ocds.ageops.net/api/record/5ed2a62c4192f32c8c74a4e5
             yield self.build_request(url, formatter=components(-1))

@@ -24,7 +24,7 @@ class UruguayRecords(UruguayBase):
 
     @handle_http_error
     def parse_list(self, response):
-        pattern = 'https://www.comprasestatales.gub.uy/ocds/record/{}'
+        url_prefix = 'https://www.comprasestatales.gub.uy/ocds/record/'
 
         titles = response.xpath('//item/title/text()').getall()
         if self.sample:
@@ -32,4 +32,4 @@ class UruguayRecords(UruguayBase):
 
         for title in titles:
             identifier = title.split(',')[0].split(':')[1]
-            yield self.build_request(pattern.format(identifier), formatter=components(-1))
+            yield self.build_request(f'{url_prefix}{identifier}', formatter=components(-1))

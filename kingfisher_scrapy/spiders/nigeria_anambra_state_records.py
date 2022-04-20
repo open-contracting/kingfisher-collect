@@ -25,7 +25,6 @@ class NigeriaAnambraStateRecords(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        mdas = response.json()
-        for mda in mdas:
-            url = 'http://www.mepbdp.org.ng/ocds/api/mda_records/{}'
-            yield self.build_request(url.format(mda['id']), formatter=components(-2))
+        url_prefix = 'http://www.mepbdp.org.ng/ocds/api/mda_records/'
+        for item in response.json():
+            yield self.build_request(f'{url_prefix}{item["id"]}', formatter=components(-2))

@@ -10,6 +10,7 @@ class HondurasPortalAPIBase(IndexSpider):
     # IndexSpider
     total_pages_pointer = '/pages'
 
+    # Local
     available_publishers = ['oncae', 'sefin']
     # start_url must be provided by subclasses.
 

@@ -32,8 +32,7 @@ class ArgentinaBuenosAires(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = response.json()
-        for resource in data['result']['resources']:
+        for resource in response.json()['result']['resources']:
             if resource['format'].upper() == 'JSON':
                 # Presently, only one URL matches.
                 yield self.build_request(resource['url'], formatter=components(-1))

@@ -8,14 +8,15 @@ from kingfisher_scrapy.util import components, handle_http_error, join, paramete
 
 
 class NigeriaCrossRiverStateBase(SimpleSpider):
-    base_url = 'https://ocdsapi.dppib-crsgov.org:443/api/ocdsAPI/'
-
     # BaseSpider
     date_format = 'year-month'
     default_from_date = '2019-08'
 
+    # Local
+    url_prefix = 'https://ocdsapi.dppib-crsgov.org:443/api/ocdsAPI/'
+
     def start_requests(self):
-        url = self.base_url + 'getAvailableReleasesSummary'
+        url = f'{self.url_prefix}getAvailableReleasesSummary'
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error

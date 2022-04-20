@@ -19,8 +19,6 @@ class PeruCompras(SimpleSpider):
 
     name = 'peru_compras'
 
-    base_url = 'https://www.catalogos.perucompras.gob.pe/ConsultaOrdenesPub'
-
     # BaseSpider
     date_required = True
     default_from_date = '2017-01-01'
@@ -28,8 +26,11 @@ class PeruCompras(SimpleSpider):
     # SimpleSpider
     data_type = 'release_package'
 
+    # Local
+    url_prefix = 'https://www.catalogos.perucompras.gob.pe/ConsultaOrdenesPub/'
+
     def start_requests(self):
-        url = f'{self.base_url}/obtenerFiltros'
+        url = f'{self.url_prefix}obtenerFiltros'
         yield scrapy.Request(url, meta={'file_name': 'list.html'}, callback=self.parse_list)
 
     @handle_http_error
@@ -47,7 +48,7 @@ class PeruCompras(SimpleSpider):
             framework_id = framework.split('-')[0]
             if framework_id:
                 yield self.build_request(
-                    f'{self.base_url}/DescargaJsonOCDS'
+                    f'{self.url_prefix}DescargaJsonOCDS'
                     f'?pAcuerdo={framework_id}&pFechaIni={from_date}&pFechaFin={until_date}',
                     formatter=parameters('pAcuerdo')
                 )

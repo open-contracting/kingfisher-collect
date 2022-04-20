@@ -46,6 +46,7 @@ class ColombiaBulk(CompressedFileSpider):
     data_type = 'release'
     encoding = 'iso-8859-1'
 
+    # Local
     available_systems = {'SECOP1': 'SI', 'SECOP2': 'SECOP2', 'TVEC': 'TVEC'}
 
     @classmethod

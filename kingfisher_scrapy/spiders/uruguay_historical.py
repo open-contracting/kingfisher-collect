@@ -38,8 +38,7 @@ class UruguayHistorical(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = response.json()
-        for resource in data['result']['resources']:
+        for resource in response.json()['result']['resources']:
             if resource['format'].upper() == 'JSON':
                 url = resource['url']
                 if self.from_date and self.until_date:

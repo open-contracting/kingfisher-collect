@@ -17,14 +17,13 @@ class UnitedKingdomContractsFinderBase(IndexSpider):
     parse_list_callback = 'build_urls'
     total_pages_pointer = '/maxPage'
 
-    # Avoid conflict with IndexSpider's `base_url`.
-    uk_base_url = 'https://www.contractsfinder.service.gov.uk'
+    url_prefix = 'https://www.contractsfinder.service.gov.uk/Published/'
     # parse_data_callback must be provided by subclasses.
 
     def start_requests(self):
         # page = 0 causes "Incorrect request [page must be a number greater than 0]".
         # size > 100 causes "Incorrect request [size must be a number greater than 0 and maximum is 100]".
-        url = f'{self.uk_base_url}/Published/Notices/OCDS/Search?order=desc&size=100'
+        url = f'{self.url_prefix}Notices/OCDS/Search?order=desc&size=100'
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
     def build_retry_request_or_file_error(self, response):
@@ -46,7 +45,7 @@ class UnitedKingdomContractsFinderBase(IndexSpider):
         if self.is_http_success(response):
             for result in response.json()['results']:
                 for release in result['releases']:
-                    yield self.build_request(f'{self.uk_base_url}/Published/OCDS/Record/{release["ocid"]}',
+                    yield self.build_request(f'{self.url_prefix}OCDS/Record/{release["ocid"]}',
                                              formatter=components(-1),
                                              callback=getattr(self, self.parse_data_callback))
         else:

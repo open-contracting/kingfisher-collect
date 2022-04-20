@@ -14,8 +14,6 @@ class IndiaCivicDataLab(SimpleSpider):
     """
     name = 'india_civic_data_lab'
 
-    github_repo = 'CivicDataLab/himachal-pradesh-health-procurement-OCDS'
-
     # BaseSpider
     unflatten = True
     unflatten_args = {
@@ -25,6 +23,9 @@ class IndiaCivicDataLab(SimpleSpider):
 
     # SimpleSpider
     data_type = 'release_package'
+
+    # Local
+    github_repo = 'CivicDataLab/himachal-pradesh-health-procurement-OCDS'
 
     def start_requests(self):
         url = f'https://api.github.com/repos/{self.github_repo}/git/trees/master'

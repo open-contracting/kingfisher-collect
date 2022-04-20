@@ -21,11 +21,7 @@ class NicaraguaSolidWaste(SimpleSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    url = 'http://www.gekoware.com/swmp/api/ocds/{}/{}'
-
     def start_requests(self):
-        url = self.url
-        # date parameter obtained
-        url = url.format(self.from_date.strftime("%Y%m%d"), self.until_date.strftime("%Y%m%d"))
-        # url looks like http://www.gekoware.com/swmp/api/ocds/20190101/20201005
+        url = f'http://www.gekoware.com/swmp/api/ocds/{self.from_date.strftime("%Y%m%d")}/' \
+              f'{self.until_date.strftime("%Y%m%d")}'
         yield self.build_request(url, formatter=components(-2))

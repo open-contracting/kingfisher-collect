@@ -16,14 +16,14 @@ class Slovenia(SimpleSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    url = 'http://tbfy.ijs.si/public/ocds/mju/'
+    # Local
+    url_prefix = 'http://tbfy.ijs.si/public/ocds/mju/'
 
     def start_requests(self):
-        yield scrapy.Request(self.url, meta={'file_name': 'list.html'}, callback=self.parse_list)
+        yield scrapy.Request(self.url_prefix, meta={'file_name': 'list.html'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
-        html_urls = reversed(response.xpath('//a/@href').getall())
-        for number, url in enumerate(html_urls):
+        for number, url in enumerate(reversed(response.xpath('//a/@href').getall())):
             if 'ocds' and 'json' in url:
-                yield self.build_request(f'{self.url}{url}', formatter=components(-1), priority=number * -1)
+                yield self.build_request(f'{self.url_prefix}{url}', formatter=components(-1), priority=number * -1)

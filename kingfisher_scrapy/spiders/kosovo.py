@@ -41,7 +41,6 @@ class Kosovo(SimpleSpider):
 
     @handle_http_error
     def parse(self, response):
-        data = response.json()
         # The API returns a release package with an empty releases array if no releases were found.
-        if data['releases']:
+        if response.json()['releases']:
             yield self.build_file_from_response(response, data_type=self.data_type)

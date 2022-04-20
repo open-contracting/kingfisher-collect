@@ -27,15 +27,13 @@ class ItalyAppaltiPOP(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        data = response.json()
-        # The data looks like:
+        # The response looks like:
         # {
         #   "total": { ... },
-        #   max_score: ...,
-        #   hits: [ ... ]
+        #   "max_score": ...,
+        #   "hits": [ ... ]
         # }
-
-        for buyer in data['hits']:
+        for buyer in response.json()['hits']:
             # The first resource in the list is the OCDS JSON, the second one a XLSX file
             resource = buyer['_source']['appaltipop:releases/0/buyer/dataSource/resources'][0]
 

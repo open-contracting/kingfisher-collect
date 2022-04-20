@@ -8,6 +8,8 @@ from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
 from kingfisher_scrapy.util import parameters
 
+HEADERS = {'Accept': '*/*', 'Content-Type': 'application/json'}
+
 
 class Openopps(BaseSpider):
     """
@@ -44,15 +46,15 @@ class Openopps(BaseSpider):
     root_path = 'results.item.json'
     dont_truncate = True
 
+    # Local
     access_token = None
     api_limit = 10000  # OpenOpps API limit for search results
     request_time_limit = 60  # in minutes
     reauthenticating = False  # flag for request a new token
     start_time = None
     data_type = 'release_package'
-
-    base_page_url = 'https://api.openopps.com/api/ocds/?format=json&ordering=releasedate&page_size=1000&' \
-                    'releasedate__gte={}&releasedate__lte={}'
+    url_pattern = 'https://api.openopps.com/api/ocds/?format=json&ordering=releasedate&page_size=1000&' \
+                  'releasedate__gte={releasedate__gte}&releasedate__lte={releasedate__lte}'
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -66,26 +68,28 @@ class Openopps(BaseSpider):
         return spider
 
     def start_requests(self):
-        """ Start requesting access token """
-        yield scrapy.Request(
+        yield self.build_access_token_request(initial_authentication=True)
+
+    def build_access_token_request(self, initial_authentication, **kwargs):
+        return scrapy.Request(
             'https://api.openopps.com/api/api-token-auth/',
             method='POST',
-            headers={"Accept": "*/*", "Content-Type": "application/json"},
-            body=json.dumps({"username": self.username, "password": self.password}),
+            headers=HEADERS,
+            body=json.dumps({'username': self.username, 'password': self.password}),
             # Send duplicate requests when we re-authenticate before the token expires
             dont_filter=True,
             # Flag request access token for middleware and initial authentication for callback function
-            meta={'token_request': True, 'initial_authentication': True},
-            callback=self.parse_access_token
+            meta={'token_request': True, 'initial_authentication': initial_authentication},
+            callback=self.parse_access_token,
+            **kwargs
         )
 
     def parse_access_token(self, response):
         if self.is_http_success(response):
-            r = response.json()
-            token = r.get('token')
+            token = response.json().get('token')
             if token:
                 self.logger.info('New access token: %s', token)
-                self.access_token = 'JWT ' + token
+                self.access_token = f'JWT {token}'
                 self.start_time = datetime.now()
                 # If the request is initial authentication, start requests
                 if response.request.meta.get('initial_authentication'):
@@ -122,17 +126,17 @@ class Openopps(BaseSpider):
 
     def request_range(self, start_date, end_date, search_h):
         return self.build_request(
-            self.base_page_url.format(start_date, end_date),
+            self.url_pattern.format(releasedate__gte=start_date, releasedate__lte=end_date),
             formatter=parameters('releasedate__gte', 'releasedate__lte'),
             meta={
                 'release_date': start_date,
                 'search_h': search_h,
             },
-            headers={'Accept': '*/*', 'Content-Type': 'application/json'}
+            headers=HEADERS
         )
 
     def request_range_per_day(self, start_date, end_date, search_h):
-        date_list = [(start_date + timedelta(days=d)).strftime("%Y-%m-%d")
+        date_list = [(start_date + timedelta(days=d)).strftime('%Y-%m-%d')
                      for d in range((end_date - start_date).days + 1)]
 
         for date in date_list:
@@ -140,8 +144,8 @@ class Openopps(BaseSpider):
 
     def parse(self, response):
         if self.is_http_success(response):
-            results = response.json()
-            count = results['count']
+            data = response.json()
+            count = data['count']
             release_date = response.request.meta['release_date']  # date used for the search
             search_h = response.request.meta['search_h']  # hour range used for the search
 
@@ -149,7 +153,7 @@ class Openopps(BaseSpider):
             if count <= self.api_limit or search_h == 1:
                 yield self.build_file_from_response(response, data_type=self.data_type)
 
-                next_url = results.get('next')
+                next_url = data.get('next')
                 if next_url:
                     yield self.build_request(
                         next_url,
@@ -158,7 +162,7 @@ class Openopps(BaseSpider):
                             'release_date': release_date,
                             'search_h': search_h,
                         },
-                        headers={'Accept': '*/*', 'Content-Type': 'application/json'}
+                        headers=HEADERS
                     )
 
                 # Tells if we have to re-authenticate before the token expires
@@ -166,16 +170,7 @@ class Openopps(BaseSpider):
                 if not self.reauthenticating and time_diff.total_seconds() > self.request_time_limit * 60:
                     self.logger.info('Time_diff: %s', time_diff.total_seconds())
                     self.reauthenticating = True
-                    yield scrapy.Request(
-                        'https://api.openopps.com/api/api-token-auth/',
-                        method='POST',
-                        headers={"Accept": "*/*", "Content-Type": "application/json"},
-                        body=json.dumps({"username": self.username, "password": self.password}),
-                        dont_filter=True,
-                        meta={'token_request': True, 'initial_authentication': False},
-                        priority=100000,
-                        callback=self.parse_access_token
-                    )
+                    yield self.build_access_token_request(initial_authentication=False, priority=1000)
             else:
                 # Change search filter if count exceeds the API limit or search_h > 1 hour
                 parts = int(ceil(count / self.api_limit))  # parts we split a search that exceeds the limit
@@ -184,38 +179,41 @@ class Openopps(BaseSpider):
                 # If we have last_hour variable here, we have to split hours
                 last_hour = response.request.meta.get('last_hour')
                 if last_hour:
-                    date = datetime.strptime(release_date, "%Y-%m-%dT%H:%M:%S")  # release_date with start hour
+                    date = datetime.strptime(release_date, '%Y-%m-%dT%H:%M:%S')  # release_date with start hour
                 else:
-                    date = datetime.strptime(release_date, "%Y-%m-%d")  # else we have to split a day by day range
-                    last_hour = date.strftime("%Y-%m-%d") + 'T23:59:59'  # last hour of a day
+                    date = datetime.strptime(release_date, '%Y-%m-%d')  # else we have to split a day by day range
+                    last_hour = f'{date.strftime("%Y-%m-%d")}T23:59:59'  # last hour of a day
 
                 # Create time lists depending on how many hours we split a search
-                start_hour_list = [(date + timedelta(hours=h)
-                                    ).strftime("%Y-%m-%dT%H:%M:%S") for h in range(0, search_h, split_h)]
-                end_hour_list = [(date + timedelta(hours=h, minutes=59, seconds=59)
-                                  ).strftime("%Y-%m-%dT%H:%M:%S") for h in
-                                 range(split_h - 1, search_h, split_h)]
+                start_hours = [
+                    (date + timedelta(hours=h)).strftime('%Y-%m-%dT%H:%M:%S')
+                    for h in range(0, search_h, split_h)
+                ]
+                end_hours = [
+                    (date + timedelta(hours=h, minutes=59, seconds=59)).strftime('%Y-%m-%dT%H:%M:%S')
+                    for h in range(split_h - 1, search_h, split_h)
+                ]
 
                 # If parts is not a divisor of hours we split, append the last missing hour
-                if len(start_hour_list) != len(end_hour_list):
-                    end_hour_list.append(last_hour)
+                if len(start_hours) != len(end_hours):
+                    end_hours.append(last_hour)
 
                 self.logger.info('Changing filters, split in %s: %s.', parts, response.request.url)
-                for i in range(len(start_hour_list)):
+                for i in range(len(start_hours)):
                     yield self.build_request(
-                        self.base_page_url.format(start_hour_list[i], end_hour_list[i]),
+                        self.url_pattern.format(releasedate__gte=start_hours[i], releasedate__lte=end_hours[i]),
                         formatter=parameters('releasedate__gte', 'releasedate__lte'),
                         meta={
-                            'release_date': start_hour_list[i],  # release_date with star hour
-                            'last_hour': end_hour_list[i],  # release_date with last hour
+                            'release_date': start_hours[i],  # release_date with star hour
+                            'last_hour': end_hours[i],  # release_date with last hour
                             'search_h': split_h,  # new search range
                         },
-                        headers={'Accept': '*/*', 'Content-Type': 'application/json'}
+                        headers=HEADERS
                     )
         else:
             # Message for pages that exceed the 10,000 search results in the range of one hour
             # These are pages with status 500 and 'page=11' in the URL request
-            if response.status == 500 and response.request.url.count("page=11"):
+            if response.status == 500 and response.request.url.count('page=11'):
                 self.logger.error('Status: %s. Results exceeded in a range of one hour, we save the first 10,000 data '
                                   'for: %s', response.status, response.request.url)
             else:

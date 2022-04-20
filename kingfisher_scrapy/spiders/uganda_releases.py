@@ -47,10 +47,9 @@ class UgandaReleases(IndexSpider):
 
     @handle_http_error
     def parse_data(self, response):
-        pattern = 'https://gpppapi.com/adminapi/public/api/open-data/v1/releases/{}?fy={}&pde={}'
+        pattern = 'https://gpppapi.com/adminapi/public/api/open-data/v1/releases/{tag}?fy={fy}&pde={pde}'
 
-        data = response.json()
-        for pdes in data['data']['data']:
+        for pdes in response.json()['data']['data']:
             for plans in pdes['procurement_plans']:
                 for tag in ('planning', 'tender', 'award', 'contract'):
                     if self.from_date and self.until_date:
@@ -58,6 +57,6 @@ class UgandaReleases(IndexSpider):
                         if not (self.from_date.year <= start_year <= self.until_date.year):
                             continue
                     yield self.build_request(
-                        pattern.format(tag, plans['financial_year'], plans['pde_id']),
+                        pattern.format(tag=tag, fy=plans['financial_year'], pde=plans['pde_id']),
                         formatter=join(components(-1), parameters('fy', 'pde'))
                     )

@@ -25,17 +25,19 @@ class NigeriaEdoState(SimpleSpider):
 
     @handle_http_error
     def parse(self, response):
-        releases = []
         data = response.json()
-        # The release list has additional numbered keys with tender, award and contract releases as values, eg:
+        # The release list has additional numbered keys with tender, award and contract releases as values, e.g.:
+        #
         #   "releases": [
-        #            "tender": {
-        #                   ...
-        #             },
-        #             "0": {
-        #                 "ocid": "ocds-fmoaoq-edsg--00546",
-        #                 "id": "ocds-fmoaoq-edsg--00546-02-tender",
-        #             } ]
+        #     "tender": {
+        #       ...
+        #     },
+        #     "0": {
+        #       "ocid": "ocds-fmoaoq-edsg--00546",
+        #       "id": "ocds-fmoaoq-edsg--00546-02-tender",
+        #     }
+        #   ]
+        releases = []
         for release in data['releases']:
             for key in list(release):
                 if key.isnumeric():

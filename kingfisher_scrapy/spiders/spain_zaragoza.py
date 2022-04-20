@@ -18,18 +18,16 @@ class SpainZaragoza(SimpleSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    url = 'https://www.zaragoza.es/sede/servicio/contratacion-publica/ocds/contracting-process/'
+    # Local
+    url_prefix = 'https://www.zaragoza.es/sede/servicio/contratacion-publica/ocds/contracting-process/'
 
     def start_requests(self):
         # row parameter setting to 100000 to get all releases
-        url = f'{self.url}?rf=html&rows=100000'
+        url = f'{self.url_prefix}?rf=html&rows=100000'
 
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
-        ids = response.json()
-        for contracting_process_id in ids:
-            ocid = contracting_process_id['ocid']
-            url = f'{self.url}{ocid}'
-            yield self.build_request(url, formatter=components(-1))
+        for item in response.json():
+            yield self.build_request(f'{self.url_prefix}{item["ocid"]}', formatter=components(-1))

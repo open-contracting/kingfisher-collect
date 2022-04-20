@@ -28,6 +28,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
     limit = 100
     parse_list_callback = 'parse_page'
 
+    # Local
     available_systems = {
         'convenio': 'listaOCDSAgnoMesConvenio',
         'licitacion': 'listaOCDSAgnoMes',
