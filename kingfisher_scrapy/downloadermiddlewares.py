@@ -36,6 +36,8 @@ class ParaguayAuthMiddleware:
             requests_backlog = []
 
             def build_access_token_request(self):
+                self.access_token_scheduled_at = datetime.now()
+
                 return scrapy.Request("https://example.com")
     """
 
