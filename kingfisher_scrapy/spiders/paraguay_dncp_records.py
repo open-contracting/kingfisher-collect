@@ -26,4 +26,4 @@ class ParaguayDNCPRecords(ParaguayDNCPBase):
 
     def get_files_to_download(self, data):
         for record in data['records']:
-            yield f"{self.url_prefix}/ocds/record/{record['ocid']}"
+            yield f"{self.url_prefix}ocds/record/{record['ocid']}"
