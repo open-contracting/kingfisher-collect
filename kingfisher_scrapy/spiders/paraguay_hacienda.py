@@ -73,7 +73,7 @@ class ParaguayHacienda(BaseSpider):
 
     @handle_http_error
     def parse(self, response):
-        package_url_prefix = f'{url_prefix}ocds/release-package/'
+        package_url_prefix = f'{self.url_prefix}ocds/release-package/'
 
         data = response.json()
 
@@ -119,7 +119,7 @@ class ParaguayHacienda(BaseSpider):
         self.access_token_scheduled_at = datetime.now()
 
         return scrapy.Request(
-            f'{url_prefix}auth/token',
+            f'{self.url_prefix}auth/token',
             method='POST',
             headers={'Authorization': self.request_token, 'Content-Type': 'application/json'},
             body=body,

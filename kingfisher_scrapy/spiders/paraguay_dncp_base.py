@@ -82,7 +82,7 @@ class ParaguayDNCPBase(SimpleSpider):
         self.access_token_scheduled_at = datetime.now()
 
         return scrapy.Request(
-            f'{url_prefix}oauth/token',
+            f'{self.url_prefix}oauth/token',
             method='POST',
             headers={'Accept': 'application/json', 'Content-Type': 'application/json'},
             body=json.dumps({'request_token': self.request_token}),
