@@ -19,7 +19,7 @@ class NigeriaBudeshiReleases(NigeriaBudeshiBase):
 
     def build_urls(self, project):
         for tag in ('planning', 'tender', 'award', 'contract'):
-            yield self.build_request(f'{self.url_prefix}releases/{project["id"]}/{tag}', formatter=components(-2))
+            yield self.build_request(f'{self.base_url}releases/{project["id"]}/{tag}', formatter=components(-2))
 
     def parse(self, response):
         data = response.json()

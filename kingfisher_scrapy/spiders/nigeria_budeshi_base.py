@@ -9,11 +9,11 @@ from kingfisher_scrapy.util import handle_http_error
 
 class NigeriaBudeshiBase(SimpleSpider):
     # NigeriaBudeshiBase
-    url_prefix = 'https://budeshi.ng/api/'
+    base_url = 'https://budeshi.ng/api/'
 
     def start_requests(self):
         yield scrapy.Request(
-            f'{self.url_prefix}project_list',
+            f'{self.base_url}project_list',
             meta={'file_name': 'project_list.json'},
             callback=self.parse_list
         )

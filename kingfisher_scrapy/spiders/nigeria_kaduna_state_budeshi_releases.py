@@ -12,4 +12,4 @@ class NigeriaKadunaStateBudeshiReleases(NigeriaBudeshiReleases):
     name = 'nigeria_kaduna_state_budeshi_releases'
 
     # NigeriaBudeshiBase
-    url_prefix = 'https://www.budeshi.ng/kadppa/api/'
+    base_url = 'https://www.budeshi.ng/kadppa/api/'
