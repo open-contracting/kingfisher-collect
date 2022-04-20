@@ -8,17 +8,19 @@ from kingfisher_scrapy.util import handle_http_error
 
 
 class NigeriaBudeshiBase(SimpleSpider):
+    # NigeriaBudeshiBase
+    base_url = 'https://budeshi.ng/api/'
+
     def start_requests(self):
         yield scrapy.Request(
-            'https://budeshi.ng/api/project_list',
+            f'{self.base_url}project_list',
             meta={'file_name': 'project_list.json'},
             callback=self.parse_list
         )
 
     @handle_http_error
     def parse_list(self, response):
-        project_list = response.json()
-        for project in sorted(project_list, key=itemgetter('year'), reverse=True):
+        for project in sorted(response.json(), key=itemgetter('year'), reverse=True):
             yield from self.build_urls(project)
 
     @abstractmethod

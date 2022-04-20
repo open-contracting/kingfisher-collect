@@ -12,19 +12,19 @@ class NigeriaBudeshiReleases(NigeriaBudeshiBase):
     name = 'nigeria_budeshi_releases'
 
     # BaseSpider
-    skip_pluck = 'Already covered (see code for details)'  # nigeria_budeshi_records
+    skip_pluck = 'Already covered (see code for details)'  # nigeria*_budeshi_records
 
     # SimpleSpider
     data_type = 'release_package'
 
     def build_urls(self, project):
-        url = 'https://budeshi.ng/api/releases/{id}/{tag}'
         for tag in ('planning', 'tender', 'award', 'contract'):
-            yield self.build_request(url.format(id=project['id'], tag=tag), formatter=components(-2))
+            yield self.build_request(f'{self.base_url}releases/{project["id"]}/{tag}', formatter=components(-2))
 
     def parse(self, response):
         data = response.json()
-        # some responses include a release list with null objects, eg:
+        # Some responses include a release list with null objects, e.g.:
+        #
         #   "releases": [
         #     null
         #   ]

@@ -1,20 +1,14 @@
-from kingfisher_scrapy.spiders.nigeria_kaduna_state_budeshi_base import NigeriaKadunaStateBudeshiBase
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.spiders.nigeria_budeshi_releases import NigeriaBudeshiReleases
 
 
-class NigeriaKadunaStateBudeshiReleases(NigeriaKadunaStateBudeshiBase):
+class NigeriaKadunaStateBudeshiReleases(NigeriaBudeshiReleases):
     """
     Domain
-        Budeshi Nigeria - Kaduna State
+      Budeshi Nigeria - Kaduna State
     API documentation
-        https://www.budeshi.ng/kadppa/api
+      https://www.budeshi.ng/kadppa/api
     """
     name = 'nigeria_kaduna_state_budeshi_releases'
 
-    # SimpleSpider
-    data_type = 'release_package'
-
-    def build_urls(self, id):
-        for tag in ('planning', 'tender', 'award', 'contract'):
-            url = f'{self.base_url}releases/{id}/{tag}'
-            yield self.build_request(url, formatter=components(-2))
+    # NigeriaBudeshiBase
+    base_url = 'https://www.budeshi.ng/kadppa/api/'

@@ -15,5 +15,4 @@ class NigeriaBudeshiRecords(NigeriaBudeshiBase):
     data_type = 'record_package'
 
     def build_urls(self, project):
-        url = 'https://budeshi.ng/api/record/{}'
-        yield self.build_request(url.format(project['id']), formatter=components(-2))
+        yield self.build_request(f'{self.base_url}record/{project["id"]}', formatter=components(-2))
