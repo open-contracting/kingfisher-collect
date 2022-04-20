@@ -15,9 +15,6 @@ class ArgentinaBuenosAires(SimpleSpider):
     """
     name = 'argentina_buenos_aires'
     download_timeout = 1000
-    custom_settings = {
-        'DOWNLOAD_FAIL_ON_DATALOSS': False,
-    }
 
     # BaseSpider
     root_path = 'main.item'
