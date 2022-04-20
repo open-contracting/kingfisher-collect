@@ -13,7 +13,7 @@ class NigeriaCrossRiverStateBase(SimpleSpider):
     default_from_date = '2019-08'
 
     # Local
-    url_prefix = 'https://ocdsapi.dppib-crsgov.org:443/api/ocdsAPI/'
+    url_prefix = 'https://ocdsapi.dppib-crsgov.org/api/ocdsAPI/'
 
     def start_requests(self):
         url = f'{self.url_prefix}getAvailableReleasesSummary'
