@@ -24,6 +24,6 @@ class ParaguayDNCPRecords(ParaguayDNCPBase):
     # SimpleSpider
     data_type = 'record_package'
 
-    def get_files_to_download(self, content):
-        for record in content['records']:
-            yield f"{self.base_url}/ocds/record/{record['ocid']}"
+    def get_files_to_download(self, data):
+        for record in data['records']:
+            yield f"{self.url_prefix}/ocds/record/{record['ocid']}"

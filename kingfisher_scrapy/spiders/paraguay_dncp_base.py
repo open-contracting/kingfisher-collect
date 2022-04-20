@@ -22,24 +22,23 @@ class ParaguayDNCPBase(SimpleSpider):
     default_from_date = '2010-01-01T00:00:00'
     date_required = True
 
-    # request limits: since we can't control when Scrapy decides to send a
-    # request, values here are slightly less than real limits.
-    start_time = None
+    # ParaguayAuthMiddleware
     access_token = None
-    auth_failed = False
-    last_requests = []
-    request_time_limit = 13  # in minutes
-    base_url = 'https://contrataciones.gov.py/datos/api/v3/doc'
-    auth_url = f'{base_url}/oauth/token'
-    request_token = None
+    access_token_scheduled_at = None
+    # The maximum age is less than the API's limit, since we don't precisely control Scrapy's scheduler.
+    access_token_maximum_age = 13 * 60
+    access_token_request_failed = False
+    requests_backlog = []
+
+    # Local
     max_attempts = 10
+    url_prefix = 'https://contrataciones.gov.py/datos/api/v3/doc/'
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super().from_crawler(crawler, *args, **kwargs)
 
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
-
         if spider.request_token is None:
             raise MissingEnvVarError('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN is not set.')
 
@@ -50,7 +49,7 @@ class ParaguayDNCPBase(SimpleSpider):
             yield self.build_request(
                 url,
                 formatter=parameters('fecha_desde'),
-                # send duplicate requests when the token expired and in the continuation of last_requests saved.
+                # send duplicate requests when the token expired and in the continuation of requests_backlog saved.
                 dont_filter=True,
                 callback=self.parse_pages
             )
@@ -68,8 +67,8 @@ class ParaguayDNCPBase(SimpleSpider):
                 start_date = end_date - interval
             # We request active/complete tenders and planned ones separately to ensure we don't exceed the 10000
             # results per request limit.
-            url_base = f'{self.base_url}/search/processes?fecha_desde={start_date.strftime(self.date_format)}-04:00' \
-                       f'&fecha_hasta={end_date.strftime(self.date_format)}-04:00&items_per_page=10000 '
+            url_base = f'{self.url_prefix}search/processes?fecha_desde={start_date.strftime(self.date_format)}' \
+                       f'-04:00&fecha_hasta={end_date.strftime(self.date_format)}-04:00&items_per_page=10000 '
             # We request the active or successful tenders by using the "publicacion_llamado" filter.
             url_tender = f'{url_base}&tipo_fecha=publicacion_llamado'
             # And the planned ones with the "fecha_release" and tender.id=planned filters.
@@ -77,16 +76,15 @@ class ParaguayDNCPBase(SimpleSpider):
             end_date = start_date - timedelta(seconds=1)
             yield from [url_tender, url_planning]
 
-    def request_access_token(self):
-        """ Requests a new access token """
-        attempt = 0
-        self.start_time = datetime.now()
+    def build_access_token_request(self, attempt=0):
         self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
 
+        self.access_token_scheduled_at = datetime.now()
+
         return scrapy.Request(
-            self.auth_url,
+            f'{url_prefix}oauth/token',
             method='POST',
-            headers={'accept': 'application/json', 'Content-Type': 'application/json'},
+            headers={'Accept': 'application/json', 'Content-Type': 'application/json'},
             body=json.dumps({'request_token': self.request_token}),
             meta={'attempt': attempt + 1, 'auth': False},
             callback=self.parse_access_token,
@@ -96,43 +94,32 @@ class ParaguayDNCPBase(SimpleSpider):
 
     def parse_access_token(self, response):
         if self.is_http_success(response):
-            r = response.json()
-            token = r.get('access_token')
+            token = response.json().get('access_token')
             if token:
                 self.logger.info('New access token: %s', token)
                 self.access_token = token
                 # continue scraping where it stopped after getting the token
-                while self.last_requests:
-                    yield self.last_requests.pop(0)
+                while self.requests_backlog:
+                    yield self.requests_backlog.pop(0)
             else:
                 attempt = response.request.meta['attempt']
                 if attempt == self.max_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
-                    self.auth_failed = True
+                    self.access_token_request_failed = True
                     raise AccessTokenError()
                 else:
-                    self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
-                    yield scrapy.Request(
-                        self.auth_url,
-                        method='POST',
-                        headers={'accept': 'application/json', 'Content-Type': 'application/json'},
-                        body=json.dumps({'request_token': self.request_token}),
-                        meta={'attempt': attempt + 1, 'auth': False},
-                        callback=self.parse_access_token,
-                        dont_filter=True,
-                        priority=1000
-                    )
+                    yield self.build_access_token_request(attempt=attempt)
         else:
             self.logger.error('Authentication failed. Status code: %s', response.status)
-            self.auth_failed = True
+            self.access_token_request_failed = True
             raise AccessTokenError()
 
     @handle_http_error
     def parse_pages(self, response):
-        content = response.json()
-        for url in self.get_files_to_download(content):
+        data = response.json()
+        for url in self.get_files_to_download(data):
             yield self.build_request(url, formatter=components(-1), dont_filter=True)
-        pagination = content['pagination']
+        pagination = data['pagination']
         if pagination['current_page'] < pagination['total_pages']:
             page = pagination['current_page'] + 1
             url = replace_parameters(response.request.url, page=page)
@@ -144,14 +131,5 @@ class ParaguayDNCPBase(SimpleSpider):
             )
 
     @abstractmethod
-    def get_files_to_download(self, content):
+    def get_files_to_download(self, data):
         pass
-
-    def expires_soon(self, time_diff):
-        """ Tells if the access token will expire soon (required by
-        ParaguayAuthMiddleware)
-        """
-        if time_diff.total_seconds() < ParaguayDNCPBase.request_time_limit * 60:
-            return False
-        self.logger.info('Time_diff: %s', time_diff.total_seconds())
-        return True
