@@ -8,7 +8,7 @@ pika
 psycopg2
 rarfile
 requests
-rfc3987
+rfc3986-validator
 Scrapy>=2
 scrapyd
 scrapyd-client
