@@ -4,6 +4,11 @@
 #
 #    pip-compile
 #
+-e git+https://github.com/scrapy/scrapy.git@b9b9422bb1025d00c5113994490ac71a162d775f#egg=scrapy
+    # via
+    #   -r requirements.in
+    #   scrapyd
+    #   scrapyd-client
 attrs==19.3.0
     # via
     #   automat
@@ -28,18 +33,11 @@ contextlib2==0.6.0.post1
 cryptography==3.4.6
     # via
     #   pyopenssl
-    #   scrapy
     #   service-identity
-cssselect==1.1.0
-    # via
-    #   parsel
-    #   scrapy
 defusedxml==0.6.0
     # via odfpy
 et-xmlfile==1.0.1
     # via openpyxl
-filelock==3.4.1
-    # via tldextract
 flattentool==0.14.0
     # via -r requirements.in
 hyperlink==21.0.0
@@ -50,7 +48,6 @@ idna==2.8
     # via
     #   hyperlink
     #   requests
-    #   tldextract
     #   twisted
 ijson==3.1.1
     # via
@@ -62,18 +59,10 @@ incremental==21.3.0
     # via
     #   treq
     #   twisted
-itemadapter==0.1.1
-    # via
-    #   itemloaders
-    #   scrapy
-itemloaders==1.0.3
-    # via scrapy
 itsdangerous==2.0.1
     # via requests-cache
 jdcal==1.4.1
     # via openpyxl
-jmespath==0.10.0
-    # via itemloaders
 json-merge-patch==0.2
     # via ocdsextensionregistry
 jsonpointer==2.0
@@ -87,10 +76,7 @@ jsonref==0.2
 jsonschema==3.2.0
     # via -r requirements.in
 lxml==4.7.1
-    # via
-    #   flattentool
-    #   parsel
-    #   scrapy
+    # via flattentool
 ocdsextensionregistry==0.1.5
     # via ocdskit
 ocdskit==1.0.0
@@ -103,14 +89,8 @@ odfpy==1.4.1
     # via flattentool
 openpyxl==3.0.5
     # via flattentool
-parsel==1.5.2
-    # via
-    #   itemloaders
-    #   scrapy
 pika==1.2.0
     # via -r requirements.in
-protego==0.1.16
-    # via scrapy
 psycopg2==2.9.2
     # via -r requirements.in
 pyasn1==0.4.8
@@ -121,18 +101,12 @@ pyasn1-modules==0.2.7
     # via service-identity
 pycparser==2.19
     # via cffi
-pydispatcher==2.0.5
-    # via scrapy
 pyopenssl==19.1.0
-    # via
-    #   scrapy
-    #   twisted
+    # via twisted
 pyrsistent==0.16.0
     # via jsonschema
 pytz==2020.1
     # via flattentool
-queuelib==1.5.0
-    # via scrapy
 rarfile==3.1
     # via -r requirements.in
 requests==2.25.1
@@ -141,23 +115,14 @@ requests==2.25.1
     #   ocdsextensionregistry
     #   ocdsmerge
     #   requests-cache
-    #   requests-file
     #   scrapyd-client
-    #   tldextract
     #   treq
 requests-cache==0.6.3
     # via ocdsextensionregistry
-requests-file==1.5.1
-    # via tldextract
 rfc3986-validator==0.1.1
     # via -r requirements.in
 schema==0.7.2
     # via flattentool
-scrapy==2.6.1
-    # via
-    #   -r requirements.in
-    #   scrapyd
-    #   scrapyd-client
 scrapyd==1.2.1
     # via -r requirements.in
 scrapyd-client==1.2.0
@@ -165,28 +130,21 @@ scrapyd-client==1.2.0
 sentry-sdk==1.0.0
     # via -r requirements.in
 service-identity==18.1.0
-    # via
-    #   scrapy
-    #   twisted
+    # via twisted
 six==1.13.0
     # via
     #   automat
     #   jsonschema
-    #   parsel
-    #   protego
     #   pyopenssl
     #   pyrsistent
-    #   requests-file
     #   scrapyd
+    #   url-normalize
     #   w3lib
-tldextract==3.1.2
-    # via scrapy
 treq==22.1.0
     # via -r requirements.in
 twisted[tls]==22.4.0
     # via
     #   -r requirements.in
-    #   scrapy
     #   scrapyd
     #   treq
 typing-extensions==3.10.0.0
@@ -200,19 +158,13 @@ urllib3==1.26.5
     #   requests
     #   sentry-sdk
 w3lib==1.21.0
-    # via
-    #   itemloaders
-    #   parsel
-    #   scrapy
-    #   scrapyd-client
+    # via scrapyd-client
 xmltodict==0.12.0
     # via flattentool
 zipp==3.4.1
     # via importlib-metadata
 zope.interface==5.4.0
-    # via
-    #   scrapy
-    #   twisted
+    # via twisted
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

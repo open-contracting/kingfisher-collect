@@ -4,6 +4,11 @@
 #
 #    pip-compile requirements_dev.in
 #
+-e git+https://github.com/scrapy/scrapy.git@b9b9422bb1025d00c5113994490ac71a162d775f#egg=scrapy
+    # via
+    #   -r requirements.txt
+    #   scrapyd
+    #   scrapyd-client
 attrs==19.3.0
     # via
     #   -r requirements.txt
@@ -51,13 +56,7 @@ cryptography==3.4.6
     # via
     #   -r requirements.txt
     #   pyopenssl
-    #   scrapy
     #   service-identity
-cssselect==1.1.0
-    # via
-    #   -r requirements.txt
-    #   parsel
-    #   scrapy
 decorator==4.4.2
     # via pytest-twisted
 defusedxml==0.6.0
@@ -72,10 +71,6 @@ et-xmlfile==1.0.1
     # via
     #   -r requirements.txt
     #   openpyxl
-filelock==3.4.1
-    # via
-    #   -r requirements.txt
-    #   tldextract
 flake8==3.7.9
     # via -r requirements_dev.in
 flattentool==0.14.0
@@ -92,7 +87,6 @@ idna==2.8
     #   -r requirements.txt
     #   hyperlink
     #   requests
-    #   tldextract
     #   twisted
 ijson==3.1.1
     # via
@@ -114,15 +108,6 @@ iniconfig==1.1.1
     # via pytest
 isort==5.7.0
     # via -r requirements_dev.in
-itemadapter==0.1.1
-    # via
-    #   -r requirements.txt
-    #   itemloaders
-    #   scrapy
-itemloaders==1.0.3
-    # via
-    #   -r requirements.txt
-    #   scrapy
 itsdangerous==2.0.1
     # via
     #   -r requirements.txt
@@ -131,10 +116,6 @@ jdcal==1.4.1
     # via
     #   -r requirements.txt
     #   openpyxl
-jmespath==0.10.0
-    # via
-    #   -r requirements.txt
-    #   itemloaders
 json-merge-patch==0.2
     # via
     #   -r requirements.txt
@@ -154,8 +135,6 @@ lxml==4.7.1
     # via
     #   -r requirements.txt
     #   flattentool
-    #   parsel
-    #   scrapy
 mccabe==0.6.1
     # via flake8
 ocdsextensionregistry==0.1.5
@@ -179,11 +158,6 @@ openpyxl==3.0.5
     #   flattentool
 packaging==19.2
     # via pytest
-parsel==1.5.2
-    # via
-    #   -r requirements.txt
-    #   itemloaders
-    #   scrapy
 pep517==0.12.0
     # via pip-tools
 pika==1.2.0
@@ -192,10 +166,6 @@ pip-tools==6.4.0
     # via -r requirements_dev.in
 pluggy==0.13.1
     # via pytest
-protego==0.1.16
-    # via
-    #   -r requirements.txt
-    #   scrapy
 psycopg2==2.9.2
     # via -r requirements.txt
 py==1.10.0
@@ -215,16 +185,11 @@ pycparser==2.19
     # via
     #   -r requirements.txt
     #   cffi
-pydispatcher==2.0.5
-    # via
-    #   -r requirements.txt
-    #   scrapy
 pyflakes==2.1.1
     # via flake8
 pyopenssl==19.1.0
     # via
     #   -r requirements.txt
-    #   scrapy
     #   twisted
 pyparsing==2.4.5
     # via packaging
@@ -248,10 +213,6 @@ pytz==2020.1
     # via
     #   -r requirements.txt
     #   flattentool
-queuelib==1.5.0
-    # via
-    #   -r requirements.txt
-    #   scrapy
 rarfile==3.1
     # via -r requirements.txt
 requests==2.25.1
@@ -261,29 +222,18 @@ requests==2.25.1
     #   ocdsextensionregistry
     #   ocdsmerge
     #   requests-cache
-    #   requests-file
     #   scrapyd-client
-    #   tldextract
     #   treq
 requests-cache==0.6.3
     # via
     #   -r requirements.txt
     #   ocdsextensionregistry
-requests-file==1.5.1
-    # via
-    #   -r requirements.txt
-    #   tldextract
 rfc3986-validator==0.1.1
     # via -r requirements.txt
 schema==0.7.2
     # via
     #   -r requirements.txt
     #   flattentool
-scrapy==2.6.1
-    # via
-    #   -r requirements.txt
-    #   scrapyd
-    #   scrapyd-client
 scrapyd==1.2.1
     # via -r requirements.txt
 scrapyd-client==1.2.0
@@ -293,7 +243,6 @@ sentry-sdk==1.0.0
 service-identity==18.1.0
     # via
     #   -r requirements.txt
-    #   scrapy
     #   twisted
 six==1.13.0
     # via
@@ -301,18 +250,11 @@ six==1.13.0
     #   automat
     #   jsonschema
     #   packaging
-    #   parsel
-    #   protego
     #   pyopenssl
     #   pyrsistent
-    #   requests-file
     #   scrapyd
     #   url-normalize
     #   w3lib
-tldextract==3.1.2
-    # via
-    #   -r requirements.txt
-    #   scrapy
 toml==0.10.2
     # via coverage
 tomli==1.2.3
@@ -324,7 +266,6 @@ treq==22.1.0
 twisted[tls]==22.4.0
     # via
     #   -r requirements.txt
-    #   scrapy
     #   scrapyd
     #   treq
 typing-extensions==3.10.0.0
@@ -344,9 +285,6 @@ urllib3==1.26.5
 w3lib==1.21.0
     # via
     #   -r requirements.txt
-    #   itemloaders
-    #   parsel
-    #   scrapy
     #   scrapyd-client
 wheel==0.37.0
     # via pip-tools
@@ -362,7 +300,6 @@ zipp==3.4.1
 zope.interface==5.4.0
     # via
     #   -r requirements.txt
-    #   scrapy
     #   twisted
 
 # The following packages are considered to be unsafe in a requirements file:
