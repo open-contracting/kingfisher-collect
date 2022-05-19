@@ -11,7 +11,7 @@ from kingfisher_scrapy.extensions import DatabaseStore, FilesStore
 from tests import spider_with_crawler
 
 database_url = os.getenv('KINGFISHER_COLLECT_DATABASE_URL')
-skip_test_if = not database_url and not os.getenv('CI')
+skip_test_if = not database_url and ('CI' not in os.environ or 'CI_SKIP' in os.environ)
 
 
 def test_from_crawler_missing_arguments():
