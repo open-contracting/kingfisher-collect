@@ -5,6 +5,7 @@ flake8
 isort
 openpyxl
 pip-tools
+psycopg2-binary
 pytest
 pytest-cov
 pytest-order
