@@ -20,6 +20,3 @@ jobs:
       - env:
           CI_SKIP: true
         run: pytest -W error -rs --cov kingfisher_scrapy
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: coveralls --service=github
