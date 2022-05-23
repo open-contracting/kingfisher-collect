@@ -2,7 +2,7 @@ from kingfisher_scrapy.base_spiders import CompressedFileSpider, PeriodicSpider
 from kingfisher_scrapy.util import components
 
 
-class EcuadorSERCOP(CompressedFileSpider, PeriodicSpider):
+class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
     """
     Domain
       Servicio Nacional de Contratación Pública (SERCOP)
@@ -16,7 +16,7 @@ class EcuadorSERCOP(CompressedFileSpider, PeriodicSpider):
     Bulk download documentation
       https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/datos-abiertos
     """
-    name = 'ecuador_sercop'
+    name = 'ecuador_sercop_bulk'
 
     # BaseSpider
     date_format = 'year-month'

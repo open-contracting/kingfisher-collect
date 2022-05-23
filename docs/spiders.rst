@@ -380,12 +380,19 @@ Ecuador
 
    scrapy crawl ecuador_emergency
 
-.. autoclass:: kingfisher_scrapy.spiders.ecuador_sercop.EcuadorSERCOP
+.. autoclass:: kingfisher_scrapy.spiders.ecuador_sercop_api.EcuadorSERCOPAPI
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl ecuador_sercop
+   scrapy crawl ecuador_sercop_api
+
+.. autoclass:: kingfisher_scrapy.spiders.ecuador_sercop_bulk.EcuadorSERCOPBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl ecuador_sercop_bulk
 
 Estonia
 ~~~~~~~
