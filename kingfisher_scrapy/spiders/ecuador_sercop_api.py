@@ -1,4 +1,4 @@
-from kingfisher_scrapy.base_spiders import PeriodicSpider, IndexSpider
+from kingfisher_scrapy.base_spiders import IndexSpider, PeriodicSpider
 from kingfisher_scrapy.util import components, parameters
 
 
