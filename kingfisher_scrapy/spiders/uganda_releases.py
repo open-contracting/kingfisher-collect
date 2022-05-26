@@ -39,14 +39,14 @@ class UgandaReleases(IndexSpider):
 
     # IndexSpider
     total_pages_pointer = '/data/last_page'
-    parse_list_callback = 'parse_data'
+    parse_list_callback = 'parse_page'
 
     def start_requests(self):
         url = 'https://gpppapi.com/adminapi/public/api/pdes'
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
     @handle_http_error
-    def parse_data(self, response):
+    def parse_page(self, response):
         pattern = 'https://gpppapi.com/adminapi/public/api/open-data/v1/releases/{tag}?fy={fy}&pde={pde}'
 
         for pdes in response.json()['data']['data']:

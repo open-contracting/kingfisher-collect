@@ -136,7 +136,7 @@ Since there are many class attributes that control a spider's behavior, please p
       start_page = 0
       formatter = staticmethod(parameters('pageNumber'))
       chronological_order = 'asc'
-      parse_list_callback = 'parse_custom'
+      parse_list_callback = 'parse_page'
       param_page = 'pageNumber'
       param_limit = 'customLimit'
       param_offset = = 'customOffset'

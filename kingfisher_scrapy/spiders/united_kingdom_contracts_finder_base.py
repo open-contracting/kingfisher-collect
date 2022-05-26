@@ -14,7 +14,7 @@ class UnitedKingdomContractsFinderBase(IndexSpider):
     ocds_version = '1.0'  # uses deprecated fields
 
     # IndexSpider
-    parse_list_callback = 'build_urls'
+    parse_list_callback = 'parse_page'
     total_pages_pointer = '/maxPage'
 
     url_prefix = 'https://www.contractsfinder.service.gov.uk/Published/'
@@ -41,7 +41,7 @@ class UnitedKingdomContractsFinderBase(IndexSpider):
         else:
             return self.build_file_error_from_response(response)
 
-    def build_urls(self, response):
+    def parse_page(self, response):
         if self.is_http_success(response):
             for result in response.json()['results']:
                 for release in result['releases']:
