@@ -6,10 +6,10 @@ class UnitedKingdomContractsFinderReleases(UnitedKingdomContractsFinderBase):
     """
     Domain
       Contracts Finder
-    API documentation
-      https://www.contractsfinder.service.gov.uk/apidocumentation/home
     Caveats
         The records endpoint is used to get the releases URLs for each ocid.
+    API documentation
+      https://www.contractsfinder.service.gov.uk/apidocumentation/home
     """
     name = 'united_kingdom_contracts_finder_releases'
 
