@@ -124,6 +124,7 @@ Since there are many class attributes that control a spider's behavior, please p
       next_pointer = '/next_page/uri'
 
       # PeriodicSpider
+      formatter = staticmethod(parameters('page'))
       pattern = 'https://example.com/{}'
       start_requests_callback = 'parse_list'
 
