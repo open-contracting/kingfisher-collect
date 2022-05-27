@@ -17,10 +17,10 @@ class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
       https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/datos-abiertos
     """
     name = 'ecuador_sercop_api'
-    # The API returns HTTP error 429 after a number of requests, so we have our own retry logic.
-    # We also reduce the number of concurrent requests to avoid too many failures.
     custom_settings = {
+        # Reduce the number of concurrent requests to avoid multiple failures.
         'CONCURRENT_REQUESTS': 2,
+        # Don't let Scrapy handle HTTP 429.
         'RETRY_HTTP_CODES': [],
     }
 
@@ -31,17 +31,17 @@ class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    # IndexSpider
-    parse_list_callback = 'parse_page'
-    start_requests_callback = 'parse_list'
-    total_pages_pointer = '/pages'
-
     # Local
     url_prefix = 'https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/api/'
 
     # PeriodicSpider
     formatter = staticmethod(components(-1))
-    pattern = f'{url_prefix}search_ocds'+'?year={0}'
+    pattern = f'{url_prefix}search_ocds?year={{0}}'
+    start_requests_callback = 'parse_list'
+
+    # IndexSpider
+    total_pages_pointer = '/pages'
+    parse_list_callback = 'parse_page'
 
     def parse_list(self, response):
         if self.is_http_success(response):
@@ -54,7 +54,7 @@ class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
             for data in response.json()['data']:
                 # Some ocids have a '/' character which cannot be in a file name.
                 yield self.build_request(f'{self.url_prefix}record?ocid={data["ocid"]}',
-                                         formatter=lambda file_name: parameters('ocid')(file_name).replace('/', ''))
+                                         formatter=lambda url: parameters('ocid')(url).replace('/', '_'))
         else:
             yield self.build_retry_request_or_file_error(response)
 
@@ -67,7 +67,7 @@ class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
     def build_retry_request_or_file_error(self, response):
         if response.status == 429:
             request = response.request.copy()
-            wait_time = int(response.headers.get('retry-after', 1))
+            wait_time = int(response.headers.get('Retry-After', 1))
             request.meta['wait_time'] = wait_time
             request.dont_filter = True
             self.logger.info('Retrying %(request)s in %(wait_time)ds: HTTP %(status)d',
