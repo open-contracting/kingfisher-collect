@@ -67,7 +67,7 @@ class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
     def build_retry_request_or_file_error(self, response):
         if response.status == 429:
             request = response.request.copy()
-            wait_time = int(response.headers.get('Retry-After'))
+            wait_time = int(response.headers['Retry-After'])
             request.meta['wait_time'] = wait_time
             request.dont_filter = True
             self.logger.info('Retrying %(request)s in %(wait_time)ds: HTTP %(status)d',
