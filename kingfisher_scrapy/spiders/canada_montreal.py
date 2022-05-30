@@ -23,7 +23,7 @@ class CanadaMontreal(IndexSpider):
     data_type = 'release_package'
 
     # IndexSpider
-    count_pointer = '/meta/count'
+    result_count_pointer = '/meta/count'
     limit = 10000  # > 10000 causes "Too many records requested. Set parameter LIMIT lower"
 
     def start_requests(self):

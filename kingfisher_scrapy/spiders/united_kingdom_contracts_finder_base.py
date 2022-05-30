@@ -15,7 +15,7 @@ class UnitedKingdomContractsFinderBase(IndexSpider):
 
     # IndexSpider
     parse_list_callback = 'parse_page'
-    total_pages_pointer = '/maxPage'
+    page_count_pointer = '/maxPage'
 
     url_prefix = 'https://www.contractsfinder.service.gov.uk/Published/'
     # parse_data_callback must be provided by subclasses.

@@ -31,7 +31,5 @@ class BigFileSpider(SimpleSpider):
 
     @handle_http_error
     def parse(self, response):
-        data = {'data': response.body,
-                'package': response.body}
         yield self.build_file(file_name=response.request.meta['file_name'], url=response.request.url,
-                              data_type='release_package', data=data)
+                              data_type='release_package', data={'data': response.body, 'package': response.body})

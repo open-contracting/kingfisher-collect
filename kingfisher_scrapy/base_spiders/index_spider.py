@@ -17,24 +17,24 @@ class IndexSpider(SimpleSpider):
 
     #. Set class attributes. Either:
 
-        #. Set ``total_pages_pointer`` to the JSON Pointer for the total number of pages in the first response. The
+        #. Set ``page_count_pointer`` to the JSON Pointer for the total number of pages in the first response. The
            spider then yields a request for each page, incrementing a ``page`` query string parameter in each request.
-        #. Set ``count_pointer`` to the JSON pointer for the total number of results, and set ``limit`` to the number
-           of results to return per page, or to the JSON pointer for it. Optionally, set ``use_page`` to ``True`` to
+        #. Set ``result_count_pointer`` to the JSON Pointer for the total number of results, and set ``limit`` to the
+           number of results to return per page, or to the JSON Pointer for it. Optionally, set ``use_page = True`` to
            configure the spider to send a ``page`` query string parameter instead of a pair of ``limit`` and ``offset``
            query string parameters. The spider then yields a request for each offset/page.
 
     #. If the ``page`` query string parameter is zero-indexed, set ``start_page = 0``.
     #. Set ``formatter`` to set the file name like in :meth:`~kingfisher_scrapy.base_spiders.BaseSpider.build_request`.
-       If ``total_pages_pointer`` or ``use_page = True``, it defaults to ``parameters(<param_page>)``. Otherwise, if
-       ``count_pointer`` is set and ``use_page = False``, it defaults to ``parameters(<param_offset>)``.
+       If ``page_count_pointer`` or ``use_page = True``, it defaults to ``parameters(<param_page>)``. Otherwise, if
+       ``result_count_pointer`` is set and ``use_page = False``, it defaults to ``parameters(<param_offset>)``.
     #. Write a ``start_requests()`` method to yield the initial URL. The request's ``callback`` parameter should be set
        to ``self.parse_list``.
 
-    If neither ``total_pages_pointer`` nor ``count_pointer`` can be used to create the URLs (e.g. if you need to query
-    a separate URL that does not return JSON), you need to define ``range_generator()`` and ``url_builder()`` methods.
-    ``range_generator()`` should return page numbers or offset numbers. ``url_builder()`` receives a page or offset
-    from ``range_generator()``, and returns a URL to request.
+    If neither ``page_count_pointer`` nor ``result_count_pointer`` can be used to create the URLs (e.g. if you need to
+    query a separate URL that does not return JSON), you need to define ``range_generator()`` and ``url_builder()``
+    methods. ``range_generator()`` should return page numbers or offset numbers. ``url_builder()`` receives a page or
+    offset from ``range_generator()``, and returns a URL to request.
 
     If the results are in ascending chronological order, set ``chronological_order = 'asc'``.
 
@@ -66,26 +66,26 @@ class IndexSpider(SimpleSpider):
 
         self.parse_list_callback = getattr(self, self.parse_list_callback)
 
-        has_total_pages_pointer = hasattr(self, 'total_pages_pointer')
-        has_count_pointer = hasattr(self, 'count_pointer')
+        has_page_count_pointer = hasattr(self, 'page_count_pointer')
+        has_result_count_pointer = hasattr(self, 'result_count_pointer')
         has_range_generator = hasattr(self, 'range_generator')
 
-        if not (has_total_pages_pointer ^ has_count_pointer ^ has_range_generator):
+        if not (has_page_count_pointer ^ has_result_count_pointer ^ has_range_generator):
             raise IncoherentConfigurationError(
-                'Exactly one of total_pages_pointer, count_pointer or range_generator must be set.')
-        if self.use_page and not has_count_pointer:
+                'Exactly one of page_count_pointer, result_count_pointer or range_generator must be set.')
+        if self.use_page and not has_result_count_pointer:
             raise IncoherentConfigurationError(
-                'use_page = True has no effect unless count_pointer is set.')
+                'use_page = True has no effect unless result_count_pointer is set.')
 
-        if has_total_pages_pointer:
-            self.range_generator = self.pages_from_total_range_generator
+        if has_page_count_pointer:
+            self.range_generator = self.page_count_range_generator
             if not hasattr(self, 'url_builder'):
                 self.url_builder = self.pages_url_builder
             if not hasattr(self, 'formatter'):
                 self.formatter = parameters(self.param_page)
-        elif has_count_pointer:
+        elif has_result_count_pointer:
             if self.use_page:
-                self.range_generator = self.page_size_range_generator
+                self.range_generator = self.result_count_range_generator
                 if not hasattr(self, 'url_builder'):
                     self.url_builder = self.pages_url_builder
                 if not hasattr(self, 'formatter'):
@@ -118,8 +118,8 @@ class IndexSpider(SimpleSpider):
     def parse_list_loader(self, response):
         return response.json()
 
-    def pages_from_total_range_generator(self, data, response):
-        pages = resolve_pointer(data, self.total_pages_pointer)
+    def page_count_range_generator(self, data, response):
+        pages = resolve_pointer(data, self.page_count_pointer)
         if self.base_url:
             start = 0
         else:
@@ -133,7 +133,7 @@ class IndexSpider(SimpleSpider):
 
     def limit_offset_range_generator(self, data, response):
         limit = self._resolve_limit(data)
-        count = resolve_pointer(data, self.count_pointer)
+        count = resolve_pointer(data, self.result_count_pointer)
         if self.base_url:
             start = 0
         else:
@@ -147,9 +147,9 @@ class IndexSpider(SimpleSpider):
             self.param_offset: value,
         })
 
-    def page_size_range_generator(self, data, response):
+    def result_count_range_generator(self, data, response):
         limit = self._resolve_limit(data)
-        count = resolve_pointer(data, self.count_pointer)
+        count = resolve_pointer(data, self.result_count_pointer)
         if self.base_url:
             start = 0
         else:

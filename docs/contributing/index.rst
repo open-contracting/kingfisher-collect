@@ -129,8 +129,8 @@ Since there are many class attributes that control a spider's behavior, please p
       start_requests_callback = 'parse_list'
 
       # IndexSpider
-      total_pages_pointer = '/data/last_page'
-      count_pointer = '/meta/count'
+      page_count_pointer = '/data/last_page'
+      result_count_pointer = '/meta/count'
       limit = 1000
       use_page = True
       start_page = 0

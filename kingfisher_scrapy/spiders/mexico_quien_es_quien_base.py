@@ -7,7 +7,7 @@ class MexicoQuienEsQuienBase(IndexSpider):
     download_delay = 1
 
     # IndexSpider
-    count_pointer = '/data/index/contracts/count'
+    result_count_pointer = '/data/index/contracts/count'
     limit = 1000  # >= 10000 causes "Search size is bigger than 10000. Elasticsearch does not allow it."
 
     def start_requests(self):

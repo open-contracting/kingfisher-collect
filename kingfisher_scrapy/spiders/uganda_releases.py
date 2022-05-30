@@ -38,7 +38,7 @@ class UgandaReleases(IndexSpider):
     data_type = 'release_package'
 
     # IndexSpider
-    total_pages_pointer = '/data/last_page'
+    page_count_pointer = '/data/last_page'
     parse_list_callback = 'parse_page'
 
     def start_requests(self):
