@@ -32,6 +32,8 @@ class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
     data_type = 'release_package'
 
     # Local
+    max_attempts = 5
+    retry_code = 429
     url_prefix = 'https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/api/'
 
     # PeriodicSpider
@@ -47,7 +49,8 @@ class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
         if self.is_http_success(response):
             yield from super().parse_list(response)
         else:
-            yield self.build_retry_request_or_file_error(response)
+            yield self.build_retry_request_or_file_error(response, int(response.headers['Retry-After']),
+                                                         self.max_attempts, response.status == self.retry_code)
 
     def parse_page(self, response):
         if self.is_http_success(response):
@@ -56,24 +59,12 @@ class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
                 yield self.build_request(f'{self.url_prefix}record?ocid={data["ocid"]}',
                                          formatter=lambda url: parameters('ocid')(url).replace('/', '_'))
         else:
-            yield self.build_retry_request_or_file_error(response)
+            yield self.build_retry_request_or_file_error(response, int(response.headers['Retry-After']),
+                                                         self.max_attempts, response.status == self.retry_code)
 
     def parse(self, response, **kwargs):
         if self.is_http_success(response):
             yield from super().parse(response)
         else:
-            yield self.build_retry_request_or_file_error(response)
-
-    def build_retry_request_or_file_error(self, response):
-        if response.status == 429:
-            request = response.request.copy()
-            wait_time = int(response.headers['Retry-After'])
-            request.meta['wait_time'] = wait_time
-            request.dont_filter = True
-            self.logger.info('Retrying %(request)s in %(wait_time)ds: HTTP %(status)d',
-                             {'request': response.request, 'status': response.status,
-                              'wait_time': wait_time}, extra={'spider': self})
-
-            return request
-        else:
-            return self.build_file_error_from_response(response)
+            yield self.build_retry_request_or_file_error(response, int(response.headers['Retry-After']),
+                                                         self.max_attempts, response.status == self.retry_code)

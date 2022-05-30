@@ -27,7 +27,6 @@ class PortugalBase(LinksSpider):
 
     # https://github.com/scrapy/scrapy/blob/master/scrapy/downloadermiddlewares/retry.py
     def parse(self, response):
-        retries = response.request.meta.get('retries', 0) + 1
         wait_time = response.request.meta.get('wait_time', self.initial_wait_time // 2) * 2
 
         # Every ~36,000 requests, the API returns HTTP errors. After a few minutes, it starts working again.
@@ -35,21 +34,5 @@ class PortugalBase(LinksSpider):
         # https://github.com/open-contracting/kingfisher-collect/issues/545#issuecomment-762768460
         if self.is_http_success(response) or response.status == 404:
             yield from super().parse(response)
-        elif retries <= self.max_retries:
-            request = response.request.copy()
-            request.meta['retries'] = retries
-            request.meta['wait_time'] = wait_time
-            request.dont_filter = True
-
-            self.logger.debug('Retrying %(request)s in %(wait_time)ds (failed %(failures)d times): HTTP %(status)d',
-                              {'request': response.request, 'failures': retries, 'status': response.status,
-                               'wait_time': wait_time},
-                              extra={'spider': self})
-
-            yield request
         else:
-            self.logger.error('Gave up retrying %(request)s (failed %(failures)d times): HTTP %(status)d',
-                              {'request': response.request, 'failures': retries, 'status': response.status},
-                              extra={'spider': self})
-
-            yield self.build_file_error_from_response(response)
+            yield self.build_retry_request_or_file_error(response, wait_time, self.max_retries, True)

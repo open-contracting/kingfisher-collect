@@ -313,6 +313,31 @@ class BaseSpider(scrapy.Spider):
         item.update(kwargs)
         return item
 
+    def build_retry_request_or_file_error(self, response, wait_time, max_attempts, retry_condition):
+        """
+        If retry_condition is True and max_attempts weren't reached, retry the request in wait_time seconds.
+        Otherwise, returns FileError.
+        """
+        if retry_condition:
+            retries = response.request.meta.get('retries', 0) + 1
+            if retries > max_attempts:
+                self.logger.error('Gave up retrying %(request)s (failed %(failures)d times): HTTP %(status)d',
+                                  {'request': response.request, 'failures': retries, 'status': response.status},
+                                  extra={'spider': self})
+                return self.build_file_error_from_response(response)
+            request = response.request.copy()
+            request.meta['retries'] = retries
+            request.meta['wait_time'] = wait_time
+            request.dont_filter = True
+            self.logger.debug('Retrying %(request)s in %(wait_time)ds (failed %(failures)d times): HTTP %(status)d',
+                              {'request': response.request, 'failures': retries, 'status': response.status,
+                               'wait_time': wait_time},
+                              extra={'spider': self})
+
+            return request
+        else:
+            return self.build_file_error_from_response(response)
+
     @classmethod
     def get_default_until_date(cls, spider):
         """
