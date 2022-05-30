@@ -18,7 +18,7 @@ class CompressedFileSpider(BaseSpider):
     #. Inherit from ``CompressedFileSpider``
     #. Set a ``data_type`` class attribute to the data type of the compressed files
     #. Optionally, add a ``resize_package = True`` class attribute to split large packages (e.g. greater than 100MB)
-    #. Write a ``start_requests`` method to request the archive files
+    #. Write a ``start_requests()`` method to request the archive files
 
     .. code-block:: python
 

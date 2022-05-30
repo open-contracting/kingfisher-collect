@@ -8,7 +8,7 @@ class SimpleSpider(BaseSpider):
 
     #. Inherit from ``SimpleSpider``
     #. Set a ``data_type`` class attribute to the data type of the responses
-    #. Write a ``start_requests`` method (and any intermediate callbacks) to send requests
+    #. Write a ``start_requests()`` method (and any intermediate callbacks) to send requests
 
     .. code-block:: python
 

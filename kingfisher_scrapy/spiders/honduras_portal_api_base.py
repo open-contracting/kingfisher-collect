@@ -8,7 +8,7 @@ class HondurasPortalAPIBase(IndexSpider):
     download_delay = 1
 
     # IndexSpider
-    total_pages_pointer = '/pages'
+    page_count_pointer = '/pages'
 
     # Local
     available_publishers = ['oncae', 'sefin']

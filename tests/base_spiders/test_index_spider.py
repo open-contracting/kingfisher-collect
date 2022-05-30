@@ -13,20 +13,20 @@ TEST_CASES = [
     # honduras_portal_*
     ({
         'data_type': 'release_package',
-        'total_pages_pointer': '/results',
+        'page_count_pointer': '/results',
         'formatter': staticmethod(parameters('page')),
     }, '{"results": 10}', 'http://example.com', r'http://example\.com\?page=(\d+)',
         [str(x) for x in range(2, 11)]),
     ({
         'data_type': 'release_package',
-        'total_pages_pointer': '/results',
+        'page_count_pointer': '/results',
         'formatter': staticmethod(parameters('page')),
     }, '{"results": 10}', 'http://example.com?pageSize=10', r'http://example\.com\?pageSize=10&page=(\d+)',
         [str(x) for x in range(2, 11)]),
     # mexico_administracion_publica_federal
     ({
         'data_type': 'release_package',
-        'count_pointer': '/total',
+        'result_count_pointer': '/total',
         'limit': '/limit',
         'use_page': True,
         'formatter': staticmethod(parameters('page')),
@@ -35,7 +35,7 @@ TEST_CASES = [
     # canada_montreal
     ({
         'data_type': 'release_package',
-        'count_pointer': '/total',
+        'result_count_pointer': '/total',
         'limit': 10,
         'formatter': staticmethod(parameters('offset')),
     }, '{"total": 50}', 'http://example.com', r'http://example\.com\?limit=10&offset=(\d+)',
@@ -43,7 +43,7 @@ TEST_CASES = [
     # canada_montreal, but with a JSON Pointer for limit
     ({
         'data_type': 'release_package',
-        'count_pointer': '/total',
+        'result_count_pointer': '/total',
         'limit': '/limit',
         'formatter': staticmethod(parameters('offset')),
     }, '{"total": 50, "limit": 10}', 'http://example.com', r'http://example\.com\?limit=10&offset=(\d+)',

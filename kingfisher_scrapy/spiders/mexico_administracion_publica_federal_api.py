@@ -21,7 +21,7 @@ class MexicoAdministracionPublicaFederalAPI(IndexSpider):
     data_type = 'record_package'
 
     # IndexSpider
-    count_pointer = '/pagination/total'
+    result_count_pointer = '/pagination/total'
     limit = '/pagination/pageSize'
     use_page = True
 
