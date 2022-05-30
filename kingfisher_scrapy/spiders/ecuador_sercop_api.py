@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import IndexSpider, PeriodicSpider
-from kingfisher_scrapy.util import components, parameters
+from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 
 class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
@@ -27,13 +27,13 @@ class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
     # BaseSpider
     date_format = 'year'
     default_from_date = '2015'
+    max_attempts = 5
+    retry_http_codes = [429]
 
     # SimpleSpider
     data_type = 'release_package'
 
     # Local
-    max_attempts = 5
-    retry_code = 429
     url_prefix = 'https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/api/'
 
     # PeriodicSpider
@@ -42,29 +42,12 @@ class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
     start_requests_callback = 'parse_list'
 
     # IndexSpider
-    total_pages_pointer = '/pages'
+    page_count_pointer = '/pages'
     parse_list_callback = 'parse_page'
 
-    def parse_list(self, response):
-        if self.is_http_success(response):
-            yield from super().parse_list(response)
-        else:
-            yield self.build_retry_request_or_file_error(response, int(response.headers['Retry-After']),
-                                                         self.max_attempts, response.status == self.retry_code)
-
+    @handle_http_error
     def parse_page(self, response):
-        if self.is_http_success(response):
-            for data in response.json()['data']:
-                # Some ocids have a '/' character which cannot be in a file name.
-                yield self.build_request(f'{self.url_prefix}record?ocid={data["ocid"]}',
-                                         formatter=lambda url: parameters('ocid')(url).replace('/', '_'))
-        else:
-            yield self.build_retry_request_or_file_error(response, int(response.headers['Retry-After']),
-                                                         self.max_attempts, response.status == self.retry_code)
-
-    def parse(self, response, **kwargs):
-        if self.is_http_success(response):
-            yield from super().parse(response)
-        else:
-            yield self.build_retry_request_or_file_error(response, int(response.headers['Retry-After']),
-                                                         self.max_attempts, response.status == self.retry_code)
+        for data in response.json()['data']:
+            # Some ocids have a '/' character which cannot be in a file name.
+            yield self.build_request(f'{self.url_prefix}record?ocid={data["ocid"]}',
+                                     formatter=lambda url: parameters('ocid')(url).replace('/', '_'))

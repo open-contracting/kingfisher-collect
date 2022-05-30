@@ -63,6 +63,10 @@ class BaseSpider(scrapy.Spider):
     unflatten_args = {}
     ocds_version = '1.1'
 
+    # Regarding the access method.
+    max_attempts = 1
+    retry_http_codes = []
+
     # Not to be overridden by sub-classes.
     available_steps = {'compile', 'check'}
 
@@ -202,11 +206,19 @@ class BaseSpider(scrapy.Spider):
 
     def is_http_success(self, response):
         """
-        Returns whether the response status is a non-2xx code.
+        Returns whether the response's status is a non-2xx code.
         """
         # All 2xx codes are successful.
         # https://tools.ietf.org/html/rfc7231#section-6.3
         return 200 <= response.status < 300
+
+    def is_http_retryable(self, response):
+        """
+        Returns whether the response's status is retryable.
+
+        Set the ``retry_http_codes`` class attribute to a list of status codes to retry.
+        """
+        return response.status in self.retry_http_codes
 
     def get_start_time(self, format):
         """
@@ -217,6 +229,12 @@ class BaseSpider(scrapy.Spider):
         else:
             date = self.crawler.stats.get_value('start_time')
         return date.strftime(format)
+
+    def get_retry_wait_time(self, response):
+        """
+        Returns the number of seconds to wait before retrying a URL.
+        """
+        return int(response.headers['Retry-After'])
 
     def build_request(self, url, formatter, **kwargs):
         """
@@ -312,31 +330,6 @@ class BaseSpider(scrapy.Spider):
             item['file_name'] = response.request.meta['file_name']
         item.update(kwargs)
         return item
-
-    def build_retry_request_or_file_error(self, response, wait_time, max_attempts, retry_condition):
-        """
-        If retry_condition is True and max_attempts weren't reached, retry the request in wait_time seconds.
-        Otherwise, returns FileError.
-        """
-        if retry_condition:
-            retries = response.request.meta.get('retries', 0) + 1
-            if retries > max_attempts:
-                self.logger.error('Gave up retrying %(request)s (failed %(failures)d times): HTTP %(status)d',
-                                  {'request': response.request, 'failures': retries, 'status': response.status},
-                                  extra={'spider': self})
-                return self.build_file_error_from_response(response)
-            request = response.request.copy()
-            request.meta['retries'] = retries
-            request.meta['wait_time'] = wait_time
-            request.dont_filter = True
-            self.logger.debug('Retrying %(request)s in %(wait_time)ds (failed %(failures)d times): HTTP %(status)d',
-                              {'request': response.request, 'failures': retries, 'status': response.status,
-                               'wait_time': wait_time},
-                              extra={'spider': self})
-
-            return request
-        else:
-            return self.build_file_error_from_response(response)
 
     @classmethod
     def get_default_until_date(cls, spider):

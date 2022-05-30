@@ -73,15 +73,54 @@ def handle_http_error(decorated):
     """
     A decorator for spider parse methods.
 
-    Yields a :class:`~kingfisher_scrapy.items.FileError` using
-    :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_file_error_from_response`
-    for unsuccessful HTTP status codes, determined using
-    :meth:`~kingfisher_scrapy.base_spider.BaseSpider.is_http_success`.
+    if :meth:`~kingfisher_scrapy.base_spider.BaseSpider.is_http_success` returns ``True``, yields from the decorated
+    method.
+
+    If :meth:`~kingfisher_scrapy.base_spider.BaseSpider.is_http_retryable` returns ``True`` and the number of attempts
+    is less than the spider's ``max_attempts`` class attribute, retries the request, after waiting the number of
+    seconds returned by :meth:`~kingfisher_scrapy.base_spider.BaseSpider.get_retry_wait_time`.
+
+    .. note::
+
+       Scrapy always retries a connection error, like a DNS issue. Scrapy also retries an error code if it is one of
+       `RETRY_HTTP_CODES <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#retry-http-codes>`__. To
+       limit or disable this behavior, set or update the spider's ``custom_settings`` class attribute. For example:
+
+       .. code-block:: python
+
+          custom_settings = {
+              # Don't let Scrapy handle error codes.
+              'RETRY_HTTP_CODES': [],
+          }
+
+    Otherwise, yields a :class:`~kingfisher_scrapy.items.FileError` using
+    :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_file_error_from_response`.
     """
     @wraps(decorated)
     def wrapper(self, response, **kwargs):
+        attempts = response.request.meta.get('retries', 0) + 1
+
         if self.is_http_success(response):
             yield from decorated(self, response, **kwargs)
+        elif self.is_http_retryable(response) and attempts < self.max_attempts:
+            wait_time = self.get_retry_wait_time(response)
+            request = response.request.copy()
+            request.meta['retries'] = attempts
+            request.meta['wait_time'] = wait_time
+            request.dont_filter = True
+            self.logger.debug(
+                'Retrying %(request)s in %(wait_time)ds (failed %(failures)d times): HTTP %(status)d',
+                {'request': response.request, 'failures': attempts, 'status': response.status, 'wait_time': wait_time},
+                extra={'spider': self}
+            )
+            yield request
+        elif self.is_http_retryable(response):
+            self.logger.error(
+                'Gave up retrying %(request)s (failed %(failures)d times): HTTP %(status)d',
+                {'request': response.request, 'failures': attempts, 'status': response.status},
+                extra={'spider': self}
+            )
+            yield self.build_file_error_from_response(response)
         else:
             yield self.build_file_error_from_response(response)
     return wrapper
