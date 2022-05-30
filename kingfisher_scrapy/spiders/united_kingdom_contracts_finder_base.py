@@ -14,7 +14,7 @@ class UnitedKingdomContractsFinderBase(IndexSpider):
     ocds_version = '1.0'  # uses deprecated fields
 
     # IndexSpider
-    parse_list_callback = 'build_urls'
+    parse_list_callback = 'parse_page'
     total_pages_pointer = '/maxPage'
 
     # Local

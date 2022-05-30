@@ -12,7 +12,7 @@ from kingfisher_scrapy.items import FileError, FileItem, PluckedItem
 from tests import ExpectedError, spider_with_crawler, spider_with_files_store
 
 rabbit_url = os.getenv('RABBIT_URL')
-skip_test_if = not rabbit_url and not os.getenv('CI')
+skip_test_if = not rabbit_url and ('CI' not in os.environ or 'CI_SKIP' in os.environ)
 
 items_scraped = [
     ('build_file', 'file.json', {
