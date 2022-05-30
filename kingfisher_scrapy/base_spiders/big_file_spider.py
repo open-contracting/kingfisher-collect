@@ -9,7 +9,7 @@ class BigFileSpider(SimpleSpider):
     using an iterative parser and without having memory issues.
 
     #. Inherit from ``BigFileSpider``
-    #. Write a ``start_requests`` method to request the archive files
+    #. Write a ``start_requests()`` method to request the archive files
 
     .. code-block:: python
 

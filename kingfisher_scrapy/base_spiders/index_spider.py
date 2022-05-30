@@ -28,19 +28,19 @@ class IndexSpider(SimpleSpider):
     #. Set ``formatter`` to set the file name like in :meth:`~kingfisher_scrapy.base_spiders.BaseSpider.build_request`.
        If ``total_pages_pointer`` or ``use_page = True``, it defaults to ``parameters(<param_page>)``. Otherwise, if
        ``count_pointer`` is set and ``use_page = False``, it defaults to ``parameters(<param_offset>)``.
-    #. Write a ``start_requests`` method to yield the initial URL. The request's ``callback`` parameter should be set
+    #. Write a ``start_requests()`` method to yield the initial URL. The request's ``callback`` parameter should be set
        to ``self.parse_list``.
 
     If neither ``total_pages_pointer`` nor ``count_pointer`` can be used to create the URLs (e.g. if you need to query
-    a separate URL that does not return JSON), you need to define ``range_generator`` and ``url_builder`` methods.
-    ``range_generator`` should return page numbers or offset numbers. ``url_builder`` receives a page or offset from
-    ``range_generator``, and returns a URL to request.
+    a separate URL that does not return JSON), you need to define ``range_generator()`` and ``url_builder()`` methods.
+    ``range_generator()`` should return page numbers or offset numbers. ``url_builder()`` receives a page or offset
+    from ``range_generator()``, and returns a URL to request.
 
     If the results are in ascending chronological order, set ``chronological_order = 'asc'``.
 
-    The ``parse_list`` method parses responses as JSON data. To change the parser of these responses - for example,
-    to check for an error response, or to extract the page count from an HTML page - override the ``parse_list_loader``
-    method. If this method returns a ``FileError``, then ``parse_list`` yields it and returns.
+    The ``parse_list()`` method parses responses as JSON data. To change the parser of these responses - for example,
+    to check for an error response or extract the page count from an HTML page - override the ``parse_list_loader()``
+    method. If this method returns a ``FileError``, then ``parse_list()`` yields it and returns.
 
     Otherwise, results are yielded from all responses by :meth:`~kingfisher_scrapy.SimpleSpider.parse`. To
     change this method, set a ``parse_list_callback`` class attribute to a method's name as a string.
