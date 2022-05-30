@@ -30,7 +30,7 @@ class UnitedKingdomContractsFinderBase(IndexSpider):
         url = f'{self.url_prefix}Notices/OCDS/Search?order=desc&size=100'
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
-    def build_urls(self, response):
+    def parse_page(self, response):
         if self.is_http_success(response):
             for result in response.json()['results']:
                 for release in result['releases']:
