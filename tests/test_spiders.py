@@ -31,9 +31,10 @@ def test_start_requests_http_error(spider_name):
             callback = request.callback or spider.parse
 
             response = Response('http://example.com', status=555, request=request)
-            # If `max_retries` is set, the spider handles (and retries) error responses.
-            if hasattr(spider, 'max_retries'):
-                response.request.meta['retries'] = spider.max_retries
+            # If `max_attempts` is set, the spider handles (and retries) error responses.
+            if hasattr(spider, 'max_attempts'):
+                response.request.meta['retries'] = spider.max_attempts
+                response.headers['Retry-After'] = 1
             items = list(callback(response))
 
             assert len(items) == 1

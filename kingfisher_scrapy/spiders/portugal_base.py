@@ -13,7 +13,7 @@ class PortugalBase(LinksSpider):
 
     # Local
     # We will wait 1, 2, 4, 8, 16 minutes (31 minutes total).
-    max_retries = 5
+    max_attempts = 5
     initial_wait_time = 60
     # start_url must be provided by subclasses.
 
@@ -35,4 +35,4 @@ class PortugalBase(LinksSpider):
         if self.is_http_success(response) or response.status == 404:
             yield from super().parse(response)
         else:
-            yield self.build_retry_request_or_file_error(response, wait_time, self.max_retries, True)
+            yield self.build_retry_request_or_file_error(response, wait_time, self.max_attempts, True)
