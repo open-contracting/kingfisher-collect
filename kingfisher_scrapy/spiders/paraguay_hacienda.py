@@ -40,7 +40,7 @@ class ParaguayHacienda(BaseSpider):
     requests_backlog = []
 
     # Local
-    max_attempts = 5
+    max_access_token_attempts = 5
     url_prefix = 'https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/'
     list_url_prefix = f'{url_prefix}pagos/cdp?page='
     release_ids = []
@@ -111,7 +111,7 @@ class ParaguayHacienda(BaseSpider):
             yield self.build_file_from_response(response, data_type='release_package')
 
     def build_access_token_request(self, body=None, attempt=0):
-        self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
+        self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_access_token_attempts)
 
         if body is None:
             body = json.dumps({"clientSecret": self.client_secret})
@@ -140,7 +140,7 @@ class ParaguayHacienda(BaseSpider):
                     yield self.requests_backlog.pop(0)
             else:
                 attempt = response.request.meta['attempt']
-                if attempt == self.max_attempts:
+                if attempt == self.max_access_token_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.access_token_request_failed = True
                     raise AccessTokenError()

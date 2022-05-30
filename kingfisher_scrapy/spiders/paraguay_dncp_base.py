@@ -31,7 +31,7 @@ class ParaguayDNCPBase(SimpleSpider):
     requests_backlog = []
 
     # Local
-    max_attempts = 10
+    max_access_token_attempts = 10
     url_prefix = 'https://contrataciones.gov.py/datos/api/v3/doc/'
 
     @classmethod
@@ -77,7 +77,7 @@ class ParaguayDNCPBase(SimpleSpider):
             yield from [url_tender, url_planning]
 
     def build_access_token_request(self, attempt=0):
-        self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_attempts)
+        self.logger.info('Requesting access token, attempt %s of %s', attempt + 1, self.max_access_token_attempts)
 
         self.access_token_scheduled_at = datetime.now()
 
@@ -103,7 +103,7 @@ class ParaguayDNCPBase(SimpleSpider):
                     yield self.requests_backlog.pop(0)
             else:
                 attempt = response.request.meta['attempt']
-                if attempt == self.max_attempts:
+                if attempt == self.max_access_token_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.access_token_request_failed = True
                     raise AccessTokenError()
