@@ -7,7 +7,9 @@ class SentryLogging:
     """
     Sends exceptions and log records to Sentry. Log records with a level of ``ERROR`` or higher are captured as events.
 
-    https://docs.sentry.io/platforms/python/logging/
+    .. seealso::
+
+       `Sentry documentation <https://docs.sentry.io/platforms/python/logging/>`__
     """
 
     @classmethod
