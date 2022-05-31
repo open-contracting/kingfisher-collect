@@ -3,8 +3,8 @@ from unittest.mock import Mock
 import pytest
 import scrapy
 
-from kingfisher_scrapy.util import components, get_parameter_value, join, parameters, replace_parameters, \
-    handle_http_error
+from kingfisher_scrapy.util import (components, get_parameter_value, handle_http_error, join, parameters,
+                                    replace_parameters)
 from tests import spider_with_crawler
 
 
