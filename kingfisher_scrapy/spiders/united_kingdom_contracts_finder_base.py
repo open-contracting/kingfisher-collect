@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import IndexSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class UnitedKingdomContractsFinderBase(IndexSpider):
@@ -12,11 +12,14 @@ class UnitedKingdomContractsFinderBase(IndexSpider):
 
     # BaseSpider
     ocds_version = '1.0'  # uses deprecated fields
+    max_attempts = 5
+    retry_http_codes = [403]
 
     # IndexSpider
     parse_list_callback = 'parse_page'
     page_count_pointer = '/maxPage'
 
+    # Local
     url_prefix = 'https://www.contractsfinder.service.gov.uk/Published/'
     # parse_data_callback must be provided by subclasses.
 
@@ -26,33 +29,13 @@ class UnitedKingdomContractsFinderBase(IndexSpider):
         url = f'{self.url_prefix}Notices/OCDS/Search?order=desc&size=100'
         yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
 
-    def build_retry_request_or_file_error(self, response):
-        if response.status == 403:
-            request = response.request.copy()
-            # https://www.contractsfinder.service.gov.uk/apidocumentation/Notices/1/GET-Published-OCDS-Record
-            wait_time = 300
-            request.meta['wait_time'] = wait_time
-            request.dont_filter = True
-            self.logger.info('Retrying %(request)s in %(wait_time)ds: HTTP %(status)d',
-                             {'request': response.request, 'status': response.status,
-                              'wait_time': wait_time}, extra={'spider': self})
-
-            return request
-        else:
-            return self.build_file_error_from_response(response)
-
+    @handle_http_error
     def parse_page(self, response):
-        if self.is_http_success(response):
-            for result in response.json()['results']:
-                for release in result['releases']:
-                    yield self.build_request(f'{self.url_prefix}OCDS/Record/{release["ocid"]}',
-                                             formatter=components(-1),
-                                             callback=getattr(self, self.parse_data_callback))
-        else:
-            yield self.build_retry_request_or_file_error(response)
+        for result in response.json()['results']:
+            for release in result['releases']:
+                yield self.build_request(f'{self.url_prefix}OCDS/Record/{release["ocid"]}',
+                                         formatter=components(-1), callback=getattr(self, self.parse_data_callback))
 
-    def parse(self, response, **kwargs):
-        if self.is_http_success(response):
-            yield from super().parse(response)
-        else:
-            yield self.build_retry_request_or_file_error(response)
+    def get_retry_wait_time(self, response):
+        # https://www.contractsfinder.service.gov.uk/apidocumentation/Notices/1/GET-Published-OCDS-Record
+        return 300

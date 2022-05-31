@@ -76,7 +76,7 @@ class Checker:
         basename = os.path.splitext(os.path.basename(self.module.__file__))[0]
         expected_basename = re.sub(word_boundary_re, '_', class_name).lower()
 
-        if basename != expected_basename and class_name != 'PakistanPPRAAPI':
+        if basename != expected_basename and class_name not in ('PakistanPPRAAPI', 'EcuadorSERCOPAPI'):
             self.log('error', 'class %s and file %s (%s) do not match', class_name, basename, expected_basename)
 
         if class_name.endswith('Base') and class_name != 'EuropeTEDTenderBase' or class_name.endswith('Digiwhist'):

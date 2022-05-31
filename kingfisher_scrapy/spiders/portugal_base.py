@@ -7,14 +7,14 @@ from kingfisher_scrapy.util import parameters
 class PortugalBase(LinksSpider):
     # BaseSpider
     default_from_date = '2010-01-01'
+    # Every ~36,000 requests, the API returns HTTP errors. After a few minutes, it starts working again.
+    # https://github.com/open-contracting/kingfisher-collect/issues/545#issuecomment-762768460
+    # The spider waits 1, 2, 4, 8 and 16 minutes (31 minutes total) before retries.
+    max_attempts = 6
 
     # LinksSpider
     formatter = staticmethod(parameters('offset'))
 
-    # Local
-    # We will wait 1, 2, 4, 8, 16 minutes (31 minutes total).
-    max_retries = 5
-    initial_wait_time = 60
     # start_url must be provided by subclasses.
 
     def start_requests(self):
@@ -25,31 +25,8 @@ class PortugalBase(LinksSpider):
 
         yield scrapy.Request(url, meta={'file_name': 'offset-1.json'})
 
-    # https://github.com/scrapy/scrapy/blob/master/scrapy/downloadermiddlewares/retry.py
-    def parse(self, response):
-        retries = response.request.meta.get('retries', 0) + 1
-        wait_time = response.request.meta.get('wait_time', self.initial_wait_time // 2) * 2
+    def is_http_retryable(self, response):
+        return response.status != 404
 
-        # Every ~36,000 requests, the API returns HTTP errors. After a few minutes, it starts working again.
-        # The number of failed attempts in the log messages includes the original request.
-        # https://github.com/open-contracting/kingfisher-collect/issues/545#issuecomment-762768460
-        if self.is_http_success(response) or response.status == 404:
-            yield from super().parse(response)
-        elif retries <= self.max_retries:
-            request = response.request.copy()
-            request.meta['retries'] = retries
-            request.meta['wait_time'] = wait_time
-            request.dont_filter = True
-
-            self.logger.debug('Retrying %(request)s in %(wait_time)ds (failed %(failures)d times): HTTP %(status)d',
-                              {'request': response.request, 'failures': retries, 'status': response.status,
-                               'wait_time': wait_time},
-                              extra={'spider': self})
-
-            yield request
-        else:
-            self.logger.error('Gave up retrying %(request)s (failed %(failures)d times): HTTP %(status)d',
-                              {'request': response.request, 'failures': retries, 'status': response.status},
-                              extra={'spider': self})
-
-            yield self.build_file_error_from_response(response)
+    def get_retry_wait_time(self, response):
+        return response.request.meta.get('wait_time', 30) * 2

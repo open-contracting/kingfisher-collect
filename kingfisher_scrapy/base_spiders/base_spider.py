@@ -63,6 +63,10 @@ class BaseSpider(scrapy.Spider):
     unflatten_args = {}
     ocds_version = '1.1'
 
+    # Regarding the access method.
+    max_attempts = 1
+    retry_http_codes = []
+
     # Not to be overridden by sub-classes.
     available_steps = {'compile', 'check'}
 
@@ -202,11 +206,19 @@ class BaseSpider(scrapy.Spider):
 
     def is_http_success(self, response):
         """
-        Returns whether the response status is a non-2xx code.
+        Returns whether the response's status is a non-2xx code.
         """
         # All 2xx codes are successful.
         # https://tools.ietf.org/html/rfc7231#section-6.3
         return 200 <= response.status < 300
+
+    def is_http_retryable(self, response):
+        """
+        Returns whether the response's status is retryable.
+
+        Set the ``retry_http_codes`` class attribute to a list of status codes to retry.
+        """
+        return response.status in self.retry_http_codes
 
     def get_start_time(self, format):
         """
@@ -217,6 +229,12 @@ class BaseSpider(scrapy.Spider):
         else:
             date = self.crawler.stats.get_value('start_time')
         return date.strftime(format)
+
+    def get_retry_wait_time(self, response):
+        """
+        Returns the number of seconds to wait before retrying a URL.
+        """
+        return int(response.headers['Retry-After'])
 
     def build_request(self, url, formatter, **kwargs):
         """

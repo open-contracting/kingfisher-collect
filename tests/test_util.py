@@ -1,6 +1,11 @@
-import pytest
+from unittest.mock import Mock
 
-from kingfisher_scrapy.util import components, get_parameter_value, join, parameters, replace_parameters
+import pytest
+import scrapy
+
+from kingfisher_scrapy.util import (components, get_parameter_value, handle_http_error, join, parameters,
+                                    replace_parameters)
+from tests import spider_with_crawler
 
 
 @pytest.mark.parametrize('url,value,expected', [
@@ -28,3 +33,80 @@ def test_get_parameter_value(url, expected):
 ])
 def test_join(url, extension, expected):
     assert join(components(-1), parameters('page'), extension=extension)(url) == expected
+
+
+@pytest.mark.parametrize('attempts', [0, 1])
+def test_handle_http_error_retry(attempts):
+    @handle_http_error
+    def test_decorated(self, response, **kwargs):
+        yield response
+
+    spider = spider_with_crawler()
+    spider.max_attempts = 3
+    spider.retry_http_codes = [429]
+
+    mock_response = Mock()
+    mock_response.status = 429
+    mock_response.headers = {'Retry-After': 5}
+    meta = {}
+    if attempts:
+        meta['retries'] = attempts
+    mock_response.request = scrapy.Request('http://test.com', meta=meta)
+
+    actual = next(test_decorated(spider, mock_response))
+
+    assert isinstance(actual, scrapy.Request)
+    assert actual.meta['retries'] == attempts + 1
+    assert actual.meta['wait_time'] == 5
+    assert actual.dont_filter is True
+
+
+def test_handle_http_error_max_attempts_reached():
+    @handle_http_error
+    def test_decorated(self, response, **kwargs):
+        yield response
+
+    spider = spider_with_crawler()
+    spider.max_attempts = 3
+    spider.retry_http_codes = [429]
+
+    mock_response = Mock()
+    mock_response.status = 429
+    mock_response.headers = {'Retry-After': 5}
+    mock_response.request = scrapy.Request('http://test.com', meta={'retries': 2})
+
+    assert next(test_decorated(spider, mock_response)) == spider.build_file_error_from_response(mock_response)
+
+
+@pytest.mark.parametrize('response_status', [200, 204])
+def test_handle_http_error_success(response_status):
+    @handle_http_error
+    def test_decorated(self, response, **kwargs):
+        yield response
+
+    spider = spider_with_crawler()
+    spider.max_attempts = 3
+    spider.retry_http_codes = [429]
+
+    mock_response = Mock()
+    mock_response.status = response_status
+    mock_response.request = scrapy.Request('http://test.com')
+
+    assert next(test_decorated(spider, mock_response)) == mock_response
+
+
+@pytest.mark.parametrize('response_status', [302, 400, 500])
+def test_handle_http_error_error(response_status):
+    @handle_http_error
+    def test_decorated(self, response, **kwargs):
+        yield response
+
+    spider = spider_with_crawler()
+    spider.max_attempts = 3
+    spider.retry_http_codes = [429]
+
+    mock_response = Mock()
+    mock_response.status = response_status
+    mock_response.request = scrapy.Request('http://test.com')
+
+    assert next(test_decorated(spider, mock_response)) == spider.build_file_error_from_response(mock_response)
