@@ -48,10 +48,7 @@ def test_handle_http_error_retry(attempts):
     mock_response = Mock()
     mock_response.status = 429
     mock_response.headers = {'Retry-After': 5}
-    meta = {}
-    if attempts:
-        meta['retries'] = attempts
-    mock_response.request = scrapy.Request('http://test.com', meta=meta)
+    mock_response.request = scrapy.Request('http://test.com', meta={'retries': attempts})
 
     actual = next(test_decorated(spider, mock_response))
 
