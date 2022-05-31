@@ -9,14 +9,12 @@ class PortugalBase(LinksSpider):
     default_from_date = '2010-01-01'
     # Every ~36,000 requests, the API returns HTTP errors. After a few minutes, it starts working again.
     # https://github.com/open-contracting/kingfisher-collect/issues/545#issuecomment-762768460
-    # The spider waits 1 (`initial_wait_time`), 2, 4, 8 and 16 minutes (31 minutes total) before retries.
+    # The spider waits 1, 2, 4, 8 and 16 minutes (31 minutes total) before retries.
     max_attempts = 6
 
     # LinksSpider
     formatter = staticmethod(parameters('offset'))
 
-    # Local
-    initial_wait_time = 60
     # start_url must be provided by subclasses.
 
     def start_requests(self):
@@ -31,4 +29,4 @@ class PortugalBase(LinksSpider):
         return response.status != 404
 
     def get_retry_wait_time(self, response):
-        return response.request.meta.get('wait_time', self.initial_wait_time // 2) * 2
+        return response.request.meta.get('wait_time', 30) * 2
