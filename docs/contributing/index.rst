@@ -259,6 +259,6 @@ API reference
    downloadermiddlewares.rst
    spidermiddlewares.rst
    pipelines.rst
-   extensions.rst
+   extensions/index.rst
    util.rst
    exceptions.rst
