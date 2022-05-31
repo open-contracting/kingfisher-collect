@@ -8,13 +8,11 @@ class HondurasSEFINBulk(CompressedFileSpider, PeriodicSpider):
       Secretaria de Finanzas de Honduras (SEFIN)
     Spider arguments
       from_date
-        Download only data from this year onward (YYYY format).
-        If ``until_date`` is provided, defaults to '2012'.
+        Download only data from this year onward (YYYY format). Defaults to '2012'.
       until_date
-        Download only data until this year (YYYY format).
-        If ``from_date`` is provided, defaults to the current year.
+        Download only data until this year (YYYY format). Defaults to the current year.
     Bulk download documentation
-      http://www.contratacionesabiertas.gob.hn/descargas/
+      https://www.sefin.gob.hn/edca/
     """
     name = 'honduras_sefin_bulk'
 
