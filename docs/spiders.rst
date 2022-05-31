@@ -543,6 +543,13 @@ Honduras
 
    scrapy crawl honduras_portal_bulk
 
+.. autoclass:: kingfisher_scrapy.spiders.honduras_sefin_bulk.HondurasSEFINBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl honduras_sefin_bulk
+
 Hungary
 ~~~~~~~
 
