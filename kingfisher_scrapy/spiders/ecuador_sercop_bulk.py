@@ -43,7 +43,7 @@ class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
         data = item['data']
         package = {}
         # The file is a JSON array of release packages that we rearrange in a single package to avoid losing data
-        # in Kingfisher Process https://github.com/open-contracting/kingfisher-process/issues/353.
+        # in kingfisher-process-v1
         for number, obj in enumerate(util.transcode(self, ijson.items, data, 'item'), 1):
             if not package:
                 package = obj
