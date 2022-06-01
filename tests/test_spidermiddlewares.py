@@ -188,17 +188,18 @@ def test_add_package_middleware(data_type, data, root_path):
 
 @pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), (5, 5, 5)])
 @pytest.mark.parametrize('encoding,character', [('utf-8', b'\xc3\x9a'), ('iso-8859-1', b'\xda')])
-def test_resize_package_middleware(sample, len_items, len_releases, encoding, character):
+@pytest.mark.parametrize('package_type', ['record', 'release'])
+def test_resize_package_middleware(sample, len_items, len_releases, encoding, character, package_type):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
-    spider.data_type = 'release_package'
+    spider.data_type = f'{package_type}_package'
     spider.resize_package = True
     spider.encoding = encoding
 
     middleware = ResizePackageMiddleware()
 
-    package = {'publisher': {'name': 'TIBÚ'}, 'releases': []}
+    package = {'publisher': {'name': 'TIBÚ'}, f'{package_type}s': []}
     for i in range(200):
-        package['releases'].append({'key': 'TIBÚ'})
+        package[f'{package_type}s'].append({'key': 'TIBÚ'})
 
     io = BytesIO()
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
@@ -220,8 +221,8 @@ def test_resize_package_middleware(sample, len_items, len_releases, encoding, ch
         assert item['url'] == 'http://example.com'
         assert item['number'] == i
         assert isinstance(item['data'], bytes)
-        assert len(json.loads(item['data'])['releases']) == len_releases
-        assert item['data_type'] == 'release_package'
+        assert len(json.loads(item['data'])[f'{package_type}s']) == len_releases
+        assert item['data_type'] == f'{package_type}_package'
 
 
 @pytest.mark.parametrize('middleware_class,attribute,separator', [
