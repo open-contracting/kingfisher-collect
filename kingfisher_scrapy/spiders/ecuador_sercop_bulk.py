@@ -1,5 +1,8 @@
+import ijson
+
+from kingfisher_scrapy import util
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, PeriodicSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
@@ -21,7 +24,6 @@ class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
     # BaseSpider
     date_format = 'year-month'
     default_from_date = '2015-01'
-    root_path = 'item'
 
     # SimpleSpider
     data_type = 'release_package'
@@ -34,3 +36,20 @@ class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
     def build_request(self, url, formatter, **kwargs):
         meta = {'meta': {'file_name': f'{formatter(url)}.zip'}}
         return super().build_request(url, formatter, **meta)
+
+    @handle_http_error
+    def parse(self, response):
+        item = next(super().parse(response))
+        data = item['data']
+        package = {}
+        # The file is a JSON array of release packages that we rearrange in a single package to avoid losing data
+        # in Kingfisher Process https://github.com/open-contracting/kingfisher-process/issues/353.
+        for number, obj in enumerate(util.transcode(self, ijson.items, data, 'item'), 1):
+            if not package:
+                package = obj
+                package['releases'] = []
+            package['releases'].extend(obj['releases'])
+            if self.sample and number > self.sample:
+                break
+        item['data'] = package
+        yield item
