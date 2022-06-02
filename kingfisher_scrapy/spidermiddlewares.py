@@ -64,7 +64,10 @@ class LineDelimitedMiddleware:
 
 class RootPathMiddleware:
     """
-    If the spider's ``root_path`` class attribute is non-empty, yields a FileItem for each object at that prefix.
+    If the spider's ``root_path`` class attribute is non-empty, then:
+     - If the file contains an array ('item' in ``root_path``), packages the releases or records in the same package
+       and yields a File
+     - If not, yields the object at ``root_path`` as a File
     Otherwise, yields the original item.
     """
 
@@ -79,16 +82,40 @@ class RootPathMiddleware:
 
             data = item['data']
 
+            package = None
+
             if isinstance(data, (dict, list)):
                 data = util.json_dumps(data).encode()
-
             for number, obj in enumerate(util.transcode(spider, ijson.items, data, spider.root_path), 1):
+
+                # If the file contains an array of either packages or non-packaged releases and records, we group them
+                # in a single package
+                if 'item' in spider.root_path.split('.') and not package:
+                    if 'release' in item['data_type']:
+                        package_type = 'releases'
+                        data_type = 'release_package'
+                    else:
+                        package_type = 'records'
+                        data_type = 'record_package'
+                    if 'package' in item['data_type']:
+                        package = obj.copy()
+                    else:
+                        package = {}
+                    package[package_type] = []
+
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
-                    return
+                    break
 
                 if isinstance(item, File):
-                    yield spider.build_file_item(number, obj, item)
+                    if package:
+                        if 'package' in item['data_type']:
+                            package[package_type].extend(obj[package_type])
+                        else:
+                            package[package_type].append(obj)
+                    else:
+                        item['data'] = obj
+                        yield item
                 else:
                     # If the input data was a JSON stream and the root path is to a JSON array, then this method will
                     # need to yield multiple FileItems for each input FileItem. To do so, the input FileItem's number
@@ -103,6 +130,10 @@ class RootPathMiddleware:
                     # https://www.postgresql.org/docs/11/datatype-numeric.html
                     yield spider.build_file_item((item['number'] - 1) * spider.root_path_max_length + number,
                                                  obj, item)
+            if package:
+                item['data_type'] = data_type
+                item['data'] = package
+                yield item
 
 
 class AddPackageMiddleware:
