@@ -274,7 +274,6 @@ def test_json_streaming_middleware_with_root_path_middleware(middleware_class, a
     spider.data_type = 'release_package'
     setattr(spider, attribute, value)
     spider.root_path = 'results.item'
-    spider.root_path_max_length = 1
 
     stream_middleware = middleware_class()
     root_path_middleware = RootPathMiddleware()

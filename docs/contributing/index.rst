@@ -106,7 +106,6 @@ Since there are many class attributes that control a spider's behavior, please p
       concatenated_json = True
       line_delimited = True
       root_path = 'item'
-      root_path_max_length = 1
       unflatten = True
       unflatten_args = {}
       ocds_version = '1.0'

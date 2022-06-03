@@ -85,7 +85,18 @@ class RootPathMiddleware:
 
             if isinstance(data, (dict, list)):
                 data = util.json_dumps(data).encode()
+
+            if 'release' in item['data_type']:
+                key = 'releases'
+                data_type = 'release_package'
+            else:
+                key = 'records'
+                data_type = 'record_package'
+
             for number, obj in enumerate(util.transcode(spider, ijson.items, data, spider.root_path), 1):
+                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
+                if spider.sample and number > spider.sample:
+                    break
 
                 # Two common issues in OCDS data are:
                 #
@@ -96,47 +107,22 @@ class RootPathMiddleware:
                 # written, the number of messages in RabbitMQ and the number of rows in PostgreSQL.
                 #
                 # We fix the packaging to reduce the overhead.
-                if 'item' in spider.root_path.split('.') and not package:
-                    if 'release' in item['data_type']:
-                        package_type = 'releases'
-                        data_type = 'release_package'
-                    else:
-                        package_type = 'records'
-                        data_type = 'record_package'
+                if 'item' in spider.root_path.split('.'):
                     # Assume that the `extensions` are the same for all packages.
-                    if 'package' in item['data_type']:
-                        package = obj.copy()
-                    else:
-                        package = {}
-                    package[package_type] = []
-
-                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                if spider.sample and number > spider.sample:
-                    break
-
-                if isinstance(item, File):
-                    if package:
+                    if not package:
                         if 'package' in item['data_type']:
-                            package[package_type].extend(obj[package_type])
+                            package = obj.copy()
                         else:
-                            package[package_type].append(obj)
+                            package = {}
+                        package[key] = []
+
+                    if 'package' in item['data_type']:
+                        package[key].extend(obj[key])
                     else:
-                        item['data'] = obj
-                        yield item
+                        package[key].append(obj)
                 else:
-                    # If the input data was a JSON stream and the root path is to a JSON array, then this method will
-                    # need to yield multiple FileItems for each input FileItem. To do so, the input FileItem's number
-                    # is multiplied by the maximum length of the JSON array, to avoid duplicate numbers.
-                    #
-                    # If this is the case, then, on the spider, set a ``root_path_max_length`` class attribute to the
-                    # maximum length of the JSON array at the root path.
-                    #
-                    # Note that, to be stored by Kingfisher Process, the final number must be within PostgreSQL's
-                    # integer range.
-                    #
-                    # https://www.postgresql.org/docs/11/datatype-numeric.html
-                    yield spider.build_file_item((item['number'] - 1) * spider.root_path_max_length + number,
-                                                 obj, item)
+                    item['data'] = obj
+                    yield item
             if package:
                 item['data_type'] = data_type
                 item['data'] = package
