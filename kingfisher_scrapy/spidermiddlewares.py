@@ -64,11 +64,10 @@ class LineDelimitedMiddleware:
 
 class RootPathMiddleware:
     """
-    If the spider's ``root_path`` class attribute is non-empty, then:
-     - If the file contains an array ('item' in ``root_path``), packages the releases or records in the same package
-       and yields a File
-     - If not, yields the object at ``root_path`` as a File
+    If the spider's ``root_path`` class attribute is non-empty, yields an item for the object(s) at the ``root_path``.
     Otherwise, yields the original item.
+
+    If the objects (releases, records or packages) are within an array, they are combined into a single package.
     """
 
     def process_spider_output(self, response, result, spider):
@@ -88,8 +87,15 @@ class RootPathMiddleware:
                 data = util.json_dumps(data).encode()
             for number, obj in enumerate(util.transcode(spider, ijson.items, data, spider.root_path), 1):
 
-                # If the file contains an array of either packages or non-packaged releases and records, we group them
-                # in a single package
+                # Two common issues in OCDS data are:
+                #
+                # - Multiple releases or records, without a package
+                # - Multiple packages in a single file (often with a single release, record or OCID per package)
+                #
+                # Yielding each release, record or package creates a lot of overhead in terms of the number of files
+                # written, the number of messages in RabbitMQ and the number of rows in PostgreSQL.
+                #
+                # We fix the packaging to reduce the overhead.
                 if 'item' in spider.root_path.split('.') and not package:
                     if 'release' in item['data_type']:
                         package_type = 'releases'
@@ -97,6 +103,7 @@ class RootPathMiddleware:
                     else:
                         package_type = 'records'
                         data_type = 'record_package'
+                    # Assume that the `extensions` are the same for all packages.
                     if 'package' in item['data_type']:
                         package = obj.copy()
                     else:
