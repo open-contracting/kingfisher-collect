@@ -24,7 +24,8 @@ class BigFileSpider(SimpleSpider):
 
     .. note::
 
-       ``concatenated_json = True``, ``line_delimited = True`` and ``root_path`` are not supported.
+       ``concatenated_json = True``, ``line_delimited = True`` and ``root_path`` are not supported, because this spider
+       yields items whose ``data`` field has ``package`` and ``data`` keys.
     """
 
     resize_package = True
