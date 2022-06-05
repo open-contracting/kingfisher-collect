@@ -113,7 +113,7 @@ class RootPathMiddleware:
                         if 'package' in item['data_type']:
                             package = obj.copy()
                         else:
-                            package = {}
+                            package = {'version': spider.ocds_version}
                         package[key] = []
 
                     if 'package' in item['data_type']:
