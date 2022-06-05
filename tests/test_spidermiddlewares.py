@@ -54,7 +54,8 @@ def test_passthrough(middleware_class, item):
 @pytest.mark.parametrize('middleware_class,attribute,value,override', [
     (ConcatenatedJSONMiddleware, 'concatenated_json', True, {'data': {'a': [{'b': 'c'}]}, 'number': 1}),
     (LineDelimitedMiddleware, 'line_delimited', True, {'data': b'{"a":[{"b": "c"}]}', 'number': 1}),
-    (RootPathMiddleware, 'root_path', 'a.item', {'data': {'b': 'c'}, 'number': 1}),
+    (RootPathMiddleware, 'root_path', 'a.item',
+     {'data':  {'releases': [{'b': 'c'}], 'version': '1.1'}, 'data_type': 'release_package'}),
     (AddPackageMiddleware, 'data_type', 'release',
      {'data': {'releases': [{'a': [{'b': 'c'}]}], 'version': '1.1'}, 'data_type': 'release_package'}),
     # ResizePackageMiddleware is only used with CompressedFileSpider and BigFileSpider.
@@ -94,15 +95,15 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
             'url': 'http://test.com',
         }
         expected.update(override)
-
         assert item == expected
 
 
-@pytest.mark.parametrize('middleware_class,attribute,value,expected', [
-    (ConcatenatedJSONMiddleware, 'concatenated_json', True, {'name': 'ALCALDÍA MUNICIPIO DE TIBÚ'}),
-    (RootPathMiddleware, 'root_path', 'name', 'ALCALDÍA MUNICIPIO DE TIBÚ'),
+@pytest.mark.parametrize('middleware_class,attribute,value,override', [
+    (ConcatenatedJSONMiddleware, 'concatenated_json', True,
+     {'data': {'name': 'ALCALDÍA MUNICIPIO DE TIBÚ'}, 'number': 1}),
+    (RootPathMiddleware, 'root_path', 'name', {'data': 'ALCALDÍA MUNICIPIO DE TIBÚ'}),
 ])
-def test_encoding(middleware_class, attribute, value, expected, tmpdir):
+def test_encoding(middleware_class, attribute, value, override, tmpdir):
     spider = spider_with_crawler()
     setattr(spider, attribute, value)
     spider.encoding = 'iso-8859-1'
@@ -130,14 +131,14 @@ def test_encoding(middleware_class, attribute, value, expected, tmpdir):
     transformed_items = list(generator)
 
     assert len(transformed_items) == 2
-    for item in transformed_items:
-        assert item == {
+    expected = {
             'file_name': 'test.json',
-            'data': expected,
             'data_type': 'release',
             'url': 'http://test.com',
-            'number': 1,
         }
+    expected.update(override)
+    for item in transformed_items:
+        assert item == expected
 
 
 @pytest.mark.parametrize('data_type,data,root_path', [
@@ -173,8 +174,6 @@ def test_add_package_middleware(data_type, data, root_path):
         'file_name': 'test.json',
         'url': 'http://test.com',
     }
-    if root_path:
-        expected['number'] = 1
 
     if 'package' in data_type:
         expected['data'] = {f"{data_type[:-8]}s": [{"ocid": "abc"}], "uri": "test"}
@@ -280,7 +279,7 @@ def test_json_streaming_middleware_with_root_path_middleware(middleware_class, a
 
     content = []
     for i in range(1, 21):
-        content.append('{"results": [{"key": %s}]}\n' % i)
+        content.append('{"results": [{"releases": [{"key": %s}]}]}\n' % i)
 
     response = response_fixture(body=''.join(content), meta={'file_name': 'test.json'})
     generator = spider.parse(response)
@@ -298,7 +297,7 @@ def test_json_streaming_middleware_with_root_path_middleware(middleware_class, a
         assert item['file_name'] == 'test.json'
         assert item['url'] == 'http://example.com'
         assert item['number'] == i
-        assert item['data'] == {'key': i}
+        assert item['data'] == {'releases': [{'key': i}]}
         assert item['data_type'] == 'release_package'
 
 
