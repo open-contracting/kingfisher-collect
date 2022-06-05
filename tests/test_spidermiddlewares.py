@@ -391,20 +391,23 @@ def test_retry_data_error_middleware(exception):
             list(generator)
 
 
-@pytest.mark.parametrize('root_path,data_type,data,expected,expected_data_type', [
-    ('item', 'release', [{'a': 'b'}], {'releases': [{'a': 'b'}], 'version': '1.1'}, 'release_package'),
-    ('Release', 'release', {'Release': {'a': 'b'}}, {'a': 'b'}, 'release'),
+@pytest.mark.parametrize('root_path,data_type,data,expected,expected_data_type,sample', [
+    ('item', 'release', [{'a': 'b'}], {'releases': [{'a': 'b'}], 'version': '1.1'}, 'release_package', None),
+    ('Release', 'release', {'Release': {'a': 'b'}}, {'a': 'b'}, 'release', None),
     ('item', 'release_package', [{'releases': [{'a': 'b'}, {'c': 'd'}], 'uri': 'test'},
                                  {'releases': [{'e': 'f'}, {'g': 'h'}], 'uri': 'test'}],
-     {'releases': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}, {'g': 'h'}], 'uri': 'test'}, 'release_package'),
-    ('a.item', 'record', {'a': [{'a': 'b'}, {'a': 'b'}]},
-     {'records': [{'a': 'b'}, {'a': 'b'}], 'version': '1.1'}, 'record_package')
+     {'releases': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}, {'g': 'h'}], 'uri': 'test'}, 'release_package', None),
+    ('a.item', 'record', {'a': [{'a': 'b'}, {'a': 'b'}]}, {'records': [{'a': 'b'}, {'a': 'b'}], 'version': '1.1'},
+     'record_package', None),
+    ('a.item', 'record', {'a': [{'a': 'b'}, {'a': 'b'}]}, {'records': [{'a': 'b'}], 'version': '1.1'},
+     'record_package', 1)
 ])
-def test_root_path_middleware(root_path, data_type, data, expected, expected_data_type):
+def test_root_path_middleware(root_path, data_type, data, expected, expected_data_type, sample):
     spider = spider_with_crawler()
     middleware = RootPathMiddleware()
     spider.data_type = data_type
     spider.root_path = root_path
+    spider.sample = sample
 
     item = File({
         'file_name': 'test.json',
