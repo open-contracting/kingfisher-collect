@@ -1,4 +1,5 @@
 from kingfisher_scrapy.base_spiders import SimpleSpider
+from kingfisher_scrapy.exceptions import IncoherentConfigurationError
 from kingfisher_scrapy.util import handle_http_error
 
 
@@ -28,6 +29,15 @@ class BigFileSpider(SimpleSpider):
     """
 
     resize_package = True
+
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(BigFileSpider, cls).from_crawler(crawler, *args, **kwargs)
+
+        if not spider.data_type or spider.data_type not in ('release_package', 'record_package'):
+            raise IncoherentConfigurationError(f'{spider.data_type} data_type is not compatible with BigFileSpider')
+
+        return spider
 
     @handle_http_error
     def parse(self, response):
