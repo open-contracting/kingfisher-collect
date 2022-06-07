@@ -140,8 +140,8 @@ class AddPackageMiddleware:
 
 class ResizePackageMiddleware:
     """
-    If the spider's ``resize_package`` class attribute is ``True``, splits the package into packages of 100 items each.
-    Otherwise, yields the original item.
+    If the spider's ``resize_package`` class attribute is ``True``, splits the package into packages of 100 releases or
+    records each. Otherwise, yields the original item.
     """
 
     def process_spider_output(self, response, result, spider):
