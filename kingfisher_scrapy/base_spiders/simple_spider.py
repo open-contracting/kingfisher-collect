@@ -26,8 +26,6 @@ class SimpleSpider(BaseSpider):
                 yield scrapy.Request('https://example.com/api/package.json', meta={'file_name': 'all.json'})
     """
 
-    data_type = None
-
     @handle_http_error
     def parse(self, response):
         yield self.build_file_from_response(response, data_type=self.data_type)
