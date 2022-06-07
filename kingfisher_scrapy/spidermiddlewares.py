@@ -168,7 +168,7 @@ class ResizePackageMiddleware:
 
             package = self._get_package_metadata(spider, data['package'], key, item['data_type'])
             iterable = util.transcode(spider, ijson.items, data['data'], f'{key}.item')
-            # We yield packages containing a maximum of 100 items.
+            # We yield packages containing a maximum of 100 releases or records.
             for number, items in enumerate(util.grouper(iterable, size), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
