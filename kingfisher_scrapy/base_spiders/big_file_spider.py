@@ -34,7 +34,7 @@ class BigFileSpider(SimpleSpider):
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(BigFileSpider, cls).from_crawler(crawler, *args, **kwargs)
 
-        if not getattr(spider, 'data_type') or spider.data_type not in ('release_package', 'record_package'):
+        if spider.data_type not in ('release_package', 'record_package'):
             raise IncoherentConfigurationError(
                 f"data_type must be 'release_package' or 'record_package', not {spider.data_type!r}")
 
