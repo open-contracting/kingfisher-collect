@@ -425,10 +425,14 @@ def test_retry_data_error_middleware(exception):
     ('item', 'release_package', None,
      [{'releases': [{'a': 'b'}, {'c': 'd'}], 'x': 'y'}, {'releases': [{'e': 'f'}, {'g': 'h'}]}],
      {'releases': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}, {'g': 'h'}], 'x': 'y'}, 'release_package'),
-    # ... with an empty object.
+    # ... with an empty object, for data_type = "release".
     ('item', 'release', None,
      [],
      {'releases': [], 'version': '1.1'}, 'release_package'),
+    # ... with an empty object, for data_type = "record_package".
+    ('item', 'record_package', None,
+     [],
+     {'records': [], 'version': '1.1'}, 'record_package'),
 ])
 @pytest.mark.parametrize('klass', [File, FileItem])
 def test_root_path_middleware(root_path, data_type, sample, data, expected_data, expected_data_type, klass):
