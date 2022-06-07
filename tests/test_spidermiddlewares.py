@@ -87,14 +87,15 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
     generator = middleware.process_spider_output(None, [bytes_item, file_item], spider)
     transformed_items = list(generator)
 
+    expected = {
+        'file_name': 'test.json',
+        'data_type': 'release',
+        'url': 'http://test.com',
+    }
+    expected.update(override)
+
     assert len(transformed_items) == 2
     for item in transformed_items:
-        expected = {
-            'file_name': 'test.json',
-            'data_type': 'release',
-            'url': 'http://test.com',
-        }
-        expected.update(override)
         assert item == expected
 
 
@@ -130,13 +131,14 @@ def test_encoding(middleware_class, attribute, value, override, tmpdir):
     generator = middleware.process_spider_output(None, [bytes_item, file_item], spider)
     transformed_items = list(generator)
 
-    assert len(transformed_items) == 2
     expected = {
-            'file_name': 'test.json',
-            'data_type': 'release',
-            'url': 'http://test.com',
-        }
+        'file_name': 'test.json',
+        'data_type': 'release',
+        'url': 'http://test.com',
+    }
     expected.update(override)
+
+    assert len(transformed_items) == 2
     for item in transformed_items:
         assert item == expected
 
@@ -391,25 +393,52 @@ def test_retry_data_error_middleware(exception):
             list(generator)
 
 
-@pytest.mark.parametrize('root_path,data_type,data,expected,expected_data_type,sample', [
-    ('item', 'release', [{'a': 'b'}], {'releases': [{'a': 'b'}], 'version': '1.1'}, 'release_package', None),
-    ('Release', 'release', {'Release': {'a': 'b'}}, {'a': 'b'}, 'release', None),
-    ('item', 'release_package', [{'releases': [{'a': 'b'}, {'c': 'd'}], 'uri': 'test'},
-                                 {'releases': [{'e': 'f'}, {'g': 'h'}], 'uri': 'test'}],
-     {'releases': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}, {'g': 'h'}], 'uri': 'test'}, 'release_package', None),
-    ('a.item', 'record', {'a': [{'a': 'b'}, {'a': 'b'}]}, {'records': [{'a': 'b'}, {'a': 'b'}], 'version': '1.1'},
-     'record_package', None),
-    ('a.item', 'record', {'a': [{'a': 'b'}, {'a': 'b'}]}, {'records': [{'a': 'b'}], 'version': '1.1'},
-     'record_package', 1)
+@pytest.mark.parametrize('root_path,data_type,sample,data,expected_data,expected_data_type', [
+    # Empty root path.
+    ('', 'my_data_type', None,
+     {'a': 'b'},
+     {'a': 'b'}, 'my_data_type'),
+
+    # Root path without "item".
+    ('x', 'my_data_type', None,
+     {'x': {'a': 'b'}},
+     {'a': 'b'}, 'my_data_type'),
+
+    # Root paths with "item" ...
+    # ... for data_type = "release".
+    ('item', 'release', None,
+     [{'a': 'b'}, {'c': 'd'}],
+     {'releases': [{'a': 'b'}, {'c': 'd'}], 'version': '1.1'}, 'release_package'),
+    # ... and another prefix, for data_type = "record".
+    ('x.item', 'record', None,
+     {'x': [{'a': 'b'}, {'c': 'd'}]},
+     {'records': [{'a': 'b'}, {'c': 'd'}], 'version': '1.1'}, 'record_package'),
+    # ... and "sample".
+    ('x.item', 'record', 1,
+     {'x': [{'a': 'b'}, {'c': 'd'}]},
+     {'records': [{'a': 'b'}], 'version': '1.1'}, 'record_package'),
+    # ... without package metadata, for data_type = "record_package".
+    ('item', 'record_package', None,
+     [{'records': [{'a': 'b'}, {'c': 'd'}]}, {'records': [{'e': 'f'}, {'g': 'h'}]}],
+     {'records': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}, {'g': 'h'}]}, 'record_package'),
+    # ... with inconsistent package metadata, for data_type = "release_package".
+    ('item', 'release_package', None,
+     [{'releases': [{'a': 'b'}, {'c': 'd'}], 'x': 'y'}, {'releases': [{'e': 'f'}, {'g': 'h'}]}],
+     {'releases': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}, {'g': 'h'}], 'x': 'y'}, 'release_package'),
+    # ... with an empty object.
+    ('item', 'release', None,
+     [],
+     {'releases': [], 'version': '1.1'}, 'release_package'),
 ])
-def test_root_path_middleware(root_path, data_type, data, expected, expected_data_type, sample):
+@pytest.mark.parametrize('klass', [File, FileItem])
+def test_root_path_middleware(root_path, data_type, sample, data, expected_data, expected_data_type, klass):
     spider = spider_with_crawler()
     middleware = RootPathMiddleware()
     spider.data_type = data_type
     spider.root_path = root_path
     spider.sample = sample
 
-    item = File({
+    item = klass({
         'file_name': 'test.json',
         'data': data,
         'data_type': data_type,
@@ -421,6 +450,6 @@ def test_root_path_middleware(root_path, data_type, data, expected, expected_dat
 
     assert len(transformed_items) == 1
     for transformed_item in transformed_items:
-        assert transformed_item['data'] == expected
-        assert type(item) == type(transformed_item)
+        assert isinstance(transformed_item, klass)
+        assert transformed_item['data'] == expected_data
         assert transformed_item['data_type'] == expected_data_type

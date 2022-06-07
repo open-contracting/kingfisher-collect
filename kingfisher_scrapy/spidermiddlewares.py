@@ -64,15 +64,14 @@ class LineDelimitedMiddleware:
 
 class RootPathMiddleware:
     """
-    If the spider's ``root_path`` class attribute is non-empty, yields an item for the object(s) at the ``root_path``.
-    Otherwise, yields the original item.
-
-    If the objects (releases, records or packages) are within an array, they are combined into a single package.
+    If the spider's ``root_path`` class attribute is non-empty, replaces the item's ``data`` with the objects at that
+    prefix; if there are multiple releases, records or packages at that prefix, combines them into a single package,
+    and updates the item's ``data_type`` if needed. Otherwise, yields the original item.
     """
 
     def process_spider_output(self, response, result, spider):
         """
-        :returns: a generator of FileItem objects, in which the ``data`` field is parsed JSON
+        :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
         """
         for item in result:
             if not isinstance(item, (File, FileItem)) or not spider.root_path:
@@ -80,8 +79,8 @@ class RootPathMiddleware:
                 continue
 
             data = item['data']
-
-            package = None
+            is_multiple = 'item' in spider.root_path.split('.')
+            is_package = 'package' in item['data_type']
 
             if isinstance(data, (dict, list)):
                 data = util.json_dumps(data).encode()
@@ -92,6 +91,8 @@ class RootPathMiddleware:
             else:
                 key = 'records'
                 data_type = 'record_package'
+
+            package = {key: [], 'version': spider.ocds_version}
 
             for number, obj in enumerate(util.transcode(spider, ijson.items, data, spider.root_path), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
@@ -107,32 +108,30 @@ class RootPathMiddleware:
                 # written, the number of messages in RabbitMQ and the number of rows in PostgreSQL.
                 #
                 # We fix the packaging to reduce the overhead.
-                if 'item' in spider.root_path.split('.'):
+                if is_multiple:
                     # Assume that the `extensions` are the same for all packages.
-                    if not package:
-                        if 'package' in item['data_type']:
-                            package = obj.copy()
-                        else:
-                            package = {'version': spider.ocds_version}
+                    if number == 1 and is_package:
+                        package = obj.copy()
                         package[key] = []
 
-                    if 'package' in item['data_type']:
+                    if is_package:
                         package[key].extend(obj[key])
                     else:
                         package[key].append(obj)
                 else:
                     item['data'] = obj
                     yield item
-            if package:
-                item['data_type'] = data_type
+
+            if is_multiple:
                 item['data'] = package
+                item['data_type'] = data_type
                 yield item
 
 
 class AddPackageMiddleware:
     """
-    If the spider's ``data_type`` class attribute is "release" or "record", wraps the data in a package.
-    Otherwise, yields the original item.
+    If the spider's ``data_type`` class attribute is "release" or "record", wraps the item's ``data`` in an appropriate
+    package, and updates the item's ``data_type``. Otherwise, yields the original item.
     """
 
     def process_spider_output(self, response, result, spider):
@@ -156,6 +155,7 @@ class AddPackageMiddleware:
                 key = 'releases'
             else:
                 key = 'records'
+
             item['data'] = {key: [data], 'version': spider.ocds_version}
             item['data_type'] += '_package'
 
@@ -217,12 +217,16 @@ class ResizePackageMiddleware:
 
 class ReadDataMiddleware:
     """
-    If the item's ``data`` value is a file pointer, as with ``CompressedFileSpider``, reads it and closes it.
-    Otherwise, yields the original item.
+    If the item's ``data`` is a file descriptor, replaces the item's ``data`` with the file's contents and closes the
+    file descriptor. Otherwise, yields the original item.
+
+    .. seealso::
+
+       :class:`~kingfisher_scrapy.base_spiders.compressed_file_spider.CompressedFileSpider`
     """
     def process_spider_output(self, response, result, spider):
         """
-        :returns: a generator of FileItem objects, in which the ``data`` field is bytes
+        :returns: a generator of File objects, in which the ``data`` field is bytes
         """
         for item in result:
             if not isinstance(item, File) or not hasattr(item['data'], 'read'):
