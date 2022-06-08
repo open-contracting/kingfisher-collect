@@ -64,13 +64,14 @@ class LineDelimitedMiddleware:
 
 class RootPathMiddleware:
     """
-    If the spider's ``root_path`` class attribute is non-empty, yields a FileItem for each object at that prefix.
-    Otherwise, yields the original item.
+    If the spider's ``root_path`` class attribute is non-empty, replaces the item's ``data`` with the objects at that
+    prefix; if there are multiple releases, records or packages at that prefix, combines them into a single package,
+    and updates the item's ``data_type`` if needed. Otherwise, yields the original item.
     """
 
     def process_spider_output(self, response, result, spider):
         """
-        :returns: a generator of FileItem objects, in which the ``data`` field is parsed JSON
+        :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
         """
         for item in result:
             if not isinstance(item, (File, FileItem)) or not spider.root_path:
@@ -78,37 +79,59 @@ class RootPathMiddleware:
                 continue
 
             data = item['data']
+            is_multiple = 'item' in spider.root_path.split('.')
+            is_package = 'package' in item['data_type']
 
             if isinstance(data, (dict, list)):
                 data = util.json_dumps(data).encode()
 
+            if 'release' in item['data_type']:
+                key = 'releases'
+                data_type = 'release_package'
+            else:
+                key = 'records'
+                data_type = 'record_package'
+
+            package = {key: [], 'version': spider.ocds_version}
+
             for number, obj in enumerate(util.transcode(spider, ijson.items, data, spider.root_path), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
-                    return
+                    break
 
-                if isinstance(item, File):
-                    yield spider.build_file_item(number, obj, item)
+                # Two common issues in OCDS data are:
+                #
+                # - Multiple releases or records, without a package
+                # - Multiple packages in a single file (often with a single release, record or OCID per package)
+                #
+                # Yielding each release, record or package creates a lot of overhead in terms of the number of files
+                # written, the number of messages in RabbitMQ and the number of rows in PostgreSQL.
+                #
+                # We fix the packaging to reduce the overhead.
+                if is_multiple:
+                    # Assume that the `extensions` are the same for all packages.
+                    if number == 1 and is_package:
+                        package = obj.copy()
+                        package[key] = []
+
+                    if is_package:
+                        package[key].extend(obj[key])
+                    else:
+                        package[key].append(obj)
                 else:
-                    # If the input data was a JSON stream and the root path is to a JSON array, then this method will
-                    # need to yield multiple FileItems for each input FileItem. To do so, the input FileItem's number
-                    # is multiplied by the maximum length of the JSON array, to avoid duplicate numbers.
-                    #
-                    # If this is the case, then, on the spider, set a ``root_path_max_length`` class attribute to the
-                    # maximum length of the JSON array at the root path.
-                    #
-                    # Note that, to be stored by Kingfisher Process, the final number must be within PostgreSQL's
-                    # integer range.
-                    #
-                    # https://www.postgresql.org/docs/11/datatype-numeric.html
-                    yield spider.build_file_item((item['number'] - 1) * spider.root_path_max_length + number,
-                                                 obj, item)
+                    item['data'] = obj
+                    yield item
+
+            if is_multiple:
+                item['data'] = package
+                item['data_type'] = data_type
+                yield item
 
 
 class AddPackageMiddleware:
     """
-    If the spider's ``data_type`` class attribute is "release" or "record", wraps the data in a package.
-    Otherwise, yields the original item.
+    If the spider's ``data_type`` class attribute is "release" or "record", wraps the item's ``data`` in an appropriate
+    package, and updates the item's ``data_type``. Otherwise, yields the original item.
     """
 
     def process_spider_output(self, response, result, spider):
@@ -132,6 +155,7 @@ class AddPackageMiddleware:
                 key = 'releases'
             else:
                 key = 'records'
+
             item['data'] = {key: [data], 'version': spider.ocds_version}
             item['data_type'] += '_package'
 
@@ -197,12 +221,16 @@ class ResizePackageMiddleware:
 
 class ReadDataMiddleware:
     """
-    If the item's ``data`` value is a file pointer, as with ``CompressedFileSpider``, reads it and closes it.
-    Otherwise, yields the original item.
+    If the item's ``data`` is a file descriptor, replaces the item's ``data`` with the file's contents and closes the
+    file descriptor. Otherwise, yields the original item.
+
+    .. seealso::
+
+       :class:`~kingfisher_scrapy.base_spiders.compressed_file_spider.CompressedFileSpider`
     """
     def process_spider_output(self, response, result, spider):
         """
-        :returns: a generator of FileItem objects, in which the ``data`` field is bytes
+        :returns: a generator of File objects, in which the ``data`` field is bytes
         """
         for item in result:
             if not isinstance(item, File) or not hasattr(item['data'], 'read'):

@@ -39,7 +39,6 @@ class ColombiaBulk(CompressedFileSpider):
     default_from_date = '2011'
     line_delimited = True
     root_path = 'Release'
-    root_path_max_length = 1
     skip_pluck = 'Already covered (see code for details)'  # colombia
 
     # SimpleSpider
