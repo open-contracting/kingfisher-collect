@@ -140,8 +140,8 @@ class AddPackageMiddleware:
 
 class ResizePackageMiddleware:
     """
-    If the spider's ``resize_package`` class attribute is ``True``, splits the package into packages of 100 items each.
-    Otherwise, yields the original item.
+    If the spider's ``resize_package`` class attribute is ``True``, splits the package into packages of 100 releases or
+    records each. Otherwise, yields the original item.
     """
 
     def process_spider_output(self, response, result, spider):
@@ -161,16 +161,20 @@ class ResizePackageMiddleware:
                 size = spider.sample
             else:
                 size = 100
+            if spider.data_type == 'release_package':
+                key = 'releases'
+            else:
+                key = 'records'
 
-            package = self._get_package_metadata(spider, data['package'], 'releases', item['data_type'])
-            iterable = util.transcode(spider, ijson.items, data['data'], 'releases.item')
-            # We yield release packages containing a maximum of 100 releases.
+            package = self._get_package_metadata(spider, data['package'], key, item['data_type'])
+            iterable = util.transcode(spider, ijson.items, data['data'], f'{key}.item')
+            # We yield packages containing a maximum of 100 releases or records.
             for number, items in enumerate(util.grouper(iterable, size), 1):
                 # Avoid reading the rest of a large file, since the rest of the items will be dropped.
                 if spider.sample and number > spider.sample:
                     return
 
-                package['releases'] = filter(None, items)
+                package[key] = filter(None, items)
                 data = util.json_dumps(package).encode()
 
                 yield spider.build_file_item(number, data, item)

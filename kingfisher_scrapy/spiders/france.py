@@ -13,6 +13,9 @@ class France(BigFileSpider):
     """
     name = 'france'
 
+    # SimpleSpider
+    data_type = 'release_package'
+
     def start_requests(self):
         # A CKAN API JSON response.
         # Ministère de l'économie, des finances et de la relance
