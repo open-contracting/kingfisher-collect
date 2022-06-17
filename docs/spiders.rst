@@ -1315,6 +1315,16 @@ Uruguay
 
    scrapy crawl uruguay_releases
 
+Wales
+~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.wales_public_contracts.WalesPublicContracts
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl wales_public_contracts
+
 Zambia
 ~~~~~~
 
