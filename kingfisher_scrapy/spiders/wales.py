@@ -1,10 +1,7 @@
-from datetime import date
-
-from kingfisher_scrapy.base_spiders import PeriodicSpider
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.spiders.proactis_base import ProactisBase
 
 
-class Wales(PeriodicSpider):
+class Wales(ProactisBase):
     """
     Domain
       Wales
@@ -18,20 +15,13 @@ class Wales(PeriodicSpider):
     Bulk download documentation
       https://www.sell2wales.gov.wales/Notice/Download/Download.aspx
     """
-    name = 'wales_public_contracts'
-
-    # BaseSpider
-    date_format = 'year-month'
-    default_from_date = date(date.today().year - 1, date.today().month, 1)
+    name = 'wales'
 
     # SimpleSpider
     data_type = 'release_package'
 
-    # PeriodicSpider
-    pattern = 'https://api.sell2wales.gov.wales/v1/Notices?dateFrom={:%m-%Y}&outputType=0&noticeType={}'
-    formatter = staticmethod(parameters('noticeType', 'dateFrom'))
+    url_base = 'https://api.sell2wales.gov.wales'
 
-    # Local
     notice_types = [
         1,  # OJEU - F1 - Prior Information Notice
         2,  # OJEU - F2 - Contract Notice
@@ -57,16 +47,3 @@ class Wales(PeriodicSpider):
         55,  # Site Notice - Sub Contract Post Award
         56,  # Site Notice - Sub Contract Award
     ]
-
-    def build_urls(self, date):
-        for notice_type in self.notice_types:
-            yield self.pattern.format(date, notice_type)
-
-    @handle_http_error
-    def parse(self, response):
-        data = response.json()
-        # Some responses are a package without a list of releases.
-        if 'releases' not in data:
-            yield self.build_file_error_from_response(response, errors=data)
-        else:
-            yield from super().parse(response)
