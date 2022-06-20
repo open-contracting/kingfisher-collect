@@ -1139,6 +1139,9 @@ Portugal
 
    scrapy crawl portugal_releases
 
+Proactis
+~~~~~~~~
+
 Romania
 ~~~~~~~
 
@@ -1318,12 +1321,12 @@ Uruguay
 Wales
 ~~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.wales_public_contracts.WalesPublicContracts
+.. autoclass:: kingfisher_scrapy.spiders.wales.Wales
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl wales_public_contracts
+   scrapy crawl wales
 
 Zambia
 ~~~~~~
