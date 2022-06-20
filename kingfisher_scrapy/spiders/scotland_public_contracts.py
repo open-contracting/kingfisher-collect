@@ -1,10 +1,7 @@
-from datetime import date
-
-from kingfisher_scrapy.base_spiders import PeriodicSpider
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.spiders.proactis_base import ProactisBase
 
 
-class ScotlandPublicContracts(PeriodicSpider):
+class ScotlandPublicContracts(ProactisBase):
     """
     Domain
       Public Contracts Scotland
@@ -18,18 +15,11 @@ class ScotlandPublicContracts(PeriodicSpider):
     """
     name = 'scotland_public_contracts'
 
-    # BaseSpider
-    date_format = 'year-month'
-    default_from_date = date(date.today().year - 1, date.today().month, 1)
-
     # SimpleSpider
     data_type = 'release_package'
 
-    # PeriodicSpider
-    pattern = 'https://api.publiccontractsscotland.gov.uk/v1/Notices?dateFrom={:%m-%Y}&outputType=0&noticeType={}'
-    formatter = staticmethod(parameters('noticeType', 'dateFrom'))
+    url_base = 'https://api.publiccontractsscotland.gov.uk'
 
-    # Local
     notice_types = [
         1,  # OJEU - F1 - Prior Information Notice
         2,  # OJEU - F2 - Contract Notice
@@ -53,16 +43,3 @@ class ScotlandPublicContracts(PeriodicSpider):
         103,  # Site Notice - Website Contract Award Notice
         104,  # Site Notice - Quick Quote Award
     ]
-
-    def build_urls(self, date):
-        for notice_type in self.notice_types:
-            yield self.pattern.format(date, notice_type)
-
-    @handle_http_error
-    def parse(self, response):
-        data = response.json()
-        # Some responses are a package without a list of releases.
-        if 'releases' not in data:
-            yield self.build_file_error_from_response(response, errors=data)
-        else:
-            yield from super().parse(response)
