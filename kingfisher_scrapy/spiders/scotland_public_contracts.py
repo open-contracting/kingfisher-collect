@@ -12,6 +12,8 @@ class ScotlandPublicContracts(ProactisBase):
         Download only data until this month (YYYY-MM format). Defaults to the current month.
     API documentation
       https://api.publiccontractsscotland.gov.uk/v1
+    Bulk download documentation
+      https://www.publiccontractsscotland.gov.uk/NoticeDownload/Download.aspx
     """
     name = 'scotland_public_contracts'
 
