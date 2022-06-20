@@ -4,7 +4,7 @@ from kingfisher_scrapy.base_spiders import PeriodicSpider
 from kingfisher_scrapy.util import handle_http_error, parameters
 
 
-class WalesPublicContracts(PeriodicSpider):
+class Wales(PeriodicSpider):
     """
     Domain
       Wales
@@ -15,6 +15,8 @@ class WalesPublicContracts(PeriodicSpider):
         Download only data until this month (YYYY-MM format). Defaults to the current month.
     API documentation
       https://api.sell2wales.gov.wales/v1
+    Bulk download documentation
+      https://www.sell2wales.gov.wales/Notice/Download/Download.aspx
     """
     name = 'wales_public_contracts'
 
