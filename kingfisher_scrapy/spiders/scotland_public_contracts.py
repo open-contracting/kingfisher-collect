@@ -22,7 +22,6 @@ class ScotlandPublicContracts(ProactisBase):
 
     # ProactisBase
     base_url = 'https://api.publiccontractsscotland.gov.uk'
-
     notice_types = [
         101,  # Site Notice - Website Contract Notice
         102,  # Site Notice - Website Prior Information Notice

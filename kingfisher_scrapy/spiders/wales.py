@@ -22,7 +22,6 @@ class Wales(ProactisBase):
 
     # ProactisBase
     base_url = 'https://api.sell2wales.gov.wales'
-
     notice_types = [
         51,  # Site Notice - Website Invitation to Tender Notice
         52,  # Site Notice - Website Prior Information Notice
