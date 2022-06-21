@@ -36,19 +36,22 @@ class UpdateDocs(ScrapyCommand):
                 if key == 'spiders':
                     continue
 
+                classes = [(module, cls) for module in group for cls in iter_spider_classes(module)]
+                if not classes:
+                    continue
+
                 f.write(f"\n{key.replace('_', ' ').title()}\n{'~' * len(key)}\n")
 
-                for module in group:
-                    for cls in iter_spider_classes(module):
-                        f.write(f'\n.. autoclass:: {module.__name__}.{cls.__name__}\n   :no-members:\n')
+                for (module, cls) in classes:
+                    f.write(f'\n.. autoclass:: {module.__name__}.{cls.__name__}\n   :no-members:\n')
 
-                        infix = ''
-                        if cls.__doc__:
-                            section = re.search(r'^Environment variables\n(.+?)(?:^\S|\Z)', dedent(cls.__doc__),
-                                                re.MULTILINE | re.DOTALL)
-                            if section:
-                                environment_variables = re.findall(r'^(\S.+)\n  ', dedent(section[1]), re.MULTILINE)
-                                infix = f"env {' '.join([f'{variable}=...' for variable in environment_variables])} "
+                    infix = ''
+                    if cls.__doc__:
+                        section = re.search(r'^Environment variables\n(.+?)(?:^\S|\Z)', dedent(cls.__doc__),
+                                            re.MULTILINE | re.DOTALL)
+                        if section:
+                            environment_variables = re.findall(r'^(\S.+)\n  ', dedent(section[1]), re.MULTILINE)
+                            infix = f"env {' '.join([f'{variable}=...' for variable in environment_variables])} "
 
-                        f.write('\n.. code-block:: bash\n')
-                        f.write(f"\n   {infix}scrapy crawl {module.__name__.rsplit('.')[-1]}\n")
+                    f.write('\n.. code-block:: bash\n')
+                    f.write(f"\n   {infix}scrapy crawl {module.__name__.rsplit('.')[-1]}\n")

@@ -350,9 +350,6 @@ Denmark
 
    scrapy crawl denmark_digiwhist
 
-Digiwhist
-~~~~~~~~~
-
 Dominican Republic
 ~~~~~~~~~~~~~~~~~~
 
@@ -413,9 +410,6 @@ Europe
 .. code-block:: bash
 
    scrapy crawl europe_ted_digiwhist
-
-European
-~~~~~~~~
 
 Finland
 ~~~~~~~
@@ -1138,9 +1132,6 @@ Portugal
 .. code-block:: bash
 
    scrapy crawl portugal_releases
-
-Proactis
-~~~~~~~~
 
 Romania
 ~~~~~~~
