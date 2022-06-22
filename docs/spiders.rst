@@ -1143,16 +1143,6 @@ Romania
 
    scrapy crawl romania_digiwhist
 
-Scotland
-~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.scotland_public_contracts.ScotlandPublicContracts
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl scotland_public_contracts
-
 Slovakia
 ~~~~~~~~
 
@@ -1285,6 +1275,20 @@ United Kingdom
 
    scrapy crawl united_kingdom_fts_test
 
+.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_scotland.UnitedKingdoScotland
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl united_kingdom_scotland
+
+.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_wales.UnitedKingdomWales
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl united_kingdom_wales
+
 Uruguay
 ~~~~~~~
 
@@ -1308,16 +1312,6 @@ Uruguay
 .. code-block:: bash
 
    scrapy crawl uruguay_releases
-
-Wales
-~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.wales.Wales
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl wales
 
 Zambia
 ~~~~~~
