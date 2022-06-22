@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.proactis_base import ProactisBase
 
 
-class ScotlandPublicContracts(ProactisBase):
+class UnitedKingdoScotland(ProactisBase):
     """
     Domain
       Public Contracts Scotland
@@ -15,7 +15,7 @@ class ScotlandPublicContracts(ProactisBase):
     Bulk download documentation
       https://www.publiccontractsscotland.gov.uk/NoticeDownload/Download.aspx
     """
-    name = 'scotland_public_contracts'
+    name = 'united_kingdom_scotland'
 
     # SimpleSpider
     data_type = 'release_package'
