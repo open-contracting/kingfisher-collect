@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.proactis_base import ProactisBase
 
 
-class Wales(ProactisBase):
+class UnitedKingdomWales(ProactisBase):
     """
     Domain
       Wales
@@ -15,7 +15,7 @@ class Wales(ProactisBase):
     Bulk download documentation
       https://www.sell2wales.gov.wales/Notice/Download/Download.aspx
     """
-    name = 'wales'
+    name = 'united_kingdom_wales'
 
     # SimpleSpider
     data_type = 'release_package'
