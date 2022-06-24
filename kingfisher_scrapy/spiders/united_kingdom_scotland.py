@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.proactis_base import ProactisBase
 
 
-class UnitedKingdoScotland(ProactisBase):
+class UnitedKingdomScotland(ProactisBase):
     """
     Domain
       Public Contracts Scotland
