@@ -350,9 +350,6 @@ Denmark
 
    scrapy crawl denmark_digiwhist
 
-Digiwhist
-~~~~~~~~~
-
 Dominican Republic
 ~~~~~~~~~~~~~~~~~~
 
@@ -413,9 +410,6 @@ Europe
 .. code-block:: bash
 
    scrapy crawl europe_ted_digiwhist
-
-European
-~~~~~~~~
 
 Finland
 ~~~~~~~
@@ -1149,16 +1143,6 @@ Romania
 
    scrapy crawl romania_digiwhist
 
-Scotland
-~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.scotland_public_contracts.ScotlandPublicContracts
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl scotland_public_contracts
-
 Slovakia
 ~~~~~~~~
 
@@ -1290,6 +1274,20 @@ United Kingdom
 .. code-block:: bash
 
    scrapy crawl united_kingdom_fts_test
+
+.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_scotland.UnitedKingdoScotland
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl united_kingdom_scotland
+
+.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_wales.UnitedKingdomWales
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl united_kingdom_wales
 
 Uruguay
 ~~~~~~~
