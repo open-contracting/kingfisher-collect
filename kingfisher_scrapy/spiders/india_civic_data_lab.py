@@ -18,7 +18,8 @@ class IndiaCivicDataLab(SimpleSpider):
     unflatten = True
     unflatten_args = {
         'metatab_name': 'Meta',
-        'metatab_vertical_orientation': True
+        'metatab_vertical_orientation': True,
+        'metatab_schema': 'https://standard.open-contracting.org/schema/1__1__5/release-package-schema.json'
     }
 
     # SimpleSpider
