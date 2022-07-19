@@ -16,11 +16,8 @@ class ArgentinaBuenosAires(SimpleSpider):
     name = 'argentina_buenos_aires'
     download_timeout = 1000
 
-    # BaseSpider
-    root_path = 'main.item'
-
     # SimpleSpider
-    data_type = 'release'
+    data_type = 'release_package'
 
     def start_requests(self):
         # A CKAN API JSON response.
