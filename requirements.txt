@@ -75,7 +75,7 @@ jsonref==0.2
     #   ocdsmerge
 jsonschema==3.2.0
     # via -r requirements.in
-lxml==4.7.1
+lxml==4.9.1
     # via flattentool
 ocdsextensionregistry==0.1.5
     # via ocdskit
