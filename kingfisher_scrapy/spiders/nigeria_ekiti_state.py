@@ -10,4 +10,3 @@ class NigeriaEkitiState(EuropeanDynamicsSassBase):
 
     # EuropeanDynamicsSassBase
     base_url = 'https://ocds.bpp.ekitistate.gov.ng/'
-
