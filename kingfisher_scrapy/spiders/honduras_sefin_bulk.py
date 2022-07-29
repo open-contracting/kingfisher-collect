@@ -13,6 +13,8 @@ class HondurasSEFINBulk(CompressedFileSpider, PeriodicSpider):
         Download only data until this year (YYYY format). Defaults to the current year.
     Bulk download documentation
       https://www.sefin.gob.hn/edca/
+    Swagger API documentation
+      https://guancasco.sefin.gob.hn/EDCA_WEBAPI/swagger/ui/index
     """
     name = 'honduras_sefin_bulk'
 
