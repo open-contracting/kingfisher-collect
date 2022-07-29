@@ -1000,6 +1000,13 @@ Nigeria
 
    scrapy crawl nigeria_kaduna_state_budeshi_releases
 
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_kano_state.NigeriaKanoState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_kano_state
+
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_lagos_state.NigeriaLagosState
    :no-members:
 
