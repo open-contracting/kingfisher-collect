@@ -1,7 +1,7 @@
-from kingfisher_scrapy.spiders.european_dynamics_saas_base import EuropeanDynamicsSassBase
+from kingfisher_scrapy.spiders.european_dynamics_saas_base import EuropeanDynamicsSaasBase
 
 
-class NigeriaLagosState(EuropeanDynamicsSassBase):
+class NigeriaLagosState(EuropeanDynamicsSaasBase):
     """
     Domain
       Nigeria Lagos State Open Contracting Portal

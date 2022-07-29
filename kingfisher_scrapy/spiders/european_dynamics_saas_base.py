@@ -4,21 +4,21 @@ from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class EuropeanDynamicsSassBase(SimpleSpider):
+class EuropeanDynamicsSaasBase(SimpleSpider):
     """
     This class makes it easy to collect data from an European Dynamics SaaS Electronic Procurement:
 
-    #. Inherit from ``EuropeanDynamicsSassBase``
+    #. Inherit from ``EuropeanDynamicsSaasBase``
     #. Set a ``base_url`` class attribute with the portal's domain
 
     .. code-block:: python
 
-        from kingfisher_scrapy.spiders.european_dynamics_saas_base import EuropeanDynamicsSassBase
+        from kingfisher_scrapy.spiders.european_dynamics_saas_base import EuropeanDynamicsSaasBase
 
-        class MySpider(EuropeanDynamicsSassBase):
+        class MySpider(EuropeanDynamicsSaasBase):
             name = 'my_spider'
 
-            # EuropeanDynamicsSassBase
+            # EuropeanDynamicsSaasBase
             base_url = 'http://base-url'
     """
 

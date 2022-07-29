@@ -1,7 +1,7 @@
-from kingfisher_scrapy.spiders.european_dynamics_saas_base import EuropeanDynamicsSassBase
+from kingfisher_scrapy.spiders.european_dynamics_saas_base import EuropeanDynamicsSaasBase
 
 
-class NigeriaEkitiState(EuropeanDynamicsSassBase):
+class NigeriaEkitiState(EuropeanDynamicsSaasBase):
     """
     Domain
       Nigeria Ekiti State Open Contracting Portal
