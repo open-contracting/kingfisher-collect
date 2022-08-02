@@ -1035,6 +1035,13 @@ Nigeria
 
    scrapy crawl nigeria_oyo_state
 
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_plateau_state.NigeriaPlateauState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_plateau_state
+
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_portal.NigeriaPortal
    :no-members:
 
