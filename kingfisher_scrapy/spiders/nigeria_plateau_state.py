@@ -7,6 +7,8 @@ class NigeriaPlateauState(SimpleSpider):
     """
     Domain
       Nigeria Plateau State
+    Bulk download documentation
+      https://plateaustatebpp.com/ocds
     """
     name = 'nigeria_plateau_state'
 
