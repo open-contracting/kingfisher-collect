@@ -209,7 +209,7 @@ def items_basecoro(target, prefix, map_type=None, skip_key=None):
     path, the current event is skipped. Otherwise, the method is identical.
     """
     while True:
-        current, event, value = (yield)
+        current, event, value = yield
         if skip_key and skip_key in current:
             continue
         if current == prefix:
@@ -218,7 +218,7 @@ def items_basecoro(target, prefix, map_type=None, skip_key=None):
                 end_event = event.replace('start', 'end')
                 while (current, event) != (prefix, end_event):
                     builder.event(event, value)
-                    current, event, value = (yield)
+                    current, event, value = yield
                 del builder.containers[:]
                 target.send(builder.value)
             else:

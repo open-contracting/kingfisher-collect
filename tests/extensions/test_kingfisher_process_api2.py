@@ -43,7 +43,7 @@ class Response():
 
     @property
     def ok(self):
-        return not(400 <= self.status_code < 600)
+        return not (400 <= self.status_code < 600)
 
     def json(self):
         return self.content
