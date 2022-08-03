@@ -35,6 +35,7 @@ class FilesStore:
 
         extension = cls(directory)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+        crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
 
         return extension
 
@@ -42,6 +43,10 @@ class FilesStore:
         if hasattr(spider, '_job'):
             path = os.path.join(self.relative_crawl_directory(spider), 'scrapyd-job.txt')
             self._write_file(path, spider._job)
+
+    def spider_closed(self, spider):
+        path = os.path.join(self.directory, self.relative_crawl_directory(spider))
+        spider.logger.info(f'The download data has been stored in this directory {path}')
 
     def item_scraped(self, item, spider):
         """
