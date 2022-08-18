@@ -46,7 +46,16 @@ class FilesStore:
 
     def spider_closed(self, spider):
         path = os.path.join(self.directory, self.relative_crawl_directory(spider))
-        spider.logger.info(f'The download data has been stored in this directory {path}')
+
+        message = f'The data is available at: {path}'
+        message_length = len(message) + 1
+        title_length = message_length // 2 - 8
+
+        spider.logger.info(f"+-{'-' * title_length } DATA DIRECTORY {'-' * title_length }-+")
+        spider.logger.info(f"| {' ' * message_length} |")
+        spider.logger.info(f"| {message.ljust(message_length)} |")
+        spider.logger.info(f"| {' ' * message_length} |")
+        spider.logger.info(f"+-{'-' * message_length}-+")
 
     def item_scraped(self, item, spider):
         """
