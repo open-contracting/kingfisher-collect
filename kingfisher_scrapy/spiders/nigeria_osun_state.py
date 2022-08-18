@@ -14,7 +14,7 @@ class NigeriaOsunState(SimpleSpider):
     name = 'nigeria_osun_state'
 
     # SimpleSpider
-    data_type = 'release_packageNew'
+    data_type = 'release_package'
 
     # Local
     url_prefix = 'https://egp.osunstate.gov.ng/'
