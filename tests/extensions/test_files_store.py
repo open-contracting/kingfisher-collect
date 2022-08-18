@@ -48,7 +48,7 @@ def test_spider_closed_odd(caplog):
         assert [record.message for record in caplog.records] == [
             '+----------------- DATA DIRECTORY -----------------+',
             '|                                                  |',
-            '| The data is available at: 1/test/20010203_040506 |',
+            f'| The data is available at: 1{os.sep}test{os.sep}20010203_040506 |',
             '|                                                  |',
             '+--------------------------------------------------+',
         ]
@@ -64,7 +64,7 @@ def test_spider_closed_even(caplog):
         assert [record.message for record in caplog.records] == [
             '+------------------ DATA DIRECTORY ------------------+',
             '|                                                    |',
-            '| The data is available at: 22/test/20010203_040506  |',
+            f'| The data is available at: 22{os.sep}test{os.sep}20010203_040506  |',
             '|                                                    |',
             '+----------------------------------------------------+',
         ]
