@@ -160,9 +160,6 @@ DATABASE_URL = None
 # https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std:setting-FILES_STORE
 FILES_STORE = os.getenv('FILES_STORE', 'data')
 
-# https://docs.scrapy.org/en/latest/topics/stats.html#stats-collection
-STATS_DUMP = os.getenv('KINGFISHER_STATS_DUMP', False)
-
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
 HTTPERROR_ALLOW_ALL = True
 
