@@ -1,3 +1,4 @@
+import math
 import os
 
 from scrapy import signals
@@ -48,7 +49,7 @@ class FilesStore:
         path = os.path.join(self.directory, self.relative_crawl_directory(spider))
 
         message = f'The data is available at: {path}'
-        message_length = len(message) + 1
+        message_length = math.ceil(len(message) / 2) * 2
         title_length = message_length // 2 - 8
 
         spider.logger.info(f"+-{'-' * title_length } DATA DIRECTORY {'-' * title_length }-+")

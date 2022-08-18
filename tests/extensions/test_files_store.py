@@ -1,3 +1,4 @@
+import logging
 import os
 from tempfile import TemporaryDirectory
 from unittest.mock import Mock
@@ -35,6 +36,38 @@ def test_spider_opened(job, tmpdir):
             assert f.read() == job
     else:
         assert not os.path.exists(path)
+
+
+def test_spider_closed_odd(caplog):
+    spider = spider_with_files_store('1')
+
+    extension = FilesStore.from_crawler(spider.crawler)
+    with caplog.at_level(logging.INFO):
+        extension.spider_closed(spider)
+
+        assert [record.message for record in caplog.records] == [
+            '+----------------- DATA DIRECTORY -----------------+',
+            '|                                                  |',
+            '| The data is available at: 1/test/20010203_040506 |',
+            '|                                                  |',
+            '+--------------------------------------------------+',
+        ]
+
+
+def test_spider_closed_even(caplog):
+    spider = spider_with_files_store('22')
+
+    extension = FilesStore.from_crawler(spider.crawler)
+    with caplog.at_level(logging.INFO):
+        extension.spider_closed(spider)
+
+        assert [record.message for record in caplog.records] == [
+            '+------------------ DATA DIRECTORY ------------------+',
+            '|                                                    |',
+            '| The data is available at: 22/test/20010203_040506  |',
+            '|                                                    |',
+            '+----------------------------------------------------+',
+        ]
 
 
 @pytest.mark.parametrize('sample,path', [
