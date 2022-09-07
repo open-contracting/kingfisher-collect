@@ -1,6 +1,6 @@
-import os
 import re
 from itertools import groupby
+from pathlib import Path
 from textwrap import dedent
 
 from scrapy.commands import ScrapyCommand
@@ -13,7 +13,7 @@ class UpdateDocs(ScrapyCommand):
         return 'Update docs/spiders.rst'
 
     def run(self, args, opts):
-        basedir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        basedir = Path(__file__).resolve().parents[2]
 
         def _keyfunc(module):
             module_name = module.__name__.rsplit('.', 1)[-1]
@@ -21,14 +21,14 @@ class UpdateDocs(ScrapyCommand):
                 return '_'.join(module_name.split('_', 2)[:2])
             return module_name.split('_', 1)[0]
 
-        with open(os.path.join(basedir, 'docs', 'spiders.rst')) as f:
+        with (basedir / 'docs' / 'spiders.rst').open() as f:
             lines = []
             for line in f:
                 lines.append(line)
                 if line.startswith('.. Do not edit past this line.'):
                     break
 
-        with open(os.path.join(basedir, 'docs', 'spiders.rst'), 'w') as f:
+        with (basedir / 'docs' / 'spiders.rst').open('w') as f:
             for line in lines:
                 f.write(line)
 
