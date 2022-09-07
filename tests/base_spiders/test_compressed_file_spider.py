@@ -1,7 +1,7 @@
 import json
 import os
-import pathlib
 from io import BytesIO
+from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 import pytest
@@ -114,9 +114,8 @@ def test_parse_rar_file():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = 'release_package'
 
-    # the rar library does'nt support the write mode so we use a static rar file
-    rar_file_path = os.path.join(pathlib.Path(__file__).parent.parent.absolute(), 'data', 'test.rar')
-    with open(rar_file_path, 'rb') as f:
+    path = Path(__file__).parents[1] / 'data' / 'test.rar'
+    with path.open('rb') as f:
         io = BytesIO(f.read())
     response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.rar'})
     generator = spider.parse(response)
