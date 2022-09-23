@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import LinksSpider, PeriodicSpider
-from kingfisher_scrapy.util import parameters, components
+from kingfisher_scrapy.util import components
 
 
 class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
