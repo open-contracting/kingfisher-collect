@@ -1086,6 +1086,30 @@ Pakistan
 
    scrapy crawl pakistan_ppra_bulk
 
+Panama
+~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.panama_dgcp_bulk.PanamaDGCPBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl panama_dgcp_bulk
+
+.. autoclass:: kingfisher_scrapy.spiders.panama_dgcp_records.PanamaDGCPRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl panama_dgcp_records
+
+.. autoclass:: kingfisher_scrapy.spiders.panama_dgcp_releases.PanamaDGCPReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl panama_dgcp_releases
+
 Paraguay
 ~~~~~~~~
 
