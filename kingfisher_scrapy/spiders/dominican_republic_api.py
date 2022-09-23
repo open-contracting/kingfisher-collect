@@ -15,6 +15,10 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
       https://api.dgcp.gob.do/api/docs
     """
     name = 'dominican_republic_api'
+    custom_settings = {
+        # Reduce the number of concurrent requests to avoid multiple failures.
+        'CONCURRENT_REQUESTS': 1,
+    }
 
     # BaseSpider
     default_from_date = '2018'
