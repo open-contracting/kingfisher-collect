@@ -27,6 +27,5 @@ class PanamaDGCPBulk(SimpleSpider):
     data_type = 'record_package'
 
     def start_requests(self):
-        url = f'https://ocds.panamacompraencifras.gob.pa/Descarga?DateFrom={self.from_date}'\
-            f'&DateTo={self.until_date}&FileType=json'
-        yield self.build_request(url, formatter=parameters('DateFrom', 'DateTo'))
+        yield self.build_request(f'https://ocds.panamacompraencifras.gob.pa/Descarga?DateFrom={self.from_date}&DateTo='
+                                 f'{self.until_date}&FileType=json', formatter=parameters('DateFrom', 'DateTo'))
