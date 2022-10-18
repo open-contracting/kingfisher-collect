@@ -19,4 +19,3 @@ class UnitedKingdomContractsFinderReleases(UnitedKingdomContractsFinderBase):
     def parse_data(self, response):
         for release in response.json()['releases']:
             yield self.build_request(f'{self.url_prefix}/OCDS/Release/{release["id"]}', formatter=components(-1))
-

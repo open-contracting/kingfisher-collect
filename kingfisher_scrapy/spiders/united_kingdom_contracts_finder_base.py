@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import LinksSpider
-from kingfisher_scrapy.util import components, handle_http_error, parameters
+from kingfisher_scrapy.util import parameters
 
 
 class UnitedKingdomContractsFinderBase(LinksSpider):
