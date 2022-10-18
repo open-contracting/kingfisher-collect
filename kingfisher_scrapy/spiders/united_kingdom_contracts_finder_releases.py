@@ -16,13 +16,7 @@ class UnitedKingdomContractsFinderReleases(UnitedKingdomContractsFinderBase):
     # SimpleSpider
     data_type = 'release_package'
 
-    # UnitedKingdomContractsFinderBase
-    parse_data_callback = 'parse_data'
-
     def parse_data(self, response):
-        if self.is_http_success(response):
-            for result in response.json()['records']:
-                for release in result['releases']:
-                    yield self.build_request(release['url'], formatter=components(-1))
-        else:
-            return self.build_retry_request_or_file_error(response)
+        for release in response.json()['releases']:
+            yield self.build_request(f'{self.url_prefix}/OCDS/Release/{release["id"]}', formatter=components(-1))
+
