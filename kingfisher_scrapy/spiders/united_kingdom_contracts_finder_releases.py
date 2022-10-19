@@ -17,6 +17,7 @@ class UnitedKingdomContractsFinderReleases(UnitedKingdomContractsFinderBase):
     data_type = 'release_package'
 
     @handle_http_error
-    def parse_data(self, response):
+    def parse_page(self, response):
         for release in response.json()['releases']:
             yield self.build_request(f'{self.url_prefix}/OCDS/Release/{release["id"]}', formatter=components(-1))
+        yield self.next_link(response, callback=self.parse_page)
