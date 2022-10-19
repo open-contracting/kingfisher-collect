@@ -1,4 +1,5 @@
 from kingfisher_scrapy.spiders.united_kingdom_contracts_finder_base import UnitedKingdomContractsFinderBase
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
@@ -13,5 +14,7 @@ class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
     # SimpleSpider
     data_type = 'record_package'
 
-    # UnitedKingdomContractsFinderBase
-    parse_data_callback = 'parse'
+    @handle_http_error
+    def parse_data(self, response):
+        for release in response.json()['releases']:
+            yield self.build_request(f'{self.url_prefix}/OCDS/Record/{release["ocid"]}', formatter=components(-1))
