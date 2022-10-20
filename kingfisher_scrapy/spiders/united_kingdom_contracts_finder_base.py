@@ -5,6 +5,10 @@ from kingfisher_scrapy.util import parameters
 
 
 class UnitedKingdomContractsFinderBase(LinksSpider):
+    # The API has unpredictable and undocumented "too many requests" logic.
+    custom_settings = {
+        'CONCURRENT_REQUESTS': 1,
+    }
 
     # BaseSpider
     date_format = 'datetime'
