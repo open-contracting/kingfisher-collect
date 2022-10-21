@@ -25,8 +25,8 @@ class UnitedKingdomContractsFinderBase(LinksSpider):
     # parse_page must be provided by subclasses.
 
     def start_requests(self):
-        # size > 100 causes "Incorrect request [size must be a number greater than 0 and maximum is 100]".
-        url = f'{self.url_prefix}Notices/OCDS/Search?size=100'
+        # https://www.contractsfinder.service.gov.uk/apidocumentation/Notices/1/GET-Published-Notice-OCDS-Search
+        url = f'{self.url_prefix}Notices/OCDS/Search?limit=100'
         if self.from_date and self.until_date:
             from_date = self.from_date.strftime(self.date_format)
             until_date = self.until_date.strftime(self.date_format)

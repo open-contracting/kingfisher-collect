@@ -24,5 +24,5 @@ class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
     @handle_http_error
     def parse_page(self, response):
         for release in response.json()['releases']:
-            yield self.build_request(f'{self.url_prefix}/OCDS/Record/{release["ocid"]}', formatter=components(-1))
+            yield self.build_request(f'{self.url_prefix}OCDS/Record/{release["ocid"]}', formatter=components(-1))
         yield self.next_link(response, callback=self.parse_page)
