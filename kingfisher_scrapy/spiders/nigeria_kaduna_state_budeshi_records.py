@@ -11,4 +11,4 @@ class NigeriaKadunaStateBudeshiRecords(NigeriaBudeshiRecords):
     name = 'nigeria_kaduna_state_budeshi_records'
 
     # NigeriaBudeshiBase
-    base_url = 'https://www.budeshi.ng/kadppa/api/'
+    base_url = 'https://kadppaocds.azurewebsites.net/api/'
