@@ -4,9 +4,9 @@ from kingfisher_scrapy.spiders.nigeria_budeshi_records import NigeriaBudeshiReco
 class NigeriaKadunaStateBudeshiRecords(NigeriaBudeshiRecords):
     """
     Domain
-      Budeshi Nigeria - Kaduna State
+      Nigeria - Kaduna State
     API documentation
-      https://www.budeshi.ng/kadppa/api
+      https://kadppaocds.azurewebsites.net/api
     """
     name = 'nigeria_kaduna_state_budeshi_records'
 
