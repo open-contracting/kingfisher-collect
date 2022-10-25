@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error, get_parameter_value
+from kingfisher_scrapy.util import components, get_parameter_value, handle_http_error
 
 
 class NigeriaBonMaximusBase(SimpleSpider):
