@@ -4,7 +4,7 @@ from io import BytesIO
 import scrapy
 
 from kingfisher_scrapy.base_spiders import BaseSpider
-from kingfisher_scrapy.util import handle_http_error
+from kingfisher_scrapy.util import handle_http_error, browser_user_agent
 
 
 class DigiwhistBase(BaseSpider):
@@ -14,6 +14,8 @@ class DigiwhistBase(BaseSpider):
     Bulk download documentation
       https://opentender.eu/download
     """
+    user_agent = browser_user_agent  # to avoid HTTP 410 error
+
     # BaseSpider
     line_delimited = True
 
