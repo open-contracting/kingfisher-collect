@@ -4,7 +4,7 @@ from io import BytesIO
 import scrapy
 
 from kingfisher_scrapy.base_spiders import BaseSpider
-from kingfisher_scrapy.util import handle_http_error, browser_user_agent
+from kingfisher_scrapy.util import browser_user_agent, handle_http_error
 
 
 class DigiwhistBase(BaseSpider):
