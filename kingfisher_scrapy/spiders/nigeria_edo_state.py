@@ -1,7 +1,6 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import handle_http_error
 
 
 class NigeriaEdoState(SimpleSpider):
