@@ -9,10 +9,10 @@ class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
     Domain
       Administración Pública Federal (APF): Secretaría de Hacienda y Crédito Público (SHCP)
     Bulk download documentation
-      https://datos.gob.mx/busca/dataset/concentrado-de-contrataciones-abiertas-de-la-apf
+      https://www.gob.mx/compranet/documentos/estandar-de-datos-para-las-contrataciones-abiertas-edca
     """
     name = 'mexico_administracion_publica_federal_bulk'
-    download_timeout = 99999
+    download_timeout = 99999  # > 2GB zip file
 
     # BaseSpider
     root_path = 'item'
@@ -22,15 +22,13 @@ class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            'https://datos.gob.mx/busca/api/3/action/package_search?q=concentrado-de-contrataciones-abiertas-de-la'
-            '-apf',
-            meta={'file_name': 'list.json'},
+            'https://www.gob.mx/compranet/documentos/estandar-de-datos-para-las-contrataciones-abiertas-edca',
+            meta={'file_name': 'list.html'},
             callback=self.parse_list
         )
 
     @handle_http_error
     def parse_list(self, response):
-        for result in response.json()['result']['results']:
-            for resource in result['resources']:
-                if resource['name'].endswith('JSON.') and resource['format'].upper() == 'JSON':
-                    yield self.build_request(resource['url'], formatter=components(-1))
+        for url in response.xpath('//a/@href').getall():
+            if url.endswith('contrataciones_arr.json.zip'):
+                yield self.build_request(url, formatter=components(-1))
