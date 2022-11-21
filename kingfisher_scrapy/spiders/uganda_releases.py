@@ -28,8 +28,8 @@ class UgandaReleases(PeriodicSpider):
     custom_settings = {
         # We cannot get the list of all the files from https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets
         # because the list is generated in the browser.
-        # To get all the files, we follow the pattern download?fy={0}-{1}&code=1, iterating de 'code' value until it
-        # returns HTTP 500 error FileNotFoundException. Therefore, we retry all codes but 500
+        # To get all the files, we follow the pattern download?fy={0}-{1}&code=1, iterating the 'code' value until it
+        # returns HTTP 500 error FileNotFoundException. Therefore, we retry all codes in RETRY_HTTP_CODES except 500.
         'RETRY_HTTP_CODES': filter(lambda status: status != 500, RETRY_HTTP_CODES),
     }
     # BaseSpider
@@ -47,7 +47,7 @@ class UgandaReleases(PeriodicSpider):
     def build_next(self, response):
         if response.status == 500:
             return
-        elif not self.is_http_success(response):
+        if not self.is_http_success(response):
             yield self.build_file_error_from_response(response)
         else:
             yield from super().parse(response)
@@ -56,7 +56,4 @@ class UgandaReleases(PeriodicSpider):
                                      formatter=self.formatter, callback=self.build_next)
 
     def build_urls(self, date):
-        """
-        Yields one or more URLs for the given date.
-        """
-        yield self.pattern.format(date, date+1)
+        yield self.pattern.format(date, date + 1)
