@@ -1,7 +1,7 @@
 from scrapy.settings.default_settings import RETRY_HTTP_CODES
 
 from kingfisher_scrapy.base_spiders import PeriodicSpider
-from kingfisher_scrapy.util import parameters, get_parameter_value, replace_parameters
+from kingfisher_scrapy.util import get_parameter_value, parameters, replace_parameters
 
 
 class UgandaReleases(PeriodicSpider):
