@@ -1,9 +1,7 @@
-from urllib.parse import parse_qs, urlparse
-
 from scrapy.settings.default_settings import RETRY_HTTP_CODES
 
 from kingfisher_scrapy.base_spiders import PeriodicSpider
-from kingfisher_scrapy.util import parameters
+from kingfisher_scrapy.util import parameters, get_parameter_value, replace_parameters
 
 
 class UgandaReleases(PeriodicSpider):
@@ -51,8 +49,8 @@ class UgandaReleases(PeriodicSpider):
             yield self.build_file_error_from_response(response)
         else:
             yield from super().parse(response)
-            next_code = int(parse_qs(urlparse(response.request.url).query)['code'][0])+1
-            yield self.build_request(f"{response.request.url.split('code=')[0]}code={next_code}",
+            next_code = int(get_parameter_value(response.request.url, 'code')) + 1
+            yield self.build_request(replace_parameters(response.request.url, code=next_code),
                                      formatter=self.formatter, callback=self.build_next)
 
     def build_urls(self, date):
