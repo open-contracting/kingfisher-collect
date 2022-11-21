@@ -1,62 +1,56 @@
-import scrapy
+from scrapy.settings.default_settings import RETRY_HTTP_CODES
 
-from kingfisher_scrapy.base_spiders import IndexSpider
-from kingfisher_scrapy.util import components, handle_http_error, join, parameters
+from kingfisher_scrapy.base_spiders import PeriodicSpider
+from kingfisher_scrapy.util import get_parameter_value, parameters, replace_parameters
 
 
-class UgandaReleases(IndexSpider):
+class UgandaReleases(PeriodicSpider):
     """
     Domain
       Government Procurement Portal (GPP) of Public Procurement and Disposal of Public Assets Authority (PPDA)
-    Caveats
-      The domains described in the API documentation must be replaced by https://gpppapi.com
     Spider arguments
       from_date
         Download only data from this year onward (YYYY format).
-        If ``until_date`` is provided, defaults to '2017'.
-        The year refers to the start of the fiscal year range, e.g. if ``from_date`` = '2017' then the fiscal year is
-        '2017-2018'
+        If ``until_date`` is provided, defaults to '2019'.
+        The year refers to the start of the fiscal year range, e.g. if ``from_date`` = '2019' then the fiscal year is
+        '2019-2020'
       until_date
         Download only data until this year (YYYY format).
         If ``from_date`` is provided, defaults to the current year.
-        The year refers to the start of the fiscal year range, e.g. if ``until_date`` = '2017' then the fiscal year is
-        '2017-2018'
-    API documentation
-        https://docs.google.com/spreadsheets/d/10tVioy-VOQa1FwWoRl5e1pMbGpiymA0iycNcoDFkvks/edit#gid=365266172
+        The year refers to the start of the fiscal year range, e.g. if ``until_date`` = '2019' then the fiscal year is
+        '2019-2020'
+    Bulk download documentation
+        https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets
     """
     name = 'uganda_releases'
-    download_delay = 30  # to avoid API 429 error "too many request"
     custom_settings = {
-        'CONCURRENT_REQUESTS': 1,
+        # We cannot get the list of all the files from https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets
+        # because the list is generated in the browser.
+        # To get all the files, we follow the pattern download?fy={0}-{1}&code=1, iterating the 'code' value until it
+        # returns HTTP 500 error FileNotFoundException. Therefore, we retry all codes in RETRY_HTTP_CODES except 500.
+        'RETRY_HTTP_CODES': filter(lambda status: status != 500, RETRY_HTTP_CODES),
     }
-
     # BaseSpider
     date_format = 'year'
-    default_from_date = '2017'
+    default_from_date = '2019'
 
     # SimpleSpider
     data_type = 'release_package'
 
-    # IndexSpider
-    page_count_pointer = '/data/last_page'
-    parse_list_callback = 'parse_page'
+    # PeriodicSpider
+    formatter = staticmethod(parameters('fy', 'code'))
+    pattern = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v2/ocds/download?fy={0}-{1}&code=1'
 
-    def start_requests(self):
-        url = 'https://gpppapi.com/adminapi/public/api/pdes'
-        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_list)
+    def parse(self, response):
+        if response.status == 500:
+            return
+        if not self.is_http_success(response):
+            yield self.build_file_error_from_response(response)
+        else:
+            yield from super().parse(response)
+            code = int(get_parameter_value(response.request.url, 'code')) + 1
+            yield self.build_request(replace_parameters(response.request.url, code=code),
+                                     formatter=self.formatter)
 
-    @handle_http_error
-    def parse_page(self, response):
-        pattern = 'https://gpppapi.com/adminapi/public/api/open-data/v1/releases/{tag}?fy={fy}&pde={pde}'
-
-        for pdes in response.json()['data']['data']:
-            for plans in pdes['procurement_plans']:
-                for tag in ('planning', 'tender', 'award', 'contract'):
-                    if self.from_date and self.until_date:
-                        start_year = int(plans['financial_year'].split('-')[0])
-                        if not (self.from_date.year <= start_year <= self.until_date.year):
-                            continue
-                    yield self.build_request(
-                        pattern.format(tag=tag, fy=plans['financial_year'], pde=plans['pde_id']),
-                        formatter=join(components(-1), parameters('fy', 'pde'))
-                    )
+    def build_urls(self, date):
+        yield self.pattern.format(date, date + 1)
