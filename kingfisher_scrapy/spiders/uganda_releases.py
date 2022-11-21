@@ -40,18 +40,17 @@ class UgandaReleases(PeriodicSpider):
     # PeriodicSpider
     formatter = staticmethod(parameters('fy', 'code'))
     pattern = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v2/ocds/download?fy={0}-{1}&code=1'
-    start_requests_callback = 'build_next'
 
-    def build_next(self, response):
+    def parse(self, response):
         if response.status == 500:
             return
         if not self.is_http_success(response):
             yield self.build_file_error_from_response(response)
         else:
             yield from super().parse(response)
-            next_code = int(get_parameter_value(response.request.url, 'code')) + 1
-            yield self.build_request(replace_parameters(response.request.url, code=next_code),
-                                     formatter=self.formatter, callback=self.build_next)
+            code = int(get_parameter_value(response.request.url, 'code')) + 1
+            yield self.build_request(replace_parameters(response.request.url, code=code),
+                                     formatter=self.formatter)
 
     def build_urls(self, date):
         yield self.pattern.format(date, date + 1)
