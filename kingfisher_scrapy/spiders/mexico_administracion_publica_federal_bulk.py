@@ -8,6 +8,8 @@ class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
     """
     Domain
       Administración Pública Federal (APF): Secretaría de Hacienda y Crédito Público (SHCP)
+    Caveats
+      This data is also published as part of https://www.plataformadigitalnacional.org/contrataciones
     Bulk download documentation
       https://www.gob.mx/compranet/documentos/estandar-de-datos-para-las-contrataciones-abiertas-edca
     """
