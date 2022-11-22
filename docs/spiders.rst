@@ -733,6 +733,13 @@ Mexico
 
    scrapy crawl mexico_administracion_publica_federal_bulk
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_aguascalientes_sesea_plataforma_digital_nacional.MexicoAguascalientesSESEAPlataformaDigitalNacional
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_aguascalientes_sesea_plataforma_digital_nacional
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_durango_idaip.MexicoDurangoIDAIP
    :no-members:
 
@@ -802,13 +809,6 @@ Mexico
 .. code-block:: bash
 
    scrapy crawl mexico_oaxaca_iaip
-
-.. autoclass:: kingfisher_scrapy.spiders.mexico_plataforma_digital_nacional.MexicoPlataformaDigitalNacional
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_plataforma_digital_nacional
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_puebla_itaipue.MexicoPueblaITAIPUE
    :no-members:
