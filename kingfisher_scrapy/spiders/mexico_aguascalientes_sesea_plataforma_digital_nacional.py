@@ -31,10 +31,7 @@ class MexicoAguascalientesSESEAPlataformaDigitalNacional(IndexSpider):
     url = 'https://api.plataformadigitalnacional.org/s6/api/v1/search?supplier_id=SESEA_AGS'
 
     def start_requests(self):
-        yield scrapy.Request(self.url,
-                             meta={'file_name': 'page-0.json'},
-                             callback=self.parse_list,
-                             method='POST')
+        yield scrapy.Request(self.url, meta={'file_name': 'page-0.json'}, callback=self.parse_list, method='POST')
 
     @handle_http_error
     def parse_list(self, response):
