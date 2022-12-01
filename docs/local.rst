@@ -8,7 +8,7 @@ This page will guide you through installing Kingfisher Collect and using it to c
 Install Kingfisher Collect
 --------------------------
 
-To use Kingfisher Collect, you need access to a `Unix-like shell <https://en.wikipedia.org/wiki/Shell_(computing)>`__ (some are available for Windows). `Git <https://git-scm.com>`__ and `Python <https://www.python.org>`__ (version 3.6 or greater) must be installed.
+To use Kingfisher Collect, you need access to a `Unix-like shell <https://en.wikipedia.org/wiki/Shell_(computing)>`__ (some are available for Windows). `Git <https://git-scm.com>`__ and `Python <https://www.python.org>`__ (version 3.7 or greater) must be installed.
 
 When ready, open a shell, and run:
 
