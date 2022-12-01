@@ -98,6 +98,8 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
     for item in transformed_items:
         assert item == expected
 
+    path.close()
+
 
 @pytest.mark.parametrize('middleware_class,attribute,value,override', [
     (ConcatenatedJSONMiddleware, 'concatenated_json', True,
@@ -141,6 +143,8 @@ def test_encoding(middleware_class, attribute, value, override, tmpdir):
     assert len(transformed_items) == 2
     for item in transformed_items:
         assert item == expected
+
+    path.close()
 
 
 @pytest.mark.parametrize('data_type,data,root_path', [
