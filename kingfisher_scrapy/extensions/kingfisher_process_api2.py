@@ -121,6 +121,9 @@ class KingfisherProcessAPI2:
         else:
             spider.logger.error('Failed to close collection. API status code: %d', response.status_code)
 
+        if self.rabbit_url:
+            self.connection.close()
+
     def item_scraped(self, item, spider):
         """
         Sends either a RabbitMQ or API request to store the file, file item or file error in Kingfisher Process.

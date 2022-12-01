@@ -310,6 +310,8 @@ def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdi
         assert len(caplog.records) == 0
         assert json.loads(body) == expected
 
+    extension.connection.close()
+
 
 def test_item_scraped_plucked_item(tmpdir):
     spider = spider_with_files_store(tmpdir)
