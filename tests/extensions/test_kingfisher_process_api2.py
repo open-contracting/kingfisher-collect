@@ -70,6 +70,9 @@ def test_from_crawler(url, expected, boolean):
     assert extension.collection_id is None
     assert bool(extension.channel) is boolean
 
+    if rabbit_url:
+        extension.connection.close()
+
 
 def test_from_crawler_missing_arguments():
     spider = spider_with_crawler(settings={
