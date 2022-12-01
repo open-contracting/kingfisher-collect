@@ -11,8 +11,8 @@ from kingfisher_scrapy.extensions import FilesStore, KingfisherProcessAPI2
 from kingfisher_scrapy.items import FileError, FileItem, PluckedItem
 from tests import ExpectedError, spider_with_crawler, spider_with_files_store
 
-rabbit_url = os.getenv('RABBIT_URL')
-skip_test_if = not rabbit_url and ('CI' not in os.environ or 'CI_SKIP' in os.environ)
+RABBIT_URL = os.getenv('RABBIT_URL')
+SKIP_TEST_IF = not RABBIT_URL and ('CI' not in os.environ or 'CI_SKIP' in os.environ)
 
 items_scraped = [
     ('build_file', 'file.json', {
@@ -49,9 +49,9 @@ class Response():
         return self.content
 
 
-@pytest.mark.skipif(skip_test_if, reason='RABBIT_URL must be set')
+@pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('url,expected,boolean', [
-    (rabbit_url, f'{rabbit_url}?blocked_connection_timeout=1800&heartbeat=0', True),
+    (RABBIT_URL, f'{RABBIT_URL}?blocked_connection_timeout=1800&heartbeat=0', True),
     ('', None, False),
 ])
 def test_from_crawler(url, expected, boolean):
@@ -70,7 +70,7 @@ def test_from_crawler(url, expected, boolean):
     assert extension.collection_id is None
     assert bool(extension.channel) is boolean
 
-    if rabbit_url:
+    if url:
         extension.connection.close()
 
 
@@ -249,12 +249,12 @@ def test_item_scraped(initializer, filename, kwargs, status_code, levelname, mes
     assert caplog.records[0].message == message
 
 
-@pytest.mark.skipif(skip_test_if, reason='RABBIT_URL must be set')
+@pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('initializer,filename,kwargs', items_scraped)
 @pytest.mark.parametrize('raises,infix', [(False, 'sent'), (True, 'failed')])
 def test_item_scraped_rabbit(initializer, filename, kwargs, raises, infix, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, settings={
-        'RABBIT_URL': rabbit_url,
+        'RABBIT_URL': RABBIT_URL,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
         'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
     })

@@ -10,8 +10,8 @@ from scrapy.exceptions import NotConfigured
 from kingfisher_scrapy.extensions import DatabaseStore, FilesStore
 from tests import spider_with_crawler
 
-database_url = os.getenv('KINGFISHER_COLLECT_DATABASE_URL')
-skip_test_if = not database_url and ('CI' not in os.environ or 'CI_SKIP' in os.environ)
+DATABASE_URL = os.getenv('KINGFISHER_COLLECT_DATABASE_URL')
+SKIP_TEST_IF = not DATABASE_URL and ('CI' not in os.environ or 'CI_SKIP' in os.environ)
 
 
 def test_from_crawler_missing_arguments():
@@ -29,7 +29,7 @@ def test_from_crawler_missing_arguments():
     assert str(excinfo.value) == 'FILES_STORE is not set.'
 
 
-@pytest.mark.skipif(skip_test_if, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
+@pytest.mark.skipif(SKIP_TEST_IF, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
 @pytest.mark.parametrize('from_date,default_from_date,date_format', [
     (None, None, None),
     ('2020-01-01', None, 'date'),
@@ -37,7 +37,7 @@ def test_from_crawler_missing_arguments():
 ])
 def test_spider_opened_first_time(caplog, tmpdir, from_date, default_from_date, date_format):
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00',
-                                 settings={'DATABASE_URL': database_url, 'FILES_STORE': tmpdir})
+                                 settings={'DATABASE_URL': DATABASE_URL, 'FILES_STORE': tmpdir})
     spider.from_date = from_date
     spider.default_from_date = default_from_date
     if date_format:
@@ -49,7 +49,7 @@ def test_spider_opened_first_time(caplog, tmpdir, from_date, default_from_date, 
             assert [record.message for record in caplog.records][-5:] == [
                 'Getting the date from which to resume the crawl from the test table']
 
-    connection = psycopg2.connect(database_url)
+    connection = psycopg2.connect(DATABASE_URL)
     cursor = connection.cursor()
     try:
         cursor.execute("SELECT to_regclass('test')")
@@ -61,10 +61,10 @@ def test_spider_opened_first_time(caplog, tmpdir, from_date, default_from_date, 
         connection.close()
 
 
-@pytest.mark.skipif(skip_test_if, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
+@pytest.mark.skipif(SKIP_TEST_IF, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
 def test_spider_closed_error(caplog, tmpdir):
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00',
-                                 settings={'DATABASE_URL': database_url, 'FILES_STORE': tmpdir})
+                                 settings={'DATABASE_URL': DATABASE_URL, 'FILES_STORE': tmpdir})
     extension = DatabaseStore.from_crawler(spider.crawler)
 
     with caplog.at_level(logging.INFO):
@@ -73,7 +73,7 @@ def test_spider_closed_error(caplog, tmpdir):
     assert not caplog.records
 
 
-@pytest.mark.skipif(skip_test_if, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
+@pytest.mark.skipif(SKIP_TEST_IF, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
 @pytest.mark.parametrize('data,data_type,sample,compile_releases', [
     (b'{"releases": [{"date": "2021-05-26T10:00:00Z"}]}', 'release_package', None, False),
     (b'{"releases": [{"date": "2021-05-26T10:00:00Z"}]}', 'release_package', 1, False),
@@ -86,7 +86,7 @@ def test_spider_closed(caplog, tmpdir, data, data_type, sample, compile_releases
     expected_date = '2021-05-26T10:00:00Z'
 
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00',
-                                 settings={'DATABASE_URL': database_url, 'FILES_STORE': tmpdir})
+                                 settings={'DATABASE_URL': DATABASE_URL, 'FILES_STORE': tmpdir})
 
     spider.data_type = data_type
     spider.sample = sample
@@ -109,7 +109,7 @@ def test_spider_closed(caplog, tmpdir, data, data_type, sample, compile_releases
     caplog.clear()
     extension.spider_closed(spider, 'finished')
 
-    connection = psycopg2.connect(database_url)
+    connection = psycopg2.connect(DATABASE_URL)
     cursor = connection.cursor()
     try:
         cursor.execute("SELECT max(data->>'date') FROM test")
@@ -145,12 +145,12 @@ def test_spider_closed(caplog, tmpdir, data, data_type, sample, compile_releases
         connection.close()
 
 
-@pytest.mark.skipif(skip_test_if, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
+@pytest.mark.skipif(SKIP_TEST_IF, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
 def test_spider_opened_with_data(caplog, tmpdir):
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00',
-                                 settings={'DATABASE_URL': database_url, 'FILES_STORE': tmpdir})
+                                 settings={'DATABASE_URL': DATABASE_URL, 'FILES_STORE': tmpdir})
     extension = DatabaseStore.from_crawler(spider.crawler)
-    connection = psycopg2.connect(database_url)
+    connection = psycopg2.connect(DATABASE_URL)
     cursor = connection.cursor()
     try:
         with caplog.at_level(logging.INFO):
