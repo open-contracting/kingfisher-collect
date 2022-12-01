@@ -77,9 +77,10 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
 
     path = tmpdir.join('test.json')
     path.write(data, 'wb')
+    f = path.open('rb')
     file_item = File({
         'file_name': 'test.json',
-        'data': path.open('rb'),
+        'data': f,
         'data_type': 'release',
         'url': 'http://test.com',
     })
@@ -98,7 +99,7 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
     for item in transformed_items:
         assert item == expected
 
-    path.close()
+    f.close()
 
 
 @pytest.mark.parametrize('middleware_class,attribute,value,override', [
@@ -123,9 +124,10 @@ def test_encoding(middleware_class, attribute, value, override, tmpdir):
 
     path = tmpdir.join('test.json')
     path.write(data, 'wb')
+    f = path.open('rb')
     file_item = File({
         'file_name': 'test.json',
-        'data': path.open('rb'),
+        'data': f,
         'data_type': 'release',
         'url': 'http://test.com',
     })
@@ -144,7 +146,7 @@ def test_encoding(middleware_class, attribute, value, override, tmpdir):
     for item in transformed_items:
         assert item == expected
 
-    path.close()
+    f.close()
 
 
 @pytest.mark.parametrize('data_type,data,root_path', [
