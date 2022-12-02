@@ -12,7 +12,6 @@ Below, we provide some of this information (metadata) for each spider. The meani
 
 .. list-table::
    :header-rows: 1
-   :widths: auto
 
    * - Metadata
      - Description
@@ -21,7 +20,6 @@ Below, we provide some of this information (metadata) for each spider. The meani
 
        .. list-table::
           :header-rows: 1
-          :widths: auto
 
           * - Suffix
             - Description
@@ -74,7 +72,6 @@ All spiders support these arguments:
 
 .. list-table::
    :header-rows: 1
-   :widths: auto
 
    * - Name
      - Description
@@ -104,7 +101,6 @@ Some spiders support these arguments:
 
 .. list-table::
    :header-rows: 1
-   :widths: auto
 
    * - Name
      - Description
