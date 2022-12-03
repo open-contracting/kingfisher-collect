@@ -9,8 +9,7 @@ psycopg2
 rarfile
 requests
 rfc3986-validator
-# Waiting for Scrapy 2.6.2 to be released.
--e git+https://github.com/scrapy/scrapy.git@b9b9422bb1025d00c5113994490ac71a162d775f#egg=scrapy
+scrapy
 scrapyd
 scrapyd-client
 sentry-sdk
