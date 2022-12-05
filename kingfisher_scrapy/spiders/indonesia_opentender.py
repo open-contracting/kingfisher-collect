@@ -16,7 +16,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     """
 
     name = 'indonesia_opentender'
-    download_delay = 1 # to avoid the server producing incomplete JSON files.
+    download_delay = 1  # to avoid the server producing incomplete JSON files.
 
     # Must be set before `pattern`, so we can't follow the standard order.
     url_prefix = 'https://opentender.net/api/'
