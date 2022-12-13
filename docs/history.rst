@@ -3,6 +3,7 @@ Lapsed spiders
 
 This page records the spiders that were available but stopped publishing and therefore where removed from Kingfisher Collect, since January 2022:
 
+- 2022-12-13: `ecuador_emergency, mexico_oaxaca_iaip, nicaragua_solid_waste, nigeria_budeshi_*, nigeria_kaduna_state_budeshi_*, tanzania_zabuni <https://github.com/open-contracting/kingfisher-collect/pull/979>`__
 - 2022-04-20: `afghanistan_*, indonesia_bandung <https://github.com/open-contracting/kingfisher-collect/pull/930>`__
 - 2022-01-27: `moldova_positive_initiative <https://github.com/open-contracting/kingfisher-collect/pull/906>`__
 
