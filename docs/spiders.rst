@@ -366,13 +366,6 @@ Dominican Republic
 Ecuador
 ~~~~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.ecuador_emergency.EcuadorEmergency
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl ecuador_emergency
-
 .. autoclass:: kingfisher_scrapy.spiders.ecuador_sercop_api.EcuadorSERCOPAPI
    :no-members:
 
@@ -799,13 +792,6 @@ Mexico
 
    scrapy crawl mexico_nuevo_leon_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_oaxaca_iaip.MexicoOaxacaIAIP
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_oaxaca_iaip
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_puebla_itaipue.MexicoPueblaITAIPUE
    :no-members:
 
@@ -906,16 +892,6 @@ Netherlands
 
    scrapy crawl netherlands_digiwhist
 
-Nicaragua
-~~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.nicaragua_solid_waste.NicaraguaSolidWaste
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nicaragua_solid_waste
-
 Nigeria
 ~~~~~~~
 
@@ -932,20 +908,6 @@ Nigeria
 .. code-block:: bash
 
    scrapy crawl nigeria_anambra_state
-
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_budeshi_records.NigeriaBudeshiRecords
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_budeshi_records
-
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_budeshi_releases.NigeriaBudeshiReleases
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_budeshi_releases
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_cross_river_state_records.NigeriaCrossRiverStateRecords
    :no-members:
@@ -995,20 +957,6 @@ Nigeria
 .. code-block:: bash
 
    scrapy crawl nigeria_gombe_state
-
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_budeshi_records.NigeriaKadunaStateBudeshiRecords
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_kaduna_state_budeshi_records
-
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_kaduna_state_budeshi_releases.NigeriaKadunaStateBudeshiReleases
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_kaduna_state_budeshi_releases
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_kano_state.NigeriaKanoState
    :no-members:
@@ -1261,16 +1209,6 @@ Switzerland
 .. code-block:: bash
 
    scrapy crawl switzerland_digiwhist
-
-Tanzania
-~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.tanzania_zabuni.TanzaniaZabuni
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl tanzania_zabuni
 
 Uganda
 ~~~~~~
