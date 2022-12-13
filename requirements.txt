@@ -13,7 +13,7 @@ attrs==19.3.0
     #   twisted
 automat==0.8.0
     # via twisted
-certifi==2019.11.28
+certifi==2022.12.7
     # via
     #   requests
     #   sentry-sdk
