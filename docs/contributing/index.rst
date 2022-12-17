@@ -13,7 +13,7 @@ Read its API documentation or bulk download documentation. Navigate the API, in 
 
 .. note::
 
-   Please inform the helpdesk analyst of the following, so that it can be reported as feedback to the publisher:
+   Please inform the data support manager of the following, so that it can be reported as feedback to the publisher:
    
    -  If there is no documentation about access methods
    -  If the release package or record package is *not* at the top-level of the JSON data
@@ -74,7 +74,7 @@ After writing the spider, add a docstring for :ref:`spider metadata<spider-metad
 
 .. note::
 
-   If you encountered any challenges, make a note in the *Caveats* section of the spider metadata, and inform the helpdesk analyst, so that it can be reported as feedback to the publisher. Examples:
+   If you encountered any challenges, make a note in the *Caveats* section of the spider metadata, and inform the data support manager, so that it can be reported as feedback to the publisher. Examples:
 
    -  Requests sometimes fail (e.g. timeout or error), but succeed on retry.
    -  Some requests always fail (e.g. for a specific date).
