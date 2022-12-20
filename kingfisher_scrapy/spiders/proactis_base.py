@@ -7,7 +7,6 @@ from kingfisher_scrapy.util import handle_http_error, parameters
 class ProactisBase(PeriodicSpider):
     # BaseSpider
     date_format = 'year-month'
-    default_from_date = date(date.today().year - 1, date.today().month, 1)
 
     # PeriodicSpider
     pattern = '/v1/Notices?dateFrom={:%m-%Y}&outputType=0&noticeType={}'

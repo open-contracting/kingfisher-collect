@@ -7,7 +7,7 @@ class UnitedKingdomWales(ProactisBase):
       Wales
     Spider arguments
       from_date
-        Download only data from this month onward (YYYY-MM format). Defaults to a year ago.
+        Download only data from this month onward (YYYY-MM format). Defaults to '2019-01'.
       until_date
         Download only data until this month (YYYY-MM format). Defaults to the current month.
     API documentation
@@ -19,6 +19,9 @@ class UnitedKingdomWales(ProactisBase):
 
     # SimpleSpider
     data_type = 'release_package'
+
+    # PeriodicSpider
+    default_from_date = '2019-01'
 
     # ProactisBase
     base_url = 'https://api.sell2wales.gov.wales'

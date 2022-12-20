@@ -12,8 +12,8 @@ from kingfisher_scrapy.base_spiders import PeriodicSpider
 
 logger = logging.getLogger(__name__)
 
-# Exceptions for HondurasCoST, MexicoINAIAPI and UKFTS.
-word_boundary_re = re.compile(r'(?<=[a-z])(?=[A-Z])(?!ST$)|(?<=.)(?=[A-Z][a-z])|(?<=MexicoINAI)|(?<=UK)')
+# Exceptions for HondurasCoST, HondurasSEFINAPI and MexicoINAIAPI.
+word_boundary_re = re.compile(r'(?<=[a-z])(?=[A-Z])(?!ST$)|(?<=.)(?=[A-Z][a-z])|(?<=MexicoINAI)|(?<=HondurasSEFIN)')
 
 
 class CheckAll(ScrapyCommand):
@@ -169,7 +169,7 @@ class Checker:
         if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
             if self.cls.__name__ in ('ColombiaBulk', 'Kosovo', 'PortugalRecords', 'PortugalReleases',
-                                     'UgandaReleases', 'UnitedKingdomScotland', 'UnitedKingdomWales'):
+                                     'UgandaReleases'):
                 level = 'info'
             else:
                 level = 'warning'
