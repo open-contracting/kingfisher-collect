@@ -4,9 +4,6 @@ from kingfisher_scrapy.base_spiders import IndexSpider
 
 
 class PanamaDGCPBase(IndexSpider):
-    # BaseSpider
-    root_path = 'package'
-
     # IndexSpider
     page_count_pointer = '/pages'
 
