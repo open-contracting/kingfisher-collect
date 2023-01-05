@@ -64,6 +64,7 @@ def test_spider_closed_even(caplog):
     extension.item_scraped(item, spider)
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, 'finished')
+
         assert [record.message for record in caplog.records] == [
             '+------------------ DATA DIRECTORY ------------------+',
             '|                                                    |',
@@ -73,27 +74,29 @@ def test_spider_closed_even(caplog):
         ]
 
 
-def test_spider_closed_no_data(caplog):
-    spider = spider_with_files_store('no_data')
+def test_spider_closed_no_data(tmpdir, caplog):
+    spider = spider_with_files_store(tmpdir)
 
     extension = FilesStore.from_crawler(spider.crawler)
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, 'finished')
+        print(caplog.records)
         assert [record.message for record in caplog.records] == [
-            '+----------------------------- DATA DIRECTORY -----------------------------+',
-            '|                                                                          |',
-            '| SOMETHING FAILED AND NO DATA WAS DOWNLOADED. CHECK THE LOGS FOR DETAILS  |',
-            '|                                                                          |',
-            '+--------------------------------------------------------------------------+',
+            '+---------------- DATA DIRECTORY ----------------+',
+            '|                                                |',
+            '| Something went wrong. No data was downloaded.  |',
+            '|                                                |',
+            '+------------------------------------------------+',
         ]
 
 
-def test_spider_closed_fails(caplog):
-    spider = spider_with_files_store('failed')
+def test_spider_closed_failed(tmpdir, caplog):
+    spider = spider_with_files_store(tmpdir)
 
     extension = FilesStore.from_crawler(spider.crawler)
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, 'failed')
+
         assert not caplog.records
 
 

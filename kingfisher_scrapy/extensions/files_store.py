@@ -51,10 +51,10 @@ class FilesStore:
 
         path = os.path.join(self.directory, self.relative_crawl_directory(spider))
 
-        if not os.path.exists(path):
-            message = 'SOMETHING FAILED AND NO DATA WAS DOWNLOADED. CHECK THE LOGS FOR DETAILS'
-        else:
+        if os.path.exists(path):
             message = f'The data is available at: {path}'
+        else:
+            message = 'Something went wrong. No data was downloaded.'
         message_length = math.ceil(len(message) / 2) * 2
         title_length = message_length // 2 - 8
 
