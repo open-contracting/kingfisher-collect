@@ -8,7 +8,7 @@ from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import FilesStore
 from kingfisher_scrapy.items import File, FileItem
-from tests import spider_with_crawler, spider_with_files_store
+from tests import spider_with_crawler, spider_with_files_store, response_fixture
 
 
 def test_from_crawler_missing_arguments():
@@ -42,6 +42,8 @@ def test_spider_closed_odd(caplog):
     spider = spider_with_files_store('1')
 
     extension = FilesStore.from_crawler(spider.crawler)
+    item = spider.build_file_from_response(response_fixture(), file_name='file.json', data_type='release_package')
+    extension.item_scraped(item, spider)
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, 'finished')
 
@@ -58,6 +60,8 @@ def test_spider_closed_even(caplog):
     spider = spider_with_files_store('22')
 
     extension = FilesStore.from_crawler(spider.crawler)
+    item = spider.build_file_from_response(response_fixture(), file_name='file.json', data_type='release_package')
+    extension.item_scraped(item, spider)
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, 'finished')
         assert [record.message for record in caplog.records] == [
@@ -67,6 +71,31 @@ def test_spider_closed_even(caplog):
             '|                                                    |',
             '+----------------------------------------------------+',
         ]
+
+
+def test_spider_closed_no_data(caplog):
+    spider = spider_with_files_store('no_data')
+
+    extension = FilesStore.from_crawler(spider.crawler)
+    with caplog.at_level(logging.INFO):
+        extension.spider_closed(spider, 'finished')
+        print(caplog.records)
+        assert [record.message for record in caplog.records] == [
+            '+----------------------------- DATA DIRECTORY -----------------------------+',
+            '|                                                                          |',
+            '| SOMETHING FAILED AND NO DATA WAS DOWNLOADED. CHECK THE LOGS FOR DETAILS  |',
+            '|                                                                          |',
+            '+--------------------------------------------------------------------------+',
+        ]
+
+
+def test_spider_closed_fails(caplog):
+    spider = spider_with_files_store('failed')
+
+    extension = FilesStore.from_crawler(spider.crawler)
+    with caplog.at_level(logging.INFO):
+        extension.spider_closed(spider, 'failed')
+        assert not caplog.records
 
 
 @pytest.mark.parametrize('sample,path', [
