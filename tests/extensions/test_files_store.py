@@ -8,7 +8,7 @@ from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import FilesStore
 from kingfisher_scrapy.items import File, FileItem
-from tests import spider_with_crawler, spider_with_files_store, response_fixture
+from tests import response_fixture, spider_with_crawler, spider_with_files_store
 
 
 def test_from_crawler_missing_arguments():
@@ -79,7 +79,6 @@ def test_spider_closed_no_data(caplog):
     extension = FilesStore.from_crawler(spider.crawler)
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, 'finished')
-        print(caplog.records)
         assert [record.message for record in caplog.records] == [
             '+----------------------------- DATA DIRECTORY -----------------------------+',
             '|                                                                          |',
