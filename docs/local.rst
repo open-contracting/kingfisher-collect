@@ -161,4 +161,34 @@ To use an HTTP and/or HTTPS proxy, set the ``http_proxy`` and/or ``https_proxy``
 Use data
 --------
 
-You should now have a crawl directory within the ``data`` directory containing OCDS files. For help using data, read about `using open contracting data <https://www.open-contracting.org/data/data-use/>`__.
+You should now have a crawl directory within the ``data`` directory containing OCDS files.
+The log file indicates the path to that crawl directory. For example:
+
+.. code-block:: bash
+
+   2023-01-05 09:12:14 [scrapy.core.engine] INFO: Closing spider (finished)
+   2023-01-05 09:12:14 [argentina_vialidad] INFO: +-------------------------- DATA DIRECTORY --------------------------+
+   2023-01-05 09:12:14 [argentina_vialidad] INFO: |                                                                    |
+   2023-01-05 09:12:14 [argentina_vialidad] INFO: | The data is available at: data/argentina_vialidad/20230105_121201  |
+   2023-01-05 09:12:14 [argentina_vialidad] INFO: |                                                                    |
+   2023-01-05 09:12:14 [argentina_vialidad] INFO: +--------------------------------------------------------------------+
+   2023-01-05 09:12:14 [scrapy.statscollectors] INFO: Dumping Scrapy stats:
+   {'downloader/request_bytes': 267,
+   'downloader/request_count': 1,
+   'downloader/request_method_count/GET': 1,
+   ...
+
+If no data was downloaded, the log file contains a message like:
+
+.. code-block:: bash
+
+   2023-01-05 09:14:43 [scrapy.core.engine] INFO: Closing spider (finished)
+   2023-01-05 09:14:43 [argentina_vialidad] INFO: +---------------- DATA DIRECTORY ----------------+
+   2023-01-05 09:14:43 [argentina_vialidad] INFO: |                                                |
+   2023-01-05 09:14:43 [argentina_vialidad] INFO: | Something went wrong. No data was downloaded.  |
+   2023-01-05 09:14:43 [argentina_vialidad] INFO: |                                                |
+   2023-01-05 09:14:43 [argentina_vialidad] INFO: +------------------------------------------------+
+
+You can check the :doc:`logs` page to learn how to interpret the log file.
+
+For help using data, read about `using open contracting data <https://www.open-contracting.org/data/data-use/>`__.
