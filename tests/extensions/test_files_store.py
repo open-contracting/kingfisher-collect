@@ -43,7 +43,7 @@ def test_spider_closed_odd(caplog):
 
     extension = FilesStore.from_crawler(spider.crawler)
     with caplog.at_level(logging.INFO):
-        extension.spider_closed(spider)
+        extension.spider_closed(spider, 'finished')
 
         assert [record.message for record in caplog.records] == [
             '+----------------- DATA DIRECTORY -----------------+',
@@ -59,8 +59,7 @@ def test_spider_closed_even(caplog):
 
     extension = FilesStore.from_crawler(spider.crawler)
     with caplog.at_level(logging.INFO):
-        extension.spider_closed(spider)
-
+        extension.spider_closed(spider, 'finished')
         assert [record.message for record in caplog.records] == [
             '+------------------ DATA DIRECTORY ------------------+',
             '|                                                    |',
