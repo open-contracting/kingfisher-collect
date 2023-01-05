@@ -8,7 +8,7 @@ from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import FilesStore
 from kingfisher_scrapy.items import File, FileItem
-from tests import spider_with_crawler, spider_with_files_store
+from tests import response_fixture, spider_with_crawler, spider_with_files_store
 
 
 def test_from_crawler_missing_arguments():
@@ -38,12 +38,15 @@ def test_spider_opened(job, tmpdir):
         assert not os.path.exists(path)
 
 
-def test_spider_closed_odd(caplog):
+def test_spider_closed_odd_length(caplog):
     spider = spider_with_files_store('1')
-
     extension = FilesStore.from_crawler(spider.crawler)
+
+    item = spider.build_file_from_response(response_fixture(), file_name='file.json', data_type='release_package')
+    extension.item_scraped(item, spider)
+
     with caplog.at_level(logging.INFO):
-        extension.spider_closed(spider)
+        extension.spider_closed(spider, 'finished')
 
         assert [record.message for record in caplog.records] == [
             '+----------------- DATA DIRECTORY -----------------+',
@@ -54,12 +57,15 @@ def test_spider_closed_odd(caplog):
         ]
 
 
-def test_spider_closed_even(caplog):
+def test_spider_closed_even_length(caplog):
     spider = spider_with_files_store('22')
-
     extension = FilesStore.from_crawler(spider.crawler)
+
+    item = spider.build_file_from_response(response_fixture(), file_name='file.json', data_type='release_package')
+    extension.item_scraped(item, spider)
+
     with caplog.at_level(logging.INFO):
-        extension.spider_closed(spider)
+        extension.spider_closed(spider, 'finished')
 
         assert [record.message for record in caplog.records] == [
             '+------------------ DATA DIRECTORY ------------------+',
@@ -68,6 +74,32 @@ def test_spider_closed_even(caplog):
             '|                                                    |',
             '+----------------------------------------------------+',
         ]
+
+
+def test_spider_closed_no_data(tmpdir, caplog):
+    spider = spider_with_files_store(tmpdir)
+    extension = FilesStore.from_crawler(spider.crawler)
+
+    with caplog.at_level(logging.INFO):
+        extension.spider_closed(spider, 'finished')
+
+        assert [record.message for record in caplog.records] == [
+            '+---------------- DATA DIRECTORY ----------------+',
+            '|                                                |',
+            '| Something went wrong. No data was downloaded.  |',
+            '|                                                |',
+            '+------------------------------------------------+',
+        ]
+
+
+def test_spider_closed_failed(tmpdir, caplog):
+    spider = spider_with_files_store(tmpdir)
+    extension = FilesStore.from_crawler(spider.crawler)
+
+    with caplog.at_level(logging.INFO):
+        extension.spider_closed(spider, 'failed')
+
+        assert not caplog.records
 
 
 @pytest.mark.parametrize('sample,path', [
@@ -106,10 +138,12 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
 def test_item_scraped_with_file_and_file_item(sample, directory, data, item, expected_file_name, tmpdir):
     spider = spider_with_files_store(tmpdir, sample=sample)
     extension = FilesStore.from_crawler(spider.crawler)
+
     path = os.path.join(directory, expected_file_name)
     original_file_name = item['file_name']
     item['data'] = data
     extension.item_scraped(item, spider)
+
     with open(tmpdir.join(path)) as f:
         assert f.read() == '{"key": "value"}'
 

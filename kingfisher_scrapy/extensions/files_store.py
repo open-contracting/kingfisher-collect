@@ -45,10 +45,16 @@ class FilesStore:
             path = os.path.join(self.relative_crawl_directory(spider), 'scrapyd-job.txt')
             self._write_file(path, spider._job)
 
-    def spider_closed(self, spider):
+    def spider_closed(self, spider, reason):
+        if reason not in ('finished', 'sample') or spider.pluck:
+            return
+
         path = os.path.join(self.directory, self.relative_crawl_directory(spider))
 
-        message = f'The data is available at: {path}'
+        if os.path.exists(path):
+            message = f'The data is available at: {path}'
+        else:
+            message = 'Something went wrong. No data was downloaded.'
         message_length = math.ceil(len(message) / 2) * 2
         title_length = message_length // 2 - 8
 
