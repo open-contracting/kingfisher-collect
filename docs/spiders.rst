@@ -1173,6 +1173,16 @@ Slovenia
 
    scrapy crawl slovenia_digiwhist
 
+South Africa
+~~~~~~~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.south_africa_national_treasury_api.SouthAfricaNationalTreasuryAPI
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl south_africa_national_treasury_api
+
 Spain
 ~~~~~
 
