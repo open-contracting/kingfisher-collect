@@ -39,11 +39,11 @@ class PeruCompras(SimpleSpider):
         until_date = self.until_date.strftime(self.date_format)
         # The response is a large text that looks like list_1¯list_2¯list_3
         str_lists = response.text.split('¯')
-        # where the first list is the framework agreements list that we need for quering the API
-        # and the items in that list are separeted by ¬
+        # where the first list is the framework agreements list that we need for querying the API
+        # and the items in that list are separated by ¬
         frameworks = str_lists[0].split('¬')
         for framework in frameworks:
-            # Each item has the format id-type^description and we need the id for quering the API
+            # Each item has the format id-type^description and we need the id for querying the API
             # e.g.: 130-BIENES^IM-CE-2020-9 MATERIAL MÉDICO ¬128-BIENES^IM-CE-2020-8 DISPOSITIVO MÉDICO IN VITRO ¬
             framework_id = framework.split('-')[0]
             if framework_id:
