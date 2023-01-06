@@ -15,7 +15,7 @@ from kingfisher_scrapy.extensions.files_store import FilesStore
 class DatabaseStore:
     """
     If the ``DATABASE_URL`` Scrapy setting and the ``crawl_time`` spider argument are set, the OCDS data is stored in a
-    PostgresSQL database, incrementally.
+    PostgreSQL database, incrementally.
 
     This extension stores data in the "data" column of a table named after the spider. When the spider is opened, if
     the table doesn't exist, it is created. The spider's ``from_date`` attribute is then set, in order of precedence,

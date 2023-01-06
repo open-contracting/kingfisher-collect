@@ -19,8 +19,8 @@ class ParaguayAuthMiddleware:
     Apparently, a Downloader Middleware is the best place to set HTTP Request Headers (see
     https://docs.scrapy.org/en/latest/topics/architecture.html), but it's not enough for this case :(.
     Tokens should be generated and assigned just before sending a request, but Scrapy does not provide any way to do
-    this, which in turn means that sometimes we accidently send expired tokens. For now, the issue seems to be avoided
-    by setting the number of concurrent requests to 1, at cost of download speed.
+    this, which in turn means that sometimes we accidentally send expired tokens. For now, the issue seems to be
+    avoided by setting the number of concurrent requests to 1, at cost of download speed.
 
     .. code-block:: python
 
