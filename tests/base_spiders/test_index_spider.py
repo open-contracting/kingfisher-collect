@@ -77,7 +77,7 @@ def test_urls(spider_args, start_request_response, initial_url, results_pattern,
 
     spider = spider_with_crawler(spider_class=test_spider)
 
-    requests = [x for x in spider.parse_list(text_response_mock)]
+    requests = list(spider.parse_list(text_response_mock))
 
     if 'base_url' in spider_args:
         assert len(requests) == len(expected)
