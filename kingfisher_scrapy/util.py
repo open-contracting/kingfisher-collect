@@ -230,9 +230,7 @@ def items(events, prefix, map_type=None, skip_key=None):
     This is copied from ``ijson/common.py``. A ``skip_key`` argument is added, which is passed as a keyword argument to
     :meth:`~kingfisher_scrapy.util.items_basecoro`. Otherwise, the method is identical.
     """
-    return utils.coros2gen(events,
-        (items_basecoro, (prefix,), {'map_type': map_type, 'skip_key': skip_key})  # noqa: E128
-    )
+    return utils.coros2gen(events, (items_basecoro, (prefix,), {'map_type': map_type, 'skip_key': skip_key}))
 
 
 def default(obj):
