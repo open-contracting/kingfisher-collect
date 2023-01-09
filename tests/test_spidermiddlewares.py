@@ -77,16 +77,16 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
 
     path = tmpdir.join('test.json')
     path.write(data, 'wb')
-    f = path.open('rb')
-    file_item = File({
-        'file_name': 'test.json',
-        'data': f,
-        'data_type': 'release',
-        'url': 'http://test.com',
-    })
+    with path.open('rb') as f:
+        file_item = File({
+            'file_name': 'test.json',
+            'data': f,
+            'data_type': 'release',
+            'url': 'http://test.com',
+        })
 
-    generator = middleware.process_spider_output(None, [bytes_item, file_item], spider)
-    transformed_items = list(generator)
+        generator = middleware.process_spider_output(None, [bytes_item, file_item], spider)
+        transformed_items = list(generator)
 
     expected = {
         'file_name': 'test.json',
@@ -98,8 +98,6 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
     assert len(transformed_items) == 2
     for item in transformed_items:
         assert item == expected
-
-    f.close()
 
 
 @pytest.mark.parametrize('middleware_class,attribute,value,override', [
@@ -124,16 +122,16 @@ def test_encoding(middleware_class, attribute, value, override, tmpdir):
 
     path = tmpdir.join('test.json')
     path.write(data, 'wb')
-    f = path.open('rb')
-    file_item = File({
-        'file_name': 'test.json',
-        'data': f,
-        'data_type': 'release',
-        'url': 'http://test.com',
-    })
+    with path.open('rb') as f:
+        file_item = File({
+            'file_name': 'test.json',
+            'data': f,
+            'data_type': 'release',
+            'url': 'http://test.com',
+        })
 
-    generator = middleware.process_spider_output(None, [bytes_item, file_item], spider)
-    transformed_items = list(generator)
+        generator = middleware.process_spider_output(None, [bytes_item, file_item], spider)
+        transformed_items = list(generator)
 
     expected = {
         'file_name': 'test.json',
@@ -145,8 +143,6 @@ def test_encoding(middleware_class, attribute, value, override, tmpdir):
     assert len(transformed_items) == 2
     for item in transformed_items:
         assert item == expected
-
-    f.close()
 
 
 @pytest.mark.parametrize('data_type,data,root_path', [
