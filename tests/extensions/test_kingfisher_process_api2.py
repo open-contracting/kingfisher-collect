@@ -107,6 +107,8 @@ def test_from_crawler_with_database_url():
     (200, 'INFO', 'Created collection 1 in Kingfisher Process'),
     (500, 'ERROR', 'Failed to create collection. API status code: 500'),
 ])
+# For requests.post() in KingfisherProcessAPI2._post_synchronous().
+@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_spider_opened(crawl_time, sample, is_sample, note, job, ocds_version, upgrade, steps, status_code, levelname,
                        message, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, crawl_time=crawl_time, sample=sample, note=note,
