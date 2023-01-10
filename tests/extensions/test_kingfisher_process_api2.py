@@ -56,7 +56,7 @@ class Response():
 ])
 def test_from_crawler(url, expected, boolean):
     spider = spider_with_crawler(settings={
-        'KINGFISHER_API2_URL': 'http://httpbin.org/anything',
+        'KINGFISHER_API2_URL': 'http://httpbin.org/anything/',
         'RABBIT_URL': url,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
         'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
@@ -87,7 +87,7 @@ def test_from_crawler_missing_arguments():
 
 def test_from_crawler_with_database_url():
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00', settings={
-        'KINGFISHER_API2_URL': 'http://httpbin.org/anything',
+        'KINGFISHER_API2_URL': 'http://httpbin.org/anything/',
         'DATABASE_URL': 'test',
     })
 

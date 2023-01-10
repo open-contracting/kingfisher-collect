@@ -32,9 +32,9 @@ def spider_with_crawler(spider_class=BaseSpider, *, settings=None, **kwargs):
 def spider_with_files_store(files_store, settings=None, **kwargs):
     crawler_settings = {
         'FILES_STORE': files_store,
-        'KINGFISHER_API_URI': 'http://httpbin.org/anything',
+        'KINGFISHER_API_URI': 'http://httpbin.org/anything/',
         'KINGFISHER_API_KEY': 'xxx',
-        'KINGFISHER_API2_URL': 'http://httpbin.org/anything',
+        'KINGFISHER_API2_URL': 'http://httpbin.org/anything/',
     }
     if settings:
         crawler_settings.update(settings)
