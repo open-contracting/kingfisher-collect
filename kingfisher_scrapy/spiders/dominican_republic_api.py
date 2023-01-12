@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import LinksSpider, PeriodicSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
@@ -29,6 +29,14 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
 
     # LinksSpider
     formatter = staticmethod(components(-2))
+    next_pointer = '/pagination/next'
 
     # PeriodicSpider
-    pattern = 'https://api.dgcp.gob.do/api/year/{}/1'
+    pattern = 'https://api.dgcp.gob.do/api/year/{}/1?limit=1000'
+
+    @handle_http_error
+    def parse(self, response):
+        data = response.json()
+        for item in data['data']:
+            yield self.build_request(item['url'], formatter=components(-1), callback=super().parse)
+        yield self.next_link(response)
