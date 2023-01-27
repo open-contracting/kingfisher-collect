@@ -296,7 +296,7 @@ def transcode(spider, function, data, *args, **kwargs):
     return function(data, *args, **kwargs)
 
 
-# See `grouper` recipe: https://docs.python.org/3.8/library/itertools.html#recipes
+# See `grouper` recipe: https://docs.python.org/3/library/itertools.html#recipes
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return itertools.zip_longest(*args, fillvalue=fillvalue)
