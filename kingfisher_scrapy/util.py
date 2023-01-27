@@ -266,7 +266,7 @@ def json_dump(obj, f, **kwargs):
     return json.dump(obj, f, default=default)
 
 
-class TranscodeFile():
+class TranscodeFile:
     def __init__(self, file, encoding):
         self.file = file
         self.encoding = encoding
