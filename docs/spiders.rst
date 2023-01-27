@@ -461,6 +461,13 @@ Georgia
 Germany
 ~~~~~~~
 
+.. autoclass:: kingfisher_scrapy.spiders.germany.Germany
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl germany
+
 .. autoclass:: kingfisher_scrapy.spiders.germany_digiwhist.GermanyDigiwhist
    :no-members:
 
