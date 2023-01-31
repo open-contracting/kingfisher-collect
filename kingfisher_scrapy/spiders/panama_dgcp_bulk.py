@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import parameters, date_range_by_interval
+from kingfisher_scrapy.util import date_range_by_interval, parameters
 
 
 class PanamaDGCPBulk(SimpleSpider):
