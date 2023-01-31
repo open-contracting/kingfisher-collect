@@ -6,7 +6,8 @@ import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
-from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameters, date_range_by_interval
+from kingfisher_scrapy.util import (components, date_range_by_interval, handle_http_error, parameters,
+                                    replace_parameters)
 
 
 class ParaguayDNCPBase(SimpleSpider):
