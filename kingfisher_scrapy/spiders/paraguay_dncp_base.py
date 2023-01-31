@@ -1,12 +1,12 @@
 import json
 from abc import abstractmethod
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
-from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameters
+from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_parameters, date_range_by_interval
 
 
 class ParaguayDNCPBase(SimpleSpider):
@@ -55,16 +55,8 @@ class ParaguayDNCPBase(SimpleSpider):
             )
 
     def urls_builder(self):
-        # ElasticSearch doesn't allow search sizes greater than 10000, so we request half-month at the time.
-        interval = timedelta(days=30)
-        end_date = self.until_date
-        # In reverse chronological order
-        while end_date > self.from_date:
-            # If there is less than or equal to one interval left, start from the `from_date`.
-            if end_date - self.from_date <= interval:
-                start_date = self.from_date
-            else:
-                start_date = end_date - interval
+        # ElasticSearch doesn't allow search sizes greater than 10000, so we request a month at the time.
+        for start_date, end_date in date_range_by_interval(self.from_date, self.until_date, 30):
             # We request active/complete tenders and planned ones separately to ensure we don't exceed the 10000
             # results per request limit.
             url_base = f'{self.url_prefix}search/processes?fecha_desde={start_date.strftime(self.date_format)}' \
@@ -73,7 +65,6 @@ class ParaguayDNCPBase(SimpleSpider):
             url_tender = f'{url_base}&tipo_fecha=publicacion_llamado'
             # And the planned ones with the "fecha_release" and tender.id=planned filters.
             url_planning = f'{url_base}&tender.id=planned&tipo_fecha=fecha_release'
-            end_date = start_date - timedelta(seconds=1)
             yield from [url_tender, url_planning]
 
     def build_access_token_request(self, attempt=0):
