@@ -1,10 +1,11 @@
+from datetime import datetime
 from unittest.mock import Mock
 
 import pytest
 import scrapy
 
 from kingfisher_scrapy.util import (components, get_parameter_value, handle_http_error, join, parameters,
-                                    replace_parameters)
+                                    replace_parameters, date_range_by_interval)
 from tests import spider_with_crawler
 
 
@@ -110,3 +111,15 @@ def test_handle_http_error_error(response_status):
     mock_response.request = scrapy.Request('http://test.com')
 
     assert next(test_decorated(spider, mock_response)) == spider.build_file_error_from_response(mock_response)
+
+
+@pytest.mark.parametrize('start,stop,interval, expected', [
+    ('2022-01-01', '2022-01-31', 15, [('2022-01-16', '2022-01-31'), ('2022-01-1', '2022-01-16')])])
+def test_date_range_by_interval(start, stop, interval, expected):
+    start = datetime.strptime(start, '%Y-%m-%d').date()
+    stop = datetime.strptime(stop, '%Y-%m-%d').date()
+    dates_expected = []
+    for expected_start, expected_stop in expected:
+        dates_expected.append((datetime.strptime(expected_start, '%Y-%m-%d').date(),
+                               datetime.strptime(expected_stop, '%Y-%m-%d').date()))
+    assert list(date_range_by_interval(start, stop, interval)) == list(dates_expected)
