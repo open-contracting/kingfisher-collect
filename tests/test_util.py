@@ -1,11 +1,16 @@
+from datetime import datetime
 from unittest.mock import Mock
 
 import pytest
 import scrapy
 
-from kingfisher_scrapy.util import (components, get_parameter_value, handle_http_error, join, parameters,
-                                    replace_parameters)
+from kingfisher_scrapy.util import (components, date_range_by_interval, get_parameter_value, handle_http_error, join,
+                                    parameters, replace_parameters)
 from tests import spider_with_crawler
+
+
+def parse_date(string):
+    return datetime.strptime(string, '%Y-%m-%d').date()
 
 
 @pytest.mark.parametrize('url,value,expected', [
@@ -110,3 +115,14 @@ def test_handle_http_error_error(response_status):
     mock_response.request = scrapy.Request('http://test.com')
 
     assert next(test_decorated(spider, mock_response)) == spider.build_file_error_from_response(mock_response)
+
+
+@pytest.mark.parametrize('start,stop,step,expected', [
+    ('2022-01-01', '2022-01-01', 15, []),
+    ('2022-01-01', '2022-01-25', 15, [('2022-01-10', '2022-01-25'), ('2022-01-01', '2022-01-10')]),
+    ('2022-01-01', '2022-01-31', 15, [('2022-01-16', '2022-01-31'), ('2022-01-01', '2022-01-16')]),
+])
+def test_date_range_by_interval(start, stop, step, expected):
+    assert list(date_range_by_interval(parse_date(start), parse_date(stop), step)) == [
+        tuple(parse_date(date) for date in dates) for dates in expected
+    ]
