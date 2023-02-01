@@ -126,22 +126,17 @@ def handle_http_error(decorated):
     return wrapper
 
 
-def date_range_by_interval(start, stop, interval):
+def date_range_by_interval(start, stop, step):
     """
-    Yields dates from the ``start`` to the ``stop`` dates, in ``interval`` days intervals in reverse chronological
-    order.
+    Yields date ranges from the ``start`` date to the ``stop`` date, in intervals of ``step`` days, in reverse
+    chronological order.
     """
-    interval = timedelta(days=interval)
-    end_date = stop
-    # In reverse chronological order
-    while end_date > start:
-        # If there is less than or equal to one interval left, start from the `from_date`.
-        if end_date - start <= interval:
-            start_date = start
-        else:
-            start_date = end_date - interval
-        yield start_date, end_date
-        end_date = start_date - timedelta(seconds=1)
+    delta = timedelta(days=step)
+    range_end = stop
+    while range_end > start:
+        range_start = max(start, range_end - delta)
+        yield range_start, range_end
+        range_end = range_start - timedelta(seconds=1)
 
 
 # https://stackoverflow.com/questions/34898525/generate-list-of-months-between-interval-in-python
