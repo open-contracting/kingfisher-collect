@@ -9,6 +9,10 @@ from kingfisher_scrapy.util import (components, date_range_by_interval, get_para
 from tests import spider_with_crawler
 
 
+def parse_date(string):
+    return datetime.strptime(string, '%Y-%m-%d').date()
+
+
 @pytest.mark.parametrize('url,value,expected', [
     ('http://example.com/?page=1', 2, 'http://example.com/?page=2'),
     ('http://example.com/?page=1', None, 'http://example.com/'),
@@ -113,13 +117,12 @@ def test_handle_http_error_error(response_status):
     assert next(test_decorated(spider, mock_response)) == spider.build_file_error_from_response(mock_response)
 
 
-@pytest.mark.parametrize('start,stop,interval, expected', [
-    ('2022-01-01', '2022-01-31', 15, [('2022-01-16', '2022-01-31'), ('2022-01-1', '2022-01-16')])])
-def test_date_range_by_interval(start, stop, interval, expected):
-    start = datetime.strptime(start, '%Y-%m-%d').date()
-    stop = datetime.strptime(stop, '%Y-%m-%d').date()
-    dates_expected = []
-    for expected_start, expected_stop in expected:
-        dates_expected.append((datetime.strptime(expected_start, '%Y-%m-%d').date(),
-                               datetime.strptime(expected_stop, '%Y-%m-%d').date()))
-    assert list(date_range_by_interval(start, stop, interval)) == list(dates_expected)
+@pytest.mark.parametrize('start,stop,step,expected', [
+    ('2022-01-01', '2022-01-01', 15, []),
+    ('2022-01-01', '2022-01-25', 15, [('2022-01-10', '2022-01-25'), ('2022-01-01', '2022-01-10')]),
+    ('2022-01-01', '2022-01-31', 15, [('2022-01-16', '2022-01-31'), ('2022-01-01', '2022-01-16')]),
+])
+def test_date_range_by_interval(start, stop, step, expected):
+    assert list(date_range_by_interval(parse_date(start), parse_date(stop), step)) == [
+        tuple(parse_date(date) for date in dates) for dates in expected
+    ]
