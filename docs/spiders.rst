@@ -1102,6 +1102,27 @@ Peru
 
    scrapy crawl peru_compras
 
+.. autoclass:: kingfisher_scrapy.spiders.peru_osce_api_records.PeruOSCEAPIRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl peru_osce_api_records
+
+.. autoclass:: kingfisher_scrapy.spiders.peru_osce_api_releases.PeruOSCEAPIReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl peru_osce_api_releases
+
+.. autoclass:: kingfisher_scrapy.spiders.peru_osce_bulk.PeruOSCEBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl peru_osce_bulk
+
 Poland
 ~~~~~~
 
