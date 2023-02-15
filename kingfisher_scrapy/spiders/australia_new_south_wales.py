@@ -6,10 +6,21 @@ class AustraliaNewSouthWales(SimpleSpider):
     """
     Domain
       New South Wales (NSW)
+    Spider arguments
+      from_date
+        Download only data from this date onward (YYYY-MM-DD format).
+        If ``until_date`` is provided, defaults to '2003-01-01'.
+      until_date
+        Download only data until this date (YYYY-MM-DD format).
+        If ``from_date`` is provided, defaults to today.
     API documentation
-      https://github.com/NSW-eTendering/NSW-eTendering-API/blob/master/README.md
+      https://github.com/NSW-eTendering/NSW-eTendering-API/wiki
     """
     name = 'australia_new_south_wales'
+
+    # BaseSpider
+    date_format = 'date'
+    default_from_date = '2003-01-01'
 
     # SimpleSpider
     data_type = 'release_package'
@@ -18,9 +29,17 @@ class AustraliaNewSouthWales(SimpleSpider):
     url_prefix = 'https://www.tenders.nsw.gov.au/?event=public.api.'
 
     def start_requests(self):
+        if self.from_date and self.until_date:
+            from_date = self.from_date.strftime(self.date_format)
+            until_date = self.until_date.strftime(self.date_format)
+            date_filters = f'&publishedFrom={from_date}&publishedTo={until_date}'
+        else:
+            date_filters = None
         for release_type in ('planning', 'tender', 'contract'):
+            url = f'{self.url_prefix}{release_type}.search&ResultsPerPage=1000'
+            url = f'{url}{date_filters}' if date_filters else url
             yield self.build_request(
-                f'{self.url_prefix}{release_type}.search&ResultsPerPage=1000',
+                url,
                 formatter=parameters('event'),
                 meta={'release_type': release_type},
                 callback=self.parse_list
