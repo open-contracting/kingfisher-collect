@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, IndexSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class PeruOSCEBulk(CompressedFileSpider, IndexSpider):
@@ -32,6 +32,7 @@ class PeruOSCEBulk(CompressedFileSpider, IndexSpider):
     def pages_url_builder(self, value, data, response):
         return self.peru_base_url.format(value)
 
+    @handle_http_error
     def parse_files_list(self, response):
         for item in response.json()['results']:
             yield scrapy.Request((item['files']['json']), meta={'file_name': 'data.zip'})
