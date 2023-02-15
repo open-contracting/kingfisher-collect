@@ -27,19 +27,16 @@ class AustraliaNewSouthWales(SimpleSpider):
 
     # Local
     url_prefix = 'https://www.tenders.nsw.gov.au/?event=public.api.'
+    format_string = f'{url_prefix}{{release_type}}.search&ResultsPerPage=1000'
 
     def start_requests(self):
         if self.from_date and self.until_date:
             from_date = self.from_date.strftime(self.date_format)
             until_date = self.until_date.strftime(self.date_format)
-            date_filters = f'&publishedFrom={from_date}&publishedTo={until_date}'
-        else:
-            date_filters = None
+            self.format_string += f'&publishedFrom={from_date}&publishedTo={until_date}'
         for release_type in ('planning', 'tender', 'contract'):
-            url = f'{self.url_prefix}{release_type}.search&ResultsPerPage=1000'
-            url = f'{url}{date_filters}' if date_filters else url
             yield self.build_request(
-                url,
+                self.format_string.format(release_type=release_type),
                 formatter=parameters('event'),
                 meta={'release_type': release_type},
                 callback=self.parse_list
