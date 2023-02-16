@@ -47,7 +47,6 @@ class LinksSpider(SimpleSpider):
 
         yield self.next_link(response)
 
-    @handle_http_error
     def next_link(self, response, **kwargs):
         """
         If the JSON response has a ``links.next`` key, returns a ``scrapy.Request`` for the URL.
