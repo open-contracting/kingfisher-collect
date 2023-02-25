@@ -38,7 +38,7 @@ class UnitedKingdomContractsFinderBase(LinksSpider):
     @handle_http_error
     def parse(self, response):
         # Remove non-iso-8859-1 characters.
-        response = response.replace(body=response.text.encode('iso-8859-1', 'ignore'))
+        response = response.replace(body=response.text.encode(self.encoding, errors='ignore').decode(self.encoding))
         yield from super().parse(response)
 
     def get_retry_wait_time(self, response):
