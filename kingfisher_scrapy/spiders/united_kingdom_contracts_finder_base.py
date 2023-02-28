@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import LinksSpider
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.util import handle_http_error, parameters, transcode_bytes
 
 
 class UnitedKingdomContractsFinderBase(LinksSpider):
@@ -38,7 +38,7 @@ class UnitedKingdomContractsFinderBase(LinksSpider):
     @handle_http_error
     def parse(self, response):
         # Remove non-iso-8859-1 characters.
-        response = response.replace(body=response.text.encode(self.encoding, errors='ignore').decode(self.encoding))
+        response = response.replace(body=transcode_bytes(response.body, self.encoding))
         yield from super().parse(response)
 
     def get_retry_wait_time(self, response):
