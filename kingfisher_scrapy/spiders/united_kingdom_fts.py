@@ -41,9 +41,7 @@ class UnitedKingdomFTS(LinksSpider):
 
     @handle_http_error
     def parse(self, response):
-        data = response.text
-        # TODO: temporary fix for https://github.com/open-contracting/kingfisher-process/issues/323, remove when it's
-        #  solved in kingfisher process
-        data = data.replace('1e9999', '9999999')
-        response = response.replace(body=data)
+        # TODO: Temporary fix for https://github.com/open-contracting/kingfisher-process/issues/323.
+        # Remove this method once the issue is closed in Kingfisher Process.
+        response = response.replace(body=response.body.replace(b'1e9999', b'9999999'))
         yield from super().parse(response)

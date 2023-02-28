@@ -55,10 +55,10 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         if isinstance(data, FileError):
             yield data
             return
-        # Some results have an illegal unicode character which produces an error when saving the JSON in a database.
-        data = response.text.replace(r'\u0000', '')
-        response = response.replace(body=data)
 
+        # Replace the "\u0000" escape sequence in the JSON string, which is rejected by PostgreSQL.
+        # https://www.postgresql.org/docs/current/datatype-json.html
+        response = response.replace(body=response.body.replace(b'\x00', b''))
         yield from super().parse(response)
 
     @handle_http_error

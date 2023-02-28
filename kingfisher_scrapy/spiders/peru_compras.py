@@ -55,6 +55,6 @@ class PeruCompras(SimpleSpider):
 
     @handle_http_error
     def parse(self, response):
-        # Replace unescaped newline characters within strings.
-        response = response.replace(body=response.text.replace('\n', ' '))
+        # Replace unescaped newline characters within strings with a space.
+        response = response.replace(body=response.body.replace(b'\n', b' '))
         yield from super().parse(response)
