@@ -47,7 +47,7 @@ coverage[toml]==5.0.3
     #   pytest-cov
 coveralls==3.2.0
     # via -r requirements_dev.in
-cryptography==38.0.4
+cryptography==40.0.1
     # via
     #   -r requirements.txt
     #   pyopenssl
@@ -223,7 +223,7 @@ pydispatcher==2.0.6
     #   scrapy
 pyflakes==2.1.1
     # via flake8
-pyopenssl==22.1.0
+pyopenssl==23.1.1
     # via
     #   -r requirements.txt
     #   scrapy

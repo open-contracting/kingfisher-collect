@@ -25,7 +25,7 @@ constantly==15.1.0
     # via twisted
 contextlib2==0.6.0.post1
     # via schema
-cryptography==38.0.4
+cryptography==40.0.1
     # via
     #   pyopenssl
     #   scrapy
@@ -123,7 +123,7 @@ pycparser==2.19
     # via cffi
 pydispatcher==2.0.6
     # via scrapy
-pyopenssl==22.1.0
+pyopenssl==23.1.1
     # via
     #   scrapy
     #   twisted
