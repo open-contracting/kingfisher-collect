@@ -3,7 +3,7 @@ import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import handle_http_error, components
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class Netherlands(SimpleSpider):
