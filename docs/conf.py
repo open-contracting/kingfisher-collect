@@ -57,6 +57,13 @@ html_theme = "furo"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
+html_theme_options = {
+    "announcement": """
+    <strong>New!</strong> Use the <a href="https://data.open-contracting.org/">OCP Data Registry</a> to
+    <a href="https://data.open-contracting.org/">download OCDS data</a>, worldwide.
+    """,
+}
+
 
 # -- Extension configuration -------------------------------------------------
 
