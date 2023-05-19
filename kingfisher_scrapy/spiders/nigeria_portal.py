@@ -1,16 +1,20 @@
-from kingfisher_scrapy.spiders.nigeria_portal_base import NigeriaPortalBase
+import scrapy
+
+from kingfisher_scrapy.base_spiders import CompressedFileSpider
 
 
-class NigeriaPortal(NigeriaPortalBase):
+class NigeriaPortal(CompressedFileSpider):
     """
     Domain
       Nigeria Open Contracting Portal (NOCOPO) of Bureau of Public Procurement (BPP)
+
+    Bulk download documentation
+        https://nocopo.bpp.gov.ng/Open-Data
     """
     name = 'nigeria_portal'
-    download_delay = 1
 
     # SimpleSpider
     data_type = 'release_package'
 
-    # NigeriaPortalBase
-    base_url = 'http://nocopo.bpp.gov.ng/OpenData.aspx'
+    def start_requests(self):
+        yield scrapy.Request('https://nocopo.bpp.gov.ng/ocdsjson.ashx?ocid=all', meta={'file_name': 'all.zip'})
