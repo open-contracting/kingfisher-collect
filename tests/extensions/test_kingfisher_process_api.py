@@ -10,12 +10,12 @@ from twisted.python.failure import Failure
 
 from kingfisher_scrapy.extensions import FilesStore, KingfisherProcessAPI
 from kingfisher_scrapy.items import FileError, FileItem, PluckedItem
-from tests import ExpectedError, spider_with_crawler, spider_with_files_store
+from tests import TEST_API_URL, ExpectedError, spider_with_crawler, spider_with_files_store
 
 
 def test_from_crawler():
     spider = spider_with_crawler(settings={
-        'KINGFISHER_API_URI': 'http://httpbin.org/anything',
+        'KINGFISHER_API_URI': TEST_API_URL,
         'KINGFISHER_API_KEY': 'xxx',
         'KINGFISHER_API_LOCAL_DIRECTORY': 'localdir',
     })
@@ -27,7 +27,7 @@ def test_from_crawler():
 
 @pytest.mark.parametrize('api_url,api_key', [
     (None, None),
-    ('http://httpbin.org/anything', None),
+    (TEST_API_URL, None),
     (None, 'xxx'),
 ])
 def test_from_crawler_missing_arguments(api_url, api_key):
@@ -114,7 +114,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, directory, o
 
         with open(tmpdir.join(path)) as f:
             assert data['method'] == 'POST'
-            assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/file/'
+            assert data['url'] == f'{TEST_API_URL}api/v1/submit/file/'
             assert data['headers']['Authorization'] == 'ApiKey xxx'
             assert data['form'] == form
             assert data['args'] == {}
@@ -175,7 +175,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, c
             form['collection_note'] = note
 
         assert data['method'] == 'POST'
-        assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/item/'
+        assert data['url'] == f'{TEST_API_URL}api/v1/submit/item/'
         assert data['headers']['Authorization'] == 'ApiKey xxx'
         assert data['form'] == form
         assert data['args'] == {}
@@ -222,7 +222,7 @@ def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
         }
 
         assert data['method'] == 'POST'
-        assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/file_errors/'
+        assert data['url'] == f'{TEST_API_URL}api/v1/submit/file_errors/'
         assert data['headers']['Authorization'] == 'ApiKey xxx'
         assert data['form'] == form
         assert data['args'] == {}
@@ -288,7 +288,7 @@ def test_item_error(sample, is_sample, ok, tmpdir, caplog):
         }
 
         assert data['method'] == 'POST'
-        assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/file_errors/'
+        assert data['url'] == f'{TEST_API_URL}api/v1/submit/file_errors/'
         assert data['headers']['Authorization'] == 'ApiKey xxx'
         assert data['form'] == form
         assert data['args'] == {}
@@ -328,7 +328,7 @@ def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
         }
 
         assert data['method'] == 'POST'
-        assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/end_collection_store/'
+        assert data['url'] == f'{TEST_API_URL}api/v1/submit/end_collection_store/'
         assert data['headers']['Authorization'] == 'ApiKey xxx'
         assert data['form'] == form
         assert data['args'] == {}
@@ -410,7 +410,7 @@ def test_spider_error(sample, is_sample, ok, tmpdir, caplog):
         }
 
         assert data['method'] == 'POST'
-        assert data['url'] == 'http://httpbin.org/anything/api/v1/submit/file_errors/'
+        assert data['url'] == f'{TEST_API_URL}api/v1/submit/file_errors/'
         assert data['headers']['Authorization'] == 'ApiKey xxx'
         assert data['form'] == form
         assert data['args'] == {}
