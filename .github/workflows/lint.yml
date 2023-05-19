@@ -22,6 +22,7 @@ jobs:
       - run: pip install --src $GITHUB_WORKSPACE/../src -r requirements_dev.txt
       - env:
           # Remove scrapy once we no longer install it as an editable project.
+          # scrapyd is run as a command in production.
           STANDARD_MAINTENANCE_SCRIPTS_IGNORE: scrapy,scrapyd,scrapyd-client
         run: pytest /tmp/test_requirements.py
       - run: shasum -c requirements.txt.sha256
