@@ -18,7 +18,7 @@ jobs:
           KINGFISHER_COLLECT_DATABASE_URL: postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
           # Use 127.0.0.1 to avoid log messages about IPv6.
           RABBIT_URL: amqp://127.0.0.1:${{ job.services.rabbitmq.ports[5672] }}
-          TEST_API_URL: http://localhost:${{ job.services.rabbitmq.ports[80] }}/anything/
+          TEST_API_URL: http://localhost:${{ job.services.httpbin.ports[80] }}/anything/
         run: pytest -W error -rs --cov kingfisher_scrapy
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
