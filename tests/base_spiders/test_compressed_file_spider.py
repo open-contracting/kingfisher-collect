@@ -133,7 +133,7 @@ def test_parse_rar_file():
         next(generator)
 
 
-def test_parse_ignore_not_archived_file():
+def test_build_not_archived_file():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = 'release_package'
     spider.build_not_archived_file = True
