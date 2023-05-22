@@ -22,7 +22,7 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
         HC1
           HonduCompras 1.0 (Módulo de Difusión de Compras y Contrataciones)
     Bulk download documentation
-      http://oncae.gob.hn/datosabiertos
+      https://oncae.gob.hn/datosabiertos
     """
     name = 'honduras_oncae'
     download_timeout = 900
@@ -35,8 +35,11 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
     # SimpleSpider
     data_type = 'release_package'
 
+    # CompressedFileSpider
+    build_not_archived_file = True
+
     # PeriodicSpider
-    pattern = 'http://200.13.162.79/datosabiertos/{}'
+    pattern = 'https://datosabiertos.oncae.gob.hn/datosabiertos/{}'
     formatter = staticmethod(components(-1))
 
     # Local
@@ -53,4 +56,8 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
         for system in self.available_systems:
             if self.system and system != self.system:
                 continue
-            yield self.pattern.format(f"{system}/{system}_datos_{date}_json.zip")
+            if system == 'HC1':
+                suffix = f'{date}.json'
+            else:
+                suffix = f'{date}_json.zip'
+            yield self.pattern.format(f"{system}/{system}_datos_{suffix}")
