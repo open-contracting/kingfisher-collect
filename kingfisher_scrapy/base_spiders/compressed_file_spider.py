@@ -19,7 +19,7 @@ class CompressedFileSpider(BaseSpider):
     #. Set a ``data_type`` class attribute to the data type of the compressed files
     #. Optionally, add a ``resize_package = True`` class attribute to split large packages (e.g. greater than 100MB)
     #. Optionally, add a ``build_not_archived_file = True`` class attribute if the spider yields both archived files
-    and JSON files and CompressedFileSpider also has to build the non-archived ones.
+       and JSON files and CompressedFileSpider also has to build the non-archived ones.
     #. Write a ``start_requests()`` method to request the archive files
 
     .. code-block:: python
