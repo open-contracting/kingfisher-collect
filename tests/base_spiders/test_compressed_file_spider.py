@@ -131,3 +131,22 @@ def test_parse_rar_file():
 
     with pytest.raises(StopIteration):
         next(generator)
+
+
+def test_build_not_archived_file():
+    spider = spider_with_crawler(spider_class=CompressedFileSpider)
+    spider.data_type = 'release_package'
+    spider.build_not_archived_file = True
+
+    response = response_fixture(meta={'file_name': 'test.json'})
+    generator = spider.parse(response)
+    item = next(generator)
+
+    assert type(item) is File
+    assert item['file_name'] == 'test.json'
+    assert item['url'] == 'http://example.com'
+    assert item['data_type'] == 'release_package'
+    assert item['data'] is not None
+
+    with pytest.raises(StopIteration):
+        next(generator)
