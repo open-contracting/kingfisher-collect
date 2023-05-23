@@ -36,7 +36,7 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
     data_type = 'release_package'
 
     # CompressedFileSpider
-    build_not_archived_file = True
+    yield_non_archive_file = True
 
     # PeriodicSpider
     pattern = 'https://datosabiertos.oncae.gob.hn/datosabiertos/{}'

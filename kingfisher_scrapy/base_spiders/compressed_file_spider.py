@@ -18,8 +18,8 @@ class CompressedFileSpider(BaseSpider):
     #. Inherit from ``CompressedFileSpider``
     #. Set a ``data_type`` class attribute to the data type of the compressed files
     #. Optionally, add a ``resize_package = True`` class attribute to split large packages (e.g. greater than 100MB)
-    #. Optionally, add a ``build_not_archived_file = True`` class attribute if the spider yields both archived files
-       and JSON files and CompressedFileSpider also has to build the non-archived ones.
+    #. Optionally, add a ``yield_non_archive_file = True`` class attribute if the spider requests both archive files
+       and JSON files. Otherwise, the spider raises an ``UnknownArchiveFormatError`` exception.
     #. Write a ``start_requests()`` method to request the archive files
 
     .. code-block:: python
@@ -45,7 +45,7 @@ class CompressedFileSpider(BaseSpider):
     # BaseSpider
     dont_truncate = True
 
-    build_not_archived_file = False
+    yield_non_archive_file = False
     resize_package = False
     file_name_must_contain = ''
 
@@ -57,7 +57,7 @@ class CompressedFileSpider(BaseSpider):
             cls = ZipFile
         elif archive_format == 'rar':
             cls = RarFile
-        elif self.build_not_archived_file:
+        elif self.yield_non_archive_file:
             yield self.build_file_from_response(response, data_type=self.data_type)
             return
         else:

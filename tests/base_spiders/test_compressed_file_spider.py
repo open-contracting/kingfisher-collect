@@ -133,10 +133,10 @@ def test_parse_rar_file():
         next(generator)
 
 
-def test_build_not_archived_file():
+def test_yield_non_archive_file():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = 'release_package'
-    spider.build_not_archived_file = True
+    spider.yield_non_archive_file = True
 
     response = response_fixture(meta={'file_name': 'test.json'})
     generator = spider.parse(response)
