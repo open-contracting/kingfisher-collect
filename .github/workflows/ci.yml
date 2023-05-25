@@ -25,7 +25,7 @@ jobs:
         run: coveralls --service=github
     services:
       postgres:
-        image: postgres:11
+        image: postgres:15
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
