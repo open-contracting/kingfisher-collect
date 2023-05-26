@@ -82,7 +82,6 @@ class FilesStore:
         self._write_file(path, item['data'])
 
         item['path'] = path
-        item['files_store'] = self.directory
 
     def _write_file(self, path, data):
         path = os.path.join(self.directory, path)

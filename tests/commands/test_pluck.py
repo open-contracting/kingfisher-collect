@@ -4,7 +4,7 @@ import pytest
 from scrapy.cmdline import execute
 
 
-# tests/extensions/test_kingfisher_process_api.py fails if this test is run first.
+# tests/extensions/test_kingfisher_process_api.py fails if execute() is already called.
 @pytest.mark.order(-1)
 @patch('scrapy.crawler.CrawlerProcess.crawl')
 def test_command(crawl, caplog):

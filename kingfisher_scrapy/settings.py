@@ -81,10 +81,9 @@ DOWNLOADER_MIDDLEWARES = {
 EXTENSIONS = {
     'kingfisher_scrapy.extensions.SentryLogging': -1,
     'kingfisher_scrapy.extensions.Pluck': 1,
-    # `FilesStore` must run before `KingfisherProcessAPI`, because the file needs to be written before the
+    # `FilesStore` must run before `KingfisherProcessAPI2`, because the file needs to be written before the
     # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.FilesStore': 100,
-    'kingfisher_scrapy.extensions.KingfisherProcessAPI': 500,
     'kingfisher_scrapy.extensions.KingfisherProcessAPI2': 501,
     'kingfisher_scrapy.extensions.ItemCount': 600,
     'kingfisher_scrapy.extensions.DatabaseStore': 700,
@@ -103,21 +102,12 @@ ITEM_PIPELINES = {
 # To send exceptions and log records to Sentry.
 SENTRY_DSN = os.getenv('SENTRY_DSN')
 
-# To send items to Kingfisher Process (version 1), see
-# https://kingfisher-collect.readthedocs.io/en/latest/kingfisher_process.html
-KINGFISHER_API_URI = os.getenv('KINGFISHER_API_URI')
-KINGFISHER_API_KEY = os.getenv('KINGFISHER_API_KEY')
-
 # To send items to Kingfisher Process (version 2). If the API has basic authentication, add the username and password
 # to the URL, like http://user:pass@localhost:8000
 KINGFISHER_API2_URL = os.getenv('KINGFISHER_API2_URL')
 RABBIT_URL = os.getenv("RABBIT_URL")
 RABBIT_EXCHANGE_NAME = os.getenv("RABBIT_EXCHANGE_NAME")
 RABBIT_ROUTING_KEY = os.getenv("RABBIT_ROUTING_KEY")
-
-# If Kingfisher Process can read Kingfisher Collect's `FILES_STORE`, then Kingfisher Collect can send file paths
-# instead of files to Kingfisher Process' API. To enable that, set this to the absolute path to the `FILES_STORE`.
-KINGFISHER_API_LOCAL_DIRECTORY = os.getenv('KINGFISHER_API_LOCAL_DIRECTORY')
 
 LOG_FORMATTER = 'kingfisher_scrapy.log_formatter.LogFormatter'
 

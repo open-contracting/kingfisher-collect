@@ -13,9 +13,8 @@ class File(Item):
     data = scrapy.Field()
     data_type = scrapy.Field()
 
-    # Added by the FilesStore extension, for the KingfisherProcessAPI extension to read the file.
+    # Added by the FilesStore extension, for the KingfisherProcessAPI2 extension to refer to the file.
     path = scrapy.Field()
-    files_store = scrapy.Field()
 
 
 class FileItem(Item):
@@ -23,9 +22,8 @@ class FileItem(Item):
     data = scrapy.Field()
     data_type = scrapy.Field()
 
-    # Added by the FilesStore extension, for the KingfisherProcessAPI extension to read the file.
+    # Added by the FilesStore extension, for the KingfisherProcessAPI2 extension to refer to the file.
     path = scrapy.Field()
-    files_store = scrapy.Field()
 
 
 class FileError(Item):
