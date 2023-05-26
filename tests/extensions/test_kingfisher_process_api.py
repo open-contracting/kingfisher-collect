@@ -14,6 +14,7 @@ from tests import TEST_API_URL, ExpectedError, spider_with_crawler, spider_with_
 
 SKIP_TEST_IF = 'CI_SKIP' in os.environ
 
+
 def test_from_crawler():
     spider = spider_with_crawler(settings={
         'KINGFISHER_API_URI': TEST_API_URL,
@@ -312,6 +313,7 @@ def test_item_error(sample, is_sample, ok, tmpdir, caplog):
 
 
 @pytest_twisted.inlineCallbacks
+@pytest.mark.skipif(SKIP_TEST_IF, reason='httpbin container is not available')
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
 def test_spider_closed(sample, is_sample, ok, tmpdir, caplog):
