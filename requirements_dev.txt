@@ -81,7 +81,7 @@ flake8==3.7.9
     # via -r requirements_dev.in
 flattentool==0.14.0
     # via -r requirements.txt
-greenlet==0.4.17
+greenlet==2.0.2
     # via pytest-twisted
 hyperlink==21.0.0
     # via
@@ -239,7 +239,7 @@ pytest-cov==2.8.1
     # via -r requirements_dev.in
 pytest-order==0.9.2
     # via -r requirements_dev.in
-pytest-twisted==1.13.2
+pytest-twisted==1.14.0
     # via -r requirements_dev.in
 pytz==2020.1
     # via
