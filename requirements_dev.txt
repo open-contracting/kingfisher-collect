@@ -311,7 +311,6 @@ six==1.13.0
     #   requests-file
     #   scrapyd
     #   url-normalize
-    #   w3lib
 tldextract==3.1.2
     # via
     #   -r requirements.txt
@@ -343,7 +342,7 @@ urllib3==1.26.15
     #   -r requirements.txt
     #   requests
     #   sentry-sdk
-w3lib==1.21.0
+w3lib==2.1.1
     # via
     #   -r requirements.txt
     #   itemloaders

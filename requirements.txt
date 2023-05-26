@@ -185,7 +185,6 @@ six==1.13.0
     #   protego
     #   requests-file
     #   scrapyd
-    #   w3lib
 tldextract==3.1.2
     # via scrapy
 treq==22.1.0
@@ -204,7 +203,7 @@ urllib3==1.26.15
     # via
     #   requests
     #   sentry-sdk
-w3lib==1.21.0
+w3lib==2.1.1
     # via
     #   itemloaders
     #   parsel
