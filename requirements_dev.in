@@ -9,4 +9,3 @@ psycopg2-binary
 pytest
 pytest-cov
 pytest-order
-pytest-twisted

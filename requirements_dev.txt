@@ -12,7 +12,6 @@ attrs==22.2.0
     #   pytest
     #   referencing
     #   service-identity
-    #   treq
     #   twisted
 automat==0.8.0
     # via
@@ -61,8 +60,6 @@ cssselect==1.1.0
     #   -r requirements.txt
     #   parsel
     #   scrapy
-decorator==4.4.2
-    # via pytest-twisted
 defusedxml==0.6.0
     # via
     #   -r requirements.txt
@@ -83,12 +80,9 @@ flake8==3.7.9
     # via -r requirements_dev.in
 flattentool==0.14.0
     # via -r requirements.txt
-greenlet==2.0.2
-    # via pytest-twisted
 hyperlink==21.0.0
     # via
     #   -r requirements.txt
-    #   treq
     #   twisted
 idna==2.8
     # via
@@ -96,7 +90,6 @@ idna==2.8
     #   hyperlink
     #   requests
     #   tldextract
-    #   twisted
 ijson==3.1.1
     # via
     #   -r requirements.txt
@@ -104,7 +97,6 @@ ijson==3.1.1
 incremental==21.3.0
     # via
     #   -r requirements.txt
-    #   treq
     #   twisted
 iniconfig==1.1.1
     # via pytest
@@ -229,7 +221,6 @@ pyopenssl==23.1.1
     # via
     #   -r requirements.txt
     #   scrapy
-    #   twisted
 pyproject-hooks==1.0.0
     # via build
 pytest==7.0.1
@@ -237,12 +228,9 @@ pytest==7.0.1
     #   -r requirements_dev.in
     #   pytest-cov
     #   pytest-order
-    #   pytest-twisted
 pytest-cov==2.8.1
     # via -r requirements_dev.in
 pytest-order==0.9.2
-    # via -r requirements_dev.in
-pytest-twisted==1.14.0
     # via -r requirements_dev.in
 pytz==2020.1
     # via
@@ -269,7 +257,6 @@ requests==2.31.0
     #   requests-file
     #   scrapyd-client
     #   tldextract
-    #   treq
 requests-cache==0.6.3
     # via
     #   -r requirements.txt
@@ -304,7 +291,6 @@ service-identity==18.1.0
     # via
     #   -r requirements.txt
     #   scrapy
-    #   twisted
 six==1.16.0
     # via
     #   -r requirements.txt
@@ -324,14 +310,11 @@ tomli==1.2.3
     # via
     #   build
     #   pytest
-treq==22.1.0
-    # via -r requirements.txt
-twisted[tls]==22.4.0
+twisted==22.4.0
     # via
     #   -r requirements.txt
     #   scrapy
     #   scrapyd
-    #   treq
 typing-extensions==3.10.0.0
     # via
     #   -r requirements.txt

@@ -10,7 +10,6 @@ attrs==22.2.0
     #   jsonschema
     #   referencing
     #   service-identity
-    #   treq
     #   twisted
 automat==0.8.0
     # via twisted
@@ -44,23 +43,18 @@ filelock==3.4.1
 flattentool==0.14.0
     # via -r requirements.in
 hyperlink==21.0.0
-    # via
-    #   treq
-    #   twisted
+    # via twisted
 idna==2.8
     # via
     #   hyperlink
     #   requests
     #   tldextract
-    #   twisted
 ijson==3.1.1
     # via
     #   -r requirements.in
     #   ocdskit
 incremental==21.3.0
-    # via
-    #   treq
-    #   twisted
+    # via twisted
 itemadapter==0.7.0
     # via
     #   itemloaders
@@ -127,9 +121,7 @@ pycparser==2.19
 pydispatcher==2.0.6
     # via scrapy
 pyopenssl==23.1.1
-    # via
-    #   scrapy
-    #   twisted
+    # via scrapy
 pytz==2020.1
     # via flattentool
 queuelib==1.6.2
@@ -150,7 +142,6 @@ requests==2.31.0
     #   requests-file
     #   scrapyd-client
     #   tldextract
-    #   treq
 requests-cache==0.6.3
     # via ocdsextensionregistry
 requests-file==1.5.1
@@ -175,9 +166,7 @@ scrapyd-client==1.2.0
 sentry-sdk==1.19.0
     # via -r requirements.in
 service-identity==18.1.0
-    # via
-    #   scrapy
-    #   twisted
+    # via scrapy
 six==1.16.0
     # via
     #   automat
@@ -187,14 +176,11 @@ six==1.16.0
     #   scrapyd
 tldextract==3.1.2
     # via scrapy
-treq==22.1.0
-    # via -r requirements.in
-twisted[tls]==22.4.0
+twisted==22.4.0
     # via
     #   -r requirements.in
     #   scrapy
     #   scrapyd
-    #   treq
 typing-extensions==3.10.0.0
     # via twisted
 url-normalize==1.4.3
