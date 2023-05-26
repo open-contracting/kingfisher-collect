@@ -29,7 +29,7 @@ cffi==1.15.0
     # via
     #   -r requirements.txt
     #   cryptography
-chardet==3.0.4
+charset-normalizer==3.1.0
     # via
     #   -r requirements.txt
     #   requests
@@ -175,8 +175,11 @@ openpyxl==3.0.5
     #   -r requirements.txt
     #   -r requirements_dev.in
     #   flattentool
-packaging==19.2
-    # via pytest
+packaging==23.1
+    # via
+    #   -r requirements.txt
+    #   pytest
+    #   scrapy
 parsel==1.6.0
     # via
     #   -r requirements.txt
@@ -226,8 +229,6 @@ pyopenssl==22.1.0
     #   -r requirements.txt
     #   scrapy
     #   twisted
-pyparsing==2.4.5
-    # via packaging
 pyrsistent==0.19.3
     # via
     #   -r requirements.txt
@@ -260,7 +261,7 @@ referencing==0.21.0
     #   -r requirements.txt
     #   jsonschema
     #   jsonschema-specifications
-requests==2.25.1
+requests==2.31.0
     # via
     #   -r requirements.txt
     #   coveralls
@@ -285,7 +286,7 @@ schema==0.7.2
     # via
     #   -r requirements.txt
     #   flattentool
-scrapy==2.6.3
+scrapy==2.9.0
     # via
     #   -r requirements.txt
     #   scrapyd
@@ -305,7 +306,6 @@ six==1.13.0
     # via
     #   -r requirements.txt
     #   automat
-    #   packaging
     #   parsel
     #   protego
     #   requests-file

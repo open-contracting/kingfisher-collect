@@ -22,7 +22,7 @@ certifi==2022.12.7
     #   sentry-sdk
 cffi==1.15.0
     # via cryptography
-chardet==3.0.4
+charset-normalizer==3.1.0
     # via requests
 constantly==15.1.0
     # via twisted
@@ -104,6 +104,8 @@ odfpy==1.4.1
     # via flattentool
 openpyxl==3.0.5
     # via flattentool
+packaging==23.1
+    # via scrapy
 parsel==1.6.0
     # via
     #   itemloaders
@@ -143,7 +145,7 @@ referencing==0.21.0
     #   -r requirements.in
     #   jsonschema
     #   jsonschema-specifications
-requests==2.25.1
+requests==2.31.0
     # via
     #   -r requirements.in
     #   ocdsextensionregistry
@@ -161,7 +163,7 @@ rfc3986-validator==0.1.1
     # via -r requirements.in
 schema==0.7.2
     # via flattentool
-scrapy==2.6.3
+scrapy==2.9.0
     # via
     #   -r requirements.in
     #   scrapyd
