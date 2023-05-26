@@ -12,6 +12,7 @@ from kingfisher_scrapy.extensions import FilesStore, KingfisherProcessAPI
 from kingfisher_scrapy.items import FileError, FileItem, PluckedItem
 from tests import TEST_API_URL, ExpectedError, spider_with_crawler, spider_with_files_store
 
+SKIP_TEST_IF = 'CI_SKIP' in os.environ
 
 def test_from_crawler():
     spider = spider_with_crawler(settings={
@@ -56,6 +57,7 @@ def test_from_crawler_with_database_url():
 
 
 @pytest_twisted.inlineCallbacks
+@pytest.mark.skipif(SKIP_TEST_IF, reason='httpbin container is not available')
 @pytest.mark.parametrize('sample,is_sample,path', [
     (None, False, os.path.join('test', '20010203_040506', 'file.json')),
     ('true', True, os.path.join('test_sample', '20010203_040506', 'file.json')),
@@ -134,6 +136,7 @@ def test_item_scraped_file(sample, is_sample, path, note, encoding, directory, o
 
 
 @pytest_twisted.inlineCallbacks
+@pytest.mark.skipif(SKIP_TEST_IF, reason='httpbin container is not available')
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('note', [None, 'Started by NAME.'])
 @pytest.mark.parametrize('encoding', ['utf-8', 'iso-8859-1'])
@@ -192,6 +195,7 @@ def test_item_scraped_file_item(sample, is_sample, note, encoding, ok, tmpdir, c
 
 
 @pytest_twisted.inlineCallbacks
+@pytest.mark.skipif(SKIP_TEST_IF, reason='httpbin container is not available')
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
 def test_item_scraped_file_error(sample, is_sample, ok, tmpdir, caplog):
@@ -380,6 +384,7 @@ def test_spider_closed_other_reason(tmpdir):
 
 
 @pytest_twisted.inlineCallbacks
+@pytest.mark.skipif(SKIP_TEST_IF, reason='httpbin container is not available')
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
 def test_spider_error(sample, is_sample, ok, tmpdir, caplog):

@@ -108,6 +108,8 @@ class Pluck:
                 except ijson.common.IncompleteJSONError as e:
                     message = str(e).split('\n', 1)[0]
                     if message.endswith((
+                        # Python backend.
+                        'Incomplete JSON content',
                         # The JSON text can be truncated by a `bytes_received` handler.
                         'premature EOF',
                         # These messages occur if the JSON text is truncated at `"\\u` or `"\\`.
