@@ -1,7 +1,7 @@
 flattentool
 ijson>=3.1.1
 jsonpointer
--e git+https://github.com/python-jsonschema/jsonschema.git@referencing#egg=jsonschema
+jsonschema
 ocdskit
 ocdsmerge
 pika

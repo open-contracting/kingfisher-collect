@@ -4,8 +4,6 @@
 #
 #    pip-compile requirements_dev.in
 #
--e git+https://github.com/python-jsonschema/jsonschema.git@referencing#egg=jsonschema
-    # via -r requirements.txt
 attrs==22.2.0
     # via
     #   -r requirements.txt
@@ -144,7 +142,9 @@ jsonref==0.2
     #   ocdsextensionregistry
     #   ocdskit
     #   ocdsmerge
-jsonschema-specifications==2023.3.1
+jsonschema==4.18.0a7
+    # via -r requirements.txt
+jsonschema-specifications==2023.5.1
     # via
     #   -r requirements.txt
     #   jsonschema
@@ -229,11 +229,6 @@ pyopenssl==23.1.1
     #   -r requirements.txt
     #   scrapy
     #   twisted
-pyrsistent==0.19.3
-    # via
-    #   -r requirements.txt
-    #   jsonschema
-    #   referencing
 pytest==7.0.1
     # via
     #   -r requirements_dev.in
@@ -256,7 +251,7 @@ queuelib==1.6.2
     #   scrapy
 rarfile==3.1
     # via -r requirements.txt
-referencing==0.21.0
+referencing==0.28.5
     # via
     #   -r requirements.txt
     #   jsonschema
@@ -282,6 +277,11 @@ requests-file==1.5.1
     #   tldextract
 rfc3986-validator==0.1.1
     # via -r requirements.txt
+rpds-py==0.7.1
+    # via
+    #   -r requirements.txt
+    #   jsonschema
+    #   referencing
 schema==0.7.2
     # via
     #   -r requirements.txt
