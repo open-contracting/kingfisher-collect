@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 from scrapy import Request
@@ -5,6 +6,8 @@ from scrapy.http import TextResponse
 from scrapy.utils.test import get_crawler
 
 from kingfisher_scrapy.base_spiders import BaseSpider
+
+TEST_API_URL = os.getenv('TEST_API_URL', 'http://httpbin.org/anything/')
 
 
 class ExpectedError(Exception):
@@ -32,9 +35,9 @@ def spider_with_crawler(spider_class=BaseSpider, *, settings=None, **kwargs):
 def spider_with_files_store(files_store, settings=None, **kwargs):
     crawler_settings = {
         'FILES_STORE': files_store,
-        'KINGFISHER_API_URI': 'http://httpbin.org/anything/',
+        'KINGFISHER_API_URI': TEST_API_URL,
         'KINGFISHER_API_KEY': 'xxx',
-        'KINGFISHER_API2_URL': 'http://httpbin.org/anything/',
+        'KINGFISHER_API2_URL': TEST_API_URL,
     }
     if settings:
         crawler_settings.update(settings)

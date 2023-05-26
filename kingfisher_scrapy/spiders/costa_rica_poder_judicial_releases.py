@@ -9,7 +9,7 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
     Domain
       Poder Judicial de Costa Rica
     Bulk download documentation
-      http://datosabiertospj.eastus.cloudapp.azure.com/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
+      https://ckanpj.azurewebsites.net/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
     """
     name = 'costa_rica_poder_judicial_releases'
 
@@ -21,8 +21,8 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
     file_name_must_contain = '-'
 
     def start_requests(self):
-        url = 'http://datosabiertospj.eastus.cloudapp.azure.com/api/3/action/package_show?id=estandar-de-datos-de' \
-              '-contrataciones-abiertas-ocds'
+        url = 'https://ckanpj.azurewebsites.net/api/3/action/package_show?id=estandar-de-datos-de-contrataciones' \
+              '-abiertas-ocds'
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error

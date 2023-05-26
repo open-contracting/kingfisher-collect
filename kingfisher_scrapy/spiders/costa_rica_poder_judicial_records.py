@@ -16,7 +16,7 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
         Download only data until this year (YYYY format).
         If ``from_date`` is provided, defaults to the current year.
     Bulk download documentation
-      http://datosabiertospj.eastus.cloudapp.azure.com/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
+      https://ckanpj.azurewebsites.net/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
     """
     name = 'costa_rica_poder_judicial_records'
 
@@ -29,7 +29,7 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
     default_from_date = '2018'
 
     def start_requests(self):
-        url = 'http://datosabiertospj.eastus.cloudapp.azure.com/api/3/action/package_show?id=estandar-de-datos-de' \
+        url = 'https://ckanpj.azurewebsites.net/api/3/action/package_show?id=estandar-de-datos-de' \
               '-contrataciones-abiertas-ocds'
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
@@ -39,7 +39,7 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
             if resource['format'].upper() == 'JSON':
                 if self.from_date and self.until_date:
                     # URL looks like:
-                    # https://pjcrdatosabiertos.blob.core.windows.net/datosabiertos/OpenContracting/2021.json
+                    # hhttps://ckanpj.azurewebsites.net/datosabiertos/OpenContracting/2021.json
                     year = int(components(-1)(resource['url']))
                     if not (self.from_date.year <= year <= self.until_date.year):
                         continue

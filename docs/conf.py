@@ -55,7 +55,14 @@ html_theme = "furo"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+html_static_path = []
+
+html_theme_options = {
+    "announcement": """
+    <strong>New!</strong> Use the <a href="https://data.open-contracting.org/">OCP Data Registry</a> to
+    <a href="https://data.open-contracting.org/">download OCDS data</a>, worldwide.
+    """,
+}
 
 
 # -- Extension configuration -------------------------------------------------

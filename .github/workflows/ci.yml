@@ -18,13 +18,14 @@ jobs:
           KINGFISHER_COLLECT_DATABASE_URL: postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
           # Use 127.0.0.1 to avoid log messages about IPv6.
           RABBIT_URL: amqp://127.0.0.1:${{ job.services.rabbitmq.ports[5672] }}
+          TEST_API_URL: http://localhost:${{ job.services.httpbin.ports[80] }}/anything/
         run: pytest -W error -rs --cov kingfisher_scrapy
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github
     services:
       postgres:
-        image: postgres:11
+        image: postgres:15
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -43,3 +44,7 @@ jobs:
           --health-retries 5
         ports:
           - 5672/tcp
+      httpbin:
+        image: kennethreitz/httpbin:latest
+        ports:
+          - 80/tcp

@@ -21,7 +21,8 @@ class IndiaAssamFinanceDepartment(SimpleSpider):
 
     def start_requests(self):
         yield scrapy.Request('https://data.gov.in/backend/dmspublic/v1/resources?filters['
-                             'catalog_reference]=7259310&offset=0&limit=100&filters[domain_visibility]=4',
+                             'catalog_reference]=7259310&offset=0&limit=8&sort[published_date]=desc&filters['
+                             'domain_visibility]=4',
                              meta={'file_name': 'response.json'}, callback=self.parse_list)
 
     @handle_http_error
