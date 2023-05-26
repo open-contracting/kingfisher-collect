@@ -258,6 +258,7 @@ def test_item_scraped_plucked_item(tmpdir):
 
 
 @pytest_twisted.inlineCallbacks
+@pytest.mark.skipif(SKIP_TEST_IF, reason='httpbin container is not available')
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('ok', [True, False])
 def test_item_error(sample, is_sample, ok, tmpdir, caplog):
