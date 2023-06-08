@@ -107,7 +107,7 @@ class DatabaseStore:
 
         data = self.yield_items_from_directory(crawl_directory, prefix)
         if spider.compile_releases:
-            spider.logger.info('Creating compiled releases')
+            spider.logger.info('Creating generator of compiled releases')
             data = merge(data)
 
         filename = os.path.join(crawl_directory, 'data.csv')
