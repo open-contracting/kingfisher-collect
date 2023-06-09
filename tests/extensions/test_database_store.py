@@ -137,7 +137,7 @@ def test_spider_closed(caplog, tmpdir, data, data_type, sample, compile_releases
             'Replacing the JSON data in the test table',
         ]
         if compile_releases:
-            expected_messages.insert(1, 'Creating compiled releases')
+            expected_messages.insert(1, 'Creating generator of compiled releases')
         assert [record.message for record in caplog.records][-5:] == expected_messages
 
     finally:
