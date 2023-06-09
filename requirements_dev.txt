@@ -141,7 +141,7 @@ json-merge-patch==0.2
     #   ocdsextensionregistry
 jsonpointer==2.0
     # via -r requirements.txt
-jsonref==0.2
+jsonref==1.0.1
     # via
     #   -r requirements.txt
     #   flattentool
@@ -158,7 +158,7 @@ lxml==4.9.1
     #   scrapy
 mccabe==0.6.1
     # via flake8
-ocdsextensionregistry==0.1.5
+ocdsextensionregistry==0.2.2
     # via
     #   -r requirements.txt
     #   ocdskit
@@ -340,6 +340,7 @@ url-normalize==1.4.3
 urllib3==1.26.15
     # via
     #   -r requirements.txt
+    #   ocdsextensionregistry
     #   requests
     #   sentry-sdk
 w3lib==1.21.0
