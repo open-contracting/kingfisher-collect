@@ -13,12 +13,18 @@ attrs==19.3.0
     #   twisted
 automat==0.8.0
     # via twisted
+backports-datetime-fromisoformat==2.0.0
+    # via flattentool
+btrees==4.11.3
+    # via zodb
 certifi==2022.12.7
     # via
     #   requests
     #   sentry-sdk
 cffi==1.15.0
-    # via cryptography
+    # via
+    #   cryptography
+    #   persistent
 chardet==3.0.4
     # via requests
 constantly==15.1.0
@@ -40,7 +46,7 @@ et-xmlfile==1.0.1
     # via openpyxl
 filelock==3.4.1
     # via tldextract
-flattentool==0.14.0
+flattentool==0.20.1
     # via -r requirements.in
 hyperlink==21.0.0
     # via
@@ -55,6 +61,7 @@ idna==2.8
 ijson==3.1.1
     # via
     #   -r requirements.in
+    #   flattentool
     #   ocdskit
 importlib-metadata==4.5.0
     # via jsonschema
@@ -107,6 +114,10 @@ parsel==1.6.0
     # via
     #   itemloaders
     #   scrapy
+persistent==4.9.3
+    # via
+    #   btrees
+    #   zodb
 pika==1.2.0
     # via -r requirements.in
 protego==0.2.1
@@ -177,10 +188,12 @@ six==1.13.0
     #   pyrsistent
     #   requests-file
     #   scrapyd
-    #   url-normalize
     #   w3lib
+    #   zodb
 tldextract==3.1.2
     # via scrapy
+transaction==3.1.0
+    # via zodb
 treq==22.1.0
     # via -r requirements.in
 twisted[tls]==22.4.0
@@ -208,12 +221,29 @@ w3lib==1.21.0
     #   scrapyd-client
 xmltodict==0.12.0
     # via flattentool
+zc.lockfile==2.0
+    # via zodb
+zc.zlibstorage==1.2.0
+    # via flattentool
+zconfig==3.6.1
+    # via zodb
 zipp==3.4.1
     # via importlib-metadata
+zodb==5.8.0
+    # via
+    #   flattentool
+    #   zc.zlibstorage
+zodbpickle==2.6
+    # via zodb
 zope.interface==5.4.0
     # via
+    #   btrees
+    #   persistent
     #   scrapy
+    #   transaction
     #   twisted
+    #   zc.zlibstorage
+    #   zodb
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
