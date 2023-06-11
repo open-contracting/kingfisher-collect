@@ -13,12 +13,18 @@ attrs==22.2.0
     #   twisted
 automat==0.8.0
     # via twisted
+backports-datetime-fromisoformat==2.0.0
+    # via flattentool
+btrees==4.11.3
+    # via zodb
 certifi==2022.12.7
     # via
     #   requests
     #   sentry-sdk
 cffi==1.15.0
-    # via cryptography
+    # via
+    #   cryptography
+    #   persistent
 charset-normalizer==3.1.0
     # via requests
 constantly==15.1.0
@@ -40,7 +46,7 @@ et-xmlfile==1.0.1
     # via openpyxl
 filelock==3.4.1
     # via tldextract
-flattentool==0.14.0
+flattentool==0.20.1
     # via -r requirements.in
 hyperlink==21.0.0
     # via twisted
@@ -52,6 +58,7 @@ idna==2.8
 ijson==3.1.1
     # via
     #   -r requirements.in
+    #   flattentool
     #   ocdskit
 incremental==21.3.0
     # via twisted
@@ -71,7 +78,7 @@ json-merge-patch==0.2
     # via ocdsextensionregistry
 jsonpointer==2.0
     # via -r requirements.in
-jsonref==0.2
+jsonref==1.0.1
     # via
     #   flattentool
     #   ocdsextensionregistry
@@ -86,9 +93,9 @@ lxml==4.9.2
     #   flattentool
     #   parsel
     #   scrapy
-ocdsextensionregistry==0.1.5
+ocdsextensionregistry==0.2.2
     # via ocdskit
-ocdskit==1.0.0
+ocdskit==1.1.6
     # via -r requirements.in
 ocdsmerge==0.6.4
     # via
@@ -104,6 +111,10 @@ parsel==1.6.0
     # via
     #   itemloaders
     #   scrapy
+persistent==4.9.3
+    # via
+    #   btrees
+    #   zodb
 pika==1.2.0
     # via -r requirements.in
 protego==0.2.1
@@ -174,8 +185,11 @@ six==1.16.0
     #   protego
     #   requests-file
     #   scrapyd
+    #   zodb
 tldextract==3.1.2
     # via scrapy
+transaction==3.1.0
+    # via zodb
 twisted==22.4.0
     # via
     #   -r requirements.in
@@ -187,6 +201,7 @@ url-normalize==1.4.3
     # via requests-cache
 urllib3==1.26.15
     # via
+    #   ocdsextensionregistry
     #   requests
     #   sentry-sdk
 w3lib==2.1.1
@@ -197,10 +212,27 @@ w3lib==2.1.1
     #   scrapyd-client
 xmltodict==0.12.0
     # via flattentool
-zope-interface==5.4.0
+zc-lockfile==3.0.post1
+    # via zodb
+zc-zlibstorage==1.2.0
+    # via flattentool
+zconfig==4.0
+    # via zodb
+zodb==5.8.0
     # via
+    #   flattentool
+    #   zc-zlibstorage
+zodbpickle==3.0.1
+    # via zodb
+zope-interface==6.0
+    # via
+    #   btrees
+    #   persistent
     #   scrapy
+    #   transaction
     #   twisted
+    #   zc-zlibstorage
+    #   zodb
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
