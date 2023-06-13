@@ -1,14 +1,13 @@
 import json
 import os
 from io import BytesIO
-from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 import pytest
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
 from kingfisher_scrapy.items import File
-from tests import response_fixture, spider_with_crawler
+from tests import path, response_fixture, spider_with_crawler
 
 
 def test_parse():
@@ -114,8 +113,7 @@ def test_parse_rar_file():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = 'release_package'
 
-    path = Path(__file__).parents[1] / 'data' / 'test.rar'
-    with path.open('rb') as f:
+    with open(path('test.rar'), 'rb') as f:
         io = BytesIO(f.read())
     response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.rar'})
     generator = spider.parse(response)
