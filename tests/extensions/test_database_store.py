@@ -5,6 +5,7 @@ from unittest.mock import Mock
 
 import psycopg2
 import pytest
+from ocdsmerge.exceptions import DuplicateIdValueWarning
 from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import DatabaseStore, FilesStore
@@ -66,7 +67,7 @@ def test_spider_opened_no_resume(cursor, caplog, tmpdir, from_date, default_from
 
     assert table_exists == 'test'
     assert spider.from_date == from_date
-    assert [record.message for record in caplog.records][-5:] == messages
+    assert [record.message for record in caplog.records] == messages
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
@@ -94,9 +95,56 @@ def test_spider_opened_resume(caplog, tmpdir):
         extension.spider_opened(spider)
 
     assert spider.from_date == datetime(2021, 5, 26, 0, 0)
-    assert [record.message for record in caplog.records][-5:] == [
+    assert [record.message for record in caplog.records] == [
         'Getting the date from which to resume the crawl from the test table',
         'Resuming the crawl from 2021-05-26',
+    ]
+
+
+@pytest.mark.skipif(SKIP_TEST_IF, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
+def test_spider_closed_warnings(caplog, tmpdir):
+    spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00',
+                                 settings={'DATABASE_URL': DATABASE_URL, 'FILES_STORE': tmpdir})
+    spider.data_type = 'release_package'
+    spider.compile_releases = True
+
+    extension = DatabaseStore.from_crawler(spider.crawler)
+
+    files_store_extension = FilesStore.from_crawler(spider.crawler)
+
+    response = Mock()
+    response.body = b'{"releases":[{"ocid":"x","date":"2021-05-26T10:00:00Z","parties":[{"id":"x"},{"id":"x"}]}]}'
+    response.request = Mock()
+    response.request.url = 'https://example.com/remote.json'
+    response.request.meta = {'file_name': 'file.json'}
+    item = spider.build_file_from_response(response, file_name='file-x.json', data_type='release_package')
+    files_store_extension.item_scraped(item, spider)
+
+    response.body = b'{"releases":[{"ocid":"y","date":"2021-05-26T10:00:00Z","parties":[{"id":"y"}]}]}'
+    item = spider.build_file_from_response(response, file_name='file-y.json', data_type='release_package')
+    files_store_extension.item_scraped(item, spider)
+
+    response.body = b'{"releases":[{"ocid":"z","date":"2021-05-26T10:00:00Z","parties":[{"id":"z"},{"id":"z"}]}]}'
+    item = spider.build_file_from_response(response, file_name='file-z.json', data_type='release_package')
+    files_store_extension.item_scraped(item, spider)
+
+    extension.spider_opened(spider)
+    caplog.clear()
+
+    with pytest.warns(DuplicateIdValueWarning) as records:
+        with caplog.at_level(logging.INFO):
+            extension.spider_closed(spider, 'finished')
+
+    assert spider.from_date == datetime(2021, 5, 26, 0, 0)
+    assert [record.message for record in caplog.records] == [
+        f'Reading the {tmpdir}/test/20210525_000000 crawl directory with the empty prefix',
+        'Creating generator of compiled releases',
+        f'Writing the JSON data to the {tmpdir}/test/20210525_000000/data.csv CSV file',
+        'Replacing the JSON data in the test table',
+    ]
+    assert [record.message for record in records] == [
+        ("x: Multiple objects have the `id` value 'x' in the `parties` array"),
+        ("z: Multiple objects have the `id` value 'z' in the `parties` array"),
     ]
 
 
@@ -158,7 +206,7 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
     ]
     if compile_releases:
         expected_messages.insert(1, 'Creating generator of compiled releases')
-    assert [record.message for record in caplog.records][-5:] == expected_messages
+    assert [record.message for record in caplog.records] == expected_messages
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
