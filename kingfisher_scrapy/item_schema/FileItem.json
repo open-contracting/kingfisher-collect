@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "allOf": [
     {
-      "$ref": "item.json#/definitions/KingfisherFileItem"
+      "$ref": "urn:item#/definitions/KingfisherFileItem"
     }
   ],
   "type": "object",

@@ -288,8 +288,7 @@ class BaseSpider(scrapy.Spider):
         if 'data' not in kwargs:
             body = response.body
             # https://tools.ietf.org/html/rfc7159#section-8.1
-            if body.startswith(codecs.BOM_UTF8):
-                body = body[len(codecs.BOM_UTF8):]
+            body = body.removeprefix(codecs.BOM_UTF8)
             kwargs['data'] = body
         return self.build_file(**kwargs)
 

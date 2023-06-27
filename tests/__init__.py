@@ -14,6 +14,10 @@ class ExpectedError(Exception):
     pass
 
 
+def path(filename):
+    return os.path.join('tests', 'fixtures', filename)
+
+
 def response_fixture(meta=None, url_path='', **kwargs):
     if meta is None:
         meta = {'file_name': 'test'}

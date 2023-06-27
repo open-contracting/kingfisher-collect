@@ -10,8 +10,9 @@ import ijson
 import jsonpointer
 from flattentool import unflatten
 from jsonschema import FormatChecker
-from jsonschema.validators import Draft4Validator, RefResolver
+from jsonschema.validators import Draft4Validator
 from ocdsmerge.util import get_release_schema_url, get_tags
+from referencing import Registry, Resource
 from scrapy.exceptions import DropItem, NotSupported
 
 from kingfisher_scrapy.items import File, FileItem, PluckedItem
@@ -34,10 +35,11 @@ class Validate:
         self.files = set()
         self.file_items = set()
 
-        resolver = RefResolver.from_schema(_json_loads('item'))
+        schema = Resource.from_contents(_json_loads('item'))
+        registry = Registry().with_resource('urn:item', schema)
         checker = FormatChecker()
         for item in ('File', 'FileError', 'FileItem'):
-            self.validators[item] = Draft4Validator(_json_loads(item), resolver=resolver, format_checker=checker)
+            self.validators[item] = Draft4Validator(_json_loads(item), registry=registry, format_checker=checker)
 
     def process_item(self, item, spider):
         if hasattr(item, 'validate'):
@@ -106,6 +108,8 @@ class Pluck:
                 except ijson.common.IncompleteJSONError as e:
                     message = str(e).split('\n', 1)[0]
                     if message.endswith((
+                        # Python backend.
+                        'Incomplete JSON content',
                         # The JSON text can be truncated by a `bytes_received` handler.
                         'premature EOF',
                         # These messages occur if the JSON text is truncated at `"\\u` or `"\\`.

@@ -11,6 +11,11 @@ from kingfisher_scrapy.items import File, FileItem
 from tests import response_fixture, spider_with_crawler, spider_with_files_store
 
 
+@pytest.fixture
+def change_to_tmpdir(tmpdir, monkeypatch):
+    monkeypatch.chdir(tmpdir)
+
+
 def test_from_crawler_missing_arguments():
     spider = spider_with_crawler()
 
@@ -38,7 +43,7 @@ def test_spider_opened(job, tmpdir):
         assert not os.path.exists(path)
 
 
-def test_spider_closed_odd_length(caplog):
+def test_spider_closed_odd_length(caplog, change_to_tmpdir):
     spider = spider_with_files_store('1')
     extension = FilesStore.from_crawler(spider.crawler)
 
@@ -57,7 +62,7 @@ def test_spider_closed_odd_length(caplog):
         ]
 
 
-def test_spider_closed_even_length(caplog):
+def test_spider_closed_even_length(caplog, change_to_tmpdir):
     spider = spider_with_files_store('22')
     extension = FilesStore.from_crawler(spider.crawler)
 
@@ -123,7 +128,6 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
         assert f.read() == '{"key": "value"}'
 
     assert item['path'] == path
-    assert item['files_store'] == tmpdir
 
 
 @pytest.mark.parametrize('sample,directory', [
@@ -148,7 +152,6 @@ def test_item_scraped_with_file_and_file_item(sample, directory, data, item, exp
         assert f.read() == '{"key": "value"}'
 
     assert item['path'] == path
-    assert item['files_store'] == tmpdir
     assert item['file_name'] == original_file_name
 
 

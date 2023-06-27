@@ -7,11 +7,11 @@ ocdsmerge
 pika
 psycopg2
 rarfile
+referencing
 requests
 rfc3986-validator
 scrapy
 scrapyd
 scrapyd-client
 sentry-sdk
-treq
 twisted
