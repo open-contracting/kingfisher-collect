@@ -30,24 +30,20 @@ class KingfisherProcessAPI2:
 
         # The collection ID is set by the spider_opened handler.
         self.collection_id = None
-        self.connection = None
-        self.rabbit_url = None
-        self.channel = None
 
         # To avoid DEBUG-level messages from pika
         logging.getLogger('pika').setLevel(logging.WARNING)
 
-        if rabbit_url:
-            # Add query string parameters to the RabbitMQ URL.
-            parsed = urlsplit(rabbit_url)
-            query = parse_qs(parsed.query)
-            # NOTE: Heartbeat should not be disabled.
-            # https://github.com/open-contracting/data-registry/issues/140
-            query.update({'blocked_connection_timeout': 1800, 'heartbeat': 0})
-            self.rabbit_url = parsed._replace(query=urlencode(query, doseq=True)).geturl()
+        # Add query string parameters to the RabbitMQ URL.
+        parsed = urlsplit(rabbit_url)
+        query = parse_qs(parsed.query)
+        # NOTE: Heartbeat should not be disabled.
+        # https://github.com/open-contracting/data-registry/issues/140
+        query.update({'blocked_connection_timeout': 1800, 'heartbeat': 0})
+        self.rabbit_url = parsed._replace(query=urlencode(query, doseq=True)).geturl()
 
-            self.open_connection_and_channel()
-            self.channel.exchange_declare(exchange=self.exchange, durable=True, exchange_type='direct')
+        self.open_connection_and_channel()
+        self.channel.exchange_declare(exchange=self.exchange, durable=True, exchange_type='direct')
 
     def open_connection_and_channel(self):
         self.connection = pika.BlockingConnection(pika.URLParameters(self.rabbit_url))
@@ -62,6 +58,10 @@ class KingfisherProcessAPI2:
 
         if not url:
             raise NotConfigured('KINGFISHER_API2_URL is not set.')
+        if not rabbit_url:
+            raise NotConfigured('RABBIT_URL is not set.')
+        if not rabbit_exchange_name:
+            raise NotConfigured('RABBIT_EXCHANGE_NAME is not set.')
 
         if crawler.settings['DATABASE_URL']:
             raise NotConfigured('DATABASE_URL is set.')
@@ -121,8 +121,7 @@ class KingfisherProcessAPI2:
         else:
             self._response_error(spider, 'Failed to close collection', response)
 
-        if self.rabbit_url:
-            self.connection.close()
+        self.connection.close()
 
     def item_scraped(self, item, spider):
         """
@@ -144,33 +143,24 @@ class KingfisherProcessAPI2:
         else:
             data['path'] = item['path']
 
-        if self.rabbit_url:
-            for attempt in range(1, 4):
-                try:
-                    self._publish_to_rabbit(data)
-                # This error is caused by another error, which might have been caught and logged by pika in another
-                # thread: for example, if RabbitMQ crashes due to insufficient memory, the connection is reset.
-                except pika.exceptions.ChannelWrongStateError as e:
-                    spider.logger.warning('Retrying to publish message to RabbitMQ (failed %d times): %s', attempt, e)
-                    self.open_connection_and_channel()
-                except Exception:
-                    spider.logger.exception('Failed to publish message to RabbitMQ')
-                    self.stats.inc_value(self.ITEMS_FAILED_RABBIT)
-                    break
-                else:
-                    self.stats.inc_value(self.ITEMS_SENT_RABBIT)
-                    break
-            else:
-                spider.logger.error('Failed to publish message to RabbitMQ (failed 3 times)')
+        for attempt in range(1, 4):
+            try:
+                self._publish_to_rabbit(data)
+            # This error is caused by another error, which might have been caught and logged by pika in another
+            # thread: for example, if RabbitMQ crashes due to insufficient memory, the connection is reset.
+            except pika.exceptions.ChannelWrongStateError as e:
+                spider.logger.warning('Retrying to publish message to RabbitMQ (failed %d times): %s', attempt, e)
+                self.open_connection_and_channel()
+            except Exception:
+                spider.logger.exception('Failed to publish message to RabbitMQ')
                 self.stats.inc_value(self.ITEMS_FAILED_RABBIT)
-        else:
-            response = self._post_synchronous(spider, 'api/v1/create_collection_file', data)
-            if response.ok:
-                self.stats.inc_value(self.ITEMS_SENT_POST)
-                spider.logger.debug('Created collection file in Kingfisher Process')
+                break
             else:
-                self.stats.inc_value(self.ITEMS_FAILED_POST)
-                self._response_error(spider, 'Failed to create collection file', response)
+                self.stats.inc_value(self.ITEMS_SENT_RABBIT)
+                break
+        else:
+            spider.logger.error('Failed to publish message to RabbitMQ (failed 3 times)')
+            self.stats.inc_value(self.ITEMS_FAILED_RABBIT)
 
     def _post_synchronous(self, spider, path, data):
         """
