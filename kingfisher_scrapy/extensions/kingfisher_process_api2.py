@@ -100,7 +100,6 @@ class KingfisherProcessAPI2:
         else:
             self._response_error(spider, 'Failed to create collection', response)
 
-
     def spider_closed(self, spider, reason):
         """
         Sends an API request to close the collection in Kingfisher Process.
