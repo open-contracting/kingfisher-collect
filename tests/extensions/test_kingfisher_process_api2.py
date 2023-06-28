@@ -117,8 +117,6 @@ def test_from_crawler_with_database_url():
     (200, 'INFO', 'Created collection 1 in Kingfisher Process'),
     (500, 'ERROR', 'Failed to create collection: HTTP 500 ({"collection_id": 1}) ({})'),
 ])
-# For requests.post() in KingfisherProcessAPI2._post_synchronous().
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_spider_opened(crawl_time, sample, is_sample, note, job, ocds_version, upgrade, steps, status_code, levelname,
                        message, tmpdir, caplog):
     spider = spider_with_files_store(
@@ -168,8 +166,6 @@ def test_spider_opened(crawl_time, sample, is_sample, note, job, ocds_version, u
     (200, 'INFO', 'Closed collection 1 in Kingfisher Process'),
     (500, 'ERROR', 'Failed to close collection: HTTP 500 (null) ({})'),
 ])
-# For requests.post() in KingfisherProcessAPI2._post_synchronous().
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_spider_closed(status_code, levelname, message, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
@@ -206,7 +202,6 @@ def test_spider_closed(status_code, levelname, message, tmpdir, caplog):
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('attribute', ['pluck', 'keep_collection_open'])
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_spider_closed_return(attribute, tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
@@ -225,7 +220,6 @@ def test_spider_closed_return(attribute, tmpdir):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_spider_closed_missing_collection_id(tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
@@ -244,7 +238,6 @@ def test_spider_closed_missing_collection_id(tmpdir):
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('initializer,filename,kwargs', items_scraped)
 @pytest.mark.parametrize('raises,infix', [(False, 'sent'), (True, 'failed')])
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_item_scraped(initializer, filename, kwargs, raises, infix, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
@@ -310,7 +303,6 @@ def test_item_scraped(initializer, filename, kwargs, raises, infix, tmpdir, capl
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_item_scraped_plucked_item(tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
@@ -332,7 +324,6 @@ def test_item_scraped_plucked_item(tmpdir):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_item_scraped_missing_collection_id(tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
@@ -353,7 +344,6 @@ def test_item_scraped_missing_collection_id(tmpdir):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_item_scraped_path(tmpdir):
     with tmpdir.as_cwd():
         spider = spider_with_files_store('subdir', settings={
