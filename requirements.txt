@@ -106,7 +106,9 @@ odfpy==1.4.1
 openpyxl==3.0.5
     # via flattentool
 packaging==23.1
-    # via scrapy
+    # via
+    #   scrapy
+    #   scrapyd
 parsel==1.6.0
     # via
     #   itemloaders
@@ -170,7 +172,7 @@ scrapy==2.9.0
     #   -r requirements.in
     #   scrapyd
     #   scrapyd-client
-scrapyd==1.3.0
+scrapyd==1.4.2
     # via -r requirements.in
 scrapyd-client==1.2.3
     # via -r requirements.in
@@ -184,7 +186,6 @@ six==1.16.0
     #   parsel
     #   protego
     #   requests-file
-    #   scrapyd
     #   zodb
 tldextract==3.1.2
     # via scrapy
@@ -212,6 +213,7 @@ w3lib==2.1.1
     #   itemloaders
     #   parsel
     #   scrapy
+    #   scrapyd
     #   scrapyd-client
 xmltodict==0.12.0
     # via flattentool
@@ -232,6 +234,7 @@ zope-interface==6.0
     #   btrees
     #   persistent
     #   scrapy
+    #   scrapyd
     #   transaction
     #   twisted
     #   zc-zlibstorage
