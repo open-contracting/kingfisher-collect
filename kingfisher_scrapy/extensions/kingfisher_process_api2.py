@@ -22,7 +22,7 @@ class KingfisherProcessAPI2:
     ITEMS_SENT_RABBIT = 'kingfisher_process_items_sent_rabbit'
     ITEMS_FAILED_RABBIT = 'kingfisher_process_items_failed_rabbit'
 
-    def __init__(self, url, stats, rabbit_url=None, rabbit_exchange_name=None, rabbit_routing_key=None):
+    def __init__(self, url, stats, rabbit_url, rabbit_exchange_name, rabbit_routing_key):
         self.url = url
         self.stats = stats
         self.exchange = rabbit_exchange_name
@@ -65,6 +65,8 @@ class KingfisherProcessAPI2:
             raise NotConfigured('RABBIT_URL is not set.')
         if not rabbit_exchange_name:
             raise NotConfigured('RABBIT_EXCHANGE_NAME is not set.')
+        if not rabbit_routing_key:
+            raise NotConfigured('RABBIT_ROUTING_KEY is not set.')
 
         extension = cls(url, crawler.stats, rabbit_url, rabbit_exchange_name, rabbit_routing_key)
         crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)

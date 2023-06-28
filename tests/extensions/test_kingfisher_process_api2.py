@@ -81,6 +81,7 @@ def test_from_crawler_missing_arguments():
     spider = spider_with_crawler(settings={
         'RABBIT_URL': RABBIT_URL,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
         'KINGFISHER_API2_URL': None,
     })
 
@@ -94,6 +95,7 @@ def test_from_crawler_with_database_url():
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00', settings={
         'RABBIT_URL': RABBIT_URL,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
         'KINGFISHER_API2_URL': TEST_API_URL,
         'DATABASE_URL': 'test',
     })
@@ -121,7 +123,11 @@ def test_spider_opened(crawl_time, sample, is_sample, note, job, ocds_version, u
                        message, tmpdir, caplog):
     spider = spider_with_files_store(
         tmpdir, crawl_time=crawl_time, sample=sample, note=note, ocds_version=ocds_version, steps=steps,
-        settings={'RABBIT_URL': RABBIT_URL, 'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test'}
+        settings={
+            'RABBIT_URL': RABBIT_URL,
+            'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+            'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
+        }
     )
     if job:
         spider._job = job
@@ -168,6 +174,7 @@ def test_spider_closed(status_code, levelname, message, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
     })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -205,6 +212,7 @@ def test_spider_closed_return(attribute, tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
     })
     setattr(spider, attribute, True)
 
@@ -224,6 +232,7 @@ def test_spider_closed_missing_collection_id(tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
     })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -310,6 +319,7 @@ def test_item_scraped_plucked_item(tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
     })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -332,6 +342,7 @@ def test_item_scraped_missing_collection_id(tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+        'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
     })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -354,6 +365,7 @@ def test_item_scraped_path(tmpdir):
         spider = spider_with_files_store('subdir', settings={
             'RABBIT_URL': RABBIT_URL,
             'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+            'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
         })
 
         extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
