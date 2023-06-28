@@ -98,7 +98,8 @@ class KingfisherProcessAPI2:
             # in the open-contracting/data-registry repository must be updated to match.
             spider.logger.info('Created collection %d in Kingfisher Process', self.collection_id)
         else:
-            spider.logger.error('Failed to create collection. API status code: %d', response.status_code)
+            self._response_error(spider, 'Failed to create collection', response)
+
 
     def spider_closed(self, spider, reason):
         """
@@ -119,7 +120,7 @@ class KingfisherProcessAPI2:
         if response.ok:
             spider.logger.info('Closed collection %d in Kingfisher Process', self.collection_id)
         else:
-            spider.logger.error('Failed to close collection. API status code: %d', response.status_code)
+            self._response_error(spider, 'Failed to close collection', response)
 
         if self.rabbit_url:
             self.connection.close()
@@ -170,7 +171,7 @@ class KingfisherProcessAPI2:
                 spider.logger.debug('Created collection file in Kingfisher Process')
             else:
                 self.stats.inc_value(self.ITEMS_FAILED_POST)
-                spider.logger.error('Failed to create collection file. API status code: %d', response.status_code)
+                self._response_error(spider, 'Failed to create collection file', response)
 
     def _post_synchronous(self, spider, path, data):
         """
@@ -185,3 +186,6 @@ class KingfisherProcessAPI2:
         # https://www.rabbitmq.com/publishers.html#message-properties
         self.channel.basic_publish(exchange=self.exchange, routing_key=self.routing_key, body=json.dumps(message),
                                    properties=pika.BasicProperties(delivery_mode=2, content_type='application/json'))
+
+    def _response_error(self, spider, message, response):
+        spider.logger.error('%s: HTTP %d (%s) (%s)', message, response.status_code, response.text, response.headers)

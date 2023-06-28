@@ -48,6 +48,14 @@ class Response:
     def json(self):
         return self.content
 
+    @property
+    def text(self):
+        return json.dumps(self.content)
+
+    @property
+    def headers(self):
+        return {}
+
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('url,expected,boolean', [
@@ -105,7 +113,7 @@ def test_from_crawler_with_database_url():
 @pytest.mark.parametrize('steps', [None, 'compile,check,invalid', 'compile', 'check'])
 @pytest.mark.parametrize('status_code,levelname,message', [
     (200, 'INFO', 'Created collection 1 in Kingfisher Process'),
-    (500, 'ERROR', 'Failed to create collection. API status code: 500'),
+    (500, 'ERROR', 'Failed to create collection: HTTP 500 ({"collection_id": 1}) ({})'),
 ])
 # For requests.post() in KingfisherProcessAPI2._post_synchronous().
 @pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
@@ -149,7 +157,7 @@ def test_spider_opened(crawl_time, sample, is_sample, note, job, ocds_version, u
 
 @pytest.mark.parametrize('status_code,levelname,message', [
     (200, 'INFO', 'Closed collection 1 in Kingfisher Process'),
-    (500, 'ERROR', 'Failed to close collection. API status code: 500'),
+    (500, 'ERROR', 'Failed to close collection: HTTP 500 (null) ({})'),
 ])
 def test_spider_closed(status_code, levelname, message, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir)
@@ -209,7 +217,7 @@ def test_spider_closed_missing_collection_id(tmpdir):
 @pytest.mark.parametrize('initializer,filename,kwargs', items_scraped)
 @pytest.mark.parametrize('status_code,levelname,message,infix', [
     (200, 'DEBUG', 'Created collection file in Kingfisher Process', 'sent'),
-    (500, 'ERROR', 'Failed to create collection file. API status code: 500', 'failed'),
+    (500, 'ERROR', 'Failed to create collection file: HTTP 500 (null) ({})', 'failed'),
 ])
 def test_item_scraped(initializer, filename, kwargs, status_code, levelname, message, infix, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir)
