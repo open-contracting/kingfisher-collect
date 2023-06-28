@@ -56,15 +56,15 @@ class KingfisherProcessAPI2:
         rabbit_exchange_name = crawler.settings['RABBIT_EXCHANGE_NAME']
         rabbit_routing_key = crawler.settings['RABBIT_ROUTING_KEY']
 
+        if crawler.settings['DATABASE_URL']:
+            raise NotConfigured('DATABASE_URL is set.')
+
         if not url:
             raise NotConfigured('KINGFISHER_API2_URL is not set.')
         if not rabbit_url:
             raise NotConfigured('RABBIT_URL is not set.')
         if not rabbit_exchange_name:
             raise NotConfigured('RABBIT_EXCHANGE_NAME is not set.')
-
-        if crawler.settings['DATABASE_URL']:
-            raise NotConfigured('DATABASE_URL is set.')
 
         extension = cls(url, crawler.stats, rabbit_url, rabbit_exchange_name, rabbit_routing_key)
         crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)

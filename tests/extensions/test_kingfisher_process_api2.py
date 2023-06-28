@@ -104,6 +104,7 @@ def test_from_crawler_with_database_url():
     assert str(excinfo.value) == 'DATABASE_URL is set.'
 
 
+@pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('crawl_time', [None, '2020-01-01T00:00:00'])
 @pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
 @pytest.mark.parametrize('note', [None, 'Started by NAME.'])
@@ -156,6 +157,7 @@ def test_spider_opened(crawl_time, sample, is_sample, note, job, ocds_version, u
     assert caplog.records[0].getMessage() == message
 
 
+@pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('status_code,levelname,message', [
     (200, 'INFO', 'Closed collection 1 in Kingfisher Process'),
     (500, 'ERROR', 'Failed to close collection: HTTP 500 (null) ({})'),
@@ -195,6 +197,7 @@ def test_spider_closed(status_code, levelname, message, tmpdir, caplog):
     assert caplog.records[0].message == message
 
 
+@pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('attribute', ['pluck', 'keep_collection_open'])
 # For requests.post() in KingfisherProcessAPI2._post_synchronous().
 @pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
@@ -214,6 +217,7 @@ def test_spider_closed_return(attribute, tmpdir):
     extension._post_synchronous.assert_not_called()
 
 
+@pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 # For requests.post() in KingfisherProcessAPI2._post_synchronous().
 @pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_spider_closed_missing_collection_id(tmpdir):
@@ -299,10 +303,14 @@ def test_item_scraped(initializer, filename, kwargs, raises, infix, tmpdir, capl
     extension.connection.close()
 
 
+@pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 # For requests.post() in KingfisherProcessAPI2._post_synchronous().
 @pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_item_scraped_plucked_item(tmpdir):
-    spider = spider_with_files_store(tmpdir)
+    spider = spider_with_files_store(tmpdir, settings={
+        'RABBIT_URL': RABBIT_URL,
+        'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+    })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
     extension.collection_id = 1
@@ -317,10 +325,14 @@ def test_item_scraped_plucked_item(tmpdir):
     extension._post_synchronous.assert_not_called()
 
 
+@pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 # For requests.post() in KingfisherProcessAPI2._post_synchronous().
 @pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_item_scraped_missing_collection_id(tmpdir):
-    spider = spider_with_files_store(tmpdir)
+    spider = spider_with_files_store(tmpdir, settings={
+        'RABBIT_URL': RABBIT_URL,
+        'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+    })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
 
@@ -334,11 +346,15 @@ def test_item_scraped_missing_collection_id(tmpdir):
     extension._post_synchronous.assert_not_called()
 
 
+@pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 # For requests.post() in KingfisherProcessAPI2._post_synchronous().
 @pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_item_scraped_path(tmpdir):
     with tmpdir.as_cwd():
-        spider = spider_with_files_store('subdir')
+        spider = spider_with_files_store('subdir', settings={
+            'RABBIT_URL': RABBIT_URL,
+            'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
+        })
 
         extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
         extension.collection_id = 1
