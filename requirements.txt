@@ -172,7 +172,7 @@ scrapy==2.9.0
     #   scrapyd-client
 scrapyd==1.3.0
     # via -r requirements.in
-scrapyd-client==1.2.0
+scrapyd-client==1.2.3
     # via -r requirements.in
 sentry-sdk==1.19.0
     # via -r requirements.in
@@ -197,12 +197,15 @@ twisted==22.4.0
     #   scrapyd
 typing-extensions==3.10.0.0
     # via twisted
+uberegg==0.1.1
+    # via scrapyd-client
 url-normalize==1.4.3
     # via requests-cache
 urllib3==1.26.15
     # via
     #   ocdsextensionregistry
     #   requests
+    #   scrapyd-client
     #   sentry-sdk
 w3lib==2.1.1
     # via
