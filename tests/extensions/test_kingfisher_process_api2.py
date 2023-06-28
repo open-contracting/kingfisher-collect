@@ -206,8 +206,6 @@ def test_spider_closed(status_code, levelname, message, tmpdir, caplog):
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('attribute', ['pluck', 'keep_collection_open'])
-# For requests.post() in KingfisherProcessAPI2._post_synchronous().
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_spider_closed_return(attribute, tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
@@ -226,8 +224,6 @@ def test_spider_closed_return(attribute, tmpdir):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-# For requests.post() in KingfisherProcessAPI2._post_synchronous().
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_spider_closed_missing_collection_id(tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
@@ -246,8 +242,6 @@ def test_spider_closed_missing_collection_id(tmpdir):
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('initializer,filename,kwargs', items_scraped)
 @pytest.mark.parametrize('raises,infix', [(False, 'sent'), (True, 'failed')])
-# For requests.post() in KingfisherProcessAPI2._post_synchronous().
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_item_scraped(initializer, filename, kwargs, raises, infix, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
@@ -313,8 +307,6 @@ def test_item_scraped(initializer, filename, kwargs, raises, infix, tmpdir, capl
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-# For requests.post() in KingfisherProcessAPI2._post_synchronous().
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_item_scraped_plucked_item(tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
@@ -329,15 +321,13 @@ def test_item_scraped_plucked_item(tmpdir):
         'value': '123',
     })
 
-    extension._post_synchronous = MagicMock(return_value=Response())
+    extension._publish_to_rabbit = MagicMock(return_value=Response())
     extension.item_scraped(item, spider)
 
-    extension._post_synchronous.assert_not_called()
+    extension._publish_to_rabbit.assert_not_called()
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-# For requests.post() in KingfisherProcessAPI2._post_synchronous().
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_item_scraped_missing_collection_id(tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
@@ -351,15 +341,13 @@ def test_item_scraped_missing_collection_id(tmpdir):
         'value': '123',
     })
 
-    extension._post_synchronous = MagicMock(return_value=Response())
+    extension._publish_to_rabbit = MagicMock(return_value=Response())
     extension.item_scraped(item, spider)
 
-    extension._post_synchronous.assert_not_called()
+    extension._publish_to_rabbit.assert_not_called()
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-# For requests.post() in KingfisherProcessAPI2._post_synchronous().
-@pytest.mark.filterwarnings("ignore:unclosed <socket.socket fd=:ResourceWarning")
 def test_item_scraped_path(tmpdir):
     with tmpdir.as_cwd():
         spider = spider_with_files_store('subdir', settings={
@@ -381,12 +369,10 @@ def test_item_scraped_path(tmpdir):
         store_extension = FilesStore.from_crawler(spider.crawler)
         store_extension.item_scraped(item, spider)
 
-        extension._post_synchronous = MagicMock(return_value=Response())
+        extension._publish_to_rabbit = MagicMock(return_value=Response())
         extension.item_scraped(item, spider)
 
-        extension._post_synchronous.assert_called_once()
-        extension._post_synchronous.assert_called_with(spider, 'api/v1/create_collection_file', {
-            'collection_id': 1,
-            'url': 'https://example.com/remote.json',
-            'path': os.path.join('test', '20010203_040506', 'file.json'),
-        })
+        extension._publish_to_rabbit.assert_called_once()
+        extension._publish_to_rabbit.assert_called_with(
+            {'collection_id': 1, 'url': 'https://example.com/remote.json', 'path': 'test/20010203_040506/file.json'}
+        )
