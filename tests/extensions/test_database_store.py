@@ -142,26 +142,32 @@ def test_spider_closed_warnings(caplog, tmpdir):
         f'Writing the JSON data to the {tmpdir}/test/20210525_000000/data.csv CSV file',
         'Replacing the JSON data in the test table',
     ]
-    assert [record.message for record in records] == [
-        ("x: Multiple objects have the `id` value 'x' in the `parties` array"),
-        ("z: Multiple objects have the `id` value 'z' in the `parties` array"),
+
+    assert [record.message.message for record in records] == [
+        ("Multiple objects have the `id` value 'x' in the `parties` array"),
+        ("Multiple objects have the `id` value 'z' in the `parties` array"),
     ]
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
-@pytest.mark.parametrize('data,data_type,sample,compile_releases', [
-    (b'{"releases": [{"date": "2021-05-26T10:00:00Z"}]}', 'release_package', None, False),
-    (b'{"releases": [{"date": "2021-05-26T10:00:00Z"}]}', 'release_package', 1, False),
-    (b'{"releases": [{"ocid":"1", "date": "2021-05-26T10:00:00Z"}]}', 'release_package', None, True),
-    (b'{"records": [{"compiledRelease": {"date": "2021-05-26T10:00:00Z"}}]}', 'record_package', None, False),
-    (b'{"records": [{"releases": [{"ocid":"1", "date": "2021-05-26T10:00:00Z"}]}]}', 'record_package', None, True),
+@pytest.mark.parametrize('data,data_type,sample,compile_releases,table_name', [
+    (b'{"releases": [{"date": "2021-05-26T10:00:00Z"}]}', 'release_package', None, False, 'new_name'),
+    (b'{"releases": [{"date": "2021-05-26T10:00:00Z"}]}', 'release_package', 1, False, None),
+    (b'{"releases": [{"ocid":"1", "date": "2021-05-26T10:00:00Z"}]}', 'release_package', None, True, None),
+    (b'{"records": [{"compiledRelease": {"date": "2021-05-26T10:00:00Z"}}]}', 'record_package', None, False, None),
+    (b'{"records": [{"releases": [{"ocid":"1", "date": "2021-05-26T10:00:00Z"}]}]}', 'record_package', None, True, None),
 ])
-def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_releases):
+def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_releases, table_name):
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00',
                                  settings={'DATABASE_URL': DATABASE_URL, 'FILES_STORE': tmpdir})
     spider.data_type = data_type
     spider.sample = sample
     spider.compile_releases = compile_releases
+
+    if table_name:
+        table = spider.table_name = table_name
+    else:
+        table = spider.name
 
     extension = DatabaseStore.from_crawler(spider.crawler)
 
@@ -202,7 +208,7 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
     expected_messages = [
         f'Reading the {tmpdir}/test{suffix}/20210525_000000 crawl directory with the {prefix} prefix',
         f'Writing the JSON data to the {tmpdir}/test{suffix}/20210525_000000/data.csv CSV file',
-        'Replacing the JSON data in the test table',
+        f'Replacing the JSON data in the {table} table',
     ]
     if compile_releases:
         expected_messages.insert(1, 'Creating generator of compiled releases')
