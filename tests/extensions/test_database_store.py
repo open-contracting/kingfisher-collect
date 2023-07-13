@@ -143,9 +143,9 @@ def test_spider_closed_warnings(caplog, tmpdir):
         'Replacing the JSON data in the test table',
     ]
 
-    assert [record.message.message for record in records] == [
-        ("Multiple objects have the `id` value 'x' in the `parties` array"),
-        ("Multiple objects have the `id` value 'z' in the `parties` array"),
+    assert [record.message for record in records] == [
+        ("x: Multiple objects have the `id` value 'x' in the `parties` array"),
+        ("z: Multiple objects have the `id` value 'z' in the `parties` array"),
     ]
 
 
@@ -155,7 +155,8 @@ def test_spider_closed_warnings(caplog, tmpdir):
     (b'{"releases": [{"date": "2021-05-26T10:00:00Z"}]}', 'release_package', 1, False, None),
     (b'{"releases": [{"ocid":"1", "date": "2021-05-26T10:00:00Z"}]}', 'release_package', None, True, None),
     (b'{"records": [{"compiledRelease": {"date": "2021-05-26T10:00:00Z"}}]}', 'record_package', None, False, None),
-    (b'{"records": [{"releases": [{"ocid":"1", "date": "2021-05-26T10:00:00Z"}]}]}', 'record_package', None, True, None),
+    (b'{"records": [{"releases": [{"ocid":"1", "date": "2021-05-26T10:00:00Z"}]}]}', 'record_package', None, True,
+     None),
 ])
 def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_releases, table_name):
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00',
