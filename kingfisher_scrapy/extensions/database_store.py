@@ -17,11 +17,11 @@ class DatabaseStore:
     If the ``DATABASE_URL`` Scrapy setting and the ``crawl_time`` spider argument are set, the OCDS data is stored in a
     PostgreSQL database, incrementally.
 
-    This extension stores data in the "data" column of a table named after the spider. When the spider is opened, if
-    the table doesn't exist, it is created. The spider's ``from_date`` attribute is then set, in order of precedence,
-    to: the ``from_date`` spider argument (unless equal to the spider's ``default_from_date`` class attribute); the
-    maximum value of the ``date`` field of the stored data (if any); the spider's ``default_from_date`` class attribute
-    (if set).
+    This extension stores data in the "data" column of a table named after the spider, or ``table_name`` (if set).
+    When the spider is opened, if the table doesn't exist, it is created. The spider's ``from_date`` attribute is then
+    set, in order of precedence, to: the ``from_date`` spider argument (unless equal to the spider's
+    ``default_from_date`` class attribute); the maximum value of the ``date`` field of the stored data (if any); the
+    spider's ``default_from_date`` class attribute (if set).
 
     When the spider is closed, this extension reads the data written by the FilesStore extension to the crawl directory
     that matches the ``crawl_time`` spider argument. If the ``compile_releases`` spider argument is set, it creates
@@ -65,7 +65,8 @@ class DatabaseStore:
         self.connection = psycopg2.connect(self.database_url)
         self.cursor = self.connection.cursor()
         try:
-            self.create_table(spider.name)
+            table_name = self.get_table_name(spider)
+            self.create_table(table_name)
 
             # If there is not a from_date from the command line or the from_date is equal to the default_from_date,
             # get the most recent date in the spider's data table.
@@ -75,8 +76,8 @@ class DatabaseStore:
                 default_from_date = None
 
             if not spider.from_date or spider.from_date == default_from_date:
-                spider.logger.info('Getting the date from which to resume the crawl from the %s table', spider.name)
-                self.execute("SELECT max(data->>'date')::timestamptz FROM {table}", table=spider.name)
+                spider.logger.info('Getting the date from which to resume the crawl from the %s table', table_name)
+                self.execute("SELECT max(data->>'date')::timestamptz FROM {table}", table=table_name)
                 from_date = self.cursor.fetchone()[0]
                 if from_date:
                     formatted_from_date = datetime.strftime(from_date, spider.date_format)
@@ -104,6 +105,7 @@ class DatabaseStore:
 
         crawl_directory = os.path.join(self.files_store_directory, FilesStore.relative_crawl_directory(spider))
         spider.logger.info('Reading the %s crawl directory with the %s prefix', crawl_directory, prefix or 'empty')
+        table_name = self.get_table_name(spider)
 
         data = self.yield_items_from_directory(crawl_directory, prefix)
         if spider.compile_releases:
@@ -117,16 +119,16 @@ class DatabaseStore:
             for item in data:
                 writer.writerow([util.json_dumps(item, ensure_ascii=False).replace(r'\u0000', '')])
 
-        spider.logger.info('Replacing the JSON data in the %s table', spider.name)
+        spider.logger.info('Replacing the JSON data in the %s table', table_name)
         self.connection = psycopg2.connect(self.database_url)
         self.cursor = self.connection.cursor()
         try:
-            self.execute('DROP TABLE {table}', table=spider.name)
-            self.create_table(spider.name)
+            self.execute('DROP TABLE {table}', table=table_name)
+            self.create_table(table_name)
             with open(filename) as f:
-                self.cursor.copy_expert(self.format('COPY {table}(data) FROM STDIN WITH CSV', table=spider.name), f)
-            self.execute("CREATE INDEX {index} ON {table}(cast(data->>'date' as text))", table=spider.name,
-                         index=f'idx_{spider.name}')
+                self.cursor.copy_expert(self.format('COPY {table}(data) FROM STDIN WITH CSV', table=table_name), f)
+            self.execute("CREATE INDEX {index} ON {table}(cast(data->>'date' as text))", table=table_name,
+                         index=f'idx_{table_name}')
             self.connection.commit()
         finally:
             self.cursor.close()
@@ -166,3 +168,6 @@ class DatabaseStore:
         if kwargs:
             statement = self.format(statement, **kwargs)
         self.cursor.execute(statement, variables)
+
+    def get_table_name(self, spider):
+        return spider.table_name if spider.table_name else spider.name

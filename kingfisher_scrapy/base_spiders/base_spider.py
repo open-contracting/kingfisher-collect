@@ -70,7 +70,7 @@ class BaseSpider(scrapy.Spider):
 
     def __init__(self, sample=None, path=None, from_date=None, until_date=None, crawl_time=None, note=None,
                  keep_collection_open=None, steps=None, compile_releases=None, package_pointer=None,
-                 release_pointer=None, truncate=None, *args, **kwargs):
+                 release_pointer=None, truncate=None, table_name=None, *args, **kwargs):
         """
         :param sample: the number of items to download (``'true'`` means ``1``; ``'false'`` and ``None`` mean no limit)
         :param path: path components to append to the URLs yielded by the ``start_requests`` method (see :ref:`filter`)
@@ -84,6 +84,7 @@ class BaseSpider(scrapy.Spider):
         :param package_pointer: the JSON Pointer to the value in the package (see the :ref:`pluck` command)
         :param release_pointer: the JSON Pointer to the value in the release (see the :ref:`pluck` command)
         :param truncate: the number of characters to which the value is truncated (see the :ref:`pluck` command)
+        :param table_name: override the crawl's table name in the database (see :ref:`database_store`)
         """
 
         super().__init__(*args, **kwargs)
@@ -121,6 +122,9 @@ class BaseSpider(scrapy.Spider):
         self.package_pointer = package_pointer
         self.release_pointer = release_pointer
         self.truncate = int(truncate) if truncate else None
+
+        # Related to the database store extension.
+        self.table_name = table_name
 
         self.query_string_parameters = {}
         for key, value in kwargs.items():
