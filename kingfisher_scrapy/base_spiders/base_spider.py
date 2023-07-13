@@ -70,13 +70,14 @@ class BaseSpider(scrapy.Spider):
 
     def __init__(self, sample=None, path=None, from_date=None, until_date=None, crawl_time=None, note=None,
                  keep_collection_open=None, steps=None, compile_releases=None, package_pointer=None,
-                 release_pointer=None, truncate=None, *args, **kwargs):
+                 release_pointer=None, truncate=None, table_name=None, *args, **kwargs):
         """
         :param sample: the number of items to download (``'true'`` means ``1``; ``'false'`` and ``None`` mean no limit)
         :param path: path components to append to the URLs yielded by the ``start_requests`` method (see :ref:`filter`)
         :param from_date: the date from which to download data (see :ref:`spider-arguments`)
         :param until_date: the date until which to download data (see :ref:`spider-arguments`)
         :param crawl_time: override the crawl's start time (see :ref:`increment`)
+        :param table_name: override the crawl's table name in the database (see :ref:`database_store`)
         :param note: a note to add to the collection in Kingfisher Process
         :param keep_collection_open: whether to close the collection in Kingfisher Process when the crawl is finished
         :param compile_releases: whether to create compiled releases from individual releases when using the
@@ -105,6 +106,9 @@ class BaseSpider(scrapy.Spider):
 
         # Related to incremental crawls.
         self.crawl_time = crawl_time
+
+        # Related to the database store extension.
+        self.table_name = table_name
 
         # Related to Kingfisher Process.
         self.note = note
