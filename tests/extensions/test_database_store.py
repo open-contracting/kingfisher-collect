@@ -164,11 +164,9 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
     spider.data_type = data_type
     spider.sample = sample
     spider.compile_releases = compile_releases
+    spider.table_name = table_name
 
-    if table_name:
-        table = spider.table_name = table_name
-    else:
-        table = spider.name
+    expected_table = table_name if table_name else spider.name
 
     extension = DatabaseStore.from_crawler(spider.crawler)
 
@@ -209,7 +207,7 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
     expected_messages = [
         f'Reading the {tmpdir}/test{suffix}/20210525_000000 crawl directory with the {prefix} prefix',
         f'Writing the JSON data to the {tmpdir}/test{suffix}/20210525_000000/data.csv CSV file',
-        f'Replacing the JSON data in the {table} table',
+        f'Replacing the JSON data in the {expected_table} table',
     ]
     if compile_releases:
         expected_messages.insert(1, 'Creating generator of compiled releases')

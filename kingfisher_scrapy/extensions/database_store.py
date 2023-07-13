@@ -17,7 +17,7 @@ class DatabaseStore:
     If the ``DATABASE_URL`` Scrapy setting and the ``crawl_time`` spider argument are set, the OCDS data is stored in a
     PostgreSQL database, incrementally.
 
-    This extension stores data in the "data" column of a table named after the spider or ``table_name``.
+    This extension stores data in the "data" column of a table named after the spider, or ``table_name`` (if set).
     When the spider is opened, if the table doesn't exist, it is created. The spider's ``from_date`` attribute is then
     set, in order of precedence, to: the ``from_date`` spider argument (unless equal to the spider's
     ``default_from_date`` class attribute); the maximum value of the ``date`` field of the stored data (if any); the
