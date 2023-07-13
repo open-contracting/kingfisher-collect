@@ -77,7 +77,6 @@ class BaseSpider(scrapy.Spider):
         :param from_date: the date from which to download data (see :ref:`spider-arguments`)
         :param until_date: the date until which to download data (see :ref:`spider-arguments`)
         :param crawl_time: override the crawl's start time (see :ref:`increment`)
-        :param table_name: override the crawl's table name in the database (see :ref:`database_store`)
         :param note: a note to add to the collection in Kingfisher Process
         :param keep_collection_open: whether to close the collection in Kingfisher Process when the crawl is finished
         :param compile_releases: whether to create compiled releases from individual releases when using the
@@ -85,6 +84,7 @@ class BaseSpider(scrapy.Spider):
         :param package_pointer: the JSON Pointer to the value in the package (see the :ref:`pluck` command)
         :param release_pointer: the JSON Pointer to the value in the release (see the :ref:`pluck` command)
         :param truncate: the number of characters to which the value is truncated (see the :ref:`pluck` command)
+        :param table_name: override the crawl's table name in the database (see :ref:`database_store`)
         """
 
         super().__init__(*args, **kwargs)
@@ -107,9 +107,6 @@ class BaseSpider(scrapy.Spider):
         # Related to incremental crawls.
         self.crawl_time = crawl_time
 
-        # Related to the database store extension.
-        self.table_name = table_name
-
         # Related to Kingfisher Process.
         self.note = note
         self.keep_collection_open = keep_collection_open == 'true'
@@ -125,6 +122,9 @@ class BaseSpider(scrapy.Spider):
         self.package_pointer = package_pointer
         self.release_pointer = release_pointer
         self.truncate = int(truncate) if truncate else None
+
+        # Related to the database store extension.
+        self.table_name = table_name
 
         self.query_string_parameters = {}
         for key, value in kwargs.items():
