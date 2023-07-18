@@ -57,7 +57,7 @@ coverage[toml]==5.5
     #   pytest-cov
 coveralls==3.2.0
     # via -r requirements_dev.in
-cryptography==41.0.1
+cryptography==41.0.2
     # via
     #   -r requirements.txt
     #   pyopenssl
