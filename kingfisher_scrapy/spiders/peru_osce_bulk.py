@@ -9,9 +9,9 @@ class PeruOSCEBulk(CompressedFileSpider, IndexSpider):
     Domain
       Organismo Supervisor de las Contrataciones del Estado (OSCE)
     API documentation
-      https://contratacionesabiertasdesa.osce.gob.pe/api
+      https://contratacionesabiertas.osce.gob.pe/api
     Bulk download documentation
-      https://contratacionesabiertasdesa.osce.gob.pe/descargas
+      https://contratacionesabiertas.osce.gob.pe/descargas
     """
     name = 'peru_osce_bulk'
 
@@ -23,7 +23,7 @@ class PeruOSCEBulk(CompressedFileSpider, IndexSpider):
     page_count_pointer = '/pagination/num_pages'
     parse_list_callback = 'parse_files_list'
 
-    peru_base_url = 'https://contratacionesabiertasdesa.osce.gob.pe/api/v1/files/{0}?format=json'
+    peru_base_url = 'https://contratacionesabiertas.osce.gob.pe/api/v1/files?page={0}&paginateBy=10&format=json'
 
     def start_requests(self):
         yield scrapy.Request(self.peru_base_url.format(1),
