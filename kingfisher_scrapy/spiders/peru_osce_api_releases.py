@@ -14,4 +14,4 @@ class PeruOSCEAPIReleases(PeruOSCEAPIBase):
     data_type = 'release_package'
 
     # PeruOSCEBase
-    endpoint = 'releases'
+    endpoint = 'releasesAfter'

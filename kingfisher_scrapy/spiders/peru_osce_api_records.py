@@ -14,4 +14,4 @@ class PeruOSCEAPIRecords(PeruOSCEAPIBase):
     data_type = 'record_package'
 
     # PeruOSCEBase
-    endpoint = 'records'
+    endpoint = 'recordsAfter'

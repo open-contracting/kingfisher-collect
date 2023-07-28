@@ -1,12 +1,12 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import LinksSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import parameters
 
 
 class PeruOSCEAPIBase(LinksSpider):
     # LinksSpider
-    formatter = staticmethod(components(-1))
+    formatter = staticmethod(parameters('searchAfter'))
 
     def start_requests(self):
         yield scrapy.Request(
