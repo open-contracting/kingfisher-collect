@@ -26,7 +26,7 @@ btrees==4.11.3
     #   zodb
 build==0.10.0
     # via pip-tools
-certifi==2022.12.7
+certifi==2023.7.22
     # via
     #   -r requirements.txt
     #   requests
