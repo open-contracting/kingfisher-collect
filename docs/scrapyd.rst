@@ -15,7 +15,7 @@ Scrapyd also makes it possible for many users to schedule crawls on the same mac
 Install Scrapyd
 ---------------
 
-On the remote server, follow Scrapyd's `installation instructions <https://scrapyd.readthedocs.io/en/stable/install.html>`__, then install Kingfisher Collect's requirements in the same environment as Scrapyd:
+On the remote server, follow `these instructions <https://scrapyd.readthedocs.io/en/stable/install.html>`__ to install Scrapyd, then install Kingfisher Collect's requirements in the same environment as Scrapyd:
 
 .. code-block:: bash
 
