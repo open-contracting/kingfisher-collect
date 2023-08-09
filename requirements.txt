@@ -31,7 +31,7 @@ constantly==15.1.0
     # via twisted
 contextlib2==0.6.0.post1
     # via schema
-cryptography==41.0.2
+cryptography==41.0.3
     # via
     #   pyopenssl
     #   scrapy
@@ -186,7 +186,6 @@ six==1.16.0
     #   parsel
     #   protego
     #   requests-file
-    #   url-normalize
     #   zodb
 tldextract==3.1.2
     # via scrapy
