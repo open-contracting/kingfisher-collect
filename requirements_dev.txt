@@ -80,7 +80,7 @@ et-xmlfile==1.0.1
     # via
     #   -r requirements.txt
     #   openpyxl
-exceptiongroup==1.1.1
+exceptiongroup==1.1.3
     # via pytest
 filelock==3.4.1
     # via
@@ -291,7 +291,7 @@ schema==0.7.2
     # via
     #   -r requirements.txt
     #   flattentool
-scrapy==2.9.0
+scrapy==2.10.0
     # via
     #   -r requirements.txt
     #   scrapyd
@@ -321,7 +321,7 @@ tldextract==3.1.2
     #   scrapy
 toml==0.10.2
     # via coverage
-tomli==1.2.3
+tomli==2.0.1
     # via
     #   build
     #   pytest

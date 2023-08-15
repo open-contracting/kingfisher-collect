@@ -167,7 +167,7 @@ rpds-py==0.7.1
     #   referencing
 schema==0.7.2
     # via flattentool
-scrapy==2.9.0
+scrapy==2.10.0
     # via
     #   -r requirements.in
     #   scrapyd
