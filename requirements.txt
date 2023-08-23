@@ -95,7 +95,7 @@ lxml==4.9.2
     #   scrapy
 ocdsextensionregistry==0.2.2
     # via ocdskit
-ocdskit==1.1.7
+ocdskit[perf]==1.1.7
     # via -r requirements.in
 ocdsmerge==0.6.4
     # via
@@ -105,6 +105,8 @@ odfpy==1.4.1
     # via flattentool
 openpyxl==3.0.5
     # via flattentool
+orjson==3.9.5
+    # via ocdskit
 packaging==23.1
     # via
     #   scrapy
