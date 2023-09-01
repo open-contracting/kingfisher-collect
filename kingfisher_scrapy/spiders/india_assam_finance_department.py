@@ -11,6 +11,11 @@ class IndiaAssamFinanceDepartment(PeriodicSpider):
     """
     name = 'india_assam_finance_department'
 
+    # To avoid 403 errors when unflattening the CSV files.
+    custom_settings = {
+        'CONCURRENT_REQUESTS': 1,
+    }
+
     # BaseSpider
     unflatten = True
 
