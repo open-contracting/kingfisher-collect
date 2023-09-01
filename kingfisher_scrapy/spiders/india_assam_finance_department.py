@@ -1,10 +1,8 @@
-import scrapy
-
-from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import handle_http_error
+from kingfisher_scrapy.base_spiders import PeriodicSpider
+from kingfisher_scrapy.util import components
 
 
-class IndiaAssamFinanceDepartment(SimpleSpider):
+class IndiaAssamFinanceDepartment(PeriodicSpider):
     """
     Domain
       Assam State Government Finance Department - Open Government Data (OGD) Platform India
@@ -19,12 +17,15 @@ class IndiaAssamFinanceDepartment(SimpleSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    def start_requests(self):
-        url = 'https://data.gov.in/backend/dmspublic/v1/resources?filters[catalog_reference]=7259310&offset=0&limit=8&sort[published_date]=desc&filters[domain_visibility]=4'  # noqa: E501
-        yield scrapy.Request(url, meta={'file_name': 'response.json'}, callback=self.parse_list)
+    # PeriodicSpider
+    date_format = 'year'
+    formatter = staticmethod(components(-1))
+    default_from_date = '2016'
+    default_until_date = '2021'
 
-    @handle_http_error
-    def parse_list(self, response):
-        data = response.json()
-        for row in data['data']['rows']:
-            yield scrapy.Request(row['datafile'][0], meta={'file_name': f"{row['title'][0]}.csv"})
+    def build_urls(self, date):
+        """
+        Yields one or more URLs for the given date.
+        """
+        url = 'https://data.gov.in/files/ogdpv2dms/s3fs-public/ocds_mapped_procurement_data_fiscal_year'
+        yield f'{url}_{date}_{date+1}.csv'
