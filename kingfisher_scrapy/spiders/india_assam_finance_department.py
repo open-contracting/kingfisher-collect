@@ -6,6 +6,11 @@ class IndiaAssamFinanceDepartment(PeriodicSpider):
     """
     Domain
       Assam State Government Finance Department - Open Government Data (OGD) Platform India
+    Spider arguments
+      from_date
+        Download only data from this year onward (YYYY format). Defaults to '2016'.
+      until_date
+        Download only data until this year (YYYY format). Defaults to '2021'.
     Bulk download documentation
       https://data.gov.in/catalog/assam-public-procurement-data
     """
