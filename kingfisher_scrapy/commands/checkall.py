@@ -120,6 +120,9 @@ class Checker:
             expected_spider_arguments.update({'from_date', 'until_date'})
         elif self.cls.date_required:
             expected_spider_arguments.update({'from_date', 'until_date'})
+            # Ukraine requires a date, but only supports from_date
+            if self.cls.__name__ == 'Ukraine':
+                expected_spider_arguments.remove('until_date')
 
         for spider_argument in expected_spider_arguments:
             if spider_argument not in spider_arguments:
@@ -171,7 +174,7 @@ class Checker:
         if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
             if self.cls.__name__ in ('ColombiaBulk', 'Kosovo', 'PortugalRecords', 'PortugalReleases',
-                                     'UgandaReleases'):
+                                     'UgandaReleases', 'Ukraine'):
                 level = 'info'
             else:
                 level = 'warning'
