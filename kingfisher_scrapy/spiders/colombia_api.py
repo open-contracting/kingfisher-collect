@@ -32,7 +32,9 @@ class ColombiaAPI(LinksSpider):
     formatter = staticmethod(parameters('_id'))
 
     def start_requests(self):
+        from_date = self.from_date.strftime(self.date_format)
+        until_date = self.until_date.strftime(self.date_format)
         url = 'https://apiocds.colombiacompra.gov.co/apiCCE2.0/rest/releases/dates/' \
-              f'{self.from_date.strftime(self.date_format)}/{self.until_date.strftime(self.date_format)}'
+              f'{from_date}/{until_date}'
 
-        yield scrapy.Request(url, meta={'file_name': 'page-1.json'})
+        yield scrapy.Request(url, meta={'file_name': f'{from_date}-{until_date}-start.json'})

@@ -32,12 +32,14 @@ class UnitedKingdomFTS(LinksSpider):
 
     def start_requests(self):
         url = 'https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages'
+        file_name = 'start.json'
         if self.from_date and self.until_date:
             from_date = self.from_date.strftime(self.date_format)
             until_date = self.until_date.strftime(self.date_format)
             url = f'{url}?updatedFrom={from_date}&updatedTo={until_date}'
+            file_name = f'{from_date}-{until_date}-{file_name}'
 
-        yield scrapy.Request(url, meta={'file_name': 'start.json'}, headers={'Accept': 'application/json'})
+        yield scrapy.Request(url, meta={'file_name': file_name}, headers={'Accept': 'application/json'})
 
     @handle_http_error
     def parse(self, response):

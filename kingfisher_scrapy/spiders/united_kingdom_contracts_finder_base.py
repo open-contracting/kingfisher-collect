@@ -28,12 +28,12 @@ class UnitedKingdomContractsFinderBase(LinksSpider):
     def start_requests(self):
         # https://www.contractsfinder.service.gov.uk/apidocumentation/Notices/1/GET-Published-Notice-OCDS-Search
         url = f'{self.url_prefix}Notices/OCDS/Search?limit=100'
-        if self.from_date and self.until_date:
-            from_date = self.from_date.strftime(self.date_format)
-            until_date = self.until_date.strftime(self.date_format)
-            url = f'{url}&publishedFrom={from_date}&publishedTo={until_date}'
+        from_date = self.from_date.strftime(self.date_format)
+        until_date = self.until_date.strftime(self.date_format)
+        url = f'{url}&publishedFrom={from_date}&publishedTo={until_date}'
 
-        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_page)
+        yield scrapy.Request(url, meta={'file_name': f'{from_date}-{until_date}-page-1.json'},
+                             callback=self.parse_page)
 
     @handle_http_error
     def parse(self, response):
