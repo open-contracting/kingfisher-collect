@@ -201,7 +201,7 @@ def test_spider_closed(status_code, levelname, message, tmpdir, caplog):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-@pytest.mark.parametrize('attribute', ['pluck', 'keep_collection_open'])
+@pytest.mark.parametrize('attribute', ['pluck', 'kingfisher_process_keep_collection_open'])
 def test_spider_closed_return(attribute, tmpdir):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
