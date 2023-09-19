@@ -36,6 +36,7 @@ class Kyrgyzstan(LinksSpider):
             from_date = self.from_date.strftime(self.date_format)
             # The API requires the timezone and seconds in the since parameter.
             url = f'{url}?since={from_date}.00%2B06:00'
+            self.formatter = staticmethod(parameters('offset', 'since'))
         else:
             from_date = '1970-01-01T00:00:00'
         yield scrapy.Request(url, meta={'file_name': f'{from_date}.json'})

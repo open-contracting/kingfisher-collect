@@ -27,10 +27,10 @@ class SouthAfricaNationalTreasuryAPI(LinksSpider):
     data_type = 'release_package'
 
     # LinksSpider
-    formatter = staticmethod(parameters('PageNumber', 'dateFrom', 'dateTo'))
+    formatter = staticmethod(parameters('PageNumber', 'dateFrom'))
 
     def start_requests(self):
 
         yield scrapy.Request('https://ocds-api.etenders.gov.za/api/OCDSReleases?PageNumber=1&PageSize=50&'
                              f'dateFrom={self.from_date}&dateTo={self.until_date}',
-                             meta={'file_name': f'{self.from_date}-{self.until_date}-start.json'})
+                             meta={'file_name': f'{self.from_date}.json'})

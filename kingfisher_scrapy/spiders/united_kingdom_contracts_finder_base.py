@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import scrapy
 
 from kingfisher_scrapy.base_spiders import LinksSpider
@@ -12,7 +14,6 @@ class UnitedKingdomContractsFinderBase(LinksSpider):
 
     # BaseSpider
     date_format = 'datetime'
-    date_required = True
     default_from_date = '2014-01-01T00:00:00'
     encoding = 'iso-8859-1'
     max_attempts = 5
@@ -28,12 +29,14 @@ class UnitedKingdomContractsFinderBase(LinksSpider):
     def start_requests(self):
         # https://www.contractsfinder.service.gov.uk/apidocumentation/Notices/1/GET-Published-Notice-OCDS-Search
         url = f'{self.url_prefix}Notices/OCDS/Search?limit=100'
-        from_date = self.from_date.strftime(self.date_format)
-        until_date = self.until_date.strftime(self.date_format)
-        url = f'{url}&publishedFrom={from_date}&publishedTo={until_date}'
+        if self.from_date and self.until_date:
+            from_date = self.from_date.strftime(self.date_format)
+            until_date = self.until_date.strftime(self.date_format)
+            url = f'{url}&publishedFrom={from_date}&publishedTo={until_date}'
+        else:
+            until_date = self.get_default_until_date(self).strftime(self.date_format)
 
-        yield scrapy.Request(url, meta={'file_name': f'{from_date}-{until_date}-page-1.json'},
-                             callback=self.parse_page)
+        yield scrapy.Request(url, meta={'file_name': f'{until_date}.json'})  # reverse chronological order
 
     @handle_http_error
     def parse(self, response):
