@@ -40,7 +40,7 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'https://datosabiertos.oncae.gob.hn/datosabiertos/{}'
-    formatter = staticmethod(components(-1))
+    formatter = staticmethod(components(-1))  # year
 
     # Local
     available_systems = ['HC1', 'CE', 'DDC']

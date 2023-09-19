@@ -17,9 +17,9 @@ class DatabaseStore:
     If the ``DATABASE_URL`` Scrapy setting and the ``crawl_time`` spider argument are set, the OCDS data is stored in a
     PostgreSQL database, incrementally.
 
-    This extension stores data in the "data" column of a table named after the spider, or ``table_name`` (if set).
-    When the spider is opened, if the table doesn't exist, it is created. The spider's ``from_date`` attribute is then
-    set, in order of precedence, to: the ``from_date`` spider argument (unless equal to the spider's
+    This extension stores data in the "data" column of a table named after the spider, or the ``table_name`` spider
+    argument (if set). When the spider is opened, if the table doesn't exist, it is created. The spider's ``from_date``
+    attribute is then set, in order of precedence, to: the ``from_date`` spider argument (unless equal to the spider's
     ``default_from_date`` class attribute); the maximum value of the ``date`` field of the stored data (if any); the
     spider's ``default_from_date`` class attribute (if set).
 
@@ -93,7 +93,7 @@ class DatabaseStore:
         if reason not in ('finished', 'sample'):
             return
 
-        if spider.compile_releases:
+        if spider.database_store_compile_releases:
             if 'release' in spider.data_type:
                 prefix = ''
             else:
@@ -108,7 +108,7 @@ class DatabaseStore:
         table_name = self.get_table_name(spider)
 
         data = self.yield_items_from_directory(crawl_directory, prefix)
-        if spider.compile_releases:
+        if spider.database_store_compile_releases:
             spider.logger.info('Creating generator of compiled releases')
             data = merge(data)
 
@@ -170,4 +170,4 @@ class DatabaseStore:
         self.cursor.execute(statement, variables)
 
     def get_table_name(self, spider):
-        return spider.table_name if spider.table_name else spider.name
+        return spider.database_store_table_name if spider.database_store_table_name else spider.name

@@ -24,7 +24,7 @@ class NigeriaEbonyiState(PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'http://ebonyieprocure.eb.gov.ng/media/ocds{}.json'
-    formatter = staticmethod(components(-1))
+    formatter = staticmethod(components(-1))  # filename containing year
 
     # SimpleSpider
     data_type = 'release_package'

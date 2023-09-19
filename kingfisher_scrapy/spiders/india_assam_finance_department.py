@@ -29,7 +29,7 @@ class IndiaAssamFinanceDepartment(PeriodicSpider):
 
     # PeriodicSpider
     date_format = 'year'
-    formatter = staticmethod(components(-1))
+    formatter = staticmethod(components(-1))  # filename containing year
     default_from_date = '2016'
     default_until_date = '2021'
 
@@ -38,4 +38,4 @@ class IndiaAssamFinanceDepartment(PeriodicSpider):
         Yields one or more URLs for the given date.
         """
         url = 'https://data.gov.in/files/ogdpv2dms/s3fs-public/ocds_mapped_procurement_data_fiscal_year'
-        yield f'{url}_{date}_{date+1}.csv'
+        yield f'{url}_{date}_{date + 1}.csv'

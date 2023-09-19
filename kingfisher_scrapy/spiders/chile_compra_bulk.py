@@ -35,7 +35,7 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'https://ocds.blob.core.windows.net/ocds/{0.year:d}{0.month:02d}.zip'
-    formatter = staticmethod(components(-1))
+    formatter = staticmethod(components(-1))  # filename containing year-month
 
     def build_file(self, file_name=None, url=None, data=None, **kwargs):
         json_data = json.loads(data)

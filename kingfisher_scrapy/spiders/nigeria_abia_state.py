@@ -26,4 +26,4 @@ class NigeriaAbiaState(PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'http://abiaeprocurement.ab.gov.ng/media/ocds{}.json'
-    formatter = staticmethod(components(-1))
+    formatter = staticmethod(components(-1))  # filename containing year

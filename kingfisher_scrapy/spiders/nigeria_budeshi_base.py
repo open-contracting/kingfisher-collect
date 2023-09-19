@@ -12,11 +12,7 @@ class NigeriaBudeshiBase(SimpleSpider):
     base_url = 'https://budeshi.ng/api/'
 
     def start_requests(self):
-        yield scrapy.Request(
-            f'{self.base_url}project_list',
-            meta={'file_name': 'project_list.json'},
-            callback=self.parse_list
-        )
+        yield scrapy.Request(f'{self.base_url}project_list', meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

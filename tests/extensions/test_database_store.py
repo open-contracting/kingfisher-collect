@@ -107,7 +107,7 @@ def test_spider_closed_warnings(caplog, tmpdir):
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00',
                                  settings={'DATABASE_URL': DATABASE_URL, 'FILES_STORE': tmpdir})
     spider.data_type = 'release_package'
-    spider.compile_releases = True
+    spider.database_store_compile_releases = True
 
     extension = DatabaseStore.from_crawler(spider.crawler)
 
@@ -164,8 +164,8 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
                                  settings={'DATABASE_URL': DATABASE_URL, 'FILES_STORE': tmpdir})
     spider.data_type = data_type
     spider.sample = sample
-    spider.compile_releases = compile_releases
-    spider.table_name = table_name
+    spider.database_store_compile_releases = compile_releases
+    spider.database_store_table_name = table_name
 
     expected_table = table_name if table_name else spider.name
 

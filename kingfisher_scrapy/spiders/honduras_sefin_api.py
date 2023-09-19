@@ -30,7 +30,7 @@ class HondurasSEFINAPI(PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'https://guancasco.sefin.gob.hn/EDCA_WEBAPI/api/listaOcids/{}'
-    formatter = staticmethod(components(-1))
+    formatter = staticmethod(components(-1))  # year
 
     @handle_http_error
     def parse(self, response):

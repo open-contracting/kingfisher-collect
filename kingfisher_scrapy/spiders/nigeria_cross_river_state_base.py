@@ -21,7 +21,7 @@ class NigeriaCrossRiverStateBase(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        formatter = join(components(-1), parameters('year', 'month'))
+        formatter = join(components(-1), parameters('year', 'month'))  # format
         for item in response.json():
             date = datetime(item['year'], item['month'], 1)
 

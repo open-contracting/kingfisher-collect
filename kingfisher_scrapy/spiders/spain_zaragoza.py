@@ -30,4 +30,4 @@ class SpainZaragoza(SimpleSpider):
     @handle_http_error
     def parse_list(self, response):
         for item in response.json():
-            yield self.build_request(f'{self.url_prefix}{item["ocid"]}', formatter=components(-1))
+            yield self.build_request(f'{self.url_prefix}{item["ocid"]}', formatter=components(-1))  # ocid

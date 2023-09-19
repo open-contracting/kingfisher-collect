@@ -26,4 +26,4 @@ class MoldovaOld(PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'http://opencontracting.date.gov.md/ocds-api/year/{}'
-    formatter = staticmethod(components(-1))
+    formatter = staticmethod(components(-1))  # year

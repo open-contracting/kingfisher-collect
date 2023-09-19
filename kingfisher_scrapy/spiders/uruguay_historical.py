@@ -34,7 +34,7 @@ class UruguayHistorical(CompressedFileSpider):
     def start_requests(self):
         # A CKAN API JSON response.
         url = 'https://catalogodatos.gub.uy/api/3/action/package_show?id=arce-datos-historicos-de-compras'
-        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
+        yield scrapy.Request(url, meta={'file_name': 'package_show.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
@@ -48,4 +48,4 @@ class UruguayHistorical(CompressedFileSpider):
                     url_date = datetime.datetime(url_year, 1, 1)
                     if not (self.from_date <= url_date <= self.until_date):
                         continue
-                yield self.build_request(url, formatter=components(-1))
+                yield self.build_request(url, formatter=components(-1))  # filename containing year

@@ -69,8 +69,8 @@ class BaseSpider(scrapy.Spider):
     available_steps = {'compile', 'check'}
 
     def __init__(self, sample=None, path=None, from_date=None, until_date=None, crawl_time=None, note=None,
-                 keep_collection_open=None, steps=None, compile_releases=None, package_pointer=None,
-                 release_pointer=None, truncate=None, table_name=None, *args, **kwargs):
+                 keep_collection_open=None, steps=None, compile_releases=None, table_name=None, package_pointer=None,
+                 release_pointer=None, truncate=None, *args, **kwargs):
         """
         :param sample: the number of items to download (``'true'`` means ``1``; ``'false'`` and ``None`` mean no limit)
         :param path: path components to append to the URLs yielded by the ``start_requests`` method (see :ref:`filter`)
@@ -104,27 +104,26 @@ class BaseSpider(scrapy.Spider):
         self.from_date = from_date
         self.until_date = until_date
 
-        # Related to incremental crawls.
+        # Related to incremental crawls (whether KingfisherProcessAPI2 data_version or DatabaseStore directory).
         self.crawl_time = crawl_time
 
-        # Related to Kingfisher Process.
-        self.note = note
-        self.keep_collection_open = keep_collection_open == 'true'
+        # KingfisherProcessAPI2 extension.
+        self.kingfisher_process_note = note
+        self.kingfisher_process_keep_collection_open = keep_collection_open == 'true'
         if steps is None:
-            self.steps = self.available_steps
+            self.kingfisher_process_steps = self.available_steps
         else:
-            self.steps = set(steps.split(',')) & self.available_steps
+            self.kingfisher_process_steps = set(steps.split(',')) & self.available_steps
 
-        # Related to the DatabaseStore extension.
-        self.compile_releases = compile_releases == 'true'
+        # DatabaseStore extension.
+        self.database_store_compile_releases = compile_releases == 'true'
+        self.database_store_table_name = table_name
 
-        # Related to the pluck command.
-        self.package_pointer = package_pointer
-        self.release_pointer = release_pointer
-        self.truncate = int(truncate) if truncate else None
-
-        # Related to the database store extension.
-        self.table_name = table_name
+        # Pluck pipeline.
+        self.pluck_package_pointer = package_pointer
+        self.pluck_release_pointer = release_pointer
+        self.pluck_truncate = int(truncate) if truncate else None
+        self.pluck = bool(package_pointer or release_pointer)
 
         self.query_string_parameters = {}
         for key, value in kwargs.items():
@@ -132,7 +131,6 @@ class BaseSpider(scrapy.Spider):
                 self.query_string_parameters[key[3:]] = value
 
         self.date_format = self.VALID_DATE_FORMATS[self.date_format]
-        self.pluck = bool(package_pointer or release_pointer)
 
         if hasattr(self, 'start_requests'):
             if path:
@@ -167,7 +165,7 @@ class BaseSpider(scrapy.Spider):
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
 
-        if spider.package_pointer and spider.release_pointer:
+        if spider.pluck_package_pointer and spider.pluck_release_pointer:
             raise SpiderArgumentError('You cannot specify both package_pointer and release_pointer spider arguments.')
 
         if spider.sample:

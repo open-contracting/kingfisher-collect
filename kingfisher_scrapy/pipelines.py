@@ -96,8 +96,8 @@ class Pluck:
             return item
 
         value = None
-        if spider.package_pointer:
-            pointer = spider.package_pointer
+        if spider.pluck_package_pointer:
+            pointer = spider.pluck_package_pointer
             if isinstance(item['data'], dict):
                 value = _resolve_pointer(item['data'], pointer)
             else:
@@ -119,7 +119,7 @@ class Pluck:
                         value = f'error: {pointer} not found within initial bytes'
                     else:
                         raise
-        else:  # spider.release_pointer
+        else:  # spider.pluck_release_pointer
             if isinstance(item['data'], dict):
                 data = item['data']
             else:
@@ -128,19 +128,19 @@ class Pluck:
             if item['data_type'].startswith('release'):
                 releases = data['releases']
                 if releases:
-                    value = max(_resolve_pointer(r, spider.release_pointer) for r in releases)
+                    value = max(_resolve_pointer(r, spider.pluck_release_pointer) for r in releases)
             elif item['data_type'].startswith('record'):
                 records = data['records']
                 if records:
                     # This assumes that the first record in the record package has the desired value.
                     record = records[0]
                     if 'releases' in record:
-                        value = max(_resolve_pointer(r, spider.release_pointer) for r in record['releases'])
+                        value = max(_resolve_pointer(r, spider.pluck_release_pointer) for r in record['releases'])
                     elif 'compiledRelease' in record:
-                        value = _resolve_pointer(record['compiledRelease'], spider.release_pointer)
+                        value = _resolve_pointer(record['compiledRelease'], spider.pluck_release_pointer)
 
-        if value and spider.truncate:
-            value = value[:spider.truncate]
+        if value and spider.pluck_truncate:
+            value = value[:spider.pluck_truncate]
 
         return PluckedItem({'value': value})
 

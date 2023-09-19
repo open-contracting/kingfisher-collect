@@ -12,10 +12,10 @@ browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,
 
 
 def pluck_filename(opts):
-    if opts.package_pointer:
-        parts = ['pluck', 'package', opts.package_pointer[1:].replace('/', '-')]
-    else:
-        parts = ['pluck', 'release', opts.release_pointer[1:].replace('/', '-')]
+    if opts.pluck_package_pointer:
+        parts = ['pluck', 'package', opts.pluck_package_pointer[1:].replace('/', '-')]
+    else:  # opts.pluck_release_pointer
+        parts = ['pluck', 'release', opts.pluck_release_pointer[1:].replace('/', '-')]
 
     return f"{'-'.join(parts)}.csv"
 
