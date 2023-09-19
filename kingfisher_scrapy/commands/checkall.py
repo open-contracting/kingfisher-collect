@@ -120,7 +120,7 @@ class Checker:
             expected_spider_arguments.update({'from_date', 'until_date'})
         elif self.cls.date_required:
             expected_spider_arguments.update({'from_date', 'until_date'})
-            # Ukraine requires a date, but only supports from_date
+            # Ukraine requires a date, but only supports from_date.
             if self.cls.__name__ == 'Ukraine':
                 expected_spider_arguments.remove('until_date')
 
