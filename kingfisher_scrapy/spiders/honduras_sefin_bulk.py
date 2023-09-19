@@ -28,4 +28,4 @@ class HondurasSEFINBulk(CompressedFileSpider, PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'https://piep.sefin.gob.hn/edca/ocid_sefin_{}.zip'
-    formatter = staticmethod(components(-1))
+    formatter = staticmethod(components(-1))  # filename containing year

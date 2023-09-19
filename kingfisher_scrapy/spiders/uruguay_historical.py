@@ -48,4 +48,4 @@ class UruguayHistorical(CompressedFileSpider):
                     url_date = datetime.datetime(url_year, 1, 1)
                     if not (self.from_date <= url_date <= self.until_date):
                         continue
-                yield self.build_request(url, formatter=components(-1))
+                yield self.build_request(url, formatter=components(-1))  # filename containing year

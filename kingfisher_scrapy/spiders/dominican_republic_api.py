@@ -28,7 +28,7 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
     data_type = 'release_package'
 
     # LinksSpider
-    formatter = staticmethod(components(-2))
+    formatter = staticmethod(components(-2))  # year
     next_pointer = '/pagination/next'
 
     # PeriodicSpider

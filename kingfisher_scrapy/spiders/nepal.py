@@ -27,4 +27,4 @@ class Nepal(PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'http://ppip.gov.np/bulk-download/{}'
-    formatter = staticmethod(components(-1))
+    formatter = staticmethod(components(-1))  # year
