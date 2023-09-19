@@ -83,12 +83,12 @@ class KingfisherProcessAPI2:
             'source_id': spider.name,
             'data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
             'sample': bool(spider.sample),
-            'note': spider.note,
+            'note': spider.kingfisher_process_note,
             'job': getattr(spider, '_job', None),
             'upgrade': spider.ocds_version == '1.0',
         }
 
-        for step in spider.steps:
+        for step in spider.kingfisher_process_steps:
             data[step] = True
 
         # This request must be synchronous, to have the collection ID for the item_scraped handler.
@@ -106,7 +106,7 @@ class KingfisherProcessAPI2:
         """
         Sends an API request to close the collection in Kingfisher Process.
         """
-        if spider.pluck or spider.keep_collection_open:
+        if spider.pluck or spider.kingfisher_process_keep_collection_open:
             return
 
         if not self.collection_id:
