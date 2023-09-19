@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import scrapy
 
 from kingfisher_scrapy.base_spiders import LinksSpider
