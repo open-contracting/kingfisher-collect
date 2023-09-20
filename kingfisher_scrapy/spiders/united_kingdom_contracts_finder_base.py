@@ -35,7 +35,8 @@ class UnitedKingdomContractsFinderBase(LinksSpider):
             url = f'{url}&publishedFrom={from_date}&publishedTo={until_date}'
         else:
             until_date = datetime.utcnow().strftime(self.date_format)
-        yield scrapy.Request(url, meta={'file_name': f'{until_date}.json'})  # reverse chronological order
+        yield scrapy.Request(url, meta={'file_name': f'{until_date}.json'},  # reverse chronological order
+                             callback=self.parse_page)
 
     @handle_http_error
     def parse(self, response):
