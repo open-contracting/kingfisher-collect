@@ -23,7 +23,7 @@ class PortugalBase(LinksSpider):
             from_date = self.from_date.strftime(self.date_format)
             until_date = self.until_date.strftime(self.date_format)
             url = f'{url}?contractStartDate={from_date}&contractEndDate={until_date}'
-            self.formatter = staticmethod(parameters('offset',  'contractStartDate', 'contractEndDate'))
+            self.formatter = staticmethod(parameters('offset',  'contractStartDate'))
         else:
             from_date = self.default_from_date
         yield scrapy.Request(url, meta={'file_name': f'{from_date}.json'})
