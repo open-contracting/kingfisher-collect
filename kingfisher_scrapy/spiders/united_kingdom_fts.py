@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import scrapy
 
 from kingfisher_scrapy.base_spiders import LinksSpider
@@ -37,7 +39,7 @@ class UnitedKingdomFTS(LinksSpider):
             until_date = self.until_date.strftime(self.date_format)
             url = f'{url}?updatedFrom={from_date}&updatedTo={until_date}'
         else:
-            until_date = self.get_default_until_date(self).strftime(self.date_format)
+            until_date = datetime.utcnow().strftime(self.date_format)
         yield scrapy.Request(url, meta={'file_name': f'{until_date}.json'},  # reverse chronological order
                              headers={'Accept': 'application/json'})
 
