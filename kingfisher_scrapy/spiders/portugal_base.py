@@ -20,10 +20,13 @@ class PortugalBase(LinksSpider):
     def start_requests(self):
         url = self.start_url
         if self.from_date and self.until_date:
-            url = f'{url}?contractStartDate={self.from_date.strftime(self.date_format)}' \
-                  f'&contractEndDate={self.until_date.strftime(self.date_format)}'
-
-        yield scrapy.Request(url, meta={'file_name': 'offset-1.json'})
+            from_date = self.from_date.strftime(self.date_format)
+            until_date = self.until_date.strftime(self.date_format)
+            url = f'{url}?contractStartDate={from_date}&contractEndDate={until_date}'
+            self.formatter = staticmethod(parameters('offset',  'contractStartDate'))
+        else:
+            from_date = self.default_from_date
+        yield scrapy.Request(url, meta={'file_name': f'{from_date}.json'})
 
     def is_http_retryable(self, response):
         return response.status != 404

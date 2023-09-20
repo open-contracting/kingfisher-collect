@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import scrapy
 
 from kingfisher_scrapy.base_spiders import LinksSpider
@@ -12,7 +14,6 @@ class UnitedKingdomContractsFinderBase(LinksSpider):
 
     # BaseSpider
     date_format = 'datetime'
-    date_required = True
     default_from_date = '2014-01-01T00:00:00'
     encoding = 'iso-8859-1'
     max_attempts = 5
@@ -32,8 +33,10 @@ class UnitedKingdomContractsFinderBase(LinksSpider):
             from_date = self.from_date.strftime(self.date_format)
             until_date = self.until_date.strftime(self.date_format)
             url = f'{url}&publishedFrom={from_date}&publishedTo={until_date}'
-
-        yield scrapy.Request(url, meta={'file_name': 'page-1.json'}, callback=self.parse_page)
+        else:
+            until_date = datetime.utcnow().strftime(self.date_format)
+        yield scrapy.Request(url, meta={'file_name': f'{until_date}.json'},  # reverse chronological order
+                             callback=self.parse_page)
 
     @handle_http_error
     def parse(self, response):
