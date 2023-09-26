@@ -15,20 +15,20 @@ RABBIT_URL = os.getenv('RABBIT_URL')
 SKIP_TEST_IF = not RABBIT_URL and ('CI' not in os.environ or 'CI_SKIP' in os.environ)
 
 items_scraped = [
-    ('build_file', 'file.json', {
+    ('build_file', '389', 'file.json', {
         'file_name': 'file.json',
         'url': 'https://example.com/remote.json',
         'data': b'{"key": "value"}',
         'data_type': 'release_package',
     }),
-    (FileItem, 'file-1.json', {
+    (FileItem, '3E7', 'file-1.json', {
         'number': 1,
         'file_name': 'file.json',
         'url': 'https://example.com/remote.json',
         'data': b'{"key": "value"}',
         'data_type': 'release_package',
     }),
-    (FileError, 'file.json', {
+    (FileError, '389', 'file.json', {
         'file_name': 'file.json',
         'url': 'https://example.com/remote.json',
         'errors': {'http_code': 500},
@@ -236,9 +236,9 @@ def test_spider_closed_missing_collection_id(tmpdir):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-@pytest.mark.parametrize('initializer,filename,kwargs', items_scraped)
+@pytest.mark.parametrize('initializer,directory,filename,kwargs', items_scraped)
 @pytest.mark.parametrize('raises,infix', [(False, 'sent'), (True, 'failed')])
-def test_item_scraped(initializer, filename, kwargs, raises, infix, tmpdir, caplog):
+def test_item_scraped(initializer, directory, filename, kwargs, raises, infix, tmpdir, caplog):
     spider = spider_with_files_store(tmpdir, settings={
         'RABBIT_URL': RABBIT_URL,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
@@ -279,7 +279,7 @@ def test_item_scraped(initializer, filename, kwargs, raises, infix, tmpdir, capl
     if initializer is FileError:
         expected['errors'] = '{"http_code": 500}'
     else:
-        expected['path'] = os.path.join('test', '20010203_040506', FilesStore._get_hashed_path(filename), filename)
+        expected['path'] = os.path.join('test', '20010203_040506', directory, filename)
 
     if raises:
         extension._publish_to_rabbit.assert_called_once()
