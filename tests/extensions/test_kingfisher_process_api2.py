@@ -279,7 +279,7 @@ def test_item_scraped(initializer, filename, kwargs, raises, infix, tmpdir, capl
     if initializer is FileError:
         expected['errors'] = '{"http_code": 500}'
     else:
-        expected['path'] = os.path.join('test', '20010203_040506', filename)
+        expected['path'] = os.path.join('test', '20010203_040506', FilesStore._get_hashed_path(filename), filename)
 
     if raises:
         extension._publish_to_rabbit.assert_called_once()
@@ -370,5 +370,6 @@ def test_item_scraped_path(tmpdir):
 
         extension._publish_to_rabbit.assert_called_once()
         extension._publish_to_rabbit.assert_called_with(
-            {'collection_id': 1, 'url': 'https://example.com/remote.json', 'path': 'test/20010203_040506/file.json'}
+            {'collection_id': 1, 'url': 'https://example.com/remote.json',
+             'path': 'test/20010203_040506/389/file.json'}
         )
