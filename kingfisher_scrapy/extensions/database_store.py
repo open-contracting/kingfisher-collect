@@ -139,10 +139,11 @@ class DatabaseStore:
         self.execute('CREATE TABLE IF NOT EXISTS {table} (data jsonb)', table=table)
 
     def yield_items_from_directory(self, crawl_directory, prefix=''):
-        for dir_entry in os.scandir(crawl_directory):
-            if dir_entry.name.endswith('.json'):
-                with open(dir_entry.path, 'rb') as f:
-                    yield from ijson.items(f, prefix)
+        for root, dirs, files in os.walk(crawl_directory):
+            for file_name in files:
+                if file_name.endswith('.json'):
+                    with open(os.path.join(root, file_name), 'rb') as f:
+                        yield from ijson.items(f, prefix)
 
     # Copied from kingfisher-summarize
     def format(self, statement, **kwargs):

@@ -1,5 +1,6 @@
 import math
 import os
+from zlib import adler32
 
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
@@ -78,10 +79,16 @@ class FilesStore:
             name, extension = util.get_file_name_and_extension(file_name)
             file_name = f"{name}-{item['number']}.{extension}"
 
-        path = os.path.join(self.relative_crawl_directory(spider), file_name)
+        path = os.path.join(self.relative_crawl_directory(spider), self._get_hashed_path(file_name), file_name)
         self._write_file(path, item['data'])
 
         item['path'] = path
+
+    @staticmethod
+    def _get_hashed_path(file_name):
+        hash_dir = adler32(file_name.encode())
+        hash_dir, dir_1 = divmod(hash_dir, 0x1000)
+        return "%03X" % dir_1
 
     def _write_file(self, path, data):
         path = os.path.join(self.directory, path)

@@ -108,8 +108,8 @@ def test_spider_closed_failed(tmpdir, caplog):
 
 
 @pytest.mark.parametrize('sample,path', [
-    (None, os.path.join('test', '20010203_040506', 'file.json')),
-    ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
+    (None, os.path.join('test', '20010203_040506', '389', 'file.json')),
+    ('true', os.path.join('test_sample', '20010203_040506', '389', 'file.json')),
 ])
 def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
     spider = spider_with_files_store(tmpdir, sample=sample)
@@ -143,7 +143,7 @@ def test_item_scraped_with_file_and_file_item(sample, directory, data, item, exp
     spider = spider_with_files_store(tmpdir, sample=sample)
     extension = FilesStore.from_crawler(spider.crawler)
 
-    path = os.path.join(directory, expected_file_name)
+    path = os.path.join(directory, FilesStore._get_hashed_path(expected_file_name), expected_file_name)
     original_file_name = item['file_name']
     item['data'] = data
     extension.item_scraped(item, spider)
