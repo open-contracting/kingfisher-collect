@@ -12,7 +12,7 @@ class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
       until_date
         Download only data until this month (YYYY-MM format). Defaults to the current month.
     API documentation
-        https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/datos-abiertos/api
+      https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/datos-abiertos/api
     Bulk download documentation
       https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/datos-abiertos
     """

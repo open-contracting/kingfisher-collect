@@ -12,7 +12,7 @@ class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
       until_date
         Download only data until this year (YYYY format). Defaults to the current year.
     API documentation
-        https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/datos-abiertos/api
+      https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/datos-abiertos/api
     Bulk download documentation
       https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/datos-abiertos
     """
