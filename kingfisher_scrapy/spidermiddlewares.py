@@ -76,8 +76,8 @@ class LineDelimitedMiddleware:
 class RootPathMiddleware:
     """
     If the spider's ``root_path`` class attribute is non-empty, replaces the item's ``data`` with the objects at that
-    prefix; if there are multiple releases, records or packages at that prefix, combines them into a single package,
-    and updates the item's ``data_type`` if needed. Otherwise, yields the original item.
+    prefix; if there are multiple releases, records or packages at that prefix, combines them into packages in groups
+    of 100, and updates the item's ``data_type`` if needed. Otherwise, yields the original item.
     """
 
     def process_spider_output(self, response, result, spider):
@@ -90,26 +90,13 @@ class RootPathMiddleware:
                 continue
 
             data = item['data']
-            is_multiple = 'item' in spider.root_path.split('.')
-            is_package = 'package' in item['data_type']
-
+            # Re-encode the data, to traverse the JSON using only ijson, instead of either ijson or Python.
             if isinstance(data, (dict, list)):
                 data = util.json_dumps(data).encode()
 
-            if 'release' in item['data_type']:
-                key = 'releases'
-                data_type = 'release_package'
-            else:
-                key = 'records'
-                data_type = 'record_package'
+            iterable = util.transcode(spider, ijson.items, data, spider.root_path)
 
-            package = {key: [], 'version': spider.ocds_version}
-
-            for number, obj in enumerate(util.transcode(spider, ijson.items, data, spider.root_path), 1):
-                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                if spider.sample and number > spider.sample:
-                    break
-
+            if 'item' in spider.root_path.split('.'):
                 # Two common issues in OCDS data are:
                 #
                 # - Multiple releases or records, without a package
@@ -118,25 +105,39 @@ class RootPathMiddleware:
                 # Yielding each release, record or package creates a lot of overhead in terms of the number of files
                 # written, the number of messages in RabbitMQ and the number of rows in PostgreSQL.
                 #
-                # We fix the packaging to reduce the overhead.
-                if is_multiple:
-                    # Assume that the `extensions` are the same for all packages.
-                    if number == 1 and is_package:
-                        package = obj.copy()
-                        package[key] = []
+                # We re-package in groups of 100 to reduce the overhead.
+
+                is_package = 'package' in item['data_type']
+
+                if 'release' in item['data_type']:
+                    key = 'releases'
+                    item['data_type'] = 'release_package'
+                else:
+                    key = 'records'
+                    item['data_type'] = 'record_package'
+
+                for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
+                    if sample_filled(spider, number):
+                        return
 
                     if is_package:
-                        package[key].extend(obj[key])
+                        # Assume that the `extensions` are the same for all packages.
+                        package = items[0]
+                        for other in items[1:]:
+                            package[key].extend(other[key])
                     else:
-                        package[key].append(obj)
-                else:
+                        # Omit the None values returned by `grouper(*, fillvalue=None)`.
+                        package = {'version': spider.ocds_version, key: list(filter(None, items))}
+
+                    yield spider.build_file_item(number, package, item)
+            else:
+                # Iterates at most once.
+                for number, obj in enumerate(iterable, 1):
+                    if sample_filled(spider, number):
+                        return
+
                     item['data'] = obj
                     yield item
-
-            if is_multiple:
-                item['data'] = package
-                item['data_type'] = data_type
-                yield item
 
 
 class AddPackageMiddleware:
