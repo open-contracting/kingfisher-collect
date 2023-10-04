@@ -15,6 +15,9 @@ class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
     """
     name = 'mexico_administracion_publica_federal_bulk'
     download_timeout = 99999  # > 2GB zip file
+    custom_settings = {
+        'DOWNLOAD_FAIL_ON_DATALOSS': False
+    }
 
     # BaseSpider
     root_path = 'item'
