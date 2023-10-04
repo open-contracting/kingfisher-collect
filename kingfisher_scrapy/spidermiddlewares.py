@@ -1,3 +1,4 @@
+import copy
 import json
 from zipfile import BadZipFile
 
@@ -5,6 +6,8 @@ import ijson
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileItem
+
+MAX_GROUP_SIZE = 100
 
 
 class ConcatenatedJSONMiddleware:
@@ -49,7 +52,6 @@ class LineDelimitedMiddleware:
                 continue
 
             data = item['data']
-
             # Data can be bytes or a file-like object.
             if isinstance(data, bytes):
                 data = data.splitlines(True)
@@ -182,10 +184,10 @@ class ResizePackageMiddleware:
             data = item['data']
 
             if spider.sample:
-                size = spider.sample
+                size = min(spider.sample, MAX_GROUP_SIZE)
             else:
-                size = 100
-            if spider.data_type == 'release_package':
+                size = MAX_GROUP_SIZE
+            if item['data_type'] == 'release_package':
                 key = 'releases'
             else:
                 key = 'records'
@@ -198,8 +200,9 @@ class ResizePackageMiddleware:
                 if spider.sample and number > spider.sample:
                     return
 
-                package[key] = filter(None, items)
-                data = util.json_dumps(package).encode()
+                data = copy.deepcopy(package)
+                # Omit the None values returned by `grouper(*, fillvalue=None)`.
+                data[key] = list(filter(None, items))
 
                 yield spider.build_file_item(number, data, item)
 

@@ -223,8 +223,7 @@ def test_resize_package_middleware(sample, len_items, len_releases, encoding, ch
         assert item['file_name'] == 'archive-test.json'
         assert item['url'] == 'http://example.com'
         assert item['number'] == i
-        assert isinstance(item['data'], bytes)
-        assert len(json.loads(item['data'])[key]) == len_releases
+        assert len(item['data'][key]) == len_releases
         assert item['data_type'] == data_type
 
 
