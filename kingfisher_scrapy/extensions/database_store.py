@@ -140,9 +140,9 @@ class DatabaseStore:
 
     def yield_items_from_directory(self, crawl_directory, prefix=''):
         for root, dirs, files in os.walk(crawl_directory):
-            for file_name in files:
-                if file_name.endswith('.json'):
-                    with open(os.path.join(root, file_name), 'rb') as f:
+            for name in files:
+                if name.endswith('.json'):
+                    with open(os.path.join(root, name), 'rb') as f:
                         yield from ijson.items(f, prefix)
 
     # Copied from kingfisher-summarize
