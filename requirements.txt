@@ -55,7 +55,7 @@ idna==2.8
     #   hyperlink
     #   requests
     #   tldextract
-ijson==3.1.1
+ijson==3.2.3
     # via
     #   -r requirements.in
     #   flattentool
