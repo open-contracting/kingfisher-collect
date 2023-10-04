@@ -10,6 +10,17 @@ from kingfisher_scrapy.items import File, FileItem
 MAX_GROUP_SIZE = 100
 
 
+# Avoid reading the rest of a large file, since the rest of the items will be dropped.
+def sample_filled(spider, number):
+    return spider.sample and number > spider.sample
+
+
+def group_size(spider):
+    if spider.sample:
+        return min(spider.sample, MAX_GROUP_SIZE)
+    return MAX_GROUP_SIZE
+
+
 class ConcatenatedJSONMiddleware:
     """
     If the spider's ``concatenated_json`` class attribute is ``True``, yields each object of the File as a FileItem.
@@ -29,8 +40,7 @@ class ConcatenatedJSONMiddleware:
 
             # ijson can read from bytes or a file-like object.
             for number, obj in enumerate(util.transcode(spider, ijson.items, data, '', multiple_values=True), 1):
-                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                if spider.sample and number > spider.sample:
+                if sample_filled(spider, number):
                     return
 
                 yield spider.build_file_item(number, obj, item)
@@ -57,8 +67,7 @@ class LineDelimitedMiddleware:
                 data = data.splitlines(True)
 
             for number, line in enumerate(data, 1):
-                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                if spider.sample and number > spider.sample:
+                if sample_filled(spider, number):
                     return
 
                 yield spider.build_file_item(number, line, item)
@@ -183,10 +192,6 @@ class ResizePackageMiddleware:
 
             data = item['data']
 
-            if spider.sample:
-                size = min(spider.sample, MAX_GROUP_SIZE)
-            else:
-                size = MAX_GROUP_SIZE
             if item['data_type'] == 'release_package':
                 key = 'releases'
             else:
@@ -194,10 +199,8 @@ class ResizePackageMiddleware:
 
             package = self._get_package_metadata(spider, data['package'], key, item['data_type'])
             iterable = util.transcode(spider, ijson.items, data['data'], f'{key}.item')
-            # We yield packages containing a maximum of 100 releases or records.
-            for number, items in enumerate(util.grouper(iterable, size), 1):
-                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                if spider.sample and number > spider.sample:
+            for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
+                if sample_filled(spider, number):
                     return
 
                 data = copy.deepcopy(package)
