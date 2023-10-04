@@ -197,17 +197,18 @@ class ResizePackageMiddleware:
             else:
                 key = 'records'
 
-            package = self._get_package_metadata(spider, data['package'], key, item['data_type'])
+            template = self._get_package_metadata(spider, data['package'], key, item['data_type'])
             iterable = util.transcode(spider, ijson.items, data['data'], f'{key}.item')
+
             for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
                 if sample_filled(spider, number):
                     return
 
-                data = copy.deepcopy(package)
+                package = copy.deepcopy(template)
                 # Omit the None values returned by `grouper(*, fillvalue=None)`.
-                data[key] = list(filter(None, items))
+                package[key] = list(filter(None, items))
 
-                yield spider.build_file_item(number, data, item)
+                yield spider.build_file_item(number, package, item)
 
     def _get_package_metadata(self, spider, data, skip_key, data_type):
         """
