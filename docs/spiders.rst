@@ -498,13 +498,6 @@ Greece
 Honduras
 ~~~~~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.honduras_cost.HondurasCoST
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl honduras_cost
-
 .. autoclass:: kingfisher_scrapy.spiders.honduras_iaip.HondurasIAIP
    :no-members:
 
@@ -635,16 +628,6 @@ Italy
 
    scrapy crawl italy_digiwhist
 
-Kenya
-~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.kenya_makueni.KenyaMakueni
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl kenya_makueni
-
 Kosovo
 ~~~~~~
 
@@ -654,16 +637,6 @@ Kosovo
 .. code-block:: bash
 
    scrapy crawl kosovo
-
-Kyrgyzstan
-~~~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.kyrgyzstan.Kyrgyzstan
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl kyrgyzstan
 
 Latvia
 ~~~~~~
@@ -1142,13 +1115,6 @@ Poland
 
 Portugal
 ~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.portugal_bulk.PortugalBulk
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl portugal_bulk
 
 .. autoclass:: kingfisher_scrapy.spiders.portugal_digiwhist.PortugalDigiwhist
    :no-members:
