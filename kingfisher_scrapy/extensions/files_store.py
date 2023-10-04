@@ -67,7 +67,8 @@ class FilesStore:
 
     def item_scraped(self, item, spider):
         """
-        If the item is a File or FileItem, writes its data to the filename in the crawl's directory.
+        If the item is a File or FileItem, writes its data to the filename in the crawl's directory, under a hashed
+        subdirectory using the filename.
 
         Returns a dict with the metadata.
         """
