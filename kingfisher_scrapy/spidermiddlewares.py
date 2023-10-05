@@ -1,3 +1,5 @@
+import copy
+import itertools
 import json
 from zipfile import BadZipFile
 
@@ -5,6 +7,19 @@ import ijson
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.items import File, FileItem
+
+MAX_GROUP_SIZE = 100
+
+
+# Avoid reading the rest of a large file, since the rest of the items will be dropped.
+def sample_filled(spider, number):
+    return spider.sample and number > spider.sample
+
+
+def group_size(spider):
+    if spider.sample:
+        return min(spider.sample, MAX_GROUP_SIZE)
+    return MAX_GROUP_SIZE
 
 
 class ConcatenatedJSONMiddleware:
@@ -26,8 +41,7 @@ class ConcatenatedJSONMiddleware:
 
             # ijson can read from bytes or a file-like object.
             for number, obj in enumerate(util.transcode(spider, ijson.items, data, '', multiple_values=True), 1):
-                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                if spider.sample and number > spider.sample:
+                if sample_filled(spider, number):
                     return
 
                 yield spider.build_file_item(number, obj, item)
@@ -49,14 +63,12 @@ class LineDelimitedMiddleware:
                 continue
 
             data = item['data']
-
             # Data can be bytes or a file-like object.
             if isinstance(data, bytes):
                 data = data.splitlines(True)
 
             for number, line in enumerate(data, 1):
-                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                if spider.sample and number > spider.sample:
+                if sample_filled(spider, number):
                     return
 
                 yield spider.build_file_item(number, line, item)
@@ -65,8 +77,8 @@ class LineDelimitedMiddleware:
 class RootPathMiddleware:
     """
     If the spider's ``root_path`` class attribute is non-empty, replaces the item's ``data`` with the objects at that
-    prefix; if there are multiple releases, records or packages at that prefix, combines them into a single package,
-    and updates the item's ``data_type`` if needed. Otherwise, yields the original item.
+    prefix; if there are multiple releases, records or packages at that prefix, combines them into packages in groups
+    of 100, and updates the item's ``data_type`` if needed. Otherwise, yields the original item.
     """
 
     def process_spider_output(self, response, result, spider):
@@ -79,26 +91,13 @@ class RootPathMiddleware:
                 continue
 
             data = item['data']
-            is_multiple = 'item' in spider.root_path.split('.')
-            is_package = 'package' in item['data_type']
-
+            # Re-encode the data, to traverse the JSON using only ijson, instead of either ijson or Python.
             if isinstance(data, (dict, list)):
                 data = util.json_dumps(data).encode()
 
-            if 'release' in item['data_type']:
-                key = 'releases'
-                data_type = 'release_package'
-            else:
-                key = 'records'
-                data_type = 'record_package'
+            iterable = util.transcode(spider, ijson.items, data, spider.root_path)
 
-            package = {key: [], 'version': spider.ocds_version}
-
-            for number, obj in enumerate(util.transcode(spider, ijson.items, data, spider.root_path), 1):
-                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                if spider.sample and number > spider.sample:
-                    break
-
+            if 'item' in spider.root_path.split('.'):
                 # Two common issues in OCDS data are:
                 #
                 # - Multiple releases or records, without a package
@@ -107,25 +106,50 @@ class RootPathMiddleware:
                 # Yielding each release, record or package creates a lot of overhead in terms of the number of files
                 # written, the number of messages in RabbitMQ and the number of rows in PostgreSQL.
                 #
-                # We fix the packaging to reduce the overhead.
-                if is_multiple:
-                    # Assume that the `extensions` are the same for all packages.
-                    if number == 1 and is_package:
-                        package = obj.copy()
-                        package[key] = []
+                # We re-package in groups of 100 to reduce the overhead.
 
-                    if is_package:
-                        package[key].extend(obj[key])
-                    else:
-                        package[key].append(obj)
+                is_package = 'package' in item['data_type']
+
+                if 'release' in item['data_type']:
+                    key = 'releases'
+                    item['data_type'] = 'release_package'
                 else:
+                    key = 'records'
+                    item['data_type'] = 'record_package'
+
+                try:
+                    head = next(iterable)
+                except StopIteration:
+                    # Always yield an item, even if the root_path points to an empty object.
+                    # https://github.com/open-contracting/kingfisher-collect/pull/944#issuecomment-1149156552
+                    item['data'] = {'version': spider.ocds_version, key: []}
+                    yield item
+                else:
+                    iterable = itertools.chain([head], iterable)
+                    for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
+                        if sample_filled(spider, number):
+                            return
+
+                        # Omit the None values returned by `grouper(*, fillvalue=None)`.
+                        items = filter(None, items)
+
+                        if is_package:
+                            # Assume that the `extensions` are the same for all packages.
+                            package = next(items)
+                            for other in items:
+                                package[key].extend(other[key])
+                        else:
+                            package = {'version': spider.ocds_version, key: list(items)}
+
+                        yield spider.build_file_item(number, package, item)
+            else:
+                # Iterates at most once.
+                for number, obj in enumerate(iterable, 1):
+                    if sample_filled(spider, number):
+                        return
+
                     item['data'] = obj
                     yield item
-
-            if is_multiple:
-                item['data'] = package
-                item['data_type'] = data_type
-                yield item
 
 
 class AddPackageMiddleware:
@@ -156,7 +180,7 @@ class AddPackageMiddleware:
             else:
                 key = 'records'
 
-            item['data'] = {key: [data], 'version': spider.ocds_version}
+            item['data'] = {'version': spider.ocds_version, key: [data]}
             item['data_type'] += '_package'
 
             yield item
@@ -181,27 +205,23 @@ class ResizePackageMiddleware:
 
             data = item['data']
 
-            if spider.sample:
-                size = spider.sample
-            else:
-                size = 100
-            if spider.data_type == 'release_package':
+            if item['data_type'] == 'release_package':
                 key = 'releases'
             else:
                 key = 'records'
 
-            package = self._get_package_metadata(spider, data['package'], key, item['data_type'])
+            template = self._get_package_metadata(spider, data['package'], key, item['data_type'])
             iterable = util.transcode(spider, ijson.items, data['data'], f'{key}.item')
-            # We yield packages containing a maximum of 100 releases or records.
-            for number, items in enumerate(util.grouper(iterable, size), 1):
-                # Avoid reading the rest of a large file, since the rest of the items will be dropped.
-                if spider.sample and number > spider.sample:
+
+            for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
+                if sample_filled(spider, number):
                     return
 
-                package[key] = filter(None, items)
-                data = util.json_dumps(package).encode()
+                package = copy.deepcopy(template)
+                # Omit the None values returned by `grouper(*, fillvalue=None)`.
+                package[key] = list(filter(None, items))
 
-                yield spider.build_file_item(number, data, item)
+                yield spider.build_file_item(number, package, item)
 
     def _get_package_metadata(self, spider, data, skip_key, data_type):
         """
