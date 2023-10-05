@@ -1,4 +1,5 @@
 import copy
+import itertools
 import json
 from zipfile import BadZipFile
 
@@ -116,20 +117,29 @@ class RootPathMiddleware:
                     key = 'records'
                     item['data_type'] = 'record_package'
 
-                for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
-                    if sample_filled(spider, number):
-                        return
+                try:
+                    head = next(iterable)
+                except StopIteration:
+                    # Always yield an item, even if the root_path points to an empty object.
+                    # https://github.com/open-contracting/kingfisher-collect/pull/944#issuecomment-1149156552
+                    item['data'] = {'version': spider.ocds_version, key: []}
+                    yield item
+                else:
+                    iterable = itertools.chain([head], iterable)
+                    for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
+                        if sample_filled(spider, number):
+                            return
 
-                    if is_package:
-                        # Assume that the `extensions` are the same for all packages.
-                        package = items[0]
-                        for other in items[1:]:
-                            package[key].extend(other[key])
-                    else:
-                        # Omit the None values returned by `grouper(*, fillvalue=None)`.
-                        package = {'version': spider.ocds_version, key: list(filter(None, items))}
+                        if is_package:
+                            # Assume that the `extensions` are the same for all packages.
+                            package = items[0]
+                            for other in filter(None, items[1:]):
+                                package[key].extend(other[key])
+                        else:
+                            # Omit the None values returned by `grouper(*, fillvalue=None)`.
+                            package = {'version': spider.ocds_version, key: list(filter(None, items))}
 
-                    yield spider.build_file_item(number, package, item)
+                        yield spider.build_file_item(number, package, item)
             else:
                 # Iterates at most once.
                 for number, obj in enumerate(iterable, 1):

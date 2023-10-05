@@ -52,10 +52,12 @@ def test_passthrough(middleware_class, item):
 
 
 @pytest.mark.parametrize('middleware_class,attribute,value,override', [
-    (ConcatenatedJSONMiddleware, 'concatenated_json', True, {'data': {'a': [{'b': 'c'}]}, 'number': 1}),
-    (LineDelimitedMiddleware, 'line_delimited', True, {'data': b'{"a":[{"b": "c"}]}', 'number': 1}),
+    (ConcatenatedJSONMiddleware, 'concatenated_json', True,
+     {'data': {'a': [{'b': 'c'}]}, 'number': 1}),
+    (LineDelimitedMiddleware, 'line_delimited', True,
+     {'data': b'{"a":[{"b": "c"}]}', 'number': 1}),
     (RootPathMiddleware, 'root_path', 'a.item',
-     {'data':  {'releases': [{'b': 'c'}], 'version': '1.1'}, 'data_type': 'release_package'}),
+     {'data':  {'releases': [{'b': 'c'}], 'version': '1.1'}, 'data_type': 'release_package', 'number': 1}),
     (AddPackageMiddleware, 'data_type', 'release',
      {'data': {'releases': [{'a': [{'b': 'c'}]}], 'version': '1.1'}, 'data_type': 'release_package'}),
     # ResizePackageMiddleware is only used with CompressedFileSpider and BigFileSpider.
@@ -178,6 +180,8 @@ def test_add_package_middleware(data_type, data, root_path):
         'file_name': 'test.json',
         'url': 'http://test.com',
     }
+    if 'item' in root_path:
+        expected['number'] = 1
 
     if 'package' in data_type:
         expected['data'] = {f"{data_type[:-8]}s": [{"ocid": "abc"}], "uri": "test"}
@@ -189,7 +193,7 @@ def test_add_package_middleware(data_type, data, root_path):
     assert item == expected
 
 
-@pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), (5, 5, 5)])
+@pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), (5, 5, 5), (200, 2, 100)])
 @pytest.mark.parametrize('encoding,character', [('utf-8', b'\xc3\x9a'), ('iso-8859-1', b'\xda')])
 @pytest.mark.parametrize('data_type, key', [('record_package', 'records'), ('release_package', 'releases')])
 def test_resize_package_middleware(sample, len_items, len_releases, encoding, character, data_type, key):
@@ -395,18 +399,52 @@ def test_retry_data_error_middleware(exception):
             list(generator)
 
 
-@pytest.mark.parametrize('root_path,data_type,sample,data,expected_data,expected_data_type', [
+@pytest.mark.parametrize('root_path,data_type,data,expected_data,expected_data_type', [
     # Empty root path.
-    ('', 'my_data_type', None,
+    ('', 'my_data_type',
      {'a': 'b'},
      {'a': 'b'}, 'my_data_type'),
-
     # Root path without "item".
-    ('x', 'my_data_type', None,
+    ('x', 'my_data_type',
      {'x': {'a': 'b'}},
      {'a': 'b'}, 'my_data_type'),
-
     # Root paths with "item" ...
+    # ... with an empty array, for data_type = "release".
+    ('item', 'release',
+     [],
+     {'releases': [], 'version': '1.1'}, 'release_package'),
+    # ... with an empty array, for data_type = "record_package".
+    ('item', 'record_package',
+     [],
+     {'records': [], 'version': '1.1'}, 'record_package'),
+])
+@pytest.mark.parametrize('klass', [File, FileItem])
+def test_root_path_middleware(root_path, data_type, data, expected_data, expected_data_type, klass):
+    spider = spider_with_crawler()
+    middleware = RootPathMiddleware()
+    spider.data_type = data_type
+    spider.root_path = root_path
+
+    item = klass({
+        'file_name': 'test.json',
+        'data': data,
+        'data_type': data_type,
+        'url': 'http://test.com',
+    })
+
+    generator = middleware.process_spider_output(None, [item], spider)
+    transformed_items = list(generator)
+
+    assert len(transformed_items) == 1
+    for transformed_item in transformed_items:
+        assert isinstance(transformed_item, klass)
+        assert transformed_item['file_name'] == 'test.json'
+        assert transformed_item['data'] == expected_data
+        assert transformed_item['data_type'] == expected_data_type
+        assert transformed_item['url'] == 'http://test.com'
+
+
+@pytest.mark.parametrize('root_path,data_type,sample,data,expected_data,expected_data_type', [
     # ... for data_type = "release".
     ('item', 'release', None,
      [{'a': 'b'}, {'c': 'd'}],
@@ -427,17 +465,9 @@ def test_retry_data_error_middleware(exception):
     ('item', 'release_package', None,
      [{'releases': [{'a': 'b'}, {'c': 'd'}], 'x': 'y'}, {'releases': [{'e': 'f'}, {'g': 'h'}]}],
      {'releases': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}, {'g': 'h'}], 'x': 'y'}, 'release_package'),
-    # ... with an empty object, for data_type = "release".
-    ('item', 'release', None,
-     [],
-     {'releases': [], 'version': '1.1'}, 'release_package'),
-    # ... with an empty object, for data_type = "record_package".
-    ('item', 'record_package', None,
-     [],
-     {'records': [], 'version': '1.1'}, 'record_package'),
 ])
 @pytest.mark.parametrize('klass', [File, FileItem])
-def test_root_path_middleware(root_path, data_type, sample, data, expected_data, expected_data_type, klass):
+def test_root_path_middleware_item(root_path, data_type, sample, data, expected_data, expected_data_type, klass):
     spider = spider_with_crawler()
     middleware = RootPathMiddleware()
     spider.data_type = data_type
@@ -456,6 +486,9 @@ def test_root_path_middleware(root_path, data_type, sample, data, expected_data,
 
     assert len(transformed_items) == 1
     for transformed_item in transformed_items:
-        assert isinstance(transformed_item, klass)
+        assert isinstance(transformed_item, FileItem)
+        assert transformed_item['number'] == 1
+        assert transformed_item['file_name'] == 'test.json'
         assert transformed_item['data'] == expected_data
         assert transformed_item['data_type'] == expected_data_type
+        assert transformed_item['url'] == 'http://test.com'
