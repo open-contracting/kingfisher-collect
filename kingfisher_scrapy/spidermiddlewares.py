@@ -130,14 +130,16 @@ class RootPathMiddleware:
                         if sample_filled(spider, number):
                             return
 
+                        # Omit the None values returned by `grouper(*, fillvalue=None)`.
+                        items = filter(None, items)
+
                         if is_package:
                             # Assume that the `extensions` are the same for all packages.
-                            package = items[0]
-                            for other in filter(None, items[1:]):
+                            package = next(items)
+                            for other in items:
                                 package[key].extend(other[key])
                         else:
-                            # Omit the None values returned by `grouper(*, fillvalue=None)`.
-                            package = {'version': spider.ocds_version, key: list(filter(None, items))}
+                            package = {'version': spider.ocds_version, key: list(items)}
 
                         yield spider.build_file_item(number, package, item)
             else:
@@ -178,7 +180,7 @@ class AddPackageMiddleware:
             else:
                 key = 'records'
 
-            item['data'] = {key: [data], 'version': spider.ocds_version}
+            item['data'] = {'version': spider.ocds_version, key: [data]}
             item['data_type'] += '_package'
 
             yield item
