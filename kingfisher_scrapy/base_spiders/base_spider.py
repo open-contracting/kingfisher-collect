@@ -1,5 +1,5 @@
 import codecs
-from datetime import datetime
+import datetime
 
 import scrapy
 
@@ -176,7 +176,7 @@ class BaseSpider(scrapy.Spider):
 
         if spider.crawl_time:
             try:
-                spider.crawl_time = datetime.strptime(spider.crawl_time, '%Y-%m-%dT%H:%M:%S')
+                spider.crawl_time = datetime.datetime.strptime(spider.crawl_time, '%Y-%m-%dT%H:%M:%S')
             except ValueError as e:
                 raise SpiderArgumentError(f'spider argument `crawl_time`: invalid date value: {e}')
 
@@ -185,7 +185,7 @@ class BaseSpider(scrapy.Spider):
                 spider.from_date = spider.default_from_date
             try:
                 if isinstance(spider.from_date, str):
-                    spider.from_date = datetime.strptime(spider.from_date, spider.date_format)
+                    spider.from_date = datetime.datetime.strptime(spider.from_date, spider.date_format)
             except ValueError as e:
                 raise SpiderArgumentError(f'spider argument `from_date`: invalid date value: {e}')
 
@@ -193,7 +193,7 @@ class BaseSpider(scrapy.Spider):
                 spider.until_date = cls.get_default_until_date(spider)
             try:
                 if isinstance(spider.until_date, str):
-                    spider.until_date = datetime.strptime(spider.until_date, spider.date_format)
+                    spider.until_date = datetime.datetime.strptime(spider.until_date, spider.date_format)
             except ValueError as e:
                 raise SpiderArgumentError(f'spider argument `until_date`: invalid date value: {e}')
 
@@ -339,4 +339,4 @@ class BaseSpider(scrapy.Spider):
         """
         if getattr(spider, 'default_until_date', None):
             return spider.default_until_date
-        return datetime.utcnow()
+        return datetime.datetime.now(tz=datetime.UTC)
