@@ -339,4 +339,4 @@ class BaseSpider(scrapy.Spider):
         """
         if getattr(spider, 'default_until_date', None):
             return spider.default_until_date
-        return datetime.datetime.now(tz=datetime.UTC)
+        return datetime.datetime.now(tz=datetime.timezone.utc)

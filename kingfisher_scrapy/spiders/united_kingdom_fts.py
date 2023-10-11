@@ -39,7 +39,7 @@ class UnitedKingdomFTS(LinksSpider):
             until_date = self.until_date.strftime(self.date_format)
             url = f'{url}?updatedFrom={from_date}&updatedTo={until_date}'
         else:
-            until_date = datetime.datetime.now(tz=datetime.UTC).strftime(self.date_format)
+            until_date = datetime.datetime.now(tz=datetime.timezone.utc).strftime(self.date_format)
         yield scrapy.Request(url, meta={'file_name': f'{until_date}.json'},  # reverse chronological order
                              headers={'Accept': 'application/json'})
 
