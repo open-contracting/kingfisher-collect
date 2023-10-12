@@ -1,5 +1,6 @@
 import math
 import os
+import zlib
 
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
@@ -66,7 +67,7 @@ class FilesStore:
 
     def item_scraped(self, item, spider):
         """
-        If the item is a File or FileItem, writes its data to the filename in the crawl's directory.
+        If the item is a File or FileItem, writes its data to the filename in a subdirectory of the crawl directory.
 
         Returns a dict with the metadata.
         """
@@ -78,10 +79,19 @@ class FilesStore:
             name, extension = util.get_file_name_and_extension(file_name)
             file_name = f"{name}-{item['number']}.{extension}"
 
-        path = os.path.join(self.relative_crawl_directory(spider), file_name)
+        path = os.path.join(self.relative_crawl_directory(spider), self._get_subdirectory(file_name), file_name)
         self._write_file(path, item['data'])
 
         item['path'] = path
+
+    # https://github.com/rails/rails/blob/05ed261/activesupport/lib/active_support/cache/file_store.rb#L150-L175
+    @staticmethod
+    def _get_subdirectory(file_name):
+        checksum = zlib.adler32(file_name.encode())
+        checksum, dir_1 = divmod(checksum, 0x1000)
+        # 0x1000 is 4096, which should be sufficient, without another level.
+        # dir_2 = checksum % 0x1000
+        return "%03X" % dir_1
 
     def _write_file(self, path, data):
         path = os.path.join(self.directory, path)

@@ -108,8 +108,8 @@ def test_spider_closed_failed(tmpdir, caplog):
 
 
 @pytest.mark.parametrize('sample,path', [
-    (None, os.path.join('test', '20010203_040506', 'file.json')),
-    ('true', os.path.join('test_sample', '20010203_040506', 'file.json')),
+    (None, os.path.join('test', '20010203_040506', '389', 'file.json')),
+    ('true', os.path.join('test_sample', '20010203_040506', '389', 'file.json')),
 ])
 def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
     spider = spider_with_files_store(tmpdir, sample=sample)
@@ -135,15 +135,15 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
     ('true', os.path.join('test_sample', '20010203_040506')),
 ])
 @pytest.mark.parametrize('data', [b'{"key": "value"}', {"key": "value"}])
-@pytest.mark.parametrize('item,expected_file_name', [
-    (File({'file_name': 'file.json'}), 'file.json'),
-    (FileItem({'number': 1, 'file_name': 'file.json'}), 'file-1.json')
+@pytest.mark.parametrize('item,subdirectory,expected_file_name', [
+    (File({'file_name': 'file.json'}), '389', 'file.json'),
+    (FileItem({'number': 1, 'file_name': 'file.json'}), '3E7', 'file-1.json')
 ])
-def test_item_scraped_with_file_and_file_item(sample, directory, data, item, expected_file_name, tmpdir):
+def test_item_scraped_with_file_and_file_item(sample, directory, data, item, subdirectory, expected_file_name, tmpdir):
     spider = spider_with_files_store(tmpdir, sample=sample)
     extension = FilesStore.from_crawler(spider.crawler)
 
-    path = os.path.join(directory, expected_file_name)
+    path = os.path.join(directory, subdirectory, expected_file_name)
     original_file_name = item['file_name']
     item['data'] = data
     extension.item_scraped(item, spider)

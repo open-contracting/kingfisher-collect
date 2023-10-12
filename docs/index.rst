@@ -30,10 +30,14 @@ By default, these files are written to a ``data`` directory (you can :ref:`chang
    └── data
        └── zambia
            └── 20200102_030405
-               ├── <...>.json
-               └── <...>
+               ├── C8E
+               │   ├── <...>.json
+               │   └── <...>
+               └── D1D
+                   ├── <...>.json
+                   └── <...>
 
-As you can see, the ``data`` directory contains a ``zambia`` spider directory (matching the spider's name), which in turn contains a ``20200102_030405`` crawl directory (matching the time at which you started the crawl – in this case, 2020-01-02 03:04:05). The crawl directory contains ``.json`` files – the OCDS data.
+As you can see, the ``data`` directory contains a ``zambia`` spider directory (matching the spider's name), which in turn contains a ``20200102_030405`` crawl directory (matching the time at which you started the crawl – in this case, 2020-01-02 03:04:05). Within the crawl directory,  ``.json`` files – the OCDS data – are split among subdirectories with opaque names, to not exceed filesystem limits.
 
 .. toctree::
    :caption: Contents
