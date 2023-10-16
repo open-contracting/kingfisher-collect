@@ -114,12 +114,14 @@ class DatabaseStore:
 
         filename = os.path.join(crawl_directory, 'data.csv')
         spider.logger.info('Writing the JSON data to the %s CSV file', filename)
+        count = 0
         with open(filename, 'w') as f:
             writer = csv.writer(f)
             for item in data:
                 writer.writerow([util.json_dumps(item, ensure_ascii=False).replace(r'\u0000', '')])
+                count += 1
 
-        spider.logger.info('Replacing the JSON data in the %s table', table_name)
+        spider.logger.info('Replacing the JSON data in the %s table (%s rows)', table_name, count)
         self.connection = psycopg2.connect(self.database_url)
         self.cursor = self.connection.cursor()
         try:
