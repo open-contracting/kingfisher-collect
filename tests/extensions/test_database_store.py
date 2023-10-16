@@ -141,7 +141,7 @@ def test_spider_closed_warnings(caplog, tmpdir):
         f'Reading the {tmpdir}/test/20210525_000000 crawl directory with the empty prefix',
         'Creating generator of compiled releases',
         f'Writing the JSON data to the {tmpdir}/test/20210525_000000/data.csv CSV file',
-        'Replacing the JSON data in the test table',
+        'Replacing the JSON data in the test table (3 rows)',
     ]
 
     assert [record.message for record in records] == [
@@ -208,7 +208,7 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
     expected_messages = [
         f'Reading the {tmpdir}/test{suffix}/20210525_000000 crawl directory with the {prefix} prefix',
         f'Writing the JSON data to the {tmpdir}/test{suffix}/20210525_000000/data.csv CSV file',
-        f'Replacing the JSON data in the {expected_table} table',
+        f'Replacing the JSON data in the {expected_table} table (1 rows)',
     ]
     if compile_releases:
         expected_messages.insert(1, 'Creating generator of compiled releases')
