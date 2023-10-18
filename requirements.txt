@@ -188,6 +188,7 @@ six==1.16.0
     #   parsel
     #   protego
     #   requests-file
+    #   url-normalize
     #   zodb
 tldextract==3.1.2
     # via scrapy
@@ -204,7 +205,7 @@ uberegg==0.1.1
     # via scrapyd-client
 url-normalize==1.4.3
     # via requests-cache
-urllib3==1.26.17
+urllib3==1.26.18
     # via
     #   ocdsextensionregistry
     #   requests
