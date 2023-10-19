@@ -9,6 +9,6 @@ Kingfisher Collect is a tool for downloading OCDS data and storing it on disk an
 (If you are viewing this on GitHub, open the `full documentation <https://kingfisher-collect.readthedocs.io/>`__ for additional details.)
 
 .. |Build Status| image:: https://github.com/open-contracting/kingfisher-collect/actions/workflows/ci.yml
-   :target: https://github.com/open-contracting//actions/workflows/ci.yml
+   :target: https://github.com/open-contracting/kingfisher-collect/actions/workflows/ci.yml
 .. |Coverage Status| image:: https://coveralls.io/repos/github/open-contracting/kingfisher-collect/badge.svg?branch=main
    :target: https://coveralls.io/github/open-contracting/kingfisher-collect?branch=main
