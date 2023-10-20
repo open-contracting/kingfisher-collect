@@ -23,7 +23,7 @@ class NigeriaEbonyiState(PeriodicSpider):
     default_from_date = '2018'
 
     # PeriodicSpider
-    pattern = 'http://ebonyieprocure.eb.gov.ng/media/ocds{}.json'
+    pattern = 'https://ebonyieprocure.eb.gov.ng/media/ocds{}.json'
     formatter = staticmethod(components(-1))  # filename containing year
 
     # SimpleSpider
