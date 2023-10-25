@@ -4,8 +4,15 @@ from unittest.mock import Mock
 import pytest
 import scrapy
 
-from kingfisher_scrapy.util import (components, date_range_by_interval, get_parameter_value, handle_http_error, join,
-                                    parameters, replace_parameters)
+from kingfisher_scrapy.util import (
+    components,
+    date_range_by_interval,
+    get_parameter_value,
+    handle_http_error,
+    join,
+    parameters,
+    replace_parameters,
+)
 from tests import spider_with_crawler
 
 
