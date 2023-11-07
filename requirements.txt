@@ -60,7 +60,7 @@ ijson==3.2.3
     #   -r requirements.in
     #   flattentool
     #   ocdskit
-incremental==21.3.0
+incremental==22.10.0
     # via twisted
 itemadapter==0.7.0
     # via
@@ -188,18 +188,17 @@ six==1.16.0
     #   parsel
     #   protego
     #   requests-file
-    #   url-normalize
     #   zodb
 tldextract==3.1.2
     # via scrapy
 transaction==3.1.0
     # via zodb
-twisted==22.4.0
+twisted==23.10.0
     # via
     #   -r requirements.in
     #   scrapy
     #   scrapyd
-typing-extensions==3.10.0.0
+typing-extensions==4.8.0
     # via twisted
 uberegg==0.1.1
     # via scrapyd-client
