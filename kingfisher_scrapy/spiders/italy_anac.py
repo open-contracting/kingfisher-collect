@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components, handle_http_error, json_dumps
 
 
 class ItalyANAC(SimpleSpider):
@@ -30,3 +30,14 @@ class ItalyANAC(SimpleSpider):
             for resource in result['resources']:
                 if resource['format'].upper() == 'JSON':
                     yield self.build_request(resource['url'], formatter=components(-2))
+
+    @handle_http_error
+    def parse(self, response):
+        data = response.json()
+        for release in data['releases']:
+            # There are some releases without an ocid which causes Kingfisher process to fail. We use the release
+            # id, which has the ocds-hu01ve-7608611-01 format, as a fallback.
+            if 'ocid' not in release:
+                release['ocid'] = '-'.join(release['id'].split('-')[:3])
+        response = response.replace(body=json_dumps(data))
+        yield from super().parse(response)

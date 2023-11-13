@@ -6,9 +6,15 @@ import pytest
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, SimpleSpider
 from kingfisher_scrapy.items import File, FileError, FileItem
-from kingfisher_scrapy.spidermiddlewares import (AddPackageMiddleware, ConcatenatedJSONMiddleware,
-                                                 LineDelimitedMiddleware, ReadDataMiddleware, ResizePackageMiddleware,
-                                                 RetryDataErrorMiddleware, RootPathMiddleware)
+from kingfisher_scrapy.spidermiddlewares import (
+    AddPackageMiddleware,
+    ConcatenatedJSONMiddleware,
+    LineDelimitedMiddleware,
+    ReadDataMiddleware,
+    ResizePackageMiddleware,
+    RetryDataErrorMiddleware,
+    RootPathMiddleware,
+)
 from tests import response_fixture, spider_with_crawler
 
 
