@@ -1,3 +1,5 @@
+import json
+
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
@@ -30,3 +32,14 @@ class ItalyANAC(SimpleSpider):
             for resource in result['resources']:
                 if resource['format'].upper() == 'JSON':
                     yield self.build_request(resource['url'], formatter=components(-2))
+
+    @handle_http_error
+    def parse(self, response):
+        data = response.json()
+        for release in data['releases']:
+            # Kingfisher Process merges only releases with ocids. Extract the ocid from the release id as a fallback.
+            # For example: ocds-hu01ve-7608611 from ocds-hu01ve-7608611-01.
+            if 'ocid' not in release:
+                release['ocid'] = '-'.join(release['id'].split('-')[:3])
+        response = response.replace(body=json.dumps(data))
+        yield from super().parse(response)
