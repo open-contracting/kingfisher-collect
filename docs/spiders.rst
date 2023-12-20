@@ -126,6 +126,16 @@ Available data sources by country
 
 .. Do not edit past this line. Instead, run: `scrapy updatedocs`
 
+Albania
+~~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.albania_public_procurement_commission.AlbaniaPublicProcurementCommission
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl albania_public_procurement_commission
+
 Argentina
 ~~~~~~~~~
 
