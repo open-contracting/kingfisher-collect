@@ -35,9 +35,11 @@ class AlbaniaPublicProcurementCommission(SimpleSpider):
         for year in util.date_range_by_year(self.from_date.year, self.until_date.year):
             payload = {
                 "extraConditions": [
-                               ["decision_date", ">=", f"1/1/{year}"],
-                               ["decision_date", "<=", f"1/1/{year+1}"]
-                           ]
+                    ["decision_date", ">=", f"1/1/{year}"],
+                    ["decision_date", "<=", f"1/1/{year + 1}"],
+                ]
             }
-            yield scrapy.Request(url, meta={'file_name': f'{year}.json'}, method='POST', body=json.dumps(payload),
-                                 headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
+            yield scrapy.Request(
+                url, meta={'file_name': f'{year}.json'}, method='POST', body=json.dumps(payload),
+                headers={'Accept': 'application/json', 'Content-Type': 'application/json'}
+            )
