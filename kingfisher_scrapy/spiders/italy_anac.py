@@ -10,6 +10,8 @@ class ItalyANAC(SimpleSpider):
     """
     Domain
       Autorità Nazionale Anticorruzione (ANAC)
+    Caveats
+      If the OCID is missing, the spider derives the ``ocid`` field from the ``id`` field.
     API documentation
       https://dati.anticorruzione.it/opendata/about
     Bulk download documentation
