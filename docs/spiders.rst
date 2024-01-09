@@ -789,13 +789,6 @@ Mexico
 
    scrapy crawl mexico_nuevo_leon_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_puebla_itaipue.MexicoPueblaITAIPUE
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_puebla_itaipue
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien_records.MexicoQuienEsQuienRecords
    :no-members:
 
@@ -933,13 +926,6 @@ Nigeria
 .. code-block:: bash
 
    scrapy crawl nigeria_ebonyi_state
-
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_edo_state.NigeriaEdoState
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_edo_state
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_ekiti_state.NigeriaEkitiState
    :no-members:
