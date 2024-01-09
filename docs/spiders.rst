@@ -146,6 +146,13 @@ Argentina
 
    scrapy crawl argentina_buenos_aires
 
+.. autoclass:: kingfisher_scrapy.spiders.argentina_mendoza_province_bulk.ArgentinaMendozaProvinceBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl argentina_mendoza_province_bulk
+
 .. autoclass:: kingfisher_scrapy.spiders.argentina_vialidad.ArgentinaVialidad
    :no-members:
 

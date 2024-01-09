@@ -8,7 +8,7 @@ class Germany(CompressedFileSpider, PeriodicSpider):
       The Procurement Office of the Federal Ministry of the Interior (BMI) - Bekanntmachungsservice OpenData API
     Spider arguments
       from_date
-        Download only data from this month onward (YYYY-MM format). Defaults to '2022-04'.
+        Download only data from this month onward (YYYY-MM format). Defaults to '2022-12'.
       until_date
         Download only data until this month (YYYY-MM format). Defaults to the current month.
     Swagger API documentation
