@@ -12,11 +12,16 @@ class SentryLogging:
        `Sentry documentation <https://docs.sentry.io/platforms/python/logging/>`__
     """
 
+    def __init__(self, sentry_dsn):
+        sentry_sdk.init(sentry_dsn)
+
     @classmethod
     def from_crawler(cls, crawler):
-        sentry_dsn = crawler.settings.get('SENTRY_DSN', None)
-        if sentry_dsn is None:
-            raise NotConfigured
-        extension = cls()
-        sentry_sdk.init(sentry_dsn)
+        sentry_dsn = crawler.settings['SENTRY_DSN']
+
+        if not sentry_dsn:
+            raise NotConfigured('SENTRY_DSN is not set.')
+
+        extension = cls(sentry_dsn)
+
         return extension

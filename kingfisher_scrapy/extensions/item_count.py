@@ -13,6 +13,7 @@ class ItemCount:
     def from_crawler(cls, crawler):
         extension = cls(crawler.stats)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
+
         return extension
 
     def item_scraped(self, item, spider):

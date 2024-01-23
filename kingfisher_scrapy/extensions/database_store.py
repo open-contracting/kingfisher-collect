@@ -55,7 +55,6 @@ class DatabaseStore:
             raise NotConfigured('FILES_STORE is not set.')
 
         extension = cls(database_url, directory)
-
         crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
         crawler.signals.connect(extension.spider_closed, signal=signals.spider_closed)
 
