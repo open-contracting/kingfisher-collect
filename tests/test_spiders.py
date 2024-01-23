@@ -3,8 +3,8 @@ from datetime import datetime
 import pytest
 from scrapy.crawler import Crawler, CrawlerRunner
 from scrapy.http import Response
-from scrapy.utils.reactor import install_reactor
 from scrapy.utils.project import get_project_settings
+from scrapy.utils.reactor import install_reactor
 
 from kingfisher_scrapy.exceptions import MissingEnvVarError
 from kingfisher_scrapy.items import FileError
