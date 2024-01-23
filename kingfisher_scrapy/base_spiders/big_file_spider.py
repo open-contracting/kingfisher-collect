@@ -37,7 +37,7 @@ class BigFileSpider(SimpleSpider):
 
         if spider.data_type not in ('release_package', 'record_package'):
             raise IncoherentConfigurationError(
-                f"data_type must be 'release_package' or 'record_package', not {spider.data_type!r}")
+                f"data_type must be 'release_package' or 'record_package', not {spider.data_type!r}.")
 
         return spider
 

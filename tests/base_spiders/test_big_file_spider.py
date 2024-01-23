@@ -12,7 +12,7 @@ from tests import response_fixture, spider_with_crawler
 def test_data_type_invalid(data_type):
     with pytest.raises(IncoherentConfigurationError) as e:
         spider_with_crawler(BigFileSpider, data_type=data_type)
-    assert str(e.value) == f"data_type must be 'release_package' or 'record_package', not {data_type!r}"
+    assert str(e.value) == f"data_type must be 'release_package' or 'record_package', not {data_type!r}."
 
 
 @pytest.mark.parametrize('data_type', ['release_package', 'record_package'])
