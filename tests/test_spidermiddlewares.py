@@ -19,13 +19,13 @@ from tests import response_fixture, spider_with_crawler
 
 
 # https://discuss.python.org/t/enhance-builtin-iterables-like-list-range-with-async-methods-like-aiter-anext/21352/11
-async def toaiter(iterable):
+async def _aiter(iterable):
     for i in iterable:
         yield i
 
 
 # https://stackoverflow.com/a/62585232/244258
-async def tolist(iterable):
+async def alist(iterable):
     return [i async for i in iterable]
 
 
@@ -62,7 +62,7 @@ async def test_passthrough(middleware_class, item):
 
     middleware = middleware_class()
 
-    generator = middleware.process_spider_output(None, toaiter([item]), spider)
+    generator = middleware.process_spider_output(None, _aiter([item]), spider)
     returned_item = await anext(generator)
 
     assert item == returned_item
@@ -104,8 +104,8 @@ async def test_bytes_or_file(middleware_class, attribute, value, override, tmpdi
             'url': 'http://test.com',
         })
 
-        generator = middleware.process_spider_output(None, toaiter([bytes_item, file_item]), spider)
-        transformed_items = await tolist(generator)
+        generator = middleware.process_spider_output(None, _aiter([bytes_item, file_item]), spider)
+        transformed_items = await alist(generator)
 
     expected = {
         'file_name': 'test.json',
@@ -149,8 +149,8 @@ async def test_encoding(middleware_class, attribute, value, override, tmpdir):
             'url': 'http://test.com',
         })
 
-        generator = middleware.process_spider_output(None, toaiter([bytes_item, file_item]), spider)
-        transformed_items = await tolist(generator)
+        generator = middleware.process_spider_output(None, _aiter([bytes_item, file_item]), spider)
+        transformed_items = await alist(generator)
 
     expected = {
         'file_name': 'test.json',
@@ -188,9 +188,9 @@ async def test_add_package_middleware(data_type, data, root_path):
         'url': 'http://test.com',
     })
 
-    generator = root_path_middleware.process_spider_output(None, toaiter([item]), spider)
+    generator = root_path_middleware.process_spider_output(None, _aiter([item]), spider)
     item = await anext(generator)
-    generator = add_package_middleware.process_spider_output(None, toaiter([item]), spider)
+    generator = add_package_middleware.process_spider_output(None, _aiter([item]), spider)
     item = await anext(generator)
 
     expected = {
@@ -234,8 +234,8 @@ async def test_resize_package_middleware(sample, len_items, len_releases, encodi
     generator = spider.parse(response)
     item = next(generator)
 
-    generator = middleware.process_spider_output(response, toaiter([item]), spider)
-    transformed_items = await tolist(generator)
+    generator = middleware.process_spider_output(response, _aiter([item]), spider)
+    transformed_items = await alist(generator)
 
     assert len(transformed_items) == len_items
     for i, item in enumerate(transformed_items, 1):
@@ -268,8 +268,8 @@ async def test_json_streaming_middleware(middleware_class, attribute, separator,
     generator = spider.parse(response)
     item = next(generator)
 
-    generator = middleware.process_spider_output(response, toaiter([item]), spider)
-    transformed_items = await tolist(generator)
+    generator = middleware.process_spider_output(response, _aiter([item]), spider)
+    transformed_items = await alist(generator)
 
     length = sample if sample else 20
 
@@ -309,11 +309,11 @@ async def test_json_streaming_middleware_with_root_path_middleware(middleware_cl
     response = response_fixture(body=''.join(content), meta={'file_name': 'test.json'})
     generator = spider.parse(response)
     item = next(generator)
-    generator = stream_middleware.process_spider_output(response, toaiter([item]), spider)
+    generator = stream_middleware.process_spider_output(response, _aiter([item]), spider)
     item = await anext(generator)
 
-    generator = root_path_middleware.process_spider_output(response, toaiter([item]), spider)
-    transformed_items = await tolist(generator)
+    generator = root_path_middleware.process_spider_output(response, _aiter([item]), spider)
+    transformed_items = await alist(generator)
 
     assert len(transformed_items) == 1
     for i, item in enumerate(transformed_items, 1):
@@ -350,8 +350,8 @@ async def test_json_streaming_middleware_with_compressed_file_spider(middleware_
     generator = spider.parse(response)
     item = next(generator)
 
-    generator = stream_middleware.process_spider_output(response, toaiter([item]), spider)
-    transformed_items = await tolist(generator)
+    generator = stream_middleware.process_spider_output(response, _aiter([item]), spider)
+    transformed_items = await alist(generator)
 
     length = sample if sample else 20
 
@@ -385,8 +385,8 @@ async def test_read_data_middleware():
     generator = spider.parse(response)
     item = next(generator)
 
-    generator = middleware.process_spider_output(response, toaiter([item]), spider)
-    transformed_items = await tolist(generator)
+    generator = middleware.process_spider_output(response, _aiter([item]), spider)
+    transformed_items = await alist(generator)
 
     assert len(transformed_items) == 1
     assert transformed_items[0]['data'] == b'{}'
@@ -449,8 +449,8 @@ async def test_root_path_middleware(root_path, data_type, data, expected_data, e
         'url': 'http://test.com',
     })
 
-    generator = middleware.process_spider_output(None, toaiter([item]), spider)
-    transformed_items = await tolist(generator)
+    generator = middleware.process_spider_output(None, _aiter([item]), spider)
+    transformed_items = await alist(generator)
 
     assert len(transformed_items) == 1
     for transformed_item in transformed_items:
@@ -498,8 +498,8 @@ async def test_root_path_middleware_item(root_path, data_type, sample, data, exp
         'url': 'http://test.com',
     })
 
-    generator = middleware.process_spider_output(None, toaiter([item]), spider)
-    transformed_items = await tolist(generator)
+    generator = middleware.process_spider_output(None, _aiter([item]), spider)
+    transformed_items = await alist(generator)
 
     assert len(transformed_items) == 1
     for transformed_item in transformed_items:
