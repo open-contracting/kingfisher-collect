@@ -8,6 +8,8 @@ from kingfisher_scrapy.downloadermiddlewares import DelayedRequestMiddleware
 from tests import spider_with_crawler
 
 
+# pytest-asyncio causes "Event loop is closed".
+@pytest.mark.order(1)
 @pytest.mark.parametrize('meta,expected', [
     (None, type(None)),
     ({'wait_time': 1}, Deferred),

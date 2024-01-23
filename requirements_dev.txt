@@ -306,7 +306,7 @@ scrapy==2.11.0
     #   -r requirements.txt
     #   scrapyd
     #   scrapyd-client
-scrapyd==1.4.2
+scrapyd==1.4.3
     # via -r requirements.txt
 scrapyd-client==1.2.3
     # via -r requirements.txt
