@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 from scrapy.crawler import Crawler, CrawlerRunner
 from scrapy.http import Response
+from scrapy.utils.reactor import install_reactor
 from scrapy.utils.project import get_project_settings
 
 from kingfisher_scrapy.exceptions import MissingEnvVarError
@@ -11,6 +12,8 @@ from kingfisher_scrapy.items import FileError
 # See scrapy.cmdline.execute
 settings = get_project_settings()
 runner = CrawlerRunner(settings)
+# https://docs.scrapy.org/en/latest/topics/asyncio.html#installing-the-asyncio-reactor
+install_reactor('twisted.internet.asyncioreactor.AsyncioSelectorReactor')
 
 
 # See scrapy.commands.list

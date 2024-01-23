@@ -163,3 +163,5 @@ HTTPPROXY_ENABLED = False
 if os.getenv('SCRAPY_PROJECT') is None:
     # https://docs.scrapy.org/en/latest/topics/commands.html#commands-module
     COMMANDS_MODULE = 'kingfisher_scrapy.commands'
+
+TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
