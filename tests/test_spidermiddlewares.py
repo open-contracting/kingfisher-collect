@@ -18,6 +18,18 @@ from kingfisher_scrapy.spidermiddlewares import (
 from tests import response_fixture, spider_with_crawler
 
 
+# https://discuss.python.org/t/enhance-builtin-iterables-like-list-range-with-async-methods-like-aiter-anext/21352/11
+async def toaiter(iterable):
+    for i in iterable:
+        yield i
+
+
+# https://stackoverflow.com/a/62585232/244258
+async def tolist(iterable):
+    return [i async for i in iterable]
+
+
+
 @pytest.mark.parametrize('middleware_class', [
     ConcatenatedJSONMiddleware,
     LineDelimitedMiddleware,
@@ -46,13 +58,13 @@ from tests import response_fixture, spider_with_crawler
         'errors': '',
     }),
 ])
-def test_passthrough(middleware_class, item):
+async def test_passthrough(middleware_class, item):
     spider = spider_with_crawler()
 
     middleware = middleware_class()
 
-    generator = middleware.process_spider_output(None, [item], spider)
-    returned_item = next(generator)
+    generator = middleware.process_spider_output(None, toaiter([item]), spider)
+    returned_item = await anext(generator)
 
     assert item == returned_item
 
@@ -69,7 +81,7 @@ def test_passthrough(middleware_class, item):
     # ResizePackageMiddleware is only used with CompressedFileSpider and BigFileSpider.
     # ReadDataMiddleware is only used with file-like objects.
 ])
-def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
+async def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
     spider = spider_with_crawler()
     setattr(spider, attribute, value)
 
@@ -93,8 +105,8 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
             'url': 'http://test.com',
         })
 
-        generator = middleware.process_spider_output(None, [bytes_item, file_item], spider)
-        transformed_items = list(generator)
+        generator = middleware.process_spider_output(None, toaiter([bytes_item, file_item]), spider)
+        transformed_items = await tolist(generator)
 
     expected = {
         'file_name': 'test.json',
@@ -113,7 +125,7 @@ def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
      {'data': {'name': 'ALCALDÍA MUNICIPIO DE TIBÚ'}, 'number': 1}),
     (RootPathMiddleware, 'root_path', 'name', {'data': 'ALCALDÍA MUNICIPIO DE TIBÚ'}),
 ])
-def test_encoding(middleware_class, attribute, value, override, tmpdir):
+async def test_encoding(middleware_class, attribute, value, override, tmpdir):
     spider = spider_with_crawler()
     setattr(spider, attribute, value)
     spider.encoding = 'iso-8859-1'
@@ -138,8 +150,8 @@ def test_encoding(middleware_class, attribute, value, override, tmpdir):
             'url': 'http://test.com',
         })
 
-        generator = middleware.process_spider_output(None, [bytes_item, file_item], spider)
-        transformed_items = list(generator)
+        generator = middleware.process_spider_output(None, toaiter([bytes_item, file_item]), spider)
+        transformed_items = await tolist(generator)
 
     expected = {
         'file_name': 'test.json',
@@ -163,7 +175,7 @@ def test_encoding(middleware_class, attribute, value, override, tmpdir):
     ('release_package', b'[{"releases":[{"ocid": "abc"}], "uri": "test"}]', 'item'),
     ('record_package', b'[{"records":[{"ocid": "abc"}], "uri": "test"}]', 'item'),
 ])
-def test_add_package_middleware(data_type, data, root_path):
+async def test_add_package_middleware(data_type, data, root_path):
     spider = spider_with_crawler()
     spider.root_path = root_path
 
@@ -177,10 +189,10 @@ def test_add_package_middleware(data_type, data, root_path):
         'url': 'http://test.com',
     })
 
-    generator = root_path_middleware.process_spider_output(None, [item], spider)
-    item = next(generator)
-    generator = add_package_middleware.process_spider_output(None, [item], spider)
-    item = next(generator)
+    generator = root_path_middleware.process_spider_output(None, toaiter([item]), spider)
+    item = await anext(generator)
+    generator = add_package_middleware.process_spider_output(None, toaiter([item]), spider)
+    item = await anext(generator)
 
     expected = {
         'file_name': 'test.json',
@@ -202,7 +214,7 @@ def test_add_package_middleware(data_type, data, root_path):
 @pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), (5, 5, 5), (200, 2, 100)])
 @pytest.mark.parametrize('encoding,character', [('utf-8', b'\xc3\x9a'), ('iso-8859-1', b'\xda')])
 @pytest.mark.parametrize('data_type, key', [('record_package', 'records'), ('release_package', 'releases')])
-def test_resize_package_middleware(sample, len_items, len_releases, encoding, character, data_type, key):
+async def test_resize_package_middleware(sample, len_items, len_releases, encoding, character, data_type, key):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = data_type
     spider.resize_package = True
@@ -223,8 +235,8 @@ def test_resize_package_middleware(sample, len_items, len_releases, encoding, ch
     generator = spider.parse(response)
     item = next(generator)
 
-    generator = middleware.process_spider_output(response, [item], spider)
-    transformed_items = list(generator)
+    generator = middleware.process_spider_output(response, toaiter([item]), spider)
+    transformed_items = await tolist(generator)
 
     assert len(transformed_items) == len_items
     for i, item in enumerate(transformed_items, 1):
@@ -242,7 +254,7 @@ def test_resize_package_middleware(sample, len_items, len_releases, encoding, ch
     (LineDelimitedMiddleware, 'line_delimited', '\n'),
 ])
 @pytest.mark.parametrize('sample', [None, 5])
-def test_json_streaming_middleware(middleware_class, attribute, separator, sample):
+async def test_json_streaming_middleware(middleware_class, attribute, separator, sample):
     spider = spider_with_crawler(spider_class=SimpleSpider, sample=sample)
     spider.data_type = 'release_package'
     setattr(spider, attribute, True)
@@ -257,8 +269,8 @@ def test_json_streaming_middleware(middleware_class, attribute, separator, sampl
     generator = spider.parse(response)
     item = next(generator)
 
-    generator = middleware.process_spider_output(response, [item], spider)
-    transformed_items = list(generator)
+    generator = middleware.process_spider_output(response, toaiter([item]), spider)
+    transformed_items = await tolist(generator)
 
     length = sample if sample else 20
 
@@ -282,7 +294,7 @@ def test_json_streaming_middleware(middleware_class, attribute, separator, sampl
     (ConcatenatedJSONMiddleware, 'concatenated_json', True),
     (LineDelimitedMiddleware, 'line_delimited', True),
 ])
-def test_json_streaming_middleware_with_root_path_middleware(middleware_class, attribute, value):
+async def test_json_streaming_middleware_with_root_path_middleware(middleware_class, attribute, value):
     spider = spider_with_crawler(spider_class=SimpleSpider)
     spider.data_type = 'release_package'
     setattr(spider, attribute, value)
@@ -298,11 +310,11 @@ def test_json_streaming_middleware_with_root_path_middleware(middleware_class, a
     response = response_fixture(body=''.join(content), meta={'file_name': 'test.json'})
     generator = spider.parse(response)
     item = next(generator)
-    generator = stream_middleware.process_spider_output(response, [item], spider)
-    item = next(generator)
+    generator = stream_middleware.process_spider_output(response, toaiter([item]), spider)
+    item = await anext(generator)
 
-    generator = root_path_middleware.process_spider_output(response, [item], spider)
-    transformed_items = list(generator)
+    generator = root_path_middleware.process_spider_output(response, toaiter([item]), spider)
+    transformed_items = await tolist(generator)
 
     assert len(transformed_items) == 1
     for i, item in enumerate(transformed_items, 1):
@@ -320,7 +332,7 @@ def test_json_streaming_middleware_with_root_path_middleware(middleware_class, a
     (LineDelimitedMiddleware, 'line_delimited', True),
 ])
 @pytest.mark.parametrize('sample', [None, 5])
-def test_json_streaming_middleware_with_compressed_file_spider(middleware_class, attribute, value, sample):
+async def test_json_streaming_middleware_with_compressed_file_spider(middleware_class, attribute, value, sample):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     setattr(spider, attribute, value)
@@ -339,8 +351,8 @@ def test_json_streaming_middleware_with_compressed_file_spider(middleware_class,
     generator = spider.parse(response)
     item = next(generator)
 
-    generator = stream_middleware.process_spider_output(response, [item], spider)
-    transformed_items = list(generator)
+    generator = stream_middleware.process_spider_output(response, toaiter([item]), spider)
+    transformed_items = await tolist(generator)
 
     length = sample if sample else 20
 
@@ -360,7 +372,7 @@ def test_json_streaming_middleware_with_compressed_file_spider(middleware_class,
         }
 
 
-def test_read_data_middleware():
+async def test_read_data_middleware():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = 'release_package'
 
@@ -374,8 +386,8 @@ def test_read_data_middleware():
     generator = spider.parse(response)
     item = next(generator)
 
-    generator = middleware.process_spider_output(response, [item], spider)
-    transformed_items = list(generator)
+    generator = middleware.process_spider_output(response, toaiter([item]), spider)
+    transformed_items = await tolist(generator)
 
     assert len(transformed_items) == 1
     assert transformed_items[0]['data'] == b'{}'
@@ -425,7 +437,7 @@ def test_retry_data_error_middleware(exception):
      {'records': [], 'version': '1.1'}, 'record_package'),
 ])
 @pytest.mark.parametrize('klass', [File, FileItem])
-def test_root_path_middleware(root_path, data_type, data, expected_data, expected_data_type, klass):
+async def test_root_path_middleware(root_path, data_type, data, expected_data, expected_data_type, klass):
     spider = spider_with_crawler()
     middleware = RootPathMiddleware()
     spider.data_type = data_type
@@ -438,8 +450,8 @@ def test_root_path_middleware(root_path, data_type, data, expected_data, expecte
         'url': 'http://test.com',
     })
 
-    generator = middleware.process_spider_output(None, [item], spider)
-    transformed_items = list(generator)
+    generator = middleware.process_spider_output(None, toaiter([item]), spider)
+    transformed_items = await tolist(generator)
 
     assert len(transformed_items) == 1
     for transformed_item in transformed_items:
@@ -473,7 +485,7 @@ def test_root_path_middleware(root_path, data_type, data, expected_data, expecte
      {'releases': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}, {'g': 'h'}], 'x': 'y'}, 'release_package'),
 ])
 @pytest.mark.parametrize('klass', [File, FileItem])
-def test_root_path_middleware_item(root_path, data_type, sample, data, expected_data, expected_data_type, klass):
+async def test_root_path_middleware_item(root_path, data_type, sample, data, expected_data, expected_data_type, klass):
     spider = spider_with_crawler()
     middleware = RootPathMiddleware()
     spider.data_type = data_type
@@ -487,8 +499,8 @@ def test_root_path_middleware_item(root_path, data_type, sample, data, expected_
         'url': 'http://test.com',
     })
 
-    generator = middleware.process_spider_output(None, [item], spider)
-    transformed_items = list(generator)
+    generator = middleware.process_spider_output(None, toaiter([item]), spider)
+    transformed_items = await tolist(generator)
 
     assert len(transformed_items) == 1
     for transformed_item in transformed_items:

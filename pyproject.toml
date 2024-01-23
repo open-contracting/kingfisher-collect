@@ -1,5 +1,6 @@
 [tool.pytest.ini_options]
 addopts = '--doctest-modules'
+asyncio_mode = 'auto'
 
 [tool.coverage.run]
 omit = ['*/kingfisher_scrapy/spiders/*']
