@@ -48,7 +48,7 @@ class ParaguayAuthMiddleware:
         return cls(crawler.spider)
 
     def process_request(self, request, spider):
-        if 'auth' in request.meta and request.meta['auth'] is False:
+        if request.meta.get('auth') is False:
             return
         if spider.access_token_request_failed:
             spider.crawler.engine.close_spider(spider, 'access_token_request_failed')
@@ -90,7 +90,7 @@ class OpenOppsAuthMiddleware:
 
     @staticmethod
     def process_request(request, spider):
-        if 'token_request' in request.meta and request.meta['token_request']:
+        if request.meta.get('token_request'):
             return
         request.headers['Authorization'] = spider.access_token
 

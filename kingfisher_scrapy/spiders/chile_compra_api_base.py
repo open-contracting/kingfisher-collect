@@ -92,7 +92,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         #   "status": 500,
         #   "detail": "error"
         # }
-        if 'status' in data and data['status'] != 200:
+        if data.get('status') != 200:
             data['http_code'] = data['status']
             return self.build_file_error_from_response(response, errors=data)
 

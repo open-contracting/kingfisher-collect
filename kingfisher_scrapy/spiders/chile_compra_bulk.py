@@ -44,7 +44,7 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
         #   "status": 500,
         #   "detail": "error"
         # }
-        if 'status' in json_data and json_data['status'] != 200:
+        if json_data.get('status') != 200:
             json_data['http_code'] = json_data['status']
             return FileError({
                 'file_name': file_name,

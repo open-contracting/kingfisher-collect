@@ -57,7 +57,7 @@ class Moldova(SimpleSpider):
         #               "maxBodyLength": -1}, "code": "EHOSTUNREACH"
         #            }
 
-        if 'name' in data and data['name'] == 'Error':
+        if data.get('name') == 'Error':
             data['http_code'] = response.status
             yield self.build_file_error_from_response(response, errors=data)
             return
