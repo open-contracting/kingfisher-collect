@@ -9,7 +9,7 @@ from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import FilesStore, KingfisherProcessAPI2
 from kingfisher_scrapy.items import FileError, FileItem, PluckedItem
-from tests import TEST_API_URL, ExpectedError, spider_with_crawler, spider_with_files_store
+from tests import ExpectedError, spider_with_crawler, spider_with_files_store
 
 RABBIT_URL = os.getenv('RABBIT_URL')
 SKIP_TEST_IF = not RABBIT_URL and ('CI' not in os.environ or 'CI_SKIP' in os.environ)
@@ -60,10 +60,10 @@ class Response:
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 def test_from_crawler():
     spider = spider_with_crawler(settings={
+        # KINGFISHER_API2_URL is set in tests/__init__.py
         'RABBIT_URL': RABBIT_URL,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
         'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
-        'KINGFISHER_API2_URL': TEST_API_URL,
     })
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -79,10 +79,10 @@ def test_from_crawler():
 
 def test_from_crawler_missing_arguments():
     spider = spider_with_crawler(settings={
+        'KINGFISHER_API2_URL': None,
         'RABBIT_URL': RABBIT_URL,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
         'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
-        'KINGFISHER_API2_URL': None,
     })
 
     with pytest.raises(NotConfigured) as excinfo:
@@ -93,10 +93,10 @@ def test_from_crawler_missing_arguments():
 
 def test_from_crawler_with_database_url():
     spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00', settings={
+        # KINGFISHER_API2_URL is set in tests/__init__.py
         'RABBIT_URL': RABBIT_URL,
         'RABBIT_EXCHANGE_NAME': 'kingfisher_process_test',
         'RABBIT_ROUTING_KEY': 'kingfisher_process_test_api',
-        'KINGFISHER_API2_URL': TEST_API_URL,
         'DATABASE_URL': 'test',
     })
 
