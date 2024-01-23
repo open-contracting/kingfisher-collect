@@ -19,4 +19,6 @@ jobs:
       - run: pip install --src $GITHUB_WORKSPACE/../src -r requirements_dev.txt
       - env:
           CI_SKIP: true
-        run: pytest -W error -rs --cov kingfisher_scrapy tests
+        run: |
+          pytest -W error kingfisher_scrapy
+          pytest -W error -rs --cov kingfisher_scrapy tests
