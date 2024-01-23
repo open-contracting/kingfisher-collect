@@ -29,7 +29,6 @@ async def tolist(iterable):
     return [i async for i in iterable]
 
 
-
 @pytest.mark.parametrize('middleware_class', [
     ConcatenatedJSONMiddleware,
     LineDelimitedMiddleware,
