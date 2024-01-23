@@ -28,7 +28,7 @@ class UgandaReleases(PeriodicSpider):
         # because the list is generated in the browser.
         # To get all the files, we follow the pattern download?fy={0}-{1}&code=1, iterating the 'code' value until it
         # returns HTTP 500 error FileNotFoundException. Therefore, we retry all codes in RETRY_HTTP_CODES except 500.
-        'RETRY_HTTP_CODES': filter(lambda status: status != 500, RETRY_HTTP_CODES),
+        'RETRY_HTTP_CODES': [status for status in RETRY_HTTP_CODES if status != 500],
     }
     # BaseSpider
     date_format = 'year'

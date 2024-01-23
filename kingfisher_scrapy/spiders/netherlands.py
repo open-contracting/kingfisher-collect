@@ -39,11 +39,12 @@ class Netherlands(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        for url in filter(lambda link: link.endswith('.json'), response.xpath('//article/div/ul/li/a/@href').getall()):
-            if self.from_date and self.until_date:
-                # URL looks like https://www.tenderned.nl/cms/sites/default/files/2023-04/2017.json
-                year = int(url.rsplit('/', 1)[1].replace('.json', ''))
-                url_date = datetime.datetime(year, 1, 1)
-                if not (self.from_date <= url_date <= self.until_date):
-                    continue
-            yield self.build_request(url, formatter=components(-1))
+        for url in response.xpath('//article/div/ul/li/a/@href').getall():
+            if url.endswith('.json'):
+                if self.from_date and self.until_date:
+                    # URL looks like https://www.tenderned.nl/cms/sites/default/files/2023-04/2017.json
+                    year = int(url.rsplit('/', 1)[1].replace('.json', ''))
+                    url_date = datetime.datetime(year, 1, 1)
+                    if not (self.from_date <= url_date <= self.until_date):
+                        continue
+                yield self.build_request(url, formatter=components(-1))
