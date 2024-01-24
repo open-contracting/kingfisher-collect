@@ -20,6 +20,9 @@ class Client(Async):
     def exchange_ready(self):
         self.ready = True
 
+    def reset(self):
+        super().reset()
+        self.ready = False
 
 class KingfisherProcessAPI2:
     """
