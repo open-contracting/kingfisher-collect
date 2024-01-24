@@ -8,7 +8,6 @@ from scrapy.utils.test import get_crawler
 from kingfisher_scrapy.base_spiders import BaseSpider
 
 SETTINGS = {
-    'KINGFISHER_API2_URL': os.getenv('TEST_API_URL', 'http://httpbin.org/anything/'),
     'TWISTED_REACTOR': 'twisted.internet.asyncioreactor.AsyncioSelectorReactor',
 }
 

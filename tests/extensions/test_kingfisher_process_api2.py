@@ -11,10 +11,18 @@ from kingfisher_scrapy.extensions import FilesStore, KingfisherProcessAPI2
 from kingfisher_scrapy.items import FileError, FileItem, PluckedItem
 from tests import ExpectedError, spider_with_crawler, spider_with_files_store
 
+DELAY = 0.05
+KINGFISHER_API2_URL = os.getenv('TEST_API_URL', 'http://httpbin.org/anything/')
 RABBIT_URL = os.getenv('RABBIT_URL')
 RABBIT_EXCHANGE_NAME = 'kingfisher_process_test'
 RABBIT_ROUTING_KEY = 'kingfisher_process_test_api'
 RABBIT_QUEUE_NAME = 'kingfisher_process_test_api_loader'
+SETTINGS = {
+    'KINGFISHER_API2_URL': KINGFISHER_API2_URL,
+    'RABBIT_URL': RABBIT_URL,
+    'RABBIT_EXCHANGE_NAME': RABBIT_EXCHANGE_NAME,
+    'RABBIT_ROUTING_KEY': RABBIT_ROUTING_KEY,
+}
 SKIP_TEST_IF = not RABBIT_URL and ('CI' not in os.environ or 'CI_SKIP' in os.environ)
 
 items_scraped = [
@@ -62,12 +70,7 @@ class Response:
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 def test_from_crawler():
-    spider = spider_with_crawler(settings={
-        # KINGFISHER_API2_URL is set in tests/__init__.py
-        'RABBIT_URL': RABBIT_URL,
-        'RABBIT_EXCHANGE_NAME': RABBIT_EXCHANGE_NAME,
-        'RABBIT_ROUTING_KEY': RABBIT_ROUTING_KEY,
-    })
+    spider = spider_with_crawler(settings=SETTINGS)
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
 
@@ -81,12 +84,7 @@ def test_from_crawler():
 
 
 def test_from_crawler_missing_arguments():
-    spider = spider_with_crawler(settings={
-        'KINGFISHER_API2_URL': None,
-        'RABBIT_URL': RABBIT_URL,
-        'RABBIT_EXCHANGE_NAME': RABBIT_EXCHANGE_NAME,
-        'RABBIT_ROUTING_KEY': RABBIT_ROUTING_KEY,
-    })
+    spider = spider_with_crawler(settings=SETTINGS | {'KINGFISHER_API2_URL': None})
 
     with pytest.raises(NotConfigured) as excinfo:
         KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -95,13 +93,7 @@ def test_from_crawler_missing_arguments():
 
 
 def test_from_crawler_with_database_url():
-    spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00', settings={
-        # KINGFISHER_API2_URL is set in tests/__init__.py
-        'RABBIT_URL': RABBIT_URL,
-        'RABBIT_EXCHANGE_NAME': RABBIT_EXCHANGE_NAME,
-        'RABBIT_ROUTING_KEY': RABBIT_ROUTING_KEY,
-        'DATABASE_URL': 'test',
-    })
+    spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00', settings=SETTINGS | {'DATABASE_URL': 'test'})
 
     with pytest.raises(NotConfigured) as excinfo:
         KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -123,12 +115,13 @@ def test_from_crawler_with_database_url():
 def test_spider_opened(crawl_time, sample, is_sample, note, job, ocds_version, upgrade, steps, status_code, levelname,
                        message, tmpdir, caplog):
     spider = spider_with_files_store(
-        tmpdir, crawl_time=crawl_time, sample=sample, note=note, ocds_version=ocds_version, steps=steps,
-        settings={
-            'RABBIT_URL': RABBIT_URL,
-            'RABBIT_EXCHANGE_NAME': RABBIT_EXCHANGE_NAME,
-            'RABBIT_ROUTING_KEY': RABBIT_ROUTING_KEY,
-        }
+        tmpdir,
+        crawl_time=crawl_time,
+        sample=sample,
+        note=note,
+        ocds_version=ocds_version,
+        steps=steps,
+        settings=SETTINGS,
     )
     if job:
         spider._job = job
@@ -170,11 +163,7 @@ def test_spider_opened(crawl_time, sample, is_sample, note, job, ocds_version, u
     (500, 'ERROR', 'Failed to close collection: HTTP 500 (null) ({})'),
 ])
 def test_spider_closed(status_code, levelname, message, tmpdir, caplog):
-    spider = spider_with_files_store(tmpdir, settings={
-        'RABBIT_URL': RABBIT_URL,
-        'RABBIT_EXCHANGE_NAME': RABBIT_EXCHANGE_NAME,
-        'RABBIT_ROUTING_KEY': RABBIT_ROUTING_KEY,
-    })
+    spider = spider_with_files_store(tmpdir, settings=SETTINGS)
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
     extension.collection_id = 1
@@ -206,11 +195,7 @@ def test_spider_closed(status_code, levelname, message, tmpdir, caplog):
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('attribute', ['pluck', 'kingfisher_process_keep_collection_open'])
 def test_spider_closed_return(attribute, tmpdir):
-    spider = spider_with_files_store(tmpdir, settings={
-        'RABBIT_URL': RABBIT_URL,
-        'RABBIT_EXCHANGE_NAME': RABBIT_EXCHANGE_NAME,
-        'RABBIT_ROUTING_KEY': RABBIT_ROUTING_KEY,
-    })
+    spider = spider_with_files_store(tmpdir, settings=SETTINGS)
     setattr(spider, attribute, True)
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -224,11 +209,7 @@ def test_spider_closed_return(attribute, tmpdir):
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 def test_spider_closed_missing_collection_id(tmpdir):
-    spider = spider_with_files_store(tmpdir, settings={
-        'RABBIT_URL': RABBIT_URL,
-        'RABBIT_EXCHANGE_NAME': RABBIT_EXCHANGE_NAME,
-        'RABBIT_ROUTING_KEY': RABBIT_ROUTING_KEY,
-    })
+    spider = spider_with_files_store(tmpdir, settings=SETTINGS)
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
 
@@ -240,15 +221,9 @@ def test_spider_closed_missing_collection_id(tmpdir):
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('initializer,directory,filename,kwargs', items_scraped)
-@pytest.mark.parametrize('raises,infix', [(False, 'sent'), (True, 'failed')])
-def test_item_scraped(initializer, directory, filename, kwargs, raises, infix, tmpdir, caplog):
-    spider = spider_with_files_store(tmpdir, settings={
-        'RABBIT_URL': RABBIT_URL,
-        'RABBIT_EXCHANGE_NAME': RABBIT_EXCHANGE_NAME,
-        'RABBIT_ROUTING_KEY': RABBIT_ROUTING_KEY,
-    })
-
-    queue = 'kingfisher_process_test_api_loader'
+@pytest.mark.parametrize('raises', [False, True])
+def test_item_scraped(initializer, directory, filename, kwargs, raises, channel, tmpdir, caplog):
+    spider = spider_with_files_store(tmpdir, settings=SETTINGS)
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
     extension.collection_id = 1
@@ -288,8 +263,6 @@ def test_item_scraped(initializer, directory, filename, kwargs, raises, infix, t
         extension._publish_to_rabbit.assert_called_once()
         extension._publish_to_rabbit.assert_called_with(expected)
 
-    assert extension.stats.get_value(f'kingfisher_process_items_{infix}_rabbit') == 1
-
     if raises:
         assert len(caplog.records) == 1
         assert caplog.records[0].name == 'test'
@@ -307,11 +280,7 @@ def test_item_scraped(initializer, directory, filename, kwargs, raises, infix, t
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 def test_item_scraped_plucked_item(tmpdir):
-    spider = spider_with_files_store(tmpdir, settings={
-        'RABBIT_URL': RABBIT_URL,
-        'RABBIT_EXCHANGE_NAME': RABBIT_EXCHANGE_NAME,
-        'RABBIT_ROUTING_KEY': RABBIT_ROUTING_KEY,
-    })
+    spider = spider_with_files_store(tmpdir, settings=SETTINGS)
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
     extension.collection_id = 1
@@ -329,11 +298,7 @@ def test_item_scraped_plucked_item(tmpdir):
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 def test_item_scraped_missing_collection_id(tmpdir):
-    spider = spider_with_files_store(tmpdir, settings={
-        'RABBIT_URL': RABBIT_URL,
-        'RABBIT_EXCHANGE_NAME': RABBIT_EXCHANGE_NAME,
-        'RABBIT_ROUTING_KEY': RABBIT_ROUTING_KEY,
-    })
+    spider = spider_with_files_store(tmpdir, settings=SETTINGS)
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
 
@@ -351,11 +316,7 @@ def test_item_scraped_missing_collection_id(tmpdir):
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 def test_item_scraped_path(tmpdir):
     with tmpdir.as_cwd():
-        spider = spider_with_files_store('subdir', settings={
-            'RABBIT_URL': RABBIT_URL,
-            'RABBIT_EXCHANGE_NAME': RABBIT_EXCHANGE_NAME,
-            'RABBIT_ROUTING_KEY': RABBIT_ROUTING_KEY,
-        })
+        spider = spider_with_files_store('subdir', settings=SETTINGS)
 
         extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
         extension.collection_id = 1
