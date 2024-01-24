@@ -32,15 +32,5 @@ def spider_with_crawler(spider_class=BaseSpider, *, settings={}, **kwargs):
     crawler = get_crawler(spider_class, SETTINGS | settings)
     start_time = datetime(2001, 2, 3, 4, 5, 6)
     crawler.stats.set_value('start_time', start_time)
-
     spider = crawler.spidercls.from_crawler(crawler, name='test', **kwargs)
-
-    return spider
-
-
-def spider_with_files_store(files_store, settings={}, **kwargs):
-    settings = SETTINGS | {'FILES_STORE': files_store} | settings
-
-    spider = spider_with_crawler(settings=settings, **kwargs)
-
     return spider

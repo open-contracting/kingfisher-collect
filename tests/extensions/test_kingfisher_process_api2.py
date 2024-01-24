@@ -9,7 +9,7 @@ from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import FilesStore, KingfisherProcessAPI2
 from kingfisher_scrapy.items import FileError, FileItem, PluckedItem
-from tests import ExpectedError, spider_with_crawler, spider_with_files_store
+from tests import ExpectedError, spider_with_crawler
 
 DELAY = 0.05
 KINGFISHER_API2_URL = os.getenv('TEST_API_URL', 'http://httpbin.org/anything/')
@@ -93,7 +93,7 @@ def test_from_crawler_missing_arguments():
 
 
 def test_from_crawler_with_database_url():
-    spider = spider_with_crawler(crawl_time='2021-05-25T00:00:00', settings=SETTINGS | {'DATABASE_URL': 'test'})
+    spider = spider_with_crawler(settings=SETTINGS | {'DATABASE_URL': 'test'}, crawl_time='2021-05-25T00:00:00')
 
     with pytest.raises(NotConfigured) as excinfo:
         KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -114,14 +114,13 @@ def test_from_crawler_with_database_url():
 ])
 def test_spider_opened(crawl_time, sample, is_sample, note, job, ocds_version, upgrade, steps, status_code, levelname,
                        message, tmpdir, caplog):
-    spider = spider_with_files_store(
-        tmpdir,
+    spider = spider_with_crawler(
+        settings=SETTINGS | {'FILES_STORE': tmpdir},
         crawl_time=crawl_time,
         sample=sample,
         note=note,
         ocds_version=ocds_version,
         steps=steps,
-        settings=SETTINGS,
     )
     if job:
         spider._job = job
@@ -163,7 +162,7 @@ def test_spider_opened(crawl_time, sample, is_sample, note, job, ocds_version, u
     (500, 'ERROR', 'Failed to close collection: HTTP 500 (null) ({})'),
 ])
 def test_spider_closed(status_code, levelname, message, tmpdir, caplog):
-    spider = spider_with_files_store(tmpdir, settings=SETTINGS)
+    spider = spider_with_crawler(settings=SETTINGS | {'FILES_STORE': tmpdir})
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
     extension.collection_id = 1
@@ -195,7 +194,7 @@ def test_spider_closed(status_code, levelname, message, tmpdir, caplog):
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('attribute', ['pluck', 'kingfisher_process_keep_collection_open'])
 def test_spider_closed_return(attribute, tmpdir):
-    spider = spider_with_files_store(tmpdir, settings=SETTINGS)
+    spider = spider_with_crawler(settings=SETTINGS | {'FILES_STORE': tmpdir})
     setattr(spider, attribute, True)
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
@@ -209,7 +208,7 @@ def test_spider_closed_return(attribute, tmpdir):
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 def test_spider_closed_missing_collection_id(tmpdir):
-    spider = spider_with_files_store(tmpdir, settings=SETTINGS)
+    spider = spider_with_crawler(settings=SETTINGS | {'FILES_STORE': tmpdir})
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
 
@@ -223,7 +222,7 @@ def test_spider_closed_missing_collection_id(tmpdir):
 @pytest.mark.parametrize('initializer,directory,filename,kwargs', items_scraped)
 @pytest.mark.parametrize('raises', [False, True])
 def test_item_scraped(initializer, directory, filename, kwargs, raises, channel, tmpdir, caplog):
-    spider = spider_with_files_store(tmpdir, settings=SETTINGS)
+    spider = spider_with_crawler(settings=SETTINGS | {'FILES_STORE': tmpdir})
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
     extension.collection_id = 1
@@ -279,15 +278,13 @@ def test_item_scraped(initializer, directory, filename, kwargs, raises, channel,
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-def test_item_scraped_plucked_item(tmpdir):
-    spider = spider_with_files_store(tmpdir, settings=SETTINGS)
+def test_item_scraped_return(tmpdir):
+    spider = spider_with_crawler(settings=SETTINGS | {'FILES_STORE': tmpdir})
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
     extension.collection_id = 1
 
-    item = PluckedItem({
-        'value': '123',
-    })
+    item = PluckedItem({'value': '123'})
 
     extension._publish_to_rabbit = MagicMock(return_value=Response())
 
@@ -298,7 +295,7 @@ def test_item_scraped_plucked_item(tmpdir):
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 def test_item_scraped_missing_collection_id(tmpdir):
-    spider = spider_with_files_store(tmpdir, settings=SETTINGS)
+    spider = spider_with_crawler(settings=SETTINGS | {'FILES_STORE': tmpdir})
 
     extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
 
@@ -316,7 +313,7 @@ def test_item_scraped_missing_collection_id(tmpdir):
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 def test_item_scraped_path(tmpdir):
     with tmpdir.as_cwd():
-        spider = spider_with_files_store('subdir', settings=SETTINGS)
+        spider = spider_with_crawler(settings=SETTINGS | {'FILES_STORE': 'subdir'})
 
         extension = KingfisherProcessAPI2.from_crawler(spider.crawler)
         extension.collection_id = 1

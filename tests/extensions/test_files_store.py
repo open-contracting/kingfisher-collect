@@ -8,7 +8,7 @@ from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import FilesStore
 from kingfisher_scrapy.items import File, FileItem
-from tests import response_fixture, spider_with_crawler, spider_with_files_store
+from tests import response_fixture, spider_with_crawler
 
 
 @pytest.fixture
@@ -27,7 +27,7 @@ def test_from_crawler_missing_arguments():
 
 @pytest.mark.parametrize('job', [None, '7df53218f37a11eb80dd0c9d92c523cb'])
 def test_spider_opened(job, tmpdir):
-    spider = spider_with_files_store(tmpdir)
+    spider = spider_with_crawler(settings={'FILES_STORE': tmpdir})
     if job:
         spider._job = job
 
@@ -44,7 +44,7 @@ def test_spider_opened(job, tmpdir):
 
 
 def test_spider_closed_odd_length(caplog, change_to_tmpdir):
-    spider = spider_with_files_store('1')
+    spider = spider_with_crawler(settings={'FILES_STORE': '1'})
     extension = FilesStore.from_crawler(spider.crawler)
 
     item = spider.build_file_from_response(response_fixture(), file_name='file.json', data_type='release_package')
@@ -63,7 +63,7 @@ def test_spider_closed_odd_length(caplog, change_to_tmpdir):
 
 
 def test_spider_closed_even_length(caplog, change_to_tmpdir):
-    spider = spider_with_files_store('22')
+    spider = spider_with_crawler(settings={'FILES_STORE': '22'})
     extension = FilesStore.from_crawler(spider.crawler)
 
     item = spider.build_file_from_response(response_fixture(), file_name='file.json', data_type='release_package')
@@ -82,7 +82,7 @@ def test_spider_closed_even_length(caplog, change_to_tmpdir):
 
 
 def test_spider_closed_no_data(tmpdir, caplog):
-    spider = spider_with_files_store(tmpdir)
+    spider = spider_with_crawler(settings={'FILES_STORE': tmpdir})
     extension = FilesStore.from_crawler(spider.crawler)
 
     with caplog.at_level(logging.INFO):
@@ -98,7 +98,7 @@ def test_spider_closed_no_data(tmpdir, caplog):
 
 
 def test_spider_closed_failed(tmpdir, caplog):
-    spider = spider_with_files_store(tmpdir)
+    spider = spider_with_crawler(settings={'FILES_STORE': tmpdir})
     extension = FilesStore.from_crawler(spider.crawler)
 
     with caplog.at_level(logging.INFO):
@@ -112,7 +112,7 @@ def test_spider_closed_failed(tmpdir, caplog):
     ('true', os.path.join('test_sample', '20010203_040506', '389', 'file.json')),
 ])
 def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
-    spider = spider_with_files_store(tmpdir, sample=sample)
+    spider = spider_with_crawler(settings={'FILES_STORE': tmpdir}, sample=sample)
     extension = FilesStore.from_crawler(spider.crawler)
 
     response = Mock()
@@ -140,7 +140,7 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
     (FileItem({'number': 1, 'file_name': 'file.json'}), '3E7', 'file-1.json')
 ])
 def test_item_scraped_with_file_and_file_item(sample, directory, data, item, subdirectory, expected_file_name, tmpdir):
-    spider = spider_with_files_store(tmpdir, sample=sample)
+    spider = spider_with_crawler(settings={'FILES_STORE': tmpdir}, sample=sample)
     extension = FilesStore.from_crawler(spider.crawler)
 
     path = os.path.join(directory, subdirectory, expected_file_name)
