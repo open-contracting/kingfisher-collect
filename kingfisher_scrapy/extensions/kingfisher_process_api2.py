@@ -24,6 +24,7 @@ class Client(Async):
         super().reset()
         self.ready = False
 
+
 class KingfisherProcessAPI2:
     """
     If the ``KINGFISHER_API2_URL`` environment variable or configuration setting is set,
