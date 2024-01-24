@@ -5,8 +5,10 @@ flake8
 isort
 openpyxl
 pip-tools
+pika
 psycopg2-binary
 pytest
 pytest-asyncio
 pytest-cov
 pytest-order
+pytest-twisted

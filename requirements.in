@@ -4,7 +4,6 @@ jsonpointer
 jsonschema
 ocdskit[perf]
 ocdsmerge
-pika
 psycopg2
 rarfile
 referencing
@@ -15,3 +14,4 @@ scrapyd
 scrapyd-client
 sentry-sdk
 twisted
+yapw[perf]
