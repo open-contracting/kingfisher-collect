@@ -20,3 +20,4 @@ jobs:
       - env:
           CI_SKIP: true
         run: pytest -W error -rs --cov kingfisher_scrapy
+      - run: python test_delayed_request_middleware.py

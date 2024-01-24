@@ -21,6 +21,7 @@ jobs:
           TEST_API_URL: http://localhost:${{ job.services.httpbin.ports[80] }}/anything/
         # For requests.post() in KingfisherProcessAPI2._post_synchronous().
         run: pytest -W error -W ignore::ResourceWarning -rs --cov kingfisher_scrapy
+      - run: python test_delayed_request_middleware.py
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github
