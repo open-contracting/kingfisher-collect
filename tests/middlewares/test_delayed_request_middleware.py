@@ -1,3 +1,5 @@
+import time
+
 import pytest
 from scrapy import Request
 from scrapy.core.downloader import DownloaderMiddlewareManager
@@ -28,7 +30,11 @@ def test_middleware_wait():
     def download_func(spider, request):
         return request
 
-    spider = spider_with_crawler()
+    spider = spider_with_crawler(settings={
+        'DOWNLOADER_MIDDLEWARES': {
+            'kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware': 543,
+        },
+    })
     request = Request('http://example.com', meta={'wait_time': 1})
     # We send the request to all the downloader middlewares, including the delayed request middleware.
     manager = DownloaderMiddlewareManager.from_crawler(spider.crawler)
@@ -36,11 +42,15 @@ def test_middleware_wait():
 
     assert isinstance(downloaded, Deferred)
 
+    start = time.time()
+
     # https://github.com/scrapy/scrapy/blob/28262d4b241744aa7c090702db9a89411e3bbf9a/tests/test_downloadermiddleware.py#L36
     results = []
     downloaded.addBoth(results.append)
     test = TestCase()
     test._wait(downloaded)
 
-    assert len(results) == 1
-    assert results[0].url == request.url
+    end = time.time()
+
+    assert results == [request]
+    assert 1 <= end - start <= 1.01
