@@ -34,10 +34,10 @@ def delayed_request_middleware():
     test = TestCase()
     test._wait(downloaded)
 
-    end = time.time()
+    spent = time.time() - start
 
     assert results == [request]
-    assert 1 <= end - start <= 1.01
+    assert 1 <= spent <= 1.01, spent
 
 
 if __name__ == "__main__":
