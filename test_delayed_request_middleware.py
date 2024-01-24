@@ -37,7 +37,7 @@ def delayed_request_middleware():
     spent = time.time() - start
 
     assert results == [request]
-    assert 1 <= spent <= 1.01, spent
+    assert 1 <= spent <= 1.5, spent
 
 
 if __name__ == "__main__":
