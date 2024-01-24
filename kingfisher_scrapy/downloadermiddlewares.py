@@ -108,6 +108,7 @@ class DelayedRequestMiddleware:
         if delay:
             from twisted.internet import reactor
 
+            # Simulate a sleep.
             d = Deferred()
             reactor.callLater(delay, d.callback, None)
             return d
