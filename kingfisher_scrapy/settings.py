@@ -84,7 +84,7 @@ EXTENSIONS = {
     # `FilesStore` must run before `KingfisherProcessAPI2`, because the file needs to be written before the
     # request is sent to Kingfisher Process.
     'kingfisher_scrapy.extensions.FilesStore': 100,
-    'kingfisher_scrapy.extensions.KingfisherProcessAPI2': 501,
+    'kingfisher_scrapy.extensions.KingfisherProcessAPI2': 500,
     'kingfisher_scrapy.extensions.ItemCount': 600,
     'kingfisher_scrapy.extensions.DatabaseStore': 700,
 }
@@ -105,9 +105,9 @@ SENTRY_DSN = os.getenv('SENTRY_DSN')
 # To send items to Kingfisher Process (version 2). If the API has basic authentication, add the username and password
 # to the URL, like http://user:pass@localhost:8000
 KINGFISHER_API2_URL = os.getenv('KINGFISHER_API2_URL')
-RABBIT_URL = os.getenv("RABBIT_URL")
-RABBIT_EXCHANGE_NAME = os.getenv("RABBIT_EXCHANGE_NAME")
-RABBIT_ROUTING_KEY = os.getenv("RABBIT_ROUTING_KEY")
+RABBIT_URL = os.getenv('RABBIT_URL')
+RABBIT_EXCHANGE_NAME = os.getenv('RABBIT_EXCHANGE_NAME')
+RABBIT_ROUTING_KEY = os.getenv('RABBIT_ROUTING_KEY')
 
 LOG_FORMATTER = 'kingfisher_scrapy.log_formatter.LogFormatter'
 
@@ -148,7 +148,7 @@ DATABASE_URL = None
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # Set settings whose default value is deprecated to a future-proof value
-REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
+REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
 
 # https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std:setting-FILES_STORE
 FILES_STORE = os.getenv('FILES_STORE', 'data')
