@@ -1,5 +1,5 @@
 flattentool
-ijson>=3.1.1
+ijson
 jsonpointer
 jsonschema
 ocdskit[perf]
