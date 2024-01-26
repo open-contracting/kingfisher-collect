@@ -25,7 +25,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
 
     # IndexSpider
     result_count_pointer = '/pagination/total'
-    limit = 100
+    limit = 10
     parse_list_callback = 'parse_page'
 
     # Local
