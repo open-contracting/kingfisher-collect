@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 
 from kingfisher_scrapy.base_spiders import PeriodicSpider
-from kingfisher_scrapy.util import components, date_range_by_month, date_range_by_year
+from kingfisher_scrapy.util import components, date_range_by_interval, date_range_by_month, date_range_by_year
 from tests import spider_with_crawler
 
 
@@ -12,10 +12,12 @@ def _format_urls(arg_type, pattern, arg_start, arg_end):
         date_range = date_range_by_year
         start = arg_start.year
         end = arg_end.year
-    else:
+    elif arg_type == 'year-month':
         date_range = date_range_by_month
         start = arg_start
         end = arg_end
+    else:
+        return [pattern.format(x, y) for x, y in date_range_by_interval(arg_start, arg_end, 1)]
 
     return [pattern.format(x) for x in date_range(start, end)]
 
@@ -34,6 +36,11 @@ TEST_CASES = [
     ('year-month', 'http://example.com/{:%Y-%m}', '2010-06', '2019-12', {
         'default_from_date': '2010-06',
         'default_until_date': '2019-12'
+    }, {}),
+    ('date', 'http://example.com/{:%Y-%m-%d}/{:%Y-%m-%d}', '2010-06-01', '2019-12-10', {
+        'default_from_date': '2010-06-01',
+        'default_until_date': '2019-12-10',
+        'step': 1
     }, {}),
     # from_date specified by the user
     ('year', 'http://example.com/{}', '2017', datetime.today().year, {
@@ -58,6 +65,11 @@ TEST_CASES = [
     }, {
         'until_date': '2019-06'
     }),
+    ('date', 'http://example.com/{0:%Y-%m-%d}/{1:%Y-%m-%d}', '2011-01-01', '2019-06-01', {
+        'default_from_date': '2011-01-01', 'step': 1
+    }, {
+         'until_date': '2019-06-01'
+     }),
     # pass the 'sample' parameter
     ('year', 'http://example.com/{}', datetime.today().year, datetime.today().year, {
         'default_from_date': '2008',
