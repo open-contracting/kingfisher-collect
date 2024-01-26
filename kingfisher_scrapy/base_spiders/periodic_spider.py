@@ -17,7 +17,7 @@ class PeriodicSpider(SimpleSpider):
 
        .. code-block: python
 
-          pattern = 'http://comprasestatales.gub.uy/ocds/rss/{0.year:d}/{0.month:02d}'
+          pattern = 'http://comprasestatales.gub.uy/ocds/rss/{0:%Y}/{0:%m}'
 
         If the ``date_format`` is "date", then a tuple of dates in intervals of ``step`` days are passed to the
         placeholder.
