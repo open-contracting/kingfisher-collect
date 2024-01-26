@@ -68,7 +68,7 @@ TEST_CASES = [
     ('date', 'http://example.com/{0:%Y-%m-%d}/{1:%Y-%m-%d}', '2011-01-01', '2019-06-01', {
         'default_from_date': '2011-01-01', 'step': 1
     }, {
-         'until_date': '2019-06-01'
+        'until_date': '2019-06-01'
      }),
     # pass the 'sample' parameter
     ('year', 'http://example.com/{}', datetime.today().year, datetime.today().year, {
@@ -90,10 +90,11 @@ def test_urls(date_format, pattern, expected_start, expected_end, class_args, us
         datetime.strptime(str(expected_end), PeriodicSpider.VALID_DATE_FORMATS[date_format])
     )
 
-    test_spider = type('TestSpider', (PeriodicSpider,), dict(date_format=date_format,
-                                                             formatter=staticmethod(components(-1)),
-                                                             pattern=pattern,
-                                                             **class_args))
+    test_spider = type(
+        'TestSpider',
+        (PeriodicSpider,),
+        dict(date_format=date_format, formatter=staticmethod(components(-1)), pattern=pattern, **class_args),
+    )
     spider = spider_with_crawler(spider_class=test_spider, **user_args)
 
     requests = list(spider.start_requests())
