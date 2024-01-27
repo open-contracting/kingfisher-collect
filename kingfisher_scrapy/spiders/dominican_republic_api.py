@@ -35,7 +35,7 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
     base_url = 'https://api.dgcp.gob.do/api/'
 
     # PeriodicSpider
-    pattern = f'{base_url}'+'date/{0:%Y-%m-%d}/{1:%Y-%m-%d}/1'
+    pattern = base_url + 'date/{0:%Y-%m-%d}/{1:%Y-%m-%d}/1'
     step = 1
 
     @handle_http_error

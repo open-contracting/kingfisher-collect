@@ -4,13 +4,11 @@ from kingfisher_scrapy.base_spiders import SimpleSpider
 
 class PeriodicSpider(SimpleSpider):
     """
-    This class makes it easy to collect data from an API that accepts a year, a year and month or date ranges
-    as parameters.
+    This class makes it easy to collect data from an API that accepts a year, year-month or date as a query string
+    parameter or URL path component.
 
     #. Inherit from ``PeriodicSpider``
-    #. Set a ``date_format`` class attribute to "year", "year-month" or "date".
-    #. If ``date_format`` is set to "date", set a ``step`` class attribute to indicate the intervals of days to iterate
-       with.
+    #. Set a ``date_format`` class attribute to "year", "year-month" or "date"
     #. Set a ``pattern`` class attribute to a URL pattern, with placeholders. If the ``date_format`` is "year", then a
        year is passed to the placeholder as an ``int``. If the ``date_format`` is "year-month", then the first day of
        the month is passed to the placeholder as a ``date``, which you can format as, for example:
@@ -19,9 +17,14 @@ class PeriodicSpider(SimpleSpider):
 
           pattern = 'http://comprasestatales.gub.uy/ocds/rss/{0:%Y}/{0:%m}'
 
-        If the ``date_format`` is "date", then a tuple of dates in intervals of ``step`` days are passed to the
-        placeholder.
+        If the ``date_format`` is "date", then a 2-tuple of ``date`` objects in intervals of ``step`` days is passed to
+        the placeholder, which you can format as, for example:
 
+       .. code-block: python
+
+          pattern = 'https://api.dgcp.gob.do/api/date/{0:%Y-%m-%d}/{1:%Y-%m-%d}/1'
+
+    #. If the ``date_format`` is "date", set a ``step`` class attribute to indicate the length of intervals, in days
     #. Set a ``formatter`` class attribute to set the file name like in
        :meth:`~kingfisher_scrapy.base_spiders.BaseSpider.build_request`
     #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM")
@@ -36,7 +39,7 @@ class PeriodicSpider(SimpleSpider):
     date_required = True
     start_requests_callback = 'parse'
 
-    step = None
+    step = 1
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -53,7 +56,6 @@ class PeriodicSpider(SimpleSpider):
         elif self.date_format == '%Y-%m':
             date_range = util.date_range_by_month(start, stop)
         else:
-            # returns from_date, until_date as a tuple
             date_range = util.date_range_by_interval(start, stop, step)
 
         for date in date_range:
