@@ -42,6 +42,7 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
     def parse(self, response):
         data = response.json()
         for item in data['data']:
-            yield self.build_request(f'{self.base_url}release/{item["ocid"]}',
-                                     formatter=components(-1), callback=super().parse)
+            yield self.build_request(
+                f'{self.base_url}release/{item["ocid"]}', formatter=components(-1), callback=super().parse
+            )
         yield self.next_link(response)

@@ -59,13 +59,17 @@ class PeriodicSpider(SimpleSpider):
             date_range = util.date_range_by_interval(start, stop, step)
 
         for date in date_range:
-            urls = self.build_urls(*date) if self.date_format == '%Y-%m-%d' else self.build_urls(date)
-            for number, url in enumerate(urls):
-                yield self.build_request(url, formatter=self.formatter, callback=self.start_requests_callback,
-                                         priority=number * -1)
+            args = date if self.date_format == '%Y-%m-%d' else [date]
+            for number, url in enumerate(self.build_urls(*args)):
+                yield self.build_request(
+                    url, formatter=self.formatter, callback=self.start_requests_callback, priority=number * -1
+                )
 
     def build_urls(self, from_date, until_date=None):
         """
         Yields one or more URLs for the given date.
         """
-        yield self.pattern.format(from_date) if not until_date else self.pattern.format(from_date, until_date)
+        if until_date:
+            yield self.pattern.format(from_date, until_date)
+        else:
+            yield self.pattern.format(from_date)
