@@ -128,9 +128,15 @@ def test_handle_http_error_error(response_status):
     ('2022-01-01', '2022-01-01', 15, []),
     ('2022-01-01', '2022-01-25', 15, [('2022-01-10', '2022-01-25'), ('2022-01-01', '2022-01-10')]),
     ('2022-01-01', '2022-01-31', 15, [('2022-01-16', '2022-01-31'), ('2022-01-01', '2022-01-16')]),
-    ('2022-01-01', '2022-01-03', 1, [('2022-01-02', '2022-01-03'), ('2022-01-01', '2022-01-02')]),
 ])
 def test_date_range_by_interval(start, stop, step, expected):
     assert list(date_range_by_interval(parse_date(start), parse_date(stop), step)) == [
         tuple(parse_date(date) for date in dates) for dates in expected
+    ]
+
+
+def test_date_range_by_interval_edge_case():
+    assert list(date_range_by_interval(datetime(2001, 1, 1, 0, 0), datetime(2001, 1, 3, 0, 0), 1)) == [
+        (datetime(2001, 1, 2, 0, 0), datetime(2001, 1, 3, 0, 0)),
+        (datetime(2001, 1, 1, 0, 0), datetime(2001, 1, 2, 0, 0)),
     ]
