@@ -13,6 +13,7 @@ pattern_year = 'http://example.com/{}'
 pattern_year_month = 'http://example.com/{0:%Y-%m}'
 pattern_date = 'http://example.com/{0:%Y-%m-%d}/{1:%Y-%m-%d}'
 
+
 def _format_urls(arg_type, pattern, arg_start, arg_end):
     if arg_type == 'year':
         date_range = date_range_by_year
