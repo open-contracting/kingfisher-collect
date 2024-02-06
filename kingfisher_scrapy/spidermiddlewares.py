@@ -136,8 +136,9 @@ class RootPathMiddleware:
                         if is_package:
                             # Assume that the `extensions` are the same for all packages.
                             package = next(items)
+                            releases_or_records = package[key]
                             for other in items:
-                                package[key].extend(other[key])
+                                releases_or_records.extend(other[key])
                         else:
                             package = {'version': spider.ocds_version, key: list(items)}
 
