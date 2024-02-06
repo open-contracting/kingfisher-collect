@@ -56,8 +56,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
             yield data
             return
 
-        # Replace the "\u0000" escape sequence in the JSON string, which is rejected by PostgreSQL.
-        # https://www.postgresql.org/docs/current/datatype-json.html
+        # Remove NUL bytes.
         response = response.replace(body=response.body.replace(b'\x00', b''))
         yield from super().parse(response)
 
