@@ -50,12 +50,26 @@ class Moldova(SimpleSpider):
         #   "name": "Error",
         #   "stack": "Error: connect EHOSTUNREACH 185.108.182.236:443\n    at TCPConnectWrap.afterConnect...",
         #   "config": {
-        #               "url": "https://public.mtender.gov.md/tenders/ocds-b3wdp1-MD-1603913785143", "method": "get",
-        #               "headers": {"Accept": "application/json, text/plain, */*", "User-Agent": "axios/0.21.1"},
-        #               "transformRequest": [null], "transformResponse": [null], "timeout": 0,
-        #               "xsrfCookieName": "XSRF-TOKEN", "xsrfHeaderName": "X-XSRF-TOKEN", "maxContentLength": -1,
-        #               "maxBodyLength": -1}, "code": "EHOSTUNREACH"
-        #            }
+        #     "url": "https://public.mtender.gov.md/tenders/ocds-b3wdp1-MD-1603913785143",
+        #     "method": "get",
+        #     "headers": {
+        #       "Accept": "application/json, text/plain, */*",
+        #       "User-Agent": "axios/0.21.1"
+        #     },
+        #     "transformRequest": [
+        #       null
+        #     ],
+        #     "transformResponse": [
+        #       null
+        #     ],
+        #     "timeout": 0,
+        #     "xsrfCookieName": "XSRF-TOKEN",
+        #     "xsrfHeaderName": "X-XSRF-TOKEN",
+        #     "maxContentLength": -1,
+        #     "maxBodyLength": -1
+        #   },
+        #   "code": "EHOSTUNREACH"
+        # }
 
         if data.get('name') == 'Error':
             data['http_code'] = response.status
