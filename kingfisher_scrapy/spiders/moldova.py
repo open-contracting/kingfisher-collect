@@ -38,8 +38,8 @@ class Moldova(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        base_url = 'http://public.eprocurement.systems/ocds/tenders/'
         data = response.json()
+
         # The last page returns an empty JSON object.
         if not data:
             return
@@ -70,12 +70,12 @@ class Moldova(SimpleSpider):
         #   },
         #   "code": "EHOSTUNREACH"
         # }
-
         if data.get('name') == 'Error':
             data['http_code'] = response.status
             yield self.build_file_error_from_response(response, errors=data)
             return
 
+        base_url = 'http://public.eprocurement.systems/ocds/tenders/'
         for item in data['data']:
             url = replace_parameters(base_url, offset=None) + item['ocid']
             yield self.build_request(url, formatter=components(-2))
