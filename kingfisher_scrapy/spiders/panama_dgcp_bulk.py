@@ -28,7 +28,8 @@ class PanamaDGCPBulk(PeriodicSpider):
 
     # PeriodicSpider
     formatter = staticmethod(parameters('DateFrom', 'DateTo'))
-    pattern = 'https://ocds.panamacompraencifras.gob.pa/Descarga?DateFrom={0:%Y-%m-%d}&DateTo={' \
-              '1:%Y-%m-%d}&FileType=json '
-    # The API returns error 400 for intervals longer than a month and timeout for a month.
+    pattern = (
+      'https://ocds.panamacompraencifras.gob.pa/Descarga?DateFrom={0:%Y-%m-%d}&DateTo={1:%Y-%m-%d}&FileType=json'
+    )
+    # The API returns HTTP 400 error for intervals longer than a month and times out for intervals of a month.
     step = 15
