@@ -24,11 +24,12 @@ class PeriodicSpider(SimpleSpider):
 
           pattern = 'https://api.dgcp.gob.do/api/date/{0:%Y-%m-%d}/{1:%Y-%m-%d}/1'
 
-    #. If the ``date_format`` is "date", set a ``step`` class attribute to indicate the length of intervals, in days
     #. Set a ``formatter`` class attribute to set the file name like in
        :meth:`~kingfisher_scrapy.base_spiders.BaseSpider.build_request`
     #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM")
     #. If the source stopped publishing, set a ``default_until_date`` class attribute to a year or year-month
+    #. Optionally, if the ``date_format`` is "date", set a ``step`` class attribute to indicate the length of
+       intervals, in days – otherwise, it defaults to 1
     #. Optionally, set a ``start_requests_callback`` class attribute to a method's name as a string - otherwise, it
        defaults to :meth:`~kingfisher_scrapy.base_spiders.simple_spider.SimpleSpider.parse`
 
@@ -39,7 +40,7 @@ class PeriodicSpider(SimpleSpider):
     date_required = True
     start_requests_callback = 'parse'
 
-    # Date intervals
+    # Length of intervals, if `date_format` is "date".
     step = 1
 
     def __init__(self, *args, **kwargs):
