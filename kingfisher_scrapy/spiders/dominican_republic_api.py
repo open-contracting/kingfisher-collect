@@ -36,7 +36,6 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
 
     # PeriodicSpider
     pattern = base_url + 'date/{0:%Y-%m-%d}/{1:%Y-%m-%d}/1'
-    step = 1
 
     @handle_http_error
     def parse(self, response):
