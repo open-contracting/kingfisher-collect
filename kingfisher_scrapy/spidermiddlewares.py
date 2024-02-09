@@ -136,8 +136,12 @@ class RootPathMiddleware:
                         if is_package:
                             # Assume that the `extensions` are the same for all packages.
                             package = next(items)
+                            releases_or_records = package[key]
                             for other in items:
-                                package[key].extend(other[key])
+                                try:
+                                    releases_or_records.extend(other[key])
+                                except KeyError as e:
+                                    spider.logger.warning('%(key)s not set in %(data)r', {'key': e, 'data': other})
                         else:
                             package = {'version': spider.ocds_version, key: list(items)}
 
