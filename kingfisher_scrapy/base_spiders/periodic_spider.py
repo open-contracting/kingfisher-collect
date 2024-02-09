@@ -39,6 +39,7 @@ class PeriodicSpider(SimpleSpider):
     date_required = True
     start_requests_callback = 'parse'
 
+    # Date intervals
     step = 1
 
     def __init__(self, *args, **kwargs):
@@ -49,14 +50,13 @@ class PeriodicSpider(SimpleSpider):
     def start_requests(self):
         start = self.from_date
         stop = self.until_date
-        step = self.step
 
         if self.date_format == '%Y':
             date_range = util.date_range_by_year(start.year, stop.year)
         elif self.date_format == '%Y-%m':
             date_range = util.date_range_by_month(start, stop)
         else:
-            date_range = util.date_range_by_interval(start, stop, step)
+            date_range = util.date_range_by_interval(start, stop, self.step)
 
         for date in date_range:
             args = date if self.date_format == '%Y-%m-%d' else [date]
