@@ -8,9 +8,9 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
       Dirección General de Contrataciones Públicas (DGCP)
     Spider arguments
       from_date
-        Download only data from this year onward (YYYY format). Defaults to '2018'.
+        Download only data from this date onward (YYYY-MM-DD format). Defaults to '2018-01-01'.
       until_date
-        Download only data until this year (YYYY format). Defaults to the current year.
+        Download only data until this date (YYYY-MM-DD format). Defaults to now.
     API documentation
       https://api.dgcp.gob.do/api/docs
     """
@@ -21,8 +21,8 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
     }
 
     # BaseSpider
-    default_from_date = '2018'
-    date_format = 'year'
+    default_from_date = '2018-01-01'
+    date_format = 'date'
 
     # SimpleSpider
     data_type = 'release_package'
@@ -31,12 +31,17 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
     formatter = staticmethod(components(-2))  # year
     next_pointer = '/pagination/next'
 
+    # Local
+    base_url = 'https://api.dgcp.gob.do/api/'
+
     # PeriodicSpider
-    pattern = 'https://api.dgcp.gob.do/api/year/{}/1?limit=1000'
+    pattern = base_url + 'date/{0:%Y-%m-%d}/{1:%Y-%m-%d}/1'
 
     @handle_http_error
     def parse(self, response):
         data = response.json()
         for item in data['data']:
-            yield self.build_request(item['url'], formatter=components(-1), callback=super().parse)
+            yield self.build_request(
+                f'{self.base_url}release/{item["ocid"]}', formatter=components(-1), callback=super().parse
+            )
         yield self.next_link(response)

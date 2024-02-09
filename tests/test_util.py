@@ -133,3 +133,10 @@ def test_date_range_by_interval(start, stop, step, expected):
     assert list(date_range_by_interval(parse_date(start), parse_date(stop), step)) == [
         tuple(parse_date(date) for date in dates) for dates in expected
     ]
+
+
+def test_date_range_by_interval_edge_case():
+    assert list(date_range_by_interval(datetime(2001, 1, 1, 0, 0), datetime(2001, 1, 3, 0, 0), 1)) == [
+        (datetime(2001, 1, 2, 0, 0), datetime(2001, 1, 3, 0, 0)),
+        (datetime(2001, 1, 1, 0, 0), datetime(2001, 1, 2, 0, 0)),
+    ]

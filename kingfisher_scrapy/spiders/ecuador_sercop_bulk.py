@@ -28,7 +28,7 @@ class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/download'\
-              '?type=json&year={0.year:d}&month={0.month:02d}&method=all'
+              '?type=json&year={0:%Y}&month={0:%m}&method=all'
     formatter = staticmethod(components(-1))
 
     def build_request(self, url, formatter, **kwargs):
