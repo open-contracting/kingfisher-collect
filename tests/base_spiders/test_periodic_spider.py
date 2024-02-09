@@ -1,10 +1,17 @@
-from datetime import datetime
+import datetime
 
 import pytest
 
 from kingfisher_scrapy.base_spiders import PeriodicSpider
 from kingfisher_scrapy.util import components, date_range_by_interval, date_range_by_month, date_range_by_year
 from tests import spider_with_crawler
+
+today = datetime.datetime.now(tz=datetime.timezone.utc).date()
+today_year_month = today.strftime('%Y-%m')
+today_date = today.strftime('%Y-%m-%d')
+pattern_year = 'http://example.com/{}'
+pattern_year_month = 'http://example.com/{0:%Y-%m}'
+pattern_date = 'http://example.com/{0:%Y-%m-%d}/{1:%Y-%m-%d}'
 
 
 def _format_urls(arg_type, pattern, arg_start, arg_end):
@@ -22,78 +29,104 @@ def _format_urls(arg_type, pattern, arg_start, arg_end):
     return [pattern.format(x) for x in date_range(start, end)]
 
 
-TEST_CASES = [
+TEST_CASES = {
     # default from date
-    ('year', 'http://example.com/{}', '2012', datetime.today().year, {'default_from_date': '2012'}, {}),
-    ('year-month', 'http://example.com/{:%Y-%m}', '2010-06', datetime.today().strftime('%Y-%m'), {
-        'default_from_date': '2010-06'
+    'default_from-year': ('year', pattern_year, '2011', today.year, {
+        'default_from_date': '2011',
     }, {}),
-    # default from & end dates
-    ('year', 'http://example.com/{}', '2012', '2016', {
-        'default_from_date': '2012',
-        'default_until_date': '2016'
+    'default_from-year_month': ('year-month', pattern_year_month, '2011-06', today_year_month, {
+        'default_from_date': '2011-06',
     }, {}),
-    ('year-month', 'http://example.com/{:%Y-%m}', '2010-06', '2019-12', {
-        'default_from_date': '2010-06',
-        'default_until_date': '2019-12'
+    'default_from-date': ('date', pattern_date, '2011-06-15', today_date, {
+        'default_from_date': '2011-06-15',
     }, {}),
-    ('date', 'http://example.com/{:%Y-%m-%d}/{:%Y-%m-%d}', '2010-06-01', '2019-12-10', {
-        'default_from_date': '2010-06-01',
-        'default_until_date': '2019-12-10',
-        'step': 1
+
+    # default from and until dates, in each date format
+    'default_from_until-year': ('year', pattern_year, '2011', '2019', {
+        'default_from_date': '2011',
+        'default_until_date': '2019',
     }, {}),
-    # from_date specified by the user
-    ('year', 'http://example.com/{}', '2017', datetime.today().year, {
-        'default_from_date': '2008'
+    'default_from_until-year_month': ('year-month', pattern_year_month, '2011-06', '2019-12', {
+        'default_from_date': '2011-06',
+        'default_until_date': '2019-12',
+    }, {}),
+    'default_from_until-date': ('date', pattern_date, '2011-06-15', '2019-12-31', {
+        'default_from_date': '2011-06-15',
+        'default_until_date': '2019-12-31',
+    }, {}),
+
+    # user-specified from_date, in each date format
+    'user_from-year': ('year', pattern_year, '2017', today.year, {
+        'default_from_date': '2011',
     }, {
-        'from_date': '2017'
+        'from_date': '2017',
     }),
-    ('year-month', 'http://example.com/{:%Y-%m}', '2018-01', datetime.today().strftime('%Y-%m'), {
-        'default_from_date': '2011-01'
+    'user_from-year_month': ('year-month', pattern_year_month, '2017-06', today_year_month, {
+        'default_from_date': '2011-01',
     }, {
-        'from_date': '2018-01'
+        'from_date': '2017-06',
     }),
-    # until_date specified by the user
-    ('year', 'http://example.com/{}', '2008', '2010', {
-        'default_from_date': '2008',
-        'default_until_date': '2017'
+    'user_from-date': ('date', pattern_date, '2017-06-15', today_date, {
+        'default_from_date': '2011-01-01',
     }, {
-        'until_date': '2010'
+        'from_date': '2017-06-15',
     }),
-    ('year-month', 'http://example.com/{:%Y-%m}', '2011-01', '2019-06', {
-        'default_from_date': '2011-01'
+
+    # user-specific until_date, in each date format
+    'user_until-year': ('year', pattern_year, '2011', '2017', {
+        'default_from_date': '2011',
+        'default_until_date': '2019',
     }, {
-        'until_date': '2019-06'
+        'until_date': '2017',
     }),
-    ('date', 'http://example.com/{0:%Y-%m-%d}/{1:%Y-%m-%d}', '2011-01-01', '2019-06-01', {
-        'default_from_date': '2011-01-01', 'step': 1
+    'user_until-year_month': ('year-month', pattern_year_month, '2011-01', '2017-06', {
+        'default_from_date': '2011-01',
+        'default_until_date': '2019-12',
     }, {
-         'until_date': '2019-06-01'
+        'until_date': '2017-06',
+    }),
+    'user_until-date': ('date', pattern_date, '2011-01-01', '2017-06-15', {
+        'default_from_date': '2011-01-01',
+        'default_until_date': '2019-12-31',
+    }, {
+        'until_date': '2017-06-15',
      }),
-    # pass the 'sample' parameter
-    ('year', 'http://example.com/{}', datetime.today().year, datetime.today().year, {
-        'default_from_date': '2008',
+
+    # user-specified sample parameter
+    'user_sample-year': ('year', 'http://example.com/{}', today.year, today.year, {
+        'default_from_date': '2011',
     }, {
-        'sample': 'true'
+        'sample': 'true',
     }),
-]
+    'user_sample-year_month': ('year-month', 'http://example.com/{}', today_year_month, today_year_month, {
+        'default_from_date': '2011-06',
+    }, {
+        'sample': 'true',
+    }),
+    'user_sample-date': ('date', 'http://example.com/{}/{}', today_date, today_date, {
+        'default_from_date': '2011-06-15',
+    }, {
+        'sample': 'true',
+    }),
+}
 
 
 @pytest.mark.parametrize(
-    'date_format,pattern,expected_start,expected_end,class_args,user_args',
-    TEST_CASES)
+    'date_format,pattern,expected_start,expected_end,class_args,user_args', TEST_CASES.values(), ids=TEST_CASES.keys()
+)
 def test_urls(date_format, pattern, expected_start, expected_end, class_args, user_args):
     expected = _format_urls(
         date_format,
         pattern,
-        datetime.strptime(str(expected_start), PeriodicSpider.VALID_DATE_FORMATS[date_format]),
-        datetime.strptime(str(expected_end), PeriodicSpider.VALID_DATE_FORMATS[date_format])
+        datetime.datetime.strptime(str(expected_start), PeriodicSpider.VALID_DATE_FORMATS[date_format]),
+        datetime.datetime.strptime(str(expected_end), PeriodicSpider.VALID_DATE_FORMATS[date_format])
     )
 
-    test_spider = type('TestSpider', (PeriodicSpider,), dict(date_format=date_format,
-                                                             formatter=staticmethod(components(-1)),
-                                                             pattern=pattern,
-                                                             **class_args))
+    test_spider = type(
+        'TestSpider',
+        (PeriodicSpider,),
+        dict(date_format=date_format, formatter=staticmethod(components(-1)), pattern=pattern, **class_args),
+    )
     spider = spider_with_crawler(spider_class=test_spider, **user_args)
 
     requests = list(spider.start_requests())

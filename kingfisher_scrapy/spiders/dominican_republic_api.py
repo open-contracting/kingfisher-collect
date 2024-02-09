@@ -35,13 +35,14 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
     base_url = 'https://api.dgcp.gob.do/api/'
 
     # PeriodicSpider
-    pattern = f'{base_url}'+'date/{0:%Y-%m-%d}/{1:%Y-%m-%d}/1'
+    pattern = base_url + 'date/{0:%Y-%m-%d}/{1:%Y-%m-%d}/1'
     step = 1
 
     @handle_http_error
     def parse(self, response):
         data = response.json()
         for item in data['data']:
-            yield self.build_request(f'{self.base_url}release/{item["ocid"]}',
-                                     formatter=components(-1), callback=super().parse)
+            yield self.build_request(
+                f'{self.base_url}release/{item["ocid"]}', formatter=components(-1), callback=super().parse
+            )
         yield self.next_link(response)

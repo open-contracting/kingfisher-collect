@@ -136,7 +136,7 @@ def date_range_by_interval(start, stop, step):
     while range_end > start:
         range_start = max(start, range_end - delta)
         yield range_start, range_end
-        range_end = range_start - timedelta(seconds=1)
+        range_end = range_start
 
 
 # https://stackoverflow.com/questions/34898525/generate-list-of-months-between-interval-in-python
