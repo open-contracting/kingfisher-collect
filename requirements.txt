@@ -171,7 +171,7 @@ rpds-py==0.7.1
     #   referencing
 schema==0.7.2
     # via flattentool
-scrapy==2.11.0
+scrapy==2.11.1
     # via
     #   -r requirements.in
     #   scrapyd
@@ -190,12 +190,13 @@ six==1.16.0
     #   parsel
     #   protego
     #   requests-file
+    #   url-normalize
     #   zodb
 tldextract==3.1.2
     # via scrapy
 transaction==3.1.0
     # via zodb
-twisted==22.10.0
+twisted==23.10.0
     # via
     #   -r requirements.in
     #   scrapy
