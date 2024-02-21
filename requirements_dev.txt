@@ -57,7 +57,7 @@ coverage[toml]==5.5
     #   pytest-cov
 coveralls==3.2.0
     # via -r requirements_dev.in
-cryptography==41.0.7
+cryptography==42.0.4
     # via
     #   -r requirements.txt
     #   pyopenssl
@@ -244,7 +244,7 @@ pydispatcher==2.0.6
     #   scrapy
 pyflakes==2.1.1
     # via flake8
-pyopenssl==23.2.0
+pyopenssl==24.0.0
     # via
     #   -r requirements.txt
     #   scrapy
@@ -320,7 +320,7 @@ scrapyd-client==1.2.3
     # via -r requirements.txt
 sentry-sdk==1.19.0
     # via -r requirements.txt
-service-identity==18.1.0
+service-identity==24.1.0
     # via
     #   -r requirements.txt
     #   scrapy

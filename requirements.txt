@@ -31,7 +31,7 @@ constantly==15.1.0
     # via twisted
 contextlib2==0.6.0.post1
     # via schema
-cryptography==41.0.7
+cryptography==42.0.4
     # via
     #   pyopenssl
     #   scrapy
@@ -137,7 +137,7 @@ pycparser==2.19
     # via cffi
 pydispatcher==2.0.6
     # via scrapy
-pyopenssl==23.2.0
+pyopenssl==24.0.0
     # via scrapy
 pytz==2020.1
     # via flattentool
@@ -182,7 +182,7 @@ scrapyd-client==1.2.3
     # via -r requirements.in
 sentry-sdk==1.19.0
     # via -r requirements.in
-service-identity==18.1.0
+service-identity==24.1.0
     # via scrapy
 six==1.16.0
     # via
