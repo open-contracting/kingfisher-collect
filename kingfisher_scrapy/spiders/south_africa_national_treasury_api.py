@@ -31,6 +31,6 @@ class SouthAfricaNationalTreasuryAPI(LinksSpider):
 
     def start_requests(self):
 
-        yield scrapy.Request('https://ocds-api.etenders.gov.za/api/OCDSReleases?PageNumber=1&PageSize=50&'
+        yield scrapy.Request('https://ocds-api-ocds-dev.azurewebsites.net/api/OCDSReleases?PageNumber=1&PageSize=50&'
                              f'dateFrom={self.from_date}&dateTo={self.until_date}',
                              meta={'file_name': f'{self.from_date}.json'})
