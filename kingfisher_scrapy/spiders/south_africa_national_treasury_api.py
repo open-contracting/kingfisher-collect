@@ -30,7 +30,8 @@ class SouthAfricaNationalTreasuryAPI(LinksSpider):
     formatter = staticmethod(parameters('PageNumber', 'dateFrom'))
 
     def start_requests(self):
-
+        from_date = self.from_date.strftime(self.date_format)
+        until_date = self.until_date.strftime(self.date_format)
         yield scrapy.Request('https://ocds-api-ocds-dev.azurewebsites.net/api/OCDSReleases?PageNumber=1&PageSize=50&'
-                             f'dateFrom={self.from_date}&dateTo={self.until_date}',
-                             meta={'file_name': f'{self.from_date}.json'})
+                             f'dateFrom={from_date}&dateTo={until_date}',
+                             meta={'file_name': f'{from_date}.json'})
