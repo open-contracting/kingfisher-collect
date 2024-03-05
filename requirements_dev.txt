@@ -184,7 +184,7 @@ openpyxl==3.0.5
     #   -r requirements.txt
     #   -r requirements_dev.in
     #   flattentool
-orjson==3.9.5
+orjson==3.9.15
     # via
     #   -r requirements.txt
     #   ocdskit
