@@ -587,6 +587,13 @@ Iceland
 India
 ~~~~~
 
+.. autoclass:: kingfisher_scrapy.spiders.india_assam_civic_data_lab.IndiaCivicDataLab
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl india_assam_civic_data_lab
+
 .. autoclass:: kingfisher_scrapy.spiders.india_assam_finance_department.IndiaAssamFinanceDepartment
    :no-members:
 
