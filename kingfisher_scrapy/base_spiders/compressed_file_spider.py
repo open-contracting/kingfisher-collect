@@ -20,10 +20,10 @@ class CompressedFileSpider(BaseSpider):
     #. Optionally, add a ``resize_package = True`` class attribute to split large packages (e.g. greater than 100MB)
     #. Optionally, add a ``yield_non_archive_file = True`` class attribute if the spider requests both archive files
        and JSON files. Otherwise, the spider raises an ``UnknownArchiveFormatError`` exception.
-    #. Optionally, add a ``file_name_must_contain = 'text'`` class attribute to only decompress the files which names
+    #. Optionally, add a ``file_name_must_contain = 'text'`` class attribute to only decompress the files whose names
        contain the given text.
-    #. Optionally, add a ``file_name_must_not_contain = 'text'`` class attribute to only decompress the files which
-       name do not contain the given text.
+    #. Optionally, add a ``file_name_must_not_contain = 'text'`` class attribute to only decompress the files whose
+       names do not contain the given text.
     #. Write a ``start_requests()`` method to request the archive files
 
     .. code-block:: python
@@ -80,8 +80,10 @@ class CompressedFileSpider(BaseSpider):
 
             filename = file_info.filename
             basename = os.path.basename(filename)
-            if self.file_name_must_contain not in basename or (self.file_name_must_not_contain and
-                                                               self.file_name_must_not_contain in basename):
+            if (
+                self.file_name_must_contain not in basename
+                or (self.file_name_must_not_contain and self.file_name_must_not_contain in basename)
+            ):
                 continue
             if archive_format == 'rar' and file_info.isdir():
                 continue
