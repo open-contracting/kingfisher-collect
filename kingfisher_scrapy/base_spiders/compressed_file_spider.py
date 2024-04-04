@@ -85,6 +85,8 @@ class CompressedFileSpider(BaseSpider):
                 or (self.file_name_must_not_contain and self.file_name_must_not_contain in basename)
             ):
                 continue
+            if filename.startswith('__MACOSX'):
+                continue
             if archive_format == 'rar' and file_info.isdir():
                 continue
             if archive_format == 'zip' and file_info.is_dir():

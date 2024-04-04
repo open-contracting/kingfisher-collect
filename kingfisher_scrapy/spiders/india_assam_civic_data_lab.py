@@ -7,14 +7,12 @@ class IndiaAssamCivicDataLab(CompressedFileSpider):
     """
     Domain
       India Assam - CivicDataLab
+    Caveats
+      The archived file contains a __MACOSX directory with a temporary ._package.json file that is omitted.
     Bulk download documentation
       https://github.com/CivicDataLab/assam-tenders-data/tree/main/data
     """
     name = 'india_assam_civic_data_lab'
-
-    # CompressedFileSpider
-    # The archived file contains a __MACOSX directory with a temporary ._package.json file.
-    file_name_must_not_contain = '._'
 
     # SimpleSpider
     data_type = 'release_package'

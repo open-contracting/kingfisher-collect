@@ -161,6 +161,7 @@ def test_filter_file_names(include, exclude):
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
         zipfile.writestr('test.json', '{}')
         zipfile.writestr('skip.json', '{}')
+        zipfile.writestr('__MACOSX/garbage.json', '')
 
     response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
     generator = spider.parse(response)
