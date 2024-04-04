@@ -6,6 +6,7 @@ from zipfile import BadZipFile
 import ijson
 
 from kingfisher_scrapy import util
+from kingfisher_scrapy.exceptions import RetryableBadResponseError
 from kingfisher_scrapy.items import File, FileItem
 
 MAX_GROUP_SIZE = 100
@@ -269,13 +270,14 @@ class ReadDataMiddleware:
 
 class RetryDataErrorMiddleware:
     """
-    Retries a request for a ZIP file up to 3 times, on the assumption that, if the spider raises a ``BadZipFile``
-    exception, then the response was truncated.
+    Retries a request up to 3 times. Either when the spider raises a ``BadZipFile`` exception, on the assumption that
+    the response was truncated, or when the spider raises a ``RetryableBadResponseError`` exception on the assumption
+    that the error was temporary.
     """
     # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#scrapy.spidermiddlewares.SpiderMiddleware.process_spider_exception
 
     def process_spider_exception(self, response, exception, spider):
-        if isinstance(exception, BadZipFile):
+        if isinstance(exception, (BadZipFile, RetryableBadResponseError)):
             attempts = response.request.meta.get('retries', 0) + 1
             if attempts > 3:
                 spider.logger.error('Gave up retrying %(request)s (failed %(failures)d times): %(exception)s',
