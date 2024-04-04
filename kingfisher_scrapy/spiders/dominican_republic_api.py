@@ -10,7 +10,7 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
       from_date
         Download only data from this date onward (YYYY-MM-DD format). Defaults to '2018-01-01'.
       until_date
-        Download only data until this date (YYYY-MM-DD format). Defaults to now.
+        Download only data until this date (YYYY-MM-DD format). Defaults to today.
     API documentation
       https://api.dgcp.gob.do/api/docs
     """

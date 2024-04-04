@@ -148,3 +148,27 @@ def test_yield_non_archive_file():
 
     with pytest.raises(StopIteration):
         next(generator)
+
+
+@pytest.mark.parametrize('include,exclude', [('', 'skip'), ('test', '')])
+def test_filter_file_names(include, exclude):
+    spider = spider_with_crawler(spider_class=CompressedFileSpider)
+    spider.data_type = 'release_package'
+    spider.file_name_must_contain = include
+    spider.file_name_must_not_contain = exclude
+
+    io = BytesIO()
+    with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
+        zipfile.writestr('test.json', '{}')
+        zipfile.writestr('skip.json', '{}')
+        zipfile.writestr('__MACOSX/garbage.json', '')
+
+    response = response_fixture(body=io.getvalue(), meta={'file_name': 'test.zip'})
+    generator = spider.parse(response)
+    item = next(generator)
+
+    assert type(item) is File
+    assert item['file_name'] == 'test-test.json'
+
+    with pytest.raises(StopIteration):
+        next(generator)

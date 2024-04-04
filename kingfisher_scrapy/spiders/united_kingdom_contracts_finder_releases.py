@@ -8,9 +8,11 @@ class UnitedKingdomContractsFinderReleases(UnitedKingdomContractsFinderBase):
       Contracts Finder
     Spider arguments
       from_date
-        Download only data from this time onward (YYYY-MM-DDThh:mm:ss format). Defaults to '2014-01-01T00:00:00'.
+        Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
+        If ``until_date`` is provided, defaults to '2014-01-01T00:00:00'.
       until_date
-        Download only data until this time (YYYY-MM-DDThh:mm:ss format). Defaults to now.
+        Download only data until this time (YYYY-MM-DDThh:mm:ss format).
+        If ``from_date`` is provided, defaults to now.
     API documentation
       https://www.contractsfinder.service.gov.uk/apidocumentation/home
     """
