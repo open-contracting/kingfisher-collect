@@ -1,4 +1,5 @@
 import datetime
+from json import JSONDecodeError
 from urllib.parse import urlsplit
 
 import scrapy
@@ -44,7 +45,12 @@ class EuropeanDynamicsBase(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        for number, url in enumerate(reversed(response.json()['packagesPerMonth'])):
+        try:
+            data = response.json()
+        # The response can be an HTML document with an error message like "temporary unavailable due to maintenance".
+        except JSONDecodeError:
+            return self.build_file_error_from_response(response, errors=response.text)
+        for number, url in enumerate(reversed(data['packagesPerMonth'])):
             path = urlsplit(url).path
             if self.from_date and self.until_date:
                 # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
