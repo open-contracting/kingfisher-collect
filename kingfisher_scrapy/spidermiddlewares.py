@@ -271,7 +271,7 @@ class ReadDataMiddleware:
 class RetryDataErrorMiddleware:
     """
     Retries a request up to 3 times. Either when the spider raises a ``BadZipFile`` exception, on the assumption that
-    the response was truncated, or when the spider raises a ``RetryableBadResponseError`` exception.
+    the response was truncated, or when the spider raises a ``RetryableError`` exception.
     """
     # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#scrapy.spidermiddlewares.SpiderMiddleware.process_spider_exception
 
