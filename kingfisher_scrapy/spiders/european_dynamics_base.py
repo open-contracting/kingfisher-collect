@@ -1,4 +1,5 @@
 import datetime
+from json import JSONDecodeError
 from urllib.parse import urlsplit
 
 import scrapy
@@ -44,13 +45,18 @@ class EuropeanDynamicsBase(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        for number, url in enumerate(reversed(response.json()['packagesPerMonth'])):
-            path = urlsplit(url).path
-            if self.from_date and self.until_date:
-                # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
-                year, month = map(int, url.rsplit('/', 2)[1:])
-                url_date = datetime.datetime(year, month, 1)
-                if not (self.from_date <= url_date <= self.until_date):
-                    continue
-            yield self.build_request(f'{self.base_url}{path}', formatter=join(components(-2), extension='zip'),
-                                     priority=number * -1)
+        try:
+            data = response.json()
+            for number, url in enumerate(reversed(data['packagesPerMonth'])):
+                path = urlsplit(url).path
+                if self.from_date and self.until_date:
+                    # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
+                    year, month = map(int, url.rsplit('/', 2)[1:])
+                    url_date = datetime.datetime(year, month, 1)
+                    if not (self.from_date <= url_date <= self.until_date):
+                        continue
+                yield self.build_request(f'{self.base_url}{path}', formatter=join(components(-2), extension='zip'),
+                                         priority=number * -1)
+        # Sometimes the response is an HTML with an error message
+        except JSONDecodeError:
+            return self.build_file_error_from_response(response, errors=response.text)
