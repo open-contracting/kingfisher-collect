@@ -796,13 +796,6 @@ Mexico
 
    scrapy crawl mexico_nuevo_leon_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien_records.MexicoQuienEsQuienRecords
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_quien_es_quien_records
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien_releases.MexicoQuienEsQuienReleases
    :no-members:
 

@@ -1,22 +1,39 @@
-from kingfisher_scrapy.spiders.mexico_quien_es_quien_base import MexicoQuienEsQuienBase
+from kingfisher_scrapy.base_spiders import IndexSpider, PeriodicSpider
+from kingfisher_scrapy.util import parameters
 
 
-class MexicoQuienEsQuienReleases(MexicoQuienEsQuienBase):
+class MexicoQuienEsQuienReleases(IndexSpider, PeriodicSpider):
     """
     Domain
       QuiénEsQuién.Wiki
+    Spider arguments
+      from_date
+        Download only data from this date onward (YYYY-MM-DD format). Defaults to '1999-01-01'.
+      until_date
+        Download only data until this date (YYYY-MM-DD format). Defaults to '2021-12-31'.
     API documentation
       https://qqwapi-elastic.readthedocs.io/es/latest/
     Swagger API documentation
       https://api.quienesquien.wiki/v3/docs/
     """
     name = 'mexico_quien_es_quien_releases'
+    download_delay = 1
 
     # BaseSpider
+    default_from_date = '1999-01-01'
+    default_until_date = '2021-12-31'
+    date_format = 'date'
     root_path = 'data.item'
 
     # SimpleSpider
     data_type = 'release'
 
     # IndexSpider
-    base_url = 'https://api.quienesquien.wiki/v3/contracts?sort=date&sort_direction=desc'
+    result_count_pointer = '/count'
+    limit = 1000
+
+    # PeriodicSpider
+    formatter = staticmethod(parameters('start_date_min', 'start_date_max', 'offset'))
+    pattern = 'https://api.quienesquien.wiki/v3/contracts?start_date_min={0:%Y-%m-%d}&start_date_max={' \
+              '1:%Y-%m-%d}&limit=25&offset=0 '
+    start_requests_callback = 'parse_list'
