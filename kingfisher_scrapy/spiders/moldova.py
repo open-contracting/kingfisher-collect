@@ -1,11 +1,17 @@
 import scrapy
 
+<<<<<<< Updated upstream
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import RetryableError
+||||||| Stash base
+from kingfisher_scrapy.base_spiders import SimpleSpider
+=======
+from kingfisher_scrapy.base_spiders import BaseSpider
+>>>>>>> Stashed changes
 from kingfisher_scrapy.util import components, handle_http_error, join, parameters, replace_parameters
 
 
-class Moldova(SimpleSpider):
+class Moldova(BaseSpider):
     """
     Domain
       MTender
