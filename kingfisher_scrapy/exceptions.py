@@ -26,5 +26,5 @@ class UnknownArchiveFormatError(KingfisherScrapyError):
     """Raised when the archive format of a file can't be determined from the filename, from a spider callback"""
 
 
-class RetryableBadResponseError(KingfisherScrapyError):
-    """Raised when a URL returns a 200 HTTP response with a non-OCDS JSON object that could be retried"""
+class RetryableError(KingfisherScrapyError):
+    """Raised when the response is an error, but the request can be retried"""

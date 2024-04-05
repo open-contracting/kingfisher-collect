@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.exceptions import RetryableBadResponseError
+from kingfisher_scrapy.exceptions import RetryableError
 from kingfisher_scrapy.util import components, handle_http_error, join, parameters, replace_parameters
 
 
@@ -37,14 +37,7 @@ class Moldova(SimpleSpider):
             url = f'{url}?offset={self.from_date.strftime(self.date_format)}'
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
-    @handle_http_error
-    def parse_list(self, response):
-        data = response.json()
-
-        # The last page returns an empty JSON object.
-        if not data:
-            return
-
+    def raise_for_status(self, data):
         # Occasional error response with HTTP 200 code, e.g.:
         # {
         #   "message": "connect EHOSTUNREACH 185.108.182.236:443",
@@ -72,7 +65,17 @@ class Moldova(SimpleSpider):
         #   "code": "EHOSTUNREACH"
         # }
         if data.get('name') == 'Error':
-            raise RetryableBadResponseError
+            raise RetryableError
+
+    @handle_http_error
+    def parse_list(self, response):
+        data = response.json()
+
+        # The last page returns an empty JSON object.
+        if not data:
+            return
+
+        self.raise_for_status(data)
 
         base_url = 'http://public.eprocurement.systems/ocds/tenders/'
         for item in data['data']:
@@ -84,6 +87,5 @@ class Moldova(SimpleSpider):
 
     @handle_http_error
     def parse(self, response):
-        if response.json().get('name') == 'Error':
-            raise RetryableBadResponseError
+        self.raise_for_status(response.json())
         yield self.build_file_from_response(response, data_type=self.data_type)
