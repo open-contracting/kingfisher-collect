@@ -2,7 +2,7 @@ from kingfisher_scrapy.base_spiders import IndexSpider, PeriodicSpider
 from kingfisher_scrapy.util import components, handle_http_error, parameters
 
 
-class EcuadorSERCOPAPI(PeriodicSpider, IndexSpider):
+class EcuadorSERCOPAPI(IndexSpider, PeriodicSpider):
     """
     Domain
       Servicio Nacional de Contratación Pública (SERCOP)
