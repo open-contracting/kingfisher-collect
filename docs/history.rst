@@ -1,12 +1,12 @@
 Removed spiders
 ===============
 
-This page records the spiders that were removed from Kingfisher Collect because they stopped publishing data or are broken.
+This page records the spiders removed from Kingfisher Collect.
 
 Lapsed spiders
 --------------
 
-This section records the spiders that were available but stopped publishing, since January 2022:
+Spiders for publications that were available but stopped publishing, since January 2022:
 
 - 2024-01-09: `mexico_puebla_itaipue, nigeria_edo_state <https://github.com/open-contracting/kingfisher-collect/pull/1047>`__
 - 2023-10-04: `honduras_cost, kenya_makueni, kyrgyzstan, portugal_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1030>`__
@@ -18,10 +18,9 @@ This section records the spiders that were available but stopped publishing, sin
 
    Since January 2022, any spider that stops working for more than six months will be deleted.
 
-
 Broken spiders
 --------------
 
-This section records the spiders that were available but then stop working, since April 2024:
+Spiders for publications that became broken, since April 2024:
 
-- 2024-04-05: `mexico_quien_es_quien_records <https://github.com/open-contracting/kingfisher-collect/pull/1063>`__ (the pagination is not working anymore)
+- 2024-04-05: `mexico_quien_es_quien_records <https://github.com/open-contracting/kingfisher-collect/pull/1063>`__ (pagination is broken)
