@@ -326,6 +326,8 @@ class BaseSpider(scrapy.Spider):
     def build_file_error_from_response(self, response, **kwargs):
         """
         Returns a FileError item to yield, based on the response to a request.
+
+        An ``errors`` keyword argument must be a ``dict``, and should set an ``http_code`` key.
         """
         item = FileError({
             'url': response.request.url,
