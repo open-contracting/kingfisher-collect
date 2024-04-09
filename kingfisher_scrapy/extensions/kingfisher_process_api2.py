@@ -108,16 +108,6 @@ class KingfisherProcessAPI2:
         else:
             self._response_error(spider, 'Failed to create collection', response)
 
-    def disconnect_and_join(self):
-        """
-        Closes the RabbitMQ connection and joins the client's thread.
-        """
-        cb = functools.partial(self._when_ready, self.client.interrupt)
-        methods.add_callback_threadsafe(self.client.connection, cb)
-
-        # Join last, to avoid blocking before scheduling interrupt.
-        self.thread.join()
-
     def spider_closed(self, spider, reason):
         """
         Sends an API request to close the collection in Kingfisher Process.
@@ -163,6 +153,16 @@ class KingfisherProcessAPI2:
 
         cb = functools.partial(self._when_ready, self.client.publish, data, self.routing_key)
         methods.add_callback_threadsafe(self.client.connection, cb)
+
+    def disconnect_and_join(self):
+        """
+        Closes the RabbitMQ connection and joins the client's thread.
+        """
+        cb = functools.partial(self._when_ready, self.client.interrupt)
+        methods.add_callback_threadsafe(self.client.connection, cb)
+
+        # Join last, to avoid blocking before scheduling interrupt.
+        self.thread.join()
 
     def _post_synchronous(self, spider, path, data):
         """
