@@ -102,8 +102,7 @@ ITEM_PIPELINES = {
 # To send exceptions and log records to Sentry.
 SENTRY_DSN = os.getenv('SENTRY_DSN')
 
-# To send items to Kingfisher Process (version 2). If the API has basic authentication, add the username and password
-# to the URL, like http://user:pass@localhost:8000
+# To send items to Kingfisher Process (version 2).
 KINGFISHER_API2_URL = os.getenv('KINGFISHER_API2_URL')
 RABBIT_URL = os.getenv('RABBIT_URL')
 RABBIT_EXCHANGE_NAME = os.getenv('RABBIT_EXCHANGE_NAME')
