@@ -79,12 +79,13 @@ class BaseSpider(scrapy.Spider):
         :param crawl_time: override the crawl's start time (see :ref:`increment`)
         :param note: a note to add to the collection in Kingfisher Process
         :param keep_collection_open: whether to close the collection in Kingfisher Process when the crawl is finished
+        :param steps: a comma-separated list of steps to run in Kingfisher Process (``'compile'`` and/or ``'check'``)
         :param compile_releases: whether to create compiled releases from individual releases when using the
                                  :class:`~kingfisher_scrapy.extensions.DatabaseStore` extension
+        :param table_name: override the crawl's table name in the database (see :ref:`database_store`)
         :param package_pointer: the JSON Pointer to the value in the package (see the :ref:`pluck` command)
         :param release_pointer: the JSON Pointer to the value in the release (see the :ref:`pluck` command)
         :param truncate: the number of characters to which the value is truncated (see the :ref:`pluck` command)
-        :param table_name: override the crawl's table name in the database (see :ref:`database_store`)
         """
 
         super().__init__(*args, **kwargs)
