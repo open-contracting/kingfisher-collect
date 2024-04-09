@@ -163,7 +163,7 @@ Test the spider
 
 #. :doc:`Check the log for errors and warnings<../logs>`
 #. Check whether the data is as expected, in format and number
-#. Integrate it with :doc:`Kingfisher Process<../kingfisher_process>` and check for errors and warnings in its logs
+#. Integrate it with :doc:`Kingfisher Process<../kingfisher_process>` and check for issues
 
 Scrapy offers some debugging features that we haven't used yet:
 
