@@ -139,7 +139,7 @@ If you are integrating with :doc:`Kingfisher Process<kingfisher_process>`, remem
 
 .. seealso::
 
-   :class:`~kingfisher_scrapy.extensions.DatabaseStore` extension
+   :class:`~kingfisher_scrapy.extensions.database_store.DatabaseStore` extension
 
 .. _proxy:
 

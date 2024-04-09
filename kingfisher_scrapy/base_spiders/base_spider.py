@@ -81,7 +81,7 @@ class BaseSpider(scrapy.Spider):
         :param keep_collection_open: whether to close the collection in Kingfisher Process when the crawl is finished
         :param steps: a comma-separated list of steps to run in Kingfisher Process (``'compile'`` and/or ``'check'``)
         :param compile_releases: whether to create compiled releases from individual releases when using the
-                                 :class:`~kingfisher_scrapy.extensions.DatabaseStore` extension
+                                 :class:`~kingfisher_scrapy.extensions.database_store.DatabaseStore` extension
         :param table_name: override the crawl's table name in the database (see :ref:`database_store`)
         :param package_pointer: the JSON Pointer to the value in the package (see the :ref:`pluck` command)
         :param release_pointer: the JSON Pointer to the value in the release (see the :ref:`pluck` command)
