@@ -201,7 +201,7 @@ class Unflatten:
                     **spider.unflatten_args
                 )
 
-            with open(output_name) as f:
+            with open(output_name, 'rb') as f:
                 item.data = f.read()
 
         return item
