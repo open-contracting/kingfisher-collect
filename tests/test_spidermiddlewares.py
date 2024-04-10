@@ -9,13 +9,13 @@ from kingfisher_scrapy.exceptions import RetryableError
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.spidermiddlewares import (
     AddPackageMiddleware,
-    ValidateJSONMiddleware,
     ConcatenatedJSONMiddleware,
     LineDelimitedMiddleware,
     ReadDataMiddleware,
     ResizePackageMiddleware,
     RetryDataErrorMiddleware,
     RootPathMiddleware,
+    ValidateJSONMiddleware,
 )
 from tests import response_fixture, spider_with_crawler
 
@@ -45,13 +45,13 @@ async def alist(iterable):
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data={},
+        data='{}',
     ),
     FileItem(
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data={},
+        data='{}',
         number=1,
     ),
     FileError(
@@ -114,8 +114,8 @@ async def test_bytes_or_file(middleware_class, attribute, value, override, tmpdi
         'file_name': 'test.json',
         'url': 'http://test.com',
         'data_type': 'release',
-        'path': '',
         'invalid_json': False,
+        'path': '',
     }
     expected.update(override)
 
@@ -161,8 +161,8 @@ async def test_encoding(middleware_class, attribute, value, override, tmpdir):
         'file_name': 'test.json',
         'url': 'http://test.com',
         'data_type': 'release',
-        'path': '',
         'invalid_json': False,
+        'path': '',
     }
     expected.update(override)
 
@@ -203,8 +203,8 @@ async def test_add_package_middleware(data_type, data, root_path):
     expected = {
         'file_name': 'test.json',
         'url': 'http://test.com',
-        'path': '',
         'invalid_json': False,
+        'path': '',
     }
     if 'item' in root_path:
         expected['number'] = 1
@@ -295,8 +295,8 @@ async def test_json_streaming_middleware(middleware_class, attribute, separator,
             'data_type': 'release_package',
             'data': data,
             'number': i,
-            'path': '',
             'invalid_json': False,
+            'path': '',
         }
 
 
@@ -379,8 +379,8 @@ async def test_json_streaming_middleware_with_compressed_file_spider(middleware_
             'data_type': 'release_package',
             'data': data,
             'number': i,
-            'path': '',
             'invalid_json': False,
+            'path': '',
         }
 
 
@@ -543,12 +543,9 @@ async def test_validate_json_middleware(invalid, klass):
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data='{"key": "value"}',
+        data='{"broken": }' if invalid else '{"key": "value"}',
         **kwargs
     )
-
-    if invalid:
-        item.data = '{"broken": }'
 
     generator = middleware.process_spider_output(None, _aiter([item]), spider)
     transformed_items = await alist(generator)

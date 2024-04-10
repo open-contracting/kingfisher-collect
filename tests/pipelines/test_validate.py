@@ -159,18 +159,18 @@ def test_process_item_with_duplicate_file_item(caplog):
     assert str(excinfo.value) == "Duplicate FileItem: ('test1', 1)"
 
 
-@pytest.mark.parametrize('klass, message', [(File, "'test.json'"), (FileItem, "('test.json', 1)")])
-def test_process_item_with_invalid_json(klass, message):
-    spider = spider_with_crawler()
+@pytest.mark.parametrize('klass', [File, FileItem])
+def test_process_item_with_invalid_json(klass):
     pipeline = Validate()
+    spider = spider_with_crawler()
 
     kwargs = {'number': 1} if klass is FileItem else {}
 
     item = klass(
-        file_name='test.json',
-        url='http://test.com',
+        file_name='test',
+        url='http://example.com',
         data_type='release_package',
-        data='{"key": "value"}',
+        data='{"broken": }',
         invalid_json=True,
         **kwargs
     )
@@ -178,4 +178,4 @@ def test_process_item_with_invalid_json(klass, message):
     with pytest.raises(DropItem) as excinfo:
         pipeline.process_item(item, spider)
 
-    assert str(excinfo.value) == f"Invalid {klass.__name__} data: {message}"
+    assert str(excinfo.value) == 'Invalid JSON data'

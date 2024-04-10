@@ -46,7 +46,7 @@ class Validate:
     def process_item(self, item, spider):
         if isinstance(item, (File, FileItem)):
             if item.invalid_json:
-                raise DropItem(f'Invalid JSON data')
+                raise DropItem('Invalid JSON data')
 
         validator = self.validators.get(item.__class__.__name__)
         if validator:
