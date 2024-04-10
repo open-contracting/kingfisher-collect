@@ -64,6 +64,7 @@ def test_parse_200():
         'data_type': 'release_package',
         'data': body,
         'path': '',
+        'invalid_format': False,
     }
 
     assert type(request) is Request

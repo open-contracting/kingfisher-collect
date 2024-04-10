@@ -37,7 +37,7 @@ def test_parse_package(sample, len_items, len_releases, data_type, key):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item.__dict__) == 5
+    assert len(item.__dict__) == 6
     assert item.file_name == 'test.json'
     assert item.url == 'http://example.com'
     assert item.data_type == data_type
