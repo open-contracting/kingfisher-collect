@@ -9,12 +9,13 @@ from kingfisher_scrapy.exceptions import RetryableError
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.spidermiddlewares import (
     AddPackageMiddleware,
+    CheckJSONFormatMiddleware,
     ConcatenatedJSONMiddleware,
     LineDelimitedMiddleware,
     ReadDataMiddleware,
     ResizePackageMiddleware,
     RetryDataErrorMiddleware,
-    RootPathMiddleware, CheckJSONFormatMiddleware,
+    RootPathMiddleware,
 )
 from tests import response_fixture, spider_with_crawler
 
