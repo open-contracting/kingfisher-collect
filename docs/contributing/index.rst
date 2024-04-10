@@ -105,6 +105,7 @@ Since there are many class attributes that control a spider's behavior, please p
       encoding = 'iso-8859-1'
       concatenated_json = True
       line_delimited = True
+      validate_json = True
       root_path = 'item'
       unflatten = True
       unflatten_args = {}
