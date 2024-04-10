@@ -76,6 +76,28 @@ class LineDelimitedMiddleware:
                 yield spider.build_file_item(number, line, item)
 
 
+class ValidateJSONMiddleware:
+    """
+    If the spider's ``validate_json`` class attribute is ``True``,  checks if the item's ``data`` field is a valid
+    JSON. If not, marks the item as invalid. Otherwise, yields the original item.
+    """
+    async def process_spider_output(self, response, result, spider):
+        """
+        :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
+        """
+        async for item in result:
+            if not isinstance(item, (File, FileItem)) or not spider.validate_json:
+                yield item
+                continue
+
+            try:
+                json.loads(item.data)
+            except (JSONDecodeError, TypeError):
+                item.invalid_json = True
+
+            yield item
+
+
 class RootPathMiddleware:
     """
     If the spider's ``root_path`` class attribute is non-empty, replaces the item's ``data`` with the objects at that
@@ -88,7 +110,11 @@ class RootPathMiddleware:
         :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
         """
         async for item in result:
-            if not isinstance(item, (File, FileItem)) or not spider.root_path or item.invalid_json:
+            if (
+                not isinstance(item, (File, FileItem))
+                or item.invalid_json
+                or not spider.root_path
+            ):
                 yield item
                 continue
 
@@ -169,8 +195,11 @@ class AddPackageMiddleware:
         :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
         """
         async for item in result:
-            if not isinstance(item, (File, FileItem)) or item.data_type not in ('release', 'record') \
-                    or item.invalid_json:
+            if (
+                not isinstance(item, (File, FileItem))
+                or item.invalid_json
+                or item.data_type not in ('release', 'record')
+            ):
                 yield item
                 continue
 
@@ -206,7 +235,11 @@ class ResizePackageMiddleware:
         :returns: a generator of FileItem objects, in which the ``data`` field is a string
         """
         async for item in result:
-            if not isinstance(item, File) or not getattr(spider, 'resize_package', False) or item.invalid_json:
+            if (
+                not isinstance(item, File)
+                or item.invalid_json
+                or not getattr(spider, 'resize_package', False)
+            ):
                 yield item
                 continue
 
@@ -260,7 +293,11 @@ class ReadDataMiddleware:
         :returns: a generator of File objects, in which the ``data`` field is bytes
         """
         async for item in result:
-            if not isinstance(item, File) or not hasattr(item.data, 'read') or item.invalid_json:
+            if (
+                not isinstance(item, File)
+                or item.invalid_json
+                or not hasattr(item.data, 'read')
+            ):
                 yield item
                 continue
 
@@ -292,25 +329,3 @@ class RetryDataErrorMiddleware:
             yield request
         else:
             raise exception
-
-
-class ValidateJSONMiddleware:
-    """
-    If the spider's ``validate_json`` class attribute is ``True``,  checks if the item's ``data`` field is a valid
-    JSON. If not, marks the item as invalid. Otherwise, yields the original item.
-    """
-    async def process_spider_output(self, response, result, spider):
-        """
-        :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
-        """
-        async for item in result:
-            if not isinstance(item, (File, FileItem)) or not spider.validate_json:
-                yield item
-                continue
-
-            try:
-                json.loads(item.data)
-            except (JSONDecodeError, TypeError):
-                item.invalid_json = True
-
-            yield item
