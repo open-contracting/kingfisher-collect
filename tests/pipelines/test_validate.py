@@ -152,3 +152,25 @@ def test_process_item_duplicate_file_item(caplog):
     pipeline.process_item(item2, spider)
 
     assert str(excinfo.value) == "Duplicate FileItem: ('test1', 1)"
+
+
+@pytest.mark.parametrize('klass, message', [(File, "'test.json'"), (FileItem, "('test.json', 1)")])
+def test_check_json_format_middleware(klass, message):
+    spider = spider_with_crawler()
+    pipeline = Validate()
+
+    kwargs = {'number': 1} if klass is FileItem else {}
+
+    item = klass(
+        file_name='test.json',
+        url='http://test.com',
+        data_type='release_package',
+        data='{"key": "value"}',
+        invalid_format=True,
+        **kwargs
+    )
+
+    with pytest.raises(DropItem) as excinfo:
+        pipeline.process_item(item, spider)
+
+    assert str(excinfo.value) == f"Invalid {klass.__name__} data: {message}"

@@ -14,7 +14,7 @@ from kingfisher_scrapy.spidermiddlewares import (
     ReadDataMiddleware,
     ResizePackageMiddleware,
     RetryDataErrorMiddleware,
-    RootPathMiddleware,
+    RootPathMiddleware, CheckJSONFormatMiddleware,
 )
 from tests import response_fixture, spider_with_crawler
 
@@ -33,6 +33,7 @@ async def alist(iterable):
 @pytest.mark.parametrize('middleware_class', [
     ConcatenatedJSONMiddleware,
     LineDelimitedMiddleware,
+    CheckJSONFormatMiddleware,
     RootPathMiddleware,
     AddPackageMiddleware,
     ResizePackageMiddleware,
@@ -43,19 +44,19 @@ async def alist(iterable):
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data='data',
+        data={},
     ),
     FileItem(
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data='data',
+        data={},
         number=1,
     ),
     FileError(
         file_name='test.json',
         url='http://test.com',
-        errors='',
+        errors={},
     ),
 ])
 async def test_passthrough(middleware_class, item):
@@ -113,6 +114,7 @@ async def test_bytes_or_file(middleware_class, attribute, value, override, tmpdi
         'url': 'http://test.com',
         'data_type': 'release',
         'path': '',
+        'invalid_format': False,
     }
     expected.update(override)
 
@@ -159,6 +161,7 @@ async def test_encoding(middleware_class, attribute, value, override, tmpdir):
         'url': 'http://test.com',
         'data_type': 'release',
         'path': '',
+        'invalid_format': False,
     }
     expected.update(override)
 
@@ -200,6 +203,7 @@ async def test_add_package_middleware(data_type, data, root_path):
         'file_name': 'test.json',
         'url': 'http://test.com',
         'path': '',
+        'invalid_format': False,
     }
     if 'item' in root_path:
         expected['number'] = 1
@@ -244,7 +248,7 @@ async def test_resize_package_middleware(sample, len_items, len_releases, encodi
     assert len(transformed_items) == len_items
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
-        assert len(item.__dict__) == 6
+        assert len(item.__dict__) == 7
         assert item.file_name == 'archive-test.json'
         assert item.url == 'http://example.com'
         assert item.number == i
@@ -291,6 +295,7 @@ async def test_json_streaming_middleware(middleware_class, attribute, separator,
             'data': data,
             'number': i,
             'path': '',
+            'invalid_format': False,
         }
 
 
@@ -323,7 +328,7 @@ async def test_json_streaming_middleware_with_root_path_middleware(middleware_cl
     assert len(transformed_items) == 1
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
-        assert len(item.__dict__) == 6
+        assert len(item.__dict__) == 7
         assert item.file_name == 'test.json'
         assert item.url == 'http://example.com'
         assert item.number == i
@@ -374,6 +379,7 @@ async def test_json_streaming_middleware_with_compressed_file_spider(middleware_
             'data': data,
             'number': i,
             'path': '',
+            'invalid_format': False,
         }
 
 
@@ -521,3 +527,31 @@ async def test_root_path_middleware_item(root_path, sample, data_type, data, exp
         assert transformed_item.data == expected_data
         assert transformed_item.data_type == expected_data_type
         assert transformed_item.url == 'http://test.com'
+
+
+@pytest.mark.parametrize('invalid', [True, False])
+@pytest.mark.parametrize('klass', [File, FileItem])
+async def test_check_json_format_middleware(invalid, klass):
+    spider = spider_with_crawler()
+    middleware = CheckJSONFormatMiddleware()
+    spider.check_json_format = True
+
+    kwargs = {'number': 1} if klass is FileItem else {}
+
+    item = klass(
+        file_name='test.json',
+        url='http://test.com',
+        data_type='release_package',
+        data='{"key": "value"}',
+        **kwargs
+    )
+
+    if invalid:
+        item.data = '{"broken": }'
+
+    generator = middleware.process_spider_output(None, _aiter([item]), spider)
+    transformed_items = await alist(generator)
+
+    assert len(transformed_items) == 1
+    for transformed_item in transformed_items:
+        assert transformed_item.invalid_format is invalid
