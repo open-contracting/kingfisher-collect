@@ -5,6 +5,7 @@ from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
 import pytest
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, SimpleSpider
+from kingfisher_scrapy.exceptions import RetryableError
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.spidermiddlewares import (
     AddPackageMiddleware,
@@ -392,7 +393,7 @@ async def test_read_data_middleware():
     assert transformed_items[0]['data'] == b'{}'
 
 
-@pytest.mark.parametrize('exception', [BadZipFile(), Exception()])
+@pytest.mark.parametrize('exception', [BadZipFile(), RetryableError, Exception()])
 def test_retry_data_error_middleware(exception):
     spider = spider_with_crawler()
     response = response_fixture()
@@ -400,7 +401,7 @@ def test_retry_data_error_middleware(exception):
 
     generator = middleware.process_spider_exception(response, exception, spider)
 
-    if isinstance(exception, BadZipFile):
+    if isinstance(exception, (BadZipFile, RetryableError)):
         request = next(generator)
 
         assert request.dont_filter is True
