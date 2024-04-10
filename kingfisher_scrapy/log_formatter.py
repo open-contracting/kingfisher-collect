@@ -13,8 +13,9 @@ class LogFormatter(_LogFormatter):
 
     def _omit_data(self, method, item, *args):
         """
-        Omits an item's `data` value from the log message.
+        Omits an item's `data` and `path` (not set yet) values from the log message.
         """
         item = item.__dict__.copy()
         item.pop('data', None)
+        item.pop('path', None)
         return getattr(super(), method)(item, *args)
