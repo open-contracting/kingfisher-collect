@@ -9,9 +9,6 @@
   "properties": {
     "path": {
       "type": "string"
-    },
-    "files_store": {
-      "type": "string"
     }
   }
 }
