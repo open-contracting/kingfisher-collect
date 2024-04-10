@@ -74,15 +74,15 @@ class FilesStore:
         if not isinstance(item, (File, FileItem)):
             return
 
-        file_name = item['file_name']
+        file_name = item.file_name
         if isinstance(item, FileItem):
             name, extension = util.get_file_name_and_extension(file_name)
-            file_name = f"{name}-{item['number']}.{extension}"
+            file_name = f"{name}-{item.number}.{extension}"
 
         path = os.path.join(self.relative_crawl_directory(spider), self._get_subdirectory(file_name), file_name)
-        self._write_file(path, item['data'])
+        self._write_file(path, item.data)
 
-        item['path'] = path
+        item.path = path
 
     # https://github.com/rails/rails/blob/05ed261/activesupport/lib/active_support/cache/file_store.rb#L150-L175
     @staticmethod

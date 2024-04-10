@@ -32,5 +32,6 @@ class DigiwhistBase(BaseSpider):
         # Load a line at the time, pass it to API
         with tarfile.open(fileobj=BytesIO(response.body), mode="r:gz") as tar:
             with tar.extractfile(tar.next()) as f:
-                yield self.build_file_from_response(data=f, response=response, file_name='data.json',
-                                                    data_type='release_package')
+                yield self.build_file_from_response(
+                    response, data_type='release_package', file_name='data.json', data=f
+                )

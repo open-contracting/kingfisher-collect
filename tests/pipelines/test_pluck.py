@@ -39,12 +39,12 @@ def test_disabled(data_type, data):
     spider = spider_with_crawler()
 
     pipeline = Pluck()
-    item = File({
-        'file_name': 'test',
-        'data': json.dumps(data),
-        'data_type': data_type,
-        'url': 'http://test.com',
-    })
+    item = File(
+        file_name='test',
+        url='http://test.com',
+        data_type=data_type,
+        data=json.dumps(data),
+    )
 
     assert pipeline.process_item(item, spider) == item
 
@@ -61,14 +61,14 @@ def test_process_item_release_pointer(data_type, data):
     spider = spider_with_crawler(release_pointer='/date', truncate=10)
 
     pipeline = Pluck()
-    item = File({
-        'file_name': 'test',
-        'data': json.dumps(data).encode(),
-        'data_type': data_type,
-        'url': 'http://test.com',
-    })
+    item = File(
+        file_name='test',
+        url='http://test.com',
+        data_type=data_type,
+        data=json.dumps(data).encode(),
+    )
 
-    assert pipeline.process_item(item, spider) == PluckedItem({'value': '2020-10-01'})
+    assert pipeline.process_item(item, spider) == PluckedItem(value='2020-10-01')
 
 
 @pytest.mark.parametrize('data_type,data', package_parameters)
@@ -76,14 +76,14 @@ def test_process_item_package_pointer(data_type, data):
     spider = spider_with_crawler(package_pointer='/publishedDate')
 
     pipeline = Pluck()
-    item = File({
-        'file_name': 'test',
-        'data': json.dumps(data).encode(),
-        'data_type': data_type,
-        'url': 'http://test.com',
-    })
+    item = File(
+        file_name='test',
+        url='http://test.com',
+        data_type=data_type,
+        data=json.dumps(data).encode(),
+    )
 
-    assert pipeline.process_item(item, spider) == PluckedItem({'value': '2000-01-01T00:00:00Z'})
+    assert pipeline.process_item(item, spider) == PluckedItem(value='2000-01-01T00:00:00Z')
 
 
 @pytest.mark.parametrize('kwargs', [{'release_pointer': '/nonexistent'}, {'package_pointer': '/nonexistent'}])
@@ -91,39 +91,41 @@ def test_process_item_nonexistent_pointer(kwargs):
     spider = spider_with_crawler(**kwargs)
 
     pipeline = Pluck()
-    item = File({
-        'file_name': 'test',
-        'data': json.dumps(release_package).encode(),
-        'data_type': 'release_package',
-        'url': 'http://test.com',
-    })
+    item = File(
+        file_name='test',
+        url='http://test.com',
+        data_type='release_package',
+        data=json.dumps(release_package).encode(),
+    )
 
-    assert pipeline.process_item(item, spider) == PluckedItem({'value': 'error: /nonexistent not found'})
+    assert pipeline.process_item(item, spider) == PluckedItem(value='error: /nonexistent not found')
 
 
 def test_process_item_non_package_data_type():
     spider = spider_with_crawler(package_pointer='/publishedDate')
 
     pipeline = Pluck()
-    item = File({
-        'file_name': 'test',
-        'data': json.dumps(releases[0]).encode(),
-        'data_type': 'release',
-        'url': 'http://test.com',
-    })
+    item = File(
+        file_name='test',
+        url='http://test.com',
+        data_type='release',
+        data=json.dumps(releases[0]).encode(),
+    )
 
-    assert pipeline.process_item(item, spider) == PluckedItem({'value': 'error: /publishedDate not found'})
+    assert pipeline.process_item(item, spider) == PluckedItem(value='error: /publishedDate not found')
 
 
 def test_process_item_incomplete_json():
     spider = spider_with_crawler(package_pointer='/publishedDate')
 
     pipeline = Pluck()
-    item = File({
-        'file_name': 'test',
-        'data': b'{"key": "value"',
-        'data_type': 'release_package',
-        'url': 'http://test.com',
-    })
+    item = File(
+        file_name='test',
+        url='http://test.com',
+        data_type='release_package',
+        data=b'{"key": "value"',
+    )
 
-    assert pipeline.process_item(item, spider) == {'value': 'error: /publishedDate not found within initial bytes'}
+    assert pipeline.process_item(item, spider) == PluckedItem(
+        value='error: /publishedDate not found within initial bytes'
+    )
