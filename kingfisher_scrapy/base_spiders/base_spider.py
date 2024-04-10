@@ -40,6 +40,7 @@ class BaseSpider(scrapy.Spider):
        Flatten Tool's ``unflatten`` function. To pass arguments to ``unflatten``, set a ``unflatten_args`` dict.
     -  If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for the
        :ref:`Kingfisher Process<kingfisher-process>` extension.
+    -  If the data contains some invalid JSON files, add a ``check_json_format = True`` class attribute.
 
     With respect to support for Kingfisher Collect's features:
 
@@ -57,6 +58,7 @@ class BaseSpider(scrapy.Spider):
     concatenated_json = False
     line_delimited = False
     root_path = ''
+    check_json_format = False
     unflatten = False
     unflatten_args = {}
     ocds_version = '1.1'

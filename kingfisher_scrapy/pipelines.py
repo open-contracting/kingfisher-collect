@@ -34,6 +34,7 @@ class Validate:
         self.validators = {}
         self.files = set()
         self.file_items = set()
+        self.invalid_items = set()
 
         schema = Resource.from_contents(_json_loads('item'))
         registry = Registry().with_resource('urn:item', schema)
@@ -47,11 +48,17 @@ class Validate:
 
         if isinstance(item, FileItem):
             key = (item['file_name'], item['number'])
+            if item.get('invalid_format'):
+                self.invalid_items.add(key)
+                raise DropItem(f'Invalid FileItem data: {key!r}')
             if key in self.file_items:
                 raise DropItem(f'Duplicate FileItem: {key!r}')
             self.file_items.add(key)
         elif isinstance(item, File):
             key = item['file_name']
+            if item.get('invalid_format'):
+                self.invalid_items.add(key)
+                raise DropItem(f'Invalid File data: {key!r}')
             if key in self.files:
                 raise DropItem(f'Duplicate File: {key!r}')
             self.files.add(key)

@@ -8,6 +8,9 @@ class Item(scrapy.Item):
     url = scrapy.Field()
     validate = True
 
+    # Added by the CheckJSONFormat middleware, for the Validate pipeline to drop the item if invalid.
+    invalid_format = scrapy.Field()
+
 
 class File(Item):
     data = scrapy.Field()

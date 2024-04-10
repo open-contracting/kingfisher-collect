@@ -11,6 +11,9 @@
         "url": {
           "type": "string",
           "format": "uri"
+        },
+        "invalid_format": {
+          "type": "boolean"
         }
       },
       "required": [
