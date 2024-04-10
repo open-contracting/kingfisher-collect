@@ -1,5 +1,5 @@
-import typing
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -11,17 +11,18 @@ class Item:
 @dataclass
 class File(Item):
     data_type: str
-    data: typing.Any
+    data: Any
     # Added by the ValidateJSON middleware, for the Validate pipeline to drop the item if invalid.
     invalid_json: bool = False
     # Added by the FilesStore extension, for the KingfisherProcessAPI2 extension to refer to the file.
     path: str = ""
 
 
+# This doesn't inherit from the File class, because we want isinstance(item, File) to be false for FileItem instances.
 @dataclass
 class FileItem(Item):
     data_type: str
-    data: typing.Any
+    data: Any
     number: int
     # Added by the ValidateJSON middleware, for the Validate pipeline to drop the item if invalid.
     invalid_json: bool = False
@@ -36,4 +37,4 @@ class FileError(Item):
 
 @dataclass
 class PluckedItem:
-    value: typing.Any
+    value: Any
