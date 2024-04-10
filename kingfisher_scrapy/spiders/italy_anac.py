@@ -43,5 +43,4 @@ class ItalyANAC(SimpleSpider):
             # For example: ocds-hu01ve-7608611 from ocds-hu01ve-7608611-01.
             if 'ocid' not in release:
                 release['ocid'] = '-'.join(release['id'].split('-')[:3])
-        response = response.replace(body=json.dumps(data))
-        yield from super().parse(response)
+        yield self.build_file_from_response(response, data_type=self.data_type, data=data)
