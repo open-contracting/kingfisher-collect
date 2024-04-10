@@ -26,8 +26,8 @@ def _json_loads(basename):
 # https://docs.scrapy.org/en/latest/topics/item-pipeline.html#duplicates-filter
 class Validate:
     """
-    Drops duplicate files based on ``file_name`` and file items based on ``file_name`` and ``number`` or, items
-    marked as invalid_json=True by ValidateJSONMiddleware.
+    Drops duplicate files based on ``file_name`` and file items based on ``file_name`` and ``number``, and items
+    marked as ``invalid_json`` by :class:`~kingfisher_scrapy.spidermiddlewares.ValidateJSONMiddleware`.
 
     :raises jsonschema.ValidationError: if the item is invalid
     """
@@ -44,22 +44,22 @@ class Validate:
             self.validators[item] = Draft4Validator(_json_loads(item), registry=registry, format_checker=checker)
 
     def process_item(self, item, spider):
+        if isinstance(item, (File, FileItem)):
+            if item.invalid_json:
+                raise DropItem(f'Invalid JSON data')
+
         validator = self.validators.get(item.__class__.__name__)
         if validator:
             validator.validate(item.__dict__)
 
         if isinstance(item, FileItem):
             key = (item.file_name, item.number)
-            if item.invalid_json:
-                raise DropItem(f'Invalid FileItem data: {key!r}')
             if key in self.file_items:
                 raise DropItem(f'Duplicate FileItem: {key!r}')
             else:
                 self.file_items.add(key)
         elif isinstance(item, File):
             key = item.file_name
-            if item.invalid_json:
-                raise DropItem(f'Invalid File data: {key!r}')
             if key in self.files:
                 raise DropItem(f'Duplicate File: {key!r}')
             else:
