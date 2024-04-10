@@ -40,8 +40,8 @@
         }
       },
       "required": [
-        "data",
-        "data_type"
+        "data_type",
+        "data"
       ]
     }
   }

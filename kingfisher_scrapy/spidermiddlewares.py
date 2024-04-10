@@ -38,7 +38,7 @@ class ConcatenatedJSONMiddleware:
                 yield item
                 continue
 
-            data = item['data']
+            data = item.data
 
             # ijson can read from bytes or a file-like object.
             for number, obj in enumerate(util.transcode(spider, ijson.items, data, '', multiple_values=True), 1):
@@ -63,7 +63,7 @@ class LineDelimitedMiddleware:
                 yield item
                 continue
 
-            data = item['data']
+            data = item.data
             # Data can be bytes or a file-like object.
             if isinstance(data, bytes):
                 data = data.splitlines(True)
@@ -91,7 +91,7 @@ class RootPathMiddleware:
                 yield item
                 continue
 
-            data = item['data']
+            data = item.data
             # Re-encode the data, to traverse the JSON using only ijson, instead of either ijson or Python.
             if isinstance(data, (dict, list)):
                 data = util.json_dumps(data).encode()
@@ -109,21 +109,21 @@ class RootPathMiddleware:
                 #
                 # We re-package in groups of 100 to reduce the overhead.
 
-                is_package = 'package' in item['data_type']
+                is_package = 'package' in item.data_type
 
-                if 'release' in item['data_type']:
+                if 'release' in item.data_type:
                     key = 'releases'
-                    item['data_type'] = 'release_package'
+                    item.data_type = 'release_package'
                 else:
                     key = 'records'
-                    item['data_type'] = 'record_package'
+                    item.data_type = 'record_package'
 
                 try:
                     head = next(iterable)
                 except StopIteration:
                     # Always yield an item, even if the root_path points to an empty object.
                     # https://github.com/open-contracting/kingfisher-collect/pull/944#issuecomment-1149156552
-                    item['data'] = {'version': spider.ocds_version, key: []}
+                    item.data = {'version': spider.ocds_version, key: []}
                     yield item
                 else:
                     iterable = itertools.chain([head], iterable)
@@ -153,7 +153,7 @@ class RootPathMiddleware:
                     if sample_filled(spider, number):
                         return
 
-                    item['data'] = obj
+                    item.data = obj
                     yield item
 
 
@@ -168,11 +168,11 @@ class AddPackageMiddleware:
         :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
         """
         async for item in result:
-            if not isinstance(item, (File, FileItem)) or item['data_type'] not in ('release', 'record'):
+            if not isinstance(item, (File, FileItem)) or item.data_type not in ('release', 'record'):
                 yield item
                 continue
 
-            data = item['data']
+            data = item.data
             if hasattr(data, 'read'):
                 data = data.read()
 
@@ -180,13 +180,13 @@ class AddPackageMiddleware:
             if not isinstance(data, dict):
                 data = json.loads(data)
 
-            if item['data_type'] == 'release':
+            if item.data_type == 'release':
                 key = 'releases'
             else:
                 key = 'records'
 
-            item['data'] = {'version': spider.ocds_version, key: [data]}
-            item['data_type'] += '_package'
+            item.data = {'version': spider.ocds_version, key: [data]}
+            item.data_type += '_package'
 
             yield item
 
@@ -208,14 +208,14 @@ class ResizePackageMiddleware:
                 yield item
                 continue
 
-            data = item['data']
+            data = item.data
 
-            if item['data_type'] == 'release_package':
+            if item.data_type == 'release_package':
                 key = 'releases'
             else:
                 key = 'records'
 
-            template = self._get_package_metadata(spider, data['package'], key, item['data_type'])
+            template = self._get_package_metadata(spider, data['package'], key, item.data_type)
             iterable = util.transcode(spider, ijson.items, data['data'], f'{key}.item')
 
             for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
@@ -258,13 +258,13 @@ class ReadDataMiddleware:
         :returns: a generator of File objects, in which the ``data`` field is bytes
         """
         async for item in result:
-            if not isinstance(item, File) or not hasattr(item['data'], 'read'):
+            if not isinstance(item, File) or not hasattr(item.data, 'read'):
                 yield item
                 continue
 
-            data = item['data'].read()
-            item['data'].close()
-            item['data'] = data
+            data = item.data.read()
+            item.data.close()
+            item.data = data
             yield item
 
 

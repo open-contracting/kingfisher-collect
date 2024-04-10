@@ -85,7 +85,7 @@ def test_handle_http_error_max_attempts_reached():
     mock_response = Mock()
     mock_response.status = 429
     mock_response.headers = {'Retry-After': 5}
-    mock_response.request = scrapy.Request('http://test.com', meta={'retries': 2})
+    mock_response.request = scrapy.Request('http://test.com', meta={'file_name': 'file.json', 'retries': 2})
 
     assert next(test_decorated(spider, mock_response)) == spider.build_file_error_from_response(mock_response)
 
@@ -119,7 +119,7 @@ def test_handle_http_error_error(response_status):
 
     mock_response = Mock()
     mock_response.status = response_status
-    mock_response.request = scrapy.Request('http://test.com')
+    mock_response.request = scrapy.Request('http://test.com', meta={'file_name': 'file.json'})
 
     assert next(test_decorated(spider, mock_response)) == spider.build_file_error_from_response(mock_response)
 

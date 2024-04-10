@@ -1,34 +1,35 @@
-# https://docs.scrapy.org/en/latest/topics/items.html
-
-import scrapy
-
-
-class Item(scrapy.Item):
-    file_name = scrapy.Field()
-    url = scrapy.Field()
-    validate = True
+import typing
+from dataclasses import dataclass
 
 
+@dataclass
+class Item:
+    file_name: str
+    url: str
+
+
+@dataclass
 class File(Item):
-    data = scrapy.Field()
-    data_type = scrapy.Field()
-
+    data_type: str
+    data: typing.Any
     # Added by the FilesStore extension, for the KingfisherProcessAPI2 extension to refer to the file.
-    path = scrapy.Field()
+    path: str = ""
 
 
+@dataclass
 class FileItem(Item):
-    number = scrapy.Field()
-    data = scrapy.Field()
-    data_type = scrapy.Field()
-
+    data_type: str
+    data: typing.Any
+    number: int
     # Added by the FilesStore extension, for the KingfisherProcessAPI2 extension to refer to the file.
-    path = scrapy.Field()
+    path: str = ""
 
 
+@dataclass
 class FileError(Item):
-    errors = scrapy.Field()
+    errors: dict
 
 
-class PluckedItem(scrapy.Item):
-    value = scrapy.Field()
+@dataclass
+class PluckedItem:
+    value: typing.Any

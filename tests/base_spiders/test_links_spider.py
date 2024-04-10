@@ -37,7 +37,7 @@ def test_parse_404():
     item = next(generator)
 
     assert type(item) is FileError
-    assert item == {
+    assert item.__dict__ == {
         'file_name': 'test',
         'url': 'http://example.com',
         'errors': {'http_code': 404},
@@ -58,11 +58,12 @@ def test_parse_200():
     request = next(generator)
 
     assert type(item) is File
-    assert item == {
+    assert item.__dict__ == {
         'file_name': 'test',
         'url': 'http://example.com',
-        'data': body,
         'data_type': 'release_package',
+        'data': body,
+        'path': '',
     }
 
     assert type(request) is Request

@@ -52,12 +52,12 @@ def channel():
 
 @pytest.fixture
 def item_file():
-    return File({
-        'file_name': 'file.json',
-        'url': 'https://example.com/remote.json',
-        'data': b'{"key": "value"}',
-        'data_type': 'release_package',
-    })
+    return File(
+        file_name='file.json',
+        url='https://example.com/remote.json',
+        data_type='release_package',
+        data=b'{"key": "value"}',
+    )
 
 
 class Spider(BaseSpider):
@@ -255,21 +255,24 @@ def test_spider_closed_return(kwargs, tmpdir):
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('directory,filename,item', [
-    ('389', 'file.json', File({
-        'file_name': 'file.json',
-        'data': b'{"key": "value"}',
-        'data_type': 'release_package',
-    })),
-    ('3E7', 'file-1.json', FileItem({
-        'number': 1,
-        'file_name': 'file.json',
-        'data': b'{"key": "value"}',
-        'data_type': 'release_package',
-    })),
-    ('389', 'file.json', FileError({
-        'file_name': 'file.json',
-        'errors': {'http_code': 500},
-    })),
+    ('389', 'file.json', File(
+        file_name='file.json',
+        url='https://t',
+        data_type='release_package',
+        data=b'{"key": "value"}',
+    )),
+    ('3E7', 'file-1.json', FileItem(
+        file_name='file.json',
+        url='https://t',
+        data_type='release_package',
+        data=b'{"key": "value"}',
+        number=1,
+    )),
+    ('389', 'file.json', FileError(
+        file_name='file.json',
+        url='https://t',
+        errors={'http_code': 500},
+    )),
 ])
 @pytest_twisted.inlineCallbacks
 def test_item_scraped(directory, filename, item, channel, tmpdir):
@@ -278,7 +281,7 @@ def test_item_scraped(directory, filename, item, channel, tmpdir):
 
     # To be sure we consume the expected message, and not an earlier message.
     url = f'https://example.com/remote.{str(time.time())}.json'
-    item['url'] = url
+    item.url = url
 
     with patch.object(KingfisherProcessAPI2, '_post_synchronous', side_effect=[create_response, close_response]):
         runner = CrawlerRunner(settings=SETTINGS | {'FILES_STORE': tmpdir})
@@ -338,7 +341,7 @@ def test_item_scraped_missing_collection_id(item_file, channel, tmpdir):
 def test_item_scraped_return(channel, tmpdir):
     create_response = Response(status_code=200, content={'collection_id': 1})
     close_response = Response(status_code=200)
-    item_plucked = PluckedItem({'value': '123'})
+    item_plucked = PluckedItem(value='123')
 
     with patch.object(KingfisherProcessAPI2, '_post_synchronous', side_effect=[create_response, close_response]):
         runner = CrawlerRunner(settings=SETTINGS | {'FILES_STORE': tmpdir})

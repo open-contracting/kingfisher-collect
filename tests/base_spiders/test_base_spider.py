@@ -48,12 +48,12 @@ def test_build_file_from_response():
 
     actual = spider.build_file_from_response(response, file_name='file.json', data_type='release_package')
 
-    assert actual == File({
-        'file_name': 'file.json',
-        'data': b'{"key": "value"}',
-        "data_type": 'release_package',
-        "url": 'https://example.com/remote.json',
-    })
+    assert actual == File(
+        file_name='file.json',
+        url='https://example.com/remote.json',
+        data_type='release_package',
+        data=b'{"key": "value"}',
+    )
 
 
 def test_build_file():
@@ -62,14 +62,14 @@ def test_build_file():
     data = b'{"key": "value"}'
     url = 'https://example.com/remote.json'
 
-    actual = spider.build_file(file_name='file.json', url=url, data=data, data_type='release_package')
+    actual = spider.build_file(file_name='file.json', url=url, data_type='release_package', data=data)
 
-    assert actual == File({
-        'file_name': 'file.json',
-        'data': b'{"key": "value"}',
-        "data_type": 'release_package',
-        "url": 'https://example.com/remote.json',
-    })
+    assert actual == File(
+        file_name='file.json',
+        url='https://example.com/remote.json',
+        data_type='release_package',
+        data=b'{"key": "value"}',
+    )
 
 
 def test_sample_invalid():

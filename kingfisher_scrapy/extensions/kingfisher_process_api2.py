@@ -162,13 +162,13 @@ class KingfisherProcessAPI2:
 
         data = {
             'collection_id': self.collection_id,
-            'url': item['url'],
+            'url': item.url,
         }
 
         if isinstance(item, FileError):
-            data['errors'] = json.dumps(item['errors'])
+            data['errors'] = json.dumps(item.errors)
         else:
-            data['path'] = item['path']
+            data['path'] = item.path
 
         cb = functools.partial(self._when_ready, self.client.publish, data, self.routing_key)
         methods.add_callback_threadsafe(self.client.connection, cb)

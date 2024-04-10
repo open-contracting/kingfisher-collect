@@ -100,11 +100,11 @@ class CompressedFileSpider(BaseSpider):
             else:
                 data = compressed_file
 
-            yield File({
-                'file_name': f'{archive_name}-{basename}',
-                'data': data,
-                'data_type': self.data_type,
-                'url': response.request.url,
-            })
+            yield File(
+                file_name=f'{archive_name}-{basename}',
+                url=response.request.url,
+                data_type=self.data_type,
+                data=data,
+            )
 
             number += 1

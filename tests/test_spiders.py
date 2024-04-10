@@ -41,10 +41,10 @@ def test_start_requests_http_error(spider_name):
             assert len(items) == 1
             for item in items:
                 assert type(item) is FileError
-                assert len(item) == 3
-                assert item['errors'] == {'http_code': 555}
-                assert item['file_name']
-                assert item['url']
+                assert len(item.__dict__) == 3
+                assert item.errors == {'http_code': 555}
+                assert item.file_name
+                assert item.url
     except MissingEnvVarError as e:
         pytest.skip(f'{spidercls.name}: {e}')
 
