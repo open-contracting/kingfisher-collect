@@ -11,9 +11,6 @@
         "url": {
           "type": "string",
           "format": "uri"
-        },
-        "invalid_format": {
-          "type": "boolean"
         }
       },
       "required": [
@@ -40,6 +37,9 @@
         },
         "data": {
           "minLength": 1
+        },
+        "invalid_json": {
+          "type": "boolean"
         }
       },
       "required": [

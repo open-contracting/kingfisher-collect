@@ -16,7 +16,7 @@ class Croatia(CompressedFileSpider):
     user_agent = browser_user_agent
 
     # BaseSpider
-    check_json_format = True
+    validate_json = True
 
     # SimpleSpider
     data_type = 'release_package'

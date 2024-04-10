@@ -32,15 +32,15 @@ class BaseSpider(scrapy.Spider):
     With respect to the data's format:
 
     -  If the data is not encoded using UTF-8, set an ``encoding`` class attribute to its encoding.
-    -  If the data is a concatenated JSON, add a ``concatenated_json = True`` class attribute.
+    -  If the data is concatenated JSON, add a ``concatenated_json = True`` class attribute.
     -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
+    -  If the data can be invalid JSON, add a ``validate_json = True`` class attribute.
     -  If the data embeds OCDS data within other objects or arrays, set a ``root_path`` class attribute to the path to
        the OCDS data, e.g. ``'releasePackage'`` or ``'results.item'``.
     -  If the data is in CSV or XLSX format, add a ``unflatten = True`` class attribute to convert it to JSON using
        Flatten Tool's ``unflatten`` function. To pass arguments to ``unflatten``, set a ``unflatten_args`` dict.
     -  If the data source uses OCDS 1.0, add an ``ocds_version = '1.0'`` class attribute. This is used for the
        :ref:`Kingfisher Process<kingfisher-process>` extension.
-    -  If the data contains some invalid JSON files, add a ``check_json_format = True`` class attribute.
 
     With respect to support for Kingfisher Collect's features:
 
@@ -57,8 +57,8 @@ class BaseSpider(scrapy.Spider):
     encoding = 'utf-8'
     concatenated_json = False
     line_delimited = False
+    validate_json = False
     root_path = ''
-    check_json_format = False
     unflatten = False
     unflatten_args = {}
     ocds_version = '1.1'

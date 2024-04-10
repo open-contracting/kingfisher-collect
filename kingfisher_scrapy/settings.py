@@ -60,7 +60,7 @@ SPIDER_MIDDLEWARES = {
     # `process_spider_output` is invoked in decreasing order.
     'kingfisher_scrapy.spidermiddlewares.ConcatenatedJSONMiddleware': 600,
     'kingfisher_scrapy.spidermiddlewares.LineDelimitedMiddleware': 500,
-    'kingfisher_scrapy.spidermiddlewares.CheckJSONFormatMiddleware': 450,
+    'kingfisher_scrapy.spidermiddlewares.ValidateJSONMiddleware': 450,
     'kingfisher_scrapy.spidermiddlewares.RootPathMiddleware': 400,
     'kingfisher_scrapy.spidermiddlewares.AddPackageMiddleware': 300,
     'kingfisher_scrapy.spidermiddlewares.ResizePackageMiddleware': 200,

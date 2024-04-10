@@ -16,7 +16,7 @@ class PakistanPPRAAPI(SimpleSpider):
     name = 'pakistan_ppra_api'
 
     # BaseSpider
-    check_json_format = True
+    validate_json = True
     skip_pluck = 'Already covered (see code for details)'  # pakistan_ppra_bulk
 
     # SimpleSpider

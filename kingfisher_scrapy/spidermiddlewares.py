@@ -88,7 +88,7 @@ class RootPathMiddleware:
         :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
         """
         async for item in result:
-            if not isinstance(item, (File, FileItem)) or not spider.root_path or item.invalid_format:
+            if not isinstance(item, (File, FileItem)) or not spider.root_path or item.invalid_json:
                 yield item
                 continue
 
@@ -170,7 +170,7 @@ class AddPackageMiddleware:
         """
         async for item in result:
             if not isinstance(item, (File, FileItem)) or item.data_type not in ('release', 'record') \
-                    or item.invalid_format:
+                    or item.invalid_json:
                 yield item
                 continue
 
@@ -206,7 +206,7 @@ class ResizePackageMiddleware:
         :returns: a generator of FileItem objects, in which the ``data`` field is a string
         """
         async for item in result:
-            if not isinstance(item, File) or not getattr(spider, 'resize_package', False) or item.invalid_format:
+            if not isinstance(item, File) or not getattr(spider, 'resize_package', False) or item.invalid_json:
                 yield item
                 continue
 
@@ -260,7 +260,7 @@ class ReadDataMiddleware:
         :returns: a generator of File objects, in which the ``data`` field is bytes
         """
         async for item in result:
-            if not isinstance(item, File) or not hasattr(item.data, 'read') or item.invalid_format:
+            if not isinstance(item, File) or not hasattr(item.data, 'read') or item.invalid_json:
                 yield item
                 continue
 
@@ -294,9 +294,9 @@ class RetryDataErrorMiddleware:
             raise exception
 
 
-class CheckJSONFormatMiddleware:
+class ValidateJSONMiddleware:
     """
-    If the spider's ``check_json_format`` class attribute is ``True``,  checks if the item's ``data`` field is a valid
+    If the spider's ``validate_json`` class attribute is ``True``,  checks if the item's ``data`` field is a valid
     JSON. If not, marks the item as invalid. Otherwise, yields the original item.
     """
     async def process_spider_output(self, response, result, spider):
@@ -304,13 +304,13 @@ class CheckJSONFormatMiddleware:
         :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
         """
         async for item in result:
-            if not isinstance(item, (File, FileItem)) or not spider.check_json_format:
+            if not isinstance(item, (File, FileItem)) or not spider.validate_json:
                 yield item
                 continue
 
             try:
                 json.loads(item.data)
             except (JSONDecodeError, TypeError):
-                item.invalid_format = True
+                item.invalid_json = True
 
             yield item

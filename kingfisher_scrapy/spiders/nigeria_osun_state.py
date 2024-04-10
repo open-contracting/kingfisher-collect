@@ -11,7 +11,7 @@ class NigeriaOsunState(NigeriaBonMaximusBase):
     name = 'nigeria_osun_state'
 
     # BaseSpider
-    check_json_format = True
+    validate_json = True
 
     # SimpleSpider
     data_type = 'release_package'

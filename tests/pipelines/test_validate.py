@@ -155,7 +155,7 @@ def test_process_item_duplicate_file_item(caplog):
 
 
 @pytest.mark.parametrize('klass, message', [(File, "'test.json'"), (FileItem, "('test.json', 1)")])
-def test_check_json_format_middleware(klass, message):
+def test_validate_json_middleware(klass, message):
     spider = spider_with_crawler()
     pipeline = Validate()
 
@@ -166,7 +166,7 @@ def test_check_json_format_middleware(klass, message):
         url='http://test.com',
         data_type='release_package',
         data='{"key": "value"}',
-        invalid_format=True,
+        invalid_json=True,
         **kwargs
     )
 

@@ -27,7 +27,7 @@ def _json_loads(basename):
 class Validate:
     """
     Drops duplicate files based on ``file_name`` and file items based on ``file_name`` and ``number`` or, items
-    marked as invalid_format=True by CheckJSONFormatMiddleware.
+    marked as invalid_json=True by ValidateJSONMiddleware.
 
     :raises jsonschema.ValidationError: if the item is invalid
     """
@@ -50,7 +50,7 @@ class Validate:
 
         if isinstance(item, FileItem):
             key = (item.file_name, item.number)
-            if item.invalid_format:
+            if item.invalid_json:
                 raise DropItem(f'Invalid FileItem data: {key!r}')
             if key in self.file_items:
                 raise DropItem(f'Duplicate FileItem: {key!r}')
@@ -58,7 +58,7 @@ class Validate:
                 self.file_items.add(key)
         elif isinstance(item, File):
             key = item.file_name
-            if item.invalid_format:
+            if item.invalid_json:
                 raise DropItem(f'Invalid File data: {key!r}')
             if key in self.files:
                 raise DropItem(f'Duplicate File: {key!r}')

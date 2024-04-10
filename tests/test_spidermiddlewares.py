@@ -9,7 +9,7 @@ from kingfisher_scrapy.exceptions import RetryableError
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.spidermiddlewares import (
     AddPackageMiddleware,
-    CheckJSONFormatMiddleware,
+    ValidateJSONMiddleware,
     ConcatenatedJSONMiddleware,
     LineDelimitedMiddleware,
     ReadDataMiddleware,
@@ -34,7 +34,7 @@ async def alist(iterable):
 @pytest.mark.parametrize('middleware_class', [
     ConcatenatedJSONMiddleware,
     LineDelimitedMiddleware,
-    CheckJSONFormatMiddleware,
+    ValidateJSONMiddleware,
     RootPathMiddleware,
     AddPackageMiddleware,
     ResizePackageMiddleware,
@@ -115,7 +115,7 @@ async def test_bytes_or_file(middleware_class, attribute, value, override, tmpdi
         'url': 'http://test.com',
         'data_type': 'release',
         'path': '',
-        'invalid_format': False,
+        'invalid_json': False,
     }
     expected.update(override)
 
@@ -162,7 +162,7 @@ async def test_encoding(middleware_class, attribute, value, override, tmpdir):
         'url': 'http://test.com',
         'data_type': 'release',
         'path': '',
-        'invalid_format': False,
+        'invalid_json': False,
     }
     expected.update(override)
 
@@ -204,7 +204,7 @@ async def test_add_package_middleware(data_type, data, root_path):
         'file_name': 'test.json',
         'url': 'http://test.com',
         'path': '',
-        'invalid_format': False,
+        'invalid_json': False,
     }
     if 'item' in root_path:
         expected['number'] = 1
@@ -296,7 +296,7 @@ async def test_json_streaming_middleware(middleware_class, attribute, separator,
             'data': data,
             'number': i,
             'path': '',
-            'invalid_format': False,
+            'invalid_json': False,
         }
 
 
@@ -380,7 +380,7 @@ async def test_json_streaming_middleware_with_compressed_file_spider(middleware_
             'data': data,
             'number': i,
             'path': '',
-            'invalid_format': False,
+            'invalid_json': False,
         }
 
 
@@ -532,10 +532,10 @@ async def test_root_path_middleware_item(root_path, sample, data_type, data, exp
 
 @pytest.mark.parametrize('invalid', [True, False])
 @pytest.mark.parametrize('klass', [File, FileItem])
-async def test_check_json_format_middleware(invalid, klass):
+async def test_validate_json_middleware(invalid, klass):
     spider = spider_with_crawler()
-    middleware = CheckJSONFormatMiddleware()
-    spider.check_json_format = True
+    middleware = ValidateJSONMiddleware()
+    spider.validate_json = True
 
     kwargs = {'number': 1} if klass is FileItem else {}
 
@@ -555,4 +555,4 @@ async def test_check_json_format_middleware(invalid, klass):
 
     assert len(transformed_items) == 1
     for transformed_item in transformed_items:
-        assert transformed_item.invalid_format is invalid
+        assert transformed_item.invalid_json is invalid

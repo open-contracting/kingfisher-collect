@@ -28,7 +28,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
 
     # BaseSpider
     date_format = 'year'
-    check_json_format = True
+    validate_json = True
     default_from_date = '2008'
 
     # SimpleSpider
