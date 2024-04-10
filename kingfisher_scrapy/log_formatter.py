@@ -15,6 +15,6 @@ class LogFormatter(_LogFormatter):
         """
         Omits an item's `data` value from the log message.
         """
-        item = item.copy()
+        item = item.__dict__.copy()
         item.pop('data', None)
         return getattr(super(), method)(item, *args)
