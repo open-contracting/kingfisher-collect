@@ -16,7 +16,7 @@ def test_disabled():
     with TemporaryDirectory() as tmpdirname:
         spider = spider_with_crawler(settings={'KINGFISHER_PLUCK_PATH': tmpdirname})
         extension = Pluck.from_crawler(spider.crawler)
-        item = PluckedItem({'value': '2020-10-01'})
+        item = PluckedItem(value='2020-10-01')
 
         extension.item_scraped(item, spider)
         extension.spider_closed(spider, 'itemcount')
@@ -28,7 +28,7 @@ def test_item_scraped():
     with TemporaryDirectory() as tmpdirname:
         spider = spider_with_crawler(settings={'KINGFISHER_PLUCK_PATH': tmpdirname}, release_pointer='/date')
         extension = Pluck.from_crawler(spider.crawler)
-        item = PluckedItem({'value': '2020-10-01'})
+        item = PluckedItem(value='2020-10-01')
 
         extension.item_scraped(item, spider)
 
@@ -46,7 +46,7 @@ def test_spider_closed_with_items():
     with TemporaryDirectory() as tmpdirname:
         spider = spider_with_crawler(settings={'KINGFISHER_PLUCK_PATH': tmpdirname}, release_pointer='/date')
         extension = Pluck.from_crawler(spider.crawler)
-        item = PluckedItem({'value': '2020-10-01'})
+        item = PluckedItem(value='2020-10-01')
 
         extension.item_scraped(item, spider)
         extension.spider_closed(spider, 'itemcount')

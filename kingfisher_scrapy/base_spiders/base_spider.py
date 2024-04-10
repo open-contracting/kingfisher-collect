@@ -81,12 +81,13 @@ class BaseSpider(scrapy.Spider):
         :param crawl_time: override the crawl's start time (see :ref:`increment`)
         :param note: a note to add to the collection in Kingfisher Process
         :param keep_collection_open: whether to close the collection in Kingfisher Process when the crawl is finished
+        :param steps: a comma-separated list of steps to run in Kingfisher Process (``'compile'`` and/or ``'check'``)
         :param compile_releases: whether to create compiled releases from individual releases when using the
-                                 :class:`~kingfisher_scrapy.extensions.DatabaseStore` extension
+                                 :class:`~kingfisher_scrapy.extensions.database_store.DatabaseStore` extension
+        :param table_name: override the crawl's table name in the database (see :ref:`database_store`)
         :param package_pointer: the JSON Pointer to the value in the package (see the :ref:`pluck` command)
         :param release_pointer: the JSON Pointer to the value in the release (see the :ref:`pluck` command)
         :param truncate: the number of characters to which the value is truncated (see the :ref:`pluck` command)
-        :param table_name: override the crawl's table name in the database (see :ref:`database_store`)
         """
 
         super().__init__(*args, **kwargs)
@@ -285,7 +286,7 @@ class BaseSpider(scrapy.Spider):
             meta.update(kwargs.pop('meta'))
         return scrapy.Request(url, meta=meta, **kwargs)
 
-    def build_file_from_response(self, response, **kwargs):
+    def build_file_from_response(self, response, /, *, data_type, **kwargs):
         """
         Returns a File item to yield, based on the response to a request.
 
@@ -300,43 +301,42 @@ class BaseSpider(scrapy.Spider):
             if body.startswith(codecs.BOM_UTF8):
                 body = body[len(codecs.BOM_UTF8):]
             kwargs['data'] = body
-        return self.build_file(**kwargs)
+        return self.build_file(data_type=data_type, **kwargs)
 
-    def build_file(self, *, file_name=None, url=None, data=None, data_type=None):
+    def build_file(self, *, file_name=None, url=None, data_type=None, data=None):
         """
         Returns a File item to yield.
         """
-        return File({
-            'file_name': file_name,
-            'data': data,
-            'data_type': data_type,
-            'url': url,
-        })
+        return File(
+            file_name=file_name,
+            url=url,
+            data_type=data_type,
+            data=data,
+        )
 
     def build_file_item(self, number, data, item):
         """
         Returns a FileItem item to yield.
         """
-        return FileItem({
-            'number': number,
-            'file_name': item['file_name'],
-            'data': data,
-            'data_type': item['data_type'],
-            'url': item['url'],
-        })
+        return FileItem(
+            file_name=item.file_name,
+            url=item.url,
+            data_type=item.data_type,
+            data=data,
+            number=number,
+        )
 
-    def build_file_error_from_response(self, response, **kwargs):
+    def build_file_error_from_response(self, response, errors=None):
         """
         Returns a FileError item to yield, based on the response to a request.
+
+        An ``errors`` keyword argument must be a ``dict``, and should set an ``http_code`` key.
         """
-        item = FileError({
-            'url': response.request.url,
-            'errors': {'http_code': response.status},
-        })
-        if 'file_name' in response.request.meta:
-            item['file_name'] = response.request.meta['file_name']
-        item.update(kwargs)
-        return item
+        return FileError(
+            file_name=response.request.meta.get('file_name', ''),
+            url=response.request.url,
+            errors=errors or {'http_code': response.status},
+        )
 
     @classmethod
     def get_default_until_date(cls, spider):

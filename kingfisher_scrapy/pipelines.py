@@ -23,9 +23,11 @@ def _json_loads(basename):
     return json.loads(pkgutil.get_data('kingfisher_scrapy', f'item_schema/{basename}.json'))
 
 
+# https://docs.scrapy.org/en/latest/topics/item-pipeline.html#duplicates-filter
 class Validate:
     """
-    Drops duplicate files based on ``file_name`` and file items based on ``file_name`` and ``number``.
+    Drops duplicate files based on ``file_name`` and file items based on ``file_name`` and ``number`` or, items
+    marked as invalid_format=True by CheckJSONFormatMiddleware.
 
     :raises jsonschema.ValidationError: if the item is invalid
     """
@@ -34,7 +36,6 @@ class Validate:
         self.validators = {}
         self.files = set()
         self.file_items = set()
-        self.invalid_items = set()
 
         schema = Resource.from_contents(_json_loads('item'))
         registry = Registry().with_resource('urn:item', schema)
@@ -43,25 +44,26 @@ class Validate:
             self.validators[item] = Draft4Validator(_json_loads(item), registry=registry, format_checker=checker)
 
     def process_item(self, item, spider):
-        if hasattr(item, 'validate'):
-            self.validators.get(item.__class__.__name__).validate(dict(item))
+        validator = self.validators.get(item.__class__.__name__)
+        if validator:
+            validator.validate(item.__dict__)
 
         if isinstance(item, FileItem):
-            key = (item['file_name'], item['number'])
-            if item.get('invalid_format'):
-                self.invalid_items.add(key)
+            key = (item.file_name, item.number)
+            if item.invalid_format:
                 raise DropItem(f'Invalid FileItem data: {key!r}')
             if key in self.file_items:
                 raise DropItem(f'Duplicate FileItem: {key!r}')
-            self.file_items.add(key)
+            else:
+                self.file_items.add(key)
         elif isinstance(item, File):
-            key = item['file_name']
-            if item.get('invalid_format'):
-                self.invalid_items.add(key)
+            key = item.file_name
+            if item.invalid_format:
                 raise DropItem(f'Invalid File data: {key!r}')
             if key in self.files:
                 raise DropItem(f'Duplicate File: {key!r}')
-            self.files.add(key)
+            else:
+                self.files.add(key)
 
         return item
 
@@ -105,11 +107,11 @@ class Pluck:
         value = None
         if spider.pluck_package_pointer:
             pointer = spider.pluck_package_pointer
-            if isinstance(item['data'], dict):
-                value = _resolve_pointer(item['data'], pointer)
+            if isinstance(item.data, dict):
+                value = _resolve_pointer(item.data, pointer)
             else:
                 try:
-                    value = next(transcode(spider, ijson.items, item['data'], pointer[1:].replace('/', '.')))
+                    value = next(transcode(spider, ijson.items, item.data, pointer[1:].replace('/', '.')))
                 except StopIteration:
                     value = f'error: {pointer} not found'
                 except ijson.common.IncompleteJSONError as e:
@@ -127,16 +129,16 @@ class Pluck:
                     else:
                         raise
         else:  # spider.pluck_release_pointer
-            if isinstance(item['data'], dict):
-                data = item['data']
+            if isinstance(item.data, dict):
+                data = item.data
             else:
-                data = json.loads(item['data'])
+                data = json.loads(item.data)
 
-            if item['data_type'].startswith('release'):
+            if item.data_type.startswith('release'):
                 releases = data['releases']
                 if releases:
                     value = max(_resolve_pointer(r, spider.pluck_release_pointer) for r in releases)
-            elif item['data_type'].startswith('record'):
+            elif item.data_type.startswith('record'):
                 records = data['records']
                 if records:
                     # This assumes that the first record in the record package has the desired value.
@@ -149,7 +151,7 @@ class Pluck:
         if value and spider.pluck_truncate:
             value = value[:spider.pluck_truncate]
 
-        return PluckedItem({'value': value})
+        return PluckedItem(value=value)
 
 
 class Unflatten:
@@ -161,16 +163,16 @@ class Unflatten:
         if not spider.unflatten or not isinstance(item, (File, FileItem)):
             return item
 
-        input_name = item['file_name']
+        input_name = item.file_name
         if input_name.endswith('.csv'):
-            item['file_name'] = f'{item["file_name"][:-4]}.json'
+            item.file_name = f'{item.file_name[:-4]}.json'
             input_format = 'csv'
         elif input_name.endswith('.xlsx'):
-            item['file_name'] = f'{item["file_name"][:-5]}.json'
+            item.file_name = f'{item.file_name[:-5]}.json'
             input_format = 'xlsx'
         else:
             extension = os.path.splitext(input_name)[1]
-            raise NotSupported(f"Unsupported extension '{extension}' of {input_name} from {item['url']}")
+            raise NotSupported(f"Unsupported extension '{extension}' of {input_name} from {item.url}")
 
         spider_ocds_version = spider.ocds_version.replace('.', '__')
         for tag in reversed(get_tags()):
@@ -182,14 +184,14 @@ class Unflatten:
 
         with tempfile.TemporaryDirectory() as directory:
             input_path = os.path.join(directory, input_name)
-            output_name = os.path.join(directory, item['file_name'])
+            output_name = os.path.join(directory, item.file_name)
             if input_format == 'csv':
                 input_name = directory
             elif input_format == 'xlsx':
                 input_name = input_path
 
             with open(input_path, 'wb') as f:
-                f.write(item['data'])
+                f.write(item.data)
 
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore')  # flattentool uses UserWarning, so we can't set a specific category
@@ -204,8 +206,8 @@ class Unflatten:
                     **spider.unflatten_args
                 )
 
-            with open(output_name, 'r') as f:
-                item['data'] = f.read()
+            with open(output_name) as f:
+                item.data = f.read()
 
         return item
 

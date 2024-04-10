@@ -1,5 +1,6 @@
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import IncoherentConfigurationError
+from kingfisher_scrapy.items import File
 from kingfisher_scrapy.util import handle_http_error
 
 
@@ -43,5 +44,9 @@ class BigFileSpider(SimpleSpider):
 
     @handle_http_error
     def parse(self, response):
-        yield self.build_file(file_name=response.request.meta['file_name'], url=response.request.url,
-                              data_type=self.data_type, data={'data': response.body, 'package': response.body})
+        yield File(
+            file_name=response.request.meta['file_name'],
+            url=response.request.url,
+            data_type=self.data_type,
+            data={'data': response.body, 'package': response.body},
+        )

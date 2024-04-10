@@ -1,7 +1,7 @@
 import json
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, PeriodicSpider
-from kingfisher_scrapy.items import FileError
+from kingfisher_scrapy.items import File, FileError
 from kingfisher_scrapy.util import components
 
 
@@ -37,7 +37,7 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
     pattern = 'https://ocds.blob.core.windows.net/ocds/{0:%Y}{0:%m}.zip'
     formatter = staticmethod(components(-1))  # filename containing year-month
 
-    def build_file(self, file_name=None, url=None, data=None, **kwargs):
+    def build_file(self, *, file_name=None, url=None, data_type=None, data=None):
         json_data = json.loads(data)
         # Some files contain invalid record packages, e.g.:
         # {
@@ -46,10 +46,6 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
         # }
         if json_data.get('status') != 200:
             json_data['http_code'] = json_data['status']
-            return FileError({
-                'file_name': file_name,
-                'url': url,
-                'errors': json_data,
-            })
+            return FileError(file_name=file_name, url=url, errors=json_data)
         else:
-            return super().build_file(file_name=file_name, url=url, data=data, **kwargs)
+            return File(file_name=file_name, url=url, data_type=None, data=data)

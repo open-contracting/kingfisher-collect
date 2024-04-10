@@ -59,7 +59,7 @@ class Pluck:
 
         self.item_scraped_called = True
 
-        self._write(spider, item['value'])
+        self._write(spider, item.value)
 
     def spider_closed(self, spider, reason):
         if not spider.pluck or self.item_scraped_called:

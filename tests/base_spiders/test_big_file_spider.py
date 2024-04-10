@@ -37,12 +37,12 @@ def test_parse_package(sample, len_items, len_releases, data_type, key):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item) == 4
-    assert item['file_name'] == 'test.json'
-    assert item['url'] == 'http://example.com'
-    assert item['data_type'] == data_type
-    assert item['data']['package'] is not None
-    assert item['data']['data'] is not None
+    assert len(item.__dict__) == 5
+    assert item.file_name == 'test.json'
+    assert item.url == 'http://example.com'
+    assert item.data_type == data_type
+    assert item.data['package'] is not None
+    assert item.data['data'] is not None
 
     with pytest.raises(StopIteration):
         next(generator)

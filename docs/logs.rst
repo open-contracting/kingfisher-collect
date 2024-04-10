@@ -103,26 +103,33 @@ CRITICAL: Unhandled error in Deferred:
 ERROR: Spider error processing <GET https:…> (referer: None)
   An exception was raised in the spider's code. (See the ``spider_exceptions/…`` statistics below.)
 
-  .. attention:: Action needed.
+  .. attention:: Action needed
 
 ERROR: Error processing {…}
   An exception was raised in an item pipeline, like ``jsonschema.exceptions.ValidationError``.
 
-  .. attention:: Action needed.
+  .. attention:: Action needed
 
 ERROR: Error caught on signal handler: …
   An exception was raised in an extension.
 
-  .. attention:: Action needed.
+  .. attention:: Action needed
 
 ERROR: Error downloading <GET https:…>
   An exception was raised by the downloader, typically after failed retries by the `RetryMiddleware <https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#module-scrapy.downloadermiddlewares.retry>`__ downloader middleware. (See the ``downloader/exception_type_count/…`` statistics below.)
-WARNING: Failed to post [https:…]. File API status code: 500
-  Issued by the :class:`~kingfisher_scrapy.extensions.KingfisherProcessAPI` extension.
+ERROR: Failed to create collection: HTTP {code} ({text}) {{headers}}
+  Issued by the :class:`~kingfisher_scrapy.extensions.kingfisher_process_api2.KingfisherProcessAPI2` extension.
 
-  .. admonition:: Potential action
+  .. attention:: Action needed
 
-     If you need the collection in Kingfisher Process to be complete, re-run the spider.
+     Run the ``./manage.py load`` command in Kingfisher Process, once the crawl is finished.
+
+ERROR: Failed to close collection: HTTP {code} ({text}) {{headers}}
+  Issued by the :class:`~kingfisher_scrapy.extensions.kingfisher_process_api2.KingfisherProcessAPI2` extension.
+
+  .. attention:: Action needed
+
+     Run the ``./manage.py closecollection`` command in Kingfisher Process.
 
 WARNING: Dropped: Duplicate File: '….json'
   Issued by the :class:`~kingfisher_scrapy.pipelines.Validate` pipeline.

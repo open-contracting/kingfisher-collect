@@ -45,6 +45,6 @@ class ProactisBase(PeriodicSpider):
         data = response.json()
         # Some responses are a package without a list of releases.
         if 'releases' not in data:
-            yield self.build_file_error_from_response(response, errors=data)
+            yield self.build_file_error_from_response(response, errors={'http_code': response.status, 'data': data})
         else:
             yield from super().parse(response)

@@ -131,7 +131,7 @@ And so on. However, as you learned in :ref:`how-it-works`, each crawl writes dat
 
     scrapy crawl spider_name -a from_date=2020-10-15 -a until_date=2020-10-31 -a crawl_time=2020-10-14T12:34:56
 
-If you are integrating with :doc:`Kingfisher Process<kingfisher_process>`, remember to set the ``keep_collection_open`` spider argument, in order to not close the collection when the crawl is finished:
+If you are integrating with :doc:`Kingfisher Process<kingfisher_process>`, remember to set the ``keep_collection_open`` spider argument to ``'true'``, in order to not close the collection when the crawl is finished:
 
 .. code-block:: bash
 
@@ -139,7 +139,7 @@ If you are integrating with :doc:`Kingfisher Process<kingfisher_process>`, remem
 
 .. seealso::
 
-   :class:`~kingfisher_scrapy.extensions.DatabaseStore` extension
+   :class:`~kingfisher_scrapy.extensions.database_store.DatabaseStore` extension
 
 .. _proxy:
 

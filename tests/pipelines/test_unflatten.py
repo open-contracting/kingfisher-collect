@@ -13,12 +13,12 @@ from tests import spider_with_crawler
 def test_process_item_csv():
     spider = spider_with_crawler(unflatten=True)
     pipeline = Unflatten()
-    item = File({
-        'file_name': 'test.csv',
-        'data': b'data',
-        'data_type': 'release_package',
-        'url': 'http://test.com/test.csv',
-    })
+    item = File(
+        file_name='test.csv',
+        url='http://test.com/test.csv',
+        data_type='release_package',
+        data=b'data',
+    )
 
     assert pipeline.process_item(item, spider) == item
 
@@ -29,12 +29,12 @@ def test_process_item_xlsx():
 
     spider = spider_with_crawler(unflatten=True)
     pipeline = Unflatten()
-    item = File({
-        'file_name': 'test.xlsx',
-        'data': io.getvalue(),
-        'data_type': 'release_package',
-        'url': 'http://test.com/test.xlsx',
-    })
+    item = File(
+        file_name='test.xlsx',
+        url='http://test.com/test.xlsx',
+        data_type='release_package',
+        data=io.getvalue(),
+    )
 
     assert pipeline.process_item(item, spider) == item
 
@@ -42,12 +42,12 @@ def test_process_item_xlsx():
 def test_process_item_extension_error():
     spider = spider_with_crawler(unflatten=True)
     pipeline = Unflatten()
-    item = File({
-        'file_name': 'file',
-        'data': b'data',
-        'data_type': 'release_package',
-        'url': 'http://test.com/file',
-    })
+    item = File(
+        file_name='file',
+        url='http://test.com/file',
+        data_type='release_package',
+        data=b'data',
+    )
 
     with pytest.raises(NotSupported):
         pipeline.process_item(item, spider)
@@ -56,12 +56,12 @@ def test_process_item_extension_error():
 def test_process_item_xlsx_error():
     spider = spider_with_crawler(unflatten=True)
     pipeline = Unflatten()
-    item = File({
-        'file_name': 'test.xlsx',
-        'data': b'data',
-        'data_type': 'release_package',
-        'url': 'http://test.com/test.xlsx',
-    })
+    item = File(
+        file_name='test.xlsx',
+        url='http://test.com/test.xlsx',
+        data_type='release_package',
+        data=b'data',
+    )
 
     with pytest.raises(BadXLSXZipFile):
         pipeline.process_item(item, spider)

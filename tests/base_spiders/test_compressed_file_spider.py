@@ -23,12 +23,12 @@ def test_parse():
     item = next(generator)
 
     assert type(item) is File
-    assert len(item) == 4
-    assert item['file_name'] == 'test-test.json'
-    assert item['url'] == 'http://example.com'
-    assert item['data_type'] == 'release_package'
-    assert item['data'] is not None
-    assert 'package' not in item['data']
+    assert len(item.__dict__) == 5
+    assert item.file_name == 'test-test.json'
+    assert item.url == 'http://example.com'
+    assert item.data_type == 'release_package'
+    assert item.data is not None
+    assert 'package' not in item.data
 
     with pytest.raises(StopIteration):
         next(generator)
@@ -53,12 +53,12 @@ def test_parse_line_delimited(sample, len_items, file_name):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item) == 4
-    assert item['file_name'] == f'{file_name}-test.json'
-    assert item['url'] == 'http://example.com'
-    assert item['data_type'] == 'release_package'
-    assert item['data'] is not None
-    assert 'package' not in item['data']
+    assert len(item.__dict__) == 5
+    assert item.file_name == f'{file_name}-test.json'
+    assert item.url == 'http://example.com'
+    assert item.data_type == 'release_package'
+    assert item.data is not None
+    assert 'package' not in item.data
 
     with pytest.raises(StopIteration):
         next(generator)
@@ -83,12 +83,12 @@ def test_parse_release_package(sample, len_items, len_releases, file_name):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item) == 4
-    assert item['file_name'] == f'{file_name}-test.json'
-    assert item['url'] == 'http://example.com'
-    assert item['data_type'] == 'release_package'
-    assert item['data']['package'] is not None
-    assert item['data']['data'] is not None
+    assert len(item.__dict__) == 5
+    assert item.file_name == f'{file_name}-test.json'
+    assert item.url == 'http://example.com'
+    assert item.data_type == 'release_package'
+    assert item.data['package'] is not None
+    assert item.data['data'] is not None
 
     with pytest.raises(StopIteration):
         next(generator)
@@ -120,12 +120,12 @@ def test_parse_rar_file():
     item = next(generator)
 
     assert type(item) is File
-    assert len(item) == 4
-    assert item['file_name'] == 'test-test.json'
-    assert item['url'] == 'http://example.com'
-    assert item['data_type'] == 'release_package'
-    assert item['data'] is not None
-    assert 'package' not in item['data']
+    assert len(item.__dict__) == 5
+    assert item.file_name == 'test-test.json'
+    assert item.url == 'http://example.com'
+    assert item.data_type == 'release_package'
+    assert item.data is not None
+    assert 'package' not in item.data
 
     with pytest.raises(StopIteration):
         next(generator)
@@ -141,10 +141,10 @@ def test_yield_non_archive_file():
     item = next(generator)
 
     assert type(item) is File
-    assert item['file_name'] == 'test.json'
-    assert item['url'] == 'http://example.com'
-    assert item['data_type'] == 'release_package'
-    assert item['data'] is not None
+    assert item.file_name == 'test.json'
+    assert item.url == 'http://example.com'
+    assert item.data_type == 'release_package'
+    assert item.data is not None
 
     with pytest.raises(StopIteration):
         next(generator)
@@ -168,7 +168,7 @@ def test_filter_file_names(include, exclude):
     item = next(generator)
 
     assert type(item) is File
-    assert item['file_name'] == 'test-test.json'
+    assert item.file_name == 'test-test.json'
 
     with pytest.raises(StopIteration):
         next(generator)
