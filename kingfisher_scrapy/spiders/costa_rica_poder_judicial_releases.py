@@ -13,6 +13,9 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
     """
     name = 'costa_rica_poder_judicial_releases'
 
+    # BaseSpider
+    check_json_format = True
+
     # SimpleSpider
     data_type = 'release_package'
 

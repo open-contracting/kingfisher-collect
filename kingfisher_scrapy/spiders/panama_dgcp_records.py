@@ -10,6 +10,9 @@ class PanamaDGCPRecords(PanamaDGCPBase):
     """
     name = 'panama_dgcp_records'
 
+    # BaseSpider
+    check_json_format = True
+
     # SimpleSpider
     data_type = 'record_package'
 
