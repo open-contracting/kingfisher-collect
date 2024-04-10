@@ -1,7 +1,6 @@
 import copy
 import itertools
 import json
-from json import JSONDecodeError
 from zipfile import BadZipFile
 
 import ijson
@@ -78,12 +77,12 @@ class LineDelimitedMiddleware:
 
 class ValidateJSONMiddleware:
     """
-    If the spider's ``validate_json`` class attribute is ``True``,  checks if the item's ``data`` field is a valid
-    JSON. If not, marks the item as invalid. Otherwise, yields the original item.
+    If the spider's ``validate_json`` class attribute is ``True``,  checks if the item's ``data`` field is valid
+    JSON. If not, marks the item invalid. Otherwise, yields the original item.
     """
     async def process_spider_output(self, response, result, spider):
         """
-        :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
+        :returns: a generator of File or FileItem objects, in which the ``invalid_json`` field is updated
         """
         async for item in result:
             if not isinstance(item, (File, FileItem)) or not spider.validate_json:
@@ -92,7 +91,7 @@ class ValidateJSONMiddleware:
 
             try:
                 json.loads(item.data)
-            except (JSONDecodeError, TypeError):
+            except json.JSONDecodeError:
                 item.invalid_json = True
 
             yield item
