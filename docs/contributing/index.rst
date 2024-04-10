@@ -267,6 +267,10 @@ Reasons to deserialize JSON bytes include:
 -  Check whether it's an error response, because the API returns a success status instead of an error status
 -  Parse non-OCDS data to build URLs for OCDS data
 
+Reasons to re-serialize JSON data include:
+
+-  To reuse the ``ijson.items`` function (:class:`~kingfisher_scrapy.spidermiddlewares.RootPathMiddleware`)
+
 Update requirements
 -------------------
 
