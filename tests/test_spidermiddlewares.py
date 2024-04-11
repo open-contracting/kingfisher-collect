@@ -45,13 +45,13 @@ async def alist(iterable):
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data=b'{}',
+        data=b'{"ocid": "abc"}',
     ),
     FileItem(
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data=b'{}',
+        data=b'{"ocid": "abc"}',
         number=1,
     ),
     FileError(
@@ -434,15 +434,6 @@ def test_retry_data_error_middleware(exception):
     ('x',
      'release', {'x': {'a': 'b'}},
      'release', {'a': 'b'}),
-    # Root paths with "item" ...
-    # ... with an empty array, for data_type = "release".
-    ('item',
-     'release', [],
-     'release_package', None),
-    # ... with an empty array, for data_type = "record_package".
-    ('item',
-     'record_package', [],
-     'record_package', None),
 ])
 @pytest.mark.parametrize('klass', [File, FileItem])
 async def test_root_path_middleware(root_path, data_type, data, expected_data_type, expected_data, klass):
@@ -476,7 +467,7 @@ async def test_root_path_middleware(root_path, data_type, data, expected_data_ty
 @pytest.mark.parametrize('root_path,sample,data_type,data,expected_data_type,expected_data', [
     # ... for data_type = "release".
     ('item', None,
-     'release', [{'a': 'b'}, {'c': 'd'}],
+     'release', b'[{"a": "b"}, {"c": "d"}]',
      'release_package', {'releases': [{'a': 'b'}, {'c': 'd'}], 'version': '1.1'}),
     # ... and another prefix, for data_type = "record".
     ('x.item', None,
@@ -488,11 +479,11 @@ async def test_root_path_middleware(root_path, data_type, data, expected_data_ty
      'record_package', {'records': [{'a': 'b'}], 'version': '1.1'}),
     # ... without package metadata, for data_type = "record_package".
     ('item', None,
-     'record_package', [{'records': [{'a': 'b'}, {'c': 'd'}]}, {'records': [{'e': 'f'}, {'g': 'h'}]}],
+     'record_package', b'[{"records": [{"a": "b"}, {"c": "d"}]}, {"records": [{"e": "f"}, {"g": "h"}]}]',
      'record_package', {'records': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}, {'g': 'h'}]}),
     # ... with inconsistent package metadata, for data_type = "release_package".
     ('item', None,
-     'release_package', [{'releases': [{'a': 'b'}, {'c': 'd'}], 'x': 'y'}, {'releases': [{'e': 'f'}, {'g': 'h'}]}],
+     'release_package', b'[{"releases": [{"a": "b"}, {"c": "d"}], "x": "y"}, {"releases": [{"e": "f"}, {"g": "h"}]}]',
      'release_package', {'releases': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}, {'g': 'h'}], 'x': 'y'}),
 ])
 @pytest.mark.parametrize('klass', [File, FileItem])
@@ -539,7 +530,7 @@ async def test_validate_json_middleware(valid, klass, caplog):
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data=b'{"key": "value"}' if valid else b'{"broken": }',
+        data=b'{"ocid": "abc"}' if valid else b'{"broken": }',
         **kwargs
     )
 
@@ -562,7 +553,7 @@ async def test_validate_json_middleware(valid, klass, caplog):
         ]]
 
 
-@pytest.mark.parametrize('data', [[], {}])
+@pytest.mark.parametrize('data', [b'[{"ocid": "abc"}]', {'ocid': 'abc'}])
 @pytest.mark.parametrize('klass', [File, FileItem])
 async def test_validate_json_middleware_already_parsed(data, klass, caplog):
     spider = spider_with_crawler()
