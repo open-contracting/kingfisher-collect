@@ -257,20 +257,20 @@ def test_spider_closed_return(kwargs, tmpdir):
 @pytest.mark.parametrize('directory,filename,item', [
     ('389', 'file.json', File(
         file_name='file.json',
-        url='https://t',
+        url='https://example.com',
         data_type='release_package',
         data=b'{"key": "value"}',
     )),
     ('3E7', 'file-1.json', FileItem(
         file_name='file.json',
-        url='https://t',
+        url='https://example.com',
         data_type='release_package',
         data=b'{"key": "value"}',
         number=1,
     )),
     ('389', 'file.json', FileError(
         file_name='file.json',
-        url='https://t',
+        url='https://example.com',
         errors={'http_code': 500},
     )),
 ])

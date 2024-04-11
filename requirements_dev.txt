@@ -8,8 +8,6 @@ attrs==22.2.0
     # via
     #   -r requirements.txt
     #   automat
-    #   jsonschema
-    #   referencing
     #   service-identity
     #   twisted
 automat==0.8.0
@@ -151,12 +149,6 @@ jsonref==1.0.1
     #   ocdsextensionregistry
     #   ocdskit
     #   ocdsmerge
-jsonschema==4.18.0a9
-    # via -r requirements.txt
-jsonschema-specifications==2023.5.1
-    # via
-    #   -r requirements.txt
-    #   jsonschema
 lxml==4.9.2
     # via
     #   -r requirements.txt
@@ -238,6 +230,8 @@ pycparser==2.19
     # via
     #   -r requirements.txt
     #   cffi
+pydantic==1.10.15
+    # via -r requirements.txt
 pydispatcher==2.0.6
     # via
     #   -r requirements.txt
@@ -275,11 +269,6 @@ queuelib==1.6.2
     #   scrapy
 rarfile==3.1
     # via -r requirements.txt
-referencing==0.28.5
-    # via
-    #   -r requirements.txt
-    #   jsonschema
-    #   jsonschema-specifications
 requests==2.31.0
     # via
     #   -r requirements.txt
@@ -300,11 +289,6 @@ requests-file==1.5.1
     #   tldextract
 rfc3986-validator==0.1.1
     # via -r requirements.txt
-rpds-py==0.7.1
-    # via
-    #   -r requirements.txt
-    #   jsonschema
-    #   referencing
 schema==0.7.2
     # via
     #   -r requirements.txt
@@ -357,6 +341,7 @@ twisted==23.10.0
 typing-extensions==4.8.0
     # via
     #   -r requirements.txt
+    #   pydantic
     #   twisted
 uberegg==0.1.1
     # via

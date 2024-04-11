@@ -136,8 +136,8 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
 ])
 @pytest.mark.parametrize('data', [b'{"key": "value"}', {"key": "value"}])
 @pytest.mark.parametrize('item,subdirectory,expected_file_name', [
-    (File(file_name='file.json', url='https://x', data_type='release', data=''), '389', 'file.json'),
-    (FileItem(number=1, file_name='file.json', url='https://x', data_type='release', data=''), '3E7', 'file-1.json')
+    (File(file_name='file.json', url='https://a.co', data_type='release', data=''), '389', 'file.json'),
+    (FileItem(file_name='file.json', url='https://a.co', data_type='release', data='', number=1), '3E7', 'file-1.json')
 ])
 def test_item_scraped_with_file_and_file_item(sample, directory, data, item, subdirectory, expected_file_name, tmpdir):
     spider = spider_with_crawler(settings={'FILES_STORE': tmpdir}, sample=sample)
@@ -160,7 +160,12 @@ def test_item_scraped_with_build_file_and_existing_directory():
         files_store = os.path.join(tmpdirname, 'data')
         spider = spider_with_crawler(settings={'FILES_STORE': files_store})
         extension = FilesStore.from_crawler(spider.crawler)
-        item = spider.build_file(file_name='file.json', url='https://x', data_type='release', data=b'{"key": "value"}')
+        item = spider.build_file(
+            file_name='file.json',
+            url='https://example.com',
+            data_type='release',
+            data=b'{"key": "value"}',
+        )
 
         os.makedirs(os.path.join(files_store, 'test', '20010203_040506'))
 

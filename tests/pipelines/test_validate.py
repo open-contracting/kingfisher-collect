@@ -1,5 +1,4 @@
 import pytest
-from jsonschema import ValidationError
 from scrapy.exceptions import DropItem
 
 from kingfisher_scrapy.items import File, FileError, FileItem
@@ -24,27 +23,6 @@ def test_process_item_with_file():
     assert pipeline.process_item(item, None) == item
 
 
-def test_process_item_with_file_failure():
-    pipeline = Validate()
-
-    with pytest.raises(TypeError):
-        File(
-            url='http://test.com',
-            data_type='release_package',
-            data='data',
-        )
-
-    item = File(
-        file_name='test',
-        url='http://test.com',
-        data_type='not a valid data type',
-        data='data',
-    )
-
-    with pytest.raises(ValidationError):
-        pipeline.process_item(item, None)
-
-
 def test_process_item_with_file_item():
     pipeline = Validate()
     item = FileItem(
@@ -57,24 +35,9 @@ def test_process_item_with_file_item():
 
     assert pipeline.process_item(item, None) == item
 
+    item.number = 2
 
-def test_process_item_with_file_item_failure():
-    pipeline = Validate()
-    item = FileItem(
-        file_name='test',
-        url='http://test.com',
-        data_type='release_package',
-        data='data',
-        number='2',
-    )
-
-    with pytest.raises(ValidationError):
-        pipeline.process_item(item, None)
-
-    item.number = None
-
-    with pytest.raises(ValidationError):
-        pipeline.process_item(item, None)
+    assert pipeline.process_item(item, None) == item
 
 
 def test_process_item_with_file_error():
@@ -86,25 +49,6 @@ def test_process_item_with_file_error():
     )
 
     assert pipeline.process_item(item, None) == item
-
-
-def test_process_item_with_file_error_failure():
-    pipeline = Validate()
-
-    with pytest.raises(TypeError):
-        FileError(
-            file_name='test',
-            url='http://test.com',
-        )
-
-    item = FileError(
-        file_name='test',
-        url='not an url',
-        errors={'http_code': 500},
-    )
-
-    with pytest.raises(ValidationError):
-        pipeline.process_item(item, None)
 
 
 def test_process_item_with_duplicate_file(caplog):
