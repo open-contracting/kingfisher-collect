@@ -76,6 +76,8 @@ async def test_passthrough(middleware_class, item):
      {'data': {'a': [{'b': 'c'}]}, 'number': 1}),
     (LineDelimitedMiddleware, 'line_delimited', True,
      {'data': b'{"a":[{"b": "c"}]}', 'number': 1}),
+    (ValidateJSONMiddleware, 'validate_json', True,
+     {'data': b'{"a":[{"b": "c"}]}'}),
     (RootPathMiddleware, 'root_path', 'a.item',
      {'data':  {'releases': [{'b': 'c'}], 'version': '1.1'}, 'data_type': 'release_package', 'number': 1}),
     (AddPackageMiddleware, 'data_type', 'release',
