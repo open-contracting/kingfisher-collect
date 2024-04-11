@@ -118,35 +118,26 @@ class RootPathMiddleware:
                     key = 'records'
                     item.data_type = 'record_package'
 
-                try:
-                    head = next(iterable)
-                except StopIteration:
-                    # Always yield an item, even if the root_path points to an empty object.
-                    # https://github.com/open-contracting/kingfisher-collect/pull/944#issuecomment-1149156552
-                    item.data = {'version': spider.ocds_version, key: []}
-                    yield item
-                else:
-                    iterable = itertools.chain([head], iterable)
-                    for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
-                        if sample_filled(spider, number):
-                            return
+                for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
+                    if sample_filled(spider, number):
+                        return
 
-                        # Omit the None values returned by `grouper(*, fillvalue=None)`.
-                        items = filter(None, items)
+                    # Omit the None values returned by `grouper(*, fillvalue=None)`.
+                    items = filter(None, items)
 
-                        if is_package:
-                            # Assume that the `extensions` are the same for all packages.
-                            package = next(items)
-                            releases_or_records = package[key]
-                            for other in items:
-                                try:
-                                    releases_or_records.extend(other[key])
-                                except KeyError as e:
-                                    spider.logger.warning('%(key)s not set in %(data)r', {'key': e, 'data': other})
-                        else:
-                            package = {'version': spider.ocds_version, key: list(items)}
+                    if is_package:
+                        # Assume that the `extensions` are the same for all packages.
+                        package = next(items)
+                        releases_or_records = package[key]
+                        for other in items:
+                            try:
+                                releases_or_records.extend(other[key])
+                            except KeyError as e:
+                                spider.logger.warning('%(key)s not set in %(data)r', {'key': e, 'data': other})
+                    else:
+                        package = {'version': spider.ocds_version, key: list(items)}
 
-                        yield spider.build_file_item(number, package, item)
+                    yield spider.build_file_item(number, package, item)
             else:
                 # Iterates at most once.
                 for number, obj in enumerate(iterable, 1):
