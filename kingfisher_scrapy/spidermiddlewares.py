@@ -1,5 +1,4 @@
 import copy
-import itertools
 import json
 from zipfile import BadZipFile
 
