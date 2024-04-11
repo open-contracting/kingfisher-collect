@@ -5,6 +5,7 @@ from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
 import pytest
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, SimpleSpider
+from kingfisher_scrapy.exceptions import RetryableError
 from kingfisher_scrapy.items import File, FileError, FileItem
 from kingfisher_scrapy.spidermiddlewares import (
     AddPackageMiddleware,
@@ -14,8 +15,9 @@ from kingfisher_scrapy.spidermiddlewares import (
     ResizePackageMiddleware,
     RetryDataErrorMiddleware,
     RootPathMiddleware,
+    ValidateJSONMiddleware,
 )
-from tests import response_fixture, spider_with_crawler
+from tests import FILE_ITEM_LENGTH, response_fixture, spider_with_crawler
 
 
 # https://discuss.python.org/t/enhance-builtin-iterables-like-list-range-with-async-methods-like-aiter-anext/21352/11
@@ -32,6 +34,7 @@ async def alist(iterable):
 @pytest.mark.parametrize('middleware_class', [
     ConcatenatedJSONMiddleware,
     LineDelimitedMiddleware,
+    ValidateJSONMiddleware,
     RootPathMiddleware,
     AddPackageMiddleware,
     ResizePackageMiddleware,
@@ -42,19 +45,19 @@ async def alist(iterable):
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data='data',
+        data='{}',
     ),
     FileItem(
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data='data',
+        data='{}',
         number=1,
     ),
     FileError(
         file_name='test.json',
         url='http://test.com',
-        errors='',
+        errors={'http_code': 500},
     ),
 ])
 async def test_passthrough(middleware_class, item):
@@ -73,6 +76,8 @@ async def test_passthrough(middleware_class, item):
      {'data': {'a': [{'b': 'c'}]}, 'number': 1}),
     (LineDelimitedMiddleware, 'line_delimited', True,
      {'data': b'{"a":[{"b": "c"}]}', 'number': 1}),
+    (ValidateJSONMiddleware, 'validate_json', True,
+     {'data': b'{"a":[{"b": "c"}]}'}),
     (RootPathMiddleware, 'root_path', 'a.item',
      {'data':  {'releases': [{'b': 'c'}], 'version': '1.1'}, 'data_type': 'release_package', 'number': 1}),
     (AddPackageMiddleware, 'data_type', 'release',
@@ -243,7 +248,7 @@ async def test_resize_package_middleware(sample, len_items, len_releases, encodi
     assert len(transformed_items) == len_items
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
-        assert len(item.__dict__) == 6
+        assert len(item.__dict__) == FILE_ITEM_LENGTH
         assert item.file_name == 'archive-test.json'
         assert item.url == 'http://example.com'
         assert item.number == i
@@ -322,7 +327,7 @@ async def test_json_streaming_middleware_with_root_path_middleware(middleware_cl
     assert len(transformed_items) == 1
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
-        assert len(item.__dict__) == 6
+        assert len(item.__dict__) == FILE_ITEM_LENGTH
         assert item.file_name == 'test.json'
         assert item.url == 'http://example.com'
         assert item.number == i
@@ -397,7 +402,7 @@ async def test_read_data_middleware():
     assert transformed_items[0].data == b'{}'
 
 
-@pytest.mark.parametrize('exception', [BadZipFile(), Exception()])
+@pytest.mark.parametrize('exception', [BadZipFile(), RetryableError, Exception()])
 def test_retry_data_error_middleware(exception):
     spider = spider_with_crawler()
     response = response_fixture()
@@ -405,7 +410,7 @@ def test_retry_data_error_middleware(exception):
 
     generator = middleware.process_spider_exception(response, exception, spider)
 
-    if isinstance(exception, BadZipFile):
+    if isinstance(exception, (BadZipFile, RetryableError)):
         request = next(generator)
 
         assert request.dont_filter is True
@@ -520,3 +525,64 @@ async def test_root_path_middleware_item(root_path, sample, data_type, data, exp
         assert transformed_item.data == expected_data
         assert transformed_item.data_type == expected_data_type
         assert transformed_item.url == 'http://test.com'
+
+
+@pytest.mark.parametrize('valid', [True, False])
+@pytest.mark.parametrize('klass', [File, FileItem])
+async def test_validate_json_middleware(valid, klass, caplog):
+    spider = spider_with_crawler()
+    middleware = ValidateJSONMiddleware()
+    spider.validate_json = True
+
+    kwargs = {'number': 1} if klass is FileItem else {}
+
+    item = klass(
+        file_name='test.json',
+        url='http://test.com',
+        data_type='release_package',
+        data='{"key": "value"}' if valid else '{"broken": }',
+        **kwargs
+    )
+
+    generator = middleware.process_spider_output(None, _aiter([item]), spider)
+    transformed_items = await alist(generator)
+
+    invalid_json_count = spider.crawler.stats.get_value('invalid_json_count', 0)
+    messages = [record.message for record in caplog.records]
+
+    assert len(transformed_items) == int(valid)
+    if valid:
+        assert invalid_json_count == 0
+        assert messages == []
+    else:
+        number = ", 'number': 1" if klass is FileItem else ''
+        assert invalid_json_count == 1
+        assert [message.splitlines() for message in messages] == [[
+            "Dropped: Invalid JSON",
+            f"{{'file_name': 'test.json', 'url': 'http://test.com', 'data_type': 'release_package'{number}}}"
+        ]]
+
+
+@pytest.mark.parametrize('data', [[], {}])
+@pytest.mark.parametrize('klass', [File, FileItem])
+async def test_validate_json_middleware_already_parsed(data, klass, caplog):
+    spider = spider_with_crawler()
+    middleware = ValidateJSONMiddleware()
+    spider.validate_json = True
+
+    kwargs = {'number': 1} if klass is FileItem else {}
+
+    item = klass(
+        file_name='test.json',
+        url='http://test.com',
+        data_type='release_package',
+        data=data,
+        **kwargs
+    )
+
+    generator = middleware.process_spider_output(None, _aiter([item]), spider)
+    transformed_items = await alist(generator)
+
+    assert len(transformed_items) == 1
+    assert spider.crawler.stats.get_value('invalid_json_count', 0) == 0
+    assert [record.message for record in caplog.records] == []

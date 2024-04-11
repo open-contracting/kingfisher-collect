@@ -10,6 +10,9 @@ class NigeriaAnambraState(NigeriaBonMaximusBase):
     """
     name = 'nigeria_anambra_state'
 
+    # BaseSpider
+    validate_json = True
+
     # SimpleSpider
     data_type = 'release_package'
 

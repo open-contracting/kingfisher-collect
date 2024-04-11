@@ -7,7 +7,7 @@ import pytest
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
 from kingfisher_scrapy.items import File
-from tests import path, response_fixture, spider_with_crawler
+from tests import FILE_LENGTH, path, response_fixture, spider_with_crawler
 
 
 def test_parse():
@@ -23,7 +23,7 @@ def test_parse():
     item = next(generator)
 
     assert type(item) is File
-    assert len(item.__dict__) == 5
+    assert len(item.__dict__) == FILE_LENGTH
     assert item.file_name == 'test-test.json'
     assert item.url == 'http://example.com'
     assert item.data_type == 'release_package'
@@ -53,7 +53,7 @@ def test_parse_line_delimited(sample, len_items, file_name):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item.__dict__) == 5
+    assert len(item.__dict__) == FILE_LENGTH
     assert item.file_name == f'{file_name}-test.json'
     assert item.url == 'http://example.com'
     assert item.data_type == 'release_package'
@@ -83,7 +83,7 @@ def test_parse_release_package(sample, len_items, len_releases, file_name):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item.__dict__) == 5
+    assert len(item.__dict__) == FILE_LENGTH
     assert item.file_name == f'{file_name}-test.json'
     assert item.url == 'http://example.com'
     assert item.data_type == 'release_package'
@@ -120,7 +120,7 @@ def test_parse_rar_file():
     item = next(generator)
 
     assert type(item) is File
-    assert len(item.__dict__) == 5
+    assert len(item.__dict__) == FILE_LENGTH
     assert item.file_name == 'test-test.json'
     assert item.url == 'http://example.com'
     assert item.data_type == 'release_package'

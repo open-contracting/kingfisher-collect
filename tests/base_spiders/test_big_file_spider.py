@@ -5,7 +5,7 @@ import pytest
 from kingfisher_scrapy.base_spiders import BigFileSpider
 from kingfisher_scrapy.exceptions import IncoherentConfigurationError
 from kingfisher_scrapy.items import File
-from tests import response_fixture, spider_with_crawler
+from tests import FILE_LENGTH, response_fixture, spider_with_crawler
 
 
 @pytest.mark.parametrize('data_type', ['release', 'record', None, 'other'])
@@ -37,7 +37,7 @@ def test_parse_package(sample, len_items, len_releases, data_type, key):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item.__dict__) == 5
+    assert len(item.__dict__) == FILE_LENGTH
     assert item.file_name == 'test.json'
     assert item.url == 'http://example.com'
     assert item.data_type == data_type

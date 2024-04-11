@@ -7,7 +7,7 @@ from kingfisher_scrapy.pipelines import Validate
 from tests import spider_with_crawler
 
 
-def test_process_item():
+def test_process_item_with_file():
     pipeline = Validate()
     item = File(
         file_name='test',
@@ -24,7 +24,7 @@ def test_process_item():
     assert pipeline.process_item(item, None) == item
 
 
-def test_process_item_error():
+def test_process_item_with_file_failure():
     pipeline = Validate()
 
     with pytest.raises(TypeError):
@@ -45,7 +45,7 @@ def test_process_item_error():
         pipeline.process_item(item, None)
 
 
-def test_process_file_item():
+def test_process_item_with_file_item():
     pipeline = Validate()
     item = FileItem(
         file_name='test',
@@ -54,10 +54,11 @@ def test_process_file_item():
         data='data',
         number=1,
     )
+
     assert pipeline.process_item(item, None) == item
 
 
-def test_process_file_item_error():
+def test_process_item_with_file_item_failure():
     pipeline = Validate()
     item = FileItem(
         file_name='test',
@@ -66,24 +67,28 @@ def test_process_file_item_error():
         data='data',
         number='2',
     )
+
     with pytest.raises(ValidationError):
         pipeline.process_item(item, None)
+
     item.number = None
+
     with pytest.raises(ValidationError):
         pipeline.process_item(item, None)
 
 
-def test_process_file_error():
+def test_process_item_with_file_error():
     pipeline = Validate()
     item = FileError(
         file_name='test',
         url='http://test.com',
         errors={'http_code': 500},
     )
+
     assert pipeline.process_item(item, None) == item
 
 
-def test_process_file_item_error_error():
+def test_process_item_with_file_error_failure():
     pipeline = Validate()
 
     with pytest.raises(TypeError):
@@ -102,7 +107,7 @@ def test_process_file_item_error_error():
         pipeline.process_item(item, None)
 
 
-def test_process_item_duplicate_file(caplog):
+def test_process_item_with_duplicate_file(caplog):
     pipeline = Validate()
     spider = spider_with_crawler()
     item = File(
@@ -127,7 +132,7 @@ def test_process_item_duplicate_file(caplog):
     assert str(excinfo.value) == "Duplicate File: 'test1'"
 
 
-def test_process_item_duplicate_file_item(caplog):
+def test_process_item_with_duplicate_file_item(caplog):
     pipeline = Validate()
     spider = spider_with_crawler()
     item = FileItem(

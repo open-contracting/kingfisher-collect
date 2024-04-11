@@ -32,8 +32,9 @@ class BaseSpider(scrapy.Spider):
     With respect to the data's format:
 
     -  If the data is not encoded using UTF-8, set an ``encoding`` class attribute to its encoding.
-    -  If the data is a concatenated JSON, add a ``concatenated_json = True`` class attribute.
+    -  If the data is concatenated JSON, add a ``concatenated_json = True`` class attribute.
     -  If the data is line-delimited JSON, add a ``line_delimited = True`` class attribute.
+    -  If the data can be invalid JSON, add a ``validate_json = True`` class attribute.
     -  If the data embeds OCDS data within other objects or arrays, set a ``root_path`` class attribute to the path to
        the OCDS data, e.g. ``'releasePackage'`` or ``'results.item'``.
     -  If the data is in CSV or XLSX format, add a ``unflatten = True`` class attribute to convert it to JSON using
@@ -56,6 +57,7 @@ class BaseSpider(scrapy.Spider):
     encoding = 'utf-8'
     concatenated_json = False
     line_delimited = False
+    validate_json = False
     root_path = ''
     unflatten = False
     unflatten_args = {}

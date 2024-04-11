@@ -13,6 +13,9 @@ class NigeriaEnuguState(SimpleSpider):
     """
     name = 'nigeria_enugu_state'
 
+    # BaseSpider
+    validate_json = True
+
     # SimpleSpider
     data_type = 'release_package'
 
