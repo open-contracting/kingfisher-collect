@@ -37,9 +37,6 @@
         },
         "data": {
           "minLength": 1
-        },
-        "invalid_json": {
-          "type": "boolean"
         }
       },
       "required": [

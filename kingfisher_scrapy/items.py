@@ -12,8 +12,6 @@ class Item:
 class File(Item):
     data_type: str
     data: Any
-    # Added by the ValidateJSON middleware, for the Validate pipeline to drop the item if invalid.
-    invalid_json: bool = False
     # Added by the FilesStore extension, for the KingfisherProcessAPI2 extension to refer to the file.
     path: str = ""
 
@@ -24,8 +22,6 @@ class FileItem(Item):
     data_type: str
     data: Any
     number: int
-    # Added by the ValidateJSON middleware, for the Validate pipeline to drop the item if invalid.
-    invalid_json: bool = False
     # Added by the FilesStore extension, for the KingfisherProcessAPI2 extension to refer to the file.
     path: str = ""
 

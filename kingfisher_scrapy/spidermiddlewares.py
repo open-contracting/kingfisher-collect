@@ -78,11 +78,11 @@ class LineDelimitedMiddleware:
 class ValidateJSONMiddleware:
     """
     If the spider's ``validate_json`` class attribute is ``True``,  checks if the item's ``data`` field is valid
-    JSON. If not, marks the item invalid. Otherwise, yields the original item.
+    JSON. If not, yields nothing. Otherwise, yields the original item.
     """
     async def process_spider_output(self, response, result, spider):
         """
-        :returns: a generator of File or FileItem objects, in which the ``invalid_json`` field is updated
+        :returns: a generator of File or FileItem objects, in which the ``data`` field is valid JSON
         """
         async for item in result:
             if (
@@ -96,9 +96,9 @@ class ValidateJSONMiddleware:
             try:
                 json.loads(item.data)
             except json.JSONDecodeError:
-                item.invalid_json = True
-
-            yield item
+                pass
+            else:
+                yield item
 
 
 class RootPathMiddleware:
@@ -113,11 +113,7 @@ class RootPathMiddleware:
         :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
         """
         async for item in result:
-            if (
-                not isinstance(item, (File, FileItem))
-                or item.invalid_json
-                or not spider.root_path
-            ):
+            if not isinstance(item, (File, FileItem)) or not spider.root_path:
                 yield item
                 continue
 
@@ -198,11 +194,7 @@ class AddPackageMiddleware:
         :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
         """
         async for item in result:
-            if (
-                not isinstance(item, (File, FileItem))
-                or item.invalid_json
-                or item.data_type not in ('release', 'record')
-            ):
+            if not isinstance(item, (File, FileItem)) or item.data_type not in ('release', 'record'):
                 yield item
                 continue
 
@@ -238,11 +230,7 @@ class ResizePackageMiddleware:
         :returns: a generator of FileItem objects, in which the ``data`` field is a string
         """
         async for item in result:
-            if (
-                not isinstance(item, File)
-                or item.invalid_json
-                or not getattr(spider, 'resize_package', False)
-            ):
+            if not isinstance(item, File) or not getattr(spider, 'resize_package', False):
                 yield item
                 continue
 
@@ -296,11 +284,7 @@ class ReadDataMiddleware:
         :returns: a generator of File objects, in which the ``data`` field is bytes
         """
         async for item in result:
-            if (
-                not isinstance(item, File)
-                or item.invalid_json
-                or not hasattr(item.data, 'read')
-            ):
+            if not isinstance(item, File) or not hasattr(item.data, 'read'):
                 yield item
                 continue
 

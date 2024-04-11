@@ -63,7 +63,6 @@ def test_parse_200():
         'url': 'http://example.com',
         'data_type': 'release_package',
         'data': body,
-        'invalid_json': False,
         'path': '',
     }
 

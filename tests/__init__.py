@@ -7,6 +7,9 @@ from scrapy.utils.test import get_crawler
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 
+FILE_LENGTH = 5
+FILE_ITEM_LENGTH = FILE_LENGTH + 1
+
 
 def path(filename):
     return os.path.join('tests', 'fixtures', filename)

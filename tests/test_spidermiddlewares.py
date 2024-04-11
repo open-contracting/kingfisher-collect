@@ -17,7 +17,7 @@ from kingfisher_scrapy.spidermiddlewares import (
     RootPathMiddleware,
     ValidateJSONMiddleware,
 )
-from tests import response_fixture, spider_with_crawler
+from tests import FILE_ITEM_LENGTH, response_fixture, spider_with_crawler
 
 
 # https://discuss.python.org/t/enhance-builtin-iterables-like-list-range-with-async-methods-like-aiter-anext/21352/11
@@ -114,7 +114,6 @@ async def test_bytes_or_file(middleware_class, attribute, value, override, tmpdi
         'file_name': 'test.json',
         'url': 'http://test.com',
         'data_type': 'release',
-        'invalid_json': False,
         'path': '',
     }
     expected.update(override)
@@ -161,7 +160,6 @@ async def test_encoding(middleware_class, attribute, value, override, tmpdir):
         'file_name': 'test.json',
         'url': 'http://test.com',
         'data_type': 'release',
-        'invalid_json': False,
         'path': '',
     }
     expected.update(override)
@@ -203,7 +201,6 @@ async def test_add_package_middleware(data_type, data, root_path):
     expected = {
         'file_name': 'test.json',
         'url': 'http://test.com',
-        'invalid_json': False,
         'path': '',
     }
     if 'item' in root_path:
@@ -249,7 +246,7 @@ async def test_resize_package_middleware(sample, len_items, len_releases, encodi
     assert len(transformed_items) == len_items
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
-        assert len(item.__dict__) == 7
+        assert len(item.__dict__) == FILE_ITEM_LENGTH
         assert item.file_name == 'archive-test.json'
         assert item.url == 'http://example.com'
         assert item.number == i
@@ -295,7 +292,6 @@ async def test_json_streaming_middleware(middleware_class, attribute, separator,
             'data_type': 'release_package',
             'data': data,
             'number': i,
-            'invalid_json': False,
             'path': '',
         }
 
@@ -329,7 +325,7 @@ async def test_json_streaming_middleware_with_root_path_middleware(middleware_cl
     assert len(transformed_items) == 1
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
-        assert len(item.__dict__) == 7
+        assert len(item.__dict__) == FILE_ITEM_LENGTH
         assert item.file_name == 'test.json'
         assert item.url == 'http://example.com'
         assert item.number == i
@@ -379,7 +375,6 @@ async def test_json_streaming_middleware_with_compressed_file_spider(middleware_
             'data_type': 'release_package',
             'data': data,
             'number': i,
-            'invalid_json': False,
             'path': '',
         }
 
@@ -530,9 +525,9 @@ async def test_root_path_middleware_item(root_path, sample, data_type, data, exp
         assert transformed_item.url == 'http://test.com'
 
 
-@pytest.mark.parametrize('invalid', [True, False])
+@pytest.mark.parametrize('valid', [True, False])
 @pytest.mark.parametrize('klass', [File, FileItem])
-async def test_validate_json_middleware(invalid, klass):
+async def test_validate_json_middleware(valid, klass):
     spider = spider_with_crawler()
     middleware = ValidateJSONMiddleware()
     spider.validate_json = True
@@ -543,16 +538,14 @@ async def test_validate_json_middleware(invalid, klass):
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data='{"broken": }' if invalid else '{"key": "value"}',
+        data='{"key": "value"}' if valid else '{"broken": }',
         **kwargs
     )
 
     generator = middleware.process_spider_output(None, _aiter([item]), spider)
     transformed_items = await alist(generator)
 
-    assert len(transformed_items) == 1
-    for transformed_item in transformed_items:
-        assert transformed_item.invalid_json is invalid
+    assert len(transformed_items) == int(valid)
 
 
 @pytest.mark.parametrize('data', [[], {}])
@@ -576,5 +569,3 @@ async def test_validate_json_middleware_already_parsed(data, klass):
     transformed_items = await alist(generator)
 
     assert len(transformed_items) == 1
-    for transformed_item in transformed_items:
-        assert transformed_item.invalid_json is False
