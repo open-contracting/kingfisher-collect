@@ -71,7 +71,7 @@ class Spider(BaseSpider):
             self._job = job
 
     def parse(self, response):
-        return self.item
+        yield self.item
 
 
 class Response:

@@ -23,4 +23,4 @@ class UnitedKingdomContractsFinderReleases(UnitedKingdomContractsFinderBase):
 
     @handle_http_error
     def parse_page(self, response):
-        return self.parse(response)
+        yield from self.parse(response)
