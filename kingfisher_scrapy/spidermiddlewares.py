@@ -24,6 +24,13 @@ def group_size(spider):
     return MAX_GROUP_SIZE
 
 
+def read_data_from_file_if_any(item):
+    if hasattr(item.data, 'read'):
+        content = item.data.read()
+        item.data.close()
+        item.data = content
+
+
 class ConcatenatedJSONMiddleware:
     """
     If the spider's ``concatenated_json`` class attribute is ``True``, yields each object of the File as a FileItem.
@@ -65,9 +72,9 @@ class LineDelimitedMiddleware:
                 continue
 
             data = item.data
-            # Data can be bytes or a file-like object.
+            # Data can be bytes or a file-like object. If bytes, split into an iterable.
             if isinstance(data, bytes):
-                data = data.splitlines(True)
+                data = data.splitlines(keepends=True)
 
             for number, line in enumerate(data, 1):
                 if sample_filled(spider, number):
@@ -94,11 +101,11 @@ class ValidateJSONMiddleware:
                 yield item
                 continue
 
-            if hasattr(item.data, 'read'):
-                item.data = item.data.read()
+            read_data_from_file_if_any(item)
 
             try:
                 json.loads(item.data)
+
                 yield item
             except json.JSONDecodeError:
                 spider.crawler.stats.inc_value('invalid_json_count')
@@ -178,6 +185,7 @@ class RootPathMiddleware:
                         return
 
                     item.data = obj
+
                     yield item
 
 
@@ -196,12 +204,11 @@ class AddPackageMiddleware:
                 yield item
                 continue
 
-            data = item.data
-            if hasattr(data, 'read'):
-                data = data.read()
+            read_data_from_file_if_any(item)
 
+            data = item.data
             # If the spider's ``root_path`` class attribute is non-empty, then the JSON data is already parsed.
-            if not isinstance(data, dict):
+            if isinstance(data, bytes):
                 data = json.loads(data)
 
             if item.data_type == 'release':
@@ -286,9 +293,8 @@ class ReadDataMiddleware:
                 yield item
                 continue
 
-            data = item.data.read()
-            item.data.close()
-            item.data = data
+            read_data_from_file_if_any(item)
+
             yield item
 
 
