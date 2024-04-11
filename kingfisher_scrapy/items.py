@@ -8,6 +8,7 @@ class Item:
     url: str
 
 
+# data can be: bytes | dict | list | io.BufferedReader | rarfile.RarExtFile | zipfile.ZipExtFile
 @dataclass
 class File(Item):
     data_type: str
