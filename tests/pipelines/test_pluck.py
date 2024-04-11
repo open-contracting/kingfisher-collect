@@ -43,7 +43,7 @@ def test_disabled(data_type, data):
         file_name='test',
         url='http://test.com',
         data_type=data_type,
-        data=json.dumps(data),
+        data=json.dumps(data).encode(),
     )
 
     assert pipeline.process_item(item, spider) == item
