@@ -17,7 +17,7 @@ class LogFormatter(scrapy.logformatter.LogFormatter):
         """
         item = item.__dict__.copy()
         if 'url' in item:
-            item['url'] = str(item['url'])
+            item['url'] = str(item['url'])  # avoid pydantic.AnyUrl.__repr__
         item.pop('data', None)
         item.pop('path', None)
         return getattr(super(), method)(item, *args)

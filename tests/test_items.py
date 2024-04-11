@@ -4,7 +4,7 @@ import pytest
 from kingfisher_scrapy.items import File, FileError, FileItem
 
 ITEM = {'file_name': 'test', 'url': 'http://test.com'}
-FILE = {**ITEM | {'data_type': 'release_package', 'data': 'data'}}
+FILE = {**ITEM | {'data_type': 'release_package', 'data': b'{}'}}
 FILE_ITEM = {**FILE | {'number': 1}}
 FILE_ERROR = {**ITEM | {'errors': {'http_code': 500, 'detail': 'timeout'}}}
 
@@ -37,10 +37,11 @@ def test_file_error_required(pop):
     check_required(FileError, FILE_ERROR, pop)
 
 
+@pytest.mark.parametrize('invalid', ['path/test', 'path\\test'])
 @pytest.mark.parametrize('klass,base', [(File, FILE), (FileItem, FILE_ITEM), (FileError, FILE_ERROR)])
-def test_file_name(klass, base):
+def test_file_name(klass, base, invalid):
     with pytest.raises(pydantic.ValidationError):
-        klass(**base | {'file_name': 'path/test'})
+        klass(**base | {'file_name': invalid})
 
 
 @pytest.mark.parametrize('invalid', ['://example.com', 'scheme://example.com', 'http://example'])
@@ -54,6 +55,22 @@ def test_url(klass, base, invalid):
 def test_data_type(klass, base):
     with pytest.raises(pydantic.ValidationError):
         klass(**base | {'data_type': 'invalid'})
+
+
+@pytest.mark.parametrize('invalid', [
+    None, True, 1, 1.0, 'data', [{'ocid': 'x'}], ({'ocid': 'x'},), {('ocid', 'x')}, frozenset((('ocid', 'x'),))
+])
+@pytest.mark.parametrize('klass,base', [(File, FILE), (FileItem, FILE_ITEM)])
+def test_data(klass, base, invalid):
+    with pytest.raises(pydantic.ValidationError):
+        klass(**base | {'data': invalid})
+
+
+@pytest.mark.parametrize('invalid', [b'', {}])
+@pytest.mark.parametrize('klass,base', [(File, FILE), (FileItem, FILE_ITEM)])
+def test_data_length(klass, base, invalid):
+    with pytest.raises(pydantic.ValidationError):
+        klass(**base | {'data': invalid})
 
 
 @pytest.mark.parametrize('invalid', [-1, 0, '1'])
