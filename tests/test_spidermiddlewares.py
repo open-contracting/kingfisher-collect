@@ -553,3 +553,28 @@ async def test_validate_json_middleware(invalid, klass):
     assert len(transformed_items) == 1
     for transformed_item in transformed_items:
         assert transformed_item.invalid_json is invalid
+
+
+@pytest.mark.parametrize('data', [[], {}])
+@pytest.mark.parametrize('klass', [File, FileItem])
+async def test_validate_json_middleware_already_parsed(data, klass):
+    spider = spider_with_crawler()
+    middleware = ValidateJSONMiddleware()
+    spider.validate_json = True
+
+    kwargs = {'number': 1} if klass is FileItem else {}
+
+    item = klass(
+        file_name='test.json',
+        url='http://test.com',
+        data_type='release_package',
+        data=data,
+        **kwargs
+    )
+
+    generator = middleware.process_spider_output(None, _aiter([item]), spider)
+    transformed_items = await alist(generator)
+
+    assert len(transformed_items) == 1
+    for transformed_item in transformed_items:
+        assert transformed_item.invalid_json is False

@@ -85,7 +85,11 @@ class ValidateJSONMiddleware:
         :returns: a generator of File or FileItem objects, in which the ``invalid_json`` field is updated
         """
         async for item in result:
-            if not isinstance(item, (File, FileItem)) or not spider.validate_json:
+            if (
+                not isinstance(item, (File, FileItem))
+                or not spider.validate_json
+                or isinstance(item.data, (dict, list))
+            ):
                 yield item
                 continue
 
