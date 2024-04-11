@@ -24,6 +24,9 @@ def response_fixture(meta=None, url_path='', **kwargs):
 
 
 def spider_with_crawler(spider_class=BaseSpider, *, settings=None, **kwargs):
+    if settings is None:
+        settings = {}
+    settings.update({'LOG_FORMATTER': 'kingfisher_scrapy.log_formatter.LogFormatter'})
     crawler = get_crawler(spider_class, settings)
     start_time = datetime(2001, 2, 3, 4, 5, 6)
     crawler.stats.set_value('start_time', start_time)

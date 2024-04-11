@@ -553,10 +553,11 @@ async def test_validate_json_middleware(valid, klass, caplog):
         assert invalid_json_count == 0
         assert messages == []
     else:
+        number = ", 'number': 1" if klass is FileItem else ''
         assert invalid_json_count == 1
         assert messages == [
-            f"Dropped: Invalid JSON\n{klass.__name__}(file_name='test.json', url='http://test.com', data_type="
-            f"'release_package', data='{{\"broken\": }}', {'number=1, ' if klass is FileItem else ''}path='')"
+            "Dropped: Invalid JSON\n"
+            f"{{'file_name': 'test.json', 'url': 'http://test.com', 'data_type': 'release_package'{number}}}"
         ]
 
 
