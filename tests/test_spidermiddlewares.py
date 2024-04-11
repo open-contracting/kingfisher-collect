@@ -57,7 +57,7 @@ async def alist(iterable):
     FileError(
         file_name='test.json',
         url='http://test.com',
-        errors={},
+        errors={'http_code': 500},
     ),
 ])
 async def test_passthrough(middleware_class, item):
@@ -555,10 +555,10 @@ async def test_validate_json_middleware(valid, klass, caplog):
     else:
         number = ", 'number': 1" if klass is FileItem else ''
         assert invalid_json_count == 1
-        assert messages == [
-            "Dropped: Invalid JSON\n"
+        assert [message.splitlines() for message in messages] == [[
+            "Dropped: Invalid JSON",
             f"{{'file_name': 'test.json', 'url': 'http://test.com', 'data_type': 'release_package'{number}}}"
-        ]
+        ]]
 
 
 @pytest.mark.parametrize('data', [[], {}])
