@@ -135,6 +135,7 @@ def test_from_crawler_with_database_url():
     ('compile,check,invalid', ['compile', 'check']),
     ('compile', ['compile']),
     ('check', ['check']),
+    ('', []),
 ])
 @pytest.mark.parametrize('call_count,status_code,messages', [
     (2, 200, [
