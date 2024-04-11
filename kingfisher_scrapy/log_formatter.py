@@ -1,8 +1,8 @@
 # https://docs.scrapy.org/en/latest/topics/logging.html#custom-log-formats
-from scrapy.logformatter import LogFormatter as _LogFormatter
+import scrapy.logformatter
 
 
-class LogFormatter(_LogFormatter):
+class LogFormatter(scrapy.logformatter.LogFormatter):
     # https://docs.scrapy.org/en/latest/_modules/scrapy/logformatter.html#LogFormatter.scraped
     def scraped(self, item, *args):
         return self._omit_data('scraped', item, *args)

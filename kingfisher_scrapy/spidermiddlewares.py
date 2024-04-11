@@ -4,6 +4,8 @@ import json
 from zipfile import BadZipFile
 
 import ijson
+from scrapy.exceptions import DropItem
+from scrapy.utils.log import logformatter_adapter
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import RetryableError
@@ -95,10 +97,13 @@ class ValidateJSONMiddleware:
 
             try:
                 json.loads(item.data)
-            except json.JSONDecodeError:
-                pass
-            else:
                 yield item
+            except json.JSONDecodeError:
+                spider.crawler.stats.inc_value('invalid_json_count')
+                # https://github.com/scrapy/scrapy/blob/48c5a8c/scrapy/core/scraper.py#L364-L367
+                logkws = spider.crawler.logformatter.dropped(item, DropItem('Invalid JSON'), response, spider)
+                if logkws is not None:
+                    spider.logger.log(*logformatter_adapter(logkws), extra={'spider': spider})
 
 
 class RootPathMiddleware:

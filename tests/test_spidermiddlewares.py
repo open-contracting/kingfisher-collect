@@ -527,7 +527,7 @@ async def test_root_path_middleware_item(root_path, sample, data_type, data, exp
 
 @pytest.mark.parametrize('valid', [True, False])
 @pytest.mark.parametrize('klass', [File, FileItem])
-async def test_validate_json_middleware(valid, klass):
+async def test_validate_json_middleware(valid, klass, caplog):
     spider = spider_with_crawler()
     middleware = ValidateJSONMiddleware()
     spider.validate_json = True
@@ -545,12 +545,24 @@ async def test_validate_json_middleware(valid, klass):
     generator = middleware.process_spider_output(None, _aiter([item]), spider)
     transformed_items = await alist(generator)
 
+    invalid_json_count = spider.crawler.stats.get_value('invalid_json_count', 0)
+    messages = [record.message for record in caplog.records]
+
     assert len(transformed_items) == int(valid)
+    if valid:
+        assert invalid_json_count == 0
+        assert messages == []
+    else:
+        assert invalid_json_count == 1
+        assert messages == [
+            f"Dropped: Invalid JSON\n{klass.__name__}(file_name='test.json', url='http://test.com', data_type="
+            f"'release_package', data='{{\"broken\": }}', {'number=1, ' if klass is FileItem else ''}path='')"
+        ]
 
 
 @pytest.mark.parametrize('data', [[], {}])
 @pytest.mark.parametrize('klass', [File, FileItem])
-async def test_validate_json_middleware_already_parsed(data, klass):
+async def test_validate_json_middleware_already_parsed(data, klass, caplog):
     spider = spider_with_crawler()
     middleware = ValidateJSONMiddleware()
     spider.validate_json = True
@@ -569,3 +581,5 @@ async def test_validate_json_middleware_already_parsed(data, klass):
     transformed_items = await alist(generator)
 
     assert len(transformed_items) == 1
+    assert spider.crawler.stats.get_value('invalid_json_count', 0) == 0
+    assert [record.message for record in caplog.records] == []
