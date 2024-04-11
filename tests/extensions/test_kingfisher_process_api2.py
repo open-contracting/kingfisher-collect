@@ -176,8 +176,6 @@ def test_spider_opened(
     }
     if steps != 'check':
         expected['compile'] = True
-    if steps != 'compile':
-        expected['check'] = True
 
     calls = mock.call_args_list
 
