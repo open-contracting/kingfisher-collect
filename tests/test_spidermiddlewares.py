@@ -125,9 +125,9 @@ async def test_bytes_or_file(middleware_class, attribute, value, expected_extra,
 
 @pytest.mark.parametrize('middleware_class,attribute,value,expected_extra', [
     (ConcatenatedJSONMiddleware, 'concatenated_json', True,
-     {'data': {'name': 'ALCALDÍA MUNICIPIO DE TIBÚ'}, 'number': 1}),
-    (RootPathMiddleware, 'root_path', 'name',
-     {'data': 'ALCALDÍA MUNICIPIO DE TIBÚ'}),
+     {'data': {'result': {'name': 'ALCALDÍA MUNICIPIO DE TIBÚ'}}, 'number': 1}),
+    (RootPathMiddleware, 'root_path', 'result',
+     {'data': {'name': 'ALCALDÍA MUNICIPIO DE TIBÚ'}}),
 ])
 async def test_encoding(middleware_class, attribute, value, expected_extra, tmpdir):
     spider = spider_with_crawler()
@@ -136,7 +136,7 @@ async def test_encoding(middleware_class, attribute, value, expected_extra, tmpd
 
     middleware = middleware_class()
 
-    data = b'{"name": "ALCALD\xcdA MUNICIPIO DE TIB\xda"}'
+    data = b'{"result": {"name": "ALCALD\xcdA MUNICIPIO DE TIB\xda"}}'
     bytes_item = File(
         file_name='test.json',
         url='http://test.com',

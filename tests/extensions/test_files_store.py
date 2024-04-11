@@ -46,8 +46,9 @@ def test_spider_opened(job, tmpdir):
 def test_spider_closed_odd_length(caplog, change_to_tmpdir):
     spider = spider_with_crawler(settings={'FILES_STORE': '1'})
     extension = FilesStore.from_crawler(spider.crawler)
+    response = response_fixture(body=b'{"ocid": "abc"}')
 
-    item = spider.build_file_from_response(response_fixture(), file_name='file.json', data_type='release_package')
+    item = spider.build_file_from_response(response, file_name='file.json', data_type='release_package')
     extension.item_scraped(item, spider)
 
     with caplog.at_level(logging.INFO):
@@ -65,8 +66,9 @@ def test_spider_closed_odd_length(caplog, change_to_tmpdir):
 def test_spider_closed_even_length(caplog, change_to_tmpdir):
     spider = spider_with_crawler(settings={'FILES_STORE': '22'})
     extension = FilesStore.from_crawler(spider.crawler)
+    response = response_fixture(body=b'{"ocid": "abc"}')
 
-    item = spider.build_file_from_response(response_fixture(), file_name='file.json', data_type='release_package')
+    item = spider.build_file_from_response(response, file_name='file.json', data_type='release_package')
     extension.item_scraped(item, spider)
 
     with caplog.at_level(logging.INFO):

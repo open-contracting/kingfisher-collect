@@ -136,7 +136,7 @@ def test_yield_non_archive_file():
     spider.data_type = 'release_package'
     spider.yield_non_archive_file = True
 
-    response = response_fixture(meta={'file_name': 'test.json'})
+    response = response_fixture(body=b'{"ocid": "abc"}', meta={'file_name': 'test.json'})
     generator = spider.parse(response)
     item = next(generator)
 
