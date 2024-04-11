@@ -12,12 +12,11 @@ def test_process_item_with_file():
         file_name='test',
         url='http://test.com',
         data_type='release_package',
-        data='data',
+        data=b'{}',
     )
 
     assert pipeline.process_item(item, None) == item
 
-    item.data = item.data.encode('ascii')
     item.file_name = 'test2'
 
     assert pipeline.process_item(item, None) == item
@@ -29,7 +28,7 @@ def test_process_item_with_file_item():
         file_name='test',
         url='http://test.com',
         data_type='release_package',
-        data='data',
+        data=b'{}',
         number=1,
     )
 
@@ -58,7 +57,7 @@ def test_process_item_with_duplicate_file(caplog):
         file_name='test1',
         url='http://example.com',
         data_type='release_package',
-        data='data',
+        data=b'{}',
     )
 
     pipeline.process_item(item, spider)
@@ -69,7 +68,7 @@ def test_process_item_with_duplicate_file(caplog):
         file_name='file2',
         url='http://example.com',
         data_type='release_package',
-        data='data',
+        data=b'{}',
     )
     pipeline.process_item(item2, spider)
 
@@ -83,7 +82,7 @@ def test_process_item_with_duplicate_file_item(caplog):
         file_name='test1',
         url='http://example.com',
         data_type='release_package',
-        data='data',
+        data=b'{}',
         number=1,
     )
 
@@ -95,7 +94,7 @@ def test_process_item_with_duplicate_file_item(caplog):
         file_name='test1',
         url='http://example.com',
         data_type='release_package',
-        data='data',
+        data=b'{}',
         number=2,
     )
     pipeline.process_item(item2, spider)

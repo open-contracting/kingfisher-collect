@@ -62,7 +62,12 @@ def test_number(invalid):
         FileItem(**FILE_ITEM | {'number': invalid})
 
 
-@pytest.mark.parametrize('invalid', [{'http_code': -1}, {'http_code': 0}, {'http_code': '1'}, {'detail': 'timeout'}])
+@pytest.mark.parametrize('invalid', [
+    {'http_code': 99},
+    {'http_code': 600},
+    {'http_code': '200'},
+    {'detail': 'timeout'},
+])
 def test_errors(invalid):
     with pytest.raises(pydantic.ValidationError):
         FileError(**FILE_ERROR | {'errors': invalid})

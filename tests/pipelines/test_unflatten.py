@@ -17,7 +17,7 @@ def test_process_item_csv():
         file_name='test.csv',
         url='http://test.com/test.csv',
         data_type='release_package',
-        data=b'data',
+        data=b'a,b,c\n1,2,3',
     )
 
     assert pipeline.process_item(item, spider) == item
@@ -46,7 +46,7 @@ def test_process_item_extension_error():
         file_name='file',
         url='http://test.com/file',
         data_type='release_package',
-        data=b'data',
+        data=b'a,b,c\n1,2,3',
     )
 
     with pytest.raises(NotSupported):
@@ -60,7 +60,7 @@ def test_process_item_xlsx_error():
         file_name='test.xlsx',
         url='http://test.com/test.xlsx',
         data_type='release_package',
-        data=b'data',
+        data=b'not xlsx data',
     )
 
     with pytest.raises(BadXLSXZipFile):

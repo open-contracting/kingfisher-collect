@@ -45,13 +45,13 @@ async def alist(iterable):
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data='{}',
+        data=b'{}',
     ),
     FileItem(
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data='{}',
+        data=b'{}',
         number=1,
     ),
     FileError(
@@ -71,7 +71,7 @@ async def test_passthrough(middleware_class, item):
     assert item == returned_item
 
 
-@pytest.mark.parametrize('middleware_class,attribute,value,override', [
+@pytest.mark.parametrize('middleware_class,attribute,value,expected_extra', [
     (ConcatenatedJSONMiddleware, 'concatenated_json', True,
      {'data': {'a': [{'b': 'c'}]}, 'number': 1}),
     (LineDelimitedMiddleware, 'line_delimited', True,
@@ -83,7 +83,7 @@ async def test_passthrough(middleware_class, item):
     # ResizePackageMiddleware is only used with CompressedFileSpider and BigFileSpider.
     # ReadDataMiddleware is only used with file-like objects.
 ])
-async def test_bytes_or_file(middleware_class, attribute, value, override, tmpdir):
+async def test_bytes_or_file(middleware_class, attribute, value, expected_extra, tmpdir):
     spider = spider_with_crawler()
     setattr(spider, attribute, value)
 
@@ -116,19 +116,20 @@ async def test_bytes_or_file(middleware_class, attribute, value, override, tmpdi
         'data_type': 'release',
         'path': '',
     }
-    expected.update(override)
+    expected.update(expected_extra)
 
     assert len(transformed_items) == 2
     for item in transformed_items:
         assert item.__dict__ == expected
 
 
-@pytest.mark.parametrize('middleware_class,attribute,value,override', [
+@pytest.mark.parametrize('middleware_class,attribute,value,expected_extra', [
     (ConcatenatedJSONMiddleware, 'concatenated_json', True,
      {'data': {'name': 'ALCALDÍA MUNICIPIO DE TIBÚ'}, 'number': 1}),
-    (RootPathMiddleware, 'root_path', 'name', {'data': 'ALCALDÍA MUNICIPIO DE TIBÚ'}),
+    (RootPathMiddleware, 'root_path', 'name',
+     {'data': 'ALCALDÍA MUNICIPIO DE TIBÚ'}),
 ])
-async def test_encoding(middleware_class, attribute, value, override, tmpdir):
+async def test_encoding(middleware_class, attribute, value, expected_extra, tmpdir):
     spider = spider_with_crawler()
     setattr(spider, attribute, value)
     spider.encoding = 'iso-8859-1'
@@ -162,7 +163,7 @@ async def test_encoding(middleware_class, attribute, value, override, tmpdir):
         'data_type': 'release',
         'path': '',
     }
-    expected.update(override)
+    expected.update(expected_extra)
 
     assert len(transformed_items) == 2
     for item in transformed_items:
@@ -538,7 +539,7 @@ async def test_validate_json_middleware(valid, klass, caplog):
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
-        data='{"key": "value"}' if valid else '{"broken": }',
+        data=b'{"key": "value"}' if valid else b'{"broken": }',
         **kwargs
     )
 
