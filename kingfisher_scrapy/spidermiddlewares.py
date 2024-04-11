@@ -94,12 +94,11 @@ class ValidateJSONMiddleware:
                 yield item
                 continue
 
-            data = item.data
-            if hasattr(data, 'read'):
-                data = data.read()
+            if hasattr(item.data, 'read'):
+                item.data = item.data.read()
 
             try:
-                json.loads(data)
+                json.loads(item.data)
                 yield item
             except json.JSONDecodeError:
                 spider.crawler.stats.inc_value('invalid_json_count')
