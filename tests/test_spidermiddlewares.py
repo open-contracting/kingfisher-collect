@@ -437,11 +437,11 @@ def test_retry_data_error_middleware(exception):
     # ... with an empty array, for data_type = "release".
     ('item',
      'release', [],
-     'release_package', {'releases': [], 'version': '1.1'}),
+     'release_package', None),
     # ... with an empty array, for data_type = "record_package".
     ('item',
      'record_package', [],
-     'record_package', {'records': [], 'version': '1.1'}),
+     'record_package', None),
 ])
 @pytest.mark.parametrize('klass', [File, FileItem])
 async def test_root_path_middleware(root_path, data_type, data, expected_data_type, expected_data, klass):
@@ -463,7 +463,7 @@ async def test_root_path_middleware(root_path, data_type, data, expected_data_ty
     generator = middleware.process_spider_output(None, _aiter([item]), spider)
     transformed_items = await alist(generator)
 
-    assert len(transformed_items) == 1
+    assert len(transformed_items) == int(expected_data is not None)
     for transformed_item in transformed_items:
         assert isinstance(transformed_item, klass)
         assert transformed_item.file_name == 'test.json'
