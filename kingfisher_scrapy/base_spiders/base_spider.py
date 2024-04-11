@@ -114,7 +114,8 @@ class BaseSpider(scrapy.Spider):
         self.kingfisher_process_note = note
         self.kingfisher_process_keep_collection_open = keep_collection_open == 'true'
         if steps is None:
-            self.kingfisher_process_steps = self.available_steps
+            # Set the compile step only by default, as the check step is very slow.
+            self.kingfisher_process_steps = {'compile'}
         else:
             self.kingfisher_process_steps = set(steps.split(',')) & self.available_steps
 
