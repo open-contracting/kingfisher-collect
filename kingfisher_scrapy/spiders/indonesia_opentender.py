@@ -16,7 +16,8 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     """
 
     name = 'indonesia_opentender'
-    custom_settings = {  # to avoid the server producing incomplete JSON files and timeouts.
+    # These settings are to avoid request timeouts and incomplete JSON.
+    custom_settings = {
         'CONCURRENT_REQUESTS': 1,
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }

@@ -242,6 +242,36 @@ The Scrapy framework is very flexible. To maintain a good separation of concerns
 
 When setting a custom `Request.meta key <https://docs.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request.meta>`__, check that the attribute name isn't `already in use <https://docs.scrapy.org/en/latest/topics/request-response.html#topics-request-meta>`__ by Scrapy.
 
+Architecture decision records (ADRs)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Deserialization
+^^^^^^^^^^^^^^^
+
+-  Use bytes wherever possible
+-  Deserialize at most once
+
+Kingfisher Collect attempts to collect the data in its original format, limiting its modifications to only those necessary to yield release packages and record packages in JSON format. Modifications include:
+
+-  Extract data files from archive files (:class:`~kingfisher_scrapy.base_spiders.compressed_file_spider.CompressedFileSpider`)
+-  Convert CSV and XLSX bytes to JSON bytes (:class:`~kingfisher_scrapy.pipelines.Unflatten`)
+-  Transcode non-UTF-8 bytes to UTF-8 bytes (:func:`~kingfisher_scrapy.util.transcode`)
+-  Correct OCDS data to enable merging releases, like filling in the ``ocid`` and ``date``
+
+.. seealso::
+
+   :doc:`spidermiddlewares`
+
+Reasons to deserialize JSON bytes include:
+
+-  Perform pagination, because the API returns metadata in the response body instead of in the `HTTP header <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link>`__ (:class:`~kingfisher_scrapy.base_spiders.index_spider.IndexSpider`, class:`~kingfisher_scrapy.base_spiders.links_spider.LinksSpider`)
+-  Check whether it's an error response, because the API returns a success status instead of an error status
+-  Parse non-OCDS data to build URLs for OCDS data
+
+Reasons to re-serialize JSON data include:
+
+-  To reuse the ``ijson.items`` function (:class:`~kingfisher_scrapy.spidermiddlewares.RootPathMiddleware`)
+
 Update requirements
 -------------------
 
