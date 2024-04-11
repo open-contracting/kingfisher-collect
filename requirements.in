@@ -7,7 +7,6 @@ psycopg2
 pydantic<2
 rarfile
 requests
-rfc3986-validator
 scrapy
 scrapyd
 scrapyd-client

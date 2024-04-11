@@ -287,8 +287,6 @@ requests-file==1.5.1
     # via
     #   -r requirements.txt
     #   tldextract
-rfc3986-validator==0.1.1
-    # via -r requirements.txt
 schema==0.7.2
     # via
     #   -r requirements.txt
