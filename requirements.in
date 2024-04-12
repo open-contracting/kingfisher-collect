@@ -1,14 +1,12 @@
 flattentool
 ijson
 jsonpointer
-jsonschema
 ocdskit[perf]
 ocdsmerge
 psycopg2
+pydantic<2
 rarfile
-referencing
 requests
-rfc3986-validator
 scrapy
 scrapyd
 scrapyd-client

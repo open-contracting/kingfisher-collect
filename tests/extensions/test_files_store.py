@@ -46,8 +46,9 @@ def test_spider_opened(job, tmpdir):
 def test_spider_closed_odd_length(caplog, change_to_tmpdir):
     spider = spider_with_crawler(settings={'FILES_STORE': '1'})
     extension = FilesStore.from_crawler(spider.crawler)
+    response = response_fixture(body=b'{"ocid": "abc"}')
 
-    item = spider.build_file_from_response(response_fixture(), file_name='file.json', data_type='release_package')
+    item = spider.build_file_from_response(response, file_name='file.json', data_type='release_package')
     extension.item_scraped(item, spider)
 
     with caplog.at_level(logging.INFO):
@@ -65,8 +66,9 @@ def test_spider_closed_odd_length(caplog, change_to_tmpdir):
 def test_spider_closed_even_length(caplog, change_to_tmpdir):
     spider = spider_with_crawler(settings={'FILES_STORE': '22'})
     extension = FilesStore.from_crawler(spider.crawler)
+    response = response_fixture(body=b'{"ocid": "abc"}')
 
-    item = spider.build_file_from_response(response_fixture(), file_name='file.json', data_type='release_package')
+    item = spider.build_file_from_response(response, file_name='file.json', data_type='release_package')
     extension.item_scraped(item, spider)
 
     with caplog.at_level(logging.INFO):
@@ -136,8 +138,19 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
 ])
 @pytest.mark.parametrize('data', [b'{"key": "value"}', {"key": "value"}])
 @pytest.mark.parametrize('item,subdirectory,expected_file_name', [
-    (File(file_name='file.json', url='https://x', data_type='release', data=''), '389', 'file.json'),
-    (FileItem(number=1, file_name='file.json', url='https://x', data_type='release', data=''), '3E7', 'file-1.json')
+    (File(
+        file_name='file.json',
+        url='https://example.com',
+        data_type='release',
+        data=b'{}',
+     ), '389', 'file.json'),
+    (FileItem(
+        file_name='file.json',
+        url='https://example.com',
+        data_type='release',
+        data=b'{}',
+        number=1,
+     ), '3E7', 'file-1.json')
 ])
 def test_item_scraped_with_file_and_file_item(sample, directory, data, item, subdirectory, expected_file_name, tmpdir):
     spider = spider_with_crawler(settings={'FILES_STORE': tmpdir}, sample=sample)
@@ -160,7 +173,12 @@ def test_item_scraped_with_build_file_and_existing_directory():
         files_store = os.path.join(tmpdirname, 'data')
         spider = spider_with_crawler(settings={'FILES_STORE': files_store})
         extension = FilesStore.from_crawler(spider.crawler)
-        item = spider.build_file(file_name='file.json', url='https://x', data_type='release', data=b'{"key": "value"}')
+        item = spider.build_file(
+            file_name='file.json',
+            url='https://example.com',
+            data_type='release',
+            data=b'{"key": "value"}',
+        )
 
         os.makedirs(os.path.join(files_store, 'test', '20010203_040506'))
 

@@ -81,9 +81,9 @@ def test_next_link_not_found():
 
     with pytest.raises(MissingNextLinkError) as e:
         meta = {'file_name': 'test', 'depth': 0}
-        spider.next_link(response_fixture(meta=meta, body=body))
+        spider.next_link(response_fixture(body=body, meta=meta))
     assert str(e.value) == 'next link not found on the first page: http://example.com'
 
     meta = {'file_name': 'test', 'depth': 10}
-    response = spider.next_link(response_fixture(meta=meta, body=body))
+    response = spider.next_link(response_fixture(body=body, meta=meta))
     assert response is None

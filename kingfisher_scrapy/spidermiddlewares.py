@@ -93,11 +93,7 @@ class ValidateJSONMiddleware:
         :returns: a generator of File or FileItem objects, in which the ``data`` field is valid JSON
         """
         async for item in result:
-            if (
-                not isinstance(item, (File, FileItem))
-                or not spider.validate_json
-                or isinstance(item.data, (dict, list))
-            ):
+            if not isinstance(item, (File, FileItem)) or not spider.validate_json or isinstance(item.data, dict):
                 yield item
                 continue
 
@@ -133,7 +129,8 @@ class RootPathMiddleware:
 
             data = item.data
             # Re-encode the data, to traverse the JSON using only ijson, instead of either ijson or Python.
-            if isinstance(data, (dict, list)):
+            # This is only expected to occur when both `root_path` and `concatenated_json` are set.
+            if isinstance(data, dict):
                 data = util.json_dumps(data).encode()
 
             iterable = util.transcode(spider, ijson.items, data, spider.root_path)

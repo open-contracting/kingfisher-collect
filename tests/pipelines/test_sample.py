@@ -15,7 +15,7 @@ def test_process_file_without_sample():
         file_name='test',
         url='http://test.com',
         data_type='release_package',
-        data='data',
+        data=b'{}',
     )
     assert pipeline.process_item(item, spider) == item
 
@@ -29,7 +29,7 @@ def test_process_file_with_sample():
         file_name='test',
         url='http://test.com',
         data_type='release_package',
-        data='data',
+        data=b'{}',
     )
     assert pipeline.process_item(item, spider) == item
     with pytest.raises(DropItem):

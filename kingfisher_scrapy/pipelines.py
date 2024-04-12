@@ -2,51 +2,30 @@
 # https://docs.scrapy.org/en/latest/topics/signals.html#item-signals
 import json
 import os
-import pkgutil
 import tempfile
 import warnings
 
 import ijson
 import jsonpointer
 from flattentool import unflatten
-from jsonschema import FormatChecker
-from jsonschema.validators import Draft4Validator
 from ocdsmerge.util import get_release_schema_url, get_tags
-from referencing import Registry, Resource
 from scrapy.exceptions import DropItem, NotSupported
 
 from kingfisher_scrapy.items import File, FileItem, PluckedItem
 from kingfisher_scrapy.util import transcode
 
 
-def _json_loads(basename):
-    return json.loads(pkgutil.get_data('kingfisher_scrapy', f'item_schema/{basename}.json'))
-
-
 # https://docs.scrapy.org/en/latest/topics/item-pipeline.html#duplicates-filter
 class Validate:
     """
     Drops duplicate files based on ``file_name`` and file items based on ``file_name`` and ``number``.
-
-    :raises jsonschema.ValidationError: if the item is invalid
     """
 
     def __init__(self):
-        self.validators = {}
         self.files = set()
         self.file_items = set()
 
-        schema = Resource.from_contents(_json_loads('item'))
-        registry = Registry().with_resource('urn:item', schema)
-        checker = FormatChecker()
-        for item in ('File', 'FileError', 'FileItem'):
-            self.validators[item] = Draft4Validator(_json_loads(item), registry=registry, format_checker=checker)
-
     def process_item(self, item, spider):
-        validator = self.validators.get(item.__class__.__name__)
-        if validator:
-            validator.validate(item.__dict__)
-
         if isinstance(item, FileItem):
             key = (item.file_name, item.number)
             if key in self.file_items:
