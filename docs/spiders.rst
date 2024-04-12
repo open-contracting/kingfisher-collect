@@ -373,13 +373,6 @@ Dominican Republic
 
    scrapy crawl dominican_republic_api
 
-.. autoclass:: kingfisher_scrapy.spiders.dominican_republic_bulk.DominicanRepublicBulk
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl dominican_republic_bulk
-
 Ecuador
 ~~~~~~~
 
