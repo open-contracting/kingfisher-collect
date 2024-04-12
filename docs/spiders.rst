@@ -976,8 +976,8 @@ Nigeria
 
    scrapy crawl nigeria_portal
 
-North
-~~~~~
+North Macedonia
+~~~~~~~~~~~~~~~
 
 .. autoclass:: kingfisher_scrapy.spiders.north_macedonia_digiwhist.NorthMacedoniaDigiwhist
    :no-members:
