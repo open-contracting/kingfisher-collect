@@ -976,6 +976,16 @@ Nigeria
 
    scrapy crawl nigeria_portal
 
+North Macedonia
+~~~~~~~~~~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.north_macedonia_digiwhist.NorthMacedoniaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl north_macedonia_digiwhist
+
 Norway
 ~~~~~~
 
@@ -1135,6 +1145,16 @@ Romania
 .. code-block:: bash
 
    scrapy crawl romania_digiwhist
+
+Serbia
+~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.serbia_digiwhist.SerbiaDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl serbia_digiwhist
 
 Slovakia
 ~~~~~~~~

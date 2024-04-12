@@ -1,13 +1,8 @@
-import tarfile
-from io import BytesIO
-
-import scrapy
-
-from kingfisher_scrapy.base_spiders import BaseSpider
-from kingfisher_scrapy.util import browser_user_agent, handle_http_error
+from kingfisher_scrapy.base_spiders import CompressedFileSpider
+from kingfisher_scrapy.util import browser_user_agent, components
 
 
-class DigiwhistBase(BaseSpider):
+class DigiwhistBase(CompressedFileSpider):
     """
     Domain
       Digiwhist
@@ -19,19 +14,13 @@ class DigiwhistBase(BaseSpider):
     # BaseSpider
     line_delimited = True
 
-    # start_urls must be provided by subclasses.
+    # CompressedFileSpider
+    data_type = 'release_package'
+
+    # Local
+    base_url = 'https://opentender.eu/data/downloads/data-{}-json-json.zip'
+
+    # country_code must be provided by subclasses.
 
     def start_requests(self):
-        # See scrapy.spiders.Spider.start_requests
-        for url in self.start_urls:
-            yield scrapy.Request(url, meta={'file_name': 'file.tar.gz'})
-
-    @handle_http_error
-    def parse(self, response):
-
-        # Load a line at the time, pass it to API
-        with tarfile.open(fileobj=BytesIO(response.body), mode="r:gz") as tar:
-            with tar.extractfile(tar.next()) as f:
-                yield self.build_file_from_response(
-                    response, data_type='release_package', file_name='data.json', data=f
-                )
+        yield self.build_request(self.base_url.format(self.country_code), formatter=components(-1))
