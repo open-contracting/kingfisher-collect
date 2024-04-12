@@ -130,7 +130,13 @@ def test_from_crawler_with_database_url():
 @pytest.mark.parametrize('note', [None, 'Started by NAME.'])
 @pytest.mark.parametrize('job', [None, '7df53218f37a11eb80dd0c9d92c523cb'])
 @pytest.mark.parametrize('ocds_version,upgrade', [('1.0', True), (None, False)])
-@pytest.mark.parametrize('steps', [None, 'compile,check,invalid', 'compile', 'check'])
+@pytest.mark.parametrize('steps,expected_steps', [
+    (None, ['compile']),
+    ('compile,check,invalid', ['compile', 'check']),
+    ('compile', ['compile']),
+    ('check', ['check']),
+    ('', []),
+])
 @pytest.mark.parametrize('call_count,status_code,messages', [
     (2, 200, [
         ('INFO', 'Created collection 1 in Kingfisher Process'), ('INFO', 'Closed collection 1 in Kingfisher Process')
@@ -149,6 +155,7 @@ def test_spider_opened(
     ocds_version,
     upgrade,
     steps,
+    expected_steps,
     call_count,
     status_code,
     messages,
@@ -174,10 +181,8 @@ def test_spider_opened(
         'job': job,
         'upgrade': upgrade,
     }
-    if steps != 'check':
-        expected['compile'] = True
-    if steps != 'compile':
-        expected['check'] = True
+    for step in expected_steps:
+        expected[step] = True
 
     calls = mock.call_args_list
 
