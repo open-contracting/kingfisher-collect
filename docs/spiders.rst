@@ -934,13 +934,6 @@ Nigeria
 
    scrapy crawl nigeria_enugu_state
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_gombe_state.NigeriaGombeState
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_gombe_state
-
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_kano_state.NigeriaKanoState
    :no-members:
 
