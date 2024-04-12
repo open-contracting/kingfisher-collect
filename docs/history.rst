@@ -24,5 +24,5 @@ Broken spiders
 
 Spiders for publications that became broken, since April 2024:
 
-- 2024-04-12: `dominican_republic_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1074>`__ (the page used by the spider was replaced by https://datosabiertos.dgcp.gob.do/opendata/estandar-mundial-ocds but the data is no longer been updated)
+- 2024-04-12: `dominican_republic_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1074>`__ (the `bulk source <https://datosabiertos.dgcp.gob.do/opendata/estandar-mundial-ocds>`__ is not synced with the API source)
 - 2024-04-05: `mexico_quien_es_quien_records <https://github.com/open-contracting/kingfisher-collect/pull/1063>`__ (pagination is broken)

@@ -7,7 +7,8 @@ import pydantic
 import rarfile
 
 Data = (
-    # https://docs.python.org/3/library/tarfile.html#tarfile.TarFile.extractfile (DigiwhistBase)
+    # "in read binary mode, it returns an io.BufferedReader" https://docs.python.org/3/library/functions.html#open
+    # https://docs.python.org/3/library/tarfile.html#tarfile.TarFile.extractfile
     io.BufferedReader
     # https://rarfile.readthedocs.io/api.html#rarfile.RarFile.open (CompressedFileSpider)
     | rarfile.RarExtFile
