@@ -172,6 +172,8 @@ class KingfisherProcessAPI2:
 
         cb = functools.partial(self._when_ready, self.client.publish, data, self.routing_key)
         methods.add_callback_threadsafe(self.client.connection, cb)
+        # WARNING! Kingfisher Process's API reads this value.
+        self.stats.inc_value("kingfisher_process_expected_files_count")
 
     def disconnect_and_join(self):
         """
