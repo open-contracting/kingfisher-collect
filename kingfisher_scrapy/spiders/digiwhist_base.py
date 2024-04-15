@@ -16,7 +16,6 @@ class DigiwhistBase(CompressedFileSpider):
 
     # CompressedFileSpider
     data_type = 'release_package'
-    file_name_must_not_contain = 'year-unavailable'
 
     # Local
     base_url = 'https://opentender.eu/data/downloads/data-{}-json-json.zip'
