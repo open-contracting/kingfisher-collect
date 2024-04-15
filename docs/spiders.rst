@@ -768,6 +768,20 @@ Mexico
 
    scrapy crawl mexico_mexico_state_infoem
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_state_sesaemm_plataforma_digital_nacional.MexicoMexicoStateSESAEMMPlataformaDigitalNacional
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_mexico_state_sesaemm_plataforma_digital_nacional
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_michoacan_sesea_plataforma_digital_nacional.MexicoMichoacanSESEAPlataformaDigitalNacional
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_michoacan_sesea_plataforma_digital_nacional
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_cotai.MexicoNuevoLeonCOTAI
    :no-members:
 
@@ -789,6 +803,13 @@ Mexico
 
    scrapy crawl mexico_nuevo_leon_releases
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_puebla_state_seseap_plataforma_digital_nacional.MexicoPueblaStateSESEAPlataformaDigitalNacional
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_puebla_state_seseap_plataforma_digital_nacional
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_quien_es_quien_releases.MexicoQuienEsQuienReleases
    :no-members:
 
@@ -803,6 +824,20 @@ Mexico
 
    scrapy crawl mexico_quintana_roo_idaip
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_quintana_roo_sesaeqroo_plataforma_digital_nacional.MexicoQuintanaRooSESAEQROOPlataformaDigitalNacional
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_quintana_roo_sesaeqroo_plataforma_digital_nacional
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_shcp_plataforma_digital_nacional.MexicoSHCPPlataformaDigitalNacional
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_shcp_plataforma_digital_nacional
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_sinaloa_ceaip.MexicoSinaloaCEAIP
    :no-members:
 
@@ -816,6 +851,13 @@ Mexico
 .. code-block:: bash
 
    scrapy crawl mexico_veracruz_ivai
+
+.. autoclass:: kingfisher_scrapy.spiders.mexico_veracruz_state_sesea_plataforma_digital_nacional.MexicoVeracruzStateSESEAPlataformaDigitalNacional
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_veracruz_state_sesea_plataforma_digital_nacional
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_yucatan_inaip.MexicoYucatanINAIP
    :no-members:
