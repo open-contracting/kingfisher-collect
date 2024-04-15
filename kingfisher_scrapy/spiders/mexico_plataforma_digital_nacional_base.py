@@ -3,7 +3,6 @@ import json
 import scrapy
 
 from kingfisher_scrapy.base_spiders import IndexSpider
-from kingfisher_scrapy.util import handle_http_error
 
 
 class MexicoPlataformaDigitalNacionalBase(IndexSpider):
@@ -39,4 +38,4 @@ class MexicoPlataformaDigitalNacionalBase(IndexSpider):
             'headers': {'Accept': 'application/json', 'Content-Type': 'application/json'},
             'body': json.dumps({'page': value, 'pageSize': 10}),
             'meta': {'file_name': f'page-{value}.json'},
-    }
+        }
