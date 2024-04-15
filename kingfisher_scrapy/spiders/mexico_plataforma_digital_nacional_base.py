@@ -14,26 +14,29 @@ class MexicoPlataformaDigitalNacionalBase(IndexSpider):
     data_type = 'release'
 
     # IndexSpider
-    limit = '/pagination/pageSize'
     result_count_pointer = '/pagination/total'
-    start_page = 1
+    limit = '/pagination/pageSize'
     use_page = True
+    start_page = 0
+    formatter = None
 
     # Local
-    base_url = 'https://api.plataformadigitalnacional.org/s6/api/v1/search?supplier_id={}'
+    url_prefix = 'https://api.plataformadigitalnacional.org/s6/api/v1/search?supplier_id='
 
     # publisher_id must be provided by subclasses.
 
     def start_requests(self):
-        yield scrapy.Request(self.base_url.format(self.publisher_id), meta={'file_name': 'page-0.json'},
-                             callback=self.parse_list, method='POST')
+        yield scrapy.Request(
+            f'{self.url_prefix}{self.publisher_id}',
+            method='POST',
+            meta={'file_name': 'page-0.json'},
+            callback=self.parse_list,
+        )
 
-    @handle_http_error
-    def parse_list(self, response):
-        data = self.parse_list_loader(response)
-        yield from self.parse(response)
-        for value in self.range_generator(data, response):
-            payload = json.dumps({'page': value, 'pageSize': 10})
-            yield scrapy.Request(self.base_url.format(self.publisher_id), body=payload,
-                                 meta={'file_name': f'page-{value}.json'}, method='POST',
-                                 headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
+    def url_builder(self, value, data, response):
+        return f'{self.url_prefix}{self.publisher_id}', {
+            'method': 'POST',
+            'headers': {'Accept': 'application/json', 'Content-Type': 'application/json'},
+            'body': json.dumps({'page': value, 'pageSize': 10}),
+            'meta': {'file_name': f'page-{value}.json'},
+    }

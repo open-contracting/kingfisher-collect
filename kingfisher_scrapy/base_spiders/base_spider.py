@@ -278,10 +278,13 @@ class BaseSpider(scrapy.Spider):
         :returns: a Scrapy request
         :rtype: scrapy.Request
         """
-        file_name = formatter(url)
-        if not file_name.endswith(('.json', '.csv', '.xlsx', '.rar', '.zip')):
-            file_name += '.json'
-        meta = {'file_name': file_name}
+        meta = {}
+        if formatter is None:
+            assert kwargs['meta']['file_name']
+        else:
+            meta['file_name'] = formatter(url)
+            if not meta['file_name'].endswith(('.json', '.csv', '.xlsx', '.rar', '.zip')):
+                meta['file_name'] += '.json'
         if 'meta' in kwargs:
             meta.update(kwargs.pop('meta'))
         return scrapy.Request(url, meta=meta, **kwargs)
