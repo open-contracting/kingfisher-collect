@@ -12,7 +12,7 @@ class NigeriaBonMaximusBase(SimpleSpider):
 
     def start_requests(self):
         url = f'{self.url_prefix}awarded_contracts.php'
-        yield scrapy.Request(url, meta={'file_name': 'all.html'}, callback=self.parse_list)
+        yield scrapy.Request(url, meta={'file_name': 'list.html'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
