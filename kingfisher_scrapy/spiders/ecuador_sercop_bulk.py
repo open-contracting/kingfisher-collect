@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, PeriodicSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import components, join
 
 
 class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
@@ -29,7 +29,4 @@ class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
     # PeriodicSpider
     pattern = 'https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/download'\
               '?type=json&year={0:%Y}&month={0:%m}&method=all'
-    formatter = staticmethod(components(-1))
-
-    def build_request(self, url, formatter, **kwargs):
-        return super().build_request(url, formatter, meta={'file_name': f'{formatter(url)}.zip'}, **kwargs)
+    formatter = staticmethod(join(components(-1), extension='zip'))

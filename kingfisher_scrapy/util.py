@@ -56,7 +56,7 @@ def parameters(*keys):
 
 def join(*functions, extension=None):
     """
-    Returns a function that joins the given functions' outputs.
+    Returns a function that joins the given functions' outputs and sets the file extension, if provided.
 
     >>> join(components(-1), parameters('page'))('http://example.com/api/planning.json?page=1')
     'planning-page-1'
