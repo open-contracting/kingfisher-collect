@@ -17,7 +17,6 @@ class MexicoQuienEsQuienReleases(IndexSpider, PeriodicSpider):
       https://api.quienesquien.wiki/v3/docs/
     """
     name = 'mexico_quien_es_quien_releases'
-    download_delay = 1
 
     # BaseSpider
     default_from_date = '1999-01-01'
