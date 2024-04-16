@@ -283,6 +283,7 @@ class BaseSpider(scrapy.Spider):
             assert kwargs['meta']['file_name']
         else:
             meta['file_name'] = formatter(url)
+            # Other extensions are related to the Unflatten pipeline and CompressedFileSpider base class.
             if not meta['file_name'].endswith(('.json', '.csv', '.xlsx', '.rar', '.zip')):
                 meta['file_name'] += '.json'
         if 'meta' in kwargs:
