@@ -27,14 +27,16 @@ class IndexSpider(SimpleSpider):
     #. If the ``page`` query string parameter is zero-indexed, set ``start_page = 0``.
     #. Set ``formatter`` to set the file name like in :meth:`~kingfisher_scrapy.base_spiders.BaseSpider.build_request`.
        If ``page_count_pointer`` or ``use_page = True``, it defaults to ``parameters(<param_page>)``. Otherwise, if
-       ``result_count_pointer`` is set and ``use_page = False``, it defaults to ``parameters(<param_offset>)``.
+       ``result_count_pointer`` is set and ``use_page = False``, it defaults to ``parameters(<param_offset>)``. If
+       ``formatter = None``, the ``url_builder()`` method must ``return url, {'meta': {'file_name': ...}, ...}``.
     #. Write a ``start_requests()`` method to yield the initial URL. The request's ``callback`` parameter should be set
        to ``self.parse_list``.
 
     If neither ``page_count_pointer`` nor ``result_count_pointer`` can be used to create the URLs (e.g. if you need to
     query a separate URL that does not return JSON), you need to define ``range_generator()`` and ``url_builder()``
     methods. ``range_generator()`` should return page numbers or offset numbers. ``url_builder()`` receives a page or
-    offset from ``range_generator()``, and returns a URL to request.
+    offset from ``range_generator()``, and returns either a request URL, or a tuple of a request URL and keyword
+    arguments (to pass to :meth:`~kingfisher_scrapy.base_spiders.BaseSpider.build_request`).
 
     If the results are in ascending chronological order, set ``chronological_order = 'asc'``.
 
@@ -112,8 +114,18 @@ class IndexSpider(SimpleSpider):
             # https://doc.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request
             if self.chronological_order == 'desc':
                 priority *= -1
-            yield self.build_request(self.url_builder(value, data, response), formatter=self.formatter,
-                                     priority=priority, callback=self.parse_list_callback)
+            return_value = self.url_builder(value, data, response)
+            if isinstance(return_value, tuple):
+                url, kwargs = return_value
+            else:
+                url, kwargs = return_value, {}
+            yield self.build_request(
+                url,
+                formatter=self.formatter,
+                priority=priority,
+                callback=self.parse_list_callback,
+                **kwargs,
+            )
 
     def parse_list_loader(self, response):
         return response.json()

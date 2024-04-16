@@ -32,5 +32,4 @@ class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
     formatter = staticmethod(components(-1))
 
     def build_request(self, url, formatter, **kwargs):
-        meta = {'meta': {'file_name': f'{formatter(url)}.zip'}}
-        return super().build_request(url, formatter, **meta)
+        return super().build_request(url, formatter, meta={'file_name': f'{formatter(url)}.zip'}, **kwargs)

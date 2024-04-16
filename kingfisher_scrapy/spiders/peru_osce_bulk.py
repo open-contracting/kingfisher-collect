@@ -21,7 +21,7 @@ class PeruOSCEBulk(CompressedFileSpider, IndexSpider):
     # IndexSpider
     formatter = staticmethod(components(-1))
     page_count_pointer = '/pagination/num_pages'
-    parse_list_callback = 'parse_files_list'
+    parse_list_callback = 'parse_page'
 
     peru_base_url = 'https://contratacionesabiertas.osce.gob.pe/api/v1/files?page={0}&paginateBy=10&format=json'
 
@@ -29,10 +29,10 @@ class PeruOSCEBulk(CompressedFileSpider, IndexSpider):
         yield scrapy.Request(self.peru_base_url.format(1),
                              meta={'file_name': 'list.json'}, callback=self.parse_list)
 
-    def pages_url_builder(self, value, data, response):
+    def url_builder(self, value, data, response):
         return self.peru_base_url.format(value)
 
     @handle_http_error
-    def parse_files_list(self, response):
+    def parse_page(self, response):
         for item in response.json()['results']:
             yield scrapy.Request((item['files']['json']), meta={'file_name': 'data.zip'})
