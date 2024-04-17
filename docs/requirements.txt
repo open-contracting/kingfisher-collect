@@ -1,5 +1,4 @@
 -r ../requirements.txt
 furo
-# https://github.com/sphinx-doc/sphinx/issues/11662
-sphinx>2,!=7.2.5
+sphinx>7.3.0
 docutils>=0.18
