@@ -645,6 +645,13 @@ Italy
 
    scrapy crawl italy_digiwhist
 
+.. autoclass:: kingfisher_scrapy.spiders.italy_ministry_of_infrastructure_and_transport.ItalyMinistryOfInfrastructureAndTransport
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl italy_ministry_of_infrastructure_and_transport
+
 Kosovo
 ~~~~~~
 
