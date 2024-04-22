@@ -100,8 +100,8 @@ class KingfisherProcessAPI2:
 
         if spider.kingfisher_process_note:
             data['note'] = spider.kingfisher_process_note
-        if getattr(spider, '_job', None):
-            data['job'] = getattr(spider, '_job', None)
+        if hasattr(spider, '_job'):
+            data['job'] = spider._job
 
         for step in spider.kingfisher_process_steps:
             data[step] = True
