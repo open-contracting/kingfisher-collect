@@ -93,16 +93,19 @@ class KingfisherProcessAPI2:
             'source_id': spider.name,
             'data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
             'sample': bool(spider.sample),
-            'note': spider.kingfisher_process_note,
-            'job': getattr(spider, '_job', None),
             'upgrade': spider.ocds_version == '1.0',
         }
+
+        if spider.kingfisher_process_note:
+            data['note'] = spider.kingfisher_process_note
+        if hasattr(spider, '_job'):
+            data['job'] = spider._job
 
         for step in spider.kingfisher_process_steps:
             data[step] = True
 
         # This request must be synchronous, to have the collection ID for the item_scraped handler.
-        response = self._post_synchronous(spider, 'api/v1/create_collection', data)
+        response = self._post_synchronous(spider, "/api/collections/", data)
 
         if response.ok:
             from twisted.internet import reactor
@@ -139,8 +142,7 @@ class KingfisherProcessAPI2:
         if spider.pluck or spider.kingfisher_process_keep_collection_open:
             return
 
-        response = self._post_synchronous(spider, 'api/v1/close_collection', {
-            'collection_id': self.collection_id,
+        response = self._post_synchronous(spider, f'/api/collections/{self.collection_id}/close/', {
             'reason': reason,
             'stats': json.loads(json.dumps(self.stats.get_stats(), default=str))  # for datetime objects
         })
