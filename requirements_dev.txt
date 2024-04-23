@@ -96,7 +96,7 @@ hyperlink==21.0.0
     # via
     #   -r requirements.txt
     #   twisted
-idna==2.8
+idna==3.7
     # via
     #   -r requirements.txt
     #   hyperlink
