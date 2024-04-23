@@ -28,8 +28,10 @@ class ItalyMinistryOfInfrastructureAndTransport(SimpleSpider):
     data_type = 'release_package'
 
     def start_requests(self):
-        url = 'https://www.serviziocontrattipubblici.it/ocdsReleasePackages-ms/v1.0/ocdsReleasePackages?page=1' \
-              '&pageSize=5 '
+        url = (
+            'https://www.serviziocontrattipubblici.it/ocdsReleasePackages-ms/v1.0/ocdsReleasePackages'
+            '?page=1&pageSize=5'
+        )
         if self.from_date and self.until_date:
             from_date = self.from_date.strftime(self.date_format)
             until_date = self.until_date.strftime(self.date_format)
