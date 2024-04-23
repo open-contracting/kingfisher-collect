@@ -193,7 +193,7 @@ def test_spider_opened(
     assert mock.call_count == call_count
 
     data_version = calls[0].args[2].pop('data_version')
-    assert calls[0].args[1:] == (f'{KingfisherProcessAPI2.base_url}/', expected)
+    assert calls[0].args[1:] == ('/api/collections/', expected)
 
     if crawl_time:
         assert data_version == '2020-01-01 00:00:00'
@@ -202,7 +202,7 @@ def test_spider_opened(
 
     if call_count == 2:
         calls[1].args[2].pop('stats')  # pop() ensures its presence
-        assert calls[1].args[1:] == (f'{KingfisherProcessAPI2.base_url}/1/close/', {'reason': 'finished'})
+        assert calls[1].args[1:] == ('/api/collections/1/close/', {'reason': 'finished'})
 
     for levelname, message in messages:
         assert any(r.name == 'test' and r.levelname == levelname and r.message == message for r in caplog.records)
@@ -229,7 +229,7 @@ def test_spider_closed_error(tmpdir, caplog):
     assert mock.call_count == 2
 
     calls[1].args[2].pop('stats')  # pop() ensures its presence
-    assert calls[1].args[1:] == (f'{KingfisherProcessAPI2.base_url}/1/close/', {'reason': 'finished'})
+    assert calls[1].args[1:] == ('/api/collections/1/close/', {'reason': 'finished'})
 
     assert any(
         r.name == 'test' and r.levelname == 'ERROR' and r.message == 'Failed to close collection: HTTP 500 (null) ({})'
