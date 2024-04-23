@@ -39,6 +39,7 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
 
     def build_file(self, *, file_name=None, url=None, data_type=None, data=None):
         json_data = json.loads(data)
+
         # Some files contain invalid record packages, e.g.:
         # {
         #   "status": 500,
@@ -47,5 +48,5 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
         if json_data.get('status') != 200:
             json_data['http_code'] = json_data['status']
             return FileError(file_name=file_name, url=url, errors=json_data)
-        else:
-            return File(file_name=file_name, url=url, data_type=None, data=data)
+
+        return File(file_name=file_name, url=url, data_type=None, data=data)
