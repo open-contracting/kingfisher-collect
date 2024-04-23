@@ -211,9 +211,9 @@ protego==0.2.1
     # via
     #   -r requirements.txt
     #   scrapy
-psycopg2==2.9.2
+psycopg2==2.9.9
     # via -r requirements.txt
-psycopg2-binary==2.9.2
+psycopg2-binary==2.9.9
     # via -r requirements_dev.in
 pyasn1==0.4.8
     # via
