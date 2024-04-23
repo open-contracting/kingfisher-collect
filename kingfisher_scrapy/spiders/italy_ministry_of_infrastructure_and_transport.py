@@ -41,20 +41,23 @@ class ItalyMinistryOfInfrastructureAndTransport(SimpleSpider):
     @handle_http_error
     def parse(self, response):
         data = response.json()
-        # A 200 HTTP response with a dict like the below is returned instead of 404, for example for not available
-        # date periods
+
+        # A success response is returned instead of an error response: for example, for unavailable date periods.
         # {
         #   "esito": false,
         #   "errorData": "Si è verificato un errore durante la creazione di OCDS"
         # }
-        if "errorData" in data:
+        if 'errorData' in data:
             data['http_code'] = response.status
             yield self.build_file_error_from_response(response, errors=data)
 
-        # An empty release package is returned pages after the last page is reached
+        # An empty release package is returned after the last meaningful page is reached.
         if 'releases' not in data:
             return
+
         yield from super().parse(response)
-        next_page = response.request.meta['page']+1
-        yield self.build_request(replace_parameters(response.url, page=next_page), meta={'page': next_page},
-                                 formatter=parameters('page'))
+
+        page = response.request.meta['page'] + 1
+        yield self.build_request(
+            replace_parameters(response.url, page=page), meta={'page': page}, formatter=parameters('page')
+        )
