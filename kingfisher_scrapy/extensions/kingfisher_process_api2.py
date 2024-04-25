@@ -89,9 +89,11 @@ class KingfisherProcessAPI2:
         """
         Sends an API request to create a collection in Kingfisher Process.
         """
+        data_version = spider.get_start_time('%Y-%m-%d %H:%M:%S')
+
         data = {
             'source_id': spider.name,
-            'data_version': spider.get_start_time('%Y-%m-%d %H:%M:%S'),
+            'data_version': data_version,
             'sample': bool(spider.sample),
             'upgrade': spider.ocds_version == '1.0',
         }
@@ -114,7 +116,7 @@ class KingfisherProcessAPI2:
 
             # WARNING! If this log message is changed, update the regular expression in the data_registry/
             # process_manager/task/collect.py file in the open-contracting/data-registry repository to match.
-            spider.logger.info('Created collection %d in Kingfisher Process', self.collection_id)
+            spider.logger.info('Created collection %d in Kingfisher Process (%s)', self.collection_id, data_version)
 
             # Connect to RabbitMQ only if a collection_id is set, as other signals don't use RabbitMQ, otherwise.
             self.client.connect()
