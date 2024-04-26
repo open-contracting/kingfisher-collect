@@ -42,7 +42,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
-#TELNETCONSOLE_ENABLED = False
+TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
 #DEFAULT_REQUEST_HEADERS = {
@@ -76,10 +76,8 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
 EXTENSIONS = {
+    'scrapy.extensions.telnet.TelnetConsole': None,
     'kingfisher_scrapy.extensions.SentryLogging': -1,
     'kingfisher_scrapy.extensions.Pluck': 1,
     # `FilesStore` must run before `KingfisherProcessAPI2`, because the file needs to be written before the
