@@ -139,7 +139,8 @@ def test_from_crawler_with_database_url():
 ])
 @pytest.mark.parametrize('call_count,status_code,messages', [
     (2, 200, [
-        ('INFO', 'Created collection 1 in Kingfisher Process'), ('INFO', 'Closed collection 1 in Kingfisher Process')
+        ('INFO', 'Created collection 1 in Kingfisher Process (DATA_VERSION)'),
+        ('INFO', 'Closed collection 1 in Kingfisher Process'),
     ]),
     (1, 500, [
         ('ERROR', 'Failed to create collection: HTTP 500 ({"collection_id": 1}) ({})'),
@@ -203,6 +204,8 @@ def test_spider_opened(
     if call_count == 2:
         calls[1].args[2].pop('stats')  # pop() ensures its presence
         assert calls[1].args[1:] == ('/api/collections/1/close/', {'reason': 'finished'})
+
+    messages = [(levelname, message.replace('DATA_VERSION', data_version)) for levelname, message in messages]
 
     for levelname, message in messages:
         assert any(r.name == 'test' and r.levelname == levelname and r.message == message for r in caplog.records)
