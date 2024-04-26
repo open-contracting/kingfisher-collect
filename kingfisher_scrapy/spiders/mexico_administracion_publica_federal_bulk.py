@@ -35,5 +35,6 @@ class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
     @handle_http_error
     def parse_list(self, response):
         for url in response.xpath('//a/@href').getall():
+            # https://compranetinfo.hacienda.gob.mx/dabiertos/contrataciones_arr.json.zip
             if url.endswith('contrataciones_arr.json.zip'):
                 yield self.build_request(url, formatter=components(-1))
