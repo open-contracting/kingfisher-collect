@@ -12,9 +12,13 @@ class CanadaMontreal(IndexSpider):
       http://donnees.ville.montreal.qc.ca/dataset/contrats-et-subventions-api
     """
     name = 'canada_montreal'
-    # Publisher uses Cloudflare (CF-Cache-Status and CF-RAY response headers).
+    # Publisher uses Cloudflare (CF-Cache-Status and CF-RAY response headers, can verify with curl).
     # Cloudflare responds with HTTP 520 if request headers use default user agent.
     user_agent = browser_user_agent
+    # Cloudflare responds with HTTP 520 depending on the server.
+    custom_settings = {
+        'HTTPPROXY_ENABLED': True,
+    }
 
     # BaseSpider
     ocds_version = '1.0'
