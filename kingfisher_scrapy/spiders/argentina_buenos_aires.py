@@ -19,6 +19,9 @@ class ArgentinaBuenosAires(SimpleSpider):
     }
     download_timeout = 99999  # to avoid user timeout when downloading the file
 
+    # BaseSpider
+    validate_json = True
+
     # SimpleSpider
     data_type = 'release_package'
 
