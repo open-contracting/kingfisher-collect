@@ -109,7 +109,7 @@ class DatabaseStore:
         data = self.yield_items_from_directory(crawl_directory, prefix)
         if spider.database_store_compile_releases:
             spider.logger.info('Creating generator of compiled releases')
-            data = merge(data)
+            data = merge(data, ignore_version=spider.database_store_ignore_version)
 
         filename = os.path.join(crawl_directory, 'data.csv')
         spider.logger.info('Writing the JSON data to the %s CSV file', filename)

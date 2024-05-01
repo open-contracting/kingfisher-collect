@@ -89,7 +89,7 @@ lxml==4.9.2
     #   scrapy
 ocdsextensionregistry==0.2.2
     # via ocdskit
-ocdskit[perf]==1.1.7
+ocdskit[perf]==1.1.11
     # via -r requirements.in
 ocdsmerge==0.6.4
     # via

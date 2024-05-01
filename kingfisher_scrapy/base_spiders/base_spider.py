@@ -70,9 +70,25 @@ class BaseSpider(scrapy.Spider):
     # Not to be overridden by sub-classes.
     available_steps = {'compile', 'check'}
 
-    def __init__(self, sample=None, path=None, from_date=None, until_date=None, crawl_time=None, note=None,
-                 keep_collection_open=None, steps=None, compile_releases=None, table_name=None, package_pointer=None,
-                 release_pointer=None, truncate=None, *args, **kwargs):
+    def __init__(
+        self,
+        sample=None,
+        path=None,
+        from_date=None,
+        until_date=None,
+        crawl_time=None,
+        note=None,
+        keep_collection_open=None,
+        steps=None,
+        compile_releases=None,
+        table_name=None,
+        ignore_version=None,
+        package_pointer=None,
+        release_pointer=None,
+        truncate=None,
+        *args,
+        **kwargs,
+    ):
         """
         :param sample: the number of items to download (``'true'`` means ``1``; ``'false'`` and ``None`` mean no limit)
         :param path: path components to append to the URLs yielded by the ``start_requests`` method (see :ref:`filter`)
@@ -121,6 +137,7 @@ class BaseSpider(scrapy.Spider):
         # DatabaseStore extension.
         self.database_store_compile_releases = compile_releases == 'true'
         self.database_store_table_name = table_name
+        self.database_store_ignore_version = ignore_version == 'true'
 
         # Pluck pipeline.
         self.pluck_package_pointer = package_pointer
