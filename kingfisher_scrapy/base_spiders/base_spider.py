@@ -142,7 +142,7 @@ class BaseSpider(scrapy.Spider):
         # DatabaseStore extension.
         self.database_store_compile_releases = compile_releases == 'true'
         self.database_store_table_name = table_name
-        self.database_store_force_version = force_version == 'true'
+        self.database_store_force_version = force_version
         self.database_store_ignore_version = ignore_version == 'true'
 
         # Pluck pipeline.
