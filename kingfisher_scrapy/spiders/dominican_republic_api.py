@@ -49,7 +49,7 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
             except JSONDecodeError:
                 pass
 
-        yield from handle_http_error(self.parse_success)(self, response)
+        yield from handle_http_error(DominicanRepublicAPI.parse_success)(self, response)
 
     def parse_success(self, response):
         data = response.json()
