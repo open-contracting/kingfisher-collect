@@ -1,3 +1,5 @@
+from json import JSONDecodeError
+
 from kingfisher_scrapy.base_spiders import LinksSpider, PeriodicSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
@@ -37,8 +39,19 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
     # PeriodicSpider
     pattern = base_url + 'date/{0:%Y-%m-%d}/{1:%Y-%m-%d}/1'
 
-    @handle_http_error
     def parse(self, response):
+        if response.status == 404:
+            try:
+                data = response.json()
+                # API should return an empty package with 200 status.
+                if data == {'msg': 'No hay resultados.'}:
+                    return
+            except JSONDecodeError:
+                pass
+
+        yield from handle_http_error(self.parse_success)(response)
+
+    def parse_success(self, response):
         data = response.json()
         for item in data['data']:
             yield self.build_request(
