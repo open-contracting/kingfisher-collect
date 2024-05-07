@@ -82,6 +82,7 @@ class BaseSpider(scrapy.Spider):
         steps=None,
         compile_releases=None,
         table_name=None,
+        force_version=None,
         ignore_version=None,
         package_pointer=None,
         release_pointer=None,
@@ -99,8 +100,12 @@ class BaseSpider(scrapy.Spider):
         :param keep_collection_open: whether to close the collection in Kingfisher Process when the crawl is finished
         :param steps: a comma-separated list of steps to run in Kingfisher Process (``'compile'`` and/or ``'check'``)
         :param compile_releases: whether to create compiled releases from individual releases when using the
-                                 :class:`~kingfisher_scrapy.extensions.database_store.DatabaseStore` extension
+            :class:`~kingfisher_scrapy.extensions.database_store.DatabaseStore` extension
         :param table_name: override the crawl's table name in the database (see :ref:`database_store`)
+        :param force_version: version to use instead of the version of the first package,
+            if ``compile_releases`` is ``'true'``
+        :param ignore_version: do not raise an error if the versions are inconsistent across packages to merge,
+            if ``compile_releases`` is ``'true'``
         :param package_pointer: the JSON Pointer to the value in the package (see the :ref:`pluck` command)
         :param release_pointer: the JSON Pointer to the value in the release (see the :ref:`pluck` command)
         :param truncate: the number of characters to which the value is truncated (see the :ref:`pluck` command)
@@ -137,6 +142,7 @@ class BaseSpider(scrapy.Spider):
         # DatabaseStore extension.
         self.database_store_compile_releases = compile_releases == 'true'
         self.database_store_table_name = table_name
+        self.database_store_force_version = force_version == 'true'
         self.database_store_ignore_version = ignore_version == 'true'
 
         # Pluck pipeline.
