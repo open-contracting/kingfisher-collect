@@ -70,7 +70,7 @@ class DatabaseStore:
             # If there is not a from_date from the command line or the from_date is equal to the default_from_date,
             # get the most recent date in the spider's data table.
             if getattr(spider, 'default_from_date', None):
-                default_from_date = datetime.strptime(spider.default_from_date, spider.date_format)
+                default_from_date = spider.parse_date_argument(spider.default_from_date)
             else:
                 default_from_date = None
 
@@ -84,6 +84,7 @@ class DatabaseStore:
                 if from_date:
                     formatted_from_date = datetime.strftime(from_date, spider.date_format)
                     spider.logger.info('Resuming the crawl from %s', formatted_from_date)
+                    # This doesn't use self.parse_date_argument()`, since the date in the data includes a time zone.
                     spider.from_date = datetime.strptime(formatted_from_date, spider.date_format)
 
             self.connection.commit()
