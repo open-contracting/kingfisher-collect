@@ -211,7 +211,7 @@ class BaseSpider(scrapy.Spider):
                 spider.from_date = spider.default_from_date
             try:
                 if isinstance(spider.from_date, str):
-                    spider.from_date = self.parse_date_argument(spider.from_date)
+                    spider.from_date = spider.parse_date_argument(spider.from_date)
             except ValueError as e:
                 raise SpiderArgumentError(f'spider argument `from_date`: invalid date value: {e}')
 
@@ -219,7 +219,7 @@ class BaseSpider(scrapy.Spider):
                 spider.until_date = cls.get_default_until_date(spider)
             try:
                 if isinstance(spider.until_date, str):
-                    spider.until_date = self.parse_date_argument(spider.until_date)
+                    spider.until_date = spider.parse_date_argument(spider.until_date)
             except ValueError as e:
                 raise SpiderArgumentError(f'spider argument `until_date`: invalid date value: {e}')
 
@@ -234,7 +234,7 @@ class BaseSpider(scrapy.Spider):
         """
         Returns the date argument as a datetime object.
         """
-        return datetime.datetime.strptime(date, spider.date_format).replace(tzinfo=datetime.timezone.utc)
+        return datetime.datetime.strptime(date, self.date_format).replace(tzinfo=datetime.timezone.utc)
 
     def is_http_success(self, response):
         """
