@@ -75,7 +75,7 @@ class DatabaseStore:
                 default_from_date = None
 
             if spider.from_date and spider.from_date != default_from_date:
-                formatted_from_date = datetime.strftime(from_date, spider.date_format)
+                formatted_from_date = datetime.strftime(spider.from_date, spider.date_format)
                 spider.logger.info('Using the provided from_date of %s', formatted_from_date)
             else:
                 spider.logger.info('Getting the date from which to resume the crawl from the %s table', table_name)
