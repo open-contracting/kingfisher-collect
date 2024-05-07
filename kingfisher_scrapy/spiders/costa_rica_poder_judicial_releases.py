@@ -14,7 +14,7 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
     name = 'costa_rica_poder_judicial_releases'
 
     # BaseSpider
-    validate_json = True
+    validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/876
 
     # SimpleSpider
     data_type = 'release_package'

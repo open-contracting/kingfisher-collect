@@ -14,7 +14,7 @@ class NigeriaEnuguState(SimpleSpider):
     name = 'nigeria_enugu_state'
 
     # BaseSpider
-    validate_json = True
+    validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/963
 
     # SimpleSpider
     data_type = 'release_package'

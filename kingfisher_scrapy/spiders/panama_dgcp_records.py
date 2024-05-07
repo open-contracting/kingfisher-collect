@@ -11,7 +11,7 @@ class PanamaDGCPRecords(PanamaDGCPBase):
     name = 'panama_dgcp_records'
 
     # BaseSpider
-    validate_json = True
+    validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/1036
 
     # SimpleSpider
     data_type = 'record_package'

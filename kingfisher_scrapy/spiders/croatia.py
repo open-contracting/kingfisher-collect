@@ -15,7 +15,7 @@ class Croatia(CompressedFileSpider):
     user_agent = browser_user_agent
 
     # BaseSpider
-    validate_json = True
+    validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/886
 
     # SimpleSpider
     data_type = 'release_package'

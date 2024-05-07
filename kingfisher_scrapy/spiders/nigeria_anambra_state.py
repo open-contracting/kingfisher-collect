@@ -11,7 +11,7 @@ class NigeriaAnambraState(NigeriaBonMaximusBase):
     name = 'nigeria_anambra_state'
 
     # BaseSpider
-    validate_json = True
+    validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/957
 
     # SimpleSpider
     data_type = 'release_package'

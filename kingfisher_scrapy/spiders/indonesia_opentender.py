@@ -30,7 +30,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     # BaseSpider
     date_format = 'year'
     default_from_date = '2008'
-    validate_json = True
+    validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/964
 
     # SimpleSpider
     data_type = 'release_package'

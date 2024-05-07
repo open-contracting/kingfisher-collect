@@ -20,7 +20,7 @@ class ArgentinaBuenosAires(SimpleSpider):
     download_timeout = 99999  # to avoid user timeout when downloading the file
 
     # BaseSpider
-    validate_json = True
+    validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/874
 
     # SimpleSpider
     data_type = 'release_package'

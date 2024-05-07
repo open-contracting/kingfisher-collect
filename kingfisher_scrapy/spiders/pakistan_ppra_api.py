@@ -16,7 +16,7 @@ class PakistanPPRAAPI(SimpleSpider):
     name = 'pakistan_ppra_api'
 
     # BaseSpider
-    validate_json = True
+    validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/645
     skip_pluck = 'Already covered (see code for details)'  # pakistan_ppra_bulk
 
     # SimpleSpider
