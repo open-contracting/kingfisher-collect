@@ -138,6 +138,14 @@ class Unflatten:
             return item
 
         input_name = item.file_name
+
+        # uganda_releases yields JSON until 2023-2024, using the same URL pattern.
+        if input_name.endswith('.json'):
+            if item.data.startswith(b'PK\x03\x04'):
+                input_name = f'{os.path.splitext(input_name)[0]}.xlsx'
+            else:
+                return item
+
         if input_name.endswith('.csv'):
             item.file_name = f'{item.file_name[:-4]}.json'
             input_format = 'csv'

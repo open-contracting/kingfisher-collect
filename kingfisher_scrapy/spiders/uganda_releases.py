@@ -30,9 +30,13 @@ class UgandaReleases(PeriodicSpider):
         # returns HTTP 500 error FileNotFoundException. Therefore, we retry all codes in RETRY_HTTP_CODES except 500.
         'RETRY_HTTP_CODES': [status for status in RETRY_HTTP_CODES if status != 500],
     }
+    # Returns HTTP 403 if too many requests. (0.5 is too short.)
+    download_delay = 1
+
     # BaseSpider
     date_format = 'year'
     default_from_date = '2019'
+    unflatten = True
 
     # SimpleSpider
     data_type = 'release_package'
@@ -49,8 +53,7 @@ class UgandaReleases(PeriodicSpider):
         else:
             yield from super().parse(response)
             code = int(get_parameter_value(response.request.url, 'code')) + 1
-            yield self.build_request(replace_parameters(response.request.url, code=code),
-                                     formatter=self.formatter)
+            yield self.build_request(replace_parameters(response.request.url, code=code), formatter=self.formatter)
 
     def build_urls(self, date):
         yield self.pattern.format(date, date + 1)
