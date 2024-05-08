@@ -2,7 +2,6 @@ flattentool
 ijson
 jsonpointer
 ocdskit[perf]
-ocdsmerge
 psycopg2
 pydantic<2
 rarfile

@@ -2,13 +2,13 @@
 # https://docs.scrapy.org/en/latest/topics/signals.html#item-signals
 import json
 import os
+import pkgutil
 import tempfile
 import warnings
 
 import ijson
 import jsonpointer
 from flattentool import unflatten
-from ocdsmerge.util import get_release_schema_url, get_tags
 from scrapy.exceptions import DropItem, NotSupported
 
 from kingfisher_scrapy.items import File, FileItem, PluckedItem
@@ -156,17 +156,10 @@ class Unflatten:
             extension = os.path.splitext(input_name)[1]
             raise NotSupported(f"Unsupported extension '{extension}' of {input_name} from {item.url}")
 
-        spider_ocds_version = spider.ocds_version.replace('.', '__')
-        for tag in reversed(get_tags()):
-            if tag.startswith(spider_ocds_version):
-                schema = get_release_schema_url(tag)
-                break
-        else:
-            raise NotSupported(f"Unsupported version '{spider_ocds_version}' from {spider.ocds_version}")
-
         with tempfile.TemporaryDirectory() as directory:
             input_path = os.path.join(directory, input_name)
             output_name = os.path.join(directory, item.file_name)
+            schema = os.path.join(directory, 'release-schema.json')
             if input_format == 'csv':
                 input_name = directory
             elif input_format == 'xlsx':
@@ -174,6 +167,9 @@ class Unflatten:
 
             with open(input_path, 'wb') as f:
                 f.write(item.data)
+            # Flatten Tool accepts only URLs or filenames.
+            with open(schema, 'wb') as f:
+                f.write(pkgutil.get_data('kingfisher_scrapy', f'schema/{spider.ocds_version}.json'))
 
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore')  # flattentool uses UserWarning, so we can't set a specific category

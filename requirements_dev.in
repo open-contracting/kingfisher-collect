@@ -3,6 +3,7 @@ coverage[toml]
 coveralls
 flake8
 isort
+ocdsmerge
 openpyxl
 pip-tools
 pika
