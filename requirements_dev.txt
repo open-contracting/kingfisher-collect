@@ -80,7 +80,7 @@ et-xmlfile==1.0.1
     # via
     #   -r requirements.txt
     #   openpyxl
-exceptiongroup==1.1.3
+exceptiongroup==1.2.1
     # via pytest
 filelock==3.4.1
     # via
@@ -163,7 +163,7 @@ ocdsextensionregistry==0.2.2
     #   ocdskit
 ocdskit[perf]==1.1.12
     # via -r requirements.txt
-ocdsmerge==0.6.4
+ocdsmerge==0.6.6
     # via
     #   -r requirements.txt
     #   -r requirements_dev.in
