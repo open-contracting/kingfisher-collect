@@ -1,5 +1,6 @@
 import csv
 import os
+import warnings
 from datetime import datetime
 
 import ijson
@@ -130,9 +131,9 @@ class DatabaseStore:
                     writer.writerow([util.json_dumps(item, ensure_ascii=False).replace(r'\u0000', '')])
                     count += 1
 
-                logger.error(
+                spider.logger.error(
                     "%d OCIDs can't be merged due to structural errors",
-                    len(list(_ for _ in w if issubclass(warning.category, MergeErrorWarning)))
+                    len([warning for warning in w if issubclass(warning.category, MergeErrorWarning)])
                 )
 
         spider.logger.info('Replacing the JSON data in the %s table (%s rows)', table_name, count)
