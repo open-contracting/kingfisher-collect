@@ -5,6 +5,7 @@ from datetime import datetime
 import ijson
 import psycopg2.sql
 from ocdskit.combine import merge
+from ocdskit.exceptions import MergeErrorWarning
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
@@ -114,6 +115,7 @@ class DatabaseStore:
                 data,
                 force_version=spider.database_store_force_version,
                 ignore_version=spider.database_store_ignore_version,
+                convert_exceptions_to_warnings=True,
             )
 
         filename = os.path.join(crawl_directory, 'data.csv')
@@ -121,9 +123,17 @@ class DatabaseStore:
         count = 0
         with open(filename, 'w') as f:
             writer = csv.writer(f)
-            for item in data:
-                writer.writerow([util.json_dumps(item, ensure_ascii=False).replace(r'\u0000', '')])
-                count += 1
+            with warnings.catch_warnings(record=True) as w:
+                warnings.simplefilter("always", category=MergeErrorWarning)
+
+                for item in data:
+                    writer.writerow([util.json_dumps(item, ensure_ascii=False).replace(r'\u0000', '')])
+                    count += 1
+
+                logger.error(
+                    "%d OCIDs can't be merged due to structural errors",
+                    len(list(_ for _ in w if issubclass(warning.category, MergeErrorWarning)))
+                )
 
         spider.logger.info('Replacing the JSON data in the %s table (%s rows)', table_name, count)
         self.connection = psycopg2.connect(self.database_url)

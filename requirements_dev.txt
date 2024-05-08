@@ -161,7 +161,7 @@ ocdsextensionregistry==0.2.2
     # via
     #   -r requirements.txt
     #   ocdskit
-ocdskit[perf]==1.1.12
+ocdskit[perf]==1.1.13
     # via -r requirements.txt
 ocdsmerge==0.6.6
     # via
