@@ -36,7 +36,7 @@ class UgandaReleases(PeriodicSpider):
     # BaseSpider
     date_format = 'year'
     default_from_date = '2019'
-    unflatten = True
+    unflatten = True  # XLSX file has no metatab
 
     # SimpleSpider
     data_type = 'release_package'
