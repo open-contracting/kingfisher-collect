@@ -136,8 +136,8 @@ class DatabaseStore:
             for w in wlist:
                 if issubclass(w.category, MergeErrorWarning):
                     errors.append(w)
-                else:
-                    warnings.warn_explicit(w.message, w.category, w.filename, w.lineno, source=w.source)
+
+                warnings.warn_explicit(w.message, w.category, w.filename, w.lineno, source=w.source)
 
             if errors:
                 spider.logger.error("%d OCIDs can't be merged due to structural errors", len(errors))
