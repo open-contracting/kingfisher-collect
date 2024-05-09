@@ -124,17 +124,23 @@ class DatabaseStore:
         count = 0
         with open(filename, 'w') as f:
             writer = csv.writer(f)
-            with warnings.catch_warnings(record=True) as w:
+
+            with warnings.catch_warnings(record=True) as wlist:
                 warnings.simplefilter("always", category=MergeErrorWarning)
 
                 for item in data:
                     writer.writerow([util.json_dumps(item, ensure_ascii=False).replace(r'\u0000', '')])
                     count += 1
 
-                spider.logger.error(
-                    "%d OCIDs can't be merged due to structural errors",
-                    len([warning for warning in w if issubclass(warning.category, MergeErrorWarning)])
-                )
+            errors = []
+            for w in wlist:
+                if issubclass(w.category, MergeErrorWarning):
+                    errors.append(w)
+                else:
+                    warnings.warn_explicit(w.message, w.category, w.filename, w.lineno, source=w.source)
+
+            if errors:
+                spider.logger.error("%d OCIDs can't be merged due to structural errors", len(errors))
 
         spider.logger.info('Replacing the JSON data in the %s table (%s rows)', table_name, count)
         self.connection = psycopg2.connect(self.database_url)

@@ -91,7 +91,7 @@ ocdsextensionregistry==0.2.2
     # via ocdskit
 ocdskit[perf]==1.1.13
     # via -r requirements.in
-ocdsmerge==0.6.6
+ocdsmerge==0.7.0
     # via ocdskit
 odfpy==1.4.1
     # via flattentool
