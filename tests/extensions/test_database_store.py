@@ -164,7 +164,7 @@ def test_spider_closed_warnings(caplog, tmpdir):
         'Replacing the JSON data in the test table (3 rows)',
     ]
 
-    assert [record.message for record in records] == [
+    assert [str(record.message) for record in records] == [
         ("x: Multiple objects have the `id` value 'x' in the `parties` array"),
         ("z: Multiple objects have the `id` value 'z' in the `parties` array"),
     ]
