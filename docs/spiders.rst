@@ -505,6 +505,16 @@ Greece
 
    scrapy crawl greece_digiwhist
 
+Guatemala
+~~~~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.guatemala_bulk.GuatemalaBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl guatemala_bulk
+
 Honduras
 ~~~~~~~~
 

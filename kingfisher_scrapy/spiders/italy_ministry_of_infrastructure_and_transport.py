@@ -10,10 +10,10 @@ class ItalyMinistryOfInfrastructureAndTransport(SimpleSpider):
       Public Contracts Service (SCP) of the Ministry of Infrastructure and Transport
     Spider arguments
       from_date
-        Download only data from this time onward (YYYY-MM-DD format).
+        Download only data from this date onward (YYYY-MM-DD format).
         If ``until_date`` is provided, defaults to '2022-01-01'.
       until_date
-        Download only data until this time (YYYY-MM-DD format).
+        Download only data until this date (YYYY-MM-DD format).
         If ``from_date`` is provided, defaults to today.
     Swagger API documentation
       https://www.serviziocontrattipubblici.it/ocds-ms/swagger-ui.html

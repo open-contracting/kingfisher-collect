@@ -1,7 +1,7 @@
 from kingfisher_scrapy.spiders.mexico_plataforma_digital_nacional_base import MexicoPlataformaDigitalNacionalBase
 
 
-class MexicoPueblaStateSESEAPlataformaDigitalNacional(MexicoPlataformaDigitalNacionalBase):
+class MexicoPueblaStateSESEAPPlataformaDigitalNacional(MexicoPlataformaDigitalNacionalBase):
     """
     Domain
       Secretaría Ejecutiva del Sistema Estatal Anticorrupción del Estado de Puebla (SESEAP) (Mexico) -
