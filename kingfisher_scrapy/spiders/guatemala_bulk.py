@@ -2,11 +2,11 @@ from datetime import datetime
 
 import scrapy
 
-from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.base_spiders import CompressedFileSpider
+from kingfisher_scrapy.util import components, handle_http_error, join
 
 
-class GuatemalaBulk(SimpleSpider):
+class GuatemalaBulk(CompressedFileSpider):
     """
     Domain
       Ministerio de Finanzas Públicas - Dirección General de Adquisiciones del Estado
@@ -62,4 +62,4 @@ class GuatemalaBulk(SimpleSpider):
                 if not (self.from_date <= date <= self.until_date):
                     continue
 
-            yield self.build_request(item['files']['json'], formatter=components(-2))
+            yield self.build_request(item['files']['json'], formatter=join(components(-2), extension='zip'))

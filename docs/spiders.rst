@@ -820,7 +820,7 @@ Mexico
 
    scrapy crawl mexico_nuevo_leon_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_puebla_state_seseap_plataforma_digital_nacional.MexicoPueblaStateSESEAPlataformaDigitalNacional
+.. autoclass:: kingfisher_scrapy.spiders.mexico_puebla_state_seseap_plataforma_digital_nacional.MexicoPueblaStateSESEAPPlataformaDigitalNacional
    :no-members:
 
 .. code-block:: bash
