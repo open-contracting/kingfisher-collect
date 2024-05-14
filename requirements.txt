@@ -38,8 +38,10 @@ cssselect==1.1.0
     # via
     #   parsel
     #   scrapy
-defusedxml==0.6.0
-    # via odfpy
+defusedxml==0.7.1
+    # via
+    #   odfpy
+    #   scrapy
 et-xmlfile==1.0.1
     # via openpyxl
 filelock==3.4.1
@@ -154,7 +156,7 @@ requests-file==1.5.1
     # via tldextract
 schema==0.7.2
     # via flattentool
-scrapy==2.11.1
+scrapy==2.11.2
     # via
     #   -r requirements.in
     #   scrapyd

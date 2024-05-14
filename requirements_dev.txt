@@ -68,10 +68,11 @@ cssselect==1.1.0
     #   scrapy
 decorator==5.1.1
     # via pytest-twisted
-defusedxml==0.6.0
+defusedxml==0.7.1
     # via
     #   -r requirements.txt
     #   odfpy
+    #   scrapy
 docopt==0.6.2
     # via coveralls
 entrypoints==0.3
@@ -292,7 +293,7 @@ schema==0.7.2
     # via
     #   -r requirements.txt
     #   flattentool
-scrapy==2.11.1
+scrapy==2.11.2
     # via
     #   -r requirements.txt
     #   scrapyd
