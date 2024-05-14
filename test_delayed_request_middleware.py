@@ -16,6 +16,7 @@ def delayed_request_middleware():
 
     spider = spider_with_crawler(settings={
         'DOWNLOADER_MIDDLEWARES': {
+            'scrapy.downloadermiddlewares.offsite.OffsiteMiddleware': None,
             'kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware': 543,
         },
     })
@@ -36,7 +37,7 @@ def delayed_request_middleware():
 
     spent = time.time() - start
 
-    assert results == [request]
+    assert results == [request], results
     assert 1 <= spent <= 1.5, spent
 
 

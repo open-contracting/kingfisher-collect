@@ -71,6 +71,7 @@ SPIDER_MIDDLEWARES = {
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.offsite.OffsiteMiddleware': None,
     'kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware': 543,
 }
 
