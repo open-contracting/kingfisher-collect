@@ -1,3 +1,4 @@
+import csv
 import os
 import warnings
 from datetime import datetime
@@ -118,15 +119,17 @@ class DatabaseStore:
                 convert_exceptions_to_warnings=True,
             )
 
-        filename = os.path.join(crawl_directory, 'data.jsonl')
-        spider.logger.info('Writing the JSON data to the %s JSONL file', filename)
+        filename = os.path.join(crawl_directory, 'data.csv')
+        spider.logger.info('Writing the JSON data to the %s CSV file', filename)
         count = 0
         with open(filename, 'w') as f:
+            writer = csv.writer(f)
+
             with warnings.catch_warnings(record=True) as wlist:
                 warnings.simplefilter('always', category=MergeErrorWarning)
 
                 for item in data:
-                    f.write(util.json_dumps(item, ensure_ascii=False).replace(r'\u0000', '') + '\n')
+                    writer.writerow([util.json_dumps(item, ensure_ascii=False).replace(r'\u0000', '')])
                     count += 1
 
             errors = []
@@ -146,7 +149,7 @@ class DatabaseStore:
             self.execute('DROP TABLE {table}', table=table_name)
             self.create_table(table_name)
             with open(filename) as f:
-                self.cursor.copy_expert(self.format('COPY {table} (data) FROM stdin', table=table_name), f)
+                self.cursor.copy_expert(self.format('COPY {table} (data) FROM stdin CSV', table=table_name), f)
             self.execute(
                 "CREATE INDEX {index} ON {table} (cast(data->>'date' as text))",
                 table=table_name,
