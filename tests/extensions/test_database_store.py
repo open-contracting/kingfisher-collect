@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import os
 from unittest.mock import Mock
@@ -118,7 +119,7 @@ def test_spider_opened_resume(caplog, tmpdir):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
-def test_spider_closed_warnings(caplog, tmpdir):
+def test_spider_closed_warnings(cursor, caplog, tmpdir):
     spider = spider_with_crawler(
         crawl_time='2021-05-25T00:00:00',
         settings={
@@ -156,6 +157,13 @@ def test_spider_closed_warnings(caplog, tmpdir):
         with caplog.at_level(logging.INFO):
             extension.spider_closed(spider, 'finished')
 
+    cursor.execute("SELECT * FROM test")
+
+    assert cursor.fetchall() == [
+        ({'ocid': 'x', 'id': 'x-2021-05-26T10:00:00Z', 'date': '2021-05-26T10:00:00Z', 'tag': ['compiled'], 'parties': [{'id': 'x'}]},),  # noqa: E501
+        ({'ocid': 'y', 'id': 'y-2021-05-26T10:00:00Z', 'date': '2021-05-26T10:00:00Z', 'tag': ['compiled'], 'parties': [{'id': 'y'}]},),  # noqa: E501
+        ({'ocid': 'z', 'id': 'z-2021-05-26T10:00:00Z', 'date': '2021-05-26T10:00:00Z', 'tag': ['compiled'], 'parties': [{'id': 'z'}]},),  # noqa: E501
+    ]
     assert spider.from_date == datetime.datetime.strptime("2021-05-26T10:00:00Z", "%Y-%m-%dT%H:%M:%S%z")
     assert [record.message for record in caplog.records] == [
         f'Reading the {tmpdir}/test/20210525_000000 crawl directory with the empty prefix',
@@ -225,6 +233,11 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
     else:
         prefix = 'records.item.compiledRelease'
 
+    if data_type == 'release_package':
+        field = 'releases'
+    else:
+        field = 'records'
+
     if sample:
         suffix = '_sample'
     else:
@@ -235,8 +248,16 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
         f'Writing the JSON data to the {tmpdir}/test{suffix}/20210525_000000/data.csv CSV file',
         f'Replacing the JSON data in the {expected_table} table (1 rows)',
     ]
+
     if compile_releases:
+        expected = {'ocid': '1', 'id': '1-2021-05-26T10:00:00Z', 'date': '2021-05-26T10:00:00Z', 'tag': ['compiled']}
         expected_messages.insert(1, 'Creating generator of compiled releases')
+    else:
+        expected = {'date': '2021-05-26T10:00:00Z'}
+
+    cursor.execute(psycopg2.sql.SQL("SELECT * FROM {table}").format(table=psycopg2.sql.Identifier(expected_table)))
+
+    assert cursor.fetchall() == [(expected,),]
     assert [record.message for record in caplog.records] == expected_messages
 
 
