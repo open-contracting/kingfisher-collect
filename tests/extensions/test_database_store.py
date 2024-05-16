@@ -1,5 +1,4 @@
 import datetime
-import json
 import logging
 import os
 from unittest.mock import Mock
@@ -232,11 +231,6 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
         prefix = 'releases.item'
     else:
         prefix = 'records.item.compiledRelease'
-
-    if data_type == 'release_package':
-        field = 'releases'
-    else:
-        field = 'records'
 
     if sample:
         suffix = '_sample'
