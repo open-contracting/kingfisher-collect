@@ -47,6 +47,6 @@ jobs:
         ports:
           - 5672/tcp
       httpbin:
-        image: kennethreitz/httpbin:latest
+        image: mccutchen/go-httpbin:latest
         ports:
           - 80/tcp
