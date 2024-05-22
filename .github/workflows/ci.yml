@@ -49,4 +49,4 @@ jobs:
       httpbin:
         image: mccutchen/go-httpbin:latest
         ports:
-          - 80/tcp
+          - 8080/tcp
