@@ -18,7 +18,7 @@ jobs:
           KINGFISHER_COLLECT_DATABASE_URL: postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
           # Use 127.0.0.1 to avoid log messages about IPv6.
           RABBIT_URL: amqp://127.0.0.1:${{ job.services.rabbitmq.ports[5672] }}
-          KINGFISHER_API2_TEST_URL: http://localhost:${{ job.services.httpbin.ports[80] }}/anything/
+          KINGFISHER_API2_TEST_URL: http://localhost:${{ job.services.httpbin.ports[8080] }}/anything/
         # For requests.post() in KingfisherProcessAPI2._post_synchronous().
         run: pytest -W error -W ignore::ResourceWarning -rs --cov kingfisher_scrapy
       - run: python test_delayed_request_middleware.py
