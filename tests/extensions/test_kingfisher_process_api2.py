@@ -17,7 +17,7 @@ from kingfisher_scrapy.extensions import KingfisherProcessAPI2
 from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
 from tests import spider_with_crawler
 
-KINGFISHER_API2_URL = os.getenv('TEST_API_URL', 'http://httpbin.org/anything/')
+KINGFISHER_API2_URL = os.getenv('KINGFISHER_API2_TEST_URL', 'http://httpbingo.org/anything/')
 RABBIT_URL = os.getenv('RABBIT_URL')
 RABBIT_EXCHANGE_NAME = 'kingfisher_process_test'
 RABBIT_ROUTING_KEY = 'kingfisher_process_test_api'
