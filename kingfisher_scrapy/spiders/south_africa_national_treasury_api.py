@@ -1,10 +1,10 @@
 import scrapy
 
-from kingfisher_scrapy.base_spiders import LinksSpider
+from kingfisher_scrapy.base_spiders import LinksSpider, PeriodicSpider
 from kingfisher_scrapy.util import parameters
 
 
-class SouthAfricaNationalTreasuryAPI(LinksSpider):
+class SouthAfricaNationalTreasuryAPI(LinksSpider, PeriodicSpider):
     """
     Domain
       South Africa National Treasury
@@ -29,9 +29,6 @@ class SouthAfricaNationalTreasuryAPI(LinksSpider):
     # LinksSpider
     formatter = staticmethod(parameters('PageNumber', 'dateFrom'))
 
-    def start_requests(self):
-        from_date = self.from_date.strftime(self.date_format)
-        until_date = self.until_date.strftime(self.date_format)
-        yield scrapy.Request('https://ocds-api.etenders.gov.za/api/OCDSReleases?PageNumber=1&PageSize=50&'
-                             f'dateFrom={from_date}&dateTo={until_date}',
-                             meta={'file_name': f'{from_date}.json'})
+    # PeriodicSpider
+    pattern = "https://ocds-api.etenders.gov.za/api/OCDSReleases?dateFrom={0:%Y-%m-%d}&dateTo={1:%Y-%m-%d}&PageNumber=1"
+    step = 30
