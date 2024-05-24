@@ -1,5 +1,3 @@
-import scrapy
-
 from kingfisher_scrapy.base_spiders import LinksSpider, PeriodicSpider
 from kingfisher_scrapy.util import parameters
 
