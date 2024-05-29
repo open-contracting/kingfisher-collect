@@ -53,7 +53,7 @@ coverage[toml]==5.5
     #   -r requirements_dev.in
     #   coveralls
     #   pytest-cov
-coveralls==3.2.0
+coveralls==4.0.1
     # via -r requirements_dev.in
 cryptography==42.0.4
     # via
@@ -271,7 +271,7 @@ queuelib==1.6.2
     #   scrapy
 rarfile==3.1
     # via -r requirements.txt
-requests==2.31.0
+requests==2.32.2
     # via
     #   -r requirements.txt
     #   coveralls
