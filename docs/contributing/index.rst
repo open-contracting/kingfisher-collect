@@ -264,7 +264,7 @@ Kingfisher Collect attempts to collect the data in its original format, limiting
 
 Reasons to deserialize JSON bytes include:
 
--  Perform pagination, because the API returns metadata in the response body instead of in the `HTTP header <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link>`__ (:class:`~kingfisher_scrapy.base_spiders.index_spider.IndexSpider`, class:`~kingfisher_scrapy.base_spiders.links_spider.LinksSpider`)
+-  Perform pagination, because the API returns metadata in the response body instead of in the `HTTP header <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link>`__ (:class:`~kingfisher_scrapy.base_spiders.index_spider.IndexSpider`, :class:`~kingfisher_scrapy.base_spiders.links_spider.LinksSpider`)
 -  Check whether it's an error response, because the API returns a success status instead of an error status
 -  Parse non-OCDS data to build URLs for OCDS data
 
