@@ -13,9 +13,6 @@ http://example.com/api/docs
 **Links to bulk download and/or API endpoints**
 http://example.com/api/v1/releases
 
-**Link to CRM issue**
-CRM-9999
-
 **Priority**
 e.g. as soon as possible, this week, next week, anytime
 
