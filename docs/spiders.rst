@@ -1205,6 +1205,16 @@ Romania
 
    scrapy crawl romania_digiwhist
 
+Rwanda
+~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.rwanda.Rwanda
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl rwanda
+
 Serbia
 ~~~~~~
 
