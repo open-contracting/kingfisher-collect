@@ -351,7 +351,7 @@ url-normalize==1.4.3
     # via
     #   -r requirements.txt
     #   requests-cache
-urllib3==1.26.18
+urllib3==1.26.19
     # via
     #   -r requirements.txt
     #   ocdsextensionregistry
