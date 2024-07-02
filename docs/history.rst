@@ -8,6 +8,7 @@ Lapsed spiders
 
 Spiders for publications that were available but stopped publishing, since January 2022:
 
+- 2024-07-02: `mexico_quintana_roo_idaip <https://github.com/open-contracting/kingfisher-collect/pull/1093>`__
 - 2024-04-12: `nigeria_gombe_state <https://github.com/open-contracting/kingfisher-collect/pull/1075>`__
 - 2024-01-09: `mexico_puebla_itaipue, nigeria_edo_state <https://github.com/open-contracting/kingfisher-collect/pull/1047>`__
 - 2023-10-04: `honduras_cost, kenya_makueni, kyrgyzstan, portugal_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1030>`__
@@ -24,5 +25,6 @@ Broken spiders
 
 Spiders for publications that became broken, since April 2024:
 
+- 2024-07-02: `mexico_sinaloa_ceaip <https://github.com/open-contracting/kingfisher-collect/pull/1093>`__ (returns no data)
 - 2024-04-12: `dominican_republic_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1074>`__ (the `bulk source <https://datosabiertos.dgcp.gob.do/opendata/estandar-mundial-ocds>`__ is not synced with the API source)
 - 2024-04-05: `mexico_quien_es_quien_records <https://github.com/open-contracting/kingfisher-collect/pull/1063>`__ (pagination is broken)
