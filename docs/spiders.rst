@@ -855,13 +855,6 @@ Mexico
 
    scrapy crawl mexico_shcp_plataforma_digital_nacional
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_sinaloa_ceaip.MexicoSinaloaCEAIP
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_sinaloa_ceaip
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_veracruz_ivai.MexicoVeracruzIVAI
    :no-members:
 
