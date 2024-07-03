@@ -36,7 +36,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     data_type = 'release_package'
 
     # PeriodicSpider
-    pattern = url_prefix + 'master/lpse/?year={}'
+    pattern = url_prefix + 'master/lpse/?year={}&format=json'
     formatter = staticmethod(components(-1))
     start_requests_callback = 'parse_list'
 
