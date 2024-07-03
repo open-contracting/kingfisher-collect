@@ -36,7 +36,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     data_type = 'release_package'
 
     # PeriodicSpider
-    pattern = url_prefix + 'master/lpse?year={}&format=json'
+    pattern = url_prefix + 'master/lpse/?year={}'
     formatter = staticmethod(components(-1))
     start_requests_callback = 'parse_list'
 
@@ -44,12 +44,12 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     def parse_list(self, response):
         year = get_parameter_value(response.request.url, 'year')
         codes_seen = set()
-        for item in response.json()['data']:
+        for item in response.json()['results']:
             code = item['code']
             # There are duplicate codes.
             if code and code not in codes_seen:
                 codes_seen.add(code)
-                url = f'{self.url_prefix}tender/export-ocds-batch?year={year}&lpse={code}'
+                url = f'{self.url_prefix}tender/export-ocds-batch/?year={year}&lpse={code}'
                 yield self.build_request(
                     url,
                     formatter=join(components(-1), parameters('year', 'lpse'), extension='zip')
