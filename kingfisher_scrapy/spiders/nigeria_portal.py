@@ -12,6 +12,7 @@ class NigeriaPortal(CompressedFileSpider):
         https://nocopo.bpp.gov.ng/Open-Data
     """
     name = 'nigeria_portal'
+    download_timeout = 99999  # to avoid user timeout when downloading the file
 
     # SimpleSpider
     data_type = 'release_package'
