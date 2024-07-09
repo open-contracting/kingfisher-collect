@@ -20,7 +20,7 @@ class ChileCompraAPIRecords(ChileCompraAPIBase):
           licitacion
             Traditional tenders
     Swagger API documentation
-      https://desarrolladores.mercadopublico.cl/docs/services/5a9ed02f718ed712f4403e75/operations/data-listaa-omes-agno-mes
+      https://datos-abiertos.chilecompra.cl/descargas/procesos-ocds
     """
     name = 'chile_compra_api_records'
 
