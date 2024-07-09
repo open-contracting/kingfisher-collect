@@ -19,7 +19,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
 
     # PeriodicSpider
     # The path parameters are {system}/{year}/{month}/{offset}/{limit}.
-    pattern = 'http://api.mercadopublico.cl/APISOCDS/OCDS/{0}/{1.year:d}/{1.month:02d}/{2}/{3}'
+    pattern = 'https://api.mercadopublico.cl/APISOCDS/OCDS/{0}/{1.year:d}/{1.month:02d}/{2}/{3}'
     formatter = staticmethod(components(-4, -1))  # year-month-offset
     start_requests_callback = 'parse_list'
 
@@ -81,21 +81,6 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
     @abstractmethod
     def handle_item(self, item):
         pass
-
-    # from IndexSpider
-    def parse_list_loader(self, response):
-        data = response.json()
-
-        # Some files contain invalid packages, e.g.:
-        # {
-        #   "status": 500,
-        #   "detail": "error"
-        # }
-        if data.get('status') != 200:
-            data['http_code'] = data['status']
-            return self.build_file_error_from_response(response, errors=data)
-
-        return data
 
     # from IndexSpider
     def url_builder(self, value, data, response):
