@@ -15,7 +15,7 @@ backports-datetime-fromisoformat==2.0.0
     # via flattentool
 btrees==4.11.3
     # via zodb
-certifi==2023.7.22
+certifi==2024.7.4
     # via
     #   requests
     #   sentry-sdk
