@@ -8,11 +8,11 @@ class SouthAfricaNationalTreasuryAPI(LinksSpider, PeriodicSpider):
       South Africa National Treasury
     Spider arguments
       from_date
-        Download only data from this date onward (YYYY-MM-DD format). Defaults to '2017-01-01'.
+        Download only data from this date onward (YYYY-MM-DD format). Defaults to '2016-07-02'.
       until_date
         Download only data until this date (YYYY-MM-DD format). Defaults to today.
     Swagger API documentation
-      https://ocds-api.etenders.gov.za/swagger/index.html
+      https://ocds.umucyo.gov.rw/core/api/docs
     """
     name = 'south_africa_national_treasury_api'
     custom_settings = {
@@ -23,7 +23,7 @@ class SouthAfricaNationalTreasuryAPI(LinksSpider, PeriodicSpider):
     # BaseSpider
     date_format = 'date'
     date_required = True
-    default_from_date = '2017-01-01'
+    default_from_date = '2016-07-02'
 
     # SimpleSpider
     data_type = 'release_package'
@@ -32,6 +32,6 @@ class SouthAfricaNationalTreasuryAPI(LinksSpider, PeriodicSpider):
     formatter = staticmethod(parameters('PageNumber', 'dateFrom'))
 
     # PeriodicSpider
-    pattern = "https://ocds-api.etenders.gov.za/api/OCDSReleases?" \
+    pattern = "https://ocds.umucyo.gov.rw/core/api/v1/releases/all?" \
               "dateFrom={0:%Y-%m-%d}&dateTo={1:%Y-%m-%d}&PageNumber=1"
     step = 7
