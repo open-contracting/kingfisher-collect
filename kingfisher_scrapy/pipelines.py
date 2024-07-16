@@ -56,7 +56,7 @@ class Sample:
 
         # Drop FileError items, so that we keep trying to get data.
         if not isinstance(item, (File, FileItem)):
-            raise DropItem(f'Sample: Item is a {item.__class__.__name__}, not a File or FileItem')
+            raise DropItem(f'Sample: Item is a {type(item).__name__}, not a File or FileItem')
         if self.item_count >= spider.sample:
             spider.crawler.engine.close_spider(spider, 'sample')
             raise DropItem('Sample: Maximum sample size reached')
