@@ -165,7 +165,7 @@ scrapyd==1.4.3
     # via -r requirements.in
 scrapyd-client==1.2.3
     # via -r requirements.in
-sentry-sdk==1.19.0
+sentry-sdk==2.10.0
     # via -r requirements.in
 service-identity==24.1.0
     # via scrapy
