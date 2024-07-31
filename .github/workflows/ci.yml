@@ -20,7 +20,8 @@ jobs:
           RABBIT_URL: amqp://127.0.0.1:${{ job.services.rabbitmq.ports[5672] }}
           KINGFISHER_API2_TEST_URL: http://localhost:${{ job.services.httpbin.ports[8080] }}/anything/
         # For requests.post() in KingfisherProcessAPI2._post_synchronous().
-        run: pytest -W error -W ignore::ResourceWarning -rs --cov kingfisher_scrapy
+        # https://github.com/pytest-dev/pytest-twisted/issues/183
+        run: pytest -W error -W ignore::ResourceWarning -W ignore::DeprecationWarning:pytest_twisted -rs --cov kingfisher_scrapy
       - run: python test_delayed_request_middleware.py
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
