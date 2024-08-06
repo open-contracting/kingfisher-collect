@@ -83,6 +83,21 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         pass
 
     # from IndexSpider
+    def parse_list_loader(self, response):
+        data = response.json()
+
+        # Some files contain invalid packages, e.g.:
+        # {
+        #   "detail": "Error en la generación. ",
+        #   "status": 500
+        # }
+        if set(data) == {'detail', 'status'}:
+            data['http_code'] = data['status']
+            return self.build_file_error_from_response(response, errors=data)
+
+        return data
+
+    # from IndexSpider
     def url_builder(self, value, data, response):
         # URL looks like http://api.mercadopublico.cl/APISOCDS/OCDS/listaOCDSAgnoMesTratoDirecto/2021/03/31500/100
         system = components(-5, -4)(response.request.url)
