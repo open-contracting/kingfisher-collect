@@ -46,7 +46,7 @@ et-xmlfile==1.0.1
     # via openpyxl
 filelock==3.4.1
     # via tldextract
-flattentool==0.24.0
+flattentool==0.26.0
     # via -r requirements.in
 hyperlink==21.0.0
     # via twisted

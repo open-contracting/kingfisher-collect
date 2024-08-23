@@ -9,6 +9,7 @@ import warnings
 import ijson
 import jsonpointer
 from flattentool import unflatten
+from flattentool.exceptions import FlattenToolWarning
 from scrapy.exceptions import DropItem, NotSupported
 
 from kingfisher_scrapy.items import File, FileItem, PluckedItem
@@ -172,7 +173,7 @@ class Unflatten:
                 f.write(pkgutil.get_data('kingfisher_scrapy', f'schema/{spider.ocds_version}.json'))
 
             with warnings.catch_warnings():
-                warnings.filterwarnings('ignore')  # flattentool uses UserWarning, so we can't set a specific category
+                warnings.filterwarnings('ignore', category=FlattenToolWarning)
 
                 unflatten(
                     input_name,
