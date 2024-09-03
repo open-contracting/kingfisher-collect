@@ -8,7 +8,7 @@ class MexicoNuevoLeonRecords(SimpleSpider):
     Domain
       Secretaría de Movilidad y Planeación Urbana de Nuevo León
     Bulk download documentation
-      http://si.nl.gob.mx/transparencia/publicaciones
+      https://smpu.nl.gob.mx/transparencia/publicaciones
     """
     name = 'mexico_nuevo_leon_records'
 
@@ -17,6 +17,6 @@ class MexicoNuevoLeonRecords(SimpleSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            'http://si.nl.gob.mx/siasi_ws/api/ocds/DescargarRecordPackage',
+            'https://smpu.nl.gob.mx/siasi_ws/api/ocds/DescargarRecordPackage',
             meta={'file_name': 'records.json'}
         )
