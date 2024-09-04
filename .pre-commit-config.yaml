@@ -1,0 +1,23 @@
+ci:
+  autoupdate_schedule: quarterly
+  skip: [pip-compile]
+repos:
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.1.0
+    hooks:
+      - id: flake8
+        additional_dependencies: [flake8-comprehensions]
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.4.4
+    hooks:
+      - id: pip-compile
+        name: pip-compile requirements.in
+        args: [requirements.in, -o, requirements.txt, --no-strip-extras]
+      - id: pip-compile
+        name: pip-compile requirements_dev.in
+        args: [requirements_dev.in, -o, requirements_dev.txt, --no-strip-extras]
+        files: ^requirements_dev\.(in|txt)$

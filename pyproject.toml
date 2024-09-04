@@ -1,6 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+# This project is not intended to be released or used as a Python package. This file only exists for scrapyd-client.
+[project]
+name = "kingfisher-collect"
+version = "0.0.0"
+license = {text = "BSD"}
+
+[tool.setuptools.packages.find]
+exclude = ["tests", "tests.*"]
+
+[tool.setuptools.package-data]
+kingfisher_scrapy = ["schema/*.json"]
+
+[options.entry_points]
+scrapy = {settings = "kingfisher_scrapy.settings"}
+
+[tool.isort]
+profile = "black"
+line_length = 119
+
 [tool.pytest.ini_options]
-addopts = '--doctest-modules'
-asyncio_mode = 'auto'
+addopts = "--doctest-modules"
+asyncio_mode = "auto"
 
 [tool.coverage.run]
-omit = ['*/kingfisher_scrapy/spiders/*']
+omit = ["*/kingfisher_scrapy/spiders/*"]
