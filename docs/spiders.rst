@@ -662,6 +662,16 @@ Italy
 
    scrapy crawl italy_ministry_of_infrastructure_and_transport
 
+Kenya
+~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.kenya_ppra.KenyaPPRA
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl kenya_ppra
+
 Kosovo
 ~~~~~~
 
