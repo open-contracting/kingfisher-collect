@@ -437,16 +437,16 @@ def test_retry_data_error_middleware(exception):
      'release', {'x': {'a': 'b'}},
      'release', {'a': 'b'}),
 ])
-@pytest.mark.parametrize('klass', [File, FileItem])
-async def test_root_path_middleware(root_path, data_type, data, expected_data_type, expected_data, klass):
+@pytest.mark.parametrize('cls', [File, FileItem])
+async def test_root_path_middleware(root_path, data_type, data, expected_data_type, expected_data, cls):
     spider = spider_with_crawler()
     middleware = RootPathMiddleware()
     spider.data_type = data_type
     spider.root_path = root_path
 
-    kwargs = {'number': 1} if klass is FileItem else {}
+    kwargs = {'number': 1} if cls is FileItem else {}
 
-    item = klass(
+    item = cls(
         file_name='test.json',
         url='http://test.com',
         data_type=data_type,
@@ -459,7 +459,7 @@ async def test_root_path_middleware(root_path, data_type, data, expected_data_ty
 
     assert len(transformed_items) == int(expected_data is not None)
     for transformed_item in transformed_items:
-        assert isinstance(transformed_item, klass)
+        assert isinstance(transformed_item, cls)
         assert transformed_item.file_name == 'test.json'
         assert transformed_item.data == expected_data
         assert transformed_item.data_type == expected_data_type
@@ -488,17 +488,17 @@ async def test_root_path_middleware(root_path, data_type, data, expected_data_ty
      'release_package', b'[{"releases": [{"a": "b"}, {"c": "d"}], "x": "y"}, {"releases": [{"e": "f"}, {"g": "h"}]}]',
      'release_package', {'releases': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}, {'g': 'h'}], 'x': 'y'}),
 ])
-@pytest.mark.parametrize('klass', [File, FileItem])
-async def test_root_path_middleware_item(root_path, sample, data_type, data, expected_data_type, expected_data, klass):
+@pytest.mark.parametrize('cls', [File, FileItem])
+async def test_root_path_middleware_item(root_path, sample, data_type, data, expected_data_type, expected_data, cls):
     spider = spider_with_crawler()
     middleware = RootPathMiddleware()
     spider.data_type = data_type
     spider.root_path = root_path
     spider.sample = sample
 
-    kwargs = {'number': 1} if klass is FileItem else {}
+    kwargs = {'number': 1} if cls is FileItem else {}
 
-    item = klass(
+    item = cls(
         file_name='test.json',
         url='http://test.com',
         data_type=data_type,
@@ -520,15 +520,15 @@ async def test_root_path_middleware_item(root_path, sample, data_type, data, exp
 
 
 @pytest.mark.parametrize('valid', [True, False])
-@pytest.mark.parametrize('klass', [File, FileItem])
-async def test_validate_json_middleware(valid, klass, caplog):
+@pytest.mark.parametrize('cls', [File, FileItem])
+async def test_validate_json_middleware(valid, cls, caplog):
     spider = spider_with_crawler()
     middleware = ValidateJSONMiddleware()
     spider.validate_json = True
 
-    kwargs = {'number': 1} if klass is FileItem else {}
+    kwargs = {'number': 1} if cls is FileItem else {}
 
-    item = klass(
+    item = cls(
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',
@@ -547,7 +547,7 @@ async def test_validate_json_middleware(valid, klass, caplog):
         assert invalid_json_count == 0
         assert messages == []
     else:
-        number = ", 'number': 1" if klass is FileItem else ''
+        number = ", 'number': 1" if cls is FileItem else ''
         assert invalid_json_count == 1
         assert [message.splitlines() for message in messages] == [[
             "Dropped: Invalid JSON",
@@ -556,15 +556,15 @@ async def test_validate_json_middleware(valid, klass, caplog):
 
 
 @pytest.mark.parametrize('data', [b'[{"ocid": "abc"}]', {'ocid': 'abc'}])
-@pytest.mark.parametrize('klass', [File, FileItem])
-async def test_validate_json_middleware_already_parsed(data, klass, caplog):
+@pytest.mark.parametrize('cls', [File, FileItem])
+async def test_validate_json_middleware_already_parsed(data, cls, caplog):
     spider = spider_with_crawler()
     middleware = ValidateJSONMiddleware()
     spider.validate_json = True
 
-    kwargs = {'number': 1} if klass is FileItem else {}
+    kwargs = {'number': 1} if cls is FileItem else {}
 
-    item = klass(
+    item = cls(
         file_name='test.json',
         url='http://test.com',
         data_type='release_package',

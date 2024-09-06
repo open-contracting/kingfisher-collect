@@ -9,6 +9,7 @@ import warnings
 import ijson
 import jsonpointer
 from flattentool import unflatten
+from flattentool.exceptions import FlattenToolWarning
 from scrapy.exceptions import DropItem, NotSupported
 
 from kingfisher_scrapy.items import File, FileItem, PluckedItem
@@ -56,7 +57,7 @@ class Sample:
 
         # Drop FileError items, so that we keep trying to get data.
         if not isinstance(item, (File, FileItem)):
-            raise DropItem(f'Sample: Item is a {item.__class__.__name__}, not a File or FileItem')
+            raise DropItem(f'Sample: Item is a {type(item).__name__}, not a File or FileItem')
         if self.item_count >= spider.sample:
             spider.crawler.engine.close_spider(spider, 'sample')
             raise DropItem('Sample: Maximum sample size reached')
@@ -172,7 +173,7 @@ class Unflatten:
                 f.write(pkgutil.get_data('kingfisher_scrapy', f'schema/{spider.ocds_version}.json'))
 
             with warnings.catch_warnings():
-                warnings.filterwarnings('ignore')  # flattentool uses UserWarning, so we can't set a specific category
+                warnings.filterwarnings('ignore', category=FlattenToolWarning)
 
                 unflatten(
                     input_name,

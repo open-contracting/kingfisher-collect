@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from datetime import date
+from json import JSONDecodeError
 
 from kingfisher_scrapy.base_spiders import IndexSpider, PeriodicSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
@@ -81,6 +82,27 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
     @abstractmethod
     def handle_item(self, item):
         pass
+
+    # from IndexSpider
+    def parse_list_loader(self, response):
+        try:
+            data = response.json()
+        except JSONDecodeError:
+            yield self.build_file_error_from_response(
+                response, errors={'http_code': response.status, 'text': response.text}
+            )
+            return
+
+        # Some files contain invalid packages, e.g.:
+        # {
+        #   "detail": "Error en la generación. ",
+        #   "status": 500
+        # }
+        if set(data) == {'detail', 'status'}:
+            data['http_code'] = data['status']
+            return self.build_file_error_from_response(response, errors=data)
+
+        return data
 
     # from IndexSpider
     def url_builder(self, value, data, response):

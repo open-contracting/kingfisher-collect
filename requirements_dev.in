@@ -1,11 +1,7 @@
 -r requirements.txt
 coverage[toml]
-coveralls
-flake8
-isort
 ocdsmerge
 openpyxl
-pip-tools
 pika
 psycopg2-binary
 pytest

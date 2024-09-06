@@ -59,7 +59,7 @@ class FilesStore:
         message_length = math.ceil(len(message) / 2) * 2
         title_length = message_length // 2 - 8
 
-        spider.logger.info(f"+-{'-' * title_length } DATA DIRECTORY {'-' * title_length }-+")
+        spider.logger.info(f"+-{'-' * title_length} DATA DIRECTORY {'-' * title_length}-+")
         spider.logger.info(f"| {' ' * message_length} |")
         spider.logger.info(f"| {message.ljust(message_length)} |")
         spider.logger.info(f"| {' ' * message_length} |")

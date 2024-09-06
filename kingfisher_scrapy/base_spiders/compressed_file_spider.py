@@ -79,6 +79,9 @@ class CompressedFileSpider(BaseSpider):
             if self.sample and number > self.sample:
                 break
 
+            if not file_info.file_size:
+                continue
+
             filename = file_info.filename
             basename = os.path.basename(filename)
             if (

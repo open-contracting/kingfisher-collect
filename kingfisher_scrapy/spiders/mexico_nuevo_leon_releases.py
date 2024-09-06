@@ -8,7 +8,7 @@ class MexicoNuevoLeonReleases(CompressedFileSpider):
     Domain
       Secretaría de Movilidad y Planeación Urbana de Nuevo León
     Bulk download documentation
-      http://si.nl.gob.mx/transparencia/acerca-del-proyecto
+      https://smpu.nl.gob.mx/transparencia/acerca-del-proyecto
     """
     name = 'mexico_nuevo_leon_releases'
 
@@ -22,5 +22,5 @@ class MexicoNuevoLeonReleases(CompressedFileSpider):
     file_name_must_contain = 'ReleasePackage'
 
     def start_requests(self):
-        url = 'http://si.nl.gob.mx/acceso/DatosAbiertos/JSONsInfraestructuraAbierta.rar'
+        url = 'https://smpu.nl.gob.mx/acceso/DatosAbiertos/JSONsInfraestructuraAbierta.rar'
         yield scrapy.Request(url, meta={'file_name': 'all.rar'})
