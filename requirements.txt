@@ -184,6 +184,8 @@ six==1.16.0
     #   zodb
 tldextract==3.1.2
     # via scrapy
+tomli==2.0.1
+    # via incremental
 transaction==3.1.0
     # via zodb
 twisted==24.7.0rc1

@@ -23,3 +23,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh pr merge --auto --squash ${{ github.event.pull_request.html_url }}
+  precommit:
+    if: ${{ github.event.pull_request.user.login == 'pre-commit-ci[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr review --approve ${{ github.event.pull_request.html_url }}
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge --auto --squash ${{ github.event.pull_request.html_url }}

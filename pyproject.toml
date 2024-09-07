@@ -21,3 +21,6 @@ asyncio_mode = "auto"
 
 [tool.coverage.run]
 omit = ["*/kingfisher_scrapy/spiders/*"]
+
+[tool.uv.pip]
+python-platform = "linux"  # greenlet

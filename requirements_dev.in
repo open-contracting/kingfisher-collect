@@ -3,9 +3,9 @@ coverage[toml]
 ocdsmerge
 openpyxl
 pika
+pre-commit
 psycopg2-binary
 pytest
 pytest-asyncio
-pytest-cov
 pytest-order
 pytest-twisted

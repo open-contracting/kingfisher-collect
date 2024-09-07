@@ -20,7 +20,7 @@ jobs:
         # For requests.post() in KingfisherProcessAPI2._post_synchronous().
         # https://github.com/pytest-dev/pytest-twisted/issues/183
         # https://github.com/scrapy/scrapy/issues/6450
-        run: pytest --cov-report=lcov:coverage/lcov.info -W error -W ignore::ResourceWarning -W ignore::DeprecationWarning:pytest_twisted -W ignore::DeprecationWarning:scrapy.core.downloader.webclient -rs --cov kingfisher_scrapy
+        run: coverage run --source=kingfisher_scrapy -m pytest -W error -W ignore::ResourceWarning -W ignore::DeprecationWarning:pytest_twisted -W ignore::DeprecationWarning:scrapy.core.downloader.webclient -rs
       - run: python test_delayed_request_middleware.py
       - uses: coverallsapp/github-action@v2
     services:
