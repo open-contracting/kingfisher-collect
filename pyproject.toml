@@ -11,16 +11,19 @@ exclude = ["tests", "tests.*"]
 [tool.setuptools.package-data]
 kingfisher_scrapy = ["schema/*.json"]
 
-[tool.isort]
-profile = "black"
-line_length = 119
+[tool.ruff]
+line-length = 119
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "C4", "F", "I", "W"]
+
+[tool.coverage.run]
+omit = ["*/kingfisher_scrapy/spiders/*"]
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules"
 asyncio_mode = "auto"
-
-[tool.coverage.run]
-omit = ["*/kingfisher_scrapy/spiders/*"]
 
 [tool.uv.pip]
 python-platform = "linux"  # greenlet
