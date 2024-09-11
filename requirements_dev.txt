@@ -221,7 +221,7 @@ pytest-asyncio==0.23.3
     # via -r requirements_dev.in
 pytest-order==1.2.0
     # via -r requirements_dev.in
-pytest-twisted==1.14.0
+pytest-twisted==1.14.3
     # via -r requirements_dev.in
 pytz==2020.1
     # via

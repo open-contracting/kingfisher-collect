@@ -20,6 +20,5 @@ jobs:
       - run: pip install -r requirements_dev.txt
       - env:
           CI_SKIP: true
-        # https://github.com/pytest-dev/pytest-twisted/issues/183
-        run: coverage run --source=kingfisher_scrapy -m pytest -W error -W ignore::DeprecationWarning:pytest_twisted -rs
+        run: coverage run --source=kingfisher_scrapy -m pytest -W error -rs
       - run: python test_delayed_request_middleware.py
