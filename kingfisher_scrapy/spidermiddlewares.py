@@ -93,7 +93,7 @@ class ValidateJSONMiddleware:
         :returns: a generator of File or FileItem objects, in which the ``data`` field is valid JSON
         """
         async for item in result:
-            if not isinstance(item, (File, FileItem)) or not spider.validate_json or isinstance(item.data, dict):
+            if not isinstance(item, File | FileItem) or not spider.validate_json or isinstance(item.data, dict):
                 yield item
                 continue
 
@@ -123,7 +123,7 @@ class RootPathMiddleware:
         :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
         """
         async for item in result:
-            if not isinstance(item, (File, FileItem)) or not spider.root_path:
+            if not isinstance(item, File | FileItem) or not spider.root_path:
                 yield item
                 continue
 
@@ -200,7 +200,7 @@ class AddPackageMiddleware:
         :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
         """
         async for item in result:
-            if not isinstance(item, (File, FileItem)) or item.data_type not in ('release', 'record'):
+            if not isinstance(item, File | FileItem) or item.data_type not in ('release', 'record'):
                 yield item
                 continue
 
@@ -211,10 +211,7 @@ class AddPackageMiddleware:
             if isinstance(data, bytes):
                 data = json.loads(data)
 
-            if item.data_type == 'release':
-                key = 'releases'
-            else:
-                key = 'records'
+            key = 'releases' if item.data_type == 'release' else 'records'
 
             item.data = {'version': spider.ocds_version, key: [data]}
             item.data_type += '_package'
@@ -241,10 +238,7 @@ class ResizePackageMiddleware:
 
             data = item.data
 
-            if item.data_type == 'release_package':
-                key = 'releases'
-            else:
-                key = 'records'
+            key = 'releases' if item.data_type == 'release_package' else 'records'
 
             template = self._get_package_metadata(spider, data['package'], key, item.data_type)
             iterable = util.transcode(spider, ijson.items, data['data'], f'{key}.item')
@@ -306,7 +300,7 @@ class RetryDataErrorMiddleware:
     # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#scrapy.spidermiddlewares.SpiderMiddleware.process_spider_exception
 
     def process_spider_exception(self, response, exception, spider):
-        if isinstance(exception, (BadZipFile, RetryableError)):
+        if isinstance(exception, BadZipFile | RetryableError):
             attempts = response.request.meta.get('retries', 0) + 1
             if attempts > 3:
                 spider.logger.error('Gave up retrying %(request)s (failed %(failures)d times): %(exception)s',

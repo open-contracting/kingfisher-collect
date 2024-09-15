@@ -132,10 +132,7 @@ class IndexSpider(SimpleSpider):
 
     def page_count_range_generator(self, data, response):
         pages = resolve_pointer(data, self.page_count_pointer)
-        if self.base_url:
-            start = 0
-        else:
-            start = 1
+        start = 0 if self.base_url else 1
         return range(self.start_page + start, self.start_page + pages)
 
     def pages_url_builder(self, value, data, response):
@@ -146,10 +143,7 @@ class IndexSpider(SimpleSpider):
     def limit_offset_range_generator(self, data, response):
         limit = self._resolve_limit(data)
         count = resolve_pointer(data, self.result_count_pointer)
-        if self.base_url:
-            start = 0
-        else:
-            start = limit
+        start = 0 if self.base_url else limit
         return range(start, count, limit)
 
     def limit_offset_url_builder(self, value, data, response):
@@ -162,10 +156,7 @@ class IndexSpider(SimpleSpider):
     def result_count_range_generator(self, data, response):
         limit = self._resolve_limit(data)
         count = resolve_pointer(data, self.result_count_pointer)
-        if self.base_url:
-            start = 0
-        else:
-            start = 1
+        start = 0 if self.base_url else 1
         return range(self.start_page + start, self.start_page + ceil(count / limit))
 
     def _resolve_limit(self, data):

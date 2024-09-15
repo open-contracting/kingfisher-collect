@@ -33,7 +33,7 @@ def delayed_request_middleware():
     results = []
     downloaded.addBoth(results.append)
     test = TestCase()
-    test._wait(downloaded)
+    test._wait(downloaded)  # noqa: SLF001
 
     spent = time.time() - start
 

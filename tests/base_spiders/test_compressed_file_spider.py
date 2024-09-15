@@ -34,15 +34,13 @@ def test_parse():
         next(generator)
 
 
-@pytest.mark.parametrize('sample,len_items,file_name', [(None, 20, 'test'), (5, 5, 'test')])
+@pytest.mark.parametrize(('sample', 'len_items', 'file_name'), [(None, 20, 'test'), (5, 5, 'test')])
 def test_parse_line_delimited(sample, len_items, file_name):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.line_delimited = True
 
-    content = []
-    for i in range(1, 21):
-        content.append('{"key": %s}\n' % i)
+    content = ['{"key": %s}\n' % i for i in range(1, 21)]  # noqa: UP031
 
     io = BytesIO()
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
@@ -64,14 +62,16 @@ def test_parse_line_delimited(sample, len_items, file_name):
         next(generator)
 
 
-@pytest.mark.parametrize('sample,len_items,len_releases, file_name', [(None, 2, 100, 'test'), (5, 1, 5, 'test')])
+@pytest.mark.parametrize(
+    ('sample', 'len_items', 'len_releases', 'file_name'), [(None, 2, 100, 'test'), (5, 1, 5, 'test')]
+)
 def test_parse_release_package(sample, len_items, len_releases, file_name):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = 'release_package'
     spider.resize_package = True
 
     package = {'releases': []}
-    for i in range(200):
+    for _ in range(200):
         package['releases'].append({'key': 'value'})
 
     io = BytesIO()
@@ -150,7 +150,7 @@ def test_yield_non_archive_file():
         next(generator)
 
 
-@pytest.mark.parametrize('include,exclude', [('', 'skip'), ('test', '')])
+@pytest.mark.parametrize(('include', 'exclude'), [('', 'skip'), ('test', '')])
 def test_filter_file_names(include, exclude):
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = 'release_package'

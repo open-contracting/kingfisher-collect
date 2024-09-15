@@ -64,7 +64,7 @@ class HondurasPortalBulk(SimpleSpider):
 
     @classmethod
     def from_crawler(cls, crawler, publisher=None, system=None, *args, **kwargs):
-        spider = super().from_crawler(crawler, publisher=publisher, system=system, *args, **kwargs)
+        spider = super().from_crawler(crawler, *args, publisher=publisher, system=system, **kwargs)
         if publisher and spider.publisher not in spider.available_publishers:
             raise SpiderArgumentError(f'spider argument `publisher`: {spider.publisher!r} not recognized')
 
@@ -79,22 +79,25 @@ class HondurasPortalBulk(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
+        """
+        The response looks like:
+
+        [
+          {
+           "urls": {
+             "csv": "...",
+             "md5": "...",
+             "json": "...",
+             "xlsx": "..."
+           },
+           "year": "values between 2005 to the current year",
+           "month": "values between 1 and 12",
+           "sistema": "values from available_system",
+           "publicador": "values from available_publishers"
+          }, ...
+        ]
+        """
         formatter = components(-1)
-        # An example of expected response is:
-        # [
-        #   {
-        #    "urls": {
-        #      "csv": "...",
-        #      "md5": "...",
-        #      "json": "...",
-        #      "xlsx": "..."
-        #    },
-        #    "year": "values between 2005 to the current year",
-        #    "month": "values between 1 and 12",
-        #    "sistema": "values from available_system",
-        #    "publicador": "values from available_publishers"
-        #   }, ...
-        # ]
         for item in response.json():
             publisher = item['publicador']
             if self.publisher and publisher != self.available_publishers.get(self.publisher):

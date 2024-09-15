@@ -14,8 +14,15 @@ from kingfisher_scrapy.exceptions import IncoherentConfigurationError, SpiderArg
 class Error(BaseSpider):
     name = 'error'
 
-    def __init__(self, raise_from_crawler=False, raise_init=False, raise_start_requests=False, raise_parse=False,
-                 *args, **kwargs):
+    def __init__(
+            self,
+            *args,
+            raise_from_crawler=False,
+            raise_init=False,
+            raise_start_requests=False,
+            raise_parse=False,
+            **kwargs,
+        ):
         super().__init__(*args, raise_from_crawler=raise_from_crawler, raise_init=raise_init,
                          raise_start_requests=raise_start_requests, raise_parse=raise_parse, **kwargs)
 
@@ -38,9 +45,9 @@ class Error(BaseSpider):
 
     def start_requests(self):
         if self.raise_start_requests:
-            raise Exception("message")
+            raise RuntimeError("message")
         yield scrapy.Request('http://httpstat.us/200')
 
     def parse(self, response):
         if self.raise_parse:
-            raise Exception("message")
+            raise RuntimeError("message")

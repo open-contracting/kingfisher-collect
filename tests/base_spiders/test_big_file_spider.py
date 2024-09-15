@@ -21,7 +21,7 @@ def test_data_type_valid(data_type):
     spider_with_crawler(BigFileSpider, data_type=data_type)
 
 
-@pytest.mark.parametrize('sample,len_items,len_releases,data_type,key', [
+@pytest.mark.parametrize(('sample', 'len_items', 'len_releases', 'data_type', 'key'), [
     (None, 2, 100, 'release_package', 'releases'),
     (5, 1, 5, 'release_package', 'releases'),
     (5, 1, 5, 'record_package', 'records')
@@ -29,7 +29,7 @@ def test_data_type_valid(data_type):
 def test_parse_package(sample, len_items, len_releases, data_type, key):
     spider = spider_with_crawler(spider_class=BigFileSpider, sample=sample, data_type=data_type)
     package = {key: []}
-    for i in range(200):
+    for _ in range(200):
         package[key].append({'key': 'value'})
 
     response = response_fixture(body=json.dumps(package).encode(), meta={'file_name': 'test.json'})

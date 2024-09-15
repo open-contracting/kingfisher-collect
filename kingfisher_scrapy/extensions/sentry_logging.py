@@ -22,6 +22,4 @@ class SentryLogging:
         if not sentry_dsn:
             raise NotConfigured('SENTRY_DSN is not set.')
 
-        extension = cls(sentry_dsn)
-
-        return extension
+        return cls(sentry_dsn)

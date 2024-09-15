@@ -50,7 +50,7 @@ class ColombiaBulk(CompressedFileSpider):
 
     @classmethod
     def from_crawler(cls, crawler, system=None, *args, **kwargs):
-        spider = super().from_crawler(crawler, system=system, *args, **kwargs)
+        spider = super().from_crawler(crawler, *args, system=system, **kwargs)
 
         if system and spider.system not in spider.available_systems:
             raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
@@ -71,9 +71,8 @@ class ColombiaBulk(CompressedFileSpider):
     def parse_list(self, response):
         urls = response.xpath('//a[@class="enlaces_contenido"]/@href').getall()
         for url in urls:
-            if self.system:
-                if self.available_systems[self.system] not in url:
-                    continue
+            if self.system and self.available_systems[self.system] not in url:
+                continue
 
             if self.from_date and self.until_date:
                 # URL looks like https://apiocds.colombiacompra.gov.co/ArchivosSECOP/Archivos/SI2011.zip

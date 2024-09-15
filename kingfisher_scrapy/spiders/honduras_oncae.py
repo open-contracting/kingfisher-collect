@@ -47,7 +47,7 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
 
     @classmethod
     def from_crawler(cls, crawler, system=None, *args, **kwargs):
-        spider = super().from_crawler(crawler, system=system, *args, **kwargs)
+        spider = super().from_crawler(crawler, *args, system=system, **kwargs)
         if system and spider.system not in spider.available_systems:
             raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
         return spider
@@ -56,8 +56,5 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
         for system in self.available_systems:
             if self.system and system != self.system:
                 continue
-            if system == 'HC1':
-                suffix = f'{date}.json'
-            else:
-                suffix = f'{date}_json.zip'
+            suffix = f'{date}.json' if system == 'HC1' else f'{date}_json.zip'
             yield self.pattern.format(f"{system}/{system}_datos_{suffix}")

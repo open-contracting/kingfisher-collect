@@ -39,7 +39,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
 
     @classmethod
     def from_crawler(cls, crawler, system=None, *args, **kwargs):
-        spider = super().from_crawler(crawler, system=system, *args, **kwargs)
+        spider = super().from_crawler(crawler, *args, system=system, **kwargs)
         if system and spider.system not in spider.available_systems:
             raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
         return spider
@@ -63,20 +63,22 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
 
     @handle_http_error
     def parse_page(self, response):
+        """
+        An item of the ``data`` array looks like:
+
+        {
+          "ocid": "ocds-70d2nz-2359-2-LE19",
+          "urlTender": "https://apis.mercadopublico.cl/OCDS/data/tender/2359-2-LE19",
+          "urlAward": "https://apis.mercadopublico.cl/OCDS/data/award/2359-2-LE19",
+          "urlPlanning": "https://apis.mercadopublico.cl/OCDS/data/planning/2359-2-LE19"
+        }
+        """
         data = self.parse_list_loader(response)
         if isinstance(data, FileError):
             yield data
             return
 
         for item in data['data']:
-            # An item looks like:
-            #
-            # {
-            #   "ocid": "ocds-70d2nz-2359-2-LE19",
-            #   "urlTender": "https://apis.mercadopublico.cl/OCDS/data/tender/2359-2-LE19",
-            #   "urlAward": "https://apis.mercadopublico.cl/OCDS/data/award/2359-2-LE19",
-            #   "urlPlanning": "https://apis.mercadopublico.cl/OCDS/data/planning/2359-2-LE19"
-            # }
             yield from self.handle_item(item)
 
     @abstractmethod
@@ -85,6 +87,14 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
 
     # from IndexSpider
     def parse_list_loader(self, response):
+        """
+        Some files contain invalid packages, like:
+
+        {
+          "detail": "Error en la generación. ",
+          "status": 500
+        }
+        """
         try:
             data = response.json()
         except JSONDecodeError:
@@ -93,11 +103,6 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
             )
             return
 
-        # Some files contain invalid packages, e.g.:
-        # {
-        #   "detail": "Error en la generación. ",
-        #   "status": 500
-        # }
         if set(data) == {'detail', 'status'}:
             data['http_code'] = data['status']
             return self.build_file_error_from_response(response, errors=data)

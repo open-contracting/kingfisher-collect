@@ -17,7 +17,7 @@ def check_required(cls, base, pop):
         cls(**data)
 
 
-@pytest.mark.parametrize('cls,base', [(File, FILE), (FileItem, FILE_ITEM), (FileError, FILE_ERROR)])
+@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM), (FileError, FILE_ERROR)])
 def test_valid(cls, base):
     cls(**base)  # no exception raised
 
@@ -38,20 +38,20 @@ def test_file_error_required(pop):
 
 
 @pytest.mark.parametrize('invalid', ['path/test', 'path\\test'])
-@pytest.mark.parametrize('cls,base', [(File, FILE), (FileItem, FILE_ITEM), (FileError, FILE_ERROR)])
+@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM), (FileError, FILE_ERROR)])
 def test_file_name(cls, base, invalid):
     with pytest.raises(pydantic.ValidationError):
         cls(**base | {'file_name': invalid})
 
 
 @pytest.mark.parametrize('invalid', ['://example.com', 'scheme://example.com', 'http://example'])
-@pytest.mark.parametrize('cls,base', [(File, FILE), (FileItem, FILE_ITEM), (FileError, FILE_ERROR)])
+@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM), (FileError, FILE_ERROR)])
 def test_url(cls, base, invalid):
     with pytest.raises(pydantic.ValidationError):
         cls(**base | {'url': invalid})
 
 
-@pytest.mark.parametrize('cls,base', [(File, FILE), (FileItem, FILE_ITEM)])
+@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_data_type(cls, base):
     with pytest.raises(pydantic.ValidationError):
         cls(**base | {'data_type': 'invalid'})
@@ -60,14 +60,14 @@ def test_data_type(cls, base):
 @pytest.mark.parametrize('invalid', [
     None, True, 1, 1.0, 'data', [{'ocid': 'x'}], ({'ocid': 'x'},), {('ocid', 'x')}, frozenset((('ocid', 'x'),))
 ])
-@pytest.mark.parametrize('cls,base', [(File, FILE), (FileItem, FILE_ITEM)])
+@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_data(cls, base, invalid):
     with pytest.raises(pydantic.ValidationError):
         cls(**base | {'data': invalid})
 
 
 @pytest.mark.parametrize('invalid', [b'', {}])
-@pytest.mark.parametrize('cls,base', [(File, FILE), (FileItem, FILE_ITEM)])
+@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_data_length(cls, base, invalid):
     with pytest.raises(pydantic.ValidationError):
         cls(**base | {'data': invalid})

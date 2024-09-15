@@ -38,13 +38,16 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
     formatter = staticmethod(components(-1))  # filename containing year-month
 
     def build_file(self, *, file_name=None, url=None, data_type=None, data=None):
+        """
+        Some files contain invalid record packages, like:
+
+        {
+          "status": 500,
+          "detail": "error"
+        }
+        """
         json_data = json.loads(data)
 
-        # Some files contain invalid record packages, e.g.:
-        # {
-        #   "status": 500,
-        #   "detail": "error"
-        # }
         if json_data.get('status') != 200:
             json_data['http_code'] = json_data['status']
             return FileError(file_name=file_name, url=url, errors=json_data)

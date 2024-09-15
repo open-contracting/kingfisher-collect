@@ -29,7 +29,7 @@ class PeriodicSpider(SimpleSpider):
     #. Set a ``default_from_date`` class attribute to a year ("YYYY") or year-month ("YYYY-MM")
     #. If the source stopped publishing, set a ``default_until_date`` class attribute to a year or year-month
     #. Optionally, if the ``date_format`` is "date", set a ``step`` class attribute to indicate the length of
-       intervals, in days – otherwise, it defaults to 1
+       intervals, in days - otherwise, it defaults to 1
     #. Optionally, set a ``start_requests_callback`` class attribute to a method's name as a string - otherwise, it
        defaults to :meth:`~kingfisher_scrapy.base_spiders.simple_spider.SimpleSpider.parse`
 

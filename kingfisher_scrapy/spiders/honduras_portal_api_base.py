@@ -14,7 +14,7 @@ class HondurasPortalAPIBase(IndexSpider):
 
     @classmethod
     def from_crawler(cls, crawler, publisher=None, *args, **kwargs):
-        spider = super().from_crawler(crawler, publisher=publisher, *args, **kwargs)
+        spider = super().from_crawler(crawler, *args, publisher=publisher, **kwargs)
         if publisher and spider.publisher not in spider.available_publishers:
             raise SpiderArgumentError(f'spider argument `publisher`: {spider.publisher!r} not recognized')
 

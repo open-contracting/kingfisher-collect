@@ -10,7 +10,7 @@ from kingfisher_scrapy.items import File
 from tests import spider_with_crawler
 
 
-@pytest.mark.parametrize('sample,expected', [
+@pytest.mark.parametrize(('sample', 'expected'), [
     ('3', 3),
     ('true', 1),
     ('false', None),
@@ -28,7 +28,7 @@ def test_sample_no_kwarg():
     assert spider.sample is None
 
 
-@pytest.mark.parametrize('status,expected', [(100, False), (200, True), (204, True), (300, False), (500, False)])
+@pytest.mark.parametrize(('status', 'expected'), [(100, False), (200, True), (204, True), (300, False), (500, False)])
 def test_is_http_success(status, expected):
     spider = BaseSpider(name='test')
 
@@ -110,15 +110,16 @@ def test_crawl_time():
 
 
 def test_crawl_time_invalid():
-    expected = "spider argument `crawl_time`: invalid date value: time data '2020' does not match format " \
-               "'%Y-%m-%dT%H:%M:%S'"
+    expected = (
+        "spider argument `crawl_time`: invalid date value: time data '2020' does not match format '%Y-%m-%dT%H:%M:%S'"
+    )
 
     with pytest.raises(SpiderArgumentError) as e:
         spider_with_crawler(crawl_time='2020')
     assert str(e.value) == expected
 
 
-@pytest.mark.parametrize('kwargs,expected', [
+@pytest.mark.parametrize(('kwargs', 'expected'), [
     ({'qs:param1': 'val1'}, '?param1=val1'),
     ({'qs:param1': 'val1', 'qs:param2': 'val2'}, '?param1=val1&param2=val2'),
     ({'qs:param1': 'val1', 'qs:param2': 'Ministerio de Urbanismo, Vivienda y Habitat'},
@@ -147,7 +148,7 @@ def test_data_base_url_with_compile():
     spider_with_crawler(settings={'DATABASE_URL': 'test'}, crawl_time='2021-05-25T00:00:00', compile_releases='true')
 
 
-@pytest.mark.parametrize('base_url,kwargs,expected', [
+@pytest.mark.parametrize(('base_url', 'kwargs', 'expected'), [
     # Empty `path` argument.
     ('http://example.com/a', {'path': ''}, 'http://example.com/a'),
     # `path` argument with trailing slash.

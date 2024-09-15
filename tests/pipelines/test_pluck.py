@@ -25,7 +25,8 @@ package_parameters = [
     # Records
     ('record_package', record_package),
 ]
-release_parameters = package_parameters + [
+release_parameters = [
+    *package_parameters,
     # Releases
     ('release', {'releases': [release_package['releases'][1]]}),
     # Records
@@ -34,7 +35,7 @@ release_parameters = package_parameters + [
 ]
 
 
-@pytest.mark.parametrize('data_type,data', release_parameters)
+@pytest.mark.parametrize(("data_type", "data"), release_parameters)
 def test_disabled(data_type, data):
     spider = spider_with_crawler()
 
@@ -56,7 +57,7 @@ def test_from_crawler():
     assert str(excinfo.value) == 'You cannot specify both package_pointer and release_pointer spider arguments.'
 
 
-@pytest.mark.parametrize('data_type,data', release_parameters)
+@pytest.mark.parametrize(("data_type", "data"), release_parameters)
 def test_process_item_release_pointer(data_type, data):
     spider = spider_with_crawler(release_pointer='/date', truncate=10)
 
@@ -71,7 +72,7 @@ def test_process_item_release_pointer(data_type, data):
     assert pipeline.process_item(item, spider) == PluckedItem(value='2020-10-01')
 
 
-@pytest.mark.parametrize('data_type,data', package_parameters)
+@pytest.mark.parametrize(("data_type", "data"), package_parameters)
 def test_process_item_package_pointer(data_type, data):
     spider = spider_with_crawler(package_pointer='/publishedDate')
 

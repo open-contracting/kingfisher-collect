@@ -32,7 +32,7 @@ class HondurasIAIP(SimpleSpider):
 
     @classmethod
     def from_crawler(cls, crawler, portal=None, *args, **kwargs):
-        spider = super().from_crawler(crawler, portal=portal, *args, **kwargs)
+        spider = super().from_crawler(crawler, *args, portal=portal, **kwargs)
         if portal and spider.portal not in spider.available_portals:
             raise SpiderArgumentError(f'spider argument `portal`: {spider.portal!r} not recognized')
         return spider

@@ -189,7 +189,7 @@ class BaseSpider(scrapy.Spider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
+        spider = super().from_crawler(crawler, *args, **kwargs)
 
         if spider.pluck_package_pointer and spider.pluck_release_pointer:
             raise SpiderArgumentError('You cannot specify both package_pointer and release_pointer spider arguments.')
@@ -198,13 +198,15 @@ class BaseSpider(scrapy.Spider):
             try:
                 spider.sample = int(spider.sample)
             except ValueError:
-                raise SpiderArgumentError(f'spider argument `sample`: invalid integer value: {spider.sample!r}')
+                raise SpiderArgumentError(
+                    f'spider argument `sample`: invalid integer value: {spider.sample!r}'
+                ) from None
 
         if spider.crawl_time:
             try:
                 spider.crawl_time = datetime.datetime.strptime(spider.crawl_time, '%Y-%m-%dT%H:%M:%S')
             except ValueError as e:
-                raise SpiderArgumentError(f'spider argument `crawl_time`: invalid date value: {e}')
+                raise SpiderArgumentError(f'spider argument `crawl_time`: invalid date value: {e}') from None
 
         if spider.from_date or spider.until_date or spider.date_required:
             if not spider.from_date:
@@ -213,7 +215,7 @@ class BaseSpider(scrapy.Spider):
                 if isinstance(spider.from_date, str):
                     spider.from_date = spider.parse_date_argument(spider.from_date)
             except ValueError as e:
-                raise SpiderArgumentError(f'spider argument `from_date`: invalid date value: {e}')
+                raise SpiderArgumentError(f'spider argument `from_date`: invalid date value: {e}') from None
 
             if not spider.until_date:
                 spider.until_date = cls.get_default_until_date(spider)
@@ -221,12 +223,13 @@ class BaseSpider(scrapy.Spider):
                 if isinstance(spider.until_date, str):
                     spider.until_date = spider.parse_date_argument(spider.until_date)
             except ValueError as e:
-                raise SpiderArgumentError(f'spider argument `until_date`: invalid date value: {e}')
+                raise SpiderArgumentError(f'spider argument `until_date`: invalid date value: {e}') from None
 
         # DatabaseStore-related logic.
-        if crawler.settings['DATABASE_URL']:
-            if not spider.crawl_time:
-                raise SpiderArgumentError("spider argument `crawl_time`: can't be blank if `DATABASE_URL` is set")
+        if crawler.settings['DATABASE_URL'] and not spider.crawl_time:
+            raise SpiderArgumentError(
+                "spider argument `crawl_time`: can't be blank if `DATABASE_URL` is set"
+            ) from None
 
         return spider
 
@@ -252,15 +255,12 @@ class BaseSpider(scrapy.Spider):
         """
         return response.status in self.retry_http_codes
 
-    def get_start_time(self, format):
+    def get_start_time(self, date_format):
         """
         Returns the formatted start time of the crawl.
         """
-        if self.crawl_time:
-            date = self.crawl_time
-        else:
-            date = self.crawler.stats.get_value('start_time')
-        return date.strftime(format)
+        date = self.crawl_time if self.crawl_time else self.crawler.stats.get_value('start_time')
+        return date.strftime(date_format)
 
     def get_retry_wait_time(self, response):
         """
@@ -305,7 +305,8 @@ class BaseSpider(scrapy.Spider):
         """
         meta = {}
         if formatter is None:
-            assert kwargs['meta']['file_name']
+            if not kwargs['meta']['file_name']:
+                raise AssertionError('build_request() must be passed a file_name or a formatter')
         else:
             meta['file_name'] = formatter(url)
             # Other extensions are related to the Unflatten pipeline and CompressedFileSpider base class.

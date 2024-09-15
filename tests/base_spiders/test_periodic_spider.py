@@ -112,7 +112,9 @@ TEST_CASES = {
 
 
 @pytest.mark.parametrize(
-    'date_format,pattern,expected_start,expected_end,class_args,user_args', TEST_CASES.values(), ids=TEST_CASES.keys()
+    ('date_format', 'pattern', 'expected_start', 'expected_end', 'class_args', 'user_args'),
+    TEST_CASES.values(),
+    ids=TEST_CASES.keys(),
 )
 def test_urls(date_format, pattern, expected_start, expected_end, class_args, user_args):
     expected = _format_urls(
@@ -131,5 +133,5 @@ def test_urls(date_format, pattern, expected_start, expected_end, class_args, us
 
     requests = list(spider.start_requests())
 
-    for request, expected_url in zip(requests, expected):
+    for request, expected_url in zip(requests, expected, strict=False):
         assert request.url == expected_url

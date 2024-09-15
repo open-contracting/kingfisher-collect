@@ -40,13 +40,16 @@ class ItalyMinistryOfInfrastructureAndTransport(SimpleSpider):
 
     @handle_http_error
     def parse(self, response):
+        """
+        A success response is returned instead of an error response: for example, for unavailable date periods:
+
+        {
+          "esito": false,
+          "errorData": "Si è verificato un errore durante la creazione di OCDS"
+        }
+        """
         data = response.json()
 
-        # A success response is returned instead of an error response: for example, for unavailable date periods.
-        # {
-        #   "esito": false,
-        #   "errorData": "Si è verificato un errore durante la creazione di OCDS"
-        # }
         if 'errorData' in data:
             data['http_code'] = response.status
             yield self.build_file_error_from_response(response, errors=data)

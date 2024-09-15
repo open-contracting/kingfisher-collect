@@ -6,7 +6,7 @@ from kingfisher_scrapy.downloadermiddlewares import DelayedRequestMiddleware
 from tests import spider_with_crawler
 
 
-@pytest.mark.parametrize('meta,expected', [
+@pytest.mark.parametrize(('meta', 'expected'), [
     (None, type(None)),
     ({'wait_time': 1}, Deferred),
 ])

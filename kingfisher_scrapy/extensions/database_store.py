@@ -95,10 +95,7 @@ class DatabaseStore:
             return
 
         if spider.database_store_compile_releases:
-            if 'release' in spider.data_type:
-                prefix = ''
-            else:
-                prefix = 'records.item.releases.item'
+            prefix = '' if 'release' in spider.data_type else 'records.item.releases.item'
         elif 'release' in spider.data_type:
             prefix = 'releases.item'
         else:
@@ -160,7 +157,7 @@ class DatabaseStore:
         self.execute('CREATE TABLE IF NOT EXISTS {table} (data jsonb)', table=table)
 
     def yield_items_from_directory(self, crawl_directory, prefix=''):
-        for root, dirs, files in os.walk(crawl_directory):
+        for root, _, files in os.walk(crawl_directory):
             for name in files:
                 if name.endswith('.json'):
                     with open(os.path.join(root, name), 'rb') as f:

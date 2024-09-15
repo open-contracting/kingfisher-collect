@@ -46,7 +46,7 @@ def test_from_crawler_missing_arguments():
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
-@pytest.mark.parametrize('from_date,default_from_date,messages', [
+@pytest.mark.parametrize(('from_date', 'default_from_date', 'messages'), [
     (None, None, ['Getting the date from which to resume the crawl from the test table']),
     (None, '2020-01-01', ['Getting the date from which to resume the crawl from the test table']),
     ('2020-01-01', None, ['Starting crawl from 2020-01-01']),
@@ -152,9 +152,8 @@ def test_spider_closed_warnings(cursor, caplog, tmpdir):
     extension.spider_opened(spider)
     caplog.clear()
 
-    with pytest.warns(DuplicateIdValueWarning) as records:
-        with caplog.at_level(logging.INFO):
-            extension.spider_closed(spider, 'finished')
+    with pytest.warns(DuplicateIdValueWarning) as records, caplog.at_level(logging.INFO):
+        extension.spider_closed(spider, 'finished')
 
     cursor.execute("SELECT * FROM test")
 
@@ -178,7 +177,7 @@ def test_spider_closed_warnings(cursor, caplog, tmpdir):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='KINGFISHER_COLLECT_DATABASE_URL must be set')
-@pytest.mark.parametrize('data,data_type,sample,compile_releases,table_name', [
+@pytest.mark.parametrize(('data', 'data_type', 'sample', 'compile_releases', 'table_name'), [
     (b'{"releases": [{"date": "2021-05-26T10:00:00Z"}]}', 'release_package', None, False, 'new_name'),
     (b'{"releases": [{"date": "2021-05-26T10:00:00Z"}]}', 'release_package', 1, False, None),
     (b'{"releases": [{"ocid":"1", "date": "2021-05-26T10:00:00Z"}]}', 'release_package', None, True, None),
@@ -223,19 +222,13 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
     assert max_date == '2021-05-26T10:00:00Z'
 
     if compile_releases:
-        if data_type == 'release_package':
-            prefix = 'empty'
-        else:
-            prefix = 'records.item.releases.item'
+        prefix = 'empty' if data_type == 'release_package' else 'records.item.releases.item'
     elif data_type == 'release_package':
         prefix = 'releases.item'
     else:
         prefix = 'records.item.compiledRelease'
 
-    if sample:
-        suffix = '_sample'
-    else:
-        suffix = ''
+    suffix = '_sample' if sample else ''
 
     expected_messages = [
         f'Reading the {tmpdir}/test{suffix}/20210525_000000 crawl directory with the {prefix} prefix',
@@ -251,7 +244,7 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
 
     cursor.execute(psycopg2.sql.SQL("SELECT * FROM {table}").format(table=psycopg2.sql.Identifier(expected_table)))
 
-    assert cursor.fetchall() == [(expected,),]
+    assert cursor.fetchall() == [(expected,)]
     assert [record.message for record in caplog.records] == expected_messages
 
 

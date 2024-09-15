@@ -25,9 +25,8 @@ class NigeriaCrossRiverStateBase(SimpleSpider):
         for item in response.json():
             date = datetime(item['year'], item['month'], 1)
 
-            if self.from_date and self.until_date:
-                if not (self.from_date <= date <= self.until_date):
-                    continue
+            if self.from_date and self.until_date and not (self.from_date <= date <= self.until_date):
+                continue
 
             yield self.build_request(self.build_url(date), formatter=formatter)
 

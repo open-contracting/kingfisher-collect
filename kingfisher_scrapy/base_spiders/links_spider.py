@@ -53,7 +53,7 @@ class LinksSpider(SimpleSpider):
         """
         # If the sample size is 1, we don't want to parse the response, especially if --max-bytes is used.
         if self.sample and self.sample == 1:
-            return
+            return None
 
         data = response.json()
         url = resolve_pointer(data, self.next_pointer, None)
@@ -62,7 +62,9 @@ class LinksSpider(SimpleSpider):
 
         for filter_argument in self.filter_arguments:
             if getattr(self, filter_argument, None):
-                return
+                return None
 
         if response.meta['depth'] == 0:
             raise MissingNextLinkError(f'next link not found on the first page: {response.url}')
+
+        return None

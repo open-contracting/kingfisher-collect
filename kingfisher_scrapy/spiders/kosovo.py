@@ -34,8 +34,10 @@ class Kosovo(SimpleSpider):
         for days in reversed(range(delta.days + 1)):
             start = self.from_date + timedelta(days=days - 1)
             end = self.from_date + timedelta(days=days)
-            url = 'https://ocdskrpp.rks-gov.net/krppapi/tenderrelease?endDateFrom=' \
-                  f'{start.strftime("%Y-%m-%d")}&endDateEnd={end.strftime("%Y-%m-%d")}'
+            url = (
+                'https://ocdskrpp.rks-gov.net/krppapi/tenderrelease'
+                f'?endDateFrom={start.strftime("%Y-%m-%d")}&endDateEnd={end.strftime("%Y-%m-%d")}'
+            )
 
             yield self.build_request(url, formatter=parameters('endDateFrom', 'endDateEnd'))
 

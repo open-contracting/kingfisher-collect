@@ -109,7 +109,7 @@ def test_spider_closed_failed(tmpdir, caplog):
         assert not caplog.records
 
 
-@pytest.mark.parametrize('sample,path', [
+@pytest.mark.parametrize(('sample', 'path'), [
     (None, os.path.join('test', '20010203_040506', '389', 'file.json')),
     ('true', os.path.join('test_sample', '20010203_040506', '389', 'file.json')),
 ])
@@ -132,12 +132,12 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
     assert item.path == path
 
 
-@pytest.mark.parametrize('sample,directory', [
+@pytest.mark.parametrize(('sample', 'directory'), [
     (None, os.path.join('test', '20010203_040506')),
     ('true', os.path.join('test_sample', '20010203_040506')),
 ])
 @pytest.mark.parametrize('data', [b'{"key": "value"}', {"key": "value"}])
-@pytest.mark.parametrize('item,subdirectory,expected_file_name', [
+@pytest.mark.parametrize(('item', 'subdirectory', 'expected_file_name'), [
     (File(
         file_name='file.json',
         url='https://example.com',

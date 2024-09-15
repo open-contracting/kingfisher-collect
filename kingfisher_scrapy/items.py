@@ -34,7 +34,7 @@ class Errors(TypedDict):
 
 
 class Resource(pydantic.BaseModel,  **base_kwargs):
-    file_name: pydantic.constr(strict=True, regex=r'^[^/\\]+$')  # noqa: F722 pydantic/pydantic#2872
+    file_name: pydantic.constr(strict=True, regex=r'^[^/\\]+$')
     url: pydantic.HttpUrl
 
 
@@ -45,10 +45,12 @@ class DataResource(Resource, arbitrary_types_allowed=True, use_enum_values=True)
     path: str = ""
 
     @pydantic.validator('data', pre=True)  # `pre` is needed to prevent pydantic from type casting
-    def check_data(cls, v):
+    def check_data(cls, v):  # noqa: N805 # false positive
         # pydantic has no `condict()` to set `strict=True` or `min_properties=1`. pydantic/pydantic#1277
-        assert isinstance(v, (Data, bytes)), f'{type(v).__name__} is not a valid type'
-        assert v, 'ensure this value is non-empty'
+        if not isinstance(v, Data | bytes):
+            raise AssertionError(f'{type(v).__name__} is not a valid type')  # noqa: TRY004 # false positive
+        if not v:
+            raise AssertionError('ensure this value is non-empty')
         return v
 
 

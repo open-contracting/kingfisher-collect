@@ -59,11 +59,11 @@ class FilesStore:
         message_length = math.ceil(len(message) / 2) * 2
         title_length = message_length // 2 - 8
 
-        spider.logger.info(f"+-{'-' * title_length} DATA DIRECTORY {'-' * title_length}-+")
-        spider.logger.info(f"| {' ' * message_length} |")
-        spider.logger.info(f"| {message.ljust(message_length)} |")
-        spider.logger.info(f"| {' ' * message_length} |")
-        spider.logger.info(f"+-{'-' * message_length}-+")
+        spider.logger.info(f"+-{'-' * title_length} DATA DIRECTORY {'-' * title_length}-+")  # noqa: G004
+        spider.logger.info(f"| {' ' * message_length} |")  # noqa: G004
+        spider.logger.info(f"| {message.ljust(message_length)} |")  # noqa: G004
+        spider.logger.info(f"| {' ' * message_length} |")  # noqa: G004
+        spider.logger.info(f"+-{'-' * message_length}-+")  # noqa: G004
 
     def item_scraped(self, item, spider):
         """
@@ -71,7 +71,7 @@ class FilesStore:
 
         Returns a dict with the metadata.
         """
-        if not isinstance(item, (File, FileItem)):
+        if not isinstance(item, File | FileItem):
             return
 
         file_name = item.file_name
@@ -89,21 +89,17 @@ class FilesStore:
     def _get_subdirectory(file_name):
         checksum = zlib.adler32(file_name.encode())
         checksum, dir_1 = divmod(checksum, 0x1000)
-        # 0x1000 is 4096, which should be sufficient, without another level.
-        # dir_2 = checksum % 0x1000
-        return "%03X" % dir_1
+        # 0x1000 is 4096, which should be sufficient, without another level of: dir_2 = checksum % 0x1000
+        return f"{dir_1:03X}"
 
     def _write_file(self, path, data):
         path = os.path.join(self.directory, path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
-        if isinstance(data, bytes):
-            mode = 'wb'
-        else:
-            mode = 'w'
+        mode = 'wb' if isinstance(data, bytes) else 'w'
 
         with open(path, mode) as f:
-            if isinstance(data, (bytes, str)):
+            if isinstance(data, bytes | str):
                 f.write(data)  # NOTE: should be UTF-8
             else:
                 util.json_dump(data, f)

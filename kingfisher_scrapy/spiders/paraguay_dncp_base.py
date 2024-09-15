@@ -65,8 +65,10 @@ class ParaguayDNCPBase(SimpleSpider):
         for start_date, end_date in date_range_by_interval(self.from_date, self.until_date, 30):
             # We request active/complete tenders and planned ones separately to ensure we don't exceed the 10000
             # results per request limit.
-            url_base = f'{self.url_prefix}search/processes?fecha_desde={start_date.strftime(self.date_format)}' \
-                       f'-04:00&fecha_hasta={end_date.strftime(self.date_format)}-04:00&items_per_page=10000 '
+            url_base = (
+                f'{self.url_prefix}search/processes?fecha_desde={start_date.strftime(self.date_format)}'
+                f'-04:00&fecha_hasta={end_date.strftime(self.date_format)}-04:00&items_per_page=10000'
+            )
             # We request the active or successful tenders by using the "publicacion_llamado" filter.
             url_tender = f'{url_base}&tipo_fecha=publicacion_llamado'
             # And the planned ones with the "fecha_release" and tender.id=planned filters.
@@ -103,13 +105,13 @@ class ParaguayDNCPBase(SimpleSpider):
                 if attempt == self.max_access_token_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.access_token_request_failed = True
-                    raise AccessTokenError()
+                    raise AccessTokenError
                 else:
                     yield self.build_access_token_request(attempt=attempt)
         else:
             self.logger.error('Authentication failed. Status code: %s', response.status)
             self.access_token_request_failed = True
-            raise AccessTokenError()
+            raise AccessTokenError
 
     @handle_http_error
     def parse_pages(self, response):

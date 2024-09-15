@@ -42,21 +42,23 @@ class MexicoINAIBase(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        # The response looks like:
-        # {
-        #   "fiscalYears": [
-        #     {
-        #       "id": "..",
-        #       "year": "..",
-        #       "status": "..",
-        #       "createdAt": "..",
-        #       "updatedAt": "..",
-        #     }
-        #   ]
-        # }
+        """
+        The response looks like:
+
+        {
+          "fiscalYears": [
+            {
+              "id": "..",
+              "year": "..",
+              "status": "..",
+              "createdAt": "..",
+              "updatedAt": "..",
+            }
+          ]
+        }
+        """
         for item in response.json()['fiscalYears']:
             year = item['year']
-            if self.from_date and self.until_date:
-                if not (self.from_date.year <= year <= self.until_date.year):
-                    continue
+            if self.from_date and self.until_date and not (self.from_date.year <= year <= self.until_date.year):
+                continue
             yield self.build_request(f'{self.base_url}/edca/contractingprocess/{year}', formatter=join(components(-1)))

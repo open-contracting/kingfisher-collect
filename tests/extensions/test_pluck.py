@@ -33,13 +33,13 @@ def test_item_scraped():
         extension.item_scraped(item, spider)
 
         with open(os.path.join(tmpdirname, 'pluck-release-date.csv')) as f:
-            assert '2020-10-01,test\n' == f.read()
+            assert f.read() == '2020-10-01,test\n'
 
         # Only one item from the same spider is written.
         extension.item_scraped(item, spider)
 
         with open(os.path.join(tmpdirname, 'pluck-release-date.csv')) as f:
-            assert '2020-10-01,test\n' == f.read()
+            assert f.read() == '2020-10-01,test\n'
 
 
 def test_spider_closed_with_items():
@@ -52,7 +52,7 @@ def test_spider_closed_with_items():
         extension.spider_closed(spider, 'itemcount')
 
         with open(os.path.join(tmpdirname, 'pluck-release-date.csv')) as f:
-            assert '2020-10-01,test\n' == f.read()
+            assert f.read() == '2020-10-01,test\n'
 
 
 def test_spider_closed_without_items():
@@ -63,7 +63,7 @@ def test_spider_closed_without_items():
         extension.spider_closed(spider, 'itemcount')
 
         with open(os.path.join(tmpdirname, 'pluck-release-date.csv')) as f:
-            assert 'closed: itemcount,test\n' == f.read()
+            assert f.read() == 'closed: itemcount,test\n'
 
 
 def test_bytes_received_stop_download():
@@ -92,7 +92,7 @@ def test_bytes_received_dont_stop_download():
         assert extension.max_bytes == 10
 
 
-@pytest.mark.parametrize('test_request,spider_class,attributes', [
+@pytest.mark.parametrize(('test_request', 'spider_class', 'attributes'), [
     (Request('http://example.com', callback=lambda item: item, meta={'file_name': 'test.json'}), BaseSpider, {}),
     (Request('http://example.com', meta={'file_name': 'test.rar'}), CompressedFileSpider, {}),
     (Request('http://example.com', meta={'file_name': 'test.zip'}), CompressedFileSpider, {}),

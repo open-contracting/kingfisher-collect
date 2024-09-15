@@ -31,14 +31,12 @@ class Validate:
             key = (item.file_name, item.number)
             if key in self.file_items:
                 raise DropItem(f'Duplicate FileItem: {key!r}')
-            else:
-                self.file_items.add(key)
+            self.file_items.add(key)
         elif isinstance(item, File):
             key = item.file_name
             if key in self.files:
                 raise DropItem(f'Duplicate File: {key!r}')
-            else:
-                self.files.add(key)
+            self.files.add(key)
 
         return item
 
@@ -56,7 +54,7 @@ class Sample:
             return item
 
         # Drop FileError items, so that we keep trying to get data.
-        if not isinstance(item, (File, FileItem)):
+        if not isinstance(item, File | FileItem):
             raise DropItem(f'Sample: Item is a {type(item).__name__}, not a File or FileItem')
         if self.item_count >= spider.sample:
             spider.crawler.engine.close_spider(spider, 'sample')
@@ -104,10 +102,7 @@ class Pluck:
                     else:
                         raise
         else:  # spider.pluck_release_pointer
-            if isinstance(item.data, dict):
-                data = item.data
-            else:
-                data = json.loads(item.data)
+            data = item.data if isinstance(item.data, dict) else json.loads(item.data)
 
             if item.data_type.startswith('release'):
                 releases = data['releases']
@@ -135,7 +130,7 @@ class Unflatten:
     """
 
     def process_item(self, item, spider):
-        if not spider.unflatten or not isinstance(item, (File, FileItem)):
+        if not spider.unflatten or not isinstance(item, File | FileItem):
             return item
 
         input_name = item.file_name

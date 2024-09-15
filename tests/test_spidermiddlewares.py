@@ -71,7 +71,7 @@ async def test_passthrough(middleware_class, item):
     assert item == returned_item
 
 
-@pytest.mark.parametrize('middleware_class,attribute,value,expected_extra', [
+@pytest.mark.parametrize(('middleware_class', 'attribute', 'value', 'expected_extra'), [
     (ConcatenatedJSONMiddleware, 'concatenated_json', True,
      {'data': {'a': [{'b': 'c'}]}, 'number': 1}),
     (LineDelimitedMiddleware, 'line_delimited', True,
@@ -125,7 +125,7 @@ async def test_bytes_or_file(middleware_class, attribute, value, expected_extra,
         assert item.__dict__ == expected
 
 
-@pytest.mark.parametrize('middleware_class,attribute,value,expected_extra', [
+@pytest.mark.parametrize(('middleware_class', 'attribute', 'value', 'expected_extra'), [
     (ConcatenatedJSONMiddleware, 'concatenated_json', True,
      {'data': {'result': {'name': 'ALCALDÍA MUNICIPIO DE TIBÚ'}}, 'number': 1}),
     (RootPathMiddleware, 'root_path', 'result',
@@ -172,7 +172,7 @@ async def test_encoding(middleware_class, attribute, value, expected_extra, tmpd
         assert item.__dict__ == expected
 
 
-@pytest.mark.parametrize('data_type,data,root_path', [
+@pytest.mark.parametrize(('data_type', 'data', 'root_path'), [
     ('release', b'{"ocid": "abc"}', ''),
     ('record', b'{"ocid": "abc"}', ''),
     ('release', b'[{"ocid": "abc"}]', 'item'),
@@ -219,9 +219,9 @@ async def test_add_package_middleware(data_type, data, root_path):
     assert item.__dict__ == expected
 
 
-@pytest.mark.parametrize('sample,len_items,len_releases', [(None, 2, 100), (5, 5, 5), (200, 2, 100)])
-@pytest.mark.parametrize('encoding,character', [('utf-8', b'\xc3\x9a'), ('iso-8859-1', b'\xda')])
-@pytest.mark.parametrize('data_type, key', [('record_package', 'records'), ('release_package', 'releases')])
+@pytest.mark.parametrize(('sample', 'len_items', 'len_releases'), [(None, 2, 100), (5, 5, 5), (200, 2, 100)])
+@pytest.mark.parametrize(('encoding', 'character'), [('utf-8', b'\xc3\x9a'), ('iso-8859-1', b'\xda')])
+@pytest.mark.parametrize(('data_type', 'key'), [('record_package', 'records'), ('release_package', 'releases')])
 async def test_resize_package_middleware(sample, len_items, len_releases, encoding, character, data_type, key):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = data_type
@@ -231,7 +231,7 @@ async def test_resize_package_middleware(sample, len_items, len_releases, encodi
     middleware = ResizePackageMiddleware()
 
     package = {'publisher': {'name': 'TIBÚ'}, key: []}
-    for i in range(200):
+    for _ in range(200):
         package[key].append({'key': 'TIBÚ'})
 
     io = BytesIO()
@@ -257,7 +257,7 @@ async def test_resize_package_middleware(sample, len_items, len_releases, encodi
         assert item.data_type == data_type
 
 
-@pytest.mark.parametrize('middleware_class,attribute,separator', [
+@pytest.mark.parametrize(('middleware_class', 'attribute', 'separator'), [
     (ConcatenatedJSONMiddleware, 'concatenated_json', ''),
     (LineDelimitedMiddleware, 'line_delimited', '\n'),
 ])
@@ -269,9 +269,7 @@ async def test_json_streaming_middleware(middleware_class, attribute, separator,
 
     middleware = middleware_class()
 
-    content = []
-    for i in range(1, 21):
-        content.append('{"key": %s}%s' % (i, separator))
+    content = ['{"key": %s}%s' % (i, separator) for i in range(1, 21)]  # noqa: UP031]
 
     response = response_fixture(body=''.join(content), meta={'file_name': 'test.json'})
     generator = spider.parse(response)
@@ -285,10 +283,7 @@ async def test_json_streaming_middleware(middleware_class, attribute, separator,
     assert len(transformed_items) == length
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
-        if attribute == 'concatenated_json':
-            data = {'key': i}
-        else:
-            data = ('{"key": %s}\n' % i).encode()
+        data = {'key': i} if attribute == 'concatenated_json' else ('{"key": %s}\n' % i).encode()  # noqa: UP031
         assert item.__dict__ == {
             'file_name': 'test.json',
             'url': 'http://example.com',
@@ -299,7 +294,7 @@ async def test_json_streaming_middleware(middleware_class, attribute, separator,
         }
 
 
-@pytest.mark.parametrize('middleware_class,attribute,value', [
+@pytest.mark.parametrize(('middleware_class', 'attribute', 'value'), [
     (ConcatenatedJSONMiddleware, 'concatenated_json', True),
     (LineDelimitedMiddleware, 'line_delimited', True),
 ])
@@ -312,9 +307,7 @@ async def test_json_streaming_middleware_with_root_path_middleware(middleware_cl
     stream_middleware = middleware_class()
     root_path_middleware = RootPathMiddleware()
 
-    content = []
-    for i in range(1, 21):
-        content.append('{"results": [{"releases": [{"key": %s}]}]}\n' % i)
+    content = ['{"results": [{"releases": [{"key": %s}]}]}\n' % i for i in range(1, 21)]  # noqa: UP031]
 
     response = response_fixture(body=''.join(content), meta={'file_name': 'test.json'})
     generator = spider.parse(response)
@@ -336,7 +329,7 @@ async def test_json_streaming_middleware_with_root_path_middleware(middleware_cl
         assert item.data_type == 'release_package'
 
 
-@pytest.mark.parametrize('middleware_class,attribute,value', [
+@pytest.mark.parametrize(('middleware_class', 'attribute', 'value'), [
     (ConcatenatedJSONMiddleware, 'concatenated_json', True),
     (LineDelimitedMiddleware, 'line_delimited', True),
 ])
@@ -348,9 +341,7 @@ async def test_json_streaming_middleware_with_compressed_file_spider(middleware_
 
     stream_middleware = middleware_class()
 
-    content = []
-    for i in range(1, 21):
-        content.append('{"key": %s}\n' % i)
+    content = ['{"key": %s}\n' % i for i in range(1, 21)]  # noqa: UP031]
 
     io = BytesIO()
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
@@ -368,10 +359,7 @@ async def test_json_streaming_middleware_with_compressed_file_spider(middleware_
     assert len(transformed_items) == length
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
-        if attribute == 'concatenated_json':
-            data = {'key': i}
-        else:
-            data = ('{"key": %s}\n' % i).encode()
+        data = {'key': i} if attribute == 'concatenated_json' else ('{"key": %s}\n' % i).encode()  # noqa: UP031
         assert item.__dict__ == {
             'file_name': 'archive-test.json',
             'url': 'http://example.com',
@@ -403,7 +391,7 @@ async def test_read_data_middleware():
     assert transformed_items[0].data == b'{}'
 
 
-@pytest.mark.parametrize('exception', [BadZipFile(), RetryableError, Exception()])
+@pytest.mark.parametrize('exception', [BadZipFile(), RetryableError(), Exception('message')])
 def test_retry_data_error_middleware(exception):
     spider = spider_with_crawler()
     response = response_fixture()
@@ -411,7 +399,7 @@ def test_retry_data_error_middleware(exception):
 
     generator = middleware.process_spider_exception(response, exception, spider)
 
-    if isinstance(exception, (BadZipFile, RetryableError)):
+    if isinstance(exception, BadZipFile | RetryableError):
         request = next(generator)
 
         assert request.dont_filter is True
@@ -423,11 +411,11 @@ def test_retry_data_error_middleware(exception):
 
         assert not list(generator)
     else:
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match='message'):
             list(generator)
 
 
-@pytest.mark.parametrize('root_path,data_type,data,expected_data_type,expected_data', [
+@pytest.mark.parametrize(('root_path', 'data_type', 'data', 'expected_data_type', 'expected_data'), [
     # Empty root path.
     ('',
      'release', {'a': 'b'},
@@ -466,7 +454,7 @@ async def test_root_path_middleware(root_path, data_type, data, expected_data_ty
         assert transformed_item.url == 'http://test.com'
 
 
-@pytest.mark.parametrize('root_path,sample,data_type,data,expected_data_type,expected_data', [
+@pytest.mark.parametrize(('root_path', 'sample', 'data_type', 'data', 'expected_data_type', 'expected_data'), [
     # ... for data_type = "release".
     ('item', None,
      'release', b'[{"a": "b"}, {"c": "d"}]',

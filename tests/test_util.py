@@ -20,7 +20,7 @@ def parse_date(string):
     return datetime.strptime(string, '%Y-%m-%d').date()
 
 
-@pytest.mark.parametrize('url,value,expected', [
+@pytest.mark.parametrize(('url', 'value', 'expected'), [
     ('http://example.com/?page=1', 2, 'http://example.com/?page=2'),
     ('http://example.com/?page=1', None, 'http://example.com/'),
     ('http://example.com/', None, 'http://example.com/'),
@@ -29,7 +29,7 @@ def test_replace_parameters(url, value, expected):
     assert replace_parameters(url, page=value) == expected
 
 
-@pytest.mark.parametrize('url,expected', [
+@pytest.mark.parametrize(('url', 'expected'), [
     ('http://example.com/?page=1', '1'),
     ('http://example.com/?page=1&page=2', '1'),
     ('http://example.com/?page=', None),
@@ -39,7 +39,7 @@ def test_get_parameter_value(url, expected):
     assert get_parameter_value(url, 'page') == expected
 
 
-@pytest.mark.parametrize('url,extension,expected', [
+@pytest.mark.parametrize(('url', 'extension', 'expected'), [
     ('http://example.com/api/planning.json?page=1', None, 'planning-page-1'),
     ('http://example.com/api/planning?page=1', 'zip', 'planning-page-1.zip'),
 ])
@@ -124,7 +124,7 @@ def test_handle_http_error_error(response_status):
     assert next(test_decorated(spider, mock_response)) == spider.build_file_error_from_response(mock_response)
 
 
-@pytest.mark.parametrize('start,stop,step,expected', [
+@pytest.mark.parametrize(('start', 'stop', 'step', 'expected'), [
     ('2022-01-01', '2022-01-01', 15, []),
     ('2022-01-01', '2022-01-25', 15, [('2022-01-10', '2022-01-25'), ('2022-01-01', '2022-01-10')]),
     ('2022-01-01', '2022-01-31', 15, [('2022-01-16', '2022-01-31'), ('2022-01-01', '2022-01-16')]),

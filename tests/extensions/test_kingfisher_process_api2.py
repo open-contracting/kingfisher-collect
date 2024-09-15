@@ -126,18 +126,18 @@ def test_from_crawler_with_database_url():
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
 @pytest.mark.parametrize('crawl_time', [None, '2020-01-01T00:00:00'])
-@pytest.mark.parametrize('sample,is_sample', [(None, False), ('true', True)])
+@pytest.mark.parametrize(('sample', 'is_sample'), [(None, False), ('true', True)])
 @pytest.mark.parametrize('note', [None, 'Started by NAME.'])
 @pytest.mark.parametrize('job', [None, '7df53218f37a11eb80dd0c9d92c523cb'])
-@pytest.mark.parametrize('ocds_version,upgrade', [('1.0', True), (None, False)])
-@pytest.mark.parametrize('steps,expected_steps', [
+@pytest.mark.parametrize(('ocds_version', 'upgrade'), [('1.0', True), (None, False)])
+@pytest.mark.parametrize(('steps', 'expected_steps'), [
     (None, ['compile']),
     ('compile,check,invalid', ['compile', 'check']),
     ('compile', ['compile']),
     ('check', ['check']),
     ('', []),
 ])
-@pytest.mark.parametrize('call_count,status_code,messages', [
+@pytest.mark.parametrize(('call_count', 'status_code', 'messages'), [
     (2, 200, [
         ('INFO', 'Created collection 1 in Kingfisher Process (DATA_VERSION)'),
         ('INFO', 'Closed collection 1 in Kingfisher Process'),
@@ -266,7 +266,7 @@ def test_spider_closed_return(kwargs, tmpdir):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-@pytest.mark.parametrize('directory,filename,item', [
+@pytest.mark.parametrize(('directory', 'filename', 'item'), [
     ('389', 'file.json', File(
         file_name='file.json',
         url='https://example.com',
@@ -292,7 +292,7 @@ def test_item_scraped(directory, filename, item, channel, tmpdir):
     close_response = Response(status_code=200)
 
     # To be sure we consume the expected message, and not an earlier message.
-    url = f'https://example.com/remote.{str(time.time())}.json'
+    url = f'https://example.com/remote.{time.time()}.json'
     item.url = url
 
     with patch.object(KingfisherProcessAPI2, '_post_synchronous', side_effect=[create_response, close_response]):
@@ -320,10 +320,12 @@ def test_item_scraped_path(item_file, channel, tmpdir):
     create_response = Response(status_code=200, content={'collection_id': 1})
     close_response = Response(status_code=200)
 
-    with tmpdir.as_cwd():
-        with patch.object(KingfisherProcessAPI2, '_post_synchronous', side_effect=[create_response, close_response]):
-            runner = CrawlerRunner(settings=SETTINGS | {'FILES_STORE': 'subdir'})
-            yield runner.crawl(Spider, crawl_time='2001-02-03T04:05:06', start_urls=[START_URL], item=item_file)
+    with (
+        tmpdir.as_cwd(),
+        patch.object(KingfisherProcessAPI2, '_post_synchronous', side_effect=[create_response, close_response]),
+    ):
+        runner = CrawlerRunner(settings=SETTINGS | {'FILES_STORE': 'subdir'})
+        yield runner.crawl(Spider, crawl_time='2001-02-03T04:05:06', start_urls=[START_URL], item=item_file)
 
     method_frame, header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
 

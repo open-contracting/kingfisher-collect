@@ -21,4 +21,4 @@ class NigeriaCrossRiverStateReleases(NigeriaCrossRiverStateBase):
     data_type = 'release_package'
 
     def build_url(self, date):
-        return self.url_prefix + 'getReleasePackage?year={0:%Y}&month={0:%m}'.format(date)
+        return f'{self.url_prefix}getReleasePackage?year={date:%Y}&month={date:%m}'

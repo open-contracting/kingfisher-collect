@@ -49,20 +49,21 @@ class ParaguayAuthMiddleware:
 
     def process_request(self, request, spider):
         if request.meta.get('auth') is False:
-            return
+            return None
         if spider.access_token_request_failed:
             spider.crawler.engine.close_spider(spider, 'access_token_request_failed')
             raise IgnoreRequest("Max attempts to get an access token reached. Stopping crawl...")
         request.headers['Authorization'] = spider.access_token
         if self._expires_soon(spider):
             return self.add_request_to_backlog_and_build_access_token_request(spider, request)
+        return None
 
     def process_response(self, request, response, spider):
-        if response.status == 401 or response.status == 429:
+        if response.status in {401, 429}:
             age = (datetime.now() - spider.access_token_scheduled_at).total_seconds()
             spider.logger.info('Access token age: %ss', age)
             spider.logger.info('%s returned for request to %s', response.status, request.url)
-            if not spider.access_token == request.headers['Authorization'] and self._expires_soon(spider):
+            if spider.access_token != request.headers['Authorization'] and self._expires_soon(spider):
                 return self.add_request_to_backlog_and_build_access_token_request(spider, request)
             request.headers['Authorization'] = spider.access_token
             return request
@@ -112,3 +113,4 @@ class DelayedRequestMiddleware:
             d = Deferred()
             reactor.callLater(delay, d.callback, None)
             return d
+        return None

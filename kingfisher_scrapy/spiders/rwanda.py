@@ -31,6 +31,8 @@ class Rwanda(LinksSpider):
     def start_requests(self):
         from_date = self.from_date.strftime(self.date_format)
         until_date = self.until_date.strftime(self.date_format)
-        url = f'https://ocds.umucyo.gov.rw/core/api/v1/releases/all?PageNumber=1&PageSize=50' \
-              f'&dateFrom={from_date}&dateTo={until_date} '
+        url = (
+            'https://ocds.umucyo.gov.rw/core/api/v1/releases/all'
+            f'?PageNumber=1&PageSize=50&dateFrom={from_date}&dateTo={until_date} '
+        )
         yield scrapy.Request(url, meta={'file_name': f'page-1-{from_date}.json'})

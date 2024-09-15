@@ -63,7 +63,7 @@ class Armenia(LinksSpider):
             yield from self.parse_binary_search(response, response.request.meta['prev'], offset)
         # If this offset failed and reached a limit, stop.
         elif offset >= start_time or exponent > EXPONENT_LIMIT:
-            self.logger.info(f'No offset found after {first_offset:,} within {2 ** EXPONENT_LIMIT} days.')
+            self.logger.info(f'No offset found after {first_offset:,} within {2 ** EXPONENT_LIMIT} days.')  # noqa: G004
             yield self.build_file_error_from_response(response)
         # Otherwise, continue.
         else:
@@ -80,7 +80,7 @@ class Armenia(LinksSpider):
         first_offset = response.request.meta['first']
 
         if minimum and maximum:
-            self.logger.info(f'Starting binary search for {first_offset:,} within [{minimum:,}, {maximum:,}]')
+            self.logger.info(f'Starting binary search for {first_offset:,} within [{minimum:,}, {maximum:,}]')  # noqa: G004
         elif self.is_http_success(response):
             minimum = response.request.meta['minimum']
             maximum = offset
@@ -91,7 +91,7 @@ class Armenia(LinksSpider):
         # If the search succeeded, parse the response as usual. We use a threshold, because getting the exact
         # millisecond requires 27 requests.
         if minimum + THRESHOLD >= maximum:
-            self.logger.info(f'New offset found after {first_offset:,} at {maximum:,}!')
+            self.logger.info(f'New offset found after {first_offset:,} at {maximum:,}!')  # noqa: G004
             if offset == maximum:
                 # If the last request used the offset, we can reuse its response.
                 yield from self.parse(response)

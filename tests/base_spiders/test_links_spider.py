@@ -12,7 +12,7 @@ from tests import response_fixture, spider_with_crawler
 
 def test_next_link():
     spider = spider_with_crawler(spider_class=LinksSpider)
-    spider.formatter = lambda url: 'next.json'
+    spider.formatter = lambda _url: 'next.json'
 
     request = spider.next_link(response_fixture(body=b'{"links": {"next": "http://example.com/next"}}'))
 
@@ -50,7 +50,7 @@ def test_parse_404():
 def test_parse_200():
     spider = spider_with_crawler(spider_class=LinksSpider)
     spider.data_type = 'release_package'
-    spider.formatter = lambda url: 'next.json'
+    spider.formatter = lambda _url: 'next.json'
     body = b'{"links": {"next": "http://example.com/next"}}'
 
     generator = spider.parse(response_fixture(body=body))
@@ -79,8 +79,8 @@ def test_next_link_not_found():
     spider.filter_arguments = []
     body = '{"links": {"next": ""}}'
 
+    meta = {'file_name': 'test', 'depth': 0}
     with pytest.raises(MissingNextLinkError) as e:
-        meta = {'file_name': 'test', 'depth': 0}
         spider.next_link(response_fixture(body=body, meta=meta))
     assert str(e.value) == 'next link not found on the first page: http://example.com'
 

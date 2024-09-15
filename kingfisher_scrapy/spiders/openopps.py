@@ -53,12 +53,14 @@ class Openopps(BaseSpider):
     reauthenticating = False  # flag for request a new token
     start_time = None
     data_type = 'release_package'
-    url_pattern = 'https://api.openopps.com/api/ocds/?format=json&ordering=releasedate&page_size=1000&' \
-                  'releasedate__gte={releasedate__gte}&releasedate__lte={releasedate__lte}'
+    url_pattern = (
+        'https://api.openopps.com/api/ocds/?format=json&ordering=releasedate&page_size=1000'
+        '&releasedate__gte={releasedate__gte}&releasedate__lte={releasedate__lte}'
+    )
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(Openopps, cls).from_crawler(crawler, *args, **kwargs)
+        spider = super().from_crawler(crawler, *args, **kwargs)
 
         spider.username = crawler.settings.get('KINGFISHER_OPENOPPS_USERNAME')
         spider.password = crawler.settings.get('KINGFISHER_OPENOPPS_PASSWORD')
@@ -93,15 +95,16 @@ class Openopps(BaseSpider):
                 self.start_time = datetime.now()
                 # If the request is initial authentication, start requests
                 if response.request.meta.get('initial_authentication'):
-                    return self.start_requests_pages()
+                    self.start_requests_pages()
+                    return
                 # For reauthenticating request, set to False and continue
                 self.reauthenticating = False
             else:
                 self.logger.error('Authentication failed. Status code: %s. %s', response.status, response.text)
-                raise AccessTokenError()
+                raise AccessTokenError
         else:
             self.logger.error('Authentication failed. Status code: %s. %s', response.status, response.text)
-            raise AccessTokenError()
+            raise AccessTokenError
 
     def start_requests_pages(self):
         search_h = 24  # start splitting one day search
@@ -210,11 +213,10 @@ class Openopps(BaseSpider):
                         },
                         headers=HEADERS
                     )
+        # Message for pages that exceed the 10,000 search results in the range of one hour.
+        # These are pages with status 500 and 'page=11' in the URL request.
+        elif response.status == 500 and response.request.url.count('page=11'):
+            self.logger.error('Status: %s. Results exceeded in a range of one hour, we save the first 10,000 data '
+                              'for: %s', response.status, response.request.url)
         else:
-            # Message for pages that exceed the 10,000 search results in the range of one hour
-            # These are pages with status 500 and 'page=11' in the URL request
-            if response.status == 500 and response.request.url.count('page=11'):
-                self.logger.error('Status: %s. Results exceeded in a range of one hour, we save the first 10,000 data '
-                                  'for: %s', response.status, response.request.url)
-            else:
-                yield self.build_file_error_from_response(response)
+            yield self.build_file_error_from_response(response)

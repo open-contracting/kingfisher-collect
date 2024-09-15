@@ -143,14 +143,17 @@ class Checker:
         def default_until_date(cls):
             if hasattr(cls, 'default_until_date'):
                 return f"'{cls.default_until_date}'"
-            if cls.date_format == 'datetime':
-                return 'now'
-            elif cls.date_format == 'date':
-                return 'today'
-            elif cls.date_format == 'year-month':
-                return 'the current month'
-            elif cls.date_format == 'year':
-                return 'the current year'
+            match cls.date_format:
+                case 'datetime':
+                    return 'now'
+                case 'date':
+                    return 'today'
+                case 'year-month':
+                    return 'the current month'
+                case 'year':
+                    return 'the current year'
+                case _:
+                    return None
 
         self.check_date_spider_argument('until_date', spider_arguments, default_until_date,
                                         'Download only data until this {period} ({format} format).')
@@ -158,8 +161,8 @@ class Checker:
     def check_list(self, items, known_items, name):
         items = list(items)
 
-        for i, item in enumerate(known_items):
-            if items and items[0] == known_items[i]:
+        for item in known_items:
+            if items and items[0] == item:
                 items.pop(0)
 
         unexpected = set(items) - set(known_items)

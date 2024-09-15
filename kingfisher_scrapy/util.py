@@ -167,6 +167,7 @@ def get_parameter_value(url, key):
     query = parse_qs(urlsplit(url).query)
     if key in query:
         return query[key][0]
+    return None
 
 
 def replace_parameters(url, **kwargs):
@@ -270,7 +271,7 @@ def json_dumps(obj, **kwargs):
     return json.dumps(obj, default=default, **kwargs)
 
 
-def json_dump(obj, f, **kwargs):
+def json_dump(obj, f, **_kwargs):
     """
     Dumps JSON to a file, using an extended JSON encoder.
 

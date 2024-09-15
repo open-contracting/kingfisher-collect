@@ -27,6 +27,8 @@ class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
     data_type = 'release_package'
 
     # PeriodicSpider
-    pattern = 'https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/download'\
-              '?type=json&year={0:%Y}&month={0:%m}&method=all'
+    pattern = (
+        'https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/download'
+        '?type=json&year={0:%Y}&month={0:%m}&method=all'
+    )
     formatter = staticmethod(join(components(-1), extension='zip'))

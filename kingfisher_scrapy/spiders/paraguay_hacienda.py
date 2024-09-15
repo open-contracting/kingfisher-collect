@@ -47,7 +47,7 @@ class ParaguayHacienda(BaseSpider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(ParaguayHacienda, cls).from_crawler(crawler, *args, **kwargs)
+        spider = super().from_crawler(crawler, *args, **kwargs)
 
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
         spider.client_secret = crawler.settings.get('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
@@ -143,10 +143,10 @@ class ParaguayHacienda(BaseSpider):
                 if attempt == self.max_access_token_attempts:
                     self.logger.error('Max attempts to get an access token reached.')
                     self.access_token_request_failed = True
-                    raise AccessTokenError()
+                    raise AccessTokenError
                 else:
                     yield self.build_access_token_request(response.request.body, attempt=attempt)
         else:
             self.logger.error('Authentication failed. Status code: %s', response.status)
             self.access_token_request_failed = True
-            raise AccessTokenError()
+            raise AccessTokenError

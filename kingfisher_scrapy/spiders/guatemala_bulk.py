@@ -37,25 +37,28 @@ class GuatemalaBulk(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        # An example of expected response is:
-        # {
-        #   "id": "gc-{year}-{month}"
-        #   "results": [
-        #     {
-        #      "files": {
-        #        "csv": "...",
-        #        "sha": "...",
-        #        "json": "...",
-        #        "xlsx": "..."
-        #      },
-        #      "year": "values between 2020 to the current year",
-        #      "month": "values between 1 and 12",
-        #      "monthName": "values between enero to diciembre",
-        #      "source": "Guatecompras",
-        #      "timestamp": "last updated date in timestamp with time zone format"
-        #     }, ...
-        #   ]
-        # }
+        """
+        The response looks like:
+
+        {
+          "id": "gc-{year}-{month}"
+          "results": [
+            {
+             "files": {
+               "csv": "...",
+               "sha": "...",
+               "json": "...",
+               "xlsx": "..."
+             },
+             "year": "values between 2020 to the current year",
+             "month": "values between 1 and 12",
+             "monthName": "values between enero to diciembre",
+             "source": "Guatecompras",
+             "timestamp": "last updated date in timestamp with time zone format"
+            }, ...
+          ]
+        }
+        """
         for item in response.json()["result"]:
             if self.from_date and self.until_date:
                 date = datetime(int(item['year']), int(item['month']), 1)

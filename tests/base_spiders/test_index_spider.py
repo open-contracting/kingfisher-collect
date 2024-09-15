@@ -54,14 +54,16 @@ TEST_CASES = [
         'formatter': staticmethod(parameters('pageNumber')),
         'param_page': 'pageNumber',
         'base_url': 'http://example.com/ocds?step=10',
-        'range_generator': lambda _self, data, response: range(ceil(int(response.text) / 10)),
+        'range_generator': lambda _self, _data, response: range(ceil(int(response.text) / 10)),
         'url_builder': lambda _self, value, data, response: _self.pages_url_builder(value, data, response),
     }, '100', 'http://example.com', r'http://example\.com/ocds\?step=10&pageNumber=(\d+)',
-        [str(x) for x in range(0, 10)])
+        [str(x) for x in range(10)])
 ]
 
 
-@pytest.mark.parametrize('spider_args,start_request_response,initial_url,results_pattern,expected', TEST_CASES)
+@pytest.mark.parametrize(
+    ('spider_args', 'start_request_response', 'initial_url', 'results_pattern', 'expected'), TEST_CASES
+)
 def test_urls(spider_args, start_request_response, initial_url, results_pattern, expected):
 
     text_response_mock = TextResponse(
@@ -87,7 +89,7 @@ def test_urls(spider_args, start_request_response, initial_url, results_pattern,
         range_to_evaluate = requests[1:]
 
     regexp = re.compile(results_pattern)
-    for request, expected_param in zip(range_to_evaluate, expected):
+    for request, expected_param in zip(range_to_evaluate, expected, strict=False):
         match = regexp.match(request.url)
         assert match is not None, f'{request.url!r} !~ {regexp!r}'
         assert match.group(1) == expected_param
