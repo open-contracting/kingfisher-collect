@@ -3,6 +3,8 @@
 attrs==22.2.0
     # via
     #   automat
+    #   cattrs
+    #   requests-cache
     #   service-identity
     #   twisted
 automat==0.8.0
@@ -11,6 +13,8 @@ backports-datetime-fromisoformat==2.0.0
     # via flattentool
 btrees==4.11.3
     # via zodb
+cattrs==23.1.2
+    # via requests-cache
 certifi==2024.7.4
     # via
     #   requests
@@ -40,6 +44,8 @@ defusedxml==0.7.1
     #   scrapy
 et-xmlfile==1.0.1
     # via openpyxl
+exceptiongroup==1.2.2
+    # via cattrs
 filelock==3.4.1
     # via tldextract
 flattentool==0.26.0
@@ -64,8 +70,6 @@ itemadapter==0.7.0
     #   scrapy
 itemloaders==1.0.6
     # via scrapy
-itsdangerous==2.0.1
-    # via requests-cache
 jdcal==1.4.1
     # via openpyxl
 jmespath==0.10.0
@@ -85,9 +89,9 @@ lxml==5.3.0
     #   flattentool
     #   parsel
     #   scrapy
-ocdsextensionregistry==0.2.2
+ocdsextensionregistry==0.4.0
     # via ocdskit
-ocdskit==1.1.13
+ocdskit==1.2.0
     # via -r requirements.in
 ocdsmerge==0.7.0
     # via ocdskit
@@ -113,6 +117,8 @@ persistent==4.9.3
     #   zodb
 pika==1.2.0
     # via yapw
+platformdirs==4.3.3
+    # via requests-cache
 protego==0.2.1
     # via scrapy
 psycopg2==2.9.9
@@ -146,7 +152,7 @@ requests==2.32.2
     #   requests-file
     #   scrapyd-client
     #   tldextract
-requests-cache==0.6.3
+requests-cache==1.2.1
     # via ocdsextensionregistry
 requests-file==1.5.1
     # via tldextract
@@ -195,6 +201,7 @@ twisted==24.7.0rc1
     #   scrapyd
 typing-extensions==4.8.0
     # via
+    #   cattrs
     #   pydantic
     #   twisted
 uberegg==0.1.1
@@ -203,8 +210,8 @@ url-normalize==1.4.3
     # via requests-cache
 urllib3==1.26.19
     # via
-    #   ocdsextensionregistry
     #   requests
+    #   requests-cache
     #   scrapyd-client
     #   sentry-sdk
 w3lib==2.1.1
