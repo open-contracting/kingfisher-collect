@@ -2,6 +2,8 @@
 name = "kingfisher-collect"
 version = "0.0.0"
 
+# Entry points and setuptools configurations are needed by scrapyd-client.
+# https://github.com/scrapy/scrapyd-client/blob/master/README.rst
 [project.entry-points.scrapy]
 settings = "kingfisher_scrapy.settings"
 
