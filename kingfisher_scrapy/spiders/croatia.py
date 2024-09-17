@@ -11,6 +11,7 @@ class Croatia(CompressedFileSpider):
     Bulk download documentation
       https://eojn.nn.hr/SPIN/application/ipn/Oglasnik/PreuzimanjeUgovoraOCD.aspx
     """
+
     name = 'croatia'
     user_agent = browser_user_agent
 

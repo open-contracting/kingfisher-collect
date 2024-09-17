@@ -15,6 +15,7 @@ class MexicoVeracruzIVAI(MexicoINAIBase):
     API documentation
       http://www.ivai.org.mx/contrataciones-abiertas/
     """
+
     name = 'mexico_veracruz_ivai'
 
     # BaseSpider

@@ -13,6 +13,7 @@ class GeorgiaReleases(LinksSpider):
     Swagger API documentation
       https://odapi.spa.ge/api/swagger.ui
     """
+
     name = 'georgia_releases'
 
     # SimpleSpider

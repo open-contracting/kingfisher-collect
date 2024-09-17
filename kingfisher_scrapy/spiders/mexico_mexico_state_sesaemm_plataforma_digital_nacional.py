@@ -9,6 +9,7 @@ class MexicoMexicoStateSESAEMMPlataformaDigitalNacional(MexicoPlataformaDigitalN
     Bulk download documentation
       https://plataformadigitalnacional.org/contrataciones
     """
+
     name = 'mexico_mexico_state_sesaemm_plataforma_digital_nacional'
 
     # MexicoPlataformaDigitalNacionalBase

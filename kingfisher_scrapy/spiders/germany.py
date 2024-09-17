@@ -14,6 +14,7 @@ class Germany(CompressedFileSpider, PeriodicSpider):
     Swagger API documentation
       https://www.oeffentlichevergabe.de/documentation/swagger-ui/opendata/index.html
     """
+
     name = 'germany'
 
     # CompressedFileSpider

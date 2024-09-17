@@ -9,6 +9,7 @@ class DigiwhistBase(CompressedFileSpider):
     Bulk download documentation
       https://opentender.eu/download
     """
+
     user_agent = browser_user_agent  # to avoid HTTP 410 error
 
     # BaseSpider

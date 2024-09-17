@@ -11,6 +11,7 @@ class CanadaMontreal(IndexSpider):
     API documentation
       http://donnees.ville.montreal.qc.ca/dataset/contrats-et-subventions-api
     """
+
     name = 'canada_montreal'
     # Publisher uses Cloudflare (CF-Cache-Status and CF-RAY response headers, can verify with curl).
     # Cloudflare responds with HTTP 520 if request headers use default user agent.

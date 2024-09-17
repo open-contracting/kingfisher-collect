@@ -11,9 +11,8 @@ from kingfisher_scrapy.util import handle_http_error, parameters
 
 class IndexSpider(SimpleSpider):
     """
-    This class can be used to collect data from an API that includes the total number of results or pages in its
-    response, and receives pagination parameters like ``page`` or ``limit`` and ``offset``. To create a spider that
-    inherits from ``IndexSpider``:
+    Collect data from an API that includes the total number of results or pages in its response, and receives
+    pagination parameters like ``page`` or ``limit`` and ``offset``.
 
     #. Set class attributes. Either:
 

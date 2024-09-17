@@ -15,6 +15,7 @@ class MexicoDurangoIDAIP(MexicoINAIBase):
     API documentation
       http://contratacionesabiertas.idaip.org.mx/contratacionesabiertas/datosabiertos
     """
+
     name = 'mexico_durango_idaip'
 
     # BaseSpider

@@ -6,8 +6,8 @@ from kingfisher_scrapy.util import components, handle_http_error, join
 
 class MexicoINAIBase(SimpleSpider):
     """
-    This class makes it easy to collect data from an API that implements the `Mexico INAI Contrataciones Abiertas
-    platform <https://github.com/datosabiertosmx/contrataciones-abiertas-infraestructura>`__:
+    Collect data from an API that implements the `Mexico INAI Contrataciones Abiertas
+    platform <https://github.com/datosabiertosmx/contrataciones-abiertas-infraestructura>`__.
 
     #. Inherit from ``MexicoINAIBase``
     #. Set a ``base_url`` class attribute with the portal's domain
@@ -27,6 +27,7 @@ class MexicoINAIBase(SimpleSpider):
             # MexicoINAIBase
             base_url = 'http://base-url'
     """
+
     # BaseSpider
     root_path = 'arrayReleasePackage.item'
     date_format = 'year'

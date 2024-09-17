@@ -16,6 +16,7 @@ class Rwanda(LinksSpider):
     Swagger API documentation
       https://ocds.umucyo.gov.rw/core/api/docs
     """
+
     name = 'rwanda'
 
     # BaseSpider

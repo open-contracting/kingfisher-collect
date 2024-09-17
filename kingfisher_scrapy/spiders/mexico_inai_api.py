@@ -15,6 +15,7 @@ class MexicoINAIAPI(MexicoINAIBase):
     API documentation
       http://contratacionesabiertas.inai.org.mx/contratacionesabiertas/datosabiertos
     """
+
     name = 'mexico_inai_api'
 
     # BaseSpider

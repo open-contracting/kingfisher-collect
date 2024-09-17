@@ -32,6 +32,7 @@ class Openopps(BaseSpider):
     Swagger API documentation
       https://api.openopps.com/api/schema/
     """
+
     name = 'openopps'
     download_delay = 1
     custom_settings = {

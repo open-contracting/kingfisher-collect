@@ -18,6 +18,7 @@ class Kosovo(SimpleSpider):
     API documentation
       https://ocdskrpp.rks-gov.net/Help
     """
+
     name = 'kosovo'
 
     # BaseSpider

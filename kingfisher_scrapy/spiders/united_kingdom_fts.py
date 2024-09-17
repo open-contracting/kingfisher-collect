@@ -20,6 +20,7 @@ class UnitedKingdomFTS(LinksSpider):
     API documentation
       https://www.find-tender.service.gov.uk/apidocumentation/1.0/GET-ocdsReleasePackages
     """
+
     name = 'united_kingdom_fts'
 
     # BaseSpider

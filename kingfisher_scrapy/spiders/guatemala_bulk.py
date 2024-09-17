@@ -22,6 +22,7 @@ class GuatemalaBulk(CompressedFileSpider):
     Bulk download documentation
       https://ocds.guatecompras.gt/descarga-datos
     """
+
     name = 'guatemala_bulk'
 
     # BaseSpider

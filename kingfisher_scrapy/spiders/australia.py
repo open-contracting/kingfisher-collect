@@ -18,6 +18,7 @@ class Australia(LinksSpider):
     Swagger API documentation
       https://app.swaggerhub.com/apis/austender/ocds-api/1.1
     """
+
     name = 'australia'
 
     # BaseSpider

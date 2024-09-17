@@ -20,6 +20,7 @@ class Netherlands(SimpleSpider):
     Bulk download documentation
       https://www.tenderned.nl/cms/nl/aanbesteden-in-cijfers/datasets-aanbestedingen
     """
+
     name = 'netherlands'
     download_timeout = 99999  # to avoid user timeout when downloading the file
 

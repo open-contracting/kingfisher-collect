@@ -6,9 +6,10 @@ from kingfisher_scrapy.util import handle_http_error
 
 class BigFileSpider(SimpleSpider):
     """
-    This class makes it easy to collect data from a source that publishes very large packages. Each package is split
-    into smaller packages, each containing 100 releases or records. Users can then process the files without using an
-    iterative parser and without having memory issues.
+    Collect data from a source that publishes very large packages.
+
+    Each package is split into smaller packages, each containing 100 releases or records. Users can then process the
+    files without using an iterative parser and without having memory issues.
 
     #. Inherit from ``BigFileSpider``
     #. Write a ``start_requests()`` method to request the archive files

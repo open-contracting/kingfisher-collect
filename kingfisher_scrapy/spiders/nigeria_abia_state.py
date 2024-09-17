@@ -14,6 +14,7 @@ class NigeriaAbiaState(PeriodicSpider):
     Bulk download documentation
       https://abiaeprocurement.ab.gov.ng/ocds_report.php
     """
+
     name = 'nigeria_abia_state'
 
     # BaseSpider

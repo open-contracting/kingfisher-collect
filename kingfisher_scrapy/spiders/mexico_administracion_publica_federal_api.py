@@ -11,6 +11,7 @@ class MexicoAdministracionPublicaFederalAPI(IndexSpider):
     API documentation
       https://www.datos.gob.mx/busca/dataset/api-de-contrataciones-abiertas-de-la-apf
     """
+
     name = 'mexico_administracion_publica_federal_api'
 
     # BaseSpider

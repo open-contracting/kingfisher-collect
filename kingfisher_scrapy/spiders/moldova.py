@@ -13,6 +13,7 @@ class Moldova(BaseSpider):
       from_date
         Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
     """
+
     name = 'moldova'
 
     # BaseSpider
@@ -38,7 +39,7 @@ class Moldova(BaseSpider):
         yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     def raise_for_status(self, data):
-        """
+        r"""
         Occasional error response with HTTP 200 code, like:
 
         {

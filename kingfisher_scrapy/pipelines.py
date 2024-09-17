@@ -18,9 +18,7 @@ from kingfisher_scrapy.util import transcode
 
 # https://docs.scrapy.org/en/latest/topics/item-pipeline.html#duplicates-filter
 class Validate:
-    """
-    Drops duplicate files based on ``file_name`` and file items based on ``file_name`` and ``number``.
-    """
+    """Drops duplicate files based on ``file_name`` and file items based on ``file_name`` and ``number``."""
 
     def __init__(self):
         self.files = set()
@@ -42,9 +40,7 @@ class Validate:
 
 
 class Sample:
-    """
-    Drops items and closes the spider once the sample size is reached.
-    """
+    """Drops items and closes the spider once the sample size is reached."""
 
     def __init__(self):
         self.item_count = 0
@@ -69,9 +65,7 @@ class Sample:
 
 
 class Pluck:
-    """
-    Extracts a value from the item and returns it as a plucked item.
-    """
+    """Extracts a value from the item and returns it as a plucked item."""
 
     def process_item(self, item, spider):
         if not spider.pluck:
@@ -125,9 +119,7 @@ class Pluck:
 
 
 class Unflatten:
-    """
-    Converts an item's data from CSV/XLSX to JSON, using the ``unflatten`` command from Flatten Tool.
-    """
+    """Converts an item's data from CSV/XLSX to JSON, using the ``unflatten`` command from Flatten Tool."""
 
     def process_item(self, item, spider):
         if not spider.unflatten or not isinstance(item, File | FileItem):

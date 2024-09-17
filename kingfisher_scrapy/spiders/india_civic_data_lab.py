@@ -12,6 +12,7 @@ class IndiaCivicDataLab(SimpleSpider):
     Bulk download documentation
       https://github.com/CivicDataLab/himachal-pradesh-health-procurement-OCDS/
     """
+
     name = 'india_civic_data_lab'
 
     # BaseSpider

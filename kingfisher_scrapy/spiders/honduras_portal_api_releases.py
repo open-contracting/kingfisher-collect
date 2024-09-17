@@ -18,6 +18,7 @@ class HondurasPortalAPIReleases(HondurasPortalAPIBase):
     Swagger API documentation
       http://www.contratacionesabiertas.gob.hn/servicio/
     """
+
     name = 'honduras_portal_api_releases'
 
     # BaseSpider

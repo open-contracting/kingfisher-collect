@@ -10,18 +10,14 @@ from kingfisher_scrapy.items import File, FileItem
 
 
 class FilesStore:
-    """
-    Writes items' data to individual files in a directory. See the :ref:`how-it-works` documentation.
-    """
+    """Write items' data to individual files in a directory. See the :ref:`how-it-works` documentation."""
 
     def __init__(self, directory):
         self.directory = directory
 
     @classmethod
     def relative_crawl_directory(cls, spider):
-        """
-        Returns the crawl's relative directory, in the format `<spider_name>[_sample]/<YYMMDD_HHMMSS>`.
-        """
+        """Return the crawl's relative directory, in the format `<spider_name>[_sample]/<YYMMDD_HHMMSS>`."""
         spider_directory = spider.name
         if spider.sample:
             spider_directory += '_sample'
@@ -67,9 +63,9 @@ class FilesStore:
 
     def item_scraped(self, item, spider):
         """
-        If the item is a File or FileItem, writes its data to the filename in a subdirectory of the crawl directory.
+        If the item is a File or FileItem, write its data to the filename in a subdirectory of the crawl directory.
 
-        Returns a dict with the metadata.
+        Return a dict with the metadata.
         """
         if not isinstance(item, File | FileItem):
             return

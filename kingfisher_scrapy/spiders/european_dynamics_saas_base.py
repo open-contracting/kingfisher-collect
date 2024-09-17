@@ -6,7 +6,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class EuropeanDynamicsSaasBase(SimpleSpider):
     """
-    This class makes it easy to collect data from an European Dynamics SaaS Electronic Procurement:
+    Collect data from a European Dynamics SaaS electronic procurement system.
 
     #. Inherit from ``EuropeanDynamicsSaasBase``
     #. Set a ``base_url`` class attribute with the portal's domain

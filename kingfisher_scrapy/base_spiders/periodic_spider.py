@@ -4,8 +4,7 @@ from kingfisher_scrapy.base_spiders import SimpleSpider
 
 class PeriodicSpider(SimpleSpider):
     """
-    This class makes it easy to collect data from an API that accepts a year, year-month or date as a query string
-    parameter or URL path component.
+    Collect data from an API that accepts a year, year-month or date as a query string parameter or URL path component.
 
     #. Inherit from ``PeriodicSpider``
     #. Set a ``date_format`` class attribute to "year", "year-month" or "date"
@@ -67,9 +66,7 @@ class PeriodicSpider(SimpleSpider):
                 )
 
     def build_urls(self, from_date, until_date=None):
-        """
-        Yields one or more URLs for the given date.
-        """
+        """Yield one or more URLs for the given date."""
         if until_date:
             yield self.pattern.format(from_date, until_date)
         else:

@@ -14,6 +14,7 @@ class SouthAfricaNationalTreasuryAPI(LinksSpider, PeriodicSpider):
     Swagger API documentation
       https://ocds-api.etenders.gov.za/swagger/index.html
     """
+
     name = 'south_africa_national_treasury_api'
     custom_settings = {
         # Reduce the number of concurrent requests to avoid multiple failures.

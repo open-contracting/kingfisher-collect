@@ -16,6 +16,7 @@ class EcuadorSERCOPAPI(IndexSpider, PeriodicSpider):
     Bulk download documentation
       https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/datos-abiertos
     """
+
     name = 'ecuador_sercop_api'
     custom_settings = {
         # Reduce the number of concurrent requests to avoid multiple failures.

@@ -14,6 +14,7 @@ class NepalDhangadhi(SimpleSpider):
     Bulk download documentation
       https://ims.susasan.org/dhangadhi/about
     """
+
     name = 'nepal_dhangadhi'
 
     # SimpleSpider

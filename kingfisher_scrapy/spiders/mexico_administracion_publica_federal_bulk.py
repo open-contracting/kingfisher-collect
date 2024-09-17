@@ -13,6 +13,7 @@ class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
     Bulk download documentation
       https://www.gob.mx/compranet/documentos/estandar-de-datos-para-las-contrataciones-abiertas-edca
     """
+
     name = 'mexico_administracion_publica_federal_bulk'
     download_timeout = 99999  # > 2GB zip file
     custom_settings = {

@@ -16,6 +16,7 @@ class NigeriaEbonyiState(PeriodicSpider):
     Bulk download documentation
       https://ebonyieprocure.eb.gov.ng/ocds_report.php
     """
+
     name = 'nigeria_ebonyi_state'
 
     # BaseSpider

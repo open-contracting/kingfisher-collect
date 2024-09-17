@@ -13,6 +13,7 @@ class ItalyAppaltiPOP(SimpleSpider):
     Swagger API documentation
       https://www.appaltipop.it/api/v1/
     """
+
     name = 'italy_appalti_pop'
 
     # SimpleSpider

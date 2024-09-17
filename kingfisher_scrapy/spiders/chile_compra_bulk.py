@@ -17,6 +17,7 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
     Bulk download documentation
       https://desarrolladores.mercadopublico.cl/OCDS/DescargaMasiva
     """
+
     name = 'chile_compra_bulk'
     download_timeout = 99999
     custom_settings = {

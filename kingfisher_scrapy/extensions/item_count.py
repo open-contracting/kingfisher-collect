@@ -2,9 +2,7 @@ from scrapy import signals
 
 
 class ItemCount:
-    """
-    Adds a count to the crawl stats for each type of item scraped.
-    """
+    """Adds a count to the crawl stats for each type of item scraped."""
 
     def __init__(self, stats):
         self.stats = stats

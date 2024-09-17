@@ -13,6 +13,7 @@ class PakistanPPRAAPI(SimpleSpider):
     API documentation
       https://www.ppra.org.pk/api/
     """
+
     name = 'pakistan_ppra_api'
 
     # BaseSpider

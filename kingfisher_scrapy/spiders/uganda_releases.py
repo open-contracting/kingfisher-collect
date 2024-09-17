@@ -22,6 +22,7 @@ class UgandaReleases(PeriodicSpider):
     Bulk download documentation
         https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets
     """
+
     name = 'uganda_releases'
     custom_settings = {
         # We cannot get the list of all the files from https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets

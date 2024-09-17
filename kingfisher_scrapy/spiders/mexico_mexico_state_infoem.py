@@ -11,6 +11,7 @@ class MexicoMexicoStateINFOEM(MexicoINAIBase):
     API documentation
       http://www.infoem.org.mx:4000/contratacionesabiertas/datosabiertos
     """
+
     name = 'mexico_mexico_state_infoem'
 
     # MexicoINAIBase

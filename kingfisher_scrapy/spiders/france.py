@@ -11,6 +11,7 @@ class France(BigFileSpider):
     Swagger API documentation
       https://doc.data.gouv.fr/api/reference/
     """
+
     name = 'france'
 
     # SimpleSpider

@@ -16,6 +16,7 @@ class ParaguayDNCPRecords(ParaguayDNCPBase):
     Swagger API documentation
       https://contrataciones.gov.py/datos/api/v3/doc
     """
+
     name = 'paraguay_dncp_records'
 
     # BaseSpider

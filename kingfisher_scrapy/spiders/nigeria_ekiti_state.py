@@ -6,6 +6,7 @@ class NigeriaEkitiState(EuropeanDynamicsSaasBase):
     Domain
       Nigeria Ekiti State Open Contracting Portal
     """
+
     name = 'nigeria_ekiti_state'
 
     # EuropeanDynamicsSassBase

@@ -8,6 +8,7 @@ class PanamaDGCPReleases(PanamaDGCPBase):
     Swagger API documentation
       https://ocds.panamacompraencifras.gob.pa/swagger/index.html
     """
+
     name = 'panama_dgcp_releases'
 
     # SimpleSpider

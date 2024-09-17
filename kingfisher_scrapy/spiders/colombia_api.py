@@ -18,6 +18,7 @@ class ColombiaAPI(LinksSpider):
     Swagger API documentation
       https://apiocds.colombiacompra.gov.co/apiCCE2.0/
     """
+
     name = 'colombia_api'
 
     # BaseSpider

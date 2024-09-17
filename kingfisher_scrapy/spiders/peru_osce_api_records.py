@@ -8,6 +8,7 @@ class PeruOSCEAPIRecords(PeruOSCEAPIBase):
     API documentation
       https://contratacionesabiertas.osce.gob.pe/api
     """
+
     name = 'peru_osce_api_records'
 
     # SimpleSpider

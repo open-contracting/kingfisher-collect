@@ -16,6 +16,7 @@ class AustraliaNewSouthWales(SimpleSpider):
     API documentation
       https://github.com/NSW-eTendering/NSW-eTendering-API/wiki
     """
+
     name = 'australia_new_south_wales'
 
     # BaseSpider

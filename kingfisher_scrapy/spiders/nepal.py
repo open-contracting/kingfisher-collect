@@ -14,6 +14,7 @@ class Nepal(PeriodicSpider):
     Bulk download documentation
       http://ppip.gov.np/downloads
     """
+
     name = 'nepal'
 
     # BaseSpider

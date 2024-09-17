@@ -11,6 +11,7 @@ class UnitedKingdomFTSTest(LinksSpider):
     Caveats
       This spider uses a test service that returns test data. For getting real data see ``uk_fts`` instead.
     """
+
     name = 'united_kingdom_fts_test'
 
     # BaseSpider

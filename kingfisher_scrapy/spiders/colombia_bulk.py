@@ -28,6 +28,7 @@ class ColombiaBulk(CompressedFileSpider):
     Bulk download documentation
       https://www.colombiacompra.gov.co/transparencia/datos-json
     """
+
     name = 'colombia_bulk'
     download_timeout = 99999
     custom_settings = {

@@ -19,6 +19,7 @@ class HondurasSEFINAPI(PeriodicSpider):
     Swagger API documentation
       https://guancasco.sefin.gob.hn/EDCA_WEBAPI/swagger/ui/index
     """
+
     name = 'honduras_sefin_api'
 
     # BaseSpider

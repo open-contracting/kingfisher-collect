@@ -10,6 +10,7 @@ class MexicoNuevoLeonRecords(SimpleSpider):
     Bulk download documentation
       https://smpu.nl.gob.mx/transparencia/publicaciones
     """
+
     name = 'mexico_nuevo_leon_records'
 
     # SimpleSpider

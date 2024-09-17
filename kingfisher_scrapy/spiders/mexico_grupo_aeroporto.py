@@ -8,6 +8,7 @@ class MexicoGrupoAeroporto(SimpleSpider):
     Domain
       Grupo Aeroportuario de la Ciudad de México (CDMX)
     """
+
     name = 'mexico_grupo_aeroporto'
 
     # SimpleSpider

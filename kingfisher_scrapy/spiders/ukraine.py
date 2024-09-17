@@ -22,6 +22,7 @@ class Ukraine(SimpleSpider):
     API documentation
       https://prozorro-api-docs.readthedocs.io/uk/latest/tendering/index.html
     """
+
     name = 'ukraine'
     user_agent = browser_user_agent  # to avoid HTTP 412 errors
 

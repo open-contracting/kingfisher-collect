@@ -8,6 +8,7 @@ class NigeriaAnambraState(NigeriaBonMaximusBase):
     API documentation
       https://eprocure.bpp.an.gov.ng/awarded_contracts.php
     """
+
     name = 'nigeria_anambra_state'
 
     # BaseSpider

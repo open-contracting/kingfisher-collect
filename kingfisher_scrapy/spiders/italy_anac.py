@@ -15,6 +15,7 @@ class ItalyANAC(SimpleSpider):
     Bulk download documentation
       https://dati.anticorruzione.it/opendata/organization/anticorruzione
     """
+
     name = 'italy_anac'
     download_timeout = 99999
 

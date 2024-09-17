@@ -8,6 +8,7 @@ class GeorgiaOpendata(CompressedFileSpider):
     Domain
       State Procurement Agency (SPA)
     """
+
     name = 'georgia_opendata'
     # The file is about 450MB.
     download_timeout = 1200  # 20min

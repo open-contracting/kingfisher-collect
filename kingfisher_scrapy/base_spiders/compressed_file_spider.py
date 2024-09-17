@@ -12,8 +12,10 @@ from kingfisher_scrapy.util import get_file_name_and_extension, handle_http_erro
 
 class CompressedFileSpider(BaseSpider):
     """
-    This class makes it easy to collect data from ZIP or RAR files. It assumes all files have the same data type.
-    Each compressed file is saved to disk. The archive file is *not* saved to disk.
+    Collect data from ZIP or RAR files.
+
+    It assumes all files have the same data type. Each compressed file is saved to disk. The archive file is *not*
+    saved to disk.
 
     #. Inherit from ``CompressedFileSpider``
     #. Set a ``data_type`` class attribute to the data type of the compressed files

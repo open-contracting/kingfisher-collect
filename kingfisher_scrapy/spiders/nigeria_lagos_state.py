@@ -6,6 +6,7 @@ class NigeriaLagosState(EuropeanDynamicsSaasBase):
     Domain
       Nigeria Lagos State Open Contracting Portal
     """
+
     name = 'nigeria_lagos_state'
 
     # EuropeanDynamicsSassBase

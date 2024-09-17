@@ -9,6 +9,7 @@ class MexicoMichoacanSESEAPlataformaDigitalNacional(MexicoPlataformaDigitalNacio
     Bulk download documentation
       https://plataformadigitalnacional.org/contrataciones
     """
+
     name = 'mexico_michoacan_sesea_plataforma_digital_nacional'
 
     # MexicoPlataformaDigitalNacionalBase

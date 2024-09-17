@@ -22,6 +22,7 @@ class HondurasIAIP(SimpleSpider):
     Bulk download documentation
       https://portalunico.iaip.gob.hn/datosabierto/
     """
+
     name = 'honduras_iaip'
 
     # SimpleSpider

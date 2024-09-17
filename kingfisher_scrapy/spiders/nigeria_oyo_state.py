@@ -8,6 +8,7 @@ class NigeriaOyoState(SimpleSpider):
     Domain
       Nigeria Oyo State Open Contracting Portal
     """
+
     name = 'nigeria_oyo_state'
 
     # SimpleSpider

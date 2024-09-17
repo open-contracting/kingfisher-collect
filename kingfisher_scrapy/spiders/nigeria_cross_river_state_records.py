@@ -15,6 +15,7 @@ class NigeriaCrossRiverStateRecords(NigeriaCrossRiverStateBase):
     API documentation
       http://ocdsapi.dppib-crsgov.org/Help
     """
+
     name = 'nigeria_cross_river_state_records'
 
     # SimpleSpider

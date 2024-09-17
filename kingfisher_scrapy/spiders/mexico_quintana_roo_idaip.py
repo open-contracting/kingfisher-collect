@@ -10,6 +10,7 @@ class MexicoQuintanaRooIDAIP(MexicoINAIBase):
     API documentation
       http://conab.idaipqroo.org.mx:4000/contratacionesabiertas/datosabiertos
     """
+
     name = 'mexico_quintana_roo_idaip'
 
     # MexicoINAIBase

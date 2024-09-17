@@ -10,6 +10,8 @@ from kingfisher_scrapy.util import add_path_components, add_query_string
 
 class BaseSpider(scrapy.Spider):
     """
+    Base class for all spiders.
+
     With respect to the data's source:
 
     -  If the source can support ``from_date`` and ``until_date`` spider arguments:
@@ -46,6 +48,7 @@ class BaseSpider(scrapy.Spider):
 
     -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
     """
+
     VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S', 'year': '%Y', 'year-month': '%Y-%m'}
 
     # Regarding the data source.
@@ -110,7 +113,6 @@ class BaseSpider(scrapy.Spider):
         :param release_pointer: the JSON Pointer to the value in the release (see the :ref:`pluck` command)
         :param truncate: the number of characters to which the value is truncated (see the :ref:`pluck` command)
         """
-
         super().__init__(*args, **kwargs)
 
         if self.concatenated_json and self.line_delimited:
@@ -234,43 +236,35 @@ class BaseSpider(scrapy.Spider):
         return spider
 
     def parse_date_argument(self, date):
-        """
-        Returns the date argument as a datetime object.
-        """
+        """Return the date argument as a datetime object."""
         return datetime.datetime.strptime(date, self.date_format).replace(tzinfo=datetime.timezone.utc)
 
     def is_http_success(self, response):
-        """
-        Returns whether the response's status is a non-2xx code.
-        """
+        """Return whether the response's status is a non-2xx code."""
         # All 2xx codes are successful.
         # https://tools.ietf.org/html/rfc7231#section-6.3
         return 200 <= response.status < 300
 
     def is_http_retryable(self, response):
         """
-        Returns whether the response's status is retryable.
+        Return whether the response's status is retryable.
 
         Set the ``retry_http_codes`` class attribute to a list of status codes to retry.
         """
         return response.status in self.retry_http_codes
 
     def get_start_time(self, date_format):
-        """
-        Returns the formatted start time of the crawl.
-        """
+        """Return the formatted start time of the crawl."""
         date = self.crawl_time if self.crawl_time else self.crawler.stats.get_value('start_time')
         return date.strftime(date_format)
 
     def get_retry_wait_time(self, response):
-        """
-        Returns the number of seconds to wait before retrying a URL.
-        """
+        """Return the number of seconds to wait before retrying a URL."""
         return int(response.headers['Retry-After'])
 
     def build_request(self, url, formatter, **kwargs):
         """
-        Returns a Scrapy request, with a file name added to the request's ``meta`` attribute. If the file name doesn't
+        Return a Scrapy request, with a file name added to the request's ``meta`` attribute. If the file name doesn't
         have a ``.json``, ``.csv``, ``.xlsx``, ``.rar`` or ``.zip`` extension, it adds a ``.json`` extension.
 
         If the last component of a URL's path is unique, use it as the file name. For example:
@@ -318,7 +312,7 @@ class BaseSpider(scrapy.Spider):
 
     def build_file_from_response(self, response, /, *, data_type, **kwargs):
         """
-        Returns a File item to yield, based on the response to a request.
+        Return a File item to yield, based on the response to a request.
 
         If the response body starts with a byte-order mark, it is removed.
         """
@@ -334,9 +328,7 @@ class BaseSpider(scrapy.Spider):
         return self.build_file(data_type=data_type, **kwargs)
 
     def build_file(self, *, file_name=None, url=None, data_type=None, data=None):
-        """
-        Returns a File item to yield.
-        """
+        """Return a File item to yield."""
         return File(
             file_name=file_name,
             url=url,
@@ -345,9 +337,7 @@ class BaseSpider(scrapy.Spider):
         )
 
     def build_file_item(self, number, data, item):
-        """
-        Returns a FileItem item to yield.
-        """
+        """Return a FileItem item to yield."""
         return FileItem(
             file_name=item.file_name,
             url=item.url,
@@ -358,7 +348,7 @@ class BaseSpider(scrapy.Spider):
 
     def build_file_error_from_response(self, response, errors=None):
         """
-        Returns a FileError item to yield, based on the response to a request.
+        Return a FileError item to yield, based on the response to a request.
 
         An ``errors`` keyword argument must be a ``dict``, and should set an ``http_code`` key.
         """
@@ -370,9 +360,7 @@ class BaseSpider(scrapy.Spider):
 
     @classmethod
     def get_default_until_date(cls, spider):
-        """
-        Returns the ``default_until_date`` class attribute if truthy. Otherwise, returns the current time.
-        """
+        """Return the ``default_until_date`` class attribute if truthy. Otherwise, return the current time."""
         if getattr(spider, 'default_until_date', None):
             return spider.default_until_date
         return datetime.datetime.now(tz=datetime.timezone.utc)

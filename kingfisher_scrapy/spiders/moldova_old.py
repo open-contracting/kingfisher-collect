@@ -14,6 +14,7 @@ class MoldovaOld(PeriodicSpider):
     Bulk download documentation
       http://opencontracting.date.gov.md/downloads
     """
+
     name = 'moldova_old'
 
     # BaseSpider

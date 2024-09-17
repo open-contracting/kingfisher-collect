@@ -11,6 +11,7 @@ class BoliviaAgetic(SimpleSpider):
     Bulk download documentation
       https://datos.gob.bo/id/dataset/contrataciones-agetic-2019-estandar-ocp
     """
+
     name = 'bolivia_agetic'
 
     # BaseSpider

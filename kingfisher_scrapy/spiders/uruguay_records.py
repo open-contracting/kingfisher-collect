@@ -14,6 +14,7 @@ class UruguayRecords(UruguayBase):
     API documentation
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
     """
+
     name = 'uruguay_records'
 
     # BaseSpider

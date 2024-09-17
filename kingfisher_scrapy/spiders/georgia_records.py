@@ -13,6 +13,7 @@ class GeorgiaRecords(LinksSpider):
     Swagger API documentation
       https://odapi.spa.ge/api/swagger.ui
     """
+
     name = 'georgia_records'
 
     # BaseSpider

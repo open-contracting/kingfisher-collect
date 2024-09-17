@@ -33,14 +33,12 @@ def read_data_from_file_if_any(item):
 
 class ConcatenatedJSONMiddleware:
     """
-    If the spider's ``concatenated_json`` class attribute is ``True``, yields each object of the File as a FileItem.
-    Otherwise, yields the original item.
+    If the spider's ``concatenated_json`` class attribute is ``True``, yield each object of the File as a FileItem.
+    Otherwise, yield the original item.
     """
 
     async def process_spider_output(self, response, result, spider):
-        """
-        :returns: a generator of FileItem objects, in which the ``data`` field is parsed JSON
-        """
+        """Return a generator of FileItem objects, in which the ``data`` field is parsed JSON."""
         async for item in result:
             if not isinstance(item, File) or not spider.concatenated_json:
                 yield item
@@ -58,14 +56,12 @@ class ConcatenatedJSONMiddleware:
 
 class LineDelimitedMiddleware:
     """
-    If the spider's ``line_delimited`` class attribute is ``True``, yields each line of the File as a FileItem.
-    Otherwise, yields the original item.
+    If the spider's ``line_delimited`` class attribute is ``True``, yield each line of the File as a FileItem.
+    Otherwise, yield the original item.
     """
 
     async def process_spider_output(self, response, result, spider):
-        """
-        :returns: a generator of FileItem objects, in which the ``data`` field is bytes
-        """
+        """Return a generator of FileItem objects, in which the ``data`` field is bytes."""
         async for item in result:
             if not isinstance(item, File) or not spider.line_delimited:
                 yield item
@@ -85,13 +81,12 @@ class LineDelimitedMiddleware:
 
 class ValidateJSONMiddleware:
     """
-    If the spider's ``validate_json`` class attribute is ``True``,  checks if the item's ``data`` field is valid
-    JSON. If not, yields nothing. Otherwise, yields the original item.
+    If the spider's ``validate_json`` class attribute is ``True``,  check if the item's ``data`` field is valid
+    JSON. If not, yield nothing. Otherwise, yield the original item.
     """
+
     async def process_spider_output(self, response, result, spider):
-        """
-        :returns: a generator of File or FileItem objects, in which the ``data`` field is valid JSON
-        """
+        """Return a generator of File or FileItem objects, in which the ``data`` field is valid JSON."""
         async for item in result:
             if not isinstance(item, File | FileItem) or not spider.validate_json or isinstance(item.data, dict):
                 yield item
@@ -113,15 +108,13 @@ class ValidateJSONMiddleware:
 
 class RootPathMiddleware:
     """
-    If the spider's ``root_path`` class attribute is non-empty, replaces the item's ``data`` with the objects at that
-    prefix; if there are multiple releases, records or packages at that prefix, combines them into packages in groups
-    of 100, and updates the item's ``data_type`` if needed. Otherwise, yields the original item.
+    If the spider's ``root_path`` class attribute is non-empty, replace the item's ``data`` with the objects at that
+    prefix; if there are multiple releases, records or packages at that prefix, combine them into packages in groups
+    of 100, and update the item's ``data_type`` if needed. Otherwise, yield the original item.
     """
 
     async def process_spider_output(self, response, result, spider):
-        """
-        :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
-        """
+        """Return a generator of File or FileItem objects, in which the ``data`` field is parsed JSON."""
         async for item in result:
             if not isinstance(item, File | FileItem) or not spider.root_path:
                 yield item
@@ -191,14 +184,12 @@ class RootPathMiddleware:
 
 class AddPackageMiddleware:
     """
-    If the spider's ``data_type`` class attribute is "release" or "record", wraps the item's ``data`` in an appropriate
-    package, and updates the item's ``data_type``. Otherwise, yields the original item.
+    If the spider's ``data_type`` class attribute is "release" or "record", wrap the item's ``data`` in an appropriate
+    package, and update the item's ``data_type``. Otherwise, yield the original item.
     """
 
     async def process_spider_output(self, response, result, spider):
-        """
-        :returns: a generator of File or FileItem objects, in which the ``data`` field is parsed JSON
-        """
+        """Return a generator of File or FileItem objects, in which the ``data`` field is parsed JSON."""
         async for item in result:
             if not isinstance(item, File | FileItem) or item.data_type not in ('release', 'record'):
                 yield item
@@ -221,15 +212,15 @@ class AddPackageMiddleware:
 
 class ResizePackageMiddleware:
     """
-    If the spider's ``resize_package`` class attribute is ``True``, splits the package into packages of 100 releases or
-    records each. Otherwise, yields the original item.
+    If the spider's ``resize_package`` class attribute is ``True``, split the package into packages of 100 releases or
+    records each. Otherwise, yield the original item.
     """
 
     async def process_spider_output(self, response, result, spider):
         """
-        The spider must yield items whose ``data`` field has ``package`` and ``data`` keys.
+        Return a generator of FileItem objects, in which the ``data`` field is a string.
 
-        :returns: a generator of FileItem objects, in which the ``data`` field is a string
+        The spider must yield items whose ``data`` field has ``package`` and ``data`` keys.
         """
         async for item in result:
             if not isinstance(item, File) or not getattr(spider, 'resize_package', False):
@@ -255,7 +246,7 @@ class ResizePackageMiddleware:
 
     def _get_package_metadata(self, spider, data, skip_key, data_type):
         """
-        Returns the package metadata from a file object.
+        Return the package metadata from a file object.
 
         :param data: a data object
         :param str skip_key: the key to skip
@@ -271,17 +262,16 @@ class ResizePackageMiddleware:
 
 class ReadDataMiddleware:
     """
-    If the item's ``data`` is a file descriptor, replaces the item's ``data`` with the file's contents and closes the
-    file descriptor. Otherwise, yields the original item.
+    If the item's ``data`` is a file descriptor, replace the item's ``data`` with the file's contents and close the
+    file descriptor. Otherwise, yield the original item.
 
     .. seealso::
 
        :class:`~kingfisher_scrapy.base_spiders.compressed_file_spider.CompressedFileSpider`
     """
+
     async def process_spider_output(self, response, result, spider):
-        """
-        :returns: a generator of File objects, in which the ``data`` field is bytes
-        """
+        """Return a generator of File objects, in which the ``data`` field is bytes."""
         async for item in result:
             if not isinstance(item, File) or not hasattr(item.data, 'read'):
                 yield item
@@ -294,9 +284,12 @@ class ReadDataMiddleware:
 
 class RetryDataErrorMiddleware:
     """
-    Retries a request up to 3 times. Either when the spider raises a ``BadZipFile`` exception, on the assumption that
-    the response was truncated, or when the spider raises a ``RetryableError`` exception.
+    Retry a request up to 3 times.
+
+    Either when the spider raises a ``BadZipFile`` exception, on the assumption that the response was truncated,
+    or when the spider raises a ``RetryableError`` exception.
     """
+
     # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#scrapy.spidermiddlewares.SpiderMiddleware.process_spider_exception
 
     def process_spider_exception(self, response, exception, spider):

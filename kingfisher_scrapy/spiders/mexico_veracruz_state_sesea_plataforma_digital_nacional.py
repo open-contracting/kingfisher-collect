@@ -9,6 +9,7 @@ class MexicoVeracruzStateSESEAPlataformaDigitalNacional(MexicoPlataformaDigitalN
     Bulk download documentation
       https://plataformadigitalnacional.org/contrataciones
     """
+
     name = 'mexico_veracruz_state_sesea_plataforma_digital_nacional'
 
     # MexicoPlataformaDigitalNacionalBase

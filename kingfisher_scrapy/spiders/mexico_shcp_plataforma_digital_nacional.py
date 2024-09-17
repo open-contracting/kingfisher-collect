@@ -8,6 +8,7 @@ class MexicoSHCPPlataformaDigitalNacional(MexicoPlataformaDigitalNacionalBase):
     Bulk download documentation
       https://plataformadigitalnacional.org/contrataciones
     """
+
     name = 'mexico_shcp_plataforma_digital_nacional'
 
     # MexicoPlataformaDigitalNacionalBase

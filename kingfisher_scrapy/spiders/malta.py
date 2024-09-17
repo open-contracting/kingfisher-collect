@@ -15,6 +15,7 @@ class Malta(EuropeanDynamicsBase):
     API documentation
       https://docs.google.com/document/d/1VnCEywKkkQ7BcVbT7HlW2s_N_QI8W0KE/edit
     """
+
     name = 'malta'
 
     # BaseSpider

@@ -166,8 +166,10 @@ class DatabaseStore:
     # Copied from kingfisher-summarize
     def format(self, statement, **kwargs):
         """
-        Formats the SQL statement, expressed as a format string with keyword arguments. A keyword argument's value is
-        converted to a SQL identifier, or a list of SQL identifiers, unless it's already a ``sql`` object.
+        Format the SQL statement, expressed as a format string with keyword arguments.
+
+        A keyword argument's value is converted to a SQL identifier, or a list of SQL identifiers,
+        unless it's already a ``sql`` object.
         """
         objects = {}
         for key, value in kwargs.items():
@@ -181,9 +183,7 @@ class DatabaseStore:
 
     # Copied from kingfisher-summarize
     def execute(self, statement, variables=None, **kwargs):
-        """
-        Executes the SQL statement.
-        """
+        """Execute the SQL statement."""
         if kwargs:
             statement = self.format(statement, **kwargs)
         self.cursor.execute(statement, variables)

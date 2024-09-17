@@ -10,6 +10,7 @@ class NigeriaPlateauState(SimpleSpider):
     Bulk download documentation
       https://ocds.plateaustate.gov.ng/
     """
+
     name = 'nigeria_plateau_state'
 
     # SimpleSpider

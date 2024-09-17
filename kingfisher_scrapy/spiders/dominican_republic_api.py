@@ -16,6 +16,7 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
     API documentation
       https://api.dgcp.gob.do/api/docs
     """
+
     name = 'dominican_republic_api'
     custom_settings = {
         # Reduce the number of concurrent requests to avoid multiple failures.

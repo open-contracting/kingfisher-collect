@@ -8,6 +8,7 @@ class NigeriaOsunState(NigeriaBonMaximusBase):
     Bulk download documentation
       https://egp.osunstate.gov.ng/awarded_contracts.php
     """
+
     name = 'nigeria_osun_state'
 
     # BaseSpider

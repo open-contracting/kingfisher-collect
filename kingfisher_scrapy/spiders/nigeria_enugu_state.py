@@ -11,6 +11,7 @@ class NigeriaEnuguState(SimpleSpider):
     Bulk download documentation
       https://dueprocess.en.gov.ng/ocds_report.php
     """
+
     name = 'nigeria_enugu_state'
 
     # BaseSpider

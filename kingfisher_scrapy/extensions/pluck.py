@@ -9,9 +9,7 @@ from kingfisher_scrapy.items import PluckedItem
 
 # https://docs.scrapy.org/en/latest/topics/extensions.html#writing-your-own-extension
 class Pluck:
-    """
-    Appends one data value from one plucked item to a file. See the :ref:`pluck` command.
-    """
+    """Appends one data value from one plucked item to a file. See the :ref:`pluck` command."""
 
     def __init__(self, directory, max_bytes):
         self.directory = directory

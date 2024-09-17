@@ -11,6 +11,7 @@ class CanadaQuebec(SimpleSpider):
     Bulk download documentation
       https://www.donneesquebec.ca/recherche/dataset/systeme-electronique-dappel-doffres-seao
     """
+
     name = 'canada_quebec'
 
     # SimpleSpider

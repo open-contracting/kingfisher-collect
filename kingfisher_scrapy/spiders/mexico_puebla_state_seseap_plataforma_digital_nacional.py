@@ -9,6 +9,7 @@ class MexicoPueblaStateSESEAPPlataformaDigitalNacional(MexicoPlataformaDigitalNa
     Bulk download documentation
       https://plataformadigitalnacional.org/contrataciones
     """
+
     name = 'mexico_puebla_state_seseap_plataforma_digital_nacional'
 
     # MexicoPlataformaDigitalNacionalBase

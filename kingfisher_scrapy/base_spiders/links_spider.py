@@ -7,8 +7,8 @@ from kingfisher_scrapy.util import handle_http_error
 
 class LinksSpider(SimpleSpider):
     """
-    This class makes it easy to collect data from an API that implements the `pagination
-    <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__ pattern:
+    Collect data from an API that implements the `pagination
+    <https://github.com/open-contracting-extensions/ocds_pagination_extension>`__ pattern.
 
     #. Inherit from ``LinksSpider``
     #. Set a ``data_type`` class attribute to the data type of the API responses
@@ -48,9 +48,7 @@ class LinksSpider(SimpleSpider):
         yield self.next_link(response)
 
     def next_link(self, response, **kwargs):
-        """
-        If the JSON response has a ``links.next`` key, returns a ``scrapy.Request`` for the URL.
-        """
+        """If the JSON response has a ``links.next`` key, returns a ``scrapy.Request`` for the URL."""
         # If the sample size is 1, we don't want to parse the response, especially if --max-bytes is used.
         if self.sample and self.sample == 1:
             return None

@@ -19,6 +19,7 @@ class AlbaniaPublicProcurementCommission(SimpleSpider):
     Bulk download documentation
       https://kpp.al/en/Historiku?nrVendimi=&OperatoriEkonmik=&idOperatori=&autoritetiKotraktues=&id=
     """
+
     name = 'albania_public_procurement_commission'
 
     # BaseSpider

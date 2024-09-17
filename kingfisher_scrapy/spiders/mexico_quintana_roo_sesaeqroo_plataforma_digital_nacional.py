@@ -9,6 +9,7 @@ class MexicoQuintanaRooSESAEQROOPlataformaDigitalNacional(MexicoPlataformaDigita
     Bulk download documentation
       https://plataformadigitalnacional.org/contrataciones
     """
+
     name = 'mexico_quintana_roo_sesaeqroo_plataforma_digital_nacional'
 
     # MexicoPlataformaDigitalNacionalBase

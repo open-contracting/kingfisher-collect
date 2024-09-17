@@ -45,7 +45,7 @@ class DataResource(Resource, arbitrary_types_allowed=True, use_enum_values=True)
     path: str = ""
 
     @pydantic.validator('data', pre=True)  # `pre` is needed to prevent pydantic from type casting
-    def check_data(cls, v):  # noqa: N805 # false positive
+    def check_data(cls, v):
         # pydantic has no `condict()` to set `strict=True` or `min_properties=1`. pydantic/pydantic#1277
         if not isinstance(v, Data | bytes):
             raise AssertionError(f'{type(v).__name__} is not a valid type')  # noqa: TRY004 # false positive

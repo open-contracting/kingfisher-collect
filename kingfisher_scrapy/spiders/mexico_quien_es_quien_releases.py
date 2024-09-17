@@ -16,6 +16,7 @@ class MexicoQuienEsQuienReleases(IndexSpider, PeriodicSpider):
     Swagger API documentation
       https://api.quienesquien.wiki/v3/docs/
     """
+
     name = 'mexico_quien_es_quien_releases'
 
     # BaseSpider

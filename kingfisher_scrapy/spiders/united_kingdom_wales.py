@@ -15,6 +15,7 @@ class UnitedKingdomWales(ProactisBase):
     Bulk download documentation
       https://www.sell2wales.gov.wales/Notice/Download/Download.aspx
     """
+
     name = 'united_kingdom_wales'
 
     # SimpleSpider

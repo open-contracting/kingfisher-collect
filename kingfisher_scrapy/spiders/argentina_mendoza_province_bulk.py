@@ -11,6 +11,7 @@ class ArgentinaMendozaProvinceBulk(SimpleSpider):
     Bulk download documentation
       https://datosabiertos-compras.mendoza.gov.ar/datasets/
     """
+
     name = 'argentina_mendoza_province_bulk'
 
     # SimpleSpider

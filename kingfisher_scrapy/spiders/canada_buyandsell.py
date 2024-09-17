@@ -11,6 +11,7 @@ class CanadaBuyandsell(SimpleSpider):
     API documentation
       https://buyandsell.gc.ca/procurement-data/open-contracting-data-standard-pilot/download-ocds-pilot-data
     """
+
     name = 'canada_buyandsell'
 
     # BaseSpider

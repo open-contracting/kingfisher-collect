@@ -12,6 +12,7 @@ class IndiaAssamCivicDataLab(CompressedFileSpider):
     Bulk download documentation
       https://github.com/CivicDataLab/assam-tenders-data/tree/main/data
     """
+
     name = 'india_assam_civic_data_lab'
 
     # SimpleSpider

@@ -15,6 +15,7 @@ class PortugalRecords(PortugalBase):
     Swagger API documentation
       http://www.base.gov.pt/swagger/index.html
     """
+
     name = 'portugal_records'
 
     # BaseSpider

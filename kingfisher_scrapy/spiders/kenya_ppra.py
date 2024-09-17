@@ -11,6 +11,7 @@ class KenyaPPRA(SimpleSpider):
     Bulk download documentation
       https://tenders.go.ke/ocds
     """
+
     name = 'kenya_ppra'
 
     # SimpleSpider

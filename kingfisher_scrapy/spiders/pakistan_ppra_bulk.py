@@ -10,6 +10,7 @@ class PakistanPPRABulk(SimpleSpider):
     API documentation
       https://www.ppra.org.pk/api/
     """
+
     name = 'pakistan_ppra_bulk'
 
     # SimpleSpider

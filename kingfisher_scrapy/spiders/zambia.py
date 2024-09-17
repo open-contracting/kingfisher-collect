@@ -13,6 +13,7 @@ class Zambia(EuropeanDynamicsBase):
         Download only data until this month (YYYY-MM format).
         If ``from_date`` is provided, defaults to the current month.
     """
+
     name = 'zambia'
     default_from_date = '2016-07'
 

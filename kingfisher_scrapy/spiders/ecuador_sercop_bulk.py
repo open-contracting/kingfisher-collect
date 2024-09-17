@@ -16,6 +16,7 @@ class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
     Bulk download documentation
       https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/datos-abiertos
     """
+
     name = 'ecuador_sercop_bulk'
 
     # BaseSpider

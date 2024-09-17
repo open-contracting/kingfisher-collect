@@ -18,6 +18,7 @@ class ItalyMinistryOfInfrastructureAndTransport(SimpleSpider):
     Swagger API documentation
       https://www.serviziocontrattipubblici.it/ocds-ms/swagger-ui.html
     """
+
     name = 'italy_ministry_of_infrastructure_and_transport'
 
     # BaseSpider

@@ -22,7 +22,7 @@ def pluck_filename(opts):
 
 def components(start, stop=None):
     """
-    Returns a function that returns the selected non-empty path components, excluding the ``.json`` extension.
+    Return a function that returns the selected non-empty path components, excluding the ``.json`` extension.
 
     >>> components(-1)('http://example.com/api/planning.json')
     'planning'
@@ -40,7 +40,7 @@ def components(start, stop=None):
 
 def parameters(*keys):
     """
-    Returns a function that returns the selected query string parameters.
+    Return a function that returns the selected query string parameters.
 
     >>> parameters('page')('http://example.com/api/packages.json?page=1')
     'page-1'
@@ -56,7 +56,7 @@ def parameters(*keys):
 
 def join(*functions, extension=None):
     """
-    Returns a function that joins the given functions' outputs and sets the file extension, if provided.
+    Return a function that joins the given functions' outputs and sets the file extension, if provided.
 
     >>> join(components(-1), parameters('page'))('http://example.com/api/planning.json?page=1')
     'planning-page-1'
@@ -71,7 +71,7 @@ def join(*functions, extension=None):
 
 def handle_http_error(decorated):
     """
-    A decorator for spider parse methods.
+    Decorate spider parse methods.
 
     if :meth:`~kingfisher_scrapy.base_spider.BaseSpider.is_http_success` returns ``True``, yields from the decorated
     method.
@@ -128,7 +128,7 @@ def handle_http_error(decorated):
 
 def date_range_by_interval(start, stop, step):
     """
-    Yields date ranges from the ``start`` date to the ``stop`` date, in intervals of ``step`` days, in reverse
+    Yield date ranges from the ``start`` date to the ``stop`` date, in intervals of ``step`` days, in reverse
     chronological order.
     """
     delta = timedelta(days=step)
@@ -142,7 +142,7 @@ def date_range_by_interval(start, stop, step):
 # https://stackoverflow.com/questions/34898525/generate-list-of-months-between-interval-in-python
 def date_range_by_month(start, stop):
     """
-    Yields the first day of the month as a ``date`` from the ``start`` to the ``stop`` dates, in reverse chronological
+    Yield the first day of the month as a ``date`` from the ``start`` to the ``stop`` dates, in reverse chronological
     order.
     """
     def number_of_months(d):
@@ -154,16 +154,12 @@ def date_range_by_month(start, stop):
 
 
 def date_range_by_year(start, stop):
-    """
-    Returns the year as an ``int`` from the ``start`` to the ``stop`` years, in reverse chronological order.
-    """
+    """Return the year as an ``int`` from the ``start`` to the ``stop`` years, in reverse chronological order."""
     return reversed(range(start, stop + 1))
 
 
 def get_parameter_value(url, key):
-    """
-    Returns the first value of the query string parameter.
-    """
+    """Return the first value of the query string parameter."""
     query = parse_qs(urlsplit(url).query)
     if key in query:
         return query[key][0]
@@ -171,9 +167,7 @@ def get_parameter_value(url, key):
 
 
 def replace_parameters(url, **kwargs):
-    """
-    Returns a URL after updating the query string parameters' values.
-    """
+    """Return a URL after updating the query string parameters' values."""
     parsed = urlsplit(url)
     query = parse_qs(parsed.query)
     for key, value in kwargs.items():
@@ -185,16 +179,14 @@ def replace_parameters(url, **kwargs):
 
 
 def append_path_components(url, path):
-    """
-    Returns a URL after appending path components to its path.
-    """
+    """Return a URL after appending path components to its path."""
     parsed = urlsplit(url)
     return urljoin(parsed._replace(path=f'{parsed.path}/').geturl(), quote(path.lstrip('/')))
 
 
 def add_query_string(method, params):
     """
-    Returns a function that yields the requests yielded by the wrapped method, after updating the query string
+    Return a function that yields the requests yielded by the wrapped method, after updating the query string
     parameter values in each request's URL.
     """
     def wrapper(*args, **kwargs):
@@ -206,7 +198,7 @@ def add_query_string(method, params):
 
 def add_path_components(method, path):
     """
-    Returns a function that yields the requests yielded by the wrapped method, after appending path components
+    Return a function that yields the requests yielded by the wrapped method, after appending path components
     to each request's URL.
     """
     def wrapper(*args, **kwargs):
@@ -219,8 +211,10 @@ def add_path_components(method, path):
 @utils.coroutine
 def items_basecoro(target, prefix, map_type=None, skip_key=None):
     """
-    This is copied from ``ijson/common.py``. A ``skip_key`` argument is added. If the ``skip_key`` is in the current
-    path, the current event is skipped. Otherwise, the method is identical.
+    Replicate the same function from ``ijson/common.py``.
+
+    A ``skip_key`` argument is added. If the ``skip_key`` is in the current path, the current event is skipped.
+    Otherwise, the method is identical.
     """
     while True:
         current, event, value = yield
@@ -241,16 +235,16 @@ def items_basecoro(target, prefix, map_type=None, skip_key=None):
 
 def items(events, prefix, map_type=None, skip_key=None):
     """
-    This is copied from ``ijson/common.py``. A ``skip_key`` argument is added, which is passed as a keyword argument to
+    Replicate the same function from from ``ijson/common.py``.
+
+    A ``skip_key`` argument is added, which is passed as a keyword argument to
     :meth:`~kingfisher_scrapy.util.items_basecoro`. Otherwise, the method is identical.
     """
     return utils.coros2gen(events, (items_basecoro, (prefix,), {'map_type': map_type, 'skip_key': skip_key}))
 
 
 def default(obj):
-    """
-    Dumps JSON to a string, converting decimals and iterables, and returns it.
-    """
+    """Dump JSON to a string, converting decimals and iterables, and return it."""
     if isinstance(obj, Decimal):
         return float(obj)
     try:
@@ -264,16 +258,16 @@ def default(obj):
 
 def json_dumps(obj, **kwargs):
     """
-    Dumps JSON to string, using an extended JSON encoder.
+    Dump JSON to string, using an extended JSON encoder.
 
     Use this method for JSON data read by ijson, which uses decimals for JSON numbers.
     """
     return json.dumps(obj, default=default, **kwargs)
 
 
-def json_dump(obj, f, **_kwargs):
+def json_dump(obj, f, **kwargs):
     """
-    Dumps JSON to a file, using an extended JSON encoder.
+    Dump JSON to a file, using an extended JSON encoder.
 
     Use this method for JSON data read by ijson, which uses decimals for JSON numbers.
     """
@@ -286,17 +280,13 @@ class TranscodeFile:
         self.encoding = encoding
 
     def read(self, buf_size):
-        """
-        Re-encodes bytes read from the file to UTF-8.
-        """
+        """Re-encodes bytes read from the file to UTF-8."""
         data = self.file.read(buf_size)
         return transcode_bytes(data, self.encoding)
 
 
 def transcode_bytes(data, encoding):
-    """
-    Re-encodes bytes to UTF-8.
-    """
+    """Re-encodes bytes to UTF-8."""
     return data.decode(encoding).encode()
 
 
@@ -318,7 +308,8 @@ def grouper(iterable, n, fillvalue=None):
 
 def get_file_name_and_extension(filename):
     """
-    Given a ``filename`` returns its name and extension in two separate strings
+    Given a ``filename``, return its name and extension in two separate strings.
+
     >>> get_file_name_and_extension('test.json')
     ('test', 'json')
     """

@@ -16,6 +16,7 @@ class MexicoYucatanINAIP(MexicoINAIBase):
     API documentation
       https://contratacionesabiertas.inaipyucatan.org.mx/contratacionesabiertas/datosabiertos#
     """
+
     name = 'mexico_yucatan_inaip'
 
     # BaseSpider

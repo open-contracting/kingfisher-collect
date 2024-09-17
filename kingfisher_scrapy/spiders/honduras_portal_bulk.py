@@ -37,6 +37,7 @@ class HondurasPortalBulk(SimpleSpider):
     Bulk download documentation
       http://www.contratacionesabiertas.gob.hn/descargas/
     """
+
     name = 'honduras_portal_bulk'
 
     # BaseSpider

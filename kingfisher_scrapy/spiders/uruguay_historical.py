@@ -20,6 +20,7 @@ class UruguayHistorical(CompressedFileSpider):
     Bulk download documentation
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
     """
+
     name = 'uruguay_historical'
     download_timeout = 1000
 

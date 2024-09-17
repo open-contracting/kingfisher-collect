@@ -15,6 +15,7 @@ class UnitedKingdomScotland(ProactisBase):
     Bulk download documentation
       https://www.publiccontractsscotland.gov.uk/NoticeDownload/Download.aspx
     """
+
     name = 'united_kingdom_scotland'
 
     # SimpleSpider

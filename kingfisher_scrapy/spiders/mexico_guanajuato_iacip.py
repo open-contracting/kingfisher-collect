@@ -15,6 +15,7 @@ class MexicoGuanajuatoIACIP(MexicoINAIBase):
     API documentation
       http://contratacionesabiertas.iacipgto.mx:4000/contratacionesabiertas/datosabiertos
     """
+
     name = 'mexico_guanajuato_iacip'
 
     # BaseSpider

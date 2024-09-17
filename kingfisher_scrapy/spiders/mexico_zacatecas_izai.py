@@ -15,6 +15,7 @@ class MexicoZacatecasIZAI(MexicoINAIBase):
     API documentation
       https://contratacionesabiertas.izai.org.mx/contratacionesabiertas/datosabiertos
     """
+
     name = 'mexico_zacatecas_izai'
 
     # BaseSpider

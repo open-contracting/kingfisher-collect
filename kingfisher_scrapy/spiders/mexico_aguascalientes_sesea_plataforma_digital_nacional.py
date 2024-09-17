@@ -8,6 +8,7 @@ class MexicoAguascalientesSESEAPlataformaDigitalNacional(MexicoPlataformaDigital
     Bulk download documentation
       https://plataformadigitalnacional.org/contrataciones
     """
+
     name = 'mexico_aguascalientes_sesea_plataforma_digital_nacional'
 
     # MexicoPlataformaDigitalNacionalBase

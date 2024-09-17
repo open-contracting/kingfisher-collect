@@ -86,9 +86,7 @@ class KingfisherProcessAPI2:
         return extension
 
     def spider_opened(self, spider):
-        """
-        Sends an API request to create a collection in Kingfisher Process.
-        """
+        """Send an API request to create a collection in Kingfisher Process."""
         data_version = spider.get_start_time('%Y-%m-%d %H:%M:%S')
 
         data = {
@@ -133,9 +131,7 @@ class KingfisherProcessAPI2:
             self._response_error(spider, 'Failed to create collection', response)
 
     def spider_closed(self, spider, reason):
-        """
-        Sends an API request to close the collection in Kingfisher Process.
-        """
+        """Send an API request to close the collection in Kingfisher Process."""
         if not self.collection_id:
             return
 
@@ -155,9 +151,7 @@ class KingfisherProcessAPI2:
             self._response_error(spider, 'Failed to close collection', response)
 
     def item_scraped(self, item, spider):
-        """
-        Publishes a RabbitMQ message to store the file, file item or file error in Kingfisher Process.
-        """
+        """Publish a RabbitMQ message to store the file, file item or file error in Kingfisher Process."""
         if not self.collection_id:
             return
 
@@ -181,9 +175,7 @@ class KingfisherProcessAPI2:
         self.stats.inc_value("kingfisher_process_expected_files_count")
 
     def disconnect_and_join(self):
-        """
-        Closes the RabbitMQ connection and joins the client's thread.
-        """
+        """Close the RabbitMQ connection and join the client's thread."""
         cb = functools.partial(self._when_ready, self.client.interrupt)
         methods.add_callback_threadsafe(self.client.connection, cb)
 
@@ -191,9 +183,7 @@ class KingfisherProcessAPI2:
         self.thread.join()
 
     def _post_synchronous(self, spider, path, data):
-        """
-        POSTs synchronous API requests to Kingfisher Process.
-        """
+        """POST synchronous API requests to Kingfisher Process."""
         url = urljoin(self.url, path)
         spider.logger.debug('Sending synchronous request to Kingfisher Process at %s with %s', url, data)
         return requests.post(url, json=data, timeout=10)

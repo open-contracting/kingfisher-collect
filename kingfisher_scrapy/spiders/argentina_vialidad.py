@@ -10,6 +10,7 @@ class ArgentinaVialidad(SimpleSpider):
     API documentation
       https://datosabiertos.vialidad.gob.ar/ui/index.html#!/datos_abiertos
     """
+
     name = 'argentina_vialidad'
 
     # BaseSpider

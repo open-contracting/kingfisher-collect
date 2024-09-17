@@ -11,6 +11,7 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
     Bulk download documentation
       https://ckanpj.azurewebsites.net/dataset/estandar-de-datos-de-contrataciones-abiertas-ocds
     """
+
     name = 'costa_rica_poder_judicial_releases'
 
     # BaseSpider

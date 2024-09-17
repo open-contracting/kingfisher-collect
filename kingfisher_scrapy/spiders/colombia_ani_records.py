@@ -14,6 +14,7 @@ class ColombiaANIRecords(SimpleSpider):
         Link
           ``https://apicost.azurewebsites.net/cost/records``
     """
+
     name = 'colombia_ani_records'
 
     # SimpleSpider

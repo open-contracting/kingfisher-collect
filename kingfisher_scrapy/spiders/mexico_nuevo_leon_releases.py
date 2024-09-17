@@ -10,6 +10,7 @@ class MexicoNuevoLeonReleases(CompressedFileSpider):
     Bulk download documentation
       https://smpu.nl.gob.mx/transparencia/acerca-del-proyecto
     """
+
     name = 'mexico_nuevo_leon_releases'
 
     # BaseSpider

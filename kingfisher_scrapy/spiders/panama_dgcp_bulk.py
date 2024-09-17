@@ -16,6 +16,7 @@ class PanamaDGCPBulk(PeriodicSpider):
     Swagger API documentation
       https://ocds.panamacompraencifras.gob.pa/swagger/index.html
     """
+
     name = 'panama_dgcp_bulk'
 
     # BaseSpider

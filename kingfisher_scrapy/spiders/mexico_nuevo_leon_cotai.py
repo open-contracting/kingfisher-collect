@@ -15,6 +15,7 @@ class MexicoNuevoLeonCOTAI(MexicoINAIBase):
     API documentation
       http://201.149.38.218:4000/contratacionesabiertas/datosabiertos
     """
+
     name = 'mexico_nuevo_leon_cotai'
 
     # BaseSpider

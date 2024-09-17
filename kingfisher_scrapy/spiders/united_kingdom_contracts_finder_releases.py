@@ -16,6 +16,7 @@ class UnitedKingdomContractsFinderReleases(UnitedKingdomContractsFinderBase):
     API documentation
       https://www.contractsfinder.service.gov.uk/apidocumentation/home
     """
+
     name = 'united_kingdom_contracts_finder_releases'
 
     # SimpleSpider

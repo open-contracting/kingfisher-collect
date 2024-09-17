@@ -22,6 +22,7 @@ class ChileCompraAPIRecords(ChileCompraAPIBase):
     Swagger API documentation
       https://datos-abiertos.chilecompra.cl/descargas/procesos-ocds
     """
+
     name = 'chile_compra_api_records'
 
     # BaseSpider

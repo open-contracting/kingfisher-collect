@@ -13,6 +13,7 @@ class PeruOSCEBulk(CompressedFileSpider, IndexSpider):
     Bulk download documentation
       https://contratacionesabiertas.osce.gob.pe/descargas
     """
+
     name = 'peru_osce_bulk'
 
     # SimpleSpider

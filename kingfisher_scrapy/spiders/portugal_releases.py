@@ -15,6 +15,7 @@ class PortugalReleases(PortugalBase):
     Swagger API documentation
       http://www.base.gov.pt/swagger/index.html
     """
+
     name = 'portugal_releases'
 
     # SimpleSpider

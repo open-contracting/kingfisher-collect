@@ -20,6 +20,7 @@ class ParaguayHacienda(BaseSpider):
     Swagger API documentation
       https://datos.hacienda.gov.py/odmh-api-v1/api-docs/
     """
+
     name = 'paraguay_hacienda'
     custom_settings = {
         'CONCURRENT_REQUESTS': 1,

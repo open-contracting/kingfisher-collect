@@ -13,6 +13,7 @@ class SpainZaragoza(SimpleSpider):
     Swagger API documentation
       https://www.zaragoza.es/docs-api_sede/
     """
+
     name = 'spain_zaragoza'
 
     # SimpleSpider

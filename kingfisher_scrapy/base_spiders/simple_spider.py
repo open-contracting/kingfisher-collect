@@ -4,7 +4,9 @@ from kingfisher_scrapy.util import handle_http_error
 
 class SimpleSpider(BaseSpider):
     """
-    Most spiders can inherit from this class. It assumes all responses have the same data type.
+    Most spiders can inherit from this class.
+
+    It assumes all responses have the same data type.
 
     #. Inherit from ``SimpleSpider``
     #. Set a ``data_type`` class attribute to the data type of the responses
