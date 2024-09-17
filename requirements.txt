@@ -111,7 +111,7 @@ parsel==1.6.0
     # via
     #   itemloaders
     #   scrapy
-persistent==4.9.3
+persistent==6.1
     # via
     #   btrees
     #   zodb
@@ -179,7 +179,9 @@ setuptools==74.1.1
     #   zc-lockfile
     #   zc-zlibstorage
     #   zodbpickle
+    #   zope-deferredimport
     #   zope-interface
+    #   zope-proxy
 six==1.16.0
     # via
     #   automat
@@ -237,6 +239,8 @@ zodb==5.8.0
     #   zc-zlibstorage
 zodbpickle==3.0.1
     # via zodb
+zope-deferredimport==5.0
+    # via persistent
 zope-interface==6.0
     # via
     #   btrees
@@ -247,3 +251,6 @@ zope-interface==6.0
     #   twisted
     #   zc-zlibstorage
     #   zodb
+    #   zope-proxy
+zope-proxy==6.0
+    # via zope-deferredimport
