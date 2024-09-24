@@ -33,12 +33,3 @@ class KenyaPPRA(SimpleSpider):
         if data['next_page_url']:
             yield scrapy.Request(data['next_page_url'], meta={'file_name': f'{data["current_page"]+1}.json'},
                                  callback=self.parse_list)
-
-    @handle_http_error
-    def parse(self, response):
-        data = response.json()
-        for release in data['releases']:
-            # Kingfisher Process processes only releases with ids. Use the ocid as the release id as a fallback.
-            if 'id' not in release:
-                release['id'] = release['ocid']
-        yield self.build_file_from_response(response, data_type=self.data_type, data=data)
