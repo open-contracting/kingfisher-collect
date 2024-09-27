@@ -33,7 +33,7 @@ class Errors(TypedDict):
     http_code: pydantic.conint(strict=True, ge=100, lt=600)
 
 
-class Resource(pydantic.BaseModel,  **base_kwargs):
+class Resource(pydantic.BaseModel, **base_kwargs):
     file_name: pydantic.constr(strict=True, regex=r'^[^/\\]+$')
     url: pydantic.HttpUrl
 
