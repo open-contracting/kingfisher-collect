@@ -43,7 +43,7 @@ class FilesStore:
             self._write_file(path, spider._job)
 
     def spider_closed(self, spider, reason):
-        if reason not in ('finished', 'sample') or spider.pluck:
+        if reason not in {'finished', 'sample'} or spider.pluck:
             return
 
         path = os.path.join(self.directory, self.relative_crawl_directory(spider))

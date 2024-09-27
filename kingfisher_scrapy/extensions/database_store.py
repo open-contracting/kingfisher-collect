@@ -91,7 +91,7 @@ class DatabaseStore:
             self.connection.close()
 
     def spider_closed(self, spider, reason):
-        if reason not in ('finished', 'sample'):
+        if reason not in {'finished', 'sample'}:
             return
 
         if spider.database_store_compile_releases:

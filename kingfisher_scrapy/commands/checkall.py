@@ -78,7 +78,7 @@ class Checker:
         basename = os.path.splitext(os.path.basename(self.module.__file__))[0]
         expected_basename = re.sub(word_boundary_re, '_', class_name).lower()
 
-        if basename != expected_basename and class_name not in ('PakistanPPRAAPI', 'EcuadorSERCOPAPI'):
+        if basename != expected_basename and class_name not in {'PakistanPPRAAPI', 'EcuadorSERCOPAPI'}:
             self.log('error', 'class %s and file %s (%s) do not match', class_name, basename, expected_basename)
 
         if class_name.endswith('Base') and class_name != 'EuropeTEDTenderBase' or class_name.endswith('Digiwhist'):
@@ -176,8 +176,9 @@ class Checker:
     def check_date_spider_argument(self, spider_argument, spider_arguments, default, format_string):
         if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
-            if self.cls.__name__ in ('ColombiaBulk', 'Kosovo', 'PortugalRecords', 'PortugalReleases',
-                                     'UgandaReleases', 'Ukraine'):
+            if self.cls.__name__ in {
+                'ColombiaBulk', 'Kosovo', 'PortugalRecords', 'PortugalReleases', 'UgandaReleases', 'Ukraine'
+            }:
                 level = 'info'
             else:
                 level = 'warning'

@@ -191,7 +191,7 @@ class AddPackageMiddleware:
     async def process_spider_output(self, response, result, spider):
         """Return a generator of File or FileItem objects, in which the ``data`` field is parsed JSON."""
         async for item in result:
-            if not isinstance(item, File | FileItem) or item.data_type not in ('release', 'record'):
+            if not isinstance(item, File | FileItem) or item.data_type not in {'release', 'record'}:
                 yield item
                 continue
 

@@ -221,7 +221,7 @@ def items_basecoro(target, prefix, map_type=None, skip_key=None):
         if skip_key and skip_key in current:
             continue
         if current == prefix:
-            if event in ('start_map', 'start_array'):
+            if event in {'start_map', 'start_array'}:
                 builder = ObjectBuilder(map_type=map_type)
                 end_event = event.replace('start', 'end')
                 while (current, event) != (prefix, end_event):
