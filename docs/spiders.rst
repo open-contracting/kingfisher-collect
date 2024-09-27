@@ -275,6 +275,13 @@ Chile
 
    scrapy crawl chile_compra_bulk
 
+.. autoclass:: kingfisher_scrapy.spiders.chile_public_works_bulk.ChilePublicWorksBUlk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl chile_public_works_bulk
+
 Colombia
 ~~~~~~~~
 
