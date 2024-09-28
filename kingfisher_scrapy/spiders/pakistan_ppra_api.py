@@ -32,7 +32,8 @@ class PakistanPPRAAPI(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        # remove the last item in the list to fix the str JSON format
-        urls = json.loads(response.xpath('//body//text()').getall()[6].replace(",\r\n\r\nhttps://www.ppra.org.pk", ""))
-        for url in urls:
+        for url in json.loads(
+            # remove the last item in the list to fix the str JSON format
+            response.xpath('//body//text()').getall()[6].replace(",\r\n\r\nhttps://www.ppra.org.pk", "")
+        ):
             yield self.build_request(url, formatter=components(-2))

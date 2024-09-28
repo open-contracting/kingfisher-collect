@@ -35,7 +35,6 @@ class HondurasSEFINAPI(PeriodicSpider):
 
     @handle_http_error
     def parse(self, response):
-        data = response.json()
-        for url in data:
+        for url in response.json():
             # URL looks like https://guancasco.sefin.gob.hn/EDCA_WEBAPI/api/releasePackage/P2022-3-1-197
             yield self.build_request(url, formatter=self.formatter, callback=super().parse)

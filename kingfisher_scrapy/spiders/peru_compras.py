@@ -41,8 +41,7 @@ class PeruCompras(SimpleSpider):
         str_lists = response.text.split('¯')
         # where the first list is the framework agreements list that we need for querying the API
         # and the items in that list are separated by ¬
-        frameworks = str_lists[0].split('¬')
-        for framework in frameworks:
+        for framework in str_lists[0].split('¬'):
             # Each item has the format id-type^description and we need the id for querying the API
             # e.g.: 130-BIENES^IM-CE-2020-9 MATERIAL MÉDICO ¬128-BIENES^IM-CE-2020-8 DISPOSITIVO MÉDICO IN VITRO ¬
             framework_id = framework.split('-')[0]

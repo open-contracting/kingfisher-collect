@@ -53,8 +53,7 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
         yield from handle_http_error(DominicanRepublicAPI.parse_success)(self, response)
 
     def parse_success(self, response):
-        data = response.json()
-        for item in data['data']:
+        for item in response.json()['data']:
             yield self.build_request(
                 f'{self.base_url}release/{item["ocid"]}', formatter=components(-1), callback=super().parse
             )

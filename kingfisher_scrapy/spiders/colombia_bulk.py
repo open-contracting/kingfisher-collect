@@ -70,8 +70,7 @@ class ColombiaBulk(CompressedFileSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        urls = response.xpath('//a[@class="enlaces_contenido"]/@href').getall()
-        for url in urls:
+        for url in response.xpath('//a[@class="enlaces_contenido"]/@href').getall():
             if self.system and self.available_systems[self.system] not in url:
                 continue
 
