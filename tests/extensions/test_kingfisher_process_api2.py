@@ -205,9 +205,9 @@ def test_spider_opened(
         calls[1].args[2].pop('stats')  # pop() ensures its presence
         assert calls[1].args[1:] == ('/api/collections/1/close/', {'reason': 'finished'})
 
-    messages = [(levelname, message.replace('DATA_VERSION', data_version)) for levelname, message in messages]
-
-    for levelname, message in messages:
+    for levelname, message in [
+        (levelname, message.replace('DATA_VERSION', data_version)) for levelname, message in messages
+    ]:
         assert any(r.name == 'test' and r.levelname == levelname and r.message == message for r in caplog.records)
 
 

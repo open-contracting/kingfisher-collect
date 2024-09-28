@@ -22,7 +22,5 @@ class UruguayReleases(UruguayBase):
 
     @handle_http_error
     def parse_list(self, response):
-        urls = response.xpath('//item/link/text()').getall()
-
-        for url in urls:
+        for url in response.xpath('//item/link/text()').getall():
             yield self.build_request(url, formatter=components(-1))
