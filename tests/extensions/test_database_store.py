@@ -217,7 +217,7 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, 'finished')
 
-    cursor.execute(f"SELECT max(data->>'date') FROM {expected_table}")
+    cursor.execute(f"SELECT max(data ->> 'date') FROM {expected_table}")
     max_date = cursor.fetchone()[0]
     assert max_date == '2021-05-26T10:00:00Z'
 

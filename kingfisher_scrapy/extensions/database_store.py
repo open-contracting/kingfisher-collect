@@ -79,7 +79,7 @@ class DatabaseStore:
                 spider.logger.info('Starting crawl from %s', datetime.strftime(spider.from_date, spider.date_format))
             else:
                 spider.logger.info('Getting the date from which to resume the crawl from the %s table', table_name)
-                self.execute("SELECT max(data->>'date')::timestamptz FROM {table}", table=table_name)
+                self.execute("SELECT max(data ->> 'date')::timestamptz FROM {table}", table=table_name)
                 from_date = self.cursor.fetchone()[0]
                 if from_date:
                     spider.logger.info('Resuming crawl from %s', datetime.strftime(from_date, spider.date_format))
@@ -145,7 +145,7 @@ class DatabaseStore:
             with open(filename) as f:
                 sql = "COPY {table} (data) FROM stdin CSV QUOTE e'\x01' DELIMITER e'\x02'"
                 self.cursor.copy_expert(self.format(sql, table=table_name), f)
-            sql = "CREATE INDEX {index} ON {table} (cast(data->>'date' as text))"
+            sql = "CREATE INDEX {index} ON {table} ((data ->> 'date'))"
             self.execute(sql, table=table_name, index=f'idx_{table_name}')
             self.connection.commit()
         finally:
