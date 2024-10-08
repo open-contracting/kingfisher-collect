@@ -4,10 +4,11 @@ from kingfisher_scrapy.base_spiders import SimpleSpider
 
 class PeriodicSpider(SimpleSpider):
     """
-    Collect data from an API that accepts a year, year-month or date as a query string parameter or URL path component.
+    Collect data from an API that accepts a year, year-month, date or datime as a query string parameter or URL path
+    component.
 
     #. Inherit from ``PeriodicSpider``
-    #. Set a ``date_format`` class attribute to "year", "year-month" or "date"
+    #. Set a ``date_format`` class attribute to "year", "year-month", "date" or "datetime"
     #. Set a ``pattern`` class attribute to a URL pattern, with placeholders. If the ``date_format`` is "year", then a
        year is passed to the placeholder as an ``int``. If the ``date_format`` is "year-month", then the first day of
        the month is passed to the placeholder as a ``date``, which you can format as, for example:
@@ -16,8 +17,8 @@ class PeriodicSpider(SimpleSpider):
 
           pattern = 'http://comprasestatales.gub.uy/ocds/rss/{0:%Y}/{0:%m}'
 
-        If the ``date_format`` is "date", then a 2-tuple of ``date`` objects in intervals of ``step`` days is passed to
-        the placeholder, which you can format as, for example:
+        If the ``date_format`` is "date" or "datetime", then a 2-tuple of ``date`` objects in intervals of ``step``
+        days is passed to the placeholder, which you can format as, for example:
 
        .. code-block: python
 
@@ -59,7 +60,7 @@ class PeriodicSpider(SimpleSpider):
             date_range = util.date_range_by_interval(start, stop, self.step)
 
         for date in date_range:
-            args = date if self.date_format == '%Y-%m-%d' else [date]
+            args = date if self.date_format.startswith('%Y-%m-%d') else [date]
             for number, url in enumerate(self.build_urls(*args)):
                 yield self.build_request(
                     url, formatter=self.formatter, callback=self.start_requests_callback, priority=number * -1
