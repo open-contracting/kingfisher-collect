@@ -15,14 +15,14 @@ class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
     max_attempts = 5
     retry_http_codes = [403]
 
-    # Local
-    base_url = 'https://www.contractsfinder.service.gov.uk/Published'
-
     # PeriodicSpider
     formatter = staticmethod(parameters('publishedFrom', 'publishedTo', 'cursor'))
     start_requests_callback = 'parse_page'
     step = 15
-    pattern = f'{base_url}/Notices/OCDS/Search?limit=100&publishedFrom={0:%Y-%m-%d}&publishedTo={1:%Y-%m-%d}'
+    pattern = (
+        'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search'
+        '?limit=100&publishedFrom={0:%Y-%m-%d}&publishedTo={1:%Y-%m-%d}'
+    )
 
     # parse_page must be provided by subclasses.
 
