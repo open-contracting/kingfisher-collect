@@ -4,7 +4,7 @@ from kingfisher_scrapy.base_spiders import SimpleSpider
 
 class PeriodicSpider(SimpleSpider):
     """
-    Collect data from an API that accepts a year, year-month, date or datime as a query string parameter or URL path
+    Collect data from an API that accepts a year, year-month, date or datetime as a query string parameter or URL path
     component.
 
     #. Inherit from ``PeriodicSpider``

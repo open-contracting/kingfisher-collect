@@ -20,12 +20,10 @@ class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
     start_requests_callback = 'parse_page'
     step = 15
     pattern = (
-        'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?limit=100&publishedFrom={0:%Y-%m-%d}'
-        '&publishedTo={1:%Y-%m-%d}'
+        'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search'
+        '?limit=100&publishedFrom={0:%Y-%m-%d}&publishedTo={1:%Y-%m-%d}'
     )
 
-    # Local
-    url_prefix = 'https://www.contractsfinder.service.gov.uk/Published/'
     # parse_page must be provided by subclasses.
 
     @handle_http_error
@@ -39,7 +37,7 @@ class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
         return 300
 
     def build_request(self, url, formatter, **kwargs):
-        # The firsts URLs can't have the 'cursor' parameter
+        # The first URLs can't have the 'cursor' parameter.
         if 'cursor' not in url:
             formatter = staticmethod(parameters('publishedFrom', 'publishedTo'))
         return super().build_request(url, formatter, **kwargs)
