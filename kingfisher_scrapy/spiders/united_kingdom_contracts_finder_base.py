@@ -1,12 +1,8 @@
-import datetime
-
-import scrapy
-
-from kingfisher_scrapy.base_spiders import LinksSpider
+from kingfisher_scrapy.base_spiders import LinksSpider, PeriodicSpider
 from kingfisher_scrapy.util import handle_http_error, parameters, transcode_bytes
 
 
-class UnitedKingdomContractsFinderBase(LinksSpider):
+class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
     # The API has unpredictable and undocumented "too many requests" logic.
     custom_settings = {
         'CONCURRENT_REQUESTS': 1,
@@ -19,24 +15,16 @@ class UnitedKingdomContractsFinderBase(LinksSpider):
     max_attempts = 5
     retry_http_codes = [403]
 
-    # LinksSpider
-    formatter = staticmethod(parameters('cursor'))
+    # PeriodicSpider
+    formatter = staticmethod(parameters('publishedFrom', 'publishedTo', 'cursor'))
+    start_requests_callback = 'parse_page'
+    step = 15
+    pattern = (
+        'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search'
+        '?limit=100&publishedFrom={0:%Y-%m-%d}&publishedTo={1:%Y-%m-%d}'
+    )
 
-    # Local
-    url_prefix = 'https://www.contractsfinder.service.gov.uk/Published/'
     # parse_page must be provided by subclasses.
-
-    def start_requests(self):
-        # https://www.contractsfinder.service.gov.uk/apidocumentation/Notices/1/GET-Published-Notice-OCDS-Search
-        url = f'{self.url_prefix}Notices/OCDS/Search?limit=100'
-        if self.from_date and self.until_date:
-            from_date = self.from_date.strftime(self.date_format)
-            until_date = self.until_date.strftime(self.date_format)
-            url = f'{url}&publishedFrom={from_date}&publishedTo={until_date}'
-        else:
-            until_date = datetime.datetime.now(tz=datetime.timezone.utc).strftime(self.date_format)
-        yield scrapy.Request(url, meta={'file_name': f'{until_date}.json'},  # reverse chronological order
-                             callback=self.parse_page)
 
     @handle_http_error
     def parse(self, response):
@@ -47,3 +35,9 @@ class UnitedKingdomContractsFinderBase(LinksSpider):
     def get_retry_wait_time(self, response):
         # https://www.contractsfinder.service.gov.uk/apidocumentation/Notices/1/GET-Published-OCDS-Record
         return 300
+
+    def build_request(self, url, formatter, **kwargs):
+        # The first URLs can't have the 'cursor' parameter.
+        if 'cursor' not in url:
+            formatter = staticmethod(parameters('publishedFrom', 'publishedTo'))
+        return super().build_request(url, formatter, **kwargs)
