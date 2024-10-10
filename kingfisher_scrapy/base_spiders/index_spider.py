@@ -1,3 +1,4 @@
+import types
 from math import ceil
 
 from jsonpointer import resolve_pointer
@@ -104,6 +105,8 @@ class IndexSpider(SimpleSpider):
         if isinstance(data, FileError):
             yield data
             return
+        if isinstance(data, types.GeneratorType):
+            data = yield from data
 
         if not self.base_url:
             yield from self.parse_list_callback(response)
