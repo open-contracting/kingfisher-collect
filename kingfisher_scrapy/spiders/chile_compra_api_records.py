@@ -6,9 +6,11 @@ class ChileCompraAPIRecords(ChileCompraAPIBase):
     """
     Domain
       ChileCompra
+    Caveats
+      The API is slow and can take months to download all the data it offers.
     Spider arguments
       from_date
-        Download only data from this month onward (YYYY-MM format). Defaults to '2009-01'.
+        Download only data from this month onward (YYYY-MM format). Defaults to '2022-01'.
       until_date
         Download only data until this month (YYYY-MM format). Defaults to the current month.
       system

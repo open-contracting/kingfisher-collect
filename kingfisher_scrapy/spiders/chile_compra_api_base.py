@@ -15,7 +15,8 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
 
     # BaseSpider
     date_format = 'year-month'
-    default_from_date = '2009-01'
+    # They have data since 2009, but the API is too slow to download them all
+    default_from_date = '2022-01'
     dont_truncate = True
 
     # PeriodicSpider
