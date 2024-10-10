@@ -98,10 +98,9 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         try:
             data = response.json()
         except JSONDecodeError:
-            yield self.build_file_error_from_response(
+            return self.build_file_error_from_response(
                 response, errors={'http_code': response.status, 'text': response.text}
             )
-            return
 
         if set(data) == {'detail', 'status'}:
             data['http_code'] = data['status']
