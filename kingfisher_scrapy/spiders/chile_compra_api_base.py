@@ -45,15 +45,15 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
             raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
         return spider
 
-    def build_urls(self, date):
+    def build_urls(self, from_date, until_date=None):
         for system in self.available_systems:
             if self.system and system != self.system:
                 continue
-            yield self.pattern.format(self.available_systems[system], date, 0, self.limit)
+            yield self.pattern.format(self.available_systems[system], from_date, 0, self.limit)
 
     @handle_http_error
     def parse(self, response):
-        data = self.parse_list_loader(response)
+        data = yield from self.parse_list_loader(response)
         if isinstance(data, FileError):
             yield data
             return
@@ -74,7 +74,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
           "urlPlanning": "https://apis.mercadopublico.cl/OCDS/data/planning/2359-2-LE19"
         }
         """
-        data = self.parse_list_loader(response)
+        data = yield from self.parse_list_loader(response)
         if isinstance(data, FileError):
             yield data
             return
