@@ -117,6 +117,8 @@ persistent==6.1
     #   zodb
 pika==1.2.0
     # via yapw
+pip==24.2
+    # via scrapyd-client
 platformdirs==4.3.3
     # via requests-cache
 protego==0.2.1
@@ -165,7 +167,7 @@ scrapy==2.11.2
     #   scrapyd-client
 scrapyd==1.5.0b1
     # via -r requirements.in
-scrapyd-client==1.2.3
+scrapyd-client==2.0.0
     # via -r requirements.in
 sentry-sdk==2.10.0
     # via -r requirements.in
@@ -176,6 +178,7 @@ setuptools==74.1.1
     #   incremental
     #   scrapy
     #   scrapyd
+    #   scrapyd-client
     #   zc-lockfile
     #   zc-zlibstorage
     #   zodbpickle
@@ -214,7 +217,6 @@ urllib3==1.26.19
     # via
     #   requests
     #   requests-cache
-    #   scrapyd-client
     #   sentry-sdk
 w3lib==2.1.1
     # via
@@ -222,7 +224,6 @@ w3lib==2.1.1
     #   parsel
     #   scrapy
     #   scrapyd
-    #   scrapyd-client
 xmltodict==0.12.0
     # via flattentool
 yapw==0.1.4
