@@ -186,7 +186,7 @@ class KingfisherProcessAPI2:
         """POST synchronous API requests to Kingfisher Process."""
         url = urljoin(self.url, path)
         spider.logger.debug('Sending synchronous request to Kingfisher Process at %s with %s', url, data)
-        return requests.post(url, json=data, timeout=300)
+        return requests.post(url, json=data, timeout=3600)  # 1h
 
     def _when_ready(self, function, *args):
         # Scrapy can sometimes reach signals before yapw reaches exchange_ready.
