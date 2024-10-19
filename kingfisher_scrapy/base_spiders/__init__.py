@@ -2,10 +2,20 @@
 # Avoid circular dependencies at runtime.
 # https://github.com/PyCQA/isort#skip-processing-of-imports-outside-of-configuration
 
-from .base_spider import BaseSpider  # noqa: F401
-from .compressed_file_spider import CompressedFileSpider  # noqa: F401
-from .simple_spider import SimpleSpider  # noqa: F401
-from .big_file_spider import BigFileSpider  # noqa: F401
-from .index_spider import IndexSpider  # noqa: F401
-from .links_spider import LinksSpider  # noqa: F401
-from .periodic_spider import PeriodicSpider  # noqa: F401
+from kingfisher_scrapy.base_spiders.base_spider import BaseSpider
+from kingfisher_scrapy.base_spiders.compressed_file_spider import CompressedFileSpider
+from kingfisher_scrapy.base_spiders.simple_spider import SimpleSpider
+from kingfisher_scrapy.base_spiders.big_file_spider import BigFileSpider
+from kingfisher_scrapy.base_spiders.index_spider import IndexSpider
+from kingfisher_scrapy.base_spiders.links_spider import LinksSpider
+from kingfisher_scrapy.base_spiders.periodic_spider import PeriodicSpider
+
+__all__ = (
+    "BaseSpider",
+    "CompressedFileSpider",
+    "SimpleSpider",
+    "BigFileSpider",
+    "IndexSpider",
+    "LinksSpider",
+    "PeriodicSpider",
+)
