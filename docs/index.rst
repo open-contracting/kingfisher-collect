@@ -20,7 +20,7 @@ How it works
 
 Kingfisher Collect is built on the `Scrapy <https://scrapy.org/>`_ framework. Using this framework, we have authored "spiders" that you can run in order to "crawl" data sources and extract OCDS data.
 
-When collecting data from a data source, each of its OCDS files will be written to a separate file on your computer. Kingfisher Collect also ensures that the files are always either a `record package <https://standard.open-contracting.org/latest/en/schema/record_package/>`__ or a `release package <https://standard.open-contracting.org/latest/en/schema/release_package/>`__, depending on the source.
+When collecting data from a data source, each of its OCDS files will be written to a separate file on your computer. Kingfisher Collect also ensures that the files are always either a `release package <https://standard.open-contracting.org/latest/en/schema/release_package/>`__ or `record package <https://standard.open-contracting.org/latest/en/schema/record_package/>`__, depending on the source.
 
 By default, these files are written to a ``data`` directory (you can :ref:`change this<configure>`) within your ``kingfisher-collect`` directory (which you will create :ref:`during installation<install>`). Each spider creates its own directory within the ``data`` directory, and each crawl of a given spider creates its own directory within its spider's directory. For example, if you run the ``zambia`` spider (:ref:`learn how<collect-data>`), then the directory hierarchy will look like:
 

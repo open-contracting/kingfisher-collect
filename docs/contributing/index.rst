@@ -42,7 +42,7 @@ If a component repeats another, you can omit or abbreviate the component, like `
 
 It is not required for the name to be minimal. For example, ``uganda_releases`` is allowed even if there is no ``uganda_records``.
 
-If you create a new base class, omit the components that are not shared, and add "base" to the end. For example, the ``afghanistan_packages_base.py`` file contains the base class for the ``afghanistan_record_packages`` and ``afghanistan_release_packages`` spiders.
+If you create a new base class, omit the components that are not shared, and add "base" to the end. For example, the ``afghanistan_packages_base.py`` file contains the base class for the ``afghanistan_release_packages`` and ``afghanistan_record_packages`` spiders.
 
 .. note::
 

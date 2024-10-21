@@ -21,7 +21,7 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
     data_type = 'release_package'
 
     # CompressedFileSpider
-    # The ZIP file contains record packages and release packages. The filenames of release packages contain "-".
+    # The ZIP file contains release packages and record packages. The filenames of release packages contain "-".
     file_name_must_contain = '-'
 
     def start_requests(self):
