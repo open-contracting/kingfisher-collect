@@ -108,6 +108,7 @@ class DatabaseStore:
         data = self.yield_items_from_directory(crawl_directory, prefix)
         if spider.database_store_compile_releases:
             spider.logger.info('Creating generator of compiled releases')
+            # Security: Potential SSRF via extension URLs (within OCDS publication).
             data = merge(
                 data,
                 force_version=spider.database_store_force_version,
