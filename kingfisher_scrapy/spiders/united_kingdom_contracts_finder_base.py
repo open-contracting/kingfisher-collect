@@ -16,7 +16,8 @@ class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
     retry_http_codes = [403]
 
     # PeriodicSpider
-    formatter = staticmethod(parameters('publishedFrom', 'publishedTo', 'cursor'))
+    formatter = staticmethod(parameters('publishedFrom', 'publishedTo'))
+    next_link_formatter = staticmethod(parameters('publishedFrom', 'publishedTo', 'cursor'))
     start_requests_callback = 'parse_page'
     step = 15
     pattern = (
@@ -35,9 +36,3 @@ class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
     def get_retry_wait_time(self, response):
         # https://www.contractsfinder.service.gov.uk/apidocumentation/Notices/1/GET-Published-OCDS-Record
         return 300
-
-    def build_request(self, url, formatter, **kwargs):
-        # The first URLs can't have the 'cursor' parameter.
-        if 'cursor' not in url:
-            formatter = staticmethod(parameters('publishedFrom', 'publishedTo'))
-        return super().build_request(url, formatter, **kwargs)

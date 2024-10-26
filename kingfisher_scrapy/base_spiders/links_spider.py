@@ -14,6 +14,7 @@ class LinksSpider(SimpleSpider):
     #. Set a ``data_type`` class attribute to the data type of the API responses
     #. Set a ``formatter`` class attribute to set the file name like in
        :meth:`~kingfisher_scrapy.base_spiders.BaseSpider.build_request`
+    #. Set a ``next_link_formatter`` class attribute if pagination URLs differ from start URLs
     #. Write a ``start_requests()`` method to request the first page of API results
     #. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
 
@@ -56,7 +57,7 @@ class LinksSpider(SimpleSpider):
         data = response.json()
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
-            return self.build_request(url, formatter=self.formatter, **kwargs)
+            return self.build_request(url, formatter=getattr(self, "next_link_formatter", self.formatter), **kwargs)
 
         for filter_argument in self.filter_arguments:
             if getattr(self, filter_argument, None):

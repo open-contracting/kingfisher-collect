@@ -19,6 +19,9 @@ class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
 
     name = 'united_kingdom_contracts_finder_records'
 
+    # BaseSpider
+    skip_pluck = 'Already covered (see code for details)'  # united_kingdom_contracts_finder_releases
+
     # SimpleSpider
     data_type = 'record_package'
 
