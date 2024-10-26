@@ -8,6 +8,7 @@ Lapsed spiders
 
 Spiders for publications that were available but stopped publishing, since January 2022:
 
+- 2024-10-26: `italy_appalti_pop, mexico_grupo_aeroporto, moldova_old <https://github.com/open-contracting/kingfisher-collect/pull/1109>`__
 - 2024-07-02: `mexico_quintana_roo_idaip <https://github.com/open-contracting/kingfisher-collect/pull/1093>`__
 - 2024-04-12: `nigeria_gombe_state <https://github.com/open-contracting/kingfisher-collect/pull/1075>`__
 - 2024-01-09: `mexico_puebla_itaipue, nigeria_edo_state <https://github.com/open-contracting/kingfisher-collect/pull/1047>`__
