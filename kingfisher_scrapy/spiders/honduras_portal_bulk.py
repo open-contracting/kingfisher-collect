@@ -43,7 +43,7 @@ class HondurasPortalBulk(SimpleSpider):
     # BaseSpider
     date_format = 'year-month'
     default_from_date = '2005-11'
-    skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
+    skip_pluck = 'Already covered (see code for details)'  # honduras_portal_api_releases
 
     # SimpleSpider
     data_type = 'release_package'

@@ -31,7 +31,7 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
     # BaseSpider
     date_format = 'year'
     default_from_date = '2005'
-    skip_pluck = 'Already covered (see code for details)'  # honduras_portal_releases
+    skip_pluck = 'Already covered (see code for details)'  # honduras_portal_api_releases
 
     # SimpleSpider
     data_type = 'release_package'
