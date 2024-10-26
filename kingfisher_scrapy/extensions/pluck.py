@@ -1,3 +1,4 @@
+import csv
 import os
 
 from scrapy import signals
@@ -67,4 +68,5 @@ class Pluck:
 
     def _write(self, spider, value):
         with open(os.path.join(self.directory, util.pluck_filename(spider)), 'a+') as f:
-            f.write(f'{value},{spider.name}\n')
+            writer = csv.writer(f, lineterminator="\n")
+            writer.writerow([value, spider.name])
