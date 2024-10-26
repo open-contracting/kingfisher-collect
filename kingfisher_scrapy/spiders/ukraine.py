@@ -27,7 +27,6 @@ class Ukraine(SimpleSpider):
     user_agent = browser_user_agent  # to avoid HTTP 412 errors
 
     # BaseSpider
-    encoding = 'utf-16'
     data_type = 'release_package'
     date_format = 'datetime'
     default_from_date = '2016-01-01T00:00:00'
