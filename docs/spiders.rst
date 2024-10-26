@@ -648,13 +648,6 @@ Italy
 
    scrapy crawl italy_anac
 
-.. autoclass:: kingfisher_scrapy.spiders.italy_appalti_pop.ItalyAppaltiPOP
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl italy_appalti_pop
-
 .. autoclass:: kingfisher_scrapy.spiders.italy_digiwhist.ItalyDigiwhist
    :no-members:
 
@@ -766,13 +759,6 @@ Mexico
 .. code-block:: bash
 
    scrapy crawl mexico_durango_idaip
-
-.. autoclass:: kingfisher_scrapy.spiders.mexico_grupo_aeroporto.MexicoGrupoAeroporto
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_grupo_aeroporto
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_guanajuato_iacip.MexicoGuanajuatoIACIP
    :no-members:
@@ -909,13 +895,6 @@ Moldova
 .. code-block:: bash
 
    scrapy crawl moldova
-
-.. autoclass:: kingfisher_scrapy.spiders.moldova_old.MoldovaOld
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl moldova_old
 
 Nepal
 ~~~~~
