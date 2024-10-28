@@ -137,7 +137,9 @@ class KingfisherProcessAPI2:
 
         self.disconnect_and_join()
 
-        if spider.pluck or spider.kingfisher_process_keep_collection_open:
+        # Scrapyd's cancel.json endpoint sends a SIGINT signal to the Scrapy process, which uses the "shutdown" reason.
+        # If a process is cancelled, don't close the collection, as this triggers compilation of release collections.
+        if spider.pluck or spider.kingfisher_process_keep_collection_open or reason == 'shutdown':
             return
 
         response = self._post_synchronous(spider, f'/api/collections/{self.collection_id}/close/', {
