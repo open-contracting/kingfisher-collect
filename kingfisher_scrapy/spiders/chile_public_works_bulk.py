@@ -2,7 +2,7 @@ from kingfisher_scrapy.base_spiders import CompressedFileSpider
 from kingfisher_scrapy.util import components
 
 
-class ChilePublicWorksBUlk(CompressedFileSpider):
+class ChilePublicWorksBulk(CompressedFileSpider):
     """
     Domain
       Observatorio del Gasto Fiscal - Dirección General de Obras Públicas

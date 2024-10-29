@@ -5,6 +5,8 @@ class PortugalRecords(PortugalBase):
     """
     Domain
       Instituto dos Mercados Públicos, do Imobiliário e da Construção (IMPIC)
+    Caveats
+      This dataset was last updated by the publisher in 2020.
     Spider arguments
       from_date
         Download only data with a contract signing date from this date onward (YYYY-MM-DD format).

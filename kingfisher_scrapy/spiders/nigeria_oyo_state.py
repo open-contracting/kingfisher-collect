@@ -7,6 +7,8 @@ class NigeriaOyoState(SimpleSpider):
     """
     Domain
       Nigeria Oyo State Open Contracting Portal
+    Caveats
+      This dataset was last updated by the publisher in 2022.
     """
 
     name = 'nigeria_oyo_state'

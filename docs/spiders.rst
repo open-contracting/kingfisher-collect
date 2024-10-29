@@ -275,7 +275,7 @@ Chile
 
    scrapy crawl chile_compra_bulk
 
-.. autoclass:: kingfisher_scrapy.spiders.chile_public_works_bulk.ChilePublicWorksBUlk
+.. autoclass:: kingfisher_scrapy.spiders.chile_public_works_bulk.ChilePublicWorksBulk
    :no-members:
 
 .. code-block:: bash

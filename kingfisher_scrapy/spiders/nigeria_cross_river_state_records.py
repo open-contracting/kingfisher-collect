@@ -1,10 +1,14 @@
 from kingfisher_scrapy.spiders.nigeria_cross_river_state_base import NigeriaCrossRiverStateBase
 
+# https://ocdsapi.dppib-crsgov.org/api/ocdsAPI/getAvailableReleasesSummary
+
 
 class NigeriaCrossRiverStateRecords(NigeriaCrossRiverStateBase):
     """
     Domain
       Cross River State
+    Caveats
+      This dataset was last updated by the publisher in 2021.
     Spider arguments
       from_date
         Download only data from this month onward (YYYY-MM format).

@@ -3,11 +3,15 @@ import scrapy
 from kingfisher_scrapy.base_spiders import LinksSpider
 from kingfisher_scrapy.util import parameters
 
+# https://odapi.spa.ge/Json.zip#/tenders?sort=tenderAnnouncementDateSortDesc
+
 
 class GeorgiaRecords(LinksSpider):
     """
     Domain
       State Procurement Agency (SPA)
+    Caveats
+      This dataset was last updated by the publisher in 2020.
     Bulk download documentation
       https://odapi.spa.ge/publication-policy
     Swagger API documentation

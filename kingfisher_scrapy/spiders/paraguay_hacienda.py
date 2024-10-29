@@ -12,6 +12,8 @@ class ParaguayHacienda(BaseSpider):
     """
     Domain
       Ministerio de Hacienda
+    Caveats
+      This dataset was last updated by the publisher in 2018.
     Environment variables
       KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN
         To get an API account and request token go to https://datos.hacienda.gov.py/aplicaciones/new.

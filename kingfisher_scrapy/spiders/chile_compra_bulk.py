@@ -4,11 +4,15 @@ from kingfisher_scrapy.base_spiders import CompressedFileSpider, PeriodicSpider
 from kingfisher_scrapy.items import File, FileError
 from kingfisher_scrapy.util import components
 
+# curl -I https://ocds.blob.core.windows.net/ocds/202205.zip
+
 
 class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
     """
     Domain
       ChileCompra
+    Caveats
+      This dataset was last updated by the publisher in 2022.
     Spider arguments
       from_date
         Download only data from this month onward (YYYY-MM format). Defaults to '2009-01'.

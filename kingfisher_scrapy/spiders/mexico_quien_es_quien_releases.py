@@ -6,6 +6,8 @@ class MexicoQuienEsQuienReleases(IndexSpider, PeriodicSpider):
     """
     Domain
       QuiénEsQuién.Wiki
+    Caveats
+      This dataset was last updated by the publisher in 2021.
     Spider arguments
       from_date
         Download only data from this date onward (YYYY-MM-DD format). Defaults to '1999-01-01'.

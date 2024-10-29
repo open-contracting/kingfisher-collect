@@ -1,13 +1,15 @@
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.util import components
 
+# curl -I https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-17-18.json
+
 
 class CanadaBuyandsell(SimpleSpider):
     """
     Domain
       Public Works and Government Services Canada
     Caveats
-      The dataset is a pilot.
+      The dataset is a pilot that ended in 2017.
     API documentation
       https://buyandsell.gc.ca/procurement-data/open-contracting-data-standard-pilot/download-ocds-pilot-data
     """
@@ -27,6 +29,7 @@ class CanadaBuyandsell(SimpleSpider):
             'https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-14-15.json',
             'https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-13-14.json',
             'https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-12-13.json',
+            # Can retrieve as early as https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-95-96.json
         ]
 
         for url in urls:

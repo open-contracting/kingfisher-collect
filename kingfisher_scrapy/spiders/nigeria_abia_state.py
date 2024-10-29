@@ -6,6 +6,8 @@ class NigeriaAbiaState(PeriodicSpider):
     """
     Domain
       Abia E-PROCUREMENT
+    Caveats
+      This dataset was last updated by the publisher in 2021.
     Spider arguments
       from_date
         Download only data from this year onward (YYYY format). Defaults to '2018'.

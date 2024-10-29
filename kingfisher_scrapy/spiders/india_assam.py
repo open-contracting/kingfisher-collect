@@ -1,11 +1,14 @@
 from kingfisher_scrapy.base_spiders import PeriodicSpider
 from kingfisher_scrapy.util import components
 
+# curl https://www.data.gov.in/files/ogdpv2dms/s3fs-public/ocds_mapped_procurement_data_fiscal_year_2022_2023.csv
 
 class IndiaAssamFinanceDepartment(PeriodicSpider):
     """
     Domain
       Assam State Government Finance Department - Open Government Data (OGD) Platform India
+    Caveats
+      This dataset was last updated by the publisher in 2022.
     Spider arguments
       from_date
         Download only data from this year onward (YYYY format). Defaults to '2016'.
@@ -35,5 +38,5 @@ class IndiaAssamFinanceDepartment(PeriodicSpider):
     default_until_date = '2021'
 
     def build_urls(self, date):
-        url = 'https://data.gov.in/files/ogdpv2dms/s3fs-public/ocds_mapped_procurement_data_fiscal_year'
+        url = 'https://www.data.gov.in/files/ogdpv2dms/s3fs-public/ocds_mapped_procurement_data_fiscal_year'
         yield f'{url}_{date}_{date + 1}.csv'

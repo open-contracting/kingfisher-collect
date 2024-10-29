@@ -1,11 +1,15 @@
 from kingfisher_scrapy.base_spiders import PeriodicSpider
 from kingfisher_scrapy.util import components
 
+# curl -I https://ppip.gov.np/bulk-download/2019
+
 
 class Nepal(PeriodicSpider):
     """
     Domain
       Public Procurement Monitoring Office (PPMO)
+    Caveats
+      This dataset was last updated by the publisher in 2018.
     Spider arguments
       from_date
         Download only data from this year onward (YYYY format). Defaults to '2012'.
@@ -27,5 +31,5 @@ class Nepal(PeriodicSpider):
     data_type = 'release_package'
 
     # PeriodicSpider
-    pattern = 'http://ppip.gov.np/bulk-download/{}'
+    pattern = 'https://ppip.gov.np/bulk-download/{}'
     formatter = staticmethod(components(-1))  # year

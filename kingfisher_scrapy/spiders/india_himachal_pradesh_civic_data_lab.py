@@ -4,11 +4,14 @@ from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import KingfisherScrapyError
 from kingfisher_scrapy.util import handle_http_error
 
+# https://github.com/CivicDataLab/himachal-pradesh-health-procurement-OCDS/
 
 class IndiaCivicDataLab(SimpleSpider):
     """
     Domain
       CivicDataLab
+    Caveats
+      This dataset was last updated by the publisher in 2020.
     Bulk download documentation
       https://github.com/CivicDataLab/himachal-pradesh-health-procurement-OCDS/
     """

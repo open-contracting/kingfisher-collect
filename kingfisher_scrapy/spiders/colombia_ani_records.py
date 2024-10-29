@@ -7,6 +7,8 @@ class ColombiaANIRecords(SimpleSpider):
     """
     Domain
       Agencia Nacional de Infraestructura (ANI)
+    Caveats
+      This dataset was last updated by the publisher in 2021.
     Bulk download documentation
       https://aniscopio.ani.gov.co/datos-abiertos
     API endpoints
