@@ -18,3 +18,10 @@ repos:
         name: pip-compile requirements_dev.in
         args: [requirements_dev.in, -o, requirements_dev.txt]
         files: ^requirements(_dev)?\.(in|txt)$
+  - repo: local
+    hooks:
+      - id: local
+        name: local
+        language: python
+        entry: scrapy checkall --loglevel=WARNING
+        additional_dependencies: [ijson, jsonpointer, pydantic<2, rarfile, scrapy]
