@@ -6,7 +6,7 @@ from kingfisher_scrapy.base_spiders import CompressedFileSpider
 class IndiaAssamCivicDataLab(CompressedFileSpider):
     """
     Domain
-      India Assam - CivicDataLab
+      Assam State Government Finance Department
     Caveats
       The archived file contains a __MACOSX directory with a temporary ._package.json file that is omitted.
     Bulk download documentation

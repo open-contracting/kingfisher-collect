@@ -9,7 +9,7 @@ from kingfisher_scrapy.util import handle_http_error
 class IndiaCivicDataLab(SimpleSpider):
     """
     Domain
-      CivicDataLab
+      Himachal Pradesh State Government Finance Department
     Caveats
       This dataset was last updated by the publisher in 2020.
     Bulk download documentation

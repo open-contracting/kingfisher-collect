@@ -4,7 +4,7 @@ from kingfisher_scrapy.spiders.nigeria_bon_maximus_base import NigeriaBonMaximus
 class NigeriaOsunState(NigeriaBonMaximusBase):
     """
     Domain
-      Nigeria Osun State Open Contracting Portal
+      Osun State e-Procurement System
     Bulk download documentation
       https://egp.osunstate.gov.ng/awarded_contracts.php
     """

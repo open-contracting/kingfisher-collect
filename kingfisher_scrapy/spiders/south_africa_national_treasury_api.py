@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import parameters
 class SouthAfricaNationalTreasuryAPI(LinksSpider, PeriodicSpider):
     """
     Domain
-      South Africa National Treasury
+      National Treasury
     Spider arguments
       from_date
         Download only data from this date onward (YYYY-MM-DD format). Defaults to '2017-01-01'.

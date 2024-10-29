@@ -6,7 +6,7 @@ from kingfisher_scrapy.spiders.nigeria_cross_river_state_base import NigeriaCros
 class NigeriaCrossRiverStateReleases(NigeriaCrossRiverStateBase):
     """
     Domain
-      Cross River State
+      Cross River State Due Process and Price Intelligence Bureau (DPPIB)
     Caveats
       This dataset was last updated by the publisher in 2021.
     Spider arguments

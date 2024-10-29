@@ -4,7 +4,7 @@ from kingfisher_scrapy.spiders.european_dynamics_base import EuropeanDynamicsBas
 class Malta(EuropeanDynamicsBase):
     """
     Domain
-      Malta
+      Electronic Public Procurement System (e-PPS)
     Spider arguments
       from_date
         Download only data from this month onward (YYYY-MM format).

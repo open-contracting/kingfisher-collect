@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import get_parameter_value, parameters, replace_para
 class UgandaReleases(PeriodicSpider):
     """
     Domain
-      Government Procurement Portal (GPP) of Public Procurement and Disposal of Public Assets Authority (PPDA)
+      Government Procurement Portal (GPP) - Public Procurement and Disposal of Public Assets Authority (PPDA)
     Spider arguments
       from_date
         Download only data from this year onward (YYYY format).

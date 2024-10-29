@@ -6,7 +6,7 @@ from kingfisher_scrapy.base_spiders import SimpleSpider
 class NigeriaPlateauState(SimpleSpider):
     """
     Domain
-      Nigeria Plateau State
+      Plateau State Open Contracting Portal
     Bulk download documentation
       https://ocds.plateaustate.gov.ng/
     """

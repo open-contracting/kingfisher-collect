@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import handle_http_error, parameters, replace_parame
 class ItalyMinistryOfInfrastructureAndTransport(SimpleSpider):
     """
     Domain
-      Public Contracts Service (SCP) of the Ministry of Infrastructure and Transport
+      Public Contracts Service (SCP) - Ministry of Infrastructure and Transport
     Spider arguments
       from_date
         Download only data from this date onward (YYYY-MM-DD format).

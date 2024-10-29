@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import handle_http_error, parameters
 class Kosovo(SimpleSpider):
     """
     Domain
-      Public Procurement Regulatory Commission
+      Public Procurement Regulatory Commission (PPRC)
     Spider arguments
       from_date
         Download only data with a tender period end date from this time onward (YYYY-MM-DD format).

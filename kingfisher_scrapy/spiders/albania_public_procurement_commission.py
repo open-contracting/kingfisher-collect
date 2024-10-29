@@ -9,7 +9,7 @@ from kingfisher_scrapy.base_spiders import SimpleSpider
 class AlbaniaPublicProcurementCommission(SimpleSpider):
     """
     Domain
-      Albania Public Procurement Commission (KPP)
+      Komisioni i Prokurimit Publik (KPP) (Public Procurement Commission)
     Spider arguments
       from_date
         Download only data from this year onward (YYYY format). Defaults to '2021'.

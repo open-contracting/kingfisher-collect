@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import components
 class NigeriaAbiaState(PeriodicSpider):
     """
     Domain
-      Abia E-PROCUREMENT
+      Abia State Open Contracting Portal
     Caveats
       This dataset was last updated by the publisher in 2021.
     Spider arguments

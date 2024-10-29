@@ -6,7 +6,7 @@ from kingfisher_scrapy.util import components
 class IndiaAssamFinanceDepartment(PeriodicSpider):
     """
     Domain
-      Assam State Government Finance Department - Open Government Data (OGD) Platform India
+      Assam State Government Finance Department
     Caveats
       This dataset was last updated by the publisher in 2022.
     Spider arguments

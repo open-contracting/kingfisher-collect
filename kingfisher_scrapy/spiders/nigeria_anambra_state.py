@@ -4,7 +4,7 @@ from kingfisher_scrapy.spiders.nigeria_bon_maximus_base import NigeriaBonMaximus
 class NigeriaAnambraState(NigeriaBonMaximusBase):
     """
     Domain
-      Anambra State
+      Anambra State e-Procurement Portal
     API documentation
       https://eprocure.bpp.an.gov.ng/awarded_contracts.php
     """

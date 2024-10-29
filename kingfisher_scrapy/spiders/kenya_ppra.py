@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import handle_http_error, parameters
 class KenyaPPRA(SimpleSpider):
     """
     Domain
-      Kenya Public Procurement Regulation Authority
+      Public Procurement Regulation Authority (PPRA)
     Bulk download documentation
       https://tenders.go.ke/ocds
     """

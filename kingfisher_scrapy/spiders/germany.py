@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import parameters
 class Germany(CompressedFileSpider, PeriodicSpider):
     """
     Domain
-      The Procurement Office of the Federal Ministry of the Interior (BMI) - Bekanntmachungsservice OpenData API
+      Bekanntmachungsservice - Procurement Office of the Federal Ministry of the Interior (BMI)
     Spider arguments
       from_date
         Download only data from this month onward (YYYY-MM format). Defaults to '2022-12'.

@@ -4,7 +4,7 @@ from kingfisher_scrapy.spiders.proactis_base import ProactisBase
 class UnitedKingdomWales(ProactisBase):
     """
     Domain
-      Wales
+      Sell2Wales
     Spider arguments
       from_date
         Download only data from this month onward (YYYY-MM format). Defaults to '2019-01'.

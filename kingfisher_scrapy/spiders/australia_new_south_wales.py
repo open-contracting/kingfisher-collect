@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import handle_http_error, parameters
 class AustraliaNewSouthWales(SimpleSpider):
     """
     Domain
-      New South Wales (NSW)
+      New South Wales (NSW) eTendering
     Spider arguments
       from_date
         Download only data from this date onward (YYYY-MM-DD format).

@@ -6,8 +6,7 @@ from kingfisher_scrapy.base_spiders import CompressedFileSpider
 class NigeriaPortal(CompressedFileSpider):
     """
     Domain
-      Nigeria Open Contracting Portal (NOCOPO) of Bureau of Public Procurement (BPP)
-
+      Nigeria Open Contracting Portal (NOCOPO) - Bureau of Public Procurement (BPP)
     Bulk download documentation
         https://nocopo.bpp.gov.ng/Open-Data
     """

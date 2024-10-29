@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class Slovenia(SimpleSpider):
     """
     Domain
-      Ministry of Public Administration Slovenia
+      Ministry of Public Administration
     Bulk download documentation
       http://tbfy.ijs.si/?m=tenders&a=list_data&t=si_ocds
     """

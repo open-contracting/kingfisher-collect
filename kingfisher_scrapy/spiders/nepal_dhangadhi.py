@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class NepalDhangadhi(SimpleSpider):
     """
     Domain
-      Dhangadhi Infrastructure Management System (IMS)
+      Infrastructure Management System (IMS)
     Caveats
       Some URLs listed in https://admin.ims.susasan.org/api/static-data/dhangadhi require login and cannot be
       downloaded

@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class France(BigFileSpider):
     """
     Domain
-      France
+      Ministère de l'Économie, des Finances et de l'Industrie
     Swagger API documentation
       https://doc.data.gouv.fr/api/reference/
     """

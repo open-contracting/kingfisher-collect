@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import browser_user_agent
 class CanadaMontreal(IndexSpider):
     """
     Domain
-      Ville de Montréal (City of Montreal)
+      Ville de Montréal
     API documentation
       http://donnees.ville.montreal.qc.ca/dataset/contrats-et-subventions-api
     """

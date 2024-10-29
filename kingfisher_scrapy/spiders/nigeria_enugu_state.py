@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class NigeriaEnuguState(SimpleSpider):
     """
     Domain
-      Nigeria Enugu State Open Contracting Portal
+      Enugu State Open Contracting Portal
     Bulk download documentation
       https://dueprocess.en.gov.ng/ocds_report.php
     """

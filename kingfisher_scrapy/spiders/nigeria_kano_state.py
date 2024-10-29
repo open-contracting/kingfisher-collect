@@ -4,7 +4,7 @@ from kingfisher_scrapy.spiders.european_dynamics_base import EuropeanDynamicsBas
 class NigeriaKanoState(EuropeanDynamicsBase):
     """
     Domain
-      Nigeria Kano State Open Contracting Portal
+      Kano State Open Contracting Portal
     Spider arguments
        from_date
          Download only data from this month onward (YYYY-MM format).

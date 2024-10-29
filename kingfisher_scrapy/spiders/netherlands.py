@@ -9,7 +9,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class Netherlands(SimpleSpider):
     """
     Domain
-      Ministry of Economic Affairs and Climate Policy - TenderNed
+      TenderNed
     Spider arguments
       from_date
         Download only data from this year onward (YYYY format).

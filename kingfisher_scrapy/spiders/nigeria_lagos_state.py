@@ -4,7 +4,7 @@ from kingfisher_scrapy.spiders.european_dynamics_saas_base import EuropeanDynami
 class NigeriaLagosState(EuropeanDynamicsSaasBase):
     """
     Domain
-      Nigeria Lagos State Open Contracting Portal
+      Lagos State Open Contracting Portal
     """
 
     name = 'nigeria_lagos_state'

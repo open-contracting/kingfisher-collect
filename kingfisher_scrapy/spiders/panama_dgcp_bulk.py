@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import parameters
 class PanamaDGCPBulk(PeriodicSpider):
     """
     Domain
-      Panama Dirección General de Contrataciones Públicas (DGCP)
+      Dirección General de Contrataciones Públicas (DGCP)
     Caveats
       The default date for historical data is 1900-01-01
     Spider arguments

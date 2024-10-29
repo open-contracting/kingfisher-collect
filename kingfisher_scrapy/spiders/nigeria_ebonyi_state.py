@@ -5,7 +5,7 @@ from kingfisher_scrapy.util import components, handle_http_error
 class NigeriaEbonyiState(PeriodicSpider):
     """
     Domain
-      Ebonyi E-PROCUREMENT
+      Ebonyi State e-Procurement System
     Caveats
         The JSON data sometimes contains unescaped tab characters within strings.
     Spider arguments
