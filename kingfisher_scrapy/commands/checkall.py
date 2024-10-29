@@ -1,8 +1,10 @@
 import logging
 import os.path
 import re
+import sys
 from textwrap import dedent
 
+import requests
 from scrapy.commands import ScrapyCommand
 from scrapy.exceptions import NotSupported
 from scrapy.utils.misc import walk_modules
@@ -12,10 +14,20 @@ from kingfisher_scrapy.base_spiders import PeriodicSpider
 
 logger = logging.getLogger(__name__)
 
-# Exceptions for HondurasCoST, HondurasSEFINAPI and MexicoINAIAPI, PeruOSCE.
 word_boundary_re = re.compile(
-    r'(?<=[a-z])(?=[A-Z])(?!ST$)|(?<=.)(?=[A-Z][a-z])|(?<=MexicoINAI)|(?<=HondurasSEFIN)|(?<=PeruOSCE)'
+    r"""
+    (?<=[a-z])(?=[A-Z])
+    |(?<=.)(?=[A-Z][a-z])
+    |(?<=EcuadorSERCOP)
+    |(?<=HondurasSEFIN)
+    |(?<=MexicoINAI)
+    |(?<=PakistanPPRA)
+    |(?<=PeruOSCE)
+    """,
+    flags=re.VERBOSE
 )
+
+year_re = re.compile(r'20\d\d\.\Z')
 
 
 class CheckAll(ScrapyCommand):
@@ -23,10 +35,34 @@ class CheckAll(ScrapyCommand):
         return 'Check that spiders are documented and well-implemented'
 
     def run(self, args, opts):
-        for module in walk_modules('kingfisher_scrapy.spiders'):
-            for cls in iter_spider_classes(module):
-                Checker(module, cls).check()
+        level = getattr(logging, self.settings['LOG_LEVEL'])
 
+        try:
+            response = requests.get('https://data.open-contracting.org/publications.json', timeout=10)
+            response.raise_for_status()
+            publications = response.json()
+        except requests.RequestException:  # pre-commit.ci blocks network connections
+            publications = {}
+
+        publications = {publication['source_id']: publication for publication in publications}
+        # Copy publications for *_releases/*_records pairs of spiders.
+        for source_id in list(publications):
+            if source_id.endswith('_releases'):
+                publications[f'{source_id[:-9]}_records'] = publications[source_id]
+            elif source_id.endswith('_records'):
+                publications[f'{source_id[:-8]}_releases'] = publications[source_id]
+
+        has_output = False
+        for module in walk_modules('kingfisher_scrapy.spiders'):
+            if not args or os.path.relpath(module.__file__) in args:
+                source_id = module.__name__.rsplit('.', 1)[-1]
+                for cls in iter_spider_classes(module):
+                    checker = Checker(module, cls, publications.get(source_id, {}), level)
+                    checker.check()
+                    has_output |= checker.has_output
+
+        if has_output:
+            sys.exit(1)
 
 class Checker:
     # Add more terms as needed.
@@ -64,11 +100,18 @@ class Checker:
         'available_systems': 'system',
     }
 
-    def __init__(self, module, cls):
-        self.cls = cls
+    def __init__(self, module, cls, publication, level):
         self.module = module
+        self.cls = cls
+        self.publication = publication
+        self.level = level
+
+        #: Whether the check() call produced output.
+        self.has_output = False
 
     def log(self, level, message, *args):
+        if getattr(logging, level.upper()) >= self.level:
+            self.has_output = True
         getattr(logger, level)(f'%s.%s: {message}', self.module.__name__, self.cls.__name__, *args)
 
     def check(self):
@@ -78,10 +121,13 @@ class Checker:
         basename = os.path.splitext(os.path.basename(self.module.__file__))[0]
         expected_basename = re.sub(word_boundary_re, '_', class_name).lower()
 
-        if basename != expected_basename and class_name not in {'PakistanPPRAAPI', 'EcuadorSERCOPAPI'}:
+        if basename != expected_basename:
             self.log('error', 'class %s and file %s (%s) do not match', class_name, basename, expected_basename)
 
-        if class_name.endswith('Base') and class_name != 'EuropeTEDTenderBase' or class_name.endswith('Digiwhist'):
+        if self.cls.name != basename:
+            self.log('error', 'spider name %s and file name %s do not match', self.cls.name, basename)
+
+        if class_name.endswith(('Base', 'Digiwhist')):
             if docstring:
                 self.log('error', 'unexpected docstring')
             return
@@ -94,15 +140,22 @@ class Checker:
         # regular expressions instead.
         docstring = dedent(docstring)
 
-        # Spider metadata.
-        terms = re.findall(r'^(\S.+)\n  ', docstring, re.MULTILINE)
+        # Spider metadata
+
+        terms = dict(re.findall(r'^(\S.+)\n  (.+)', docstring, re.MULTILINE))
 
         self.check_list(terms, self.known_terms, 'terms')
 
         if 'Domain' not in terms:
             self.log('error', 'missing term: "Domain"')
 
-        # Spider arguments.
+        if self.publication.get('retrieval_frequency') == 'NEVER' and not year_re.search(terms.get('Caveats', '')):
+            self.log('error', 'missing "Caveats" term for publication that has ended')
+        elif self.publication.get('retrieval_frequency') != 'NEVER' and year_re.search(terms.get('Caveats', '')):
+            self.log('error', 'unexpected "Caveats" term for publication that has not ended')
+
+        # Spider arguments
+
         section = re.search(r'^Spider arguments\n(.+?)(?:^\S|\Z)', docstring, re.MULTILINE | re.DOTALL)
         if section:
             matches = re.findall(r'^(\S.+)((?:\n  .+)+)', dedent(section[1]), re.MULTILINE)
