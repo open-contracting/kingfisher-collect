@@ -1,3 +1,4 @@
+
 import logging
 import os.path
 import re
@@ -149,9 +150,10 @@ class Checker:
         if 'Domain' not in terms:
             self.log('error', 'missing term: "Domain"')
 
-        if self.publication.get('retrieval_frequency') == 'NEVER' and not year_re.search(terms.get('Caveats', '')):
+        retrieval_frequency = self.publication.get('retrieval_frequency')
+        if retrieval_frequency == 'NEVER' and not year_re.search(terms.get('Caveats', '')):
             self.log('error', 'missing "Caveats" term for publication that has ended')
-        elif self.publication.get('retrieval_frequency') != 'NEVER' and year_re.search(terms.get('Caveats', '')):
+        elif retrieval_frequency and retrieval_frequency != 'NEVER' and year_re.search(terms.get('Caveats', '')):
             self.log('error', 'unexpected "Caveats" term for publication that has not ended')
 
         # Spider arguments

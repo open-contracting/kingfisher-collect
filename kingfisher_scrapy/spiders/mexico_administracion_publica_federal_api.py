@@ -8,6 +8,8 @@ class MexicoAdministracionPublicaFederalAPI(IndexSpider):
     Domain
       Administración Pública Federal (APF): Secretaria de la Función Pública (SFP) - Secretaría de Hacienda y Crédito
       Público (SHCP)
+    Caveats
+      This dataset was last updated by the publisher in 2018.
     API documentation
       https://www.datos.gob.mx/busca/dataset/api-de-contrataciones-abiertas-de-la-apf
     """
