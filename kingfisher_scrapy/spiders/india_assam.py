@@ -3,7 +3,8 @@ from kingfisher_scrapy.util import components
 
 # curl https://www.data.gov.in/files/ogdpv2dms/s3fs-public/ocds_mapped_procurement_data_fiscal_year_2022_2023.csv
 
-class IndiaAssamFinanceDepartment(PeriodicSpider):
+
+class IndiaAssam(PeriodicSpider):
     """
     Domain
       Assam State Government Finance Department
@@ -18,7 +19,7 @@ class IndiaAssamFinanceDepartment(PeriodicSpider):
       https://data.gov.in/catalog/assam-public-procurement-data
     """
 
-    name = 'india_assam_finance_department'
+    name = 'india_assam'
 
     # To avoid 403 errors when unflattening the CSV files.
     custom_settings = {

@@ -6,7 +6,8 @@ from kingfisher_scrapy.util import handle_http_error
 
 # https://github.com/CivicDataLab/himachal-pradesh-health-procurement-OCDS/
 
-class IndiaCivicDataLab(SimpleSpider):
+
+class IndiaHimachalPradeshCivicDataLab(SimpleSpider):
     """
     Domain
       Himachal Pradesh State Government Finance Department
@@ -16,7 +17,7 @@ class IndiaCivicDataLab(SimpleSpider):
       https://github.com/CivicDataLab/himachal-pradesh-health-procurement-OCDS/
     """
 
-    name = 'india_civic_data_lab'
+    name = 'india_himachal_pradesh_civic_data_lab'
 
     # BaseSpider
     unflatten = True
