@@ -18,7 +18,7 @@ NEWSPIDER_MODULE = 'kingfisher_scrapy.spiders'
 USER_AGENT = 'kingfisher_scrapy (+http://www.open-contracting.org)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = False
+ROBOTSTXT_OBEY = False  # default True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 CONCURRENT_REQUESTS = 32
@@ -27,15 +27,8 @@ CONCURRENT_REQUESTS = 32
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 #DOWNLOAD_DELAY = 3
-
-# The maximum response size (in bytes) that downloader will download (default: 1073741824):
-DOWNLOAD_MAXSIZE = 10000000000
-DOWNLOAD_WARNSIZE = 0
-# Many spiders time out when using default of 180.
-DOWNLOAD_TIMEOUT = 360
-
 # The download delay setting will honor only one of:
-CONCURRENT_REQUESTS_PER_DOMAIN = 2
+CONCURRENT_REQUESTS_PER_DOMAIN = 2  # default 8
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
@@ -46,15 +39,12 @@ TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
 #DEFAULT_REQUEST_HEADERS = {
-#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
+#    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+#    'Accept-Language': 'en',
 #}
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'kingfisher_scrapy.spidermiddlewares.MyCustomSpiderMiddleware': 543,
-#}
 SPIDER_MIDDLEWARES = {
     # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#topics-spider-middleware-setting
     # `process_spider_output` is invoked in decreasing order.
@@ -98,33 +88,6 @@ ITEM_PIPELINES = {
    'kingfisher_scrapy.pipelines.Pluck': 302,
 }
 
-
-# To send exceptions and log records to Sentry.
-SENTRY_DSN = os.getenv('SENTRY_DSN')
-
-# To send items to Kingfisher Process (version 2).
-KINGFISHER_API2_URL = os.getenv('KINGFISHER_API2_URL')
-RABBIT_URL = os.getenv('RABBIT_URL')
-RABBIT_EXCHANGE_NAME = os.getenv('RABBIT_EXCHANGE_NAME')
-RABBIT_ROUTING_KEY = os.getenv('RABBIT_ROUTING_KEY')
-
-LOG_FORMATTER = 'kingfisher_scrapy.log_formatter.LogFormatter'
-
-KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
-KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
-
-# To get an API account, visit https://www.contrataciones.gov.py/datos/adm/signup
-KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
-
-# To get an API account, contact contact@openopps.com.
-KINGFISHER_OPENOPPS_USERNAME = os.getenv('KINGFISHER_OPENOPPS_USERNAME')
-KINGFISHER_OPENOPPS_PASSWORD = os.getenv('KINGFISHER_OPENOPPS_PASSWORD')
-
-KINGFISHER_PLUCK_PATH = os.getenv('KINGFISHER_PLUCK_PATH', '')
-KINGFISHER_PLUCK_MAX_BYTES = None
-
-# To store items into a PostgreSQL database.
-DATABASE_URL = None
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
@@ -149,16 +112,65 @@ DATABASE_URL = None
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
 
-# https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std:setting-FILES_STORE
-FILES_STORE = os.getenv('FILES_STORE', 'data')
+
+# Project-specific Scrapy configuration
+
+# https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-DOWNLOAD_TIMEOUT
+DOWNLOAD_TIMEOUT = 360  # many spiders time out when using the 180 default
+# https://docs.scrapy.org/en/latest/topics/settings.html#download-maxsize
+DOWNLOAD_MAXSIZE = 10000000000  # 10 GB, default 1 GiB
+# https://docs.scrapy.org/en/latest/topics/settings.html#download-warnsize
+DOWNLOAD_WARNSIZE = 0  # default 32 MiB
 
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
-HTTPERROR_ALLOW_ALL = True
+HTTPERROR_ALLOW_ALL = True  # default False
 
 # https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpproxy-enabled
-HTTPPROXY_ENABLED = False
+HTTPPROXY_ENABLED = False  # default True
+
+# https://docs.scrapy.org/en/latest/topics/settings.html#log-formatter
+LOG_FORMATTER = 'kingfisher_scrapy.log_formatter.LogFormatter'
 
 # Scrapyd won't have (and doesn't need) access to this module.
 if os.getenv('SCRAPY_PROJECT') is None:
-    # https://docs.scrapy.org/en/latest/topics/commands.html#commands-module
+    # https://docs.scrapy.org/en/latest/topics/commands.html#std-setting-COMMANDS_MODULE
     COMMANDS_MODULE = 'kingfisher_scrapy.commands'
+
+
+# Project configuration
+
+# To send exceptions and log records to Sentry.
+# Used by SentryLogging extension.
+SENTRY_DSN = os.getenv('SENTRY_DSN')
+
+# This setting is not the same as the Scrapy setting. (The project previously used FilesPipeline.)
+# Used by FilesStore extension.
+FILES_STORE = os.getenv('FILES_STORE', 'data')
+
+# To store items into a PostgreSQL database.
+# Used by DatabaseStore extension.
+DATABASE_URL = None
+
+# To send items to Kingfisher Process (version 2).
+# Used by KingfisherProcessAPI2 extension.
+KINGFISHER_API2_URL = os.getenv('KINGFISHER_API2_URL')
+RABBIT_URL = os.getenv('RABBIT_URL')
+RABBIT_EXCHANGE_NAME = os.getenv('RABBIT_EXCHANGE_NAME')
+RABBIT_ROUTING_KEY = os.getenv('RABBIT_ROUTING_KEY')
+
+# Used by Pluck extension.
+KINGFISHER_PLUCK_PATH = os.getenv('KINGFISHER_PLUCK_PATH', '')
+KINGFISHER_PLUCK_MAX_BYTES = None
+
+
+# API keys
+
+KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
+KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET = os.getenv('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
+
+# To get an API account, visit https://www.contrataciones.gov.py/datos/adm/signup
+KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN = os.getenv('KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN')
+
+# To get an API account, contact contact@openopps.com.
+KINGFISHER_OPENOPPS_USERNAME = os.getenv('KINGFISHER_OPENOPPS_USERNAME')
+KINGFISHER_OPENOPPS_PASSWORD = os.getenv('KINGFISHER_OPENOPPS_PASSWORD')
