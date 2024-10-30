@@ -5,6 +5,8 @@ class HondurasPortalAPIReleases(HondurasPortalAPIBase):
     """
     Domain
       Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Secretaria de Finanzas de Honduras (SEFIN)
+    Caveats
+      Cloudflare responds with HTTP 502 on deep pages (like page 5000).
     Spider arguments
       publisher
         Filter by publisher:
