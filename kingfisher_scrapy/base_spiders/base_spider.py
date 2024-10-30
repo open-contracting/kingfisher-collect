@@ -189,6 +189,14 @@ class BaseSpider(scrapy.Spider):
 
         self.logger.info('Spider arguments: %r', spider_arguments)
 
+    # Scrapy calls this method to merge the spider's custom_settings into the project's settings.
+    @classmethod
+    def update_settings(cls, settings):
+        if cls.custom_settings is None:
+            cls.custom_settings = {}
+        cls.custom_settings['HTTPPROXY_ENABLED'] = cls.name in settings.getlist('PROXY_SPIDERS')
+        super().update_settings(settings)
+
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super().from_crawler(crawler, *args, **kwargs)

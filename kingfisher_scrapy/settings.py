@@ -139,6 +139,9 @@ if os.getenv('SCRAPY_PROJECT') is None:
 
 # Project configuration
 
+# Add the names of spiders that need to use a proxy.
+PROXY_SPIDERS = os.getenv('PROXY_SPIDERS')
+
 # To send exceptions and log records to Sentry.
 # Used by SentryLogging extension.
 SENTRY_DSN = os.getenv('SENTRY_DSN')
