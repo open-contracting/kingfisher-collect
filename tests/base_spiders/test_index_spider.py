@@ -75,7 +75,7 @@ def test_urls(spider_args, start_request_response, initial_url, results_pattern,
         request=Request(url=initial_url, meta={'file_name': 'list.json'})
     )
 
-    test_spider = type('TestSpider', (IndexSpider,), spider_args)
+    test_spider = type('TestSpider', (IndexSpider,), {'name': 'test'} | spider_args)
 
     spider = spider_with_crawler(spider_class=test_spider)
 

@@ -11,10 +11,6 @@ FILE_LENGTH = 5
 FILE_ITEM_LENGTH = FILE_LENGTH + 1
 
 
-class TestSpider(BaseSpider):
-    name = 'test'
-
-
 def path(filename):
     return os.path.join('tests', 'fixtures', filename)
 
@@ -27,9 +23,11 @@ def response_fixture(meta=None, url_path='', **kwargs):
     return TextResponse(request.url, encoding='utf-8', request=request, **kwargs)
 
 
-def spider_with_crawler(spider_class=TestSpider, *, settings=None, **kwargs):
+def spider_with_crawler(spider_class=BaseSpider, *, settings=None, **kwargs):
     if settings is None:
         settings = {}
+    if not hasattr(spider_class, 'name'):
+        spider_class = type('TestSpider', (spider_class,), {'name': 'test'})
     settings.update({'LOG_FORMATTER': 'kingfisher_scrapy.log_formatter.LogFormatter'})
     crawler = get_crawler(spider_class, settings)
     start_time = datetime(2001, 2, 3, 4, 5, 6)

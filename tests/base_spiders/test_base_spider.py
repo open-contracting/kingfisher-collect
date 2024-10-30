@@ -127,7 +127,8 @@ def test_crawl_time_invalid():
 ])
 def test_qs_parameters(kwargs, expected):
     test_spider = type('TestSpider', (BaseSpider,), {
-        'start_requests': lambda _self: [scrapy.Request('http://example.com')]
+        'name': 'test',
+        'start_requests': lambda _self: [scrapy.Request('http://example.com')],
     })
     spider = spider_with_crawler(test_spider, **kwargs)
 
@@ -165,6 +166,7 @@ def test_data_base_url_with_compile():
 ])
 def test_path_parameters(base_url, kwargs, expected):
     test_spider = type('TestSpider', (BaseSpider,), {
+        'name': 'test',
         'start_requests': lambda _self: [scrapy.Request(base_url)]
     })
     spider = spider_with_crawler(test_spider, **kwargs)

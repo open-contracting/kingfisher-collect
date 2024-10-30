@@ -124,11 +124,12 @@ def test_urls(date_format, pattern, expected_start, expected_end, class_args, us
         datetime.datetime.strptime(str(expected_end), PeriodicSpider.VALID_DATE_FORMATS[date_format])
     )
 
-    test_spider = type(
-        'TestSpider',
-        (PeriodicSpider,),
-        dict(date_format=date_format, formatter=staticmethod(components(-1)), pattern=pattern, **class_args),
-    )
+    test_spider = type('TestSpider', (PeriodicSpider,), {
+        'name': 'test',
+        'date_format': date_format,
+        'formatter': staticmethod(components(-1)),
+        'pattern': pattern,
+    } | class_args)
     spider = spider_with_crawler(spider_class=test_spider, **user_args)
 
     requests = list(spider.start_requests())
