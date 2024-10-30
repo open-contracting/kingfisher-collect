@@ -1,6 +1,6 @@
-from kingfisher_scrapy.spiders.digiwhist_base import DigiwhistBase
+from kingfisher_scrapy.spiders.government_transparency_institute_base import GovernmentTransparencyInstituteBase
 
 
-class SloveniaDigiwhist(DigiwhistBase):
+class SloveniaDigiwhist(GovernmentTransparencyInstituteBase):
     name = 'slovenia_digiwhist'
     country_code = 'si'

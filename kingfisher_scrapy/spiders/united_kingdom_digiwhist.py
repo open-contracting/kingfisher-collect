@@ -1,6 +1,6 @@
-from kingfisher_scrapy.spiders.digiwhist_base import DigiwhistBase
+from kingfisher_scrapy.spiders.government_transparency_institute_base import GovernmentTransparencyInstituteBase
 
 
-class UnitedKingdomDigiwhist(DigiwhistBase):
+class UnitedKingdomDigiwhist(GovernmentTransparencyInstituteBase):
     name = 'united_kingdom_digiwhist'
     country_code = 'uk'

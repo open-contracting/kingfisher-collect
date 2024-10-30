@@ -2,10 +2,10 @@ from kingfisher_scrapy.base_spiders import CompressedFileSpider
 from kingfisher_scrapy.util import browser_user_agent, components
 
 
-class DigiwhistBase(CompressedFileSpider):
+class GovernmentTransparencyInstituteBase(CompressedFileSpider):
     """
     Domain
-      Digiwhist
+      Government Transparency Institute
     Bulk download documentation
       https://opentender.eu/download
     """
