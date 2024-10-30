@@ -1,8 +1,8 @@
-
 import logging
 import os.path
 import re
 import sys
+from fnmatch import fnmatch
 from textwrap import dedent
 
 import requests
@@ -28,7 +28,18 @@ word_boundary_re = re.compile(
     flags=re.VERBOSE
 )
 
+spider_re = re.compile(r'\b([a-z]+(?:(?:_[a-z*]+)+|(?=:)))')
 year_re = re.compile(r'20\d\d\.\Z')
+
+
+def _get(url):
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
+    return response.json()
+
+
+def _freezable(publication):
+    return publication and publication['retrieval_frequency'] != 'NEVER' and not publication['frozen']
 
 
 class CheckAll(ScrapyCommand):
@@ -39,19 +50,46 @@ class CheckAll(ScrapyCommand):
         level = getattr(logging, self.settings['LOG_LEVEL'])
 
         try:
-            response = requests.get('https://data.open-contracting.org/publications.json', timeout=10)
-            response.raise_for_status()
-            publications = response.json()
+            issues = _get('https://api.github.com/repos/open-contracting/kingfisher-collect/issues?labels=unavailable&per_page=100')
+            publications = _get('https://data.open-contracting.org/publications.json')
         except requests.RequestException:  # pre-commit.ci blocks network connections
+            issues = {}
             publications = {}
 
         publications = {publication['source_id']: publication for publication in publications}
-        # Copy publications for *_releases/*_records pairs of spiders.
-        for source_id in list(publications):
+
+        glob_issues = []
+        with_issues = set()
+        for issue in issues:
+            for spider in spider_re.findall(issue['title']):
+                if '*' in spider:
+                    glob_issues.append(spider)
+                else:
+                    with_issues.add(spider)
+
+        # Perform issue checks before copying publications for "Caveats" check.
+        for source_id in with_issues:
+            publication = publications.get(source_id)
+            if _freezable(publication):
+                logger.error('%s: publication has issues but is not frozen', source_id)
+        for pattern in glob_issues:
+            publication = next((v for source_id, v in publications.items() if fnmatch(source_id, pattern)), None)
+            if _freezable(publication):
+                logger.error('%s: publication has issues but is not frozen', source_id)
+
+        for source_id, publication in list(publications.items()):
+            if (
+                publication['frozen']
+                and source_id not in with_issues
+                and not any(fnmatch(source_id, pattern) for pattern in glob_issues)
+            ):
+                logger.error('%s: publication has no issues but is frozen', source_id)
+
+            # Copy publications for *_releases/*_records pairs of spiders.
             if source_id.endswith('_releases'):
-                publications[f'{source_id[:-9]}_records'] = publications[source_id]
+                publications[f'{source_id[:-9]}_records'] = publication
             elif source_id.endswith('_records'):
-                publications[f'{source_id[:-8]}_releases'] = publications[source_id]
+                publications[f'{source_id[:-8]}_releases'] = publication
 
         has_output = False
         for module in walk_modules('kingfisher_scrapy.spiders'):
@@ -153,7 +191,7 @@ class Checker:
         retrieval_frequency = self.publication.get('retrieval_frequency')
         if retrieval_frequency == 'NEVER' and not year_re.search(terms.get('Caveats', '')):
             self.log('error', 'missing "Caveats" term for publication that has ended')
-        elif retrieval_frequency and retrieval_frequency != 'NEVER' and year_re.search(terms.get('Caveats', '')):
+        elif retrieval_frequency not in (None, 'NEVER') and year_re.search(terms.get('Caveats', '')):
             self.log('error', 'unexpected "Caveats" term for publication that has not ended')
 
         # Spider arguments
