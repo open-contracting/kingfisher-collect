@@ -81,7 +81,11 @@ Pass ``spider`` names as positional arguments to run specific spiders, instead o
 checkall
 --------
 
-Checks that spiders are documented and well-implemented. It reports whether information is missing, out-of-order, or unexpected in the docstring, and if an expected spider argument isn't implemented.
+Checks that spiders are documented and well-implemented. It reports whether:
+
+-  The names of files, classes and spiders mismatch.
+-  Information is missing, unexpected or out-of-order in the docstring, including spider arguments.
+-  A publication in the Data Registry has GitHub issues, but isn't frozen, or vice versa.
 
 .. code-block:: bash
 
