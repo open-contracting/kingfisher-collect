@@ -10,7 +10,7 @@ class GovernmentTransparencyInstituteBase(CompressedFileSpider):
       https://opentender.eu/download
     """
 
-    user_agent = browser_user_agent  # to avoid HTTP 410 error
+    user_agent = browser_user_agent  # to avoid HTTP 410
 
     # BaseSpider
     line_delimited = True

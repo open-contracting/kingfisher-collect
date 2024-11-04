@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import browser_user_agent, components, handle_http_error
 
 
 class SpainZaragoza(SimpleSpider):
@@ -15,6 +15,7 @@ class SpainZaragoza(SimpleSpider):
     """
 
     name = 'spain_zaragoza'
+    user_agent = browser_user_agent  # to avoid HTTP 500
 
     # SimpleSpider
     data_type = 'release_package'
