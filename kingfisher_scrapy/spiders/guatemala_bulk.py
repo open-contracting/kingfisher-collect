@@ -42,7 +42,7 @@ class GuatemalaBulk(CompressedFileSpider):
         The response looks like:
 
         {
-          "id": "gc-{year}-{month}"
+          "id": "gc-{year}-{month}",
           "results": [
             {
              "files": {
