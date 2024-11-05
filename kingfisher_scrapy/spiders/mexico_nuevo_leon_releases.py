@@ -1,12 +1,16 @@
-import scrapy
+from kingfisher_scrapy.spiders.mexico_nuevo_leon_base import MexicoNuevoLeonBase
+from kingfisher_scrapy.util import components, handle_http_error
 
-from kingfisher_scrapy.base_spiders import CompressedFileSpider
 
-
-class MexicoNuevoLeonReleases(CompressedFileSpider):
+class MexicoNuevoLeonReleases(MexicoNuevoLeonBase):
     """
     Domain
       Secretaría de Movilidad y Planeación Urbana de Nuevo León
+    Spider arguments
+      from_date
+        Download only data from this year onward (YYYY format). Defaults to '2013'.
+      until_date
+        Download only data until this year (YYYY format). Defaults to the current year.
     Bulk download documentation
       https://smpu.nl.gob.mx/transparencia/acerca-del-proyecto
     """
@@ -19,9 +23,12 @@ class MexicoNuevoLeonReleases(CompressedFileSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    # CompressedFileSpider
-    file_name_must_contain = 'ReleasePackage'
+    # PeriodicSpider
+    start_requests_callback = 'parse_list'
 
-    def start_requests(self):
-        url = 'https://smpu.nl.gob.mx/acceso/DatosAbiertos/JSONsInfraestructuraAbierta.rar'
-        yield scrapy.Request(url, meta={'file_name': 'all.rar'})
+    @handle_http_error
+    def parse_list(self, response):
+        for record_package in response.json():
+            for record in record_package['records']:
+                for release in record['releases']:
+                    yield self.build_request(release['url'], formatter=components(-1))
