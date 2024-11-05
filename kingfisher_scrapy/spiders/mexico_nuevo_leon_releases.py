@@ -1,8 +1,8 @@
-from kingfisher_scrapy.spiders.mexico_nuevo_leon_records import MexicoNuevoLeonRecords
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.spiders.mexico_nuevo_leon_base import MexicoNuevoLeonBase
+from kingfisher_scrapy.util import components, handle_http_error
 
 
-class MexicoNuevoLeonReleases(MexicoNuevoLeonRecords):
+class MexicoNuevoLeonReleases(MexicoNuevoLeonBase):
     """
     Domain
       Secretaría de Movilidad y Planeación Urbana de Nuevo León
@@ -26,6 +26,7 @@ class MexicoNuevoLeonReleases(MexicoNuevoLeonRecords):
     # PeriodicSpider
     start_requests_callback = 'parse_list'
 
+    @handle_http_error
     def parse_list(self, response):
         for record_package in response.json():
             for record in record_package['records']:
