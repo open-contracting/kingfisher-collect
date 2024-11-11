@@ -1,7 +1,7 @@
-from kingfisher_scrapy.spiders.mexico_nuevo_leon_base import MexicoNuevoLeonBase
+from kingfisher_scrapy.spiders.mexico_nuevo_leon_infra_abierta_base import MexicoNuevoLeonBase
 
 
-class MexicoNuevoLeonRecords(MexicoNuevoLeonBase):
+class MexicoNuevoLeonInfraAbiertaRecords(MexicoNuevoLeonBase):
     """
     Domain
       Secretaría de Movilidad y Planeación Urbana de Nuevo León
@@ -14,7 +14,7 @@ class MexicoNuevoLeonRecords(MexicoNuevoLeonBase):
       https://smpu.nl.gob.mx/transparencia/publicaciones
     """
 
-    name = 'mexico_nuevo_leon_records'
+    name = 'mexico_nuevo_leon_infra_abierta_records'
 
     # SimpleSpider
     data_type = 'record_package'

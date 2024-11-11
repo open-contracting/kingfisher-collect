@@ -1,8 +1,8 @@
-from kingfisher_scrapy.spiders.mexico_nuevo_leon_base import MexicoNuevoLeonBase
+from kingfisher_scrapy.spiders.mexico_nuevo_leon_infra_abierta_base import MexicoNuevoLeonBase
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class MexicoNuevoLeonReleases(MexicoNuevoLeonBase):
+class MexicoNuevoLeonInfraAbiertaReleases(MexicoNuevoLeonBase):
     """
     Domain
       Secretaría de Movilidad y Planeación Urbana de Nuevo León
@@ -15,7 +15,7 @@ class MexicoNuevoLeonReleases(MexicoNuevoLeonBase):
       https://smpu.nl.gob.mx/transparencia/acerca-del-proyecto
     """
 
-    name = 'mexico_nuevo_leon_releases'
+    name = 'mexico_nuevo_leon_infra_abierta_releases'
 
     # BaseSpider
     skip_pluck = 'Already covered (see code for details)'  # mexico_nuevo_leon_records
