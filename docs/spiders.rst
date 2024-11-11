@@ -809,6 +809,13 @@ Mexico
 
    scrapy crawl mexico_michoacan_sesea_plataforma_digital_nacional
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon.MexicoNuevoLeon
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_nuevo_leon
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_cotai.MexicoNuevoLeonCOTAI
    :no-members:
 
@@ -816,19 +823,19 @@ Mexico
 
    scrapy crawl mexico_nuevo_leon_cotai
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_records.MexicoNuevoLeonRecords
+.. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_infra_abierta_records.MexicoNuevoLeonInfraAbiertaRecords
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl mexico_nuevo_leon_records
+   scrapy crawl mexico_nuevo_leon_infra_abierta_records
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_releases.MexicoNuevoLeonReleases
+.. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_infra_abierta_releases.MexicoNuevoLeonInfraAbiertaReleases
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl mexico_nuevo_leon_releases
+   scrapy crawl mexico_nuevo_leon_infra_abierta_releases
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_puebla_state_seseap_plataforma_digital_nacional.MexicoPueblaStateSESEAPPlataformaDigitalNacional
    :no-members:
