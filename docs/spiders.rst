@@ -760,6 +760,13 @@ Mexico
 
    scrapy crawl mexico_durango_idaip
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_guadalajara.MexicoGuadalajara
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_guadalajara
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_guanajuato_iacip.MexicoGuanajuatoIACIP
    :no-members:
 
