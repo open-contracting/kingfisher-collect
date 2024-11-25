@@ -88,10 +88,10 @@ class CompressedFileSpider(BaseSpider):
             basename = os.path.basename(filename)
             if (
                 self.file_name_must_contain not in basename
-                or self.file_name_must_not_contain and self.file_name_must_not_contain in basename
+                or (self.file_name_must_not_contain and self.file_name_must_not_contain in basename)
                 or filename.startswith('__MACOSX')
-                or archive_format == 'rar' and file_info.isdir()
-                or archive_format == 'zip' and file_info.is_dir()
+                or (archive_format == 'rar' and file_info.isdir())
+                or (archive_format == 'zip' and file_info.is_dir())
             ):
                 continue
             if not basename.endswith('.json'):

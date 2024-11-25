@@ -12,10 +12,10 @@ from kingfisher_scrapy.base_spiders.periodic_spider import PeriodicSpider
 
 __all__ = (
     "BaseSpider",
-    "CompressedFileSpider",
-    "SimpleSpider",
     "BigFileSpider",
+    "CompressedFileSpider",
     "IndexSpider",
     "LinksSpider",
     "PeriodicSpider",
+    "SimpleSpider",
 )
