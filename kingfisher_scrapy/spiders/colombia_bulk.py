@@ -2,7 +2,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components, handle_http_error
 
 
 class ColombiaBulk(CompressedFileSpider):
@@ -30,7 +30,7 @@ class ColombiaBulk(CompressedFileSpider):
     """
 
     name = 'colombia_bulk'
-    download_timeout = 99999
+    download_timeout = MAX_DOWNLOAD_TIMEOUT
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }

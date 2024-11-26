@@ -3,7 +3,7 @@ import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components, handle_http_error
 
 
 class Netherlands(SimpleSpider):
@@ -22,7 +22,7 @@ class Netherlands(SimpleSpider):
     """
 
     name = 'netherlands'
-    download_timeout = 99999  # to avoid user timeout when downloading the file
+    download_timeout = MAX_DOWNLOAD_TIMEOUT
 
     # SimpleSpider
     data_type = 'release_package'

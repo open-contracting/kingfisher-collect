@@ -2,8 +2,8 @@ import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.util import (
+    BROWSER_USER_AGENT,
     append_path_components,
-    browser_user_agent,
     components,
     handle_http_error,
     join,
@@ -24,7 +24,7 @@ class Ukraine(SimpleSpider):
     """
 
     name = 'ukraine'
-    user_agent = browser_user_agent  # to avoid HTTP 412
+    user_agent = BROWSER_USER_AGENT  # to avoid HTTP 412
 
     # BaseSpider
     data_type = 'release_package'

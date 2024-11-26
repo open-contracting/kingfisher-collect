@@ -1,5 +1,5 @@
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
-from kingfisher_scrapy.util import browser_user_agent
+from kingfisher_scrapy.util import BROWSER_USER_AGENT
 
 
 class MexicoMexicoCityINFOCDMX(MexicoINAIBase):
@@ -19,7 +19,7 @@ class MexicoMexicoCityINFOCDMX(MexicoINAIBase):
     """
 
     name = 'mexico_mexico_city_infocdmx'
-    user_agent = browser_user_agent  # to avoid HTTP 500
+    user_agent = BROWSER_USER_AGENT  # to avoid HTTP 500
 
     # BaseSpider
     default_from_date = '2019'

@@ -1,9 +1,9 @@
 from kingfisher_scrapy.base_spiders import PeriodicSpider
-from kingfisher_scrapy.util import browser_user_agent, parameters
+from kingfisher_scrapy.util import BROWSER_USER_AGENT, parameters
 
 
 class MexicoNuevoLeonBase(PeriodicSpider):
-    user_agent = browser_user_agent  # to avoid HTTP 403
+    user_agent = BROWSER_USER_AGENT  # to avoid HTTP 403
 
     # BaseSpider
     date_format = 'year'

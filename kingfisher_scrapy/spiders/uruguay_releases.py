@@ -1,5 +1,5 @@
 from kingfisher_scrapy.spiders.uruguay_base import UruguayBase
-from kingfisher_scrapy.util import browser_user_agent, components, handle_http_error
+from kingfisher_scrapy.util import BROWSER_USER_AGENT, components, handle_http_error
 
 
 class UruguayReleases(UruguayBase):
@@ -16,7 +16,7 @@ class UruguayReleases(UruguayBase):
     """
 
     name = 'uruguay_releases'
-    user_agent = browser_user_agent
+    user_agent = BROWSER_USER_AGENT
 
     # SimpleSpider
     data_type = 'release_package'

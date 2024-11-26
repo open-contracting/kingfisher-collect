@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import IndexSpider
-from kingfisher_scrapy.util import browser_user_agent
+from kingfisher_scrapy.util import BROWSER_USER_AGENT
 
 
 class CanadaMontreal(IndexSpider):
@@ -15,7 +15,7 @@ class CanadaMontreal(IndexSpider):
     name = 'canada_montreal'
     # Publisher uses Cloudflare (CF-Cache-Status and CF-RAY response headers, can verify with curl).
     # Cloudflare responds with HTTP 520 if request headers use default user agent.
-    user_agent = browser_user_agent
+    user_agent = BROWSER_USER_AGENT
 
     # BaseSpider
     ocds_version = '1.0'

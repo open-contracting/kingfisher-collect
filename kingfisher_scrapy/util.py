@@ -8,7 +8,8 @@ from urllib.parse import parse_qs, quote, urlencode, urljoin, urlsplit
 
 from ijson import ObjectBuilder, utils
 
-browser_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
+BROWSER_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
+MAX_DOWNLOAD_TIMEOUT = 1800 # 30min
 
 
 def pluck_filename(opts):

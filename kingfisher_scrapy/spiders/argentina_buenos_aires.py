@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components, handle_http_error
 
 
 class ArgentinaBuenosAires(SimpleSpider):
@@ -15,10 +15,7 @@ class ArgentinaBuenosAires(SimpleSpider):
     """
 
     name = 'argentina_buenos_aires'
-    custom_settings = {
-        'DOWNLOAD_FAIL_ON_DATALOSS': False,
-    }
-    download_timeout = 99999  # to avoid user timeout when downloading the file
+    download_timeout = MAX_DOWNLOAD_TIMEOUT
 
     # BaseSpider
     validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/874

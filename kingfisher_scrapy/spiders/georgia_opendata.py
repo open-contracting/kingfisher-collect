@@ -1,6 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
+from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT
 
 
 class GeorgiaOpendata(CompressedFileSpider):
@@ -11,7 +12,7 @@ class GeorgiaOpendata(CompressedFileSpider):
 
     name = 'georgia_opendata'
     # The file is about 450MB.
-    download_timeout = 1200  # 20min
+    download_timeout = MAX_DOWNLOAD_TIMEOUT
 
     # SimpleSpider
     data_type = 'release_package'

@@ -2,7 +2,7 @@ import json
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, PeriodicSpider
 from kingfisher_scrapy.items import File, FileError
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components
 
 # curl -I https://ocds.blob.core.windows.net/ocds/202205.zip
 
@@ -23,7 +23,7 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
     """
 
     name = 'chile_compra_bulk'
-    download_timeout = 99999
+    download_timeout = MAX_DOWNLOAD_TIMEOUT
     custom_settings = {
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }

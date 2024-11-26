@@ -26,7 +26,7 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
     """
 
     name = 'honduras_oncae'
-    download_timeout = 900
+    download_timeout = 900  # 15min
 
     # BaseSpider
     date_format = 'year'

@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import browser_user_agent, components, handle_http_error
+from kingfisher_scrapy.util import BROWSER_USER_AGENT, components, handle_http_error
 
 
 class MexicoNuevoLeon(SimpleSpider):
@@ -13,7 +13,7 @@ class MexicoNuevoLeon(SimpleSpider):
     """
 
     name = 'mexico_nuevo_leon'
-    user_agent = browser_user_agent  # to avoid HTTP 403
+    user_agent = BROWSER_USER_AGENT  # to avoid HTTP 403
 
     # SimpleSpider
     data_type = 'release_package'

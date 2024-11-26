@@ -22,7 +22,7 @@ class UruguayHistorical(CompressedFileSpider):
     """
 
     name = 'uruguay_historical'
-    download_timeout = 1000
+    download_timeout = 900  # 15min
 
     # BaseSpider
     date_format = 'year'

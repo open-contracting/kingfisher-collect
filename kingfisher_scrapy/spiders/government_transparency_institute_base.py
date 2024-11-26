@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
-from kingfisher_scrapy.util import browser_user_agent, components
+from kingfisher_scrapy.util import BROWSER_USER_AGENT, components
 
 
 class GovernmentTransparencyInstituteBase(CompressedFileSpider):
@@ -10,7 +10,7 @@ class GovernmentTransparencyInstituteBase(CompressedFileSpider):
       https://opentender.eu/download
     """
 
-    user_agent = browser_user_agent  # to avoid HTTP 410
+    user_agent = BROWSER_USER_AGENT  # to avoid HTTP 410
 
     # BaseSpider
     line_delimited = True

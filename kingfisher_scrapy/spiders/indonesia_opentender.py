@@ -1,5 +1,12 @@
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, PeriodicSpider
-from kingfisher_scrapy.util import components, get_parameter_value, handle_http_error, join, parameters
+from kingfisher_scrapy.util import (
+    MAX_DOWNLOAD_TIMEOUT,
+    components,
+    get_parameter_value,
+    handle_http_error,
+    join,
+    parameters,
+)
 
 
 class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
@@ -22,7 +29,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
     download_delay = 1
-    download_timeout = 99999
+    download_timeout = MAX_DOWNLOAD_TIMEOUT
 
     # Must be set before `pattern`, so we can't follow the standard order.
     url_prefix = 'https://opentender.net/api/'
