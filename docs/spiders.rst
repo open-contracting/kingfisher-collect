@@ -746,6 +746,13 @@ Mexico
 
    scrapy crawl mexico_administracion_publica_federal_bulk
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_aguascalientes_plataforma_digital_estatal.MexicoAguascalientesPlataformaDigitalEstatal
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_aguascalientes_plataforma_digital_estatal
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_aguascalientes_sesea_plataforma_digital_nacional.MexicoAguascalientesSESEAPlataformaDigitalNacional
    :no-members:
 
