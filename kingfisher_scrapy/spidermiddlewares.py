@@ -238,6 +238,12 @@ class ResizePackageMiddleware:
                 if sample_filled(spider, number):
                     return
 
+                # Kingfisher Process merges only releases with ocids.
+                if hasattr(spider, 'ocid_fallback'):
+                    for entry in items:
+                        if 'ocid' not in entry:
+                            entry['ocid'] = spider.ocid_fallback(entry)
+
                 package = copy.deepcopy(template)
                 # Omit the None values returned by `grouper(*, fillvalue=None)`.
                 package[key] = list(filter(None, items))
