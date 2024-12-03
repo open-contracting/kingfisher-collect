@@ -1150,6 +1150,13 @@ Peru
 
    scrapy crawl peru_compras
 
+.. autoclass:: kingfisher_scrapy.spiders.peru_compras_bulk.PeruComprasBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl peru_compras_bulk
+
 .. autoclass:: kingfisher_scrapy.spiders.peru_osce_api_records.PeruOSCEAPIRecords
    :no-members:
 
