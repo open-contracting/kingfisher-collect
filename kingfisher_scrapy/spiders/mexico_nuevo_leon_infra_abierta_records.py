@@ -21,3 +21,8 @@ class MexicoNuevoLeonInfraAbiertaRecords(MexicoNuevoLeonBase):
 
     # SimpleSpider
     data_type = 'record_package'
+
+    def build_file_item(self, number, data, item):
+        # The 'anio' query parameter looks like anio-[{"value":"2024"}].json
+        item.file_name = item.file_name.replace('[{"value":"', '').replace('"}]', '')
+        return super().build_file_item(number, data, item)

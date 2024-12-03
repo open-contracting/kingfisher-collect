@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import PeriodicSpider
-from kingfisher_scrapy.util import BROWSER_USER_AGENT, slice_url
+from kingfisher_scrapy.util import BROWSER_USER_AGENT, parameters
 
 
 class MexicoNuevoLeonBase(PeriodicSpider):
@@ -11,4 +11,4 @@ class MexicoNuevoLeonBase(PeriodicSpider):
 
     # PeriodicSpider
     pattern = 'https://smpu.nl.gob.mx/siasi_ws/api/ocds/ListarProduccionXAnio?anio=%5B%7B"value":"{0}"%7D%5D'
-    formatter = staticmethod(slice_url(83, 87))
+    formatter = staticmethod(parameters('anio'))
