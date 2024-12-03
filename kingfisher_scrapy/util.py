@@ -55,6 +55,18 @@ def parameters(*keys):
     return wrapper
 
 
+def slice_url(start, stop):
+    """
+    Return a function that returns the selected part of the url.
+
+    >>> slice_url(51, 52)('http://example.com/api/packages.json?page={"value":1}')
+    '1'
+    """
+    def wrapper(url):
+        return url[start:stop]
+    return wrapper
+
+
 def join(*functions, extension=None):
     """
     Return a function that joins the given functions' outputs and sets the file extension, if provided.

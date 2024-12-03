@@ -16,5 +16,8 @@ class MexicoNuevoLeonInfraAbiertaRecords(MexicoNuevoLeonBase):
 
     name = 'mexico_nuevo_leon_infra_abierta_records'
 
+    # BaseSpider
+    root_path = 'item'
+
     # SimpleSpider
     data_type = 'record_package'
