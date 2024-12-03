@@ -39,7 +39,7 @@ def components(start, stop=None):
     return wrapper
 
 
-def parameters(*keys):
+def parameters(*keys, parser=None):
     """
     Return a function that returns the selected query string parameters.
 
@@ -51,7 +51,7 @@ def parameters(*keys):
     """
     def wrapper(url):
         query = parse_qs(urlsplit(url).query)
-        return '-'.join(s for key in keys for value in query[key] for s in [key, value])
+        return '-'.join(s for key in keys for value in query[key] for s in [key, parser(value) if parser else value])
     return wrapper
 
 
