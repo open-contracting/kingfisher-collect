@@ -38,6 +38,5 @@ class ItalyANAC(BigFileSpider):
 
     @staticmethod
     def ocid_fallback(release):
-        # Kingfisher Process merges only releases with ocids. Extract the ocid from the release id as a fallback.
-        # For example: ocds-hu01ve-7608611 from ocds-hu01ve-7608611-01.
+        # Extract the ocid from the release id as a fallback, like ocds-hu01ve-7608611 from ocds-hu01ve-7608611-01.
         return '-'.join(release['id'].split('-')[:3])
