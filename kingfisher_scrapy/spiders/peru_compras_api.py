@@ -4,7 +4,7 @@ from kingfisher_scrapy.spiders.peru_compras_base import PeruComprasBase
 from kingfisher_scrapy.util import handle_http_error, parameters
 
 
-class PeruCompras(PeruComprasBase):
+class PeruComprasApi(PeruComprasBase):
     """
     Domain
       Peru Compras (contracts within framework agreements)
@@ -17,7 +17,7 @@ class PeruCompras(PeruComprasBase):
         Download only data until this date (YYYY-MM-DD format). Defaults to today.
     """
 
-    name = 'peru_compras'
+    name = 'peru_compras_api'
 
     # BaseSpider
     default_from_date = '2017-01-01'
