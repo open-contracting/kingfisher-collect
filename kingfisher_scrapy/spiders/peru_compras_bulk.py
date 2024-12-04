@@ -25,12 +25,8 @@ class PeruComprasBulk(PeruComprasBase):
     default_from_date = '2021-08'
 
     def start_requests(self):
-        yield scrapy.Request(
-            f'{self.url_prefix}getListaDescargaMasiva?Anio=&Mes=',
-            method='POST',
-            meta={'file_name': 'list.json'},
-            callback=self.parse_list
-        )
+        url = f'{self.url_prefix}getListaDescargaMasiva?Anio=&Mes='
+        yield scrapy.Request(url, method='POST', meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
