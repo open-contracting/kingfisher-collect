@@ -222,11 +222,15 @@ async def test_add_package_middleware(data_type, data, root_path):
 @pytest.mark.parametrize(('sample', 'len_items', 'len_releases'), [(None, 2, 100), (5, 5, 5), (200, 2, 100)])
 @pytest.mark.parametrize(('encoding', 'character'), [('utf-8', b'\xc3\x9a'), ('iso-8859-1', b'\xda')])
 @pytest.mark.parametrize(('data_type', 'key'), [('record_package', 'records'), ('release_package', 'releases')])
-async def test_resize_package_middleware(sample, len_items, len_releases, encoding, character, data_type, key):
+@pytest.mark.parametrize('ocid_fallback', [None, lambda release: release['key']])
+async def test_resize_package_middleware(sample, len_items, len_releases, encoding, character, data_type, key,
+                                         ocid_fallback):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = data_type
     spider.resize_package = True
     spider.encoding = encoding
+    if ocid_fallback:
+        spider.ocid_fallback = ocid_fallback
 
     middleware = ResizePackageMiddleware()
 
@@ -255,6 +259,7 @@ async def test_resize_package_middleware(sample, len_items, len_releases, encodi
         assert item.number == i
         assert len(item.data[key]) == len_releases
         assert item.data_type == data_type
+        assert all('ocid' in entry for entry in item.data[key]) if ocid_fallback else True
 
 
 @pytest.mark.parametrize(('middleware_class', 'attribute', 'separator'), [

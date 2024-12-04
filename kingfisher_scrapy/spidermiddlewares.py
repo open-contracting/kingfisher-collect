@@ -214,6 +214,7 @@ class ResizePackageMiddleware:
     """
     If the spider's ``resize_package`` class attribute is ``True``, split the package into packages of 100 releases or
     records each. Otherwise, yield the original item.
+    Optionally, implement an ocid_fallback function that returns an alternative ocid value if the ocid is not set.
     """
 
     async def process_spider_output(self, response, result, spider):
