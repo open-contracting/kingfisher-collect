@@ -22,9 +22,6 @@ class ItalyANAC(BigFileSpider):
     # SimpleSpider
     data_type = 'release_package'
 
-    # ResizePackageMiddleware
-    resize_package = True
-
     def start_requests(self):
         url = 'https://dati.anticorruzione.it/opendata/api/3/action/package_search?q=ocds'
         yield scrapy.Request(url, meta={'file_name': 'package_search.json'}, callback=self.parse_list)
@@ -36,7 +33,7 @@ class ItalyANAC(BigFileSpider):
                 if resource['format'].upper() == 'JSON':
                     yield self.build_request(resource['url'], formatter=components(-2))
 
-    @staticmethod
-    def ocid_fallback(release):
+    # ResizePackageMiddleware
+    def ocid_fallback(self, release):
         # Extract the ocid from the release id as a fallback, like ocds-hu01ve-7608611 from ocds-hu01ve-7608611-01.
         return '-'.join(release['id'].split('-')[:3])
