@@ -1,15 +1,16 @@
 import scrapy
 
-from kingfisher_scrapy.base_spiders import SimpleSpider
+from kingfisher_scrapy.spiders.peru_compras_base import PeruComprasBase
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class PeruCompras(SimpleSpider):
+class PeruComprasBulk(PeruComprasBase):
     """
     Domain
       Peru Compras (contracts within framework agreements)
     Caveats
         The JSON data sometimes contains unescaped newline characters within strings.
+        The peru_compras spider contains more updated data.
     Spider arguments
       from_date
         Download only data from this month onward (YYYY-MM format). Defaults to '2021-08'.
@@ -17,18 +18,14 @@ class PeruCompras(SimpleSpider):
         Download only data until this month (YYYY-MM format). Defaults to the current month.
     """
 
-    name = 'peru_compras'
+    name = 'peru_compras_bulk'
 
     # BaseSpider
     date_format = 'year-month'
     default_from_date = '2021-08'
-    date_required = True
-
-    # SimpleSpider
-    data_type = 'release_package'
 
     def start_requests(self):
-        url = 'https://www.catalogos.perucompras.gob.pe/ConsultaOrdenesPub/getListaDescargaMasiva?Anio=&Mes='
+        url = f'{self.url_prefix}getListaDescargaMasiva?Anio=&Mes='
         yield scrapy.Request(url, method='POST', meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     @handle_http_error
@@ -41,9 +38,3 @@ class PeruCompras(SimpleSpider):
                     f"https://saeusceprod01.blob.core.windows.net/contproveedor/DescargaMasiva/{item['C_FileJson']}",
                     formatter=components(-1)
                 )
-
-    @handle_http_error
-    def parse(self, response):
-        # Replace unescaped newline characters within strings with a space.
-        response = response.replace(body=response.body.replace(b'\n', b' '))
-        yield from super().parse(response)

@@ -1143,12 +1143,19 @@ Paraguay
 Peru
 ~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.peru_compras.PeruCompras
+.. autoclass:: kingfisher_scrapy.spiders.peru_compras_api.PeruComprasAPI
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl peru_compras
+   scrapy crawl peru_compras_api
+
+.. autoclass:: kingfisher_scrapy.spiders.peru_compras_bulk.PeruComprasBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl peru_compras_bulk
 
 .. autoclass:: kingfisher_scrapy.spiders.peru_osce_api_records.PeruOSCEAPIRecords
    :no-members:
