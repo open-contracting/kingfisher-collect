@@ -1143,7 +1143,7 @@ Paraguay
 Peru
 ~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.peru_compras_api.PeruComprasApi
+.. autoclass:: kingfisher_scrapy.spiders.peru_compras_api.PeruComprasAPI
    :no-members:
 
 .. code-block:: bash

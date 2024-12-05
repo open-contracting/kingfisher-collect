@@ -4,7 +4,7 @@ from kingfisher_scrapy.spiders.peru_compras_base import PeruComprasBase
 from kingfisher_scrapy.util import handle_http_error, parameters
 
 
-class PeruComprasApi(PeruComprasBase):
+class PeruComprasAPI(PeruComprasBase):
     """
     Domain
       Peru Compras (contracts within framework agreements)
