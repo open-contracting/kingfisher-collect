@@ -259,7 +259,7 @@ async def test_resize_package_middleware(sample, len_items, len_releases, encodi
         assert item.number == i
         assert len(item.data[key]) == len_releases
         assert item.data_type == data_type
-        assert all('ocid' in entry for entry in item.data[key]) if ocid_fallback else True
+        assert all('ocid' in entry if ocid_fallback else 'ocid' not in entry for entry in item.data[key])
 
 
 @pytest.mark.parametrize(('middleware_class', 'attribute', 'separator'), [
