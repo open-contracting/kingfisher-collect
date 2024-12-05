@@ -1,10 +1,10 @@
 import scrapy
 
-from kingfisher_scrapy.base_spiders import SimpleSpider
+from kingfisher_scrapy.base_spiders import BigFileSpider
 from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components, handle_http_error
 
 
-class ItalyANAC(SimpleSpider):
+class ItalyANAC(BigFileSpider):
     """
     Domain
       Autorità Nazionale Anticorruzione (ANAC)
@@ -33,12 +33,7 @@ class ItalyANAC(SimpleSpider):
                 if resource['format'].upper() == 'JSON':
                     yield self.build_request(resource['url'], formatter=components(-2))
 
-    @handle_http_error
-    def parse(self, response):
-        data = response.json()
-        for release in data['releases']:
-            # Kingfisher Process merges only releases with ocids. Extract the ocid from the release id as a fallback.
-            # For example: ocds-hu01ve-7608611 from ocds-hu01ve-7608611-01.
-            if 'ocid' not in release:
-                release['ocid'] = '-'.join(release['id'].split('-')[:3])
-        yield self.build_file_from_response(response, data_type=self.data_type, data=data)
+    # ResizePackageMiddleware
+    def ocid_fallback(self, release):
+        # Extract the ocid from the release id as a fallback, like ocds-hu01ve-7608611 from ocds-hu01ve-7608611-01.
+        return '-'.join(release['id'].split('-')[:3])

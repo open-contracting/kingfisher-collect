@@ -214,6 +214,9 @@ class ResizePackageMiddleware:
     """
     If the spider's ``resize_package`` class attribute is ``True``, split the package into packages of 100 releases or
     records each. Otherwise, yield the original item.
+
+    Optionally, implement an ``ocid_fallback`` method on the spider, which accepts a release (or record) and returns an
+    an ``ocid`` value, to be used if the ``ocid`` field is not set.
     """
 
     async def process_spider_output(self, response, result, spider):
@@ -237,6 +240,12 @@ class ResizePackageMiddleware:
             for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
                 if sample_filled(spider, number):
                     return
+
+                # Kingfisher Process merges only releases and records with OCIDs.
+                if hasattr(spider, 'ocid_fallback'):
+                    for entry in items:
+                        if 'ocid' not in entry:
+                            entry['ocid'] = spider.ocid_fallback(entry)
 
                 package = copy.deepcopy(template)
                 # Omit the None values returned by `grouper(*, fillvalue=None)`.
