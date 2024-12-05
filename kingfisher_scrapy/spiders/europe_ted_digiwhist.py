@@ -3,4 +3,7 @@ from kingfisher_scrapy.spiders.government_transparency_institute_base import Gov
 
 class EuropeTEDDigiwhist(GovernmentTransparencyInstituteBase):
     name = 'europe_ted_digiwhist'
-    country_code = 'eu'
+    country_code = 'ted'
+
+    # Unlike all others, data-ted-ocds-json.zip doesn't exist.
+    base_url = 'https://opentender.eu/data/downloads/data-{}-json-json.zip'

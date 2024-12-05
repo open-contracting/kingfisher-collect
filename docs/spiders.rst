@@ -410,6 +410,13 @@ Estonia
 Europe
 ~~~~~~
 
+.. autoclass:: kingfisher_scrapy.spiders.europe_eu_digiwhist.EuropeEUDigiwhist
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl europe_eu_digiwhist
+
 .. autoclass:: kingfisher_scrapy.spiders.europe_ted_digiwhist.EuropeTEDDigiwhist
    :no-members:
 
