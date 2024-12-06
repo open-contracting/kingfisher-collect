@@ -3,7 +3,7 @@ from datetime import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
-from kingfisher_scrapy.util import components, handle_http_error, join
+from kingfisher_scrapy.util import BROWSER_USER_AGENT, components, handle_http_error, join
 
 
 class GuatemalaBulk(CompressedFileSpider):
@@ -24,6 +24,7 @@ class GuatemalaBulk(CompressedFileSpider):
     """
 
     name = 'guatemala_bulk'
+    user_agent = BROWSER_USER_AGENT  # to avoid HTTP 403
 
     # BaseSpider
     date_format = 'year-month'
