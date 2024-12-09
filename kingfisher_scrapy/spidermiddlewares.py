@@ -244,7 +244,7 @@ class ResizePackageMiddleware:
                 # Kingfisher Process merges only releases and records with OCIDs.
                 if hasattr(spider, 'ocid_fallback'):
                     for entry in items:
-                        if 'ocid' not in entry:
+                        if entry and 'ocid' not in entry:
                             entry['ocid'] = spider.ocid_fallback(entry)
 
                 package = copy.deepcopy(template)
