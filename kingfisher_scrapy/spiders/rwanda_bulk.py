@@ -23,8 +23,8 @@ class RwandaBulk(CompressedFileSpider):
 
     # BaseSpider
     date_format = 'year-month'
-    date_required = True
     default_from_date = '2016-06'
+    date_required = True
     skip_pluck = 'Already covered (see code for details)'  # rwanda_api
 
     # SimpleSpider

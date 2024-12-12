@@ -23,8 +23,8 @@ class SouthAfricaNationalTreasuryAPI(LinksSpider, PeriodicSpider):
 
     # BaseSpider
     date_format = 'date'
-    date_required = True
     default_from_date = '2017-01-01'
+    date_required = True
 
     # SimpleSpider
     data_type = 'release_package'
