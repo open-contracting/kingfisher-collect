@@ -121,17 +121,18 @@ class Checker:
     ########
     #
     # If you need to change this list, remember to update `ScrapyLogFile.is_complete()` in:
-    # https://github.com/open-contracting/kingfisher-archive/blob/main/ocdskingfisherarchive/scrapy_log_file.py
+    # https://github.com/open-contracting/scrapy-log-analyzer/blob/main/scrapyloganalyzer/__init__.py
     #
     # Add more spider arguments as needed.
     known_spider_arguments = [
         'from_date',
         'until_date',
-        'year',
+        'portal',
         'publisher',
         'system',
         'sample',
-        'portal',
+        'path',
+        'qs:',
     ]
 
     conditional_spider_arguments = {
