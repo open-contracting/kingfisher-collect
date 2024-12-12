@@ -120,7 +120,7 @@ class Checker:
     # NOTE #
     ########
     #
-    # If you need to change this list, remember to update `ScrapyLogFile.is_complete()` in:
+    # If you need to change this list, remember to update `spiders.rst` and `ScrapyLogFile.is_complete()` in:
     # https://github.com/open-contracting/scrapy-log-analyzer/blob/main/scrapyloganalyzer/__init__.py
     #
     # Add more spider arguments as needed.
