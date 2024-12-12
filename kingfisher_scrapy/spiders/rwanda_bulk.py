@@ -42,7 +42,7 @@ class RwandaBulk(CompressedFileSpider):
         The response looks like:
 
         {
-         "year": "2024 n/a",
+            "year": "2024 n/a",
             "Dataset": [
                 {
                     "data_name": "2024-01",
