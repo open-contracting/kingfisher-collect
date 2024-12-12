@@ -1232,12 +1232,19 @@ Romania
 Rwanda
 ~~~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.rwanda.Rwanda
+.. autoclass:: kingfisher_scrapy.spiders.rwanda_api.RwandaAPI
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl rwanda
+   scrapy crawl rwanda_api
+
+.. autoclass:: kingfisher_scrapy.spiders.rwanda_bulk.RwandaBulk
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl rwanda_bulk
 
 Serbia
 ~~~~~~
