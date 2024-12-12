@@ -4,7 +4,7 @@ from kingfisher_scrapy.base_spiders import LinksSpider
 from kingfisher_scrapy.util import parameters
 
 
-class Rwanda(LinksSpider):
+class RwandaAPI(LinksSpider):
     """
     Domain
       Rwanda Public Procurement Authority (RPPA)
@@ -17,7 +17,7 @@ class Rwanda(LinksSpider):
       https://ocds.umucyo.gov.rw/core/api/docs
     """
 
-    name = 'rwanda'
+    name = 'rwanda_api'
 
     # BaseSpider
     default_from_date = '2016-07-02'
