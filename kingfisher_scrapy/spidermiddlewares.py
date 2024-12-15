@@ -198,7 +198,7 @@ class AddPackageMiddleware:
             read_data_from_file_if_any(item)
 
             data = item.data
-            # If the spider's ``root_path`` class attribute is non-empty, then the JSON data is already parsed.
+            # If the spider's `root_path` class attribute is non-empty, then the JSON data is already parsed.
             if isinstance(data, bytes):
                 data = json.loads(data)
 
