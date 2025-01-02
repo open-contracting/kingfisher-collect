@@ -1082,23 +1082,6 @@ Openopps
 
    env KINGFISHER_OPENOPPS_USERNAME=... KINGFISHER_OPENOPPS_PASSWORD=... scrapy crawl openopps
 
-Pakistan
-~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_api.PakistanPPRAAPI
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl pakistan_ppra_api
-
-.. autoclass:: kingfisher_scrapy.spiders.pakistan_ppra_bulk.PakistanPPRABulk
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl pakistan_ppra_bulk
-
 Panama
 ~~~~~~
 
