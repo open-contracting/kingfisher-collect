@@ -26,6 +26,7 @@ Broken spiders
 
 Spiders for publications that became broken, since April 2024:
 
+- 2025-01-02: `pakistan_* <https://github.com/open-contracting/kingfisher-collect/pull/1137>`__ (all return error)
 - 2024-07-02: `mexico_sinaloa_ceaip <https://github.com/open-contracting/kingfisher-collect/pull/1093>`__ (returns no data)
 - 2024-04-12: `dominican_republic_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1074>`__ (the `bulk source <https://datosabiertos.dgcp.gob.do/opendata/estandar-mundial-ocds>`__ is not synced with the API source)
 - 2024-04-05: `mexico_quien_es_quien_records <https://github.com/open-contracting/kingfisher-collect/pull/1063>`__ (pagination is broken)
