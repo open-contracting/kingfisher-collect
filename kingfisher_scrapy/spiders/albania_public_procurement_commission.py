@@ -1,12 +1,7 @@
-import json
-
-import scrapy
-
-from kingfisher_scrapy import util
-from kingfisher_scrapy.base_spiders import SimpleSpider
+from kingfisher_scrapy.spiders.albania_public_procurement_commission_base import AlbaniaPublicProcurementCommissionBase
 
 
-class AlbaniaPublicProcurementCommission(SimpleSpider):
+class AlbaniaPublicProcurementCommission(AlbaniaPublicProcurementCommissionBase):
     """
     Domain
       Komisioni i Prokurimit Publik (KPP) (Public Procurement Commission)
@@ -23,24 +18,8 @@ class AlbaniaPublicProcurementCommission(SimpleSpider):
     name = 'albania_public_procurement_commission'
 
     # BaseSpider
-    date_format = 'year'
     default_from_date = '2021'
-    date_required = True
-    root_path = 'result'
 
-    # SimpleSpider
-    data_type = 'release_package'
-
-    def start_requests(self):
-        url = 'https://kpp.al/api/public/Decision/getBulkJsonByYear'
-        for year in util.date_range_by_year(self.from_date.year, self.until_date.year):
-            payload = {
-                "extraConditions": [
-                    ["decision_date", ">=", f"1/1/{year}"],
-                    ["decision_date", "<=", f"1/1/{year + 1}"],
-                ]
-            }
-            yield scrapy.Request(
-                url, meta={'file_name': f'{year}.json'}, method='POST', body=json.dumps(payload),
-                headers={'Accept': 'application/json', 'Content-Type': 'application/json'}
-            )
+    # AlbaniaPublicProcurementCommissionBase
+    base_url = 'https://kpp.al/api/public/Decision/getBulkJsonByYear'
+    date_param = 'decision_date'

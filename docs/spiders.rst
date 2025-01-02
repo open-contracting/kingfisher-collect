@@ -136,6 +136,13 @@ Albania
 
    scrapy crawl albania_public_procurement_commission
 
+.. autoclass:: kingfisher_scrapy.spiders.albania_public_procurement_commission_historical.AlbaniaPublicProcurementCommissionHistorical
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl albania_public_procurement_commission_historical
+
 Argentina
 ~~~~~~~~~
 
