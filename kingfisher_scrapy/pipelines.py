@@ -127,7 +127,7 @@ class Unflatten:
 
         input_name = item.file_name
 
-        # uganda_releases yields JSON until 2023-2024, using the same URL pattern.
+        # For example, uganda_releases previously yielded either JSON or XLSX, using the same URL pattern.
         if input_name.endswith('.json'):
             if item.data.startswith(b'PK\x03\x04'):
                 input_name = f'{os.path.splitext(input_name)[0]}.xlsx'
