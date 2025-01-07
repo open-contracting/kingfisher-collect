@@ -37,14 +37,13 @@ class UgandaReleases(PeriodicSpider):
     # BaseSpider
     date_format = 'year'
     default_from_date = '2019'
-    unflatten = True  # XLSX file has no metatab
 
     # SimpleSpider
     data_type = 'release_package'
 
     # PeriodicSpider
     formatter = staticmethod(parameters('fy', 'code'))
-    pattern = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v2/ocds/download?fy={0}-{1}&code=1'
+    pattern = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v2/ocds/download?fy={0}-{1}&format=json&code=1'
 
     def parse(self, response):
         if response.status == 500:
