@@ -329,8 +329,7 @@ class BaseSpider(scrapy.Spider):
         if 'data' not in kwargs:
             body = response.body
             # https://tools.ietf.org/html/rfc7159#section-8.1
-            # bytes instances don't have a removeprefix method.
-            if body.startswith(codecs.BOM_UTF8):
+            if body.startswith(codecs.BOM_UTF8):  # noqa: FURB188 # bytes instances don't have a removeprefix method.
                 body = body[len(codecs.BOM_UTF8):]
             kwargs['data'] = body
         return self.build_file(data_type=data_type, **kwargs)
