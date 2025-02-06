@@ -25,14 +25,14 @@ class UgandaReleases(PeriodicSpider):
 
     name = 'uganda_releases'
     custom_settings = {
-        # Reduce the number of concurrent requests to avoid multiple failures.
-        'CONCURRENT_REQUESTS': 1,
         # We cannot get the list of all the files from https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets
         # because the list is generated in the browser.
         # To get all the files, we follow the pattern download?fy={0}-{1}&code=1, iterating the 'code' value until it
         # returns HTTP 500 error FileNotFoundException. Therefore, we retry all codes in RETRY_HTTP_CODES except 500.
         'RETRY_HTTP_CODES': [status for status in RETRY_HTTP_CODES if status != 500],
     }
+    # Returns HTTP 403 if too many requests. (1 is too short.)
+    download_delay = 2
 
     # BaseSpider
     date_format = 'year'
