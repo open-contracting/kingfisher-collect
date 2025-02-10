@@ -16,14 +16,13 @@ class ColombiaAPI(LinksSpider):
     API documentation
       https://www.colombiacompra.gov.co/transparencia/api
     Swagger API documentation
-      https://apiocds.colombiacompra.gov.co/apiCCE2.0/
+      https://apiocds.colombiacompra.gov.co/apiCCE-2.0/
     """
 
     name = 'colombia_api'
 
     # BaseSpider
     default_from_date = '2011-01-01'
-    # The endpoint without date parameters also works but is slower.
     date_required = True
 
     # SimpleSpider
@@ -35,6 +34,6 @@ class ColombiaAPI(LinksSpider):
     def start_requests(self):
         from_date = self.from_date.strftime(self.date_format)
         until_date = self.until_date.strftime(self.date_format)
-        url = f'https://apiocds.colombiacompra.gov.co/apiCCE2.0/rest/releases/dates/{from_date}/{until_date}'
+        url = f'https://apiocds.colombiacompra.gov.co/apiCCE-2.0/rest/releases/dates/{from_date}/{until_date}'
 
         yield scrapy.Request(url, meta={'file_name': f'{from_date}.json'})
