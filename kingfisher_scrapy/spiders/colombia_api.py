@@ -29,7 +29,7 @@ class ColombiaAPI(LinksSpider):
     data_type = 'release_package'
 
     # LinksSpider
-    formatter = staticmethod(parameters('_id'))
+    formatter = staticmethod(lambda url: parameters('_id')(url).replace('/', '_'))
 
     def start_requests(self):
         from_date = self.from_date.strftime(self.date_format)
