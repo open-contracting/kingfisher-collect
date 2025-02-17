@@ -70,8 +70,9 @@ class Armenia(LinksSpider):
         else:
             new_offset = min(first_offset + MILLISECONDS_PER_DAY * 2 ** exponent, start_time)
             url = replace_parameters(response.request.url, offset=new_offset)
-            yield self._build_request(url, self.parse_date_range, {'prev': offset, 'exponent': exponent,
-                                                                   'first': first_offset})
+            yield self._build_request(
+                url, self.parse_date_range, {'prev': offset, 'exponent': exponent, 'first': first_offset}
+            )
 
     # We use one of the alternative binary search methods (https://en.wikipedia.org/wiki/Binary_search_algorithm),
     # because we only know if an offset succeeds, not whether an offset is greater than the target value.
@@ -101,8 +102,9 @@ class Armenia(LinksSpider):
                 yield self._build_request(url, self.parse, {})
         else:
             url = replace_parameters(response.request.url, offset=(minimum + maximum) // 2)
-            yield self._build_request(url, self.parse_binary_search, {'minimum': minimum, 'maximum': maximum,
-                                                                      'first': first_offset})
+            yield self._build_request(
+                url, self.parse_binary_search, {'minimum': minimum, 'maximum': maximum, 'first': first_offset}
+            )
 
     def _build_request(self, url, callback, meta):
         meta['dont_retry'] = True

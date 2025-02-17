@@ -305,14 +305,18 @@ class RetryDataErrorMiddleware:
         if isinstance(exception, BadZipFile | RetryableError):
             attempts = response.request.meta.get('retries', 0) + 1
             if attempts > 3:
-                spider.logger.error('Gave up retrying %(request)s (failed %(failures)d times): %(exception)s',
-                                    {'request': response.request, 'failures': attempts, 'exception': exception})
+                spider.logger.error(
+                    'Gave up retrying %(request)s (failed %(failures)d times): %(exception)s',
+                    {'request': response.request, 'failures': attempts, 'exception': exception},
+                )
                 return
             request = response.request.copy()
             request.dont_filter = True
             request.meta['retries'] = attempts
-            spider.logger.debug('Retrying %(request)s (failed %(failures)d times): %(exception)s',
-                                {'request': response.request, 'failures': attempts, 'exception': exception})
+            spider.logger.debug(
+                'Retrying %(request)s (failed %(failures)d times): %(exception)s',
+                {'request': response.request, 'failures': attempts, 'exception': exception},
+            )
             yield request
         else:
             raise exception

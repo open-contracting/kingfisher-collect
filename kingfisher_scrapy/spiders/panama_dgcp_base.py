@@ -10,5 +10,8 @@ class PanamaDGCPBase(IndexSpider):
     # url_path must be provided by subclasses.
 
     def start_requests(self):
-        yield scrapy.Request(f'https://ocds.panamacompraencifras.gob.pa/{self.url_path}?page=1&DescendingOrder=true',
-                             meta={'file_name': 'page-1.json'}, callback=self.parse_list)
+        yield scrapy.Request(
+            f'https://ocds.panamacompraencifras.gob.pa/{self.url_path}?page=1&DescendingOrder=true',
+            meta={'file_name': 'page-1.json'},
+            callback=self.parse_list,
+        )

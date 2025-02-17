@@ -140,8 +140,9 @@ class Openopps(BaseSpider):
         )
 
     def request_range_per_day(self, start_date, end_date, search_h):
-        date_list = [(start_date + timedelta(days=d)).strftime('%Y-%m-%d')
-                     for d in range((end_date - start_date).days + 1)]
+        date_list = [
+            (start_date + timedelta(days=d)).strftime('%Y-%m-%d') for d in range((end_date - start_date).days + 1)
+        ]
 
         for date in date_list:
             yield self.request_range(date, date, search_h)
@@ -217,7 +218,10 @@ class Openopps(BaseSpider):
         # Message for pages that exceed the 10,000 search results in the range of one hour.
         # These are pages with status 500 and 'page=11' in the URL request.
         elif response.status == 500 and response.request.url.count('page=11'):
-            self.logger.error('Status: %s. Results exceeded in a range of one hour, we save the first 10,000 data '
-                              'for: %s', response.status, response.request.url)
+            self.logger.error(
+                'Status: %s. Results exceeded in a range of one hour, we save the first 10,000 data for: %s',
+                response.status,
+                response.request.url,
+            )
         else:
             yield self.build_file_error_from_response(response)

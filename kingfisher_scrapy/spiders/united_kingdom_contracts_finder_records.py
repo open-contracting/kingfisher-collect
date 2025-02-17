@@ -27,7 +27,7 @@ class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
     def parse_page(self, response):
         for release in response.json()['releases']:
             yield self.build_request(
-              f'https://www.contractsfinder.service.gov.uk/Published/OCDS/Record/{release["ocid"]}',
-              formatter=components(-1),
+                f'https://www.contractsfinder.service.gov.uk/Published/OCDS/Record/{release["ocid"]}',
+                formatter=components(-1),
             )
         yield self.next_link(response, callback=self.parse_page)

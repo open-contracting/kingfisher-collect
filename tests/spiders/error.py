@@ -15,16 +15,22 @@ class Error(BaseSpider):
     name = 'error'
 
     def __init__(
-            self,
+        self,
+        *args,
+        raise_from_crawler=False,
+        raise_init=False,
+        raise_start_requests=False,
+        raise_parse=False,
+        **kwargs,
+    ):
+        super().__init__(
             *args,
-            raise_from_crawler=False,
-            raise_init=False,
-            raise_start_requests=False,
-            raise_parse=False,
+            raise_from_crawler=raise_from_crawler,
+            raise_init=raise_init,
+            raise_start_requests=raise_start_requests,
+            raise_parse=raise_parse,
             **kwargs,
-        ):
-        super().__init__(*args, raise_from_crawler=raise_from_crawler, raise_init=raise_init,
-                         raise_start_requests=raise_start_requests, raise_parse=raise_parse, **kwargs)
+        )
 
         self.raise_from_crawler = raise_from_crawler
         self.raise_init = raise_init
