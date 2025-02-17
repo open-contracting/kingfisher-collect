@@ -21,6 +21,10 @@ def pluck_filename(opts):
     return f"{'-'.join(parts)}.csv"
 
 
+def replace_path_separator(string):
+    return string.replace('/', '_')
+
+
 def components(start, stop=None):
     """
     Return a function that returns the selected non-empty path components, excluding the ``.json`` extension.
