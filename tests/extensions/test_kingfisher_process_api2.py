@@ -280,11 +280,6 @@ def test_spider_closed_return(kwargs, tmpdir):
         data=b'{"key": "value"}',
         number=1,
     )),
-    ('389', 'file.json', FileError(
-        file_name='file.json',
-        url='https://example.com',
-        errors={'http_code': 500},
-    )),
 ])
 @pytest_twisted.inlineCallbacks
 def test_item_scraped(directory, filename, item, channel, tmpdir):
@@ -302,11 +297,8 @@ def test_item_scraped(directory, filename, item, channel, tmpdir):
     expected = {
         'collection_id': 1,
         'url': url,
+        'path': os.path.join('test', '20010203_040506', directory, filename),
     }
-    if isinstance(item, FileError):
-        expected['errors'] = '{"http_code": 500}'
-    else:
-        expected['path'] = os.path.join('test', '20010203_040506', directory, filename)
 
     method_frame, header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
 
@@ -351,14 +343,23 @@ def test_item_scraped_missing_collection_id(item_file, channel, tmpdir):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
+@pytest.mark.parametrize('item', [
+    PluckedItem(
+        value='123'
+    ),
+    FileError(
+        file_name='file.json',
+        url='https://example.com',
+        errors={'http_code': 500},
+    )
+])
 @pytest_twisted.inlineCallbacks
-def test_item_scraped_return(channel, tmpdir):
+def test_item_scraped_return(item, channel, tmpdir):
     create_response = Response(status_code=200, content={'collection_id': 1})
     close_response = Response(status_code=200)
-    item_plucked = PluckedItem(value='123')
 
     with patch.object(KingfisherProcessAPI2, '_post_synchronous', side_effect=[create_response, close_response]):
         runner = CrawlerRunner(settings=SETTINGS | {'FILES_STORE': tmpdir})
-        yield runner.crawl(Spider, crawl_time='2001-02-03T04:05:06', start_urls=[START_URL], item=item_plucked)
+        yield runner.crawl(Spider, crawl_time='2001-02-03T04:05:06', start_urls=[START_URL], item=item)
 
     assert channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True) == (None, None, None)

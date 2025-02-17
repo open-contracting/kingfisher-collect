@@ -153,29 +153,24 @@ class KingfisherProcessAPI2:
             self._response_error(spider, 'Failed to close collection', response)
 
     def item_scraped(self, item, spider):
-        """Publish a RabbitMQ message to store the file, file item or file error in Kingfisher Process."""
+        """Publish a RabbitMQ message to store the file or file item Kingfisher Process."""
         if not self.collection_id:
             return
 
-        if isinstance(item, PluckedItem):
+        if isinstance(item, PluckedItem | FileError):
             return
 
         data = {
             'collection_id': self.collection_id,
             'url': item.url,
+            'path': item.path,
         }
-
-        if isinstance(item, FileError):
-            data['errors'] = json.dumps(item.errors)
-        else:
-            data['path'] = item.path
 
         cb = functools.partial(self._when_ready, self.client.publish, data, self.routing_key)
         methods.add_callback_threadsafe(self.client.connection, cb)
 
-        if not isinstance(item, FileError):
-            # WARNING! Kingfisher Process's API reads this value.
-            self.stats.inc_value("kingfisher_process_expected_files_count")
+        # WARNING! Kingfisher Process's API reads this value.
+        self.stats.inc_value("kingfisher_process_expected_files_count")
 
     def disconnect_and_join(self):
         """Close the RabbitMQ connection and join the client's thread."""
