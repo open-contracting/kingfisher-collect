@@ -17,5 +17,6 @@ class NigeriaPlateauState(SimpleSpider):
     data_type = 'release_package'
 
     def start_requests(self):
-        yield scrapy.Request('https://api.ocds.plateaustate.gov.ng/api/v1/releases/bulk?download=json',
-                             meta={'file_name': 'all.json'})
+        yield scrapy.Request(
+            'https://api.ocds.plateaustate.gov.ng/api/v1/releases/bulk?download=json', meta={'file_name': 'all.json'}
+        )

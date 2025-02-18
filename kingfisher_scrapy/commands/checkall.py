@@ -231,8 +231,12 @@ class Checker:
         def default_from_date(cls):
             return repr(getattr(cls, 'default_from_date', None))
 
-        self.check_date_spider_argument('from_date', spider_arguments, default_from_date,
-                                        'Download only data from this {period} onward ({format} format).')
+        self.check_date_spider_argument(
+            'from_date',
+            spider_arguments,
+            default_from_date,
+            'Download only data from this {period} onward ({format} format).',
+        )
 
         def default_until_date(cls):
             if hasattr(cls, 'default_until_date'):
@@ -249,8 +253,12 @@ class Checker:
                 case _:
                     return None
 
-        self.check_date_spider_argument('until_date', spider_arguments, default_until_date,
-                                        'Download only data until this {period} ({format} format).')
+        self.check_date_spider_argument(
+            'until_date',
+            spider_arguments,
+            default_until_date,
+            'Download only data until this {period} ({format} format).',
+        )
 
     def check_list(self, items, known_items, name):
         items = list(items)

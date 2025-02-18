@@ -62,5 +62,6 @@ class EuropeanDynamicsBase(CompressedFileSpider):
                 url_date = datetime.datetime(year, month, 1)
                 if not (self.from_date <= url_date <= self.until_date):
                     continue
-            yield self.build_request(f'{self.base_url}{path}', formatter=join(components(-2), extension='zip'),
-                                     priority=number * -1)
+            yield self.build_request(
+                f'{self.base_url}{path}', formatter=join(components(-2), extension='zip'), priority=number * -1
+            )

@@ -34,6 +34,6 @@ class SouthAfricaNationalTreasuryAPI(LinksSpider, PeriodicSpider):
 
     # PeriodicSpider
     pattern = (
-      "https://ocds-api.etenders.gov.za/api/OCDSReleases?dateFrom={0:%Y-%m-%d}&dateTo={1:%Y-%m-%d}&PageNumber=1"
+        "https://ocds-api.etenders.gov.za/api/OCDSReleases?dateFrom={0:%Y-%m-%d}&dateTo={1:%Y-%m-%d}&PageNumber=1"
     )
     step = 7

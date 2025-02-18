@@ -20,13 +20,29 @@ class Pluck(ScrapyCommand):
 
     def add_options(self, parser):
         ScrapyCommand.add_options(self, parser)
-        parser.add_argument('-p', '--package-pointer', dest='pluck_package_pointer',
-                            help='The JSON Pointer to the value in the package')
-        parser.add_argument('-r', '--release-pointer', dest='pluck_release_pointer',
-                            help='The JSON Pointer to the value in the release')
-        parser.add_argument('-t', '--truncate', type=int, help='Truncate the value to this number of characters')
-        parser.add_argument('--max-bytes', type=int,
-                            help='Stop downloading an OCDS file after reading this many bytes')
+        parser.add_argument(
+            '-p',
+            '--package-pointer',
+            dest='pluck_package_pointer',
+            help='The JSON Pointer to the value in the package',
+        )
+        parser.add_argument(
+            '-r',
+            '--release-pointer',
+            dest='pluck_release_pointer',
+            help='The JSON Pointer to the value in the release',
+        )
+        parser.add_argument(
+            '-t',
+            '--truncate',
+            type=int,
+            help='Truncate the value to this number of characters',
+        )
+        parser.add_argument(
+            '--max-bytes',
+            type=int,
+            help='Stop downloading an OCDS file after reading this many bytes',
+        )
 
     def run(self, args, opts):
         if not (bool(opts.pluck_package_pointer) ^ bool(opts.pluck_release_pointer)):
@@ -57,8 +73,13 @@ class Pluck(ScrapyCommand):
                     skipped[spidercls.skip_pluck].append(spider_name)
                 else:
                     running.append(spider_name)
-                    self.crawler_process.crawl(spidercls, sample=1, package_pointer=opts.pluck_package_pointer,
-                                               release_pointer=opts.pluck_release_pointer, truncate=opts.truncate)
+                    self.crawler_process.crawl(
+                        spidercls,
+                        sample=1,
+                        package_pointer=opts.pluck_package_pointer,
+                        release_pointer=opts.pluck_release_pointer,
+                        truncate=opts.truncate,
+                    )
 
         with open('pluck_skipped.json', 'w') as f:
             json.dump(skipped, f, indent=2)

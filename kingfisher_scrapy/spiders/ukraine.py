@@ -52,5 +52,6 @@ class Ukraine(SimpleSpider):
             )
             yield self.build_request(url, formatter=components(-2))
 
-        yield self.build_request(data['next_page']['uri'], formatter=join(components(-1), parameters('offset')),
-                                 callback=self.parse_list)
+        yield self.build_request(
+            data['next_page']['uri'], formatter=join(components(-1), parameters('offset')), callback=self.parse_list
+        )
