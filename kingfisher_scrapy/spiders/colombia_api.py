@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import LinksSpider
-from kingfisher_scrapy.util import parameters
+from kingfisher_scrapy.util import handle_http_error, parameters
 
 
 class ColombiaAPI(LinksSpider):
@@ -37,3 +37,9 @@ class ColombiaAPI(LinksSpider):
         url = f'https://apiocds.colombiacompra.gov.co/apiCCE-2.0/rest/releases/dates/{from_date}/{until_date}'
 
         yield scrapy.Request(url, meta={'file_name': f'{from_date}.json'})
+
+    @handle_http_error
+    def parse(self, response):
+        # Replace unescaped tab characters within strings with a space.
+        response = response.replace(body=response.body.replace(b'\t', b' '))
+        yield from super().parse(response)
