@@ -1,7 +1,7 @@
 import enum
 import io
 import zipfile
-from typing import Any, TypedDict
+from typing import Any
 
 import pydantic
 import rarfile
@@ -27,10 +27,6 @@ class DataType(str, enum.Enum):
     release = "release"
     record_package = "record_package"
     release_package = "release_package"
-
-
-class Errors(TypedDict):
-    http_code: pydantic.conint(strict=True, ge=100, lt=600)
 
 
 class Resource(pydantic.BaseModel, **base_kwargs):
@@ -61,10 +57,6 @@ class File(DataResource):
 # This doesn't inherit from the File class, because we want isinstance(item, File) to be false for FileItem instances.
 class FileItem(DataResource):
     number: pydantic.conint(strict=True, gt=0)
-
-
-class FileError(Resource):
-    errors: Errors
 
 
 class PluckedItem(pydantic.BaseModel, **base_kwargs):

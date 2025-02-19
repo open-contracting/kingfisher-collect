@@ -1,3 +1,5 @@
+import logging
+import re
 from datetime import datetime
 
 import pytest
@@ -6,7 +8,6 @@ from scrapy.http import Response
 from scrapy.utils.project import get_project_settings
 
 from kingfisher_scrapy.exceptions import MissingEnvVarError
-from kingfisher_scrapy.items import FileError
 
 # See scrapy.cmdline.execute
 settings = get_project_settings()
@@ -15,7 +16,9 @@ runner = CrawlerRunner(settings)
 
 # See scrapy.commands.list
 @pytest.mark.parametrize('spider_name', runner.spider_loader.list())
-def test_start_requests_http_error(spider_name):
+def test_start_requests_http_error(spider_name, caplog):
+    caplog.set_level(logging.ERROR)
+
     # See scrapy.crawler.CrawlerRunner._create_crawler
     spidercls = runner.spider_loader.load(spider_name)
     crawler = Crawler(spidercls, runner.settings)
@@ -38,13 +41,12 @@ def test_start_requests_http_error(spider_name):
                 response.headers['Retry-After'] = 1
             items = list(callback(response))
 
-            assert len(items) == 1
-            for item in items:
-                assert type(item) is FileError
-                assert len(item.__dict__) == 3
-                assert item.errors == {'http_code': 555}
-                assert item.file_name
-                assert item.url
+            assert len(items) == 0
+            for record in caplog.records:
+                assert re.search(
+                    r"^status=555 message='[^']*' request=<(GET|POST) \S+> file_name=\S+$",
+                    record.message,
+                )
     except MissingEnvVarError as e:
         pytest.skip(f'{spidercls.name}: {e}')
 

@@ -4,7 +4,7 @@ import datetime
 import scrapy
 
 from kingfisher_scrapy.exceptions import IncoherentConfigurationError, SpiderArgumentError
-from kingfisher_scrapy.items import File, FileError, FileItem
+from kingfisher_scrapy.items import File, FileItem
 from kingfisher_scrapy.util import add_path_components, add_query_string
 
 
@@ -353,16 +353,14 @@ class BaseSpider(scrapy.Spider):
             number=number,
         )
 
-    def build_file_error_from_response(self, response, errors=None):
-        """
-        Return a FileError item to yield, based on the response to a request.
-
-        An ``errors`` keyword argument must be a ``dict``, and should set an ``http_code`` key.
-        """
-        return FileError(
-            file_name=response.request.meta.get('file_name', ''),
-            url=response.request.url,
-            errors=errors or {'http_code': response.status},
+    def log_error_from_response(self, response, *, level='error', status=None, message=''):
+        """Log an error message, based on the response to a request."""
+        getattr(self.logger, level)(
+            'status=%d message=%r request=%s file_name=%s',
+            status or response.status,
+            message,
+            response.request,
+            response.request.meta.get('file_name', ''),
         )
 
     @classmethod

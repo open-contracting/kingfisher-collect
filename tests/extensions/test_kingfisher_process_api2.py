@@ -14,7 +14,7 @@ from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.extensions import KingfisherProcessAPI2
-from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
+from kingfisher_scrapy.items import File, FileItem, PluckedItem
 from tests import spider_with_crawler
 
 KINGFISHER_API2_URL = os.getenv('KINGFISHER_API2_TEST_URL', 'http://httpbingo.org/anything/')
@@ -343,23 +343,14 @@ def test_item_scraped_missing_collection_id(item_file, channel, tmpdir):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason='RABBIT_URL must be set')
-@pytest.mark.parametrize('item', [
-    PluckedItem(
-        value='123'
-    ),
-    FileError(
-        file_name='file.json',
-        url='https://example.com',
-        errors={'http_code': 500},
-    )
-])
 @pytest_twisted.inlineCallbacks
-def test_item_scraped_return(item, channel, tmpdir):
+def test_item_scraped_return(channel, tmpdir):
     create_response = Response(status_code=200, content={'collection_id': 1})
     close_response = Response(status_code=200)
+    item_plucked = PluckedItem(value='123')
 
     with patch.object(KingfisherProcessAPI2, '_post_synchronous', side_effect=[create_response, close_response]):
         runner = CrawlerRunner(settings=SETTINGS | {'FILES_STORE': tmpdir})
-        yield runner.crawl(Spider, crawl_time='2001-02-03T04:05:06', start_urls=[START_URL], item=item)
+        yield runner.crawl(Spider, crawl_time='2001-02-03T04:05:06', start_urls=[START_URL], item=item_plucked)
 
     assert channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True) == (None, None, None)

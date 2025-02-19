@@ -6,7 +6,7 @@ from scrapy.utils.trackref import NoneType
 
 from kingfisher_scrapy.base_spiders import LinksSpider
 from kingfisher_scrapy.exceptions import MissingNextLinkError
-from kingfisher_scrapy.items import File, FileError
+from kingfisher_scrapy.items import File
 from tests import response_fixture, spider_with_crawler
 
 
@@ -30,21 +30,15 @@ def test_next_link_condition():
     assert type(request) is NoneType
 
 
-def test_parse_404():
+def test_parse_404(caplog):
     spider = spider_with_crawler(spider_class=LinksSpider)
 
     generator = spider.parse(response_fixture(status=404, body=b'{"links": {"next": "http://example.com/next"}}'))
-    item = next(generator)
 
-    assert type(item) is FileError
-    assert item.__dict__ == {
-        'file_name': 'test',
-        'url': 'http://example.com',
-        'errors': {'http_code': 404},
-    }
-
-    with pytest.raises(StopIteration):
-        next(generator)
+    assert len(list(generator)) == 0
+    assert [record.message for record in caplog.records] == [
+        "status=404 message='' request=<GET http://example.com> file_name=test"
+    ]
 
 
 def test_parse_200():

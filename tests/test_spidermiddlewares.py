@@ -6,7 +6,7 @@ import pytest
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, SimpleSpider
 from kingfisher_scrapy.exceptions import RetryableError
-from kingfisher_scrapy.items import File, FileError, FileItem
+from kingfisher_scrapy.items import File, FileItem
 from kingfisher_scrapy.spidermiddlewares import (
     AddPackageMiddleware,
     ConcatenatedJSONMiddleware,
@@ -53,11 +53,6 @@ async def alist(iterable):
         data_type='release_package',
         data=b'{"ocid": "abc"}',
         number=1,
-    ),
-    FileError(
-        file_name='test.json',
-        url='http://test.com',
-        errors={'http_code': 500},
     ),
 ])
 async def test_passthrough(middleware_class, item):

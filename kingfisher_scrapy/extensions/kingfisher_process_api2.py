@@ -9,7 +9,7 @@ from scrapy.exceptions import NotConfigured
 from yapw import methods
 from yapw.clients import Async
 
-from kingfisher_scrapy.items import FileError, PluckedItem
+from kingfisher_scrapy.items import PluckedItem
 
 
 class Client(Async):
@@ -153,11 +153,11 @@ class KingfisherProcessAPI2:
             self._response_error(spider, 'Failed to close collection', response)
 
     def item_scraped(self, item, spider):
-        """Publish a RabbitMQ message to store the file or file item Kingfisher Process."""
+        """Publish a RabbitMQ message to store the file or file item in Kingfisher Process."""
         if not self.collection_id:
             return
 
-        if isinstance(item, PluckedItem | FileError):
+        if isinstance(item, PluckedItem):
             return
 
         data = {

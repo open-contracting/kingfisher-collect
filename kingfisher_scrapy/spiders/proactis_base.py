@@ -43,8 +43,10 @@ class ProactisBase(PeriodicSpider):
     @handle_http_error
     def parse(self, response):
         data = response.json()
+
         # Some responses are a package without a list of releases.
         if 'releases' not in data:
-            yield self.build_file_error_from_response(response, errors={'http_code': response.status, 'data': data})
-        else:
-            yield from super().parse(response)
+            self.log_error_from_response(response, message=data)
+            return
+
+        yield from super().parse(response)

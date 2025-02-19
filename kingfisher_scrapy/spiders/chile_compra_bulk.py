@@ -1,7 +1,7 @@
 import json
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, PeriodicSpider
-from kingfisher_scrapy.items import File, FileError
+from kingfisher_scrapy.items import File
 from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components
 
 # curl -I https://ocds.blob.core.windows.net/ocds/202205.zip
@@ -51,10 +51,15 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
           "detail": "error"
         }
         """
-        json_data = json.loads(data)
+        parsed = json.loads(data)
 
-        if json_data.get('status') != 200:
-            json_data['http_code'] = json_data['status']
-            return FileError(file_name=file_name, url=url, errors=json_data)
+        if parsed.get('status') != 200:
+            self.logger.error(
+                'status=%d message=%r request=<GET %s> file_name=%s',
+                parsed['status'],
+                parsed['detail'],
+                url,
+                file_name,
+            )
 
         return File(file_name=file_name, url=url, data_type=None, data=data)

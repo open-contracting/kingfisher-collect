@@ -98,8 +98,7 @@ def handle_http_error(decorated):
               'RETRY_HTTP_CODES': [],
           }
 
-    Otherwise, yields a :class:`~kingfisher_scrapy.items.FileError` using
-    :meth:`~kingfisher_scrapy.base_spider.BaseSpider.build_file_error_from_response`.
+    Otherwise, logs an error message.
     """
     @wraps(decorated)
     def wrapper(self, response, **kwargs):
@@ -120,14 +119,9 @@ def handle_http_error(decorated):
             )
             yield request
         elif self.is_http_retryable(response):
-            self.logger.error(
-                'Gave up retrying %(request)s (failed %(failures)d times): HTTP %(status)d',
-                {'request': response.request, 'failures': attempts, 'status': response.status},
-                extra={'spider': self}
-            )
-            yield self.build_file_error_from_response(response)
+            self.log_error_from_response(response, message=f'Gave up retrying (failed {attempts} times)')
         else:
-            yield self.build_file_error_from_response(response)
+            self.log_error_from_response(response)
     return wrapper
 
 

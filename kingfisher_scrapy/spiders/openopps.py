@@ -148,80 +148,78 @@ class Openopps(BaseSpider):
             yield self.request_range(date, date, search_h)
 
     def parse(self, response):
-        if self.is_http_success(response):
-            data = response.json()
-            count = data['count']
-            release_date = response.request.meta['release_date']  # date used for the search
-            search_h = response.request.meta['search_h']  # hour range used for the search
-
-            # Counts response and range hour split control
-            if count <= self.api_limit or search_h == 1:
-                yield self.build_file_from_response(response, data_type=self.data_type)
-
-                next_url = data.get('next')
-                if next_url:
-                    yield self.build_request(
-                        next_url,
-                        formatter=parameters('releasedate__gte', 'releasedate__lte', 'page'),
-                        meta={
-                            'release_date': release_date,
-                            'search_h': search_h,
-                        },
-                        headers=HEADERS
-                    )
-
-                # Tells if we have to re-authenticate before the token expires
-                time_diff = datetime.now() - self.start_time
-                if not self.reauthenticating and time_diff.total_seconds() > self.request_time_limit * 60:
-                    self.logger.info('Time_diff: %s', time_diff.total_seconds())
-                    self.reauthenticating = True
-                    yield self.build_access_token_request(initial_authentication=False, priority=1000)
+        if not self.is_http_success(response):
+            # 1,000 results per page, with up to 10,000 results (10 pages) per query.
+            if response.status == 500 and response.request.url.count('page=11'):
+                message = 'Collected only first 10,000 results. Modify code to handle windows of less than 1 hour.'
             else:
-                # Change search filter if count exceeds the API limit or search_h > 1 hour
-                parts = int(ceil(count / self.api_limit))  # parts we split a search that exceeds the limit
-                split_h = int(ceil(search_h / parts))  # hours we split
+                message = ''
+            self.log_error_from_response(response, message=message)
+            return
 
-                # If we have last_hour variable here, we have to split hours
-                last_hour = response.request.meta.get('last_hour')
-                if last_hour:
-                    date = datetime.strptime(release_date, '%Y-%m-%dT%H:%M:%S')  # release_date with start hour
-                else:
-                    date = datetime.strptime(release_date, '%Y-%m-%d')  # else we have to split a day by day range
-                    last_hour = f'{date.strftime("%Y-%m-%d")}T23:59:59'  # last hour of a day
+        data = response.json()
+        count = data['count']
+        release_date = response.request.meta['release_date']  # date used for the search
+        search_h = response.request.meta['search_h']  # hour range used for the search
 
-                # Create time lists depending on how many hours we split a search
-                start_hours = [
-                    (date + timedelta(hours=h)).strftime('%Y-%m-%dT%H:%M:%S')
-                    for h in range(0, search_h, split_h)
-                ]
-                end_hours = [
-                    (date + timedelta(hours=h, minutes=59, seconds=59)).strftime('%Y-%m-%dT%H:%M:%S')
-                    for h in range(split_h - 1, search_h, split_h)
-                ]
+        # Counts response and range hour split control
+        if count <= self.api_limit or search_h == 1:
+            yield self.build_file_from_response(response, data_type=self.data_type)
 
-                # If parts is not a divisor of hours we split, append the last missing hour
-                if len(start_hours) != len(end_hours):
-                    end_hours.append(last_hour)
+            next_url = data.get('next')
+            if next_url:
+                yield self.build_request(
+                    next_url,
+                    formatter=parameters('releasedate__gte', 'releasedate__lte', 'page'),
+                    meta={
+                        'release_date': release_date,
+                        'search_h': search_h,
+                    },
+                    headers=HEADERS
+                )
 
-                self.logger.info('Changing filters, split in %s: %s.', parts, response.request.url)
-                for i in range(len(start_hours)):
-                    yield self.build_request(
-                        self.url_pattern.format(releasedate__gte=start_hours[i], releasedate__lte=end_hours[i]),
-                        formatter=parameters('releasedate__gte', 'releasedate__lte'),
-                        meta={
-                            'release_date': start_hours[i],  # release_date with star hour
-                            'last_hour': end_hours[i],  # release_date with last hour
-                            'search_h': split_h,  # new search range
-                        },
-                        headers=HEADERS
-                    )
-        # Message for pages that exceed the 10,000 search results in the range of one hour.
-        # These are pages with status 500 and 'page=11' in the URL request.
-        elif response.status == 500 and response.request.url.count('page=11'):
-            self.logger.error(
-                'Status: %s. Results exceeded in a range of one hour, we save the first 10,000 data for: %s',
-                response.status,
-                response.request.url,
-            )
+            # Tells if we have to re-authenticate before the token expires
+            time_diff = datetime.now() - self.start_time
+            if not self.reauthenticating and time_diff.total_seconds() > self.request_time_limit * 60:
+                self.logger.info('Time_diff: %s', time_diff.total_seconds())
+                self.reauthenticating = True
+                yield self.build_access_token_request(initial_authentication=False, priority=1000)
         else:
-            yield self.build_file_error_from_response(response)
+            # Change search filter if count exceeds the API limit or search_h > 1 hour
+            parts = int(ceil(count / self.api_limit))  # parts we split a search that exceeds the limit
+            split_h = int(ceil(search_h / parts))  # hours we split
+
+            # If we have last_hour variable here, we have to split hours
+            last_hour = response.request.meta.get('last_hour')
+            if last_hour:
+                date = datetime.strptime(release_date, '%Y-%m-%dT%H:%M:%S')  # release_date with start hour
+            else:
+                date = datetime.strptime(release_date, '%Y-%m-%d')  # else we have to split a day by day range
+                last_hour = f'{date.strftime("%Y-%m-%d")}T23:59:59'  # last hour of a day
+
+            # Create time lists depending on how many hours we split a search
+            start_hours = [
+                (date + timedelta(hours=h)).strftime('%Y-%m-%dT%H:%M:%S')
+                for h in range(0, search_h, split_h)
+            ]
+            end_hours = [
+                (date + timedelta(hours=h, minutes=59, seconds=59)).strftime('%Y-%m-%dT%H:%M:%S')
+                for h in range(split_h - 1, search_h, split_h)
+            ]
+
+            # If parts is not a divisor of hours we split, append the last missing hour
+            if len(start_hours) != len(end_hours):
+                end_hours.append(last_hour)
+
+            self.logger.info('Changing filters, split in %s: %s.', parts, response.request.url)
+            for i in range(len(start_hours)):
+                yield self.build_request(
+                    self.url_pattern.format(releasedate__gte=start_hours[i], releasedate__lte=end_hours[i]),
+                    formatter=parameters('releasedate__gte', 'releasedate__lte'),
+                    meta={
+                        'release_date': start_hours[i],  # release_date with star hour
+                        'last_hour': end_hours[i],  # release_date with last hour
+                        'search_h': split_h,  # new search range
+                    },
+                    headers=HEADERS
+                )

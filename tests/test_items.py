@@ -1,12 +1,11 @@
 import pydantic
 import pytest
 
-from kingfisher_scrapy.items import File, FileError, FileItem
+from kingfisher_scrapy.items import File, FileItem
 
 ITEM = {'file_name': 'test', 'url': 'http://test.com'}
 FILE = {**ITEM | {'data_type': 'release_package', 'data': b'{}'}}
 FILE_ITEM = {**FILE | {'number': 1}}
-FILE_ERROR = {**ITEM | {'errors': {'http_code': 500, 'detail': 'timeout'}}}
 
 
 def check_required(cls, base, pop):
@@ -17,7 +16,7 @@ def check_required(cls, base, pop):
         cls(**data)
 
 
-@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM), (FileError, FILE_ERROR)])
+@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_valid(cls, base):
     cls(**base)  # no exception raised
 
@@ -32,20 +31,15 @@ def test_file_item_required(pop):
     check_required(FileItem, FILE_ITEM, pop)
 
 
-@pytest.mark.parametrize('pop', ['file_name', 'url', 'errors'])
-def test_file_error_required(pop):
-    check_required(FileError, FILE_ERROR, pop)
-
-
 @pytest.mark.parametrize('invalid', ['path/test', 'path\\test'])
-@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM), (FileError, FILE_ERROR)])
+@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_file_name(cls, base, invalid):
     with pytest.raises(pydantic.ValidationError):
         cls(**base | {'file_name': invalid})
 
 
 @pytest.mark.parametrize('invalid', ['://example.com', 'scheme://example.com', 'http://example'])
-@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM), (FileError, FILE_ERROR)])
+@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_url(cls, base, invalid):
     with pytest.raises(pydantic.ValidationError):
         cls(**base | {'url': invalid})
@@ -77,14 +71,3 @@ def test_data_length(cls, base, invalid):
 def test_number(invalid):
     with pytest.raises(pydantic.ValidationError):
         FileItem(**FILE_ITEM | {'number': invalid})
-
-
-@pytest.mark.parametrize('invalid', [
-    {'http_code': 99},
-    {'http_code': 600},
-    {'http_code': '200'},
-    {'detail': 'timeout'},
-])
-def test_errors(invalid):
-    with pytest.raises(pydantic.ValidationError):
-        FileError(**FILE_ERROR | {'errors': invalid})

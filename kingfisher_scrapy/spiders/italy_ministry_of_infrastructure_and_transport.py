@@ -49,11 +49,11 @@ class ItalyMinistryOfInfrastructureAndTransport(SimpleSpider):
         data = response.json()
 
         if 'errorData' in data:
-            data['http_code'] = response.status
-            yield self.build_file_error_from_response(response, errors=data)
+            self.log_error_from_response(response, message=data)
+            return
 
-        # An empty release package is returned after the last meaningful page is reached.
         if 'releases' not in data:
+            # An empty release package is returned after the last meaningful page is reached.
             return
 
         yield from super().parse(response)

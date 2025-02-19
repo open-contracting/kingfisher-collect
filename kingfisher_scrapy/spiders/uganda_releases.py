@@ -41,7 +41,7 @@ class UgandaReleases(PeriodicSpider):
             # https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets generates URLs with JavaScript. We increment
             # the 'code' parameter until it 404s. As such, we can't disambiguate expected from unespected 404s.
             if response.status != 404:
-                yield self.build_file_error_from_response(response)
+                self.log_error_from_response(response)
             return
 
         yield from super().parse(response)

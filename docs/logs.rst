@@ -168,7 +168,7 @@ Some spiders can recover from errors, for example:
 -  *503 Service Unavailable*: back off and retry
 -  … or try different parameters until a request succeeds
 
-Unrecoverable errors are yielded as FileError items (see :ref:`log-file-error-items`).
+Unrecoverable errors are logged at ERROR level (see :ref:`log-errors`).
 
 Read the numbers of spider exceptions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -221,9 +221,9 @@ Presently, only the first duplicate request is logged. The line looks like:
 
    2020-01-10 12:34:56 [scrapy.dupefilters] DEBUG: Filtered duplicate request: <GET http://...> (referer: http://...)
 
-.. _log-file-error-items:
+.. _log-errors:
 
-4. Check for FileError items
-----------------------------
+4. Check for ERROR-level messages
+---------------------------------
 
-Kingfisher Collect yields some errors as FileError items. You can open the log file and search for ``'errors':`` to get more context on each error.
+Kingfisher Collect logs unrecoverable errors at ERROR level. You can open the log file and search for ``ERROR`` to get more context on each error.
