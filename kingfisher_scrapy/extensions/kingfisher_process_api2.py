@@ -194,4 +194,6 @@ class KingfisherProcessAPI2:
             self.client.connection.ioloop.call_soon(self._when_ready, function, *args)
 
     def _response_error(self, spider, message, response):
-        spider.logger.error('%s: HTTP %d (%s) (%s)', message, response.status_code, response.text, response.headers)
+        spider.logger.error(
+            '%s: status=%d response=%r headers=%r', message, response.status_code, response.text, response.headers
+        )
