@@ -57,8 +57,9 @@ class UpdateDocs(ScrapyCommand):
 
                     infix = ''
                     if cls.__doc__:
-                        section = re.search(r'^Environment variables\n(.+?)(?:^\S|\Z)', dedent(cls.__doc__),
-                                            re.MULTILINE | re.DOTALL)
+                        section = re.search(
+                            r'^Environment variables\n(.+?)(?:^\S|\Z)', dedent(cls.__doc__), re.MULTILINE | re.DOTALL
+                        )
                         if section:
                             environment_variables = re.findall(r'^(\S.+)\n  ', dedent(section[1]), re.MULTILINE)
                             infix = f"env {' '.join([f'{variable}=...' for variable in environment_variables])} "

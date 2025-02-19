@@ -71,8 +71,9 @@ class HondurasPortalBulk(SimpleSpider):
 
         if system:
             if spider.publisher != 'oncae':
-                raise SpiderArgumentError(f'spider argument `system` is not supported for publisher: '
-                                          f'{spider.publisher!r}')
+                raise SpiderArgumentError(
+                    f'spider argument `system` is not supported for publisher: {spider.publisher!r}'
+                )
             if spider.system not in spider.available_systems:
                 raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
 

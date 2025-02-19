@@ -27,8 +27,7 @@ class PeruOSCEBulk(CompressedFileSpider, IndexSpider):
     peru_base_url = 'https://contratacionesabiertas.osce.gob.pe/api/v1/files?page={0}&paginateBy=10&format=json'
 
     def start_requests(self):
-        yield scrapy.Request(self.peru_base_url.format(1),
-                             meta={'file_name': 'list.json'}, callback=self.parse_list)
+        yield scrapy.Request(self.peru_base_url.format(1), meta={'file_name': 'list.json'}, callback=self.parse_list)
 
     def url_builder(self, value, data, response):
         return self.peru_base_url.format(value)

@@ -68,8 +68,9 @@ def test_spider_closed_without_items():
 
 def test_bytes_received_stop_download():
     with TemporaryDirectory() as tmpdirname:
-        spider = spider_with_crawler(settings={'KINGFISHER_PLUCK_PATH': tmpdirname,
-                                               'KINGFISHER_PLUCK_MAX_BYTES': 1}, release_pointer='/date')
+        spider = spider_with_crawler(
+            settings={'KINGFISHER_PLUCK_PATH': tmpdirname, 'KINGFISHER_PLUCK_MAX_BYTES': 1}, release_pointer='/date'
+        )
         extension = Pluck.from_crawler(spider.crawler)
         request = Request('http://example.com', meta={'file_name': 'test.json'})
 
@@ -81,8 +82,9 @@ def test_bytes_received_stop_download():
 
 def test_bytes_received_dont_stop_download():
     with TemporaryDirectory() as tmpdirname:
-        spider = spider_with_crawler(settings={'KINGFISHER_PLUCK_PATH': tmpdirname,
-                                               'KINGFISHER_PLUCK_MAX_BYTES': 10}, release_pointer='/date')
+        spider = spider_with_crawler(
+            settings={'KINGFISHER_PLUCK_PATH': tmpdirname, 'KINGFISHER_PLUCK_MAX_BYTES': 10}, release_pointer='/date'
+        )
         extension = Pluck.from_crawler(spider.crawler)
         request = Request('http://example.com', meta={'file_name': 'test.json'})
 
@@ -102,8 +104,11 @@ def test_bytes_received_dont_stop_download():
 ])
 def test_bytes_received_ignored_requests(test_request, spider_class, attributes):
     with TemporaryDirectory() as tmpdirname:
-        spider = spider_with_crawler(spider_class=spider_class, release_pointer='/date',
-                                     settings={'KINGFISHER_PLUCK_PATH': tmpdirname, 'KINGFISHER_PLUCK_MAX_BYTES': 10})
+        spider = spider_with_crawler(
+            spider_class=spider_class,
+            release_pointer='/date',
+            settings={'KINGFISHER_PLUCK_PATH': tmpdirname, 'KINGFISHER_PLUCK_MAX_BYTES': 10},
+        )
         for attr, value in attributes.items():
             setattr(spider, attr, value)
 

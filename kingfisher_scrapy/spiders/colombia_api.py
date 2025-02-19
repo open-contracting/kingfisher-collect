@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import LinksSpider
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.util import handle_http_error, parameters, replace_path_separator
 
 
 class ColombiaAPI(LinksSpider):
@@ -29,7 +29,7 @@ class ColombiaAPI(LinksSpider):
     data_type = 'release_package'
 
     # LinksSpider
-    formatter = staticmethod(lambda url: parameters('_id')(url).replace('/', '_'))
+    formatter = staticmethod(parameters('_id', parser=replace_path_separator))  # e.g. _id=11/23
 
     def start_requests(self):
         from_date = self.from_date.strftime(self.date_format)

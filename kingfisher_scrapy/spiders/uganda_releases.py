@@ -1,5 +1,3 @@
-from scrapy.settings.default_settings import RETRY_HTTP_CODES
-
 from kingfisher_scrapy.base_spiders import PeriodicSpider
 from kingfisher_scrapy.util import get_parameter_value, parameters, replace_parameters
 
@@ -24,13 +22,6 @@ class UgandaReleases(PeriodicSpider):
     """
 
     name = 'uganda_releases'
-    custom_settings = {
-        # We cannot get the list of all the files from https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets
-        # because the list is generated in the browser.
-        # To get all the files, we follow the pattern download?fy={0}-{1}&code=1, iterating the 'code' value until it
-        # returns HTTP 500 error FileNotFoundException. Therefore, we retry all codes in RETRY_HTTP_CODES except 500.
-        'RETRY_HTTP_CODES': [status for status in RETRY_HTTP_CODES if status != 500],
-    }
     # Returns HTTP 403 if too many requests. (1 is too short.)
     download_delay = 2
 
@@ -46,14 +37,19 @@ class UgandaReleases(PeriodicSpider):
     pattern = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v2/ocds/download?fy={0}-{1}&format=json&code=1'
 
     def parse(self, response):
-        if response.status == 500:
-            return
         if not self.is_http_success(response):
-            yield self.build_file_error_from_response(response)
-        else:
-            yield from super().parse(response)
-            code = int(get_parameter_value(response.request.url, 'code')) + 1
-            yield self.build_request(replace_parameters(response.request.url, code=code), formatter=self.formatter)
+            # https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets generates URLs with JavaScript. We increment
+            # the 'code' parameter until it 404s. As such, we can't disambiguate expected from unespected 404s.
+            if response.status != 404:
+                yield self.build_file_error_from_response(response)
+            return
+
+        yield from super().parse(response)
+
+        yield self.build_request(
+            replace_parameters(response.request.url, code=int(get_parameter_value(response.request.url, 'code')) + 1),
+            formatter=self.formatter,
+        )
 
     def build_urls(self, date):
         yield self.pattern.format(date, date + 1)

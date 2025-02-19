@@ -55,8 +55,10 @@ class ParaguayHacienda(BaseSpider):
         spider.request_token = crawler.settings.get('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN')
         spider.client_secret = crawler.settings.get('KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET')
         if spider.request_token is None or spider.client_secret is None:
-            raise MissingEnvVarError('KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN and/or '
-                                     'KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET is not set.')
+            raise MissingEnvVarError(
+                'KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN and/or '
+                'KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET is not set.'
+            )
 
         return spider
 
