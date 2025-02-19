@@ -5,7 +5,6 @@ from jsonpointer import resolve_pointer
 from kingfisher_scrapy import util
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import IncoherentConfigurationError
-from kingfisher_scrapy.items import FileError
 from kingfisher_scrapy.util import handle_http_error, parameters
 
 
@@ -41,7 +40,7 @@ class IndexSpider(SimpleSpider):
 
     The ``parse_list()`` method parses responses as JSON data. To change the parser of these responses - for example,
     to check for an error response or extract the page count from an HTML page - override the ``parse_list_loader()``
-    method. If this method returns a ``FileError``, then ``parse_list()`` yields it and returns.
+    method. If this method returns ``None``, then ``parse_list()`` returns.
 
     Otherwise, results are yielded from all responses by :meth:`~kingfisher_scrapy.SimpleSpider.parse`. To
     change this method, set a ``parse_list_callback`` class attribute to a method's name as a string.
@@ -101,8 +100,7 @@ class IndexSpider(SimpleSpider):
     @handle_http_error
     def parse_list(self, response):
         data = self.parse_list_loader(response)
-        if isinstance(data, FileError):
-            yield data
+        if data is None:
             return
 
         if not self.base_url:

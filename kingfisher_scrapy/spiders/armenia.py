@@ -41,7 +41,7 @@ class Armenia(LinksSpider):
         # Otherwise, parse the response as usual, then (1) pick a date range and (2) do a binary search within it.
         # This approach assumes that, if two offsets error, then intervening offsets error, too.
         else:
-            yield self.build_file_error_from_response(response)
+            self.log_error_from_response(response)
 
             # If the error occurs on the first request, we have no starting offset.
             if get_parameter_value(response.request.url, 'offset'):
@@ -65,7 +65,7 @@ class Armenia(LinksSpider):
         # If this offset failed and reached a limit, stop.
         elif offset >= start_time or exponent > EXPONENT_LIMIT:
             self.logger.info(f'No offset found after {first_offset:,} within {2 ** EXPONENT_LIMIT} days.')  # noqa: G004
-            yield self.build_file_error_from_response(response)
+            self.log_error_from_response(response)
         # Otherwise, continue.
         else:
             new_offset = min(first_offset + MILLISECONDS_PER_DAY * 2 ** exponent, start_time)

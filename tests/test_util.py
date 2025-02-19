@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from unittest.mock import Mock
 
@@ -73,10 +74,12 @@ def test_handle_http_error_retry(attempts):
     assert actual.dont_filter is True
 
 
-def test_handle_http_error_max_attempts_reached():
+def test_handle_http_error_max_attempts_reached(caplog):
     @handle_http_error
     def test_decorated(self, response, **kwargs):
         yield response
+
+    caplog.set_level(logging.ERROR)
 
     spider = spider_with_crawler()
     spider.max_attempts = 3
@@ -87,7 +90,10 @@ def test_handle_http_error_max_attempts_reached():
     mock_response.headers = {'Retry-After': 5}
     mock_response.request = scrapy.Request('http://test.com', meta={'file_name': 'file.json', 'retries': 2})
 
-    assert next(test_decorated(spider, mock_response)) == spider.build_file_error_from_response(mock_response)
+    assert len(list(test_decorated(spider, mock_response))) == 0
+    assert [record.message for record in caplog.records] == [
+        "status=429 message='Gave up retrying (failed 3 times)' request=<GET http://test.com> file_name=file.json",
+    ]
 
 
 @pytest.mark.parametrize('response_status', [200, 204])
@@ -108,10 +114,12 @@ def test_handle_http_error_success(response_status):
 
 
 @pytest.mark.parametrize('response_status', [302, 400, 500])
-def test_handle_http_error_error(response_status):
+def test_handle_http_error_error(response_status, caplog):
     @handle_http_error
     def test_decorated(self, response, **kwargs):
         yield response
+
+    caplog.set_level(logging.ERROR)
 
     spider = spider_with_crawler()
     spider.max_attempts = 3
@@ -121,7 +129,10 @@ def test_handle_http_error_error(response_status):
     mock_response.status = response_status
     mock_response.request = scrapy.Request('http://test.com', meta={'file_name': 'file.json'})
 
-    assert next(test_decorated(spider, mock_response)) == spider.build_file_error_from_response(mock_response)
+    assert len(list(test_decorated(spider, mock_response))) == 0
+    assert [record.message for record in caplog.records] == [
+        f"status={response_status} message='' request=<GET http://test.com> file_name=file.json"
+    ]
 
 
 @pytest.mark.parametrize(('start', 'stop', 'step', 'expected'), [

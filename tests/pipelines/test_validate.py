@@ -1,7 +1,7 @@
 import pytest
 from scrapy.exceptions import DropItem
 
-from kingfisher_scrapy.items import File, FileError, FileItem
+from kingfisher_scrapy.items import File, FileItem
 from kingfisher_scrapy.pipelines import Validate
 from tests import spider_with_crawler
 
@@ -35,17 +35,6 @@ def test_process_item_with_file_item():
     assert pipeline.process_item(item, None) == item
 
     item.number = 2
-
-    assert pipeline.process_item(item, None) == item
-
-
-def test_process_item_with_file_error():
-    pipeline = Validate()
-    item = FileError(
-        file_name='test',
-        url='http://test.com',
-        errors={'http_code': 500},
-    )
 
     assert pipeline.process_item(item, None) == item
 

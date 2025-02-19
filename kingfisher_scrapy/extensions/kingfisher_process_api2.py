@@ -9,7 +9,7 @@ from scrapy.exceptions import NotConfigured
 from yapw import methods
 from yapw.clients import Async
 
-from kingfisher_scrapy.items import FileError, PluckedItem
+from kingfisher_scrapy.items import PluckedItem
 
 
 class Client(Async):
@@ -153,7 +153,7 @@ class KingfisherProcessAPI2:
             self._response_error(spider, 'Failed to close collection', response)
 
     def item_scraped(self, item, spider):
-        """Publish a RabbitMQ message to store the file, file item or file error in Kingfisher Process."""
+        """Publish a RabbitMQ message to store the file or file item in Kingfisher Process."""
         if not self.collection_id:
             return
 
@@ -163,19 +163,14 @@ class KingfisherProcessAPI2:
         data = {
             'collection_id': self.collection_id,
             'url': item.url,
+            'path': item.path,
         }
-
-        if isinstance(item, FileError):
-            data['errors'] = json.dumps(item.errors)
-        else:
-            data['path'] = item.path
 
         cb = functools.partial(self._when_ready, self.client.publish, data, self.routing_key)
         methods.add_callback_threadsafe(self.client.connection, cb)
 
-        if not isinstance(item, FileError):
-            # WARNING! Kingfisher Process's API reads this value.
-            self.stats.inc_value("kingfisher_process_expected_files_count")
+        # WARNING! Kingfisher Process's API reads this value.
+        self.stats.inc_value("kingfisher_process_expected_files_count")
 
     def disconnect_and_join(self):
         """Close the RabbitMQ connection and join the client's thread."""
@@ -199,4 +194,6 @@ class KingfisherProcessAPI2:
             self.client.connection.ioloop.call_soon(self._when_ready, function, *args)
 
     def _response_error(self, spider, message, response):
-        spider.logger.error('%s: HTTP %d (%s) (%s)', message, response.status_code, response.text, response.headers)
+        spider.logger.critical(
+            '%s: status=%d response=%r headers=%r', message, response.status_code, response.text, response.headers
+        )

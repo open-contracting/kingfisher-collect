@@ -1,10 +1,9 @@
+import json
 from abc import abstractmethod
 from datetime import date
-from json import JSONDecodeError
 
 from kingfisher_scrapy.base_spiders import IndexSpider, PeriodicSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.items import FileError
 from kingfisher_scrapy.util import components, handle_http_error
 
 
@@ -54,8 +53,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
     @handle_http_error
     def parse(self, response):
         data = self.parse_list_loader(response)
-        if isinstance(data, FileError):
-            yield data
+        if data is None:
             return
 
         # Remove NUL bytes.
@@ -75,8 +73,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         }
         """
         data = self.parse_list_loader(response)
-        if isinstance(data, FileError):
-            yield data
+        if data is None:
             return
 
         for item in data['data']:
@@ -98,14 +95,13 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         """
         try:
             data = response.json()
-        except JSONDecodeError:
-            return self.build_file_error_from_response(
-                response, errors={'http_code': response.status, 'text': response.text}
-            )
+        except json.JSONDecodeError as e:
+            self.log_error_from_response(response, level='exception', message=e)
+            return None
 
         if set(data) == {'detail', 'status'}:
-            data['http_code'] = data['status']
-            return self.build_file_error_from_response(response, errors=data)
+            self.log_error_from_response(response, status=data['status'], message=data['detail'])
+            return None
 
         return data
 

@@ -48,10 +48,8 @@ class EuropeanDynamicsBase(CompressedFileSpider):
         try:
             data = response.json()
         # The response can be an HTML document with an error message like "temporary unavailable due to maintenance".
-        except JSONDecodeError:
-            yield self.build_file_error_from_response(
-                response, errors={'http_code': response.status, 'text': response.text}
-            )
+        except JSONDecodeError as e:
+            self.log_error_from_response(response, level='exception', message=e)
             return
 
         for number, url in enumerate(reversed(data['packagesPerMonth'])):

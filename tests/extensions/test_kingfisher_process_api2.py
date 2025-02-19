@@ -14,7 +14,7 @@ from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.extensions import KingfisherProcessAPI2
-from kingfisher_scrapy.items import File, FileError, FileItem, PluckedItem
+from kingfisher_scrapy.items import File, FileItem, PluckedItem
 from tests import spider_with_crawler
 
 KINGFISHER_API2_URL = os.getenv('KINGFISHER_API2_TEST_URL', 'http://httpbingo.org/anything/')
@@ -143,7 +143,7 @@ def test_from_crawler_with_database_url():
         ('INFO', 'Closed collection 1 in Kingfisher Process'),
     ]),
     (1, 500, [
-        ('ERROR', 'Failed to create collection: HTTP 500 ({"collection_id": 1}) ({})'),
+        ('CRITICAL', """Failed to create collection: status=500 response='{"collection_id": 1}' headers={}"""),
     ]),
 ])
 @pytest_twisted.inlineCallbacks
@@ -235,7 +235,9 @@ def test_spider_closed_error(tmpdir, caplog):
     assert calls[1].args[1:] == ('/api/collections/1/close/', {'reason': 'finished'})
 
     assert any(
-        r.name == 'test' and r.levelname == 'ERROR' and r.message == 'Failed to close collection: HTTP 500 (null) ({})'
+        r.name == 'test'
+        and r.levelname == 'CRITICAL'
+        and r.message == "Failed to close collection: status=500 response='null' headers={}"
         for r in caplog.records
     )
 
@@ -280,11 +282,6 @@ def test_spider_closed_return(kwargs, tmpdir):
         data=b'{"key": "value"}',
         number=1,
     )),
-    ('389', 'file.json', FileError(
-        file_name='file.json',
-        url='https://example.com',
-        errors={'http_code': 500},
-    )),
 ])
 @pytest_twisted.inlineCallbacks
 def test_item_scraped(directory, filename, item, channel, tmpdir):
@@ -302,11 +299,8 @@ def test_item_scraped(directory, filename, item, channel, tmpdir):
     expected = {
         'collection_id': 1,
         'url': url,
+        'path': os.path.join('test', '20010203_040506', directory, filename),
     }
-    if isinstance(item, FileError):
-        expected['errors'] = '{"http_code": 500}'
-    else:
-        expected['path'] = os.path.join('test', '20010203_040506', directory, filename)
 
     method_frame, header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
 
