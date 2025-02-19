@@ -146,12 +146,10 @@ class ParaguayHacienda(BaseSpider):
             else:
                 attempt = response.request.meta['attempt']
                 if attempt == self.max_access_token_attempts:
-                    self.logger.error('Max attempts to get an access token reached.')
                     self.access_token_request_failed = True
-                    raise AccessTokenError
+                    raise AccessTokenError('Max attempts to get an access token reached.')
                 else:
                     yield self.build_access_token_request(response.request.body, attempt=attempt)
         else:
-            self.logger.error('Authentication failed. Status code: %s', response.status)
             self.access_token_request_failed = True
-            raise AccessTokenError
+            raise AccessTokenError(f'Authentication failed. Status code: {response.status}')
