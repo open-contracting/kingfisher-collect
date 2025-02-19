@@ -143,7 +143,7 @@ def test_from_crawler_with_database_url():
         ('INFO', 'Closed collection 1 in Kingfisher Process'),
     ]),
     (1, 500, [
-        ('ERROR', 'Failed to create collection: HTTP 500 ({"collection_id": 1}) ({})'),
+        ('CRITICAL', 'Failed to create collection: HTTP 500 ({"collection_id": 1}) ({})'),
     ]),
 ])
 @pytest_twisted.inlineCallbacks
@@ -235,7 +235,9 @@ def test_spider_closed_error(tmpdir, caplog):
     assert calls[1].args[1:] == ('/api/collections/1/close/', {'reason': 'finished'})
 
     assert any(
-        r.name == 'test' and r.levelname == 'ERROR' and r.message == 'Failed to close collection: HTTP 500 (null) ({})'
+        r.name == 'test'
+        and r.levelname == 'CRITICAL'
+        and r.message == 'Failed to close collection: HTTP 500 (null) ({})'
         for r in caplog.records
     )
 
