@@ -46,7 +46,7 @@ class ProactisBase(PeriodicSpider):
 
         # Some responses are a package without a list of releases.
         if 'releases' not in data:
-            self.log_error_from_response(response, message=data)
+            self.log_error_from_response(response, level='warning', message=data)
             return
 
         yield from super().parse(response)
