@@ -48,7 +48,7 @@ contextlib2==0.6.0.post1
     #   schema
 coverage==7.6.1
     # via -r requirements_dev.in
-cryptography==43.0.1
+cryptography==44.0.1
     # via
     #   -r requirements.txt
     #   pyopenssl
@@ -220,7 +220,7 @@ pydispatcher==2.0.6
     # via
     #   -r requirements.txt
     #   scrapy
-pyopenssl==24.2.1
+pyopenssl==24.3.0
     # via
     #   -r requirements.txt
     #   scrapy
