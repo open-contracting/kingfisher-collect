@@ -26,4 +26,5 @@ class CanadaQuebec(SimpleSpider):
     def parse_list(self, response):
         for resource in response.json()['result']['resources']:
             if resource['format'].upper() == 'JSON':
-                yield self.build_request(resource['url'], formatter=components(-1))
+                # The same filename can be generated on different dates, but containing different releases.
+                yield self.build_request(resource['url'], formatter=components(-3))
