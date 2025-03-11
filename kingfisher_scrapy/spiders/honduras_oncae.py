@@ -1,6 +1,6 @@
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, PeriodicSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components
 
 
 class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
@@ -26,7 +26,7 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
     """
 
     name = 'honduras_oncae'
-    download_timeout = 900  # 15min
+    download_timeout = MAX_DOWNLOAD_TIMEOUT / 2  # 15min
 
     # BaseSpider
     date_format = 'year'

@@ -17,7 +17,7 @@ class ItalyANAC(BigFileSpider):
     """
 
     name = 'italy_anac'
-    download_timeout = MAX_DOWNLOAD_TIMEOUT
+    download_timeout = MAX_DOWNLOAD_TIMEOUT * 2  # 1h
 
     # SimpleSpider
     data_type = 'release_package'

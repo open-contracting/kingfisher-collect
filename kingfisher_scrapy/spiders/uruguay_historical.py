@@ -3,7 +3,7 @@ import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components, handle_http_error
 
 
 class UruguayHistorical(CompressedFileSpider):
@@ -22,7 +22,7 @@ class UruguayHistorical(CompressedFileSpider):
     """
 
     name = 'uruguay_historical'
-    download_timeout = 900  # 15min
+    download_timeout = MAX_DOWNLOAD_TIMEOUT / 2  # 15min
 
     # BaseSpider
     date_format = 'year'
