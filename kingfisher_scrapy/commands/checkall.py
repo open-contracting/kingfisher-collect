@@ -71,11 +71,11 @@ class CheckAll(ScrapyCommand):
         for source_id in with_issues:
             publication = publications.get(source_id)
             if _freezable(publication):
-                logger.error('%s: publication has issues but is not frozen', source_id)
+                logger.error('publication has issues but is not frozen: %s', source_id)
         for pattern in glob_issues:
             publication = next((v for source_id, v in publications.items() if fnmatch(source_id, pattern)), None)
             if _freezable(publication):
-                logger.error('%s: publication has issues but is not frozen', source_id)
+                logger.error('publication has issues but is not frozen: %s', source_id)
 
         for source_id, publication in list(publications.items()):
             if (
@@ -83,7 +83,7 @@ class CheckAll(ScrapyCommand):
                 and source_id not in with_issues
                 and not any(fnmatch(source_id, pattern) for pattern in glob_issues)
             ):
-                logger.error('%s: publication has no issues but is frozen', source_id)
+                logger.error('publication has no issues but is frozen: %s', source_id)
 
             # Copy publications for *_releases/*_records pairs of spiders.
             if source_id.endswith('_releases'):
