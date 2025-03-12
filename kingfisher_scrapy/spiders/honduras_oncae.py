@@ -22,7 +22,7 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
         HC1
           HonduCompras 1.0 (Módulo de Difusión de Compras y Contrataciones)
     Bulk download documentation
-      https://oncae.gob.hn/datosabiertos
+      https://oncae.gob.hn/datos-abiertos/
     """
 
     name = 'honduras_oncae'
@@ -44,7 +44,7 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
     formatter = staticmethod(components(-1))  # year
 
     # Local
-    available_systems = ['HC1', 'CE', 'DDC']
+    available_systems = {'HC1': 2005, 'CE': 2014, 'DDC': 2010}
 
     @classmethod
     def from_crawler(cls, crawler, system=None, *args, **kwargs):
@@ -54,8 +54,12 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
         return spider
 
     def build_urls(self, date):
-        for system in self.available_systems:
+        systems = self.available_systems
+        for system in systems:
             if self.system and system != self.system:
                 continue
+            if date < systems[system] or (system == 'DDC' and date > 2019):
+                continue
+
             suffix = f'{date}.json' if system == 'HC1' else f'{date}_json.zip'
             yield self.pattern.format(f"{system}/{system}_datos_{suffix}")
