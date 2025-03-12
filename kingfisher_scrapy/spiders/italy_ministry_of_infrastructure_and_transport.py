@@ -1,6 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
+from kingfisher_scrapy.exceptions import RetryableError
 from kingfisher_scrapy.util import handle_http_error, parameters, replace_parameters
 
 
@@ -49,8 +50,8 @@ class ItalyMinistryOfInfrastructureAndTransport(SimpleSpider):
         data = response.json()
 
         if 'errorData' in data:
-            self.log_error_from_response(response, message=data)
-            return
+            # Temporary error: {'esito': False, 'errorData': 'Si Ã¨ verificato un errore durante la creazione di OCDS'}
+            raise RetryableError
 
         if 'releases' not in data:
             # An empty release package is returned after the last meaningful page is reached.
