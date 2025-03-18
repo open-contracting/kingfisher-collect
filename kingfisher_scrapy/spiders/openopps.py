@@ -184,8 +184,8 @@ class Openopps(BaseSpider):
                 yield self.build_access_token_request(initial_authentication=False, priority=1000)
         else:
             # Change search filter if count exceeds the API limit or search_h > 1 hour
-            parts = int(ceil(count / self.api_limit))  # parts we split a search that exceeds the limit
-            split_h = int(ceil(search_h / parts))  # hours we split
+            parts = ceil(count / self.api_limit)  # parts we split a search that exceeds the limit
+            split_h = ceil(search_h / parts)  # hours we split
 
             # If we have last_hour variable here, we have to split hours
             last_hour = response.request.meta.get('last_hour')

@@ -38,7 +38,7 @@ def test_start_requests_http_error(spider_name, caplog):
         spider = crawler.spidercls.from_crawler(crawler, **kwargs)
 
         requests = list(spider.start_requests())
-        assert len(requests)
+        assert requests
         for request in requests:
             # See scrapy.core.scraper.Scraper.call_spider
             callback = request.callback or spider.parse
