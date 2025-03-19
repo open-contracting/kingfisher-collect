@@ -269,7 +269,7 @@ async def test_json_streaming_middleware(middleware_class, attribute, separator,
 
     middleware = middleware_class()
 
-    content = ['{"key": %s}%s' % (i, separator) for i in range(1, 21)]  # noqa: UP031]
+    content = ['{"key": %s}%s' % (i, separator) for i in range(1, 21)]  # noqa: UP031
 
     response = response_fixture(body=''.join(content), meta={'file_name': 'test.json'})
     generator = spider.parse(response)
@@ -307,7 +307,7 @@ async def test_json_streaming_middleware_with_root_path_middleware(middleware_cl
     stream_middleware = middleware_class()
     root_path_middleware = RootPathMiddleware()
 
-    content = ['{"results": [{"releases": [{"key": %s}]}]}\n' % i for i in range(1, 21)]  # noqa: UP031]
+    content = ['{"results": [{"releases": [{"key": %s}]}]}\n' % i for i in range(1, 21)]  # noqa: UP031
 
     response = response_fixture(body=''.join(content), meta={'file_name': 'test.json'})
     generator = spider.parse(response)
@@ -341,7 +341,7 @@ async def test_json_streaming_middleware_with_compressed_file_spider(middleware_
 
     stream_middleware = middleware_class()
 
-    content = ['{"key": %s}\n' % i for i in range(1, 21)]  # noqa: UP031]
+    content = ['{"key": %s}\n' % i for i in range(1, 21)]  # noqa: UP031
 
     io = BytesIO()
     with ZipFile(io, 'w', compression=ZIP_DEFLATED) as zipfile:
