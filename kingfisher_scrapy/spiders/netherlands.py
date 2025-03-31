@@ -40,7 +40,7 @@ class Netherlands(SimpleSpider):
 
     @handle_http_error
     def parse_list(self, response):
-        for url in response.xpath('//article/div/ul/li/a/@href').getall():
+        for url in response.xpath('//article//li//@href').getall():
             if url.endswith('.json'):
                 if self.from_date and self.until_date:
                     # URL looks like https://www.tenderned.nl/cms/sites/default/files/2023-04/2017.json
