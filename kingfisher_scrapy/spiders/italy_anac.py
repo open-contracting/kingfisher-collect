@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import BigFileSpider
-from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components, handle_http_error
+from kingfisher_scrapy.util import BROWSER_USER_AGENT, MAX_DOWNLOAD_TIMEOUT, components, handle_http_error
 
 
 class ItalyANAC(BigFileSpider):
@@ -18,6 +18,7 @@ class ItalyANAC(BigFileSpider):
 
     name = 'italy_anac'
     download_timeout = MAX_DOWNLOAD_TIMEOUT * 2  # 1h
+    user_agent = BROWSER_USER_AGENT  # Otherwise, API returns "Request Rejected" HTML
 
     # SimpleSpider
     data_type = 'release_package'
