@@ -44,11 +44,12 @@ class DominicanRepublicAPI(LinksSpider, PeriodicSpider):
         if response.status == 404:
             try:
                 data = response.json()
+            except JSONDecodeError:
+                pass
+            else:
                 # API should return an empty package with 200 status.
                 if data == {'msg': 'No hay resultados.'}:
                     return
-            except JSONDecodeError:
-                pass
 
         yield from handle_http_error(DominicanRepublicAPI.parse_success)(self, response)
 
