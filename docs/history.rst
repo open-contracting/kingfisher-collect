@@ -3,27 +3,45 @@ Removed spiders
 
 This page records the spiders removed from Kingfisher Collect.
 
-Lapsed spiders
---------------
+Lapsed publications
+-------------------
 
 Spiders for publications that were available but stopped publishing, since January 2022:
 
 - 2025-04-14: `mexico_durango_idaip, mexico_mexico_state_infoem, mexico_nuevo_leon_cotai, moldova, nigeria_abia_state, nigeria_enugu_state, panama_dgcp_bulk, panama_dgcp_records, panama_dgcp_releases, portugal_records, portugal_releases, united_kingdom_contracts_finder_records <https://github.com/open-contracting/kingfisher-collect/pull/1159>`__
 - 2024-10-26: `italy_appalti_pop, mexico_grupo_aeroporto, moldova_old <https://github.com/open-contracting/kingfisher-collect/pull/1111>`__
-- 2024-07-02: `mexico_quintana_roo_idaip <https://github.com/open-contracting/kingfisher-collect/pull/1093>`__
+.. https://www.appaltipop.it/api/v1/buyers from https://www.appaltipop.it/api/v1/, also https://github.com/ondata/appaltipop
+.. http://gacmda.gacm.mx:8880/files/opendata/coleccion/concentrado05032019RELEASE.json
+.. http://opencontracting.date.gov.md/ocds-api/year/{year} from http://opencontracting.date.gov.md/downloads
 - 2024-04-12: `nigeria_gombe_state <https://github.com/open-contracting/kingfisher-collect/pull/1075>`__
+.. http://gombe.stateopencontracting.com/Other-Basic/Report/Json-Report
 - 2024-01-09: `mexico_puebla_itaipue, nigeria_edo_state <https://github.com/open-contracting/kingfisher-collect/pull/1047>`__
+.. http://189.240.12.27:3000 from http://189.240.12.27:4000/contratacionesabiertas/datosabiertos/
+.. https://edoocds.cloudware.ng/edo-ocds.json from http://edpms.edostate.gov.ng/ocds/
 - 2023-10-04: `honduras_cost, kenya_makueni, kyrgyzstan, portugal_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1030>`__
+.. https://app.sisocs.org:8080/sisocs/records from http://app.sisocs.org/protected/ocdsShow/
+.. https://opencontracting.makueni.go.ke/api/ocds/package/all from https://opencontracting.makueni.go.ke/swagger-ui/#/ocds-controller
+.. http://ocds.zakupki.gov.kg/api/tendering
+.. https://dados.gov.pt/pt/datasets/ocds-portal-base-www-base-gov-pt/
 - 2022-12-13: `ecuador_emergency, mexico_oaxaca_iaip, nicaragua_solid_waste, nigeria_budeshi_*, nigeria_kaduna_state_budeshi_*, tanzania_zabuni <https://github.com/open-contracting/kingfisher-collect/pull/979>`__
+.. https://datosabiertos.compraspublicas.gob.ec/OCDS/ from https://portal.compraspublicas.gob.ec/sercop/data-estandar-ocds/
+.. http://contratacionesabiertas-iaipoaxaca-org.mx:3000 from http://contratacionesabiertas-iaipoaxaca-org.mx:4000/contratacionesabiertas/datosabiertos
+.. http://www.gekoware.com/swmp/api/ocds/20010101/20220101/
+.. https://budeshi.ng/api/releases/1/tender or https://budeshi.ng/api/record/1 from https://budeshi.ng/api/
+.. https://kadppaocds.azurewebsites.net/api/
+.. https://app.zabuni.co.tz/api/releases/tender from https://zabuni.co.tz/docs
 - 2022-04-20: `afghanistan_*, indonesia_bandung <https://github.com/open-contracting/kingfisher-collect/pull/930>`__
+.. https://ocds.ageops.net
+.. https://birms.bandung.go.id/api/packages/year/{year}
 - 2022-01-27: `moldova_positive_initiative <https://github.com/open-contracting/kingfisher-collect/pull/906>`__
+.. http://116.202.173.47:8080/md_covid_2020-11-06.json from https://www.tender.health/ocdsrelease
 
 .. note::
 
    Since January 2022, any spider that stops working for more than six months will be deleted.
 
-Broken spiders
---------------
+Broken publications
+-------------------
 
 Spiders for publications that became broken, since April 2024:
 
