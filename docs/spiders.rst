@@ -774,13 +774,6 @@ Mexico
 
    scrapy crawl mexico_aguascalientes_sesea_plataforma_digital_nacional
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_durango_idaip.MexicoDurangoIDAIP
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_durango_idaip
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_guadalajara.MexicoGuadalajara
    :no-members:
 
@@ -809,13 +802,6 @@ Mexico
 
    scrapy crawl mexico_mexico_city_infocdmx
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_state_infoem.MexicoMexicoStateINFOEM
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_mexico_state_infoem
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_state_sesaemm_plataforma_digital_nacional.MexicoMexicoStateSESAEMMPlataformaDigitalNacional
    :no-members:
 
@@ -836,13 +822,6 @@ Mexico
 .. code-block:: bash
 
    scrapy crawl mexico_nuevo_leon
-
-.. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_cotai.MexicoNuevoLeonCOTAI
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_nuevo_leon_cotai
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_nuevo_leon_infra_abierta_records.MexicoNuevoLeonInfraAbiertaRecords
    :no-members:
@@ -921,16 +900,6 @@ Mexico
 
    scrapy crawl mexico_zacatecas_izai
 
-Moldova
-~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.moldova.Moldova
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl moldova
-
 Nepal
 ~~~~~
 
@@ -968,13 +937,6 @@ Netherlands
 Nigeria
 ~~~~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_abia_state.NigeriaAbiaState
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_abia_state
-
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_anambra_state.NigeriaAnambraState
    :no-members:
 
@@ -1009,20 +971,6 @@ Nigeria
 .. code-block:: bash
 
    scrapy crawl nigeria_ekiti_state
-
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_enugu_state.NigeriaEnuguState
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_enugu_state
-
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_kano_state.NigeriaKanoState
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_kano_state
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_lagos_state.NigeriaLagosState
    :no-members:
@@ -1088,30 +1036,6 @@ Openopps
 .. code-block:: bash
 
    env KINGFISHER_OPENOPPS_USERNAME=... KINGFISHER_OPENOPPS_PASSWORD=... scrapy crawl openopps
-
-Panama
-~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.panama_dgcp_bulk.PanamaDGCPBulk
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl panama_dgcp_bulk
-
-.. autoclass:: kingfisher_scrapy.spiders.panama_dgcp_records.PanamaDGCPRecords
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl panama_dgcp_records
-
-.. autoclass:: kingfisher_scrapy.spiders.panama_dgcp_releases.PanamaDGCPReleases
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl panama_dgcp_releases
 
 Paraguay
 ~~~~~~~~
@@ -1194,20 +1118,6 @@ Portugal
 .. code-block:: bash
 
    scrapy crawl portugal_digiwhist
-
-.. autoclass:: kingfisher_scrapy.spiders.portugal_records.PortugalRecords
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl portugal_records
-
-.. autoclass:: kingfisher_scrapy.spiders.portugal_releases.PortugalReleases
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl portugal_releases
 
 Romania
 ~~~~~~~
@@ -1342,13 +1252,6 @@ Ukraine
 
 United Kingdom
 ~~~~~~~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_contracts_finder_records.UnitedKingdomContractsFinderRecords
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl united_kingdom_contracts_finder_records
 
 .. autoclass:: kingfisher_scrapy.spiders.united_kingdom_contracts_finder_releases.UnitedKingdomContractsFinderReleases
    :no-members:
