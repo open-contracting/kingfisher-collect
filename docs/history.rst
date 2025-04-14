@@ -8,7 +8,18 @@ Lapsed publications
 
 Spiders for publications that were available but stopped publishing, since January 2022:
 
-- 2025-04-14: `mexico_durango_idaip, mexico_mexico_state_infoem, mexico_nuevo_leon_cotai, moldova, nigeria_abia_state, nigeria_enugu_state, panama_dgcp_bulk, panama_dgcp_records, panama_dgcp_releases, portugal_records, portugal_releases, united_kingdom_contracts_finder_records <https://github.com/open-contracting/kingfisher-collect/pull/1159>`__
+- 2025-04-14: `mexico_durango_idaip, mexico_mexico_state_infoem, mexico_nuevo_leon_cotai, nigeria_abia_state, nigeria_enugu_state, nigeria_kano_state, panama_dgcp_bulk, panama_dgcp_records, panama_dgcp_releases, portugal_records, portugal_releases, united_kingdom_contracts_finder_records <https://github.com/open-contracting/kingfisher-collect/pull/1159>`__
+.. http://74.208.135.52:3000/edca/fiscalYears from http://contratacionesabiertas.idaip.org.mx/contratacionesabiertas/datosabiertos
+.. http://infoem.org.mx:3000/edca/contractingprocess/null from http://www.infoem.org.mx:4000/contratacionesabiertas/datosabiertos
+.. http://201.149.38.218:3000/edca/fiscalYears from http://201.149.38.218:4000/contratacionesabiertas/datosabiertos
+.. https://abiaeprocurement.ab.gov.ng
+.. https://dueprocess.en.gov.ng
+.. https://kano-eproc.eurodyn.com
+.. https://ocds.panamacompraencifras.gob.pa/Descarga?DateFrom=2023-01-01&DateTo=2023-12-31&FileType=json from https://ocds.panamacompraencifras.gob.pa/swagger/
+.. https://ocds.panamacompraencifras.gob.pa/Record
+.. https://ocds.panamacompraencifras.gob.pa/Release
+.. http://www.base.gov.pt/api/Release/GetReleases from http://www.base.gov.pt/swagger/index.html
+.. http://www.base.gov.pt/api/Record/GetRecords
 - 2024-10-26: `italy_appalti_pop, mexico_grupo_aeroporto, moldova_old <https://github.com/open-contracting/kingfisher-collect/pull/1111>`__
 .. https://www.appaltipop.it/api/v1/buyers from https://www.appaltipop.it/api/v1/, also https://github.com/ondata/appaltipop
 .. http://gacmda.gacm.mx:8880/files/opendata/coleccion/concentrado05032019RELEASE.json
@@ -45,6 +56,7 @@ Broken publications
 
 Spiders for publications that became broken, since April 2024:
 
+- 2025-04-14: `moldova <https://github.com/open-contracting/kingfisher-collect/pull/1159>`__ (returns upstream errors)
 - 2025-01-02: `pakistan_ppra_api, pakistan_ppra_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1137>`__ (requires paginating `HTML <https://ppra.org.pk/opendata.asp>`__)
 - 2024-07-02: `mexico_sinaloa_ceaip <https://github.com/open-contracting/kingfisher-collect/pull/1093>`__ (returns no data)
 - 2024-04-12: `dominican_republic_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1074>`__ (the `bulk source <https://datosabiertos.dgcp.gob.do/opendata/estandar-mundial-ocds>`__ isn't in sync with the API source)
