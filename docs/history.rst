@@ -8,6 +8,7 @@ Lapsed spiders
 
 Spiders for publications that were available but stopped publishing, since January 2022:
 
+- 2025-04-14: `mexico_durango_idaip, mexico_mexico_state_infoem, mexico_nuevo_leon_cotai, moldova, nigeria_abia_state, nigeria_enugu_state, panama_dgcp_bulk, panama_dgcp_records, panama_dgcp_releases, portugal_records, portugal_releases, united_kingdom_contracts_finder_records <https://github.com/open-contracting/kingfisher-collect/pull/1159>`__
 - 2024-10-26: `italy_appalti_pop, mexico_grupo_aeroporto, moldova_old <https://github.com/open-contracting/kingfisher-collect/pull/1111>`__
 - 2024-07-02: `mexico_quintana_roo_idaip <https://github.com/open-contracting/kingfisher-collect/pull/1093>`__
 - 2024-04-12: `nigeria_gombe_state <https://github.com/open-contracting/kingfisher-collect/pull/1075>`__
