@@ -14,7 +14,7 @@ class RwandaAPI(LinksSpider):
       until_date
         Download only data until this date (YYYY-MM-DD format). Defaults to today.
     Swagger API documentation
-      https://ocds.umucyo.gov.rw/core/api/docs
+      https://ocds.umucyo.gov.rw/opendata/api/docs
     """
 
     name = 'rwanda_api'
@@ -27,13 +27,13 @@ class RwandaAPI(LinksSpider):
     data_type = 'release_package'
 
     # LinksSpider
-    formatter = staticmethod(parameters('PageNumber', 'dateFrom', 'dateTo'))
+    formatter = staticmethod(parameters('offset', 'date_from', 'date_to'))
 
     def start_requests(self):
         from_date = self.from_date.strftime(self.date_format)
         until_date = self.until_date.strftime(self.date_format)
         url = (
-            'https://ocds.umucyo.gov.rw/core/api/v1/releases/all'
-            f'?PageNumber=1&PageSize=50&dateFrom={from_date}&dateTo={until_date} '
+            'https://ocds.umucyo.gov.rw/opendata/api/v1/releases/all'
+            f'?sort_field=date&sort_direction=desc&offset=0&limit=50&date_from={from_date}&date_to={until_date}'
         )
         yield scrapy.Request(url, meta={'file_name': f'page-1-{from_date}.json'})
