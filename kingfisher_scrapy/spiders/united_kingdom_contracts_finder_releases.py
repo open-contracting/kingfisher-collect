@@ -1,8 +1,8 @@
-from kingfisher_scrapy.base_spiders import LinksSpider, PeriodicSpider
-from kingfisher_scrapy.util import handle_http_error, parameters, transcode_bytes
+from kingfisher_scrapy.spiders.united_kingdom_contracts_finder_base import UnitedKingdomContractsFinderBase
+from kingfisher_scrapy.util import handle_http_error
 
 
-class UnitedKingdomContractsFinderReleases(LinksSpider, PeriodicSpider):
+class UnitedKingdomContractsFinderReleases(UnitedKingdomContractsFinderBase):
     """
     Domain
       Contracts Finder
@@ -15,38 +15,11 @@ class UnitedKingdomContractsFinderReleases(LinksSpider, PeriodicSpider):
       https://www.contractsfinder.service.gov.uk/apidocumentation/home
     """
 
-    # The API has unpredictable and undocumented "too many requests" logic.
-    custom_settings = {
-        'CONCURRENT_REQUESTS': 1,
-    }
-
-    # BaseSpider
-    date_format = 'datetime'
-    default_from_date = '2014-01-01T00:00:00'
-    encoding = 'iso-8859-1'
-    max_attempts = 5
-    retry_http_codes = [403]
-
-    # PeriodicSpider
-    formatter = staticmethod(parameters('publishedFrom', 'publishedTo'))
-    next_link_formatter = staticmethod(parameters('publishedFrom', 'publishedTo', 'cursor'))
-    step = 15
-    pattern = (
-        'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search'
-        '?limit=100&publishedFrom={0:%Y-%m-%d}&publishedTo={1:%Y-%m-%d}'
-    )
-
     name = 'united_kingdom_contracts_finder_releases'
 
     # SimpleSpider
     data_type = 'release_package'
 
     @handle_http_error
-    def parse(self, response):
-        # Remove non-iso-8859-1 characters.
-        response = response.replace(body=transcode_bytes(response.body, self.encoding))
-        yield from super().parse(response)
-
-    def get_retry_wait_time(self, response):
-        # https://www.contractsfinder.service.gov.uk/apidocumentation/Notices/1/GET-Published-OCDS-Record
-        return 300
+    def parse_page(self, response):
+        yield from self.parse(response)

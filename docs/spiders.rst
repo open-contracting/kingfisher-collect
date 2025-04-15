@@ -1253,6 +1253,13 @@ Ukraine
 United Kingdom
 ~~~~~~~~~~~~~~
 
+.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_contracts_finder_records.UnitedKingdomContractsFinderRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl united_kingdom_contracts_finder_records
+
 .. autoclass:: kingfisher_scrapy.spiders.united_kingdom_contracts_finder_releases.UnitedKingdomContractsFinderReleases
    :no-members:
 
