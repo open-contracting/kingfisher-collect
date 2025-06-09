@@ -61,7 +61,9 @@ class LinksSpider(SimpleSpider):
         try:
             data = response.json()
         except json.JSONDecodeError as e:
-            raise MissingNextLinkError(f'next link not found on page {depth}: {response.url}') from e
+            raise MissingNextLinkError(
+                f'Invalid JSON on page {depth}, ending crawl prematurely: {response.url}'
+            ) from e
 
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
@@ -72,6 +74,6 @@ class LinksSpider(SimpleSpider):
                 return None
 
         if depth == 0:
-            raise MissingNextLinkError(f'next link not found on page 0: {response.url}')
+            raise MissingNextLinkError(f'Missing link on first page, ending crawl prematurely: {response.url}')
 
         return None

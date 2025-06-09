@@ -92,7 +92,7 @@ def test_next_link_not_found_first_page():
     meta = {'file_name': 'test', 'depth': 0}
     with pytest.raises(MissingNextLinkError) as e:
         spider.next_link(response_fixture(body=body, meta=meta))
-    assert str(e.value) == 'next link not found on page 0: http://example.com'
+    assert str(e.value) == 'Missing link on first page, ending crawl prematurely: http://example.com'
 
     meta = {'file_name': 'test', 'depth': 10}
     response = spider.next_link(response_fixture(body=body, meta=meta))
@@ -107,4 +107,4 @@ def test_next_link_not_found_later_page():
     meta = {'file_name': 'test', 'depth': 4}
     with pytest.raises(MissingNextLinkError) as e:
         spider.next_link(response_fixture(body=body, meta=meta))
-    assert str(e.value) == 'next link not found on page 4: http://example.com'
+    assert str(e.value) == 'Invalid JSON on page 4, ending crawl prematurely: http://example.com'
