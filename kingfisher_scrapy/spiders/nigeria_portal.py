@@ -13,7 +13,7 @@ class NigeriaPortal(CompressedFileSpider):
     """
 
     name = 'nigeria_portal'
-    download_timeout = MAX_DOWNLOAD_TIMEOUT
+    download_timeout = MAX_DOWNLOAD_TIMEOUT * 2  # 1h
 
     # SimpleSpider
     data_type = 'release_package'
