@@ -1,3 +1,5 @@
+import json
+
 from jsonpointer import resolve_pointer
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
@@ -54,7 +56,15 @@ class LinksSpider(SimpleSpider):
         if self.sample and self.sample == 1:
             return None
 
-        data = response.json()
+        depth = response.meta['depth']
+
+        try:
+            data = response.json()
+        except json.JSONDecodeError as e:
+            raise MissingNextLinkError(
+                f'Invalid JSON on page {depth}, ending crawl prematurely: {response.url}'
+            ) from e
+
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
             return self.build_request(url, formatter=getattr(self, "next_link_formatter", self.formatter), **kwargs)
@@ -63,7 +73,7 @@ class LinksSpider(SimpleSpider):
             if getattr(self, filter_argument, None):
                 return None
 
-        if response.meta['depth'] == 0:
-            raise MissingNextLinkError(f'next link not found on the first page: {response.url}')
+        if depth == 0:
+            raise MissingNextLinkError(f'Missing link on first page, ending crawl prematurely: {response.url}')
 
         return None
