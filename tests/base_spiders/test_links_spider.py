@@ -14,7 +14,12 @@ def test_next_link():
     spider = spider_with_crawler(spider_class=LinksSpider)
     spider.formatter = lambda _url: 'next.json'
 
-    request = spider.next_link(response_fixture(body=b'{"links": {"next": "http://example.com/next"}}'))
+    request = spider.next_link(
+        response_fixture(
+            meta={'file_name': 'test', 'depth': 0},
+            body=b'{"links": {"next": "http://example.com/next"}}',
+        ),
+    )
 
     assert type(request) is Request
     assert request.url == 'http://example.com/next'
@@ -25,7 +30,12 @@ def test_next_link_condition():
     spider = spider_with_crawler(spider_class=LinksSpider)
     spider.from_date = spider.until_date = date(2002, 12, 31)
 
-    request = spider.next_link(response_fixture(body='{"links": {"next": ""}}'))
+    request = spider.next_link(
+        response_fixture(
+            meta={'file_name': 'test', 'depth': 0},
+            body='{"links": {"next": ""}}',
+        ),
+    )
 
     assert type(request) is NoneType
 
@@ -33,7 +43,13 @@ def test_next_link_condition():
 def test_parse_404(caplog):
     spider = spider_with_crawler(spider_class=LinksSpider)
 
-    generator = spider.parse(response_fixture(status=404, body=b'{"links": {"next": "http://example.com/next"}}'))
+    generator = spider.parse(
+        response_fixture(
+            meta={'file_name': 'test', 'depth': 0},
+            body=b'{"links": {"next": "http://example.com/next"}}',
+            status=404,
+        ),
+    )
 
     assert len(list(generator)) == 0
     assert [record.message for record in caplog.records] == [
@@ -47,7 +63,7 @@ def test_parse_200():
     spider.formatter = lambda _url: 'next.json'
     body = b'{"links": {"next": "http://example.com/next"}}'
 
-    generator = spider.parse(response_fixture(body=body))
+    generator = spider.parse(response_fixture(meta={'file_name': 'test', 'depth': 0}, body=body))
     item = next(generator)
     request = next(generator)
 
@@ -68,7 +84,7 @@ def test_parse_200():
         next(generator)
 
 
-def test_next_link_not_found():
+def test_next_link_not_found_first_page():
     spider = spider_with_crawler(spider_class=LinksSpider)
     spider.filter_arguments = []
     body = '{"links": {"next": ""}}'
@@ -76,14 +92,14 @@ def test_next_link_not_found():
     meta = {'file_name': 'test', 'depth': 0}
     with pytest.raises(MissingNextLinkError) as e:
         spider.next_link(response_fixture(body=body, meta=meta))
-    assert str(e.value) == 'next link not found on the first page: http://example.com'
+    assert str(e.value) == 'next link not found on page 0: http://example.com'
 
     meta = {'file_name': 'test', 'depth': 10}
     response = spider.next_link(response_fixture(body=body, meta=meta))
     assert response is None
 
 
-def test_next_link_cannot_be_found():
+def test_next_link_not_found_later_page():
     spider = spider_with_crawler(spider_class=LinksSpider)
     spider.filter_arguments = []
     body = '{"value": 000}'
@@ -91,4 +107,4 @@ def test_next_link_cannot_be_found():
     meta = {'file_name': 'test', 'depth': 4}
     with pytest.raises(MissingNextLinkError) as e:
         spider.next_link(response_fixture(body=body, meta=meta))
-    assert str(e.value) == 'next link cannot be found on page 4: http://example.com'
+    assert str(e.value) == 'next link not found on page 4: http://example.com'

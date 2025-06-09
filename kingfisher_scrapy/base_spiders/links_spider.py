@@ -1,4 +1,4 @@
-from json import JSONDecodeError
+import json
 
 from jsonpointer import resolve_pointer
 
@@ -56,12 +56,12 @@ class LinksSpider(SimpleSpider):
         if self.sample and self.sample == 1:
             return None
 
+        depth = response.meta['depth']
+
         try:
             data = response.json()
-        except JSONDecodeError as exc:
-            raise MissingNextLinkError(
-                f'next link cannot be found on page {response.meta["depth"]}: {response.url}'
-            ) from exc
+        except json.JSONDecodeError as e:
+            raise MissingNextLinkError(f'next link not found on page {depth}: {response.url}') from e
 
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
@@ -71,7 +71,7 @@ class LinksSpider(SimpleSpider):
             if getattr(self, filter_argument, None):
                 return None
 
-        if response.meta['depth'] == 0:
-            raise MissingNextLinkError(f'next link not found on the first page: {response.url}')
+        if depth == 0:
+            raise MissingNextLinkError(f'next link not found on page 0: {response.url}')
 
         return None
