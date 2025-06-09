@@ -81,3 +81,14 @@ def test_next_link_not_found():
     meta = {'file_name': 'test', 'depth': 10}
     response = spider.next_link(response_fixture(body=body, meta=meta))
     assert response is None
+
+
+def test_next_link_cannot_be_found():
+    spider = spider_with_crawler(spider_class=LinksSpider)
+    spider.filter_arguments = []
+    body = '{"value": 000}'
+
+    meta = {'file_name': 'test', 'depth': 4}
+    with pytest.raises(MissingNextLinkError) as e:
+        spider.next_link(response_fixture(body=body, meta=meta))
+    assert str(e.value) == 'next link cannot be found on page 4: http://example.com'

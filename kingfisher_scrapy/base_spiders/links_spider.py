@@ -1,3 +1,5 @@
+from json import JSONDecodeError
+
 from jsonpointer import resolve_pointer
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
@@ -54,7 +56,13 @@ class LinksSpider(SimpleSpider):
         if self.sample and self.sample == 1:
             return None
 
-        data = response.json()
+        try:
+            data = response.json()
+        except JSONDecodeError as exc:
+            raise MissingNextLinkError(
+                f'next link cannot be found on page {response.meta["depth"]}: {response.url}'
+            ) from exc
+
         url = resolve_pointer(data, self.next_pointer, None)
         if url:
             return self.build_request(url, formatter=getattr(self, "next_link_formatter", self.formatter), **kwargs)
