@@ -14,7 +14,12 @@ def test_next_link():
     spider = spider_with_crawler(spider_class=LinksSpider)
     spider.formatter = lambda _url: 'next.json'
 
-    request = spider.next_link(response_fixture(body=b'{"links": {"next": "http://example.com/next"}}'))
+    request = spider.next_link(
+        response_fixture(
+            meta={'file_name': 'test', 'depth': 0},
+            body=b'{"links": {"next": "http://example.com/next"}}',
+        ),
+    )
 
     assert type(request) is Request
     assert request.url == 'http://example.com/next'
@@ -25,7 +30,12 @@ def test_next_link_condition():
     spider = spider_with_crawler(spider_class=LinksSpider)
     spider.from_date = spider.until_date = date(2002, 12, 31)
 
-    request = spider.next_link(response_fixture(body='{"links": {"next": ""}}'))
+    request = spider.next_link(
+        response_fixture(
+            meta={'file_name': 'test', 'depth': 0},
+            body='{"links": {"next": ""}}',
+        ),
+    )
 
     assert type(request) is NoneType
 
@@ -33,7 +43,13 @@ def test_next_link_condition():
 def test_parse_404(caplog):
     spider = spider_with_crawler(spider_class=LinksSpider)
 
-    generator = spider.parse(response_fixture(status=404, body=b'{"links": {"next": "http://example.com/next"}}'))
+    generator = spider.parse(
+        response_fixture(
+            meta={'file_name': 'test', 'depth': 0},
+            body=b'{"links": {"next": "http://example.com/next"}}',
+            status=404,
+        ),
+    )
 
     assert len(list(generator)) == 0
     assert [record.message for record in caplog.records] == [
@@ -47,7 +63,7 @@ def test_parse_200():
     spider.formatter = lambda _url: 'next.json'
     body = b'{"links": {"next": "http://example.com/next"}}'
 
-    generator = spider.parse(response_fixture(body=body))
+    generator = spider.parse(response_fixture(meta={'file_name': 'test', 'depth': 0}, body=body))
     item = next(generator)
     request = next(generator)
 
