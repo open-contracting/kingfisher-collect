@@ -108,7 +108,8 @@ class KingfisherProcessAPI2:
         response = self._post_synchronous(spider, "/api/collections/", data)
 
         if response.ok:
-            from twisted.internet import reactor
+            # https://docs.scrapy.org/en/latest/topics/asyncio.html#handling-a-pre-installed-reactor
+            from twisted.internet import reactor  # noqa: PLC0415
 
             self.collection_id = response.json()['collection_id']
 

@@ -105,7 +105,8 @@ class DelayedRequestMiddleware:
     def process_request(self, request, spider):
         delay = request.meta.get('wait_time', None)
         if delay:
-            from twisted.internet import reactor
+            # https://docs.scrapy.org/en/latest/topics/asyncio.html#handling-a-pre-installed-reactor
+            from twisted.internet import reactor  # noqa: PLC0415
 
             # Simulate a sleep.
             d = Deferred()
