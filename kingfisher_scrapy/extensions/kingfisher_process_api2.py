@@ -6,6 +6,7 @@ from urllib.parse import urljoin
 import requests
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
+from twisted.internet import reactor
 from yapw import methods
 from yapw.clients import Async
 
@@ -108,8 +109,6 @@ class KingfisherProcessAPI2:
         response = self._post_synchronous(spider, "/api/collections/", data)
 
         if response.ok:
-            from twisted.internet import reactor
-
             self.collection_id = response.json()['collection_id']
 
             # WARNING! If this log message is changed, update the regular expression in the data_registry/
