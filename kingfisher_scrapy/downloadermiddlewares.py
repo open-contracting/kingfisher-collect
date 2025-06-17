@@ -2,7 +2,6 @@
 from datetime import datetime
 
 from scrapy.exceptions import IgnoreRequest
-from twisted.internet import reactor
 from twisted.internet.defer import Deferred
 
 
@@ -106,6 +105,8 @@ class DelayedRequestMiddleware:
     def process_request(self, request, spider):
         delay = request.meta.get('wait_time', None)
         if delay:
+            from twisted.internet import reactor
+
             # Simulate a sleep.
             d = Deferred()
             reactor.callLater(delay, d.callback, None)
