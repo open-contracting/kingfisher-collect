@@ -12,7 +12,7 @@ automat==0.8.0
     # via
     #   -r requirements.txt
     #   twisted
-backports-datetime-fromisoformat==2.0.0
+backports-datetime-fromisoformat==2.0.3
     # via
     #   -r requirements.txt
     #   flattentool
@@ -66,7 +66,7 @@ defusedxml==0.7.1
     #   -r requirements.txt
     #   odfpy
     #   scrapy
-et-xmlfile==1.0.1
+et-xmlfile==2.0.0
     # via
     #   -r requirements.txt
     #   openpyxl
@@ -93,7 +93,7 @@ idna==3.7
     #   hyperlink
     #   requests
     #   tldextract
-ijson==3.2.3
+ijson==3.4.0
     # via
     #   -r requirements.txt
     #   flattentool
@@ -121,7 +121,7 @@ jmespath==0.10.0
     # via
     #   -r requirements.txt
     #   itemloaders
-json-merge-patch==0.2
+json-merge-patch==0.3.0
     # via
     #   -r requirements.txt
     #   ocdsextensionregistry
@@ -197,7 +197,7 @@ protego==0.2.1
     # via
     #   -r requirements.txt
     #   scrapy
-psycopg2==2.9.9
+psycopg2==2.9.10
     # via -r requirements.txt
 psycopg2-binary==2.9.9
     # via -r requirements_dev.in
@@ -210,13 +210,13 @@ pyasn1-modules==0.2.7
     # via
     #   -r requirements.txt
     #   service-identity
-pycparser==2.19
+pycparser==2.22
     # via
     #   -r requirements.txt
     #   cffi
 pydantic==1.10.15
     # via -r requirements.txt
-pydispatcher==2.0.6
+pydispatcher==2.0.7
     # via
     #   -r requirements.txt
     #   scrapy
@@ -244,7 +244,7 @@ queuelib==1.6.2
     # via
     #   -r requirements.txt
     #   scrapy
-rarfile==3.1
+rarfile==4.2
     # via -r requirements.txt
 requests==2.32.4
     # via
@@ -291,7 +291,6 @@ setuptools==80.9.0
     #   scrapyd-client
     #   zc-lockfile
     #   zc-zlibstorage
-    #   zodbpickle
     #   zope-deferredimport
     #   zope-interface
     #   zope-proxy
@@ -373,7 +372,7 @@ zodb==5.8.0
     #   -r requirements.txt
     #   flattentool
     #   zc-zlibstorage
-zodbpickle==3.0.1
+zodbpickle==4.2
     # via
     #   -r requirements.txt
     #   zodb
