@@ -380,7 +380,7 @@ zope-deferredimport==5.0
     # via
     #   -r requirements.txt
     #   persistent
-zope-interface==6.0
+zope-interface==7.2
     # via
     #   -r requirements.txt
     #   btrees

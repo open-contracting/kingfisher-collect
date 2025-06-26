@@ -241,7 +241,7 @@ zodbpickle==4.2
     # via zodb
 zope-deferredimport==5.0
     # via persistent
-zope-interface==6.0
+zope-interface==7.2
     # via
     #   btrees
     #   persistent
