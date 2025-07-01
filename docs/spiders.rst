@@ -1247,6 +1247,37 @@ Switzerland
 
    scrapy crawl switzerland_digiwhist
 
+Tanzania
+~~~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.tanzania_api_records.TanzaniaAPIRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl tanzania_api_records
+
+.. autoclass:: kingfisher_scrapy.spiders.tanzania_api_releases.TanzaniaAPIReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl tanzania_api_releases
+
+.. autoclass:: kingfisher_scrapy.spiders.tanzania_bulk_records.TanzaniaBulkRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl tanzania_bulk_records
+
+.. autoclass:: kingfisher_scrapy.spiders.tanzania_bulk_releases.TanzaniaBulkReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl tanzania_bulk_releases
+
 Uganda
 ~~~~~~
 
