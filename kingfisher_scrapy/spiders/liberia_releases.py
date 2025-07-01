@@ -20,34 +20,25 @@ class LiberiaReleases(IndexSpider):
     data_type = 'release_package'
 
     # IndexSpider
-    base_url = 'https://eprocurement.ppcc.gov.lr/ocds/record/'
     result_count_pointer = '/total'
     use_page = True
-    start_page = 2
+    start_page = 1
     formatter = None
     limit = 10
     parse_list_callback = 'parse_items'
 
     # Local
-    headers = {'Accept': 'application/json', 'Content-Type': 'application/json;charset=UTF-8'}
-    payload = {"page": 1, "pagesize": 10, "sortField": "ocid", "sortDir": "asc"}
+    main_url = 'https://eprocurement.ppcc.gov.lr/ocds/record/'
 
     def start_requests(self):
-        yield scrapy.Request(
-            f'{self.base_url}searchRecords.action',
-            headers=self.headers,
-            method='POST',
-            body=json.dumps(self.payload),
-            meta={'file_name': 'page-1.json'},
-            callback=self.parse_list,
-        )
+        url, kwargs = self.url_builder(1, None, None)
+        yield scrapy.Request(url, **kwargs, callback=self.parse_list)
 
     def url_builder(self, value, data, response):
-        self.payload['page'] = value
-        return f'{self.base_url}searchRecords.action', {
+        return f'{self.main_url}searchRecords.action', {
             'method': 'POST',
-            'headers': self.headers,
-            'body': json.dumps(self.payload),
+            'headers': {'Accept': 'application/json', 'Content-Type': 'application/json;charset=UTF-8'},
+            'body': json.dumps({"page": value, "pagesize": 10, "sortField": "ocid", "sortDir": "asc"}),
             'meta': {'file_name': f'page-{value}.json'},
         }
 
@@ -55,5 +46,5 @@ class LiberiaReleases(IndexSpider):
     def parse_items(self, response):
         data = response.json()
         for item in data['items']:
-            yield self.build_request(f'{self.base_url}downloadRecord/{item["id"]}/COMPILED.action',
+            yield self.build_request(f'{self.main_url}downloadRecord/{item["id"]}/COMPILED.action',
                                      formatter=components(-2))

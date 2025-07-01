@@ -234,7 +234,7 @@ def items_basecoro(target, prefix, map_type=None, skip_key=None):
 
 def items(events, prefix, map_type=None, skip_key=None):
     """
-    Replicate the same function from from ``ijson/common.py``.
+    Replicate the same function from ``ijson/common.py``.
 
     A ``skip_key`` argument is added, which is passed as a keyword argument to
     :meth:`~kingfisher_scrapy.util.items_basecoro`. Otherwise, the method is identical.
