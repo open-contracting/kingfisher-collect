@@ -23,7 +23,7 @@ class LiberiaReleases(IndexSpider):
     base_url = 'https://eprocurement.ppcc.gov.lr/ocds/record/'
     result_count_pointer = '/total'
     use_page = True
-    start_page = 1
+    start_page = 2
     formatter = None
     limit = 10
     parse_list_callback = 'parse_items'
@@ -33,7 +33,7 @@ class LiberiaReleases(IndexSpider):
     payload = {"page": 1, "pagesize": 10, "sortField": "ocid", "sortDir": "asc"}
 
     def start_requests(self):
-        request = scrapy.Request(
+        yield scrapy.Request(
             f'{self.base_url}searchRecords.action',
             headers=self.headers,
             method='POST',
@@ -41,7 +41,6 @@ class LiberiaReleases(IndexSpider):
             meta={'file_name': 'page-1.json'},
             callback=self.parse_list,
         )
-        yield request
 
     def url_builder(self, value, data, response):
         self.payload['page'] = value
