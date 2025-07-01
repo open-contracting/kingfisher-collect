@@ -706,6 +706,23 @@ Latvia
 
    scrapy crawl latvia_digiwhist
 
+Liberia
+~~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.liberia_records.LiberiaRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl liberia_records
+
+.. autoclass:: kingfisher_scrapy.spiders.liberia_releases.LiberiaReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl liberia_releases
+
 Lithuania
 ~~~~~~~~~
 
