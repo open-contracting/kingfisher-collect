@@ -13,5 +13,8 @@ class TanzaniaAPIBase(IndexSpider):
     param_limit = 'pageSize'
 
     def start_requests(self):
-        yield scrapy.Request(f'https://nest.go.tz/gateway/nest-data-portal-api/api/{self.data_type}s?page=0&pageSize=10'
-                             , meta={'file_name': 'page-0.json'}, callback=self.parse_list)
+        yield scrapy.Request(
+            f'https://nest.go.tz/gateway/nest-data-portal-api/api/{self.data_type}s?page=0&pageSize=10',
+            meta={'file_name': 'page-0.json'},
+            callback=self.parse_list,
+        )
