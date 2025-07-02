@@ -2,5 +2,5 @@ from kingfisher_scrapy.spiders.government_transparency_institute_base import Gov
 
 
 class IrelandDigiwhist(GovernmentTransparencyInstituteBase):
-    name = 'ireland_digiwhist'
-    country_code = 'ie'
+    name = "ireland_digiwhist"
+    country_code = "ie"

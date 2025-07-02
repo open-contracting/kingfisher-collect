@@ -49,29 +49,29 @@ class BaseSpider(scrapy.Spider):
     -  If the spider doesn't work with the ``pluck`` command, set a ``skip_pluck`` class attribute to the reason.
     """
 
-    VALID_DATE_FORMATS = {'date': '%Y-%m-%d', 'datetime': '%Y-%m-%dT%H:%M:%S', 'year': '%Y', 'year-month': '%Y-%m'}
+    VALID_DATE_FORMATS = {"date": "%Y-%m-%d", "datetime": "%Y-%m-%dT%H:%M:%S", "year": "%Y", "year-month": "%Y-%m"}
 
     # Regarding the data source.
-    date_format = 'date'
+    date_format = "date"
     date_required = False
     dont_truncate = False
 
     # Regarding the data format.
-    encoding = 'utf-8'
+    encoding = "utf-8"
     concatenated_json = False
     line_delimited = False
     validate_json = False
-    root_path = ''
+    root_path = ""
     unflatten = False
     unflatten_args = {}
-    ocds_version = '1.1'
+    ocds_version = "1.1"
 
     # Regarding the access method.
     max_attempts = 1
     retry_http_codes = []
 
     # Not to be overridden by sub-classes.
-    available_steps = {'compile', 'check'}
+    available_steps = {"compile", "check"}
 
     def __init__(
         self,
@@ -116,14 +116,14 @@ class BaseSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
 
         if self.concatenated_json and self.line_delimited:
-            raise IncoherentConfigurationError('concatenated_json = True is incompatible with line_delimited = True.')
+            raise IncoherentConfigurationError("concatenated_json = True is incompatible with line_delimited = True.")
 
         # https://docs.scrapy.org/en/latest/topics/spiders.html#spider-arguments
 
         # Related to filtering data from the source.
-        if sample == 'true':
+        if sample == "true":
             self.sample = 1
-        elif sample == 'false':
+        elif sample == "false":
             self.sample = None
         else:
             self.sample = sample
@@ -135,17 +135,17 @@ class BaseSpider(scrapy.Spider):
 
         # KingfisherProcessAPI2 extension.
         self.kingfisher_process_note = note
-        self.kingfisher_process_keep_collection_open = keep_collection_open == 'true'
+        self.kingfisher_process_keep_collection_open = keep_collection_open == "true"
         if steps is None:
-            self.kingfisher_process_steps = {'compile'}
+            self.kingfisher_process_steps = {"compile"}
         else:
-            self.kingfisher_process_steps = set(steps.split(',')) & self.available_steps
+            self.kingfisher_process_steps = set(steps.split(",")) & self.available_steps
 
         # DatabaseStore extension.
-        self.database_store_compile_releases = compile_releases == 'true'
+        self.database_store_compile_releases = compile_releases == "true"
         self.database_store_table_name = table_name
         self.database_store_force_version = force_version
-        self.database_store_ignore_version = ignore_version == 'true'
+        self.database_store_ignore_version = ignore_version == "true"
 
         # Pluck pipeline.
         self.pluck_package_pointer = package_pointer
@@ -155,46 +155,46 @@ class BaseSpider(scrapy.Spider):
 
         self.query_string_parameters = {}
         for key, value in kwargs.items():
-            if key.startswith('qs:'):
+            if key.startswith("qs:"):
                 self.query_string_parameters[key[3:]] = value
 
         self.date_format = self.VALID_DATE_FORMATS[self.date_format]
 
-        if hasattr(self, 'start_requests'):
+        if hasattr(self, "start_requests"):
             if path:
                 self.start_requests = add_path_components(self.start_requests, path)
             if self.query_string_parameters:
                 self.start_requests = add_query_string(self.start_requests, self.query_string_parameters)
 
         self.filter_arguments = {
-            'from_date': from_date,
-            'until_date': until_date,
-            'path': path,
+            "from_date": from_date,
+            "until_date": until_date,
+            "path": path,
         }
         self.filter_arguments.update(kwargs)
 
         spider_arguments = {
-            'sample': sample,
-            'note': note,
-            'from_date': from_date,
-            'until_date': until_date,
-            'crawl_time': crawl_time,
-            'keep_collection_open': keep_collection_open,
-            'package_pointer': package_pointer,
-            'release_pointer': release_pointer,
-            'truncate': truncate,
-            'compile_releases': compile_releases,
+            "sample": sample,
+            "note": note,
+            "from_date": from_date,
+            "until_date": until_date,
+            "crawl_time": crawl_time,
+            "keep_collection_open": keep_collection_open,
+            "package_pointer": package_pointer,
+            "release_pointer": release_pointer,
+            "truncate": truncate,
+            "compile_releases": compile_releases,
         }
         spider_arguments.update(kwargs)
 
-        self.logger.info('Spider arguments: %r', spider_arguments)
+        self.logger.info("Spider arguments: %r", spider_arguments)
 
     # Scrapy calls this method to merge the spider's custom_settings into the project's settings.
     @classmethod
     def update_settings(cls, settings):
         if cls.custom_settings is None:
             cls.custom_settings = {}
-        cls.custom_settings['HTTPPROXY_ENABLED'] = cls.name in settings.getlist('PROXY_SPIDERS')
+        cls.custom_settings["HTTPPROXY_ENABLED"] = cls.name in settings.getlist("PROXY_SPIDERS")
         super().update_settings(settings)
 
     @classmethod
@@ -202,21 +202,21 @@ class BaseSpider(scrapy.Spider):
         spider = super().from_crawler(crawler, *args, **kwargs)
 
         if spider.pluck_package_pointer and spider.pluck_release_pointer:
-            raise SpiderArgumentError('You cannot specify both package_pointer and release_pointer spider arguments.')
+            raise SpiderArgumentError("You cannot specify both package_pointer and release_pointer spider arguments.")
 
         if spider.sample:
             try:
                 spider.sample = int(spider.sample)
             except ValueError:
                 raise SpiderArgumentError(
-                    f'spider argument `sample`: invalid integer value: {spider.sample!r}'
+                    f"spider argument `sample`: invalid integer value: {spider.sample!r}"
                 ) from None
 
         if spider.crawl_time:
             try:
-                spider.crawl_time = datetime.datetime.strptime(spider.crawl_time, '%Y-%m-%dT%H:%M:%S')
+                spider.crawl_time = datetime.datetime.strptime(spider.crawl_time, "%Y-%m-%dT%H:%M:%S")
             except ValueError as e:
-                raise SpiderArgumentError(f'spider argument `crawl_time`: invalid date value: {e}') from None
+                raise SpiderArgumentError(f"spider argument `crawl_time`: invalid date value: {e}") from None
 
         if spider.from_date or spider.until_date or spider.date_required:
             if not spider.from_date:
@@ -225,7 +225,7 @@ class BaseSpider(scrapy.Spider):
                 if isinstance(spider.from_date, str):
                     spider.from_date = spider.parse_date_argument(spider.from_date)
             except ValueError as e:
-                raise SpiderArgumentError(f'spider argument `from_date`: invalid date value: {e}') from None
+                raise SpiderArgumentError(f"spider argument `from_date`: invalid date value: {e}") from None
 
             if not spider.until_date:
                 spider.until_date = cls.get_default_until_date(spider)
@@ -233,10 +233,10 @@ class BaseSpider(scrapy.Spider):
                 if isinstance(spider.until_date, str):
                     spider.until_date = spider.parse_date_argument(spider.until_date)
             except ValueError as e:
-                raise SpiderArgumentError(f'spider argument `until_date`: invalid date value: {e}') from None
+                raise SpiderArgumentError(f"spider argument `until_date`: invalid date value: {e}") from None
 
         # DatabaseStore-related logic.
-        if crawler.settings['DATABASE_URL'] and not spider.crawl_time:
+        if crawler.settings["DATABASE_URL"] and not spider.crawl_time:
             raise SpiderArgumentError(
                 "spider argument `crawl_time`: can't be blank if `DATABASE_URL` is set"
             ) from None
@@ -263,12 +263,12 @@ class BaseSpider(scrapy.Spider):
 
     def get_start_time(self, date_format):
         """Return the formatted start time of the crawl."""
-        date = self.crawl_time if self.crawl_time else self.crawler.stats.get_value('start_time')
+        date = self.crawl_time if self.crawl_time else self.crawler.stats.get_value("start_time")
         return date.strftime(date_format)
 
     def get_retry_wait_time(self, response):
         """Return the number of seconds to wait before retrying a URL."""
-        return int(response.headers['Retry-After'])
+        return int(response.headers["Retry-After"])
 
     def build_request(self, url, formatter, **kwargs):
         """
@@ -307,15 +307,15 @@ class BaseSpider(scrapy.Spider):
         """
         meta = {}
         if formatter is None:
-            if not kwargs['meta']['file_name']:
-                raise AssertionError('build_request() must be passed a file_name or a formatter')
+            if not kwargs["meta"]["file_name"]:
+                raise AssertionError("build_request() must be passed a file_name or a formatter")
         else:
-            meta['file_name'] = formatter(url)
+            meta["file_name"] = formatter(url)
             # Other extensions are related to the Unflatten pipeline and CompressedFileSpider base class.
-            if not meta['file_name'].endswith(('.json', '.csv', '.xlsx', '.rar', '.zip')):
-                meta['file_name'] += '.json'
-        if 'meta' in kwargs:
-            meta.update(kwargs.pop('meta'))
+            if not meta["file_name"].endswith((".json", ".csv", ".xlsx", ".rar", ".zip")):
+                meta["file_name"] += ".json"
+        if "meta" in kwargs:
+            meta.update(kwargs.pop("meta"))
         return scrapy.Request(url, meta=meta, **kwargs)
 
     def build_file_from_response(self, response, /, *, data_type, **kwargs):
@@ -324,14 +324,14 @@ class BaseSpider(scrapy.Spider):
 
         If the response body starts with a byte-order mark, it is removed.
         """
-        kwargs.setdefault('file_name', response.request.meta['file_name'])
-        kwargs.setdefault('url', response.request.url)
-        if 'data' not in kwargs:
+        kwargs.setdefault("file_name", response.request.meta["file_name"])
+        kwargs.setdefault("url", response.request.url)
+        if "data" not in kwargs:
             body = response.body
             # https://tools.ietf.org/html/rfc7159#section-8.1
             if body.startswith(codecs.BOM_UTF8):  # noqa: FURB188 # bytes instances don't have a removeprefix method.
-                body = body[len(codecs.BOM_UTF8):]
-            kwargs['data'] = body
+                body = body[len(codecs.BOM_UTF8) :]
+            kwargs["data"] = body
         return self.build_file(data_type=data_type, **kwargs)
 
     def build_file(self, *, file_name=None, url=None, data_type=None, data=None):
@@ -353,19 +353,19 @@ class BaseSpider(scrapy.Spider):
             number=number,
         )
 
-    def log_error_from_response(self, response, *, level='error', status=None, message=''):
+    def log_error_from_response(self, response, *, level="error", status=None, message=""):
         """Log an error message, based on the response to a request."""
         getattr(self.logger, level)(
-            'status=%d message=%r request=%s file_name=%s',
+            "status=%d message=%r request=%s file_name=%s",
             status or response.status,
             message,
             response.request,
-            response.request.meta.get('file_name', ''),
+            response.request.meta.get("file_name", ""),
         )
 
     @classmethod
     def get_default_until_date(cls, spider):
         """Return the ``default_until_date`` class attribute if truthy. Otherwise, return the current time."""
-        if getattr(spider, 'default_until_date', None):
+        if getattr(spider, "default_until_date", None):
             return spider.default_until_date
         return datetime.datetime.now(tz=datetime.timezone.utc)

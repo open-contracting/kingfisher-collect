@@ -9,13 +9,13 @@ class NigeriaAnambraState(NigeriaBonMaximusBase):
       https://eprocure.bpp.an.gov.ng/awarded_contracts.php
     """
 
-    name = 'nigeria_anambra_state'
+    name = "nigeria_anambra_state"
 
     # BaseSpider
     validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/957
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # NigeriaBonMaximusBase
-    url_prefix = 'https://eprocure.bpp.an.gov.ng/'
+    url_prefix = "https://eprocure.bpp.an.gov.ng/"

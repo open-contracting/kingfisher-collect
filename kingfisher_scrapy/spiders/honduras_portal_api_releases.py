@@ -21,13 +21,13 @@ class HondurasPortalAPIReleases(HondurasPortalAPIBase):
       http://www.contratacionesabiertas.gob.hn/servicio/
     """
 
-    name = 'honduras_portal_api_releases'
+    name = "honduras_portal_api_releases"
 
     # BaseSpider
-    root_path = 'releasePackage'
+    root_path = "releasePackage"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # HondurasPortalAPIBase
-    start_url = 'http://www.contratacionesabiertas.gob.hn/api/v1/release/?format=json'
+    start_url = "http://www.contratacionesabiertas.gob.hn/api/v1/release/?format=json"

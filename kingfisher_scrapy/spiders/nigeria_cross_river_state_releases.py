@@ -20,10 +20,10 @@ class NigeriaCrossRiverStateReleases(NigeriaCrossRiverStateBase):
       http://ocdsapi.dppib-crsgov.org/Help
     """
 
-    name = 'nigeria_cross_river_state_releases'
+    name = "nigeria_cross_river_state_releases"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def build_url(self, date):
-        return f'{self.url_prefix}getReleasePackage?year={date:%Y}&month={date:%m}'
+        return f"{self.url_prefix}getReleasePackage?year={date:%Y}&month={date:%m}"

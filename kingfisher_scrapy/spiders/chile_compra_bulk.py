@@ -22,24 +22,24 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
       https://desarrolladores.mercadopublico.cl/OCDS/DescargaMasiva
     """
 
-    name = 'chile_compra_bulk'
+    name = "chile_compra_bulk"
     download_timeout = MAX_DOWNLOAD_TIMEOUT
     custom_settings = {
-        'DOWNLOAD_FAIL_ON_DATALOSS': False,
+        "DOWNLOAD_FAIL_ON_DATALOSS": False,
     }
 
     # BaseSpider
-    skip_pluck = 'Already covered (see code for details)'  # chile_compra_api_records
+    skip_pluck = "Already covered (see code for details)"  # chile_compra_api_records
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = "record_package"
 
     # BaseSpider
-    date_format = 'year-month'
-    default_from_date = '2009-01'
+    date_format = "year-month"
+    default_from_date = "2009-01"
 
     # PeriodicSpider
-    pattern = 'https://ocds.blob.core.windows.net/ocds/{0:%Y}{0:%m}.zip'
+    pattern = "https://ocds.blob.core.windows.net/ocds/{0:%Y}{0:%m}.zip"
     formatter = staticmethod(components(-1))  # filename containing year-month
 
     def build_file(self, *, file_name=None, url=None, data_type=None, data=None):
@@ -53,11 +53,11 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
         """
         parsed = json.loads(data)
 
-        if parsed.get('status') != 200:
+        if parsed.get("status") != 200:
             self.logger.error(
-                'status=%d message=%r request=<GET %s> file_name=%s',
-                parsed['status'],
-                parsed['detail'],
+                "status=%d message=%r request=<GET %s> file_name=%s",
+                parsed["status"],
+                parsed["detail"],
                 url,
                 file_name,
             )

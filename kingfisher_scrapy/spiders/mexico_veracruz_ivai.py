@@ -16,10 +16,10 @@ class MexicoVeracruzIVAI(MexicoINAIBase):
       http://www.ivai.org.mx/contrataciones-abiertas/
     """
 
-    name = 'mexico_veracruz_ivai'
+    name = "mexico_veracruz_ivai"
 
     # BaseSpider
-    default_from_date = '2020'
+    default_from_date = "2020"
 
     # MexicoINAIBase
-    base_url = 'http://187.216.225.247:3000'
+    base_url = "http://187.216.225.247:3000"

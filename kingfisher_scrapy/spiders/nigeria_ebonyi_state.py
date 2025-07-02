@@ -17,21 +17,21 @@ class NigeriaEbonyiState(PeriodicSpider):
       https://ebonyieprocure.eb.gov.ng/ocds_report.php
     """
 
-    name = 'nigeria_ebonyi_state'
+    name = "nigeria_ebonyi_state"
 
     # BaseSpider
-    date_format = 'year'
-    default_from_date = '2018'
+    date_format = "year"
+    default_from_date = "2018"
 
     # PeriodicSpider
-    pattern = 'https://ebonyieprocure.eb.gov.ng/media/ocds{}.json'
+    pattern = "https://ebonyieprocure.eb.gov.ng/media/ocds{}.json"
     formatter = staticmethod(components(-1))  # filename containing year
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     @handle_http_error
     def parse(self, response):
         # Replace unescaped tab characters within strings with a space.
-        response = response.replace(body=response.body.replace(b'\t', b' '))
+        response = response.replace(body=response.body.replace(b"\t", b" "))
         yield from super().parse(response)

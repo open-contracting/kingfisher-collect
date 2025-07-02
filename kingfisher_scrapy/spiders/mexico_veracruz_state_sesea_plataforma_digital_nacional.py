@@ -10,7 +10,7 @@ class MexicoVeracruzStateSESEAPlataformaDigitalNacional(MexicoPlataformaDigitalN
       https://plataformadigitalnacional.org/contrataciones
     """
 
-    name = 'mexico_veracruz_state_sesea_plataforma_digital_nacional'
+    name = "mexico_veracruz_state_sesea_plataforma_digital_nacional"
 
     # MexicoPlataformaDigitalNacionalBase
-    publisher_id = 'SESEA_VER'
+    publisher_id = "SESEA_VER"

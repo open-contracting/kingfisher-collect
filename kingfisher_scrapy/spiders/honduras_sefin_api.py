@@ -20,17 +20,17 @@ class HondurasSEFINAPI(PeriodicSpider):
       https://guancasco.sefin.gob.hn/EDCA_WEBAPI/swagger/ui/index
     """
 
-    name = 'honduras_sefin_api'
+    name = "honduras_sefin_api"
 
     # BaseSpider
-    date_format = 'year'
-    default_from_date = '2019'
+    date_format = "year"
+    default_from_date = "2019"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # PeriodicSpider
-    pattern = 'https://guancasco.sefin.gob.hn/EDCA_WEBAPI/api/listaOcids/{}'
+    pattern = "https://guancasco.sefin.gob.hn/EDCA_WEBAPI/api/listaOcids/{}"
     formatter = staticmethod(components(-1))  # year
 
     @handle_http_error

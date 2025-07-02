@@ -15,13 +15,13 @@ class AlbaniaPublicProcurementCommissionHistorical(AlbaniaPublicProcurementCommi
       https://kpp.al/en/HistorikVendimesh?objektProkurimi=&viti=&vitiId=&muaji=&muajiId=
     """
 
-    name = 'albania_public_procurement_commission_historical'
+    name = "albania_public_procurement_commission_historical"
 
     # BaseSpider
-    default_from_date = '2010'
-    default_until_date = '2020'
-    skip_pluck = 'Already covered (see code for details)'  # albania_public_procurement_commission
+    default_from_date = "2010"
+    default_until_date = "2020"
+    skip_pluck = "Already covered (see code for details)"  # albania_public_procurement_commission
 
     # AlbaniaPublicProcurementCommissionBase
-    base_url = 'https://kpp.al/api/public/Decision/getHistoricBulkJsonByYear'
-    date_param = 'prot_date'
+    base_url = "https://kpp.al/api/public/Decision/getHistoricBulkJsonByYear"
+    date_param = "prot_date"

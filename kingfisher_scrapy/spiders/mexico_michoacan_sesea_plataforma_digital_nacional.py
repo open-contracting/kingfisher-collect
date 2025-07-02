@@ -10,7 +10,7 @@ class MexicoMichoacanSESEAPlataformaDigitalNacional(MexicoPlataformaDigitalNacio
       https://plataformadigitalnacional.org/contrataciones
     """
 
-    name = 'mexico_michoacan_sesea_plataforma_digital_nacional'
+    name = "mexico_michoacan_sesea_plataforma_digital_nacional"
 
     # MexicoPlataformaDigitalNacionalBase
-    publisher_id = 'SESEA_MCH'
+    publisher_id = "SESEA_MCH"

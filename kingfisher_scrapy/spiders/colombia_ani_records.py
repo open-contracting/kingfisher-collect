@@ -17,12 +17,12 @@ class ColombiaANIRecords(SimpleSpider):
           ``https://apicost.azurewebsites.net/cost/records``
     """
 
-    name = 'colombia_ani_records'
+    name = "colombia_ani_records"
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = "record_package"
 
     def start_requests(self):
         # Extracted from https://aniscopio.ani.gov.co/datos-abiertos, 'OCDS' tab
-        url = 'https://apicost.azurewebsites.net/cost/records'
-        yield scrapy.Request(url, meta={'file_name': 'all.json'})
+        url = "https://apicost.azurewebsites.net/cost/records"
+        yield scrapy.Request(url, meta={"file_name": "all.json"})

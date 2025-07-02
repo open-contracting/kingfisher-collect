@@ -7,7 +7,7 @@ class NigeriaLagosState(EuropeanDynamicsSaasBase):
       Lagos State Open Contracting Portal
     """
 
-    name = 'nigeria_lagos_state'
+    name = "nigeria_lagos_state"
 
     # EuropeanDynamicsSassBase
-    base_url = 'https://lagosppaocds.azurewebsites.net/'
+    base_url = "https://lagosppaocds.azurewebsites.net/"

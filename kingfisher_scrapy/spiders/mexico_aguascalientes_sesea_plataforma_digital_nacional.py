@@ -9,7 +9,7 @@ class MexicoAguascalientesSESEAPlataformaDigitalNacional(MexicoPlataformaDigital
       https://plataformadigitalnacional.org/contrataciones
     """
 
-    name = 'mexico_aguascalientes_sesea_plataforma_digital_nacional'
+    name = "mexico_aguascalientes_sesea_plataforma_digital_nacional"
 
     # MexicoPlataformaDigitalNacionalBase
-    publisher_id = 'SESEA_AGS'
+    publisher_id = "SESEA_AGS"

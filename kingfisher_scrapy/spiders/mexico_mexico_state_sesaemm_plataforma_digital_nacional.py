@@ -10,7 +10,7 @@ class MexicoMexicoStateSESAEMMPlataformaDigitalNacional(MexicoPlataformaDigitalN
       https://plataformadigitalnacional.org/contrataciones
     """
 
-    name = 'mexico_mexico_state_sesaemm_plataforma_digital_nacional'
+    name = "mexico_mexico_state_sesaemm_plataforma_digital_nacional"
 
     # MexicoPlataformaDigitalNacionalBase
-    publisher_id = 'SESAEMM_EDOMEX'
+    publisher_id = "SESAEMM_EDOMEX"

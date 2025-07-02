@@ -41,19 +41,19 @@ class ParaguayAuthMiddleware:
     """
 
     def __init__(self, spider):
-        spider.logger.info('Initialized authentication middleware with spider: %s.', spider.name)
+        spider.logger.info("Initialized authentication middleware with spider: %s.", spider.name)
 
     @classmethod
     def from_crawler(cls, crawler):
         return cls(crawler.spider)
 
     def process_request(self, request, spider):
-        if request.meta.get('auth') is False:
+        if request.meta.get("auth") is False:
             return None
         if spider.access_token_request_failed:
-            spider.crawler.engine.close_spider(spider, 'access_token_request_failed')
+            spider.crawler.engine.close_spider(spider, "access_token_request_failed")
             raise IgnoreRequest("Max attempts to get an access token reached. Stopping crawl...")
-        request.headers['Authorization'] = spider.access_token
+        request.headers["Authorization"] = spider.access_token
         if self._expires_soon(spider):
             return self.add_request_to_backlog_and_build_access_token_request(spider, request)
         return None
@@ -61,17 +61,17 @@ class ParaguayAuthMiddleware:
     def process_response(self, request, response, spider):
         if response.status in {401, 429}:
             age = (datetime.now() - spider.access_token_scheduled_at).total_seconds()
-            spider.logger.info('Access token age: %ss', age)
-            spider.logger.info('%s returned for request to %s', response.status, request.url)
-            if spider.access_token != request.headers['Authorization'] and self._expires_soon(spider):
+            spider.logger.info("Access token age: %ss", age)
+            spider.logger.info("%s returned for request to %s", response.status, request.url)
+            if spider.access_token != request.headers["Authorization"] and self._expires_soon(spider):
                 return self.add_request_to_backlog_and_build_access_token_request(spider, request)
-            request.headers['Authorization'] = spider.access_token
+            request.headers["Authorization"] = spider.access_token
             return request
         return response
 
     def add_request_to_backlog_and_build_access_token_request(self, spider, request):
         spider.requests_backlog.append(request)
-        spider.logger.info('Added request to backlog until token received: %s', request.url)
+        spider.logger.info("Added request to backlog until token received: %s", request.url)
         return spider.build_access_token_request()
 
     @staticmethod
@@ -80,7 +80,7 @@ class ParaguayAuthMiddleware:
             age = (datetime.now() - spider.access_token_scheduled_at).total_seconds()
             if age < spider.access_token_maximum_age:
                 return False
-            spider.logger.info('Access token age: %ss', age)
+            spider.logger.info("Access token age: %ss", age)
         return True
 
 
@@ -89,9 +89,9 @@ class OpenOppsAuthMiddleware:
 
     @staticmethod
     def process_request(request, spider):
-        if request.meta.get('token_request'):
+        if request.meta.get("token_request"):
             return
-        request.headers['Authorization'] = spider.access_token
+        request.headers["Authorization"] = spider.access_token
 
 
 # https://github.com/ArturGaspar/scrapy-delayed-requests/blob/master/scrapy_delayed_requests.py
@@ -103,7 +103,7 @@ class DelayedRequestMiddleware:
     """
 
     def process_request(self, request, spider):
-        delay = request.meta.get('wait_time', None)
+        delay = request.meta.get("wait_time", None)
         if delay:
             # https://docs.scrapy.org/en/latest/topics/asyncio.html#handling-a-pre-installed-reactor
             from twisted.internet import reactor  # noqa: PLC0415

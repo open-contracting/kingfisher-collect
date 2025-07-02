@@ -17,19 +17,19 @@ class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
       https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/datos-abiertos
     """
 
-    name = 'ecuador_sercop_bulk'
+    name = "ecuador_sercop_bulk"
 
     # BaseSpider
-    date_format = 'year-month'
-    default_from_date = '2015-01'
-    root_path = 'item'
+    date_format = "year-month"
+    default_from_date = "2015-01"
+    root_path = "item"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # PeriodicSpider
     pattern = (
-        'https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/download'
-        '?type=json&year={0:%Y}&month={0:%m}&method=all'
+        "https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/download"
+        "?type=json&year={0:%Y}&month={0:%m}&method=all"
     )
-    formatter = staticmethod(join(components(-1), extension='zip'))
+    formatter = staticmethod(join(components(-1), extension="zip"))

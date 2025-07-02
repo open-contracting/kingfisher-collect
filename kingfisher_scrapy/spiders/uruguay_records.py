@@ -15,22 +15,22 @@ class UruguayRecords(UruguayBase):
       https://www.gub.uy/agencia-compras-contrataciones-estado/datos-y-estadisticas/datos/open-contracting
     """
 
-    name = 'uruguay_records'
+    name = "uruguay_records"
 
     # BaseSpider
-    skip_pluck = 'Already covered (see code for details)'  # uruguay_releases
+    skip_pluck = "Already covered (see code for details)"  # uruguay_releases
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = "record_package"
 
     @handle_http_error
     def parse_list(self, response):
-        url_prefix = 'https://www.comprasestatales.gub.uy/ocds/record/'
+        url_prefix = "https://www.comprasestatales.gub.uy/ocds/record/"
 
-        titles = response.xpath('//item/title/text()').getall()
+        titles = response.xpath("//item/title/text()").getall()
         if self.sample:
             titles = [titles[0]]
 
         for title in titles:
-            identifier = title.split(',')[0].split(':')[1]
-            yield self.build_request(f'{url_prefix}{identifier}', formatter=components(-1))
+            identifier = title.split(",")[0].split(":")[1]
+            yield self.build_request(f"{url_prefix}{identifier}", formatter=components(-1))

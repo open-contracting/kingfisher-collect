@@ -23,16 +23,16 @@ class EuropeanDynamicsSaasBase(SimpleSpider):
     """
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # base_url must be provided by subclasses.
 
     def start_requests(self):
-        url = f'{self.base_url}Home/Procurements/'
-        yield scrapy.Request(url, meta={'file_name': 'list.html'}, callback=self.parse_list)
+        url = f"{self.base_url}Home/Procurements/"
+        yield scrapy.Request(url, meta={"file_name": "list.html"}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
         pattern = '//table[@id="datable_3"]/tbody/tr/td[2]/span/a/@href'
         for item in response.xpath(pattern).re("[0-9]+"):
-            yield self.build_request(f'{self.base_url}openapi/packagesapi/{item}', formatter=components(-1))
+            yield self.build_request(f"{self.base_url}openapi/packagesapi/{item}", formatter=components(-1))

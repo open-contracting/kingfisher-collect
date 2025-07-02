@@ -21,31 +21,32 @@ class MexicoNuevoLeon(SimpleSpider):
       https://catalogodatos.nl.gob.mx/dataset/contrataciones-abiertas-direccion-general-de-adquisiciones-y-servicios
     """
 
-    name = 'mexico_nuevo_leon'
+    name = "mexico_nuevo_leon"
     user_agent = BROWSER_USER_AGENT  # to avoid HTTP 403
 
     # BaseSpider
-    default_from_date = '2024-11-11'
+    default_from_date = "2024-11-11"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def start_requests(self):
         # A CKAN API JSON response.
         url = (
-            'https://catalogodatos.nl.gob.mx/api/3/action/package_show?id='
-            'contrataciones-abiertas-direccion-general-de-adquisiciones-y-servicios'
+            "https://catalogodatos.nl.gob.mx/api/3/action/package_show?id="
+            "contrataciones-abiertas-direccion-general-de-adquisiciones-y-servicios"
         )
-        yield scrapy.Request(url, meta={'file_name': 'package_show.json'}, callback=self.parse_list)
+        yield scrapy.Request(url, meta={"file_name": "package_show.json"}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
-        for resource in response.json()['result']['resources']:
+        for resource in response.json()["result"]["resources"]:
             # Some files don't include an extension file, so we need to check the file name instead.
-            if resource['name'].upper().startswith('JSON-OCDS'):
+            if resource["name"].upper().startswith("JSON-OCDS"):
                 if self.from_date and self.until_date:
-                    date = datetime.strptime(resource['created'], '%Y-%m-%dT%H:%M:%S.%f').replace(
-                        tzinfo=self.from_date.tzinfo)
+                    date = datetime.strptime(resource["created"], "%Y-%m-%dT%H:%M:%S.%f").replace(
+                        tzinfo=self.from_date.tzinfo
+                    )
                     if not (self.from_date <= date <= self.until_date):
                         continue
-                yield self.build_request(resource['url'], formatter=components(-1))
+                yield self.build_request(resource["url"], formatter=components(-1))

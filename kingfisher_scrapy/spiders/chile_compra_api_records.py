@@ -25,14 +25,14 @@ class ChileCompraAPIRecords(ChileCompraAPIBase):
       https://datos-abiertos.chilecompra.cl/descargas/procesos-ocds
     """
 
-    name = 'chile_compra_api_records'
+    name = "chile_compra_api_records"
 
     # BaseSpider
-    skip_pluck = 'Already covered (see code for details)'  # chile_compra_api_releases
+    skip_pluck = "Already covered (see code for details)"  # chile_compra_api_releases
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = "record_package"
 
     def handle_item(self, item):
-        url = f'https://apis.mercadopublico.cl/OCDS/data/record/{item["ocid"].replace("ocds-70d2nz-", "")}'
+        url = f"https://apis.mercadopublico.cl/OCDS/data/record/{item['ocid'].replace('ocds-70d2nz-', '')}"
         yield self.build_request(url, formatter=components(-2))

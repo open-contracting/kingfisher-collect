@@ -19,15 +19,15 @@ class Kosovo(SimpleSpider):
       https://ocdskrpp.rks-gov.net/Help
     """
 
-    name = 'kosovo'
+    name = "kosovo"
 
     # BaseSpider
-    date_format = 'date'
-    default_from_date = '2000-01-01'
+    date_format = "date"
+    default_from_date = "2000-01-01"
     date_required = True
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def start_requests(self):
         # The API is slow even with short periods, so we request one day at a time.
@@ -36,14 +36,14 @@ class Kosovo(SimpleSpider):
             start = self.from_date + timedelta(days=days - 1)
             end = self.from_date + timedelta(days=days)
             url = (
-                'https://ocdskrpp.rks-gov.net/krppapi/tenderrelease'
-                f'?endDateFrom={start.strftime("%Y-%m-%d")}&endDateEnd={end.strftime("%Y-%m-%d")}'
+                "https://ocdskrpp.rks-gov.net/krppapi/tenderrelease"
+                f"?endDateFrom={start.strftime('%Y-%m-%d')}&endDateEnd={end.strftime('%Y-%m-%d')}"
             )
 
-            yield self.build_request(url, formatter=parameters('endDateFrom', 'endDateEnd'))
+            yield self.build_request(url, formatter=parameters("endDateFrom", "endDateEnd"))
 
     @handle_http_error
     def parse(self, response):
         # The API returns a release package with an empty releases array if no releases were found.
-        if response.json()['releases']:
+        if response.json()["releases"]:
             yield self.build_file_from_response(response, data_type=self.data_type)

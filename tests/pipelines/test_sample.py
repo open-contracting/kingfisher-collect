@@ -12,10 +12,10 @@ def test_process_file_without_sample():
     pipeline = Sample()
     spider = spider_with_crawler()
     item = File(
-        file_name='test',
-        url='http://test.com',
-        data_type='release_package',
-        data=b'{}',
+        file_name="test",
+        url="http://test.com",
+        data_type="release_package",
+        data=b"{}",
     )
     assert pipeline.process_item(item, spider) == item
 
@@ -26,10 +26,10 @@ def test_process_file_with_sample():
     crawler = MagicMock()
     spider.crawler = crawler
     item = File(
-        file_name='test',
-        url='http://test.com',
-        data_type='release_package',
-        data=b'{}',
+        file_name="test",
+        url="http://test.com",
+        data_type="release_package",
+        data=b"{}",
     )
     assert pipeline.process_item(item, spider) == item
     with pytest.raises(DropItem):

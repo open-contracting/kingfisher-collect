@@ -19,25 +19,25 @@ class IndiaAssam(PeriodicSpider):
       https://data.gov.in/catalog/assam-public-procurement-data
     """
 
-    name = 'india_assam'
+    name = "india_assam"
 
     # To avoid 403 errors when unflattening the CSV files.
     custom_settings = {
-        'CONCURRENT_REQUESTS': 1,
+        "CONCURRENT_REQUESTS": 1,
     }
 
     # BaseSpider
     unflatten = True
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # PeriodicSpider
-    date_format = 'year'
+    date_format = "year"
     formatter = staticmethod(components(-1))  # filename containing year
-    default_from_date = '2016'
-    default_until_date = '2021'
+    default_from_date = "2016"
+    default_until_date = "2021"
 
     def build_urls(self, date):
-        url = 'https://www.data.gov.in/files/ogdpv2dms/s3fs-public/ocds_mapped_procurement_data_fiscal_year'
-        yield f'{url}_{date}_{date + 1}.csv'
+        url = "https://www.data.gov.in/files/ogdpv2dms/s3fs-public/ocds_mapped_procurement_data_fiscal_year"
+        yield f"{url}_{date}_{date + 1}.csv"

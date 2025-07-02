@@ -12,18 +12,18 @@ from tests import response_fixture, spider_with_crawler
 
 def test_next_link():
     spider = spider_with_crawler(spider_class=LinksSpider)
-    spider.formatter = lambda _url: 'next.json'
+    spider.formatter = lambda _url: "next.json"
 
     request = spider.next_link(
         response_fixture(
-            meta={'file_name': 'test', 'depth': 0},
+            meta={"file_name": "test", "depth": 0},
             body=b'{"links": {"next": "http://example.com/next"}}',
         ),
     )
 
     assert type(request) is Request
-    assert request.url == 'http://example.com/next'
-    assert request.meta == {'file_name': 'next.json'}
+    assert request.url == "http://example.com/next"
+    assert request.meta == {"file_name": "next.json"}
 
 
 def test_next_link_condition():
@@ -32,7 +32,7 @@ def test_next_link_condition():
 
     request = spider.next_link(
         response_fixture(
-            meta={'file_name': 'test', 'depth': 0},
+            meta={"file_name": "test", "depth": 0},
             body='{"links": {"next": ""}}',
         ),
     )
@@ -45,7 +45,7 @@ def test_parse_404(caplog):
 
     generator = spider.parse(
         response_fixture(
-            meta={'file_name': 'test', 'depth': 0},
+            meta={"file_name": "test", "depth": 0},
             body=b'{"links": {"next": "http://example.com/next"}}',
             status=404,
         ),
@@ -59,26 +59,26 @@ def test_parse_404(caplog):
 
 def test_parse_200():
     spider = spider_with_crawler(spider_class=LinksSpider)
-    spider.data_type = 'release_package'
-    spider.formatter = lambda _url: 'next.json'
+    spider.data_type = "release_package"
+    spider.formatter = lambda _url: "next.json"
     body = b'{"links": {"next": "http://example.com/next"}}'
 
-    generator = spider.parse(response_fixture(meta={'file_name': 'test', 'depth': 0}, body=body))
+    generator = spider.parse(response_fixture(meta={"file_name": "test", "depth": 0}, body=body))
     item = next(generator)
     request = next(generator)
 
     assert type(item) is File
     assert item.__dict__ == {
-        'file_name': 'test',
-        'url': 'http://example.com',
-        'data_type': 'release_package',
-        'data': body,
-        'path': '',
+        "file_name": "test",
+        "url": "http://example.com",
+        "data_type": "release_package",
+        "data": body,
+        "path": "",
     }
 
     assert type(request) is Request
-    assert request.url == 'http://example.com/next'
-    assert request.meta == {'file_name': 'next.json'}
+    assert request.url == "http://example.com/next"
+    assert request.meta == {"file_name": "next.json"}
 
     with pytest.raises(StopIteration):
         next(generator)
@@ -89,12 +89,12 @@ def test_next_link_not_found_first_page():
     spider.filter_arguments = []
     body = '{"links": {"next": ""}}'
 
-    meta = {'file_name': 'test', 'depth': 0}
+    meta = {"file_name": "test", "depth": 0}
     with pytest.raises(MissingNextLinkError) as e:
         spider.next_link(response_fixture(body=body, meta=meta))
-    assert str(e.value) == 'Missing link on first page, ending crawl prematurely: http://example.com'
+    assert str(e.value) == "Missing link on first page, ending crawl prematurely: http://example.com"
 
-    meta = {'file_name': 'test', 'depth': 10}
+    meta = {"file_name": "test", "depth": 10}
     response = spider.next_link(response_fixture(body=body, meta=meta))
     assert response is None
 
@@ -104,7 +104,7 @@ def test_next_link_not_found_later_page():
     spider.filter_arguments = []
     body = '{"value": 000}'
 
-    meta = {'file_name': 'test', 'depth': 4}
+    meta = {"file_name": "test", "depth": 4}
     with pytest.raises(MissingNextLinkError) as e:
         spider.next_link(response_fixture(body=body, meta=meta))
-    assert str(e.value) == 'Invalid JSON on page 4, ending crawl prematurely: http://example.com'
+    assert str(e.value) == "Invalid JSON on page 4, ending crawl prematurely: http://example.com"

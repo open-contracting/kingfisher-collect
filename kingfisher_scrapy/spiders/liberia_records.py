@@ -16,10 +16,10 @@ class LiberiaRecords(EuropeanDynamicsBase):
       https://eprocurement.ppcc.gov.lr/ocds/report/home.action#/recordPackages
     """
 
-    name = 'liberia_records'
+    name = "liberia_records"
 
     # BaseSpider
-    default_from_date = '2024-11'
+    default_from_date = "2024-11"
 
     # EuropeanDynamicsBase
-    base_url = 'https://eprocurement.ppcc.gov.lr'
+    base_url = "https://eprocurement.ppcc.gov.lr"

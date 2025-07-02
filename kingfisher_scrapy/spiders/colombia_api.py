@@ -19,27 +19,27 @@ class ColombiaAPI(LinksSpider):
       https://apiocds.colombiacompra.gov.co/apiCCE-2.0/
     """
 
-    name = 'colombia_api'
+    name = "colombia_api"
 
     # BaseSpider
-    default_from_date = '2011-01-01'
+    default_from_date = "2011-01-01"
     date_required = True
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # LinksSpider
-    formatter = staticmethod(parameters('_id', parser=replace_path_separator))  # e.g. _id=11/23
+    formatter = staticmethod(parameters("_id", parser=replace_path_separator))  # e.g. _id=11/23
 
     def start_requests(self):
         from_date = self.from_date.strftime(self.date_format)
         until_date = self.until_date.strftime(self.date_format)
-        url = f'https://apiocds.colombiacompra.gov.co/apiCCE-2.0/rest/releases/dates/{from_date}/{until_date}'
+        url = f"https://apiocds.colombiacompra.gov.co/apiCCE-2.0/rest/releases/dates/{from_date}/{until_date}"
 
-        yield scrapy.Request(url, meta={'file_name': f'{from_date}.json'})
+        yield scrapy.Request(url, meta={"file_name": f"{from_date}.json"})
 
     @handle_http_error
     def parse(self, response):
         # Replace unescaped tab characters within strings with a space.
-        response = response.replace(body=response.body.replace(b'\t', b' '))
+        response = response.replace(body=response.body.replace(b"\t", b" "))
         yield from super().parse(response)

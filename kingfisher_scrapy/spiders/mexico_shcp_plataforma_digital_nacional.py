@@ -9,7 +9,7 @@ class MexicoSHCPPlataformaDigitalNacional(MexicoPlataformaDigitalNacionalBase):
       https://plataformadigitalnacional.org/contrataciones
     """
 
-    name = 'mexico_shcp_plataforma_digital_nacional'
+    name = "mexico_shcp_plataforma_digital_nacional"
 
     # MexicoPlataformaDigitalNacionalBase
-    publisher_id = 'SHCP'
+    publisher_id = "SHCP"

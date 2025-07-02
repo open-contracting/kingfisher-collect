@@ -5,6 +5,7 @@ This spider raises exceptions in different methods. You can use this to test whe
 
    python -m scrapy crawl error -s SPIDER_MODULES=tests.spiders -a raise_init=True
 """
+
 import scrapy
 
 from kingfisher_scrapy.base_spiders import BaseSpider
@@ -12,7 +13,7 @@ from kingfisher_scrapy.exceptions import IncoherentConfigurationError, SpiderArg
 
 
 class Error(BaseSpider):
-    name = 'error'
+    name = "error"
 
     def __init__(
         self,
@@ -52,7 +53,7 @@ class Error(BaseSpider):
     def start_requests(self):
         if self.raise_start_requests:
             raise RuntimeError("message")
-        yield scrapy.Request('http://httpstat.us/200')
+        yield scrapy.Request("http://httpstat.us/200")
 
     def parse(self, response):
         if self.raise_parse:

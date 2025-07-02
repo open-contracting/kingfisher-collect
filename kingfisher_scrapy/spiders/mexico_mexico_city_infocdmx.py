@@ -18,11 +18,11 @@ class MexicoMexicoCityINFOCDMX(MexicoINAIBase):
       https://dashboard.infocdmx.org.mx/contratacionesabiertas/datosabiertos
     """
 
-    name = 'mexico_mexico_city_infocdmx'
+    name = "mexico_mexico_city_infocdmx"
     user_agent = BROWSER_USER_AGENT  # to avoid HTTP 500
 
     # BaseSpider
-    default_from_date = '2019'
+    default_from_date = "2019"
 
     # MexicoINAIBase
-    base_url = 'https://contratacionesabiertas.infocdmx.org.mx:3000'
+    base_url = "https://contratacionesabiertas.infocdmx.org.mx:3000"

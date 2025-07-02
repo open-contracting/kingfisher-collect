@@ -15,10 +15,10 @@ class UnitedKingdomContractsFinderReleases(UnitedKingdomContractsFinderBase):
       https://www.contractsfinder.service.gov.uk/apidocumentation/home
     """
 
-    name = 'united_kingdom_contracts_finder_releases'
+    name = "united_kingdom_contracts_finder_releases"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     @handle_http_error
     def parse_page(self, response):

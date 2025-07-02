@@ -16,10 +16,10 @@ class MexicoINAIAPI(MexicoINAIBase):
       http://contratacionesabiertas.inai.org.mx/contratacionesabiertas/datosabiertos
     """
 
-    name = 'mexico_inai_api'
+    name = "mexico_inai_api"
 
     # BaseSpider
-    default_from_date = '2015'
+    default_from_date = "2015"
 
     # MexicoINAIBase
-    base_url = 'http://contratacionesabiertas.inai.org.mx:3000'
+    base_url = "http://contratacionesabiertas.inai.org.mx:3000"

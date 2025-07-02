@@ -10,12 +10,12 @@ class GeorgiaOpendata(CompressedFileSpider):
       State Procurement Agency (SPA)
     """
 
-    name = 'georgia_opendata'
+    name = "georgia_opendata"
     # The file is about 450MB.
     download_timeout = MAX_DOWNLOAD_TIMEOUT
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def start_requests(self):
-        yield scrapy.Request('http://opendata.spa.ge/json/allTenders.zip', meta={'file_name': 'all.zip'})
+        yield scrapy.Request("http://opendata.spa.ge/json/allTenders.zip", meta={"file_name": "all.zip"})

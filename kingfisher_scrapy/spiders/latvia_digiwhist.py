@@ -2,5 +2,5 @@ from kingfisher_scrapy.spiders.government_transparency_institute_base import Gov
 
 
 class LatviaDigiwhist(GovernmentTransparencyInstituteBase):
-    name = 'latvia_digiwhist'
-    country_code = 'lv'
+    name = "latvia_digiwhist"
+    country_code = "lv"

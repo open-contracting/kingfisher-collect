@@ -38,44 +38,44 @@ class HondurasPortalBulk(SimpleSpider):
       http://www.contratacionesabiertas.gob.hn/descargas/
     """
 
-    name = 'honduras_portal_bulk'
+    name = "honduras_portal_bulk"
 
     # BaseSpider
-    date_format = 'year-month'
-    default_from_date = '2005-11'
-    skip_pluck = 'Already covered (see code for details)'  # honduras_portal_api_releases
+    date_format = "year-month"
+    default_from_date = "2005-11"
+    skip_pluck = "Already covered (see code for details)"  # honduras_portal_api_releases
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # Local
     available_publishers = {
-        'oncae': 'Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Honduras',
-        'sefin': 'Secretaria de Finanzas de Honduras',
+        "oncae": "Oficina Normativa de Contratación y Adquisiciones del Estado (ONCAE) / Honduras",
+        "sefin": "Secretaria de Finanzas de Honduras",
     }
     available_systems = {
-        'HC1': 'HonduCompras 1.0 - Módulo de Difusión de Compras y Contrataciones',
-        'CE': 'Catálogo Electrónico',
-        'DDC': 'Módulo de Difusión Directa de Contratos',
+        "HC1": "HonduCompras 1.0 - Módulo de Difusión de Compras y Contrataciones",
+        "CE": "Catálogo Electrónico",
+        "DDC": "Módulo de Difusión Directa de Contratos",
     }
 
     def start_requests(self):
-        url = 'http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json'
-        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
+        url = "http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json"
+        yield scrapy.Request(url, meta={"file_name": "list.json"}, callback=self.parse_list)
 
     @classmethod
     def from_crawler(cls, crawler, publisher=None, system=None, *args, **kwargs):
         spider = super().from_crawler(crawler, *args, publisher=publisher, system=system, **kwargs)
         if publisher and spider.publisher not in spider.available_publishers:
-            raise SpiderArgumentError(f'spider argument `publisher`: {spider.publisher!r} not recognized')
+            raise SpiderArgumentError(f"spider argument `publisher`: {spider.publisher!r} not recognized")
 
         if system:
-            if spider.publisher != 'oncae':
+            if spider.publisher != "oncae":
                 raise SpiderArgumentError(
-                    f'spider argument `system` is not supported for publisher: {spider.publisher!r}'
+                    f"spider argument `system` is not supported for publisher: {spider.publisher!r}"
                 )
             if spider.system not in spider.available_systems:
-                raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
+                raise SpiderArgumentError(f"spider argument `system`: {spider.system!r} not recognized")
 
         return spider
 
@@ -101,18 +101,18 @@ class HondurasPortalBulk(SimpleSpider):
         """
         formatter = components(-1)
         for item in response.json():
-            publisher = item['publicador']
+            publisher = item["publicador"]
             if self.publisher and publisher != self.available_publishers.get(self.publisher):
                 continue
 
-            if publisher == self.available_publishers['oncae']:
-                system = item['sistema']
+            if publisher == self.available_publishers["oncae"]:
+                system = item["sistema"]
                 if self.system and system != self.available_systems.get(self.system):
                     continue
 
             if self.from_date and self.until_date:
-                date = datetime(int(item['year']), int(item['month']), 1)
+                date = datetime(int(item["year"]), int(item["month"]), 1)
                 if not (self.from_date <= date <= self.until_date):
                     continue
 
-            yield self.build_request(item['urls']['json'], formatter=formatter)
+            yield self.build_request(item["urls"]["json"], formatter=formatter)

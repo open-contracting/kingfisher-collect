@@ -11,10 +11,10 @@ class MexicoQuintanaRooIDAIP(MexicoINAIBase):
       http://conab.idaipqroo.org.mx:4000/contratacionesabiertas/datosabiertos
     """
 
-    name = 'mexico_quintana_roo_idaip'
+    name = "mexico_quintana_roo_idaip"
 
     # MexicoINAIBase
-    base_url = 'http://conab.idaipqroo.org.mx:3000'
+    base_url = "http://conab.idaipqroo.org.mx:3000"
 
     def start_requests(self):
-        yield scrapy.Request(f'{self.base_url}/edca/contractingprocess/null', meta={'file_name': 'all.json'})
+        yield scrapy.Request(f"{self.base_url}/edca/contractingprocess/null", meta={"file_name": "all.json"})

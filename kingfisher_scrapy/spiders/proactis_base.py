@@ -4,11 +4,11 @@ from kingfisher_scrapy.util import handle_http_error, parameters
 
 class ProactisBase(PeriodicSpider):
     # BaseSpider
-    date_format = 'year-month'
+    date_format = "year-month"
 
     # PeriodicSpider
-    pattern = '/v1/Notices?dateFrom={:%m-%Y}&outputType=0&noticeType={}'
-    formatter = staticmethod(parameters('noticeType', 'dateFrom'))
+    pattern = "/v1/Notices?dateFrom={:%m-%Y}&outputType=0&noticeType={}"
+    formatter = staticmethod(parameters("noticeType", "dateFrom"))
 
     # base_url and notice_types must be provided by subclasses.
 
@@ -45,8 +45,8 @@ class ProactisBase(PeriodicSpider):
         data = response.json()
 
         # Some responses are a package without a list of releases.
-        if 'releases' not in data:
-            self.log_error_from_response(response, level='warning', message=data)
+        if "releases" not in data:
+            self.log_error_from_response(response, level="warning", message=data)
             return
 
         yield from super().parse(response)

@@ -12,19 +12,19 @@ class Slovenia(SimpleSpider):
       http://tbfy.ijs.si/?m=tenders&a=list_data&t=si_ocds
     """
 
-    name = 'slovenia'
+    name = "slovenia"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # Local
-    url_prefix = 'http://tbfy.ijs.si/public/ocds/mju/'
+    url_prefix = "http://tbfy.ijs.si/public/ocds/mju/"
 
     def start_requests(self):
-        yield scrapy.Request(self.url_prefix, meta={'file_name': 'list.html'}, callback=self.parse_list)
+        yield scrapy.Request(self.url_prefix, meta={"file_name": "list.html"}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
-        for number, url in enumerate(reversed(response.xpath('//a/@href').getall())):
-            if 'ocds' and 'json' in url:
-                yield self.build_request(f'{self.url_prefix}{url}', formatter=components(-1), priority=number * -1)
+        for number, url in enumerate(reversed(response.xpath("//a/@href").getall())):
+            if "ocds" and "json" in url:
+                yield self.build_request(f"{self.url_prefix}{url}", formatter=components(-1), priority=number * -1)

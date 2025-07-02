@@ -61,22 +61,22 @@ class KingfisherProcessAPI2:
 
     @classmethod
     def from_crawler(cls, crawler):
-        url = crawler.settings['KINGFISHER_API2_URL']
-        rabbit_url = crawler.settings['RABBIT_URL']
-        rabbit_exchange_name = crawler.settings['RABBIT_EXCHANGE_NAME']
-        rabbit_routing_key = crawler.settings['RABBIT_ROUTING_KEY']
+        url = crawler.settings["KINGFISHER_API2_URL"]
+        rabbit_url = crawler.settings["RABBIT_URL"]
+        rabbit_exchange_name = crawler.settings["RABBIT_EXCHANGE_NAME"]
+        rabbit_routing_key = crawler.settings["RABBIT_ROUTING_KEY"]
 
-        if crawler.settings['DATABASE_URL']:
-            raise NotConfigured('DATABASE_URL is set.')
+        if crawler.settings["DATABASE_URL"]:
+            raise NotConfigured("DATABASE_URL is set.")
 
         if not url:
-            raise NotConfigured('KINGFISHER_API2_URL is not set.')
+            raise NotConfigured("KINGFISHER_API2_URL is not set.")
         if not rabbit_url:
-            raise NotConfigured('RABBIT_URL is not set.')
+            raise NotConfigured("RABBIT_URL is not set.")
         if not rabbit_exchange_name:
-            raise NotConfigured('RABBIT_EXCHANGE_NAME is not set.')
+            raise NotConfigured("RABBIT_EXCHANGE_NAME is not set.")
         if not rabbit_routing_key:
-            raise NotConfigured('RABBIT_ROUTING_KEY is not set.')
+            raise NotConfigured("RABBIT_ROUTING_KEY is not set.")
 
         extension = cls(url, crawler.stats, rabbit_url, rabbit_exchange_name, rabbit_routing_key)
         crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
@@ -87,19 +87,19 @@ class KingfisherProcessAPI2:
 
     def spider_opened(self, spider):
         """Send an API request to create a collection in Kingfisher Process."""
-        data_version = spider.get_start_time('%Y-%m-%d %H:%M:%S')
+        data_version = spider.get_start_time("%Y-%m-%d %H:%M:%S")
 
         data = {
-            'source_id': spider.name,
-            'data_version': data_version,
-            'sample': bool(spider.sample),
-            'upgrade': spider.ocds_version == '1.0',
+            "source_id": spider.name,
+            "data_version": data_version,
+            "sample": bool(spider.sample),
+            "upgrade": spider.ocds_version == "1.0",
         }
 
         if spider.kingfisher_process_note:
-            data['note'] = spider.kingfisher_process_note
-        if hasattr(spider, '_job'):
-            data['job'] = spider._job
+            data["note"] = spider.kingfisher_process_note
+        if hasattr(spider, "_job"):
+            data["job"] = spider._job
 
         for step in spider.kingfisher_process_steps:
             data[step] = True
@@ -111,11 +111,11 @@ class KingfisherProcessAPI2:
             # https://docs.scrapy.org/en/latest/topics/asyncio.html#handling-a-pre-installed-reactor
             from twisted.internet import reactor  # noqa: PLC0415
 
-            self.collection_id = response.json()['collection_id']
+            self.collection_id = response.json()["collection_id"]
 
             # WARNING! If this log message is changed, update the regular expression in the data_registry/
             # process_manager/task/collect.py file in the open-contracting/data-registry repository to match.
-            spider.logger.info('Created collection %d in Kingfisher Process (%s)', self.collection_id, data_version)
+            spider.logger.info("Created collection %d in Kingfisher Process (%s)", self.collection_id, data_version)
 
             # Connect to RabbitMQ only if a collection_id is set, as other signals don't use RabbitMQ, otherwise.
             self.client.connect()
@@ -127,9 +127,9 @@ class KingfisherProcessAPI2:
             self.thread.start()
 
             # Ensure the RabbitMQ connection is closed, if an unclean shutdown is forced.
-            reactor.addSystemEventTrigger('before', 'shutdown', self.disconnect_and_join)
+            reactor.addSystemEventTrigger("before", "shutdown", self.disconnect_and_join)
         else:
-            self._response_error(spider, 'Failed to create collection', response)
+            self._response_error(spider, "Failed to create collection", response)
 
     def spider_closed(self, spider, reason):
         """Send an API request to close the collection in Kingfisher Process."""
@@ -140,18 +140,22 @@ class KingfisherProcessAPI2:
 
         # Scrapyd's cancel.json endpoint sends a SIGINT signal to the Scrapy process, which uses the "shutdown" reason.
         # If a process is cancelled, don't close the collection, as this triggers compilation of release collections.
-        if spider.pluck or spider.kingfisher_process_keep_collection_open or reason == 'shutdown':
+        if spider.pluck or spider.kingfisher_process_keep_collection_open or reason == "shutdown":
             return
 
-        response = self._post_synchronous(spider, f'/api/collections/{self.collection_id}/close/', {
-            'reason': reason,
-            'stats': json.loads(json.dumps(self.stats.get_stats(), default=str))  # for datetime objects
-        })
+        response = self._post_synchronous(
+            spider,
+            f"/api/collections/{self.collection_id}/close/",
+            {
+                "reason": reason,
+                "stats": json.loads(json.dumps(self.stats.get_stats(), default=str)),  # for datetime objects
+            },
+        )
 
         if response.ok:
-            spider.logger.info('Closed collection %d in Kingfisher Process', self.collection_id)
+            spider.logger.info("Closed collection %d in Kingfisher Process", self.collection_id)
         else:
-            self._response_error(spider, 'Failed to close collection', response)
+            self._response_error(spider, "Failed to close collection", response)
 
     def item_scraped(self, item, spider):
         """Publish a RabbitMQ message to store the file or file item in Kingfisher Process."""
@@ -162,9 +166,9 @@ class KingfisherProcessAPI2:
             return
 
         data = {
-            'collection_id': self.collection_id,
-            'url': item.url,
-            'path': item.path,
+            "collection_id": self.collection_id,
+            "url": item.url,
+            "path": item.path,
         }
 
         cb = functools.partial(self._when_ready, self.client.publish, data, self.routing_key)
@@ -184,7 +188,7 @@ class KingfisherProcessAPI2:
     def _post_synchronous(self, spider, path, data):
         """POST synchronous API requests to Kingfisher Process."""
         url = urljoin(self.url, path)
-        spider.logger.debug('Sending synchronous request to Kingfisher Process at %s with %s', url, data)
+        spider.logger.debug("Sending synchronous request to Kingfisher Process at %s with %s", url, data)
         return requests.post(url, json=data, timeout=3600)  # 1h
 
     def _when_ready(self, function, *args):
@@ -196,5 +200,5 @@ class KingfisherProcessAPI2:
 
     def _response_error(self, spider, message, response):
         spider.logger.critical(
-            '%s: status=%d response=%r headers=%r', message, response.status_code, response.text, response.headers
+            "%s: status=%d response=%r headers=%r", message, response.status_code, response.text, response.headers
         )

@@ -16,16 +16,16 @@ class UnitedKingdomWales(ProactisBase):
       https://www.sell2wales.gov.wales/Notice/Download/Download.aspx
     """
 
-    name = 'united_kingdom_wales'
+    name = "united_kingdom_wales"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # PeriodicSpider
-    default_from_date = '2019-01'
+    default_from_date = "2019-01"
 
     # ProactisBase
-    base_url = 'https://api.sell2wales.gov.wales'
+    base_url = "https://api.sell2wales.gov.wales"
     notice_types = [
         51,  # Site Notice - Website Invitation to Tender Notice
         52,  # Site Notice - Website Prior Information Notice

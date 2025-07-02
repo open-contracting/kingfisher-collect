@@ -10,7 +10,7 @@ class MexicoPueblaStateSESEAPPlataformaDigitalNacional(MexicoPlataformaDigitalNa
       https://plataformadigitalnacional.org/contrataciones
     """
 
-    name = 'mexico_puebla_state_seseap_plataforma_digital_nacional'
+    name = "mexico_puebla_state_seseap_plataforma_digital_nacional"
 
     # MexicoPlataformaDigitalNacionalBase
-    publisher_id = 'SESAE_PUE'
+    publisher_id = "SESAE_PUE"

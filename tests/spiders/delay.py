@@ -5,16 +5,17 @@ This spider has a slow request. You can use this to test integrations (e.g. Rabb
 
    python -m scrapy crawl delay -s SPIDER_MODULES=tests.spiders
 """
+
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
 
 
 class Delay(SimpleSpider):
-    name = 'delay'
+    name = "delay"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def start_requests(self):
-        yield scrapy.Request('http://httpbingo.org/delay/10', meta={'file_name': 'delay.json'})
+        yield scrapy.Request("http://httpbingo.org/delay/10", meta={"file_name": "delay.json"})

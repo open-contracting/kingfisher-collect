@@ -17,16 +17,16 @@ class HondurasSEFINBulk(CompressedFileSpider, PeriodicSpider):
       https://guancasco.sefin.gob.hn/EDCA_WEBAPI/swagger/ui/index
     """
 
-    name = 'honduras_sefin_bulk'
+    name = "honduras_sefin_bulk"
 
     # BaseSpider
-    date_format = 'year'
-    default_from_date = '2012'
+    date_format = "year"
+    default_from_date = "2012"
     line_delimited = True
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # PeriodicSpider
-    pattern = 'https://piep.sefin.gob.hn/edca/ocid_sefin_{}.zip'
+    pattern = "https://piep.sefin.gob.hn/edca/ocid_sefin_{}.zip"
     formatter = staticmethod(components(-1))  # filename containing year

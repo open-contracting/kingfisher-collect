@@ -10,17 +10,18 @@ from tests import spider_with_crawler
 
 # Running this as a pytest test raises "twisted.internet.error.ReactorAlreadyRunning".
 def delayed_request_middleware():
-
     def download_func(spider, request):
         return request
 
-    spider = spider_with_crawler(settings={
-        'DOWNLOADER_MIDDLEWARES': {
-            'scrapy.downloadermiddlewares.offsite.OffsiteMiddleware': None,
-            'kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware': 543,
-        },
-    })
-    request = Request('http://example.com', meta={'wait_time': 1})
+    spider = spider_with_crawler(
+        settings={
+            "DOWNLOADER_MIDDLEWARES": {
+                "scrapy.downloadermiddlewares.offsite.OffsiteMiddleware": None,
+                "kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware": 543,
+            },
+        }
+    )
+    request = Request("http://example.com", meta={"wait_time": 1})
     # We send the request to all the downloader middlewares, including the delayed request middleware.
     manager = DownloaderMiddlewareManager.from_crawler(spider.crawler)
     downloaded = manager.download(download_func, request, spider)

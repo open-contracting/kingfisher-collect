@@ -17,9 +17,9 @@ class SentryLogging:
 
     @classmethod
     def from_crawler(cls, crawler):
-        sentry_dsn = crawler.settings['SENTRY_DSN']
+        sentry_dsn = crawler.settings["SENTRY_DSN"]
 
         if not sentry_dsn:
-            raise NotConfigured('SENTRY_DSN is not set.')
+            raise NotConfigured("SENTRY_DSN is not set.")
 
         return cls(sentry_dsn)

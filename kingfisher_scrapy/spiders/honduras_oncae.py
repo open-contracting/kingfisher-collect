@@ -25,32 +25,32 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
       https://oncae.gob.hn/datos-abiertos/
     """
 
-    name = 'honduras_oncae'
+    name = "honduras_oncae"
     download_timeout = MAX_DOWNLOAD_TIMEOUT / 2  # 15min
 
     # BaseSpider
-    date_format = 'year'
-    default_from_date = '2005'
-    skip_pluck = 'Already covered (see code for details)'  # honduras_portal_api_releases
+    date_format = "year"
+    default_from_date = "2005"
+    skip_pluck = "Already covered (see code for details)"  # honduras_portal_api_releases
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # CompressedFileSpider
     yield_non_archive_file = True
 
     # PeriodicSpider
-    pattern = 'https://datosabiertos.oncae.gob.hn/datosabiertos/{}'
+    pattern = "https://datosabiertos.oncae.gob.hn/datosabiertos/{}"
     formatter = staticmethod(components(-1))  # year
 
     # Local
-    available_systems = {'HC1': 2005, 'CE': 2014, 'DDC': 2010}
+    available_systems = {"HC1": 2005, "CE": 2014, "DDC": 2010}
 
     @classmethod
     def from_crawler(cls, crawler, system=None, *args, **kwargs):
         spider = super().from_crawler(crawler, *args, system=system, **kwargs)
         if system and spider.system not in spider.available_systems:
-            raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
+            raise SpiderArgumentError(f"spider argument `system`: {spider.system!r} not recognized")
         return spider
 
     def build_urls(self, date):
@@ -58,8 +58,8 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
         for system in systems:
             if self.system and system != self.system:
                 continue
-            if date < systems[system] or (system == 'DDC' and date > 2019):
+            if date < systems[system] or (system == "DDC" and date > 2019):
                 continue
 
-            suffix = f'{date}.json' if system == 'HC1' else f'{date}_json.zip'
+            suffix = f"{date}.json" if system == "HC1" else f"{date}_json.zip"
             yield self.pattern.format(f"{system}/{system}_datos_{suffix}")

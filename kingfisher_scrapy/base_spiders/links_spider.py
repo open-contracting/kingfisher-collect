@@ -42,7 +42,7 @@ class LinksSpider(SimpleSpider):
 
     """
 
-    next_pointer = '/links/next'
+    next_pointer = "/links/next"
 
     @handle_http_error
     def parse(self, response):
@@ -56,13 +56,13 @@ class LinksSpider(SimpleSpider):
         if self.sample and self.sample == 1:
             return None
 
-        depth = response.meta['depth']
+        depth = response.meta["depth"]
 
         try:
             data = response.json()
         except json.JSONDecodeError as e:
             raise MissingNextLinkError(
-                f'Invalid JSON on page {depth}, ending crawl prematurely: {response.url}'
+                f"Invalid JSON on page {depth}, ending crawl prematurely: {response.url}"
             ) from e
 
         url = resolve_pointer(data, self.next_pointer, None)
@@ -74,6 +74,6 @@ class LinksSpider(SimpleSpider):
                 return None
 
         if depth == 0:
-            raise MissingNextLinkError(f'Missing link on first page, ending crawl prematurely: {response.url}')
+            raise MissingNextLinkError(f"Missing link on first page, ending crawl prematurely: {response.url}")
 
         return None

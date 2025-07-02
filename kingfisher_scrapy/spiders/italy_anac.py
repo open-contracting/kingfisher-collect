@@ -16,25 +16,25 @@ class ItalyANAC(BigFileSpider):
       https://dati.anticorruzione.it/opendata/organization/anticorruzione
     """
 
-    name = 'italy_anac'
+    name = "italy_anac"
     download_timeout = MAX_DOWNLOAD_TIMEOUT * 2  # 1h
     user_agent = BROWSER_USER_AGENT  # Otherwise, API returns "Request Rejected" HTML
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def start_requests(self):
-        url = 'https://dati.anticorruzione.it/opendata/api/3/action/package_search?q=ocds'
-        yield scrapy.Request(url, meta={'file_name': 'package_search.json'}, callback=self.parse_list)
+        url = "https://dati.anticorruzione.it/opendata/api/3/action/package_search?q=ocds"
+        yield scrapy.Request(url, meta={"file_name": "package_search.json"}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
-        for result in response.json()['result']['results']:
-            for resource in result['resources']:
-                if resource['format'].upper() == 'JSON':
-                    yield self.build_request(resource['url'], formatter=components(-2))
+        for result in response.json()["result"]["results"]:
+            for resource in result["resources"]:
+                if resource["format"].upper() == "JSON":
+                    yield self.build_request(resource["url"], formatter=components(-2))
 
     # ResizePackageMiddleware
     def ocid_fallback(self, release):
         # Extract the ocid from the release id as a fallback, like ocds-hu01ve-7608611 from ocds-hu01ve-7608611-01.
-        return '-'.join(release['id'].split('-')[:3])
+        return "-".join(release["id"].split("-")[:3])

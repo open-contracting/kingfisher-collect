@@ -47,13 +47,13 @@ class DatabaseStore:
 
     @classmethod
     def from_crawler(cls, crawler):
-        database_url = crawler.settings['DATABASE_URL']
-        directory = crawler.settings['FILES_STORE']
+        database_url = crawler.settings["DATABASE_URL"]
+        directory = crawler.settings["FILES_STORE"]
 
         if not database_url:
-            raise NotConfigured('DATABASE_URL is not set.')
+            raise NotConfigured("DATABASE_URL is not set.")
         if not directory:
-            raise NotConfigured('FILES_STORE is not set.')
+            raise NotConfigured("FILES_STORE is not set.")
 
         extension = cls(database_url, directory)
         crawler.signals.connect(extension.spider_opened, signal=signals.spider_opened)
@@ -70,19 +70,19 @@ class DatabaseStore:
 
             # If there is not a from_date from the command line or the from_date is equal to the default_from_date,
             # get the most recent date in the spider's data table.
-            if getattr(spider, 'default_from_date', None):
+            if getattr(spider, "default_from_date", None):
                 default_from_date = spider.parse_date_argument(spider.default_from_date)
             else:
                 default_from_date = None
 
             if spider.from_date and spider.from_date != default_from_date:
-                spider.logger.info('Starting crawl from %s', datetime.strftime(spider.from_date, spider.date_format))
+                spider.logger.info("Starting crawl from %s", datetime.strftime(spider.from_date, spider.date_format))
             else:
-                spider.logger.info('Getting the date from which to resume the crawl from the %s table', table_name)
+                spider.logger.info("Getting the date from which to resume the crawl from the %s table", table_name)
                 self.execute("SELECT max(data ->> 'date')::timestamptz FROM {table}", table=table_name)
                 from_date = self.cursor.fetchone()[0]
                 if from_date:
-                    spider.logger.info('Resuming crawl from %s', datetime.strftime(from_date, spider.date_format))
+                    spider.logger.info("Resuming crawl from %s", datetime.strftime(from_date, spider.date_format))
                     spider.from_date = from_date
 
             self.connection.commit()
@@ -91,23 +91,23 @@ class DatabaseStore:
             self.connection.close()
 
     def spider_closed(self, spider, reason):
-        if reason not in {'finished', 'sample'}:
+        if reason not in {"finished", "sample"}:
             return
 
         if spider.database_store_compile_releases:
-            prefix = '' if 'release' in spider.data_type else 'records.item.releases.item'
-        elif 'release' in spider.data_type:
-            prefix = 'releases.item'
+            prefix = "" if "release" in spider.data_type else "records.item.releases.item"
+        elif "release" in spider.data_type:
+            prefix = "releases.item"
         else:
-            prefix = 'records.item.compiledRelease'
+            prefix = "records.item.compiledRelease"
 
         crawl_directory = os.path.join(self.files_store_directory, FilesStore.relative_crawl_directory(spider))
-        spider.logger.info('Reading the %s crawl directory with the %s prefix', crawl_directory, prefix or 'empty')
+        spider.logger.info("Reading the %s crawl directory with the %s prefix", crawl_directory, prefix or "empty")
         table_name = self.get_table_name(spider)
 
         data = self.yield_items_from_directory(crawl_directory, prefix)
         if spider.database_store_compile_releases:
-            spider.logger.info('Creating generator of compiled releases')
+            spider.logger.info("Creating generator of compiled releases")
             # Security: Potential SSRF via extension URLs (within OCDS publication).
             data = merge(
                 data,
@@ -116,15 +116,15 @@ class DatabaseStore:
                 convert_exceptions_to_warnings=True,
             )
 
-        filename = os.path.join(crawl_directory, 'data.jsonl')
-        spider.logger.info('Writing the JSON data to the %s JSONL file', filename)
+        filename = os.path.join(crawl_directory, "data.jsonl")
+        spider.logger.info("Writing the JSON data to the %s JSONL file", filename)
         count = 0
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             with warnings.catch_warnings(record=True) as wlist:
-                warnings.simplefilter('always', category=MergeErrorWarning)
+                warnings.simplefilter("always", category=MergeErrorWarning)
 
                 for item in data:
-                    f.write(util.json_dumps(item, ensure_ascii=False).replace(r'\u0000', '') + '\n')
+                    f.write(util.json_dumps(item, ensure_ascii=False).replace(r"\u0000", "") + "\n")
                     count += 1
 
             errors = []
@@ -137,17 +137,17 @@ class DatabaseStore:
             if errors:
                 spider.logger.error("%d OCIDs can't be merged due to structural errors", len(errors))
 
-        spider.logger.info('Replacing the JSON data in the %s table (%s rows)', table_name, count)
+        spider.logger.info("Replacing the JSON data in the %s table (%s rows)", table_name, count)
         self.connection = psycopg2.connect(self.database_url)
         self.cursor = self.connection.cursor()
         try:
-            self.execute('DROP TABLE {table}', table=table_name)
+            self.execute("DROP TABLE {table}", table=table_name)
             self.create_table(table_name)
             with open(filename) as f:
                 sql = "COPY {table} (data) FROM stdin CSV QUOTE e'\x01' DELIMITER e'\x02'"
                 self.cursor.copy_expert(self.format(sql, table=table_name), f)
             sql = "CREATE INDEX {index} ON {table} ((data ->> 'date'))"
-            self.execute(sql, table=table_name, index=f'idx_{table_name}')
+            self.execute(sql, table=table_name, index=f"idx_{table_name}")
             self.connection.commit()
         finally:
             self.cursor.close()
@@ -155,13 +155,13 @@ class DatabaseStore:
             os.remove(filename)
 
     def create_table(self, table):
-        self.execute('CREATE TABLE IF NOT EXISTS {table} (data jsonb)', table=table)
+        self.execute("CREATE TABLE IF NOT EXISTS {table} (data jsonb)", table=table)
 
-    def yield_items_from_directory(self, crawl_directory, prefix=''):
+    def yield_items_from_directory(self, crawl_directory, prefix=""):
         for root, _, files in os.walk(crawl_directory):
             for name in files:
-                if name.endswith('.json'):
-                    with open(os.path.join(root, name), 'rb') as f:
+                if name.endswith(".json"):
+                    with open(os.path.join(root, name), "rb") as f:
                         yield from ijson.items(f, prefix)
 
     # Copied from kingfisher-summarize
@@ -177,7 +177,7 @@ class DatabaseStore:
             if isinstance(value, psycopg2.sql.Composable):
                 objects[key] = value
             elif isinstance(value, list):
-                objects[key] = psycopg2.sql.SQL(', ').join(psycopg2.sql.Identifier(entry) for entry in value)
+                objects[key] = psycopg2.sql.SQL(", ").join(psycopg2.sql.Identifier(entry) for entry in value)
             else:
                 objects[key] = psycopg2.sql.Identifier(value)
         return psycopg2.sql.SQL(statement).format(**objects)

@@ -6,6 +6,6 @@ from scrapy.cmdline import execute
 @pytest.mark.order(-1)
 def test_command(caplog):
     with pytest.raises(SystemExit):
-        execute(['scrapy', 'checkall'])
+        execute(["scrapy", "checkall"])
 
     assert len(caplog.records) > 0

@@ -18,14 +18,14 @@ class GeorgiaReleases(LinksSpider):
       https://odapi.spa.ge/api/swagger.ui
     """
 
-    name = 'georgia_releases'
+    name = "georgia_releases"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # LinksSpider
-    formatter = staticmethod(parameters('page'))
+    formatter = staticmethod(parameters("page"))
 
     def start_requests(self):
-        url = 'https://odapi.spa.ge/api/releases.json'
-        yield scrapy.Request(url, meta={'file_name': 'page-1.json'})
+        url = "https://odapi.spa.ge/api/releases.json"
+        yield scrapy.Request(url, meta={"file_name": "page-1.json"})

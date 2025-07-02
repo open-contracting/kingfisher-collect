@@ -18,14 +18,14 @@ class MexicoGuadalajara(PeriodicSpider, MexicoINAIBase):
       https://contratacionesabiertas.guadalajara.gob.mx:4000/contratacionesabiertas/datosabiertos
     """
 
-    name = 'mexico_guadalajara'
+    name = "mexico_guadalajara"
 
     # BaseSpider
-    default_from_date = '2022'
+    default_from_date = "2022"
 
     # MexicoINAIBase
-    base_url = 'https://contratacionesabiertas.guadalajara.gob.mx:3000'
+    base_url = "https://contratacionesabiertas.guadalajara.gob.mx:3000"
 
     # PeriodicSpider
     formatter = staticmethod(components(-1))
-    pattern = 'https://contratacionesabiertas.guadalajara.gob.mx:3000/edca/contractingprocess/{0}'
+    pattern = "https://contratacionesabiertas.guadalajara.gob.mx:3000/edca/contractingprocess/{0}"

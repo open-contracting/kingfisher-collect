@@ -31,16 +31,16 @@ class EuropeanDynamicsBase(CompressedFileSpider):
     """
 
     # SimpleSpider
-    data_type = 'record_package'
-    date_format = 'year-month'
+    data_type = "record_package"
+    date_format = "year-month"
 
     # base_url must be provided by subclasses.
 
     def start_requests(self):
         yield scrapy.Request(
-            f'{self.base_url}/ocds/services/recordpackage/getrecordpackagelist',
-            meta={'file_name': 'list.json'},
-            callback=self.parse_list
+            f"{self.base_url}/ocds/services/recordpackage/getrecordpackagelist",
+            meta={"file_name": "list.json"},
+            callback=self.parse_list,
         )
 
     @handle_http_error
@@ -49,17 +49,17 @@ class EuropeanDynamicsBase(CompressedFileSpider):
             data = response.json()
         # The response can be an HTML document with an error message like "temporary unavailable due to maintenance".
         except JSONDecodeError as e:
-            self.log_error_from_response(response, level='exception', message=e)
+            self.log_error_from_response(response, level="exception", message=e)
             return
 
-        for number, url in enumerate(reversed(data['packagesPerMonth'])):
+        for number, url in enumerate(reversed(data["packagesPerMonth"])):
             path = urlsplit(url).path
             if self.from_date and self.until_date:
                 # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
-                year, month = map(int, url.rsplit('/', 2)[1:])
+                year, month = map(int, url.rsplit("/", 2)[1:])
                 url_date = datetime.datetime(year, month, 1)
                 if not (self.from_date <= url_date <= self.until_date):
                     continue
             yield self.build_request(
-                f'{self.base_url}{path}', formatter=join(components(-2), extension='zip'), priority=number * -1
+                f"{self.base_url}{path}", formatter=join(components(-2), extension="zip"), priority=number * -1
             )

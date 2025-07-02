@@ -29,17 +29,17 @@ class MexicoINAIBase(SimpleSpider):
     """
 
     # BaseSpider
-    root_path = 'arrayReleasePackage.item'
-    date_format = 'year'
+    root_path = "arrayReleasePackage.item"
+    date_format = "year"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # base_url must be provided by subclasses.
 
     def start_requests(self):
         yield scrapy.Request(
-            f'{self.base_url}/edca/fiscalYears', meta={'file_name': 'list.json'}, callback=self.parse_list
+            f"{self.base_url}/edca/fiscalYears", meta={"file_name": "list.json"}, callback=self.parse_list
         )
 
     @handle_http_error
@@ -59,8 +59,8 @@ class MexicoINAIBase(SimpleSpider):
           ]
         }
         """
-        for item in response.json()['fiscalYears']:
-            year = item['year']
+        for item in response.json()["fiscalYears"]:
+            year = item["year"]
             if self.from_date and self.until_date and not (self.from_date.year <= year <= self.until_date.year):
                 continue
-            yield self.build_request(f'{self.base_url}/edca/contractingprocess/{year}', formatter=join(components(-1)))
+            yield self.build_request(f"{self.base_url}/edca/contractingprocess/{year}", formatter=join(components(-1)))

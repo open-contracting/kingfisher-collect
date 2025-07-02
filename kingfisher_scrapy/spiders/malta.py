@@ -16,10 +16,10 @@ class Malta(EuropeanDynamicsBase):
       https://docs.google.com/document/d/1VnCEywKkkQ7BcVbT7HlW2s_N_QI8W0KE/edit
     """
 
-    name = 'malta'
+    name = "malta"
 
     # BaseSpider
-    default_from_date = '2019-10'
+    default_from_date = "2019-10"
 
     # EuropeanDynamicsBase
-    base_url = 'http://demowww.etenders.gov.mt'
+    base_url = "http://demowww.etenders.gov.mt"

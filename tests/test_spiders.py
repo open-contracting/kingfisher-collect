@@ -15,7 +15,7 @@ runner = CrawlerRunner(settings)
 
 
 # See scrapy.commands.list
-@pytest.mark.parametrize('spider_name', runner.spider_loader.list())
+@pytest.mark.parametrize("spider_name", runner.spider_loader.list())
 def test_start_requests_http_error(spider_name, caplog):
     caplog.set_level(logging.ERROR)
 
@@ -24,15 +24,15 @@ def test_start_requests_http_error(spider_name, caplog):
     crawler = Crawler(spidercls, runner.settings)
     crawler._apply_settings()  # noqa: SLF001
     start_time = datetime(2001, 2, 3, 4, 5, 6)
-    crawler.stats.set_value('start_time', start_time)
+    crawler.stats.set_value("start_time", start_time)
 
     try:
         kwargs = {}
         # colombia_bulk errors if until_date is set but system is not 'SECOP1'.
-        if (default_from_date := getattr(spidercls, 'default_from_date', None)) and spider_name != 'colombia_bulk':
+        if (default_from_date := getattr(spidercls, "default_from_date", None)) and spider_name != "colombia_bulk":
             date_format = spidercls.VALID_DATE_FORMATS[spidercls.date_format]
             from_date = datetime.strptime(default_from_date, date_format).replace(tzinfo=timezone.utc)
-            kwargs = {'until_date': from_date + timedelta(days=1)}
+            kwargs = {"until_date": from_date + timedelta(days=1)}
 
         # See scrapy.crawler.Crawler._create_spider
         spider = crawler.spidercls.from_crawler(crawler, **kwargs)
@@ -43,11 +43,11 @@ def test_start_requests_http_error(spider_name, caplog):
             # See scrapy.core.scraper.Scraper.call_spider
             callback = request.callback or spider.parse
 
-            response = Response('http://example.com', status=555, request=request)
+            response = Response("http://example.com", status=555, request=request)
             # If `max_attempts` is set, the spider handles (and retries) error responses.
-            if hasattr(spider, 'max_attempts'):
-                response.request.meta['retries'] = spider.max_attempts
-                response.headers['Retry-After'] = 1
+            if hasattr(spider, "max_attempts"):
+                response.request.meta["retries"] = spider.max_attempts
+                response.headers["Retry-After"] = 1
             items = list(callback(response))
 
             assert len(items) == 0
@@ -57,11 +57,11 @@ def test_start_requests_http_error(spider_name, caplog):
                     record.message,
                 )
     except MissingEnvVarError as e:
-        pytest.skip(f'{spidercls.name}: {e}')
+        pytest.skip(f"{spidercls.name}: {e}")
 
 
-@pytest.mark.parametrize('spider_name', runner.spider_loader.list())
+@pytest.mark.parametrize("spider_name", runner.spider_loader.list())
 def test_start_urls_start_requests(spider_name):
     spidercls = runner.spider_loader.load(spider_name)
 
-    assert 'start_urls' not in spidercls.__dict__ or 'start_requests' not in spidercls.__dict__
+    assert "start_urls" not in spidercls.__dict__ or "start_requests" not in spidercls.__dict__

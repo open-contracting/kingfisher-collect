@@ -14,29 +14,27 @@ class MexicoAdministracionPublicaFederalBulk(CompressedFileSpider):
       https://www.gob.mx/compranet/documentos/estandar-de-datos-para-las-contrataciones-abiertas-edca
     """
 
-    name = 'mexico_administracion_publica_federal_bulk'
+    name = "mexico_administracion_publica_federal_bulk"
     # The ZIP file is more than 2GB.
     download_timeout = MAX_DOWNLOAD_TIMEOUT
-    custom_settings = {
-        'DOWNLOAD_FAIL_ON_DATALOSS': False
-    }
+    custom_settings = {"DOWNLOAD_FAIL_ON_DATALOSS": False}
 
     # BaseSpider
-    root_path = 'item'
+    root_path = "item"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def start_requests(self):
         yield scrapy.Request(
-            'https://www.gob.mx/compranet/documentos/estandar-de-datos-para-las-contrataciones-abiertas-edca',
-            meta={'file_name': 'list.html'},
-            callback=self.parse_list
+            "https://www.gob.mx/compranet/documentos/estandar-de-datos-para-las-contrataciones-abiertas-edca",
+            meta={"file_name": "list.html"},
+            callback=self.parse_list,
         )
 
     @handle_http_error
     def parse_list(self, response):
-        for url in response.xpath('//a/@href').getall():
+        for url in response.xpath("//a/@href").getall():
             # https://compranetinfo.hacienda.gob.mx/dabiertos/contrataciones_arr.json.zip
-            if url.endswith('contrataciones_arr.json.zip'):
+            if url.endswith("contrataciones_arr.json.zip"):
                 yield self.build_request(url, formatter=components(-1))

@@ -3,9 +3,9 @@ import pytest
 
 from kingfisher_scrapy.items import File, FileItem
 
-ITEM = {'file_name': 'test', 'url': 'http://test.com'}
-FILE = {**ITEM | {'data_type': 'release_package', 'data': b'{}'}}
-FILE_ITEM = {**FILE | {'number': 1}}
+ITEM = {"file_name": "test", "url": "http://test.com"}
+FILE = {**ITEM | {"data_type": "release_package", "data": b"{}"}}
+FILE_ITEM = {**FILE | {"number": 1}}
 
 
 def check_required(cls, base, pop):
@@ -16,58 +16,59 @@ def check_required(cls, base, pop):
         cls(**data)
 
 
-@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM)])
+@pytest.mark.parametrize(("cls", "base"), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_valid(cls, base):
     cls(**base)  # no exception raised
 
 
-@pytest.mark.parametrize('pop', ['file_name', 'url', 'data_type'])
+@pytest.mark.parametrize("pop", ["file_name", "url", "data_type"])
 def test_file_required(pop):
     check_required(File, FILE, pop)
 
 
-@pytest.mark.parametrize('pop', ['file_name', 'url', 'data_type', 'number'])
+@pytest.mark.parametrize("pop", ["file_name", "url", "data_type", "number"])
 def test_file_item_required(pop):
     check_required(FileItem, FILE_ITEM, pop)
 
 
-@pytest.mark.parametrize('invalid', ['path/test', 'path\\test'])
-@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM)])
+@pytest.mark.parametrize("invalid", ["path/test", "path\\test"])
+@pytest.mark.parametrize(("cls", "base"), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_file_name(cls, base, invalid):
     with pytest.raises(pydantic.ValidationError):
-        cls(**base | {'file_name': invalid})
+        cls(**base | {"file_name": invalid})
 
 
-@pytest.mark.parametrize('invalid', ['://example.com', 'scheme://example.com', 'http://example'])
-@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM)])
+@pytest.mark.parametrize("invalid", ["://example.com", "scheme://example.com", "http://example"])
+@pytest.mark.parametrize(("cls", "base"), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_url(cls, base, invalid):
     with pytest.raises(pydantic.ValidationError):
-        cls(**base | {'url': invalid})
+        cls(**base | {"url": invalid})
 
 
-@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM)])
+@pytest.mark.parametrize(("cls", "base"), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_data_type(cls, base):
     with pytest.raises(pydantic.ValidationError):
-        cls(**base | {'data_type': 'invalid'})
+        cls(**base | {"data_type": "invalid"})
 
 
-@pytest.mark.parametrize('invalid', [
-    None, True, 1, 1.0, 'data', [{'ocid': 'x'}], ({'ocid': 'x'},), {('ocid', 'x')}, frozenset((('ocid', 'x'),))
-])
-@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM)])
+@pytest.mark.parametrize(
+    "invalid",
+    [None, True, 1, 1.0, "data", [{"ocid": "x"}], ({"ocid": "x"},), {("ocid", "x")}, frozenset((("ocid", "x"),))],
+)
+@pytest.mark.parametrize(("cls", "base"), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_data(cls, base, invalid):
     with pytest.raises(pydantic.ValidationError):
-        cls(**base | {'data': invalid})
+        cls(**base | {"data": invalid})
 
 
-@pytest.mark.parametrize('invalid', [b'', {}])
-@pytest.mark.parametrize(('cls', 'base'), [(File, FILE), (FileItem, FILE_ITEM)])
+@pytest.mark.parametrize("invalid", [b"", {}])
+@pytest.mark.parametrize(("cls", "base"), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_data_length(cls, base, invalid):
     with pytest.raises(pydantic.ValidationError):
-        cls(**base | {'data': invalid})
+        cls(**base | {"data": invalid})
 
 
-@pytest.mark.parametrize('invalid', [-1, 0, '1'])
+@pytest.mark.parametrize("invalid", [-1, 0, "1"])
 def test_number(invalid):
     with pytest.raises(pydantic.ValidationError):
-        FileItem(**FILE_ITEM | {'number': invalid})
+        FileItem(**FILE_ITEM | {"number": invalid})

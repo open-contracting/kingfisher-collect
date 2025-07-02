@@ -9,7 +9,7 @@ class TanzaniaAPIRecords(TanzaniaAPIBase):
       https://data.nest.go.tz/ocds
     """
 
-    name = 'tanzania_api_records'
+    name = "tanzania_api_records"
 
     # SimpleSpider
-    data_type = 'record'
+    data_type = "record"

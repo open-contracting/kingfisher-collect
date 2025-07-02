@@ -15,20 +15,20 @@ class MexicoNuevoLeonInfraAbiertaReleases(MexicoNuevoLeonBase):
       https://smpu.nl.gob.mx/transparencia/acerca-del-proyecto
     """
 
-    name = 'mexico_nuevo_leon_infra_abierta_releases'
+    name = "mexico_nuevo_leon_infra_abierta_releases"
 
     # BaseSpider
-    skip_pluck = 'Already covered (see code for details)'  # mexico_nuevo_leon_records
+    skip_pluck = "Already covered (see code for details)"  # mexico_nuevo_leon_records
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # PeriodicSpider
-    start_requests_callback = 'parse_list'
+    start_requests_callback = "parse_list"
 
     @handle_http_error
     def parse_list(self, response):
         for record_package in response.json():
-            for record in record_package['records']:
-                for release in record['releases']:
-                    yield self.build_request(release['url'], formatter=components(-1))
+            for record in record_package["records"]:
+                for release in record["releases"]:
+                    yield self.build_request(release["url"], formatter=components(-1))

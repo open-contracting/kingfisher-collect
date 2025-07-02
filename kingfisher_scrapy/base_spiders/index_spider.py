@@ -54,47 +54,47 @@ class IndexSpider(SimpleSpider):
 
     use_page = False
     start_page = 1
-    chronological_order = 'desc'
-    parse_list_callback = 'parse'
-    param_page = 'page'
-    param_limit = 'limit'
-    param_offset = 'offset'
-    base_url = ''
+    chronological_order = "desc"
+    parse_list_callback = "parse"
+    param_page = "page"
+    param_limit = "limit"
+    param_offset = "offset"
+    base_url = ""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.parse_list_callback = getattr(self, self.parse_list_callback)
 
-        has_page_count_pointer = hasattr(self, 'page_count_pointer')
-        has_result_count_pointer = hasattr(self, 'result_count_pointer')
-        has_range_generator = hasattr(self, 'range_generator')
+        has_page_count_pointer = hasattr(self, "page_count_pointer")
+        has_result_count_pointer = hasattr(self, "result_count_pointer")
+        has_range_generator = hasattr(self, "range_generator")
 
         if not (has_page_count_pointer ^ has_result_count_pointer ^ has_range_generator):
             raise IncoherentConfigurationError(
-                'Exactly one of page_count_pointer, result_count_pointer or range_generator must be set.')
+                "Exactly one of page_count_pointer, result_count_pointer or range_generator must be set."
+            )
         if self.use_page and not has_result_count_pointer:
-            raise IncoherentConfigurationError(
-                'use_page = True has no effect unless result_count_pointer is set.')
+            raise IncoherentConfigurationError("use_page = True has no effect unless result_count_pointer is set.")
 
         if has_page_count_pointer:
             self.range_generator = self.page_count_range_generator
-            if not hasattr(self, 'url_builder'):
+            if not hasattr(self, "url_builder"):
                 self.url_builder = self.pages_url_builder
-            if not hasattr(self, 'formatter'):
+            if not hasattr(self, "formatter"):
                 self.formatter = parameters(self.param_page)
         elif has_result_count_pointer:
             if self.use_page:
                 self.range_generator = self.result_count_range_generator
-                if not hasattr(self, 'url_builder'):
+                if not hasattr(self, "url_builder"):
                     self.url_builder = self.pages_url_builder
-                if not hasattr(self, 'formatter'):
+                if not hasattr(self, "formatter"):
                     self.formatter = parameters(self.param_page)
             else:
                 self.range_generator = self.limit_offset_range_generator
-                if not hasattr(self, 'url_builder'):
+                if not hasattr(self, "url_builder"):
                     self.url_builder = self.limit_offset_url_builder
-                if not hasattr(self, 'formatter'):
+                if not hasattr(self, "formatter"):
                     self.formatter = parameters(self.param_offset)
 
     @handle_http_error
@@ -109,7 +109,7 @@ class IndexSpider(SimpleSpider):
         for priority, value in enumerate(self.range_generator(data, response)):
             # Requests with a higher priority value will execute earlier and we want the newest pages first.
             # https://doc.scrapy.org/en/latest/topics/request-response.html#scrapy.http.Request
-            if self.chronological_order == 'desc':
+            if self.chronological_order == "desc":
                 priority *= -1
             return_value = self.url_builder(value, data, response)
             if isinstance(return_value, tuple):
@@ -133,9 +133,12 @@ class IndexSpider(SimpleSpider):
         return range(self.start_page + start, self.start_page + pages)
 
     def pages_url_builder(self, value, data, response):
-        return self._build_url(response, {
-            self.param_page: value,
-        })
+        return self._build_url(
+            response,
+            {
+                self.param_page: value,
+            },
+        )
 
     def limit_offset_range_generator(self, data, response):
         limit = self._resolve_limit(data)
@@ -145,10 +148,13 @@ class IndexSpider(SimpleSpider):
 
     def limit_offset_url_builder(self, value, data, response):
         limit = self._resolve_limit(data)
-        return self._build_url(response, {
-            self.param_limit: limit,
-            self.param_offset: value,
-        })
+        return self._build_url(
+            response,
+            {
+                self.param_limit: limit,
+                self.param_offset: value,
+            },
+        )
 
     def result_count_range_generator(self, data, response):
         limit = self._resolve_limit(data)
@@ -157,7 +163,7 @@ class IndexSpider(SimpleSpider):
         return range(self.start_page + start, self.start_page + ceil(count / limit))
 
     def _resolve_limit(self, data):
-        if isinstance(self.limit, str) and self.limit.startswith('/'):
+        if isinstance(self.limit, str) and self.limit.startswith("/"):
             return resolve_pointer(data, self.limit)
         return int(self.limit)
 

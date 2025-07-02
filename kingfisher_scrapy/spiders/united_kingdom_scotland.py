@@ -16,16 +16,16 @@ class UnitedKingdomScotland(ProactisBase):
       https://www.publiccontractsscotland.gov.uk/NoticeDownload/Download.aspx
     """
 
-    name = 'united_kingdom_scotland'
+    name = "united_kingdom_scotland"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # PeriodicSpider
-    default_from_date = '2019-01'
+    default_from_date = "2019-01"
 
     # ProactisBase
-    base_url = 'https://api.publiccontractsscotland.gov.uk'
+    base_url = "https://api.publiccontractsscotland.gov.uk"
     notice_types = [
         101,  # Site Notice - Website Contract Notice
         102,  # Site Notice - Website Prior Information Notice

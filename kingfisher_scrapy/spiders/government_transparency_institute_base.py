@@ -16,11 +16,11 @@ class GovernmentTransparencyInstituteBase(CompressedFileSpider):
     line_delimited = True
 
     # CompressedFileSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # Local
-    base_url = 'https://opentender.eu/data/downloads/data-{}-{}-json.zip'
-    infix = 'ocds'
+    base_url = "https://opentender.eu/data/downloads/data-{}-{}-json.zip"
+    infix = "ocds"
 
     # country_code must be provided by subclasses.
 

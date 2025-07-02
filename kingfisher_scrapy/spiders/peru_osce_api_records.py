@@ -9,10 +9,10 @@ class PeruOSCEAPIRecords(PeruOSCEAPIBase):
       https://contratacionesabiertas.osce.gob.pe/api
     """
 
-    name = 'peru_osce_api_records'
+    name = "peru_osce_api_records"
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = "record_package"
 
     # PeruOSCEBase
-    endpoint = 'recordsAfter'
+    endpoint = "recordsAfter"

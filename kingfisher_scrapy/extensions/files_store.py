@@ -20,16 +20,16 @@ class FilesStore:
         """Return the crawl's relative directory, in the format `<spider_name>[_sample]/<YYMMDD_HHMMSS>`."""
         spider_directory = spider.name
         if spider.sample:
-            spider_directory += '_sample'
+            spider_directory += "_sample"
 
-        return os.path.join(spider_directory, spider.get_start_time('%Y%m%d_%H%M%S'))
+        return os.path.join(spider_directory, spider.get_start_time("%Y%m%d_%H%M%S"))
 
     @classmethod
     def from_crawler(cls, crawler):
-        directory = crawler.settings['FILES_STORE']
+        directory = crawler.settings["FILES_STORE"]
 
         if not directory:
-            raise NotConfigured('FILES_STORE is not set.')
+            raise NotConfigured("FILES_STORE is not set.")
 
         extension = cls(directory)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
@@ -38,20 +38,20 @@ class FilesStore:
         return extension
 
     def spider_opened(self, spider):
-        if hasattr(spider, '_job'):
-            path = os.path.join(self.relative_crawl_directory(spider), 'scrapyd-job.txt')
+        if hasattr(spider, "_job"):
+            path = os.path.join(self.relative_crawl_directory(spider), "scrapyd-job.txt")
             self._write_file(path, spider._job)
 
     def spider_closed(self, spider, reason):
-        if reason not in {'finished', 'sample'} or spider.pluck:
+        if reason not in {"finished", "sample"} or spider.pluck:
             return
 
         path = os.path.join(self.directory, self.relative_crawl_directory(spider))
 
         if os.path.exists(path):
-            message = f'The data is available at: {path}'
+            message = f"The data is available at: {path}"
         else:
-            message = 'Something went wrong. No data was downloaded.'
+            message = "Something went wrong. No data was downloaded."
         message_length = math.ceil(len(message) / 2) * 2
         title_length = message_length // 2 - 8
 
@@ -92,7 +92,7 @@ class FilesStore:
         path = os.path.join(self.directory, path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
-        mode = 'wb' if isinstance(data, bytes) else 'w'
+        mode = "wb" if isinstance(data, bytes) else "w"
 
         with open(path, mode) as f:
             if isinstance(data, bytes | str):

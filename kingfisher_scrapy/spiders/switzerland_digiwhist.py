@@ -2,5 +2,5 @@ from kingfisher_scrapy.spiders.government_transparency_institute_base import Gov
 
 
 class SwitzerlandDigiwhist(GovernmentTransparencyInstituteBase):
-    name = 'switzerland_digiwhist'
-    country_code = 'ch'
+    name = "switzerland_digiwhist"
+    country_code = "ch"

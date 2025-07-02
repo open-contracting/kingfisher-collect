@@ -16,7 +16,7 @@ class TanzaniaBulkReleases(TanzaniaBulkBase):
       https://data.nest.go.tz/ocds
     """
 
-    name = 'tanzania_bulk_releases'
+    name = "tanzania_bulk_releases"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"

@@ -20,10 +20,10 @@ class NigeriaCrossRiverStateRecords(NigeriaCrossRiverStateBase):
       http://ocdsapi.dppib-crsgov.org/Help
     """
 
-    name = 'nigeria_cross_river_state_records'
+    name = "nigeria_cross_river_state_records"
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = "record_package"
 
     def build_url(self, date):
-        return f'{self.url_prefix}getRecordPackage?year={date:%Y}&month={date:%m}'
+        return f"{self.url_prefix}getRecordPackage?year={date:%Y}&month={date:%m}"

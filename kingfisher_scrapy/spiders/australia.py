@@ -19,22 +19,22 @@ class Australia(LinksSpider):
       https://app.swaggerhub.com/apis/austender/ocds-api/1.1
     """
 
-    name = 'australia'
+    name = "australia"
 
     # BaseSpider
-    date_format = 'datetime'
-    default_from_date = '2004-01-01T00:00:00'
+    date_format = "datetime"
+    default_from_date = "2004-01-01T00:00:00"
     date_required = True
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # LinksSpider
-    formatter = staticmethod(parameters('cursor'))
+    formatter = staticmethod(parameters("cursor"))
 
     def start_requests(self):
         from_date = self.from_date.strftime(self.date_format)
         until_date = self.until_date.strftime(self.date_format)
-        url = f'https://api.tenders.gov.au/ocds/findByDates/contractPublished/{from_date}Z/{until_date}Z'
+        url = f"https://api.tenders.gov.au/ocds/findByDates/contractPublished/{from_date}Z/{until_date}Z"
 
-        yield scrapy.Request(url, meta={'file_name': f'{until_date}.json'})  # reverse chronological order
+        yield scrapy.Request(url, meta={"file_name": f"{until_date}.json"})  # reverse chronological order

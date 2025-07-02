@@ -25,12 +25,12 @@ class ChileCompraAPIReleases(ChileCompraAPIBase):
       https://datos-abiertos.chilecompra.cl/descargas/procesos-ocds
     """
 
-    name = 'chile_compra_api_releases'
+    name = "chile_compra_api_releases"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def handle_item(self, item):
         for key in item:
-            if key.startswith('url'):
+            if key.startswith("url"):
                 yield self.build_request(item[key], formatter=components(-2))

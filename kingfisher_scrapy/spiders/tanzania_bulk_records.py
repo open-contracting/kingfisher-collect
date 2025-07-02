@@ -16,7 +16,7 @@ class TanzaniaBulkRecords(TanzaniaBulkBase):
       https://data.nest.go.tz/ocds
     """
 
-    name = 'tanzania_bulk_records'
+    name = "tanzania_bulk_records"
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = "record_package"

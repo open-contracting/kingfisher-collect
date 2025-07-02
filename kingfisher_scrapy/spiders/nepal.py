@@ -19,17 +19,17 @@ class Nepal(PeriodicSpider):
       http://ppip.gov.np/downloads
     """
 
-    name = 'nepal'
+    name = "nepal"
 
     # BaseSpider
-    ocds_version = '1.0'
-    date_format = 'year'
-    default_from_date = '2012'
-    default_until_date = '2018'  # HTTP 500 after 2018
+    ocds_version = "1.0"
+    date_format = "year"
+    default_from_date = "2012"
+    default_until_date = "2018"  # HTTP 500 after 2018
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # PeriodicSpider
-    pattern = 'https://ppip.gov.np/bulk-download/{}'
+    pattern = "https://ppip.gov.np/bulk-download/{}"
     formatter = staticmethod(components(-1))  # year

@@ -37,17 +37,18 @@ class BigFileSpider(SimpleSpider):
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super().from_crawler(crawler, *args, **kwargs)
 
-        if spider.data_type not in {'release_package', 'record_package'}:
+        if spider.data_type not in {"release_package", "record_package"}:
             raise IncoherentConfigurationError(
-                f"data_type must be 'release_package' or 'record_package', not {spider.data_type!r}.")
+                f"data_type must be 'release_package' or 'record_package', not {spider.data_type!r}."
+            )
 
         return spider
 
     @handle_http_error
     def parse(self, response):
         yield File(
-            file_name=response.request.meta['file_name'],
+            file_name=response.request.meta["file_name"],
             url=response.request.url,
             data_type=self.data_type,
-            data={'data': response.body, 'package': response.body},
+            data={"data": response.body, "package": response.body},
         )

@@ -8,21 +8,23 @@ from urllib.parse import parse_qs, quote, urlencode, urljoin, urlsplit
 
 from ijson import ObjectBuilder, utils
 
-BROWSER_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'  # noqa: E501
-MAX_DOWNLOAD_TIMEOUT = 1800 # 30min
+BROWSER_USER_AGENT = (
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"
+)
+MAX_DOWNLOAD_TIMEOUT = 1800  # 30min
 
 
 def pluck_filename(opts):
     if opts.pluck_package_pointer:
-        parts = ['pluck', 'package', opts.pluck_package_pointer[1:].replace('/', '-')]
+        parts = ["pluck", "package", opts.pluck_package_pointer[1:].replace("/", "-")]
     else:  # opts.pluck_release_pointer
-        parts = ['pluck', 'release', opts.pluck_release_pointer[1:].replace('/', '-')]
+        parts = ["pluck", "release", opts.pluck_release_pointer[1:].replace("/", "-")]
 
     return f"{'-'.join(parts)}.csv"
 
 
 def replace_path_separator(string):
-    return string.replace('/', '_')
+    return string.replace("/", "_")
 
 
 def components(start, stop=None):
@@ -35,11 +37,13 @@ def components(start, stop=None):
     >>> components(-2, -1)('http://example.com/api/planning/package.json')
     'planning'
     """
+
     def wrapper(url):
-        value = '-'.join(list(filter(None, urlsplit(url).path.split('/')))[start:stop])
-        if value.endswith('.json'):
+        value = "-".join(list(filter(None, urlsplit(url).path.split("/")))[start:stop])
+        if value.endswith(".json"):
             return value[:-5]
         return value
+
     return wrapper
 
 
@@ -53,9 +57,11 @@ def parameters(*keys, parser=None):
     >>> parameters('year', 'page')('http://example.com/api/packages.json?year=2000&page=1')
     'year-2000-page-1'
     """
+
     def wrapper(url):
         query = parse_qs(urlsplit(url).query)
-        return '-'.join(s for key in keys for value in query[key] for s in [key, parser(value) if parser else value])
+        return "-".join(s for key in keys for value in query[key] for s in [key, parser(value) if parser else value])
+
     return wrapper
 
 
@@ -66,11 +72,13 @@ def join(*functions, extension=None):
     >>> join(components(-1), parameters('page'))('http://example.com/api/planning.json?page=1')
     'planning-page-1'
     """
+
     def wrapper(url):
-        value = '-'.join(function(url) for function in functions)
+        value = "-".join(function(url) for function in functions)
         if extension:
-            return f'{value}.{extension}'
+            return f"{value}.{extension}"
         return value
+
     return wrapper
 
 
@@ -100,28 +108,30 @@ def handle_http_error(decorated):
 
     Otherwise, logs an error message.
     """
+
     @wraps(decorated)
     def wrapper(self, response, **kwargs):
-        attempts = response.request.meta.get('retries', 0) + 1
+        attempts = response.request.meta.get("retries", 0) + 1
 
         if self.is_http_success(response):
             yield from decorated(self, response, **kwargs)
         elif self.is_http_retryable(response) and attempts < self.max_attempts:
             wait_time = self.get_retry_wait_time(response)
             request = response.request.copy()
-            request.meta['retries'] = attempts
-            request.meta['wait_time'] = wait_time
+            request.meta["retries"] = attempts
+            request.meta["wait_time"] = wait_time
             request.dont_filter = True
             self.logger.debug(
-                'Retrying %(request)s in %(wait_time)ds (failed %(failures)d times): HTTP %(status)d',
-                {'request': response.request, 'failures': attempts, 'status': response.status, 'wait_time': wait_time},
-                extra={'spider': self}
+                "Retrying %(request)s in %(wait_time)ds (failed %(failures)d times): HTTP %(status)d",
+                {"request": response.request, "failures": attempts, "status": response.status, "wait_time": wait_time},
+                extra={"spider": self},
             )
             yield request
         elif self.is_http_retryable(response):
-            self.log_error_from_response(response, message=f'Gave up retrying (failed {attempts} times)')
+            self.log_error_from_response(response, message=f"Gave up retrying (failed {attempts} times)")
         else:
             self.log_error_from_response(response)
+
     return wrapper
 
 
@@ -144,6 +154,7 @@ def date_range_by_month(start, stop):
     Yield the first day of the month as a ``date`` from the ``start`` to the ``stop`` dates, in reverse chronological
     order.
     """
+
     def number_of_months(d):
         return 12 * d.year + d.month
 
@@ -180,7 +191,7 @@ def replace_parameters(url, **kwargs):
 def append_path_components(url, path):
     """Return a URL after appending path components to its path."""
     parsed = urlsplit(url)
-    return urljoin(parsed._replace(path=f'{parsed.path}/').geturl(), quote(path.lstrip('/')))
+    return urljoin(parsed._replace(path=f"{parsed.path}/").geturl(), quote(path.lstrip("/")))
 
 
 def add_query_string(method, params):
@@ -188,10 +199,12 @@ def add_query_string(method, params):
     Return a function that yields the requests yielded by the wrapped method, after updating the query string
     parameter values in each request's URL.
     """
+
     def wrapper(*args, **kwargs):
         for request in method(*args, **kwargs):
             url = replace_parameters(request.url, **params)
             yield request.replace(url=url)
+
     return wrapper
 
 
@@ -200,10 +213,12 @@ def add_path_components(method, path):
     Return a function that yields the requests yielded by the wrapped method, after appending path components
     to each request's URL.
     """
+
     def wrapper(*args, **kwargs):
         for request in method(*args, **kwargs):
             url = append_path_components(request.url, path)
             yield request.replace(url=url)
+
     return wrapper
 
 
@@ -220,9 +235,9 @@ def items_basecoro(target, prefix, map_type=None, skip_key=None):
         if skip_key and skip_key in current:
             continue
         if current == prefix:
-            if event in {'start_map', 'start_array'}:
+            if event in {"start_map", "start_array"}:
                 builder = ObjectBuilder(map_type=map_type)
-                end_event = event.replace('start', 'end')
+                end_event = event.replace("start", "end")
                 while (current, event) != (prefix, end_event):
                     builder.event(event, value)
                     current, event, value = yield
@@ -239,7 +254,7 @@ def items(events, prefix, map_type=None, skip_key=None):
     A ``skip_key`` argument is added, which is passed as a keyword argument to
     :meth:`~kingfisher_scrapy.util.items_basecoro`. Otherwise, the method is identical.
     """
-    return utils.coros2gen(events, (items_basecoro, (prefix,), {'map_type': map_type, 'skip_key': skip_key}))
+    return utils.coros2gen(events, (items_basecoro, (prefix,), {"map_type": map_type, "skip_key": skip_key}))
 
 
 def default(obj):
@@ -290,8 +305,8 @@ def transcode_bytes(data, encoding):
 
 
 def transcode(spider, function, data, *args, **kwargs):
-    if spider.encoding != 'utf-8':
-        if hasattr(data, 'read'):
+    if spider.encoding != "utf-8":
+        if hasattr(data, "read"):
             data = TranscodeFile(data, spider.encoding)
         else:
             data = transcode_bytes(data, spider.encoding)

@@ -13,9 +13,9 @@ class MexicoNuevoLeonBase(PeriodicSpider):
     user_agent = BROWSER_USER_AGENT  # to avoid HTTP 403
 
     # BaseSpider
-    date_format = 'year'
-    default_from_date = '2013'
+    date_format = "year"
+    default_from_date = "2013"
 
     # PeriodicSpider
     pattern = 'https://smpu.nl.gob.mx/siasi_ws/api/ocds/ListarProduccionXAnio?anio=%5B%7B"value":"{0}"%7D%5D'
-    formatter = staticmethod(parameters('anio', parser=parser))
+    formatter = staticmethod(parameters("anio", parser=parser))

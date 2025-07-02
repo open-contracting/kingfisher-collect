@@ -9,7 +9,7 @@ class TanzaniaAPIReleases(TanzaniaAPIBase):
       https://data.nest.go.tz/ocds
     """
 
-    name = 'tanzania_api_releases'
+    name = "tanzania_api_releases"
 
     # SimpleSpider
-    data_type = 'release'
+    data_type = "release"

@@ -24,8 +24,8 @@ class Pluck:
 
     @classmethod
     def from_crawler(cls, crawler):
-        directory = crawler.settings['KINGFISHER_PLUCK_PATH']
-        max_bytes = crawler.settings['KINGFISHER_PLUCK_MAX_BYTES']
+        directory = crawler.settings["KINGFISHER_PLUCK_PATH"]
+        max_bytes = crawler.settings["KINGFISHER_PLUCK_MAX_BYTES"]
 
         extension = cls(directory=directory, max_bytes=max_bytes)
         crawler.signals.connect(extension.item_scraped, signal=signals.item_scraped)
@@ -65,10 +65,10 @@ class Pluck:
         if not spider.pluck or self.item_scraped_called:
             return
 
-        self._write(spider, f'closed: {reason}')
+        self._write(spider, f"closed: {reason}")
 
     def _write(self, spider, value):
-        with open(os.path.join(self.directory, util.pluck_filename(spider)), 'a+') as f:
+        with open(os.path.join(self.directory, util.pluck_filename(spider)), "a+") as f:
             if not isinstance(value, str):
                 value = json.dumps(value)
             writer = csv.writer(f, lineterminator="\n")

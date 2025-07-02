@@ -21,20 +21,20 @@ class UgandaReleases(PeriodicSpider):
         https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets
     """
 
-    name = 'uganda_releases'
+    name = "uganda_releases"
     # Returns HTTP 403 if too many requests. (1 is too short.)
     download_delay = 2
 
     # BaseSpider
-    date_format = 'year'
-    default_from_date = '2019'
+    date_format = "year"
+    default_from_date = "2019"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # PeriodicSpider
-    formatter = staticmethod(parameters('fy', 'code'))
-    pattern = 'https://gpp.ppda.go.ug/adminapi/public/api/open-data/v2/ocds/download?fy={0}-{1}&format=json&code=1'
+    formatter = staticmethod(parameters("fy", "code"))
+    pattern = "https://gpp.ppda.go.ug/adminapi/public/api/open-data/v2/ocds/download?fy={0}-{1}&format=json&code=1"
 
     def parse(self, response):
         if not self.is_http_success(response):
@@ -47,7 +47,7 @@ class UgandaReleases(PeriodicSpider):
         yield from super().parse(response)
 
         yield self.build_request(
-            replace_parameters(response.request.url, code=int(get_parameter_value(response.request.url, 'code')) + 1),
+            replace_parameters(response.request.url, code=int(get_parameter_value(response.request.url, "code")) + 1),
             formatter=self.formatter,
         )
 

@@ -14,10 +14,10 @@ class Ghana(EuropeanDynamicsBase):
          If ``from_date`` is provided, defaults to the current month.
     """
 
-    name = 'ghana'
+    name = "ghana"
 
     # BaseSpider
-    default_from_date = '2019-07'
+    default_from_date = "2019-07"
 
     # EuropeanDynamicsBase
-    base_url = 'https://www.ghaneps.gov.gh'
+    base_url = "https://www.ghaneps.gov.gh"

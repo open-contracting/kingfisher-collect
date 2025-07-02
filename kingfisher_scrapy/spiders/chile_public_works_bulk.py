@@ -10,10 +10,10 @@ class ChilePublicWorksBulk(CompressedFileSpider):
       https://obrapublica.cl/Data/
     """
 
-    name = 'chile_public_works_bulk'
+    name = "chile_public_works_bulk"
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = "record_package"
 
     def start_requests(self):
-        yield self.build_request('https://obrapublica.cl/download/ocds_descargamasiva.zip', formatter=components(-1))
+        yield self.build_request("https://obrapublica.cl/download/ocds_descargamasiva.zip", formatter=components(-1))

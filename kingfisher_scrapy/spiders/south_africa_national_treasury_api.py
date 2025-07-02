@@ -15,22 +15,22 @@ class SouthAfricaNationalTreasuryAPI(LinksSpider, PeriodicSpider):
       https://ocds-api.etenders.gov.za/swagger/index.html
     """
 
-    name = 'south_africa_national_treasury_api'
+    name = "south_africa_national_treasury_api"
     custom_settings = {
         # Reduce the number of concurrent requests to avoid multiple failures.
-        'CONCURRENT_REQUESTS': 1,
+        "CONCURRENT_REQUESTS": 1,
     }
 
     # BaseSpider
-    date_format = 'date'
-    default_from_date = '2017-01-01'
+    date_format = "date"
+    default_from_date = "2017-01-01"
     date_required = True
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # LinksSpider
-    formatter = staticmethod(parameters('PageNumber', 'dateFrom'))
+    formatter = staticmethod(parameters("PageNumber", "dateFrom"))
 
     # PeriodicSpider
     pattern = (

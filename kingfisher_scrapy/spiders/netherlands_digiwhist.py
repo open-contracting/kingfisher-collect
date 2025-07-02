@@ -2,5 +2,5 @@ from kingfisher_scrapy.spiders.government_transparency_institute_base import Gov
 
 
 class NetherlandsDigiwhist(GovernmentTransparencyInstituteBase):
-    name = 'netherlands_digiwhist'
-    country_code = 'nl'
+    name = "netherlands_digiwhist"
+    country_code = "nl"

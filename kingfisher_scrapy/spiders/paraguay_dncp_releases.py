@@ -17,12 +17,12 @@ class ParaguayDNCPReleases(ParaguayDNCPBase):
       https://contrataciones.gov.py/datos/api/v3/doc
     """
 
-    name = 'paraguay_dncp_releases'
+    name = "paraguay_dncp_releases"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def get_files_to_download(self, data):
-        for record in data['records']:
-            for release in record['releases']:
-                yield release['url']
+        for record in data["records"]:
+            for release in record["releases"]:
+                yield release["url"]

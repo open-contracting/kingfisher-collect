@@ -15,13 +15,13 @@ class Germany(CompressedFileSpider, PeriodicSpider):
       https://www.oeffentlichevergabe.de/documentation/swagger-ui/opendata/index.html
     """
 
-    name = 'germany'
+    name = "germany"
 
     # CompressedFileSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # PeriodicSpider
-    date_format = 'year-month'
-    default_from_date = '2022-12'
-    formatter = staticmethod(parameters('pubMonth', 'format'))
-    pattern = 'https://www.oeffentlichevergabe.de/api/notice-exports?pubMonth={0:%Y}-{0:%m}&format=ocds.zip'
+    date_format = "year-month"
+    default_from_date = "2022-12"
+    formatter = staticmethod(parameters("pubMonth", "format"))
+    pattern = "https://www.oeffentlichevergabe.de/api/notice-exports?pubMonth={0:%Y}-{0:%m}&format=ocds.zip"

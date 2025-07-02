@@ -7,7 +7,7 @@ class NigeriaEkitiState(EuropeanDynamicsSaasBase):
       Ekiti State Open Contracting Portal
     """
 
-    name = 'nigeria_ekiti_state'
+    name = "nigeria_ekiti_state"
 
     # EuropeanDynamicsSassBase
-    base_url = 'https://ocds.bpp.ekitistate.gov.ng/'
+    base_url = "https://ocds.bpp.ekitistate.gov.ng/"

@@ -14,10 +14,10 @@ class MexicoNuevoLeonInfraAbiertaRecords(MexicoNuevoLeonBase):
       https://smpu.nl.gob.mx/transparencia/publicaciones
     """
 
-    name = 'mexico_nuevo_leon_infra_abierta_records'
+    name = "mexico_nuevo_leon_infra_abierta_records"
 
     # BaseSpider
-    root_path = 'item'
+    root_path = "item"
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = "record_package"

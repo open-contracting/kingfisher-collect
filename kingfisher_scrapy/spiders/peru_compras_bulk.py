@@ -18,15 +18,15 @@ class PeruComprasBulk(PeruComprasBase):
         Download only data until this month (YYYY-MM format). Defaults to the current month.
     """
 
-    name = 'peru_compras_bulk'
+    name = "peru_compras_bulk"
 
     # BaseSpider
-    date_format = 'year-month'
-    default_from_date = '2021-08'
+    date_format = "year-month"
+    default_from_date = "2021-08"
 
     def start_requests(self):
-        url = f'{self.url_prefix}getListaDescargaMasiva?Anio=&Mes='
-        yield scrapy.Request(url, method='POST', meta={'file_name': 'list.json'}, callback=self.parse_list)
+        url = f"{self.url_prefix}getListaDescargaMasiva?Anio=&Mes="
+        yield scrapy.Request(url, method="POST", meta={"file_name": "list.json"}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
@@ -36,5 +36,5 @@ class PeruComprasBulk(PeruComprasBase):
             if from_date <= f"{item['C_Anio']}-{item['CodMes']}" <= until_date:
                 yield self.build_request(
                     f"https://saeusceprod01.blob.core.windows.net/contproveedor/DescargaMasiva/{item['C_FileJson']}",
-                    formatter=components(-1)
+                    formatter=components(-1),
                 )

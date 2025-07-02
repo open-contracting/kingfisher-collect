@@ -38,7 +38,7 @@ class PeriodicSpider(SimpleSpider):
 
     # PeriodicSpider requires date parameters to be always set.
     date_required = True
-    start_requests_callback = 'parse'
+    start_requests_callback = "parse"
 
     # Length of intervals, if `date_format` is "date".
     step = 1
@@ -52,15 +52,15 @@ class PeriodicSpider(SimpleSpider):
         start = self.from_date
         stop = self.until_date
 
-        if self.date_format == '%Y':
+        if self.date_format == "%Y":
             date_range = util.date_range_by_year(start.year, stop.year)
-        elif self.date_format == '%Y-%m':
+        elif self.date_format == "%Y-%m":
             date_range = util.date_range_by_month(start, stop)
         else:
             date_range = util.date_range_by_interval(start, stop, self.step)
 
         for date in date_range:
-            args = date if self.date_format.startswith('%Y-%m-%d') else [date]
+            args = date if self.date_format.startswith("%Y-%m-%d") else [date]
             for number, url in enumerate(self.build_urls(*args)):
                 yield self.build_request(
                     url, formatter=self.formatter, callback=self.start_requests_callback, priority=number * -1

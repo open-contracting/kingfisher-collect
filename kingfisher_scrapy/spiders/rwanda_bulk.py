@@ -19,22 +19,22 @@ class RwandaBulk(CompressedFileSpider):
       https://ocds.umucyo.gov.rw/OpenData
     """
 
-    name = 'rwanda_bulk'
+    name = "rwanda_bulk"
 
     # BaseSpider
-    date_format = 'year-month'
-    default_from_date = '2016-06'
+    date_format = "year-month"
+    default_from_date = "2016-06"
     date_required = True
-    skip_pluck = 'Already covered (see code for details)'  # rwanda_api
+    skip_pluck = "Already covered (see code for details)"  # rwanda_api
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def start_requests(self):
         for year in date_range_by_year(self.from_date.year, self.until_date.year):
             # The month parameter only works with the value "n/a"
-            url = f'https://ocds.umucyo.gov.rw/core/api/v1/portal/dataset?year={year}&month=n/a'
-            yield scrapy.Request(url, meta={'file_name': f'list_{year}.json'}, callback=self.parse_list)
+            url = f"https://ocds.umucyo.gov.rw/core/api/v1/portal/dataset?year={year}&month=n/a"
+            yield scrapy.Request(url, meta={"file_name": f"list_{year}.json"}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
@@ -59,8 +59,8 @@ class RwandaBulk(CompressedFileSpider):
         }
         """
         for item in response.json()["Dataset"]:
-            date = datetime.strptime(item['data_name'], "%Y-%m").replace(tzinfo=self.from_date.tzinfo)
+            date = datetime.strptime(item["data_name"], "%Y-%m").replace(tzinfo=self.from_date.tzinfo)
             if not (self.from_date <= date <= self.until_date):
                 continue
 
-            yield self.build_request(item['json_url'], formatter=components(-1))
+            yield self.build_request(item["json_url"], formatter=components(-1))

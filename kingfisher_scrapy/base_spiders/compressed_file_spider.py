@@ -53,23 +53,23 @@ class CompressedFileSpider(BaseSpider):
 
     yield_non_archive_file = False
     resize_package = False
-    file_name_must_contain = ''
-    file_name_must_not_contain = ''
+    file_name_must_contain = ""
+    file_name_must_not_contain = ""
 
     @handle_http_error
     def parse(self, response):
-        archive_name, archive_format = get_file_name_and_extension(response.request.meta['file_name'])
+        archive_name, archive_format = get_file_name_and_extension(response.request.meta["file_name"])
 
         # NOTE: If support is added for additional archive formats, remember to update the `Data` type in `items.py`.
-        if archive_format == 'zip':
+        if archive_format == "zip":
             cls = ZipFile
-        elif archive_format == 'rar':
+        elif archive_format == "rar":
             cls = RarFile
         elif self.yield_non_archive_file:
             yield self.build_file_from_response(response, data_type=self.data_type)
             return
         else:
-            raise UnknownArchiveFormatError(response.request.meta['file_name'])
+            raise UnknownArchiveFormatError(response.request.meta["file_name"])
 
         # If we use a context manager here, the archive file might close before the item pipeline reads from the file
         # handlers of the compressed files.
@@ -89,25 +89,25 @@ class CompressedFileSpider(BaseSpider):
             if (
                 self.file_name_must_contain not in basename
                 or (self.file_name_must_not_contain and self.file_name_must_not_contain in basename)
-                or filename.startswith('__MACOSX')
-                or (archive_format == 'rar' and file_info.isdir())
-                or (archive_format == 'zip' and file_info.is_dir())
+                or filename.startswith("__MACOSX")
+                or (archive_format == "rar" and file_info.isdir())
+                or (archive_format == "zip" and file_info.is_dir())
             ):
                 continue
-            if not basename.endswith('.json'):
-                basename += '.json'
+            if not basename.endswith(".json"):
+                basename += ".json"
 
             compressed_file = archive_file.open(filename)
 
             # If `resize_package = True`, then we need to open the file twice: once to extract the package metadata and
             # then to extract the releases themselves.
             if self.resize_package:
-                data = {'data': compressed_file, 'package': archive_file.open(filename)}
+                data = {"data": compressed_file, "package": archive_file.open(filename)}
             else:
                 data = compressed_file
 
             yield File(
-                file_name=f'{archive_name}-{basename}',
+                file_name=f"{archive_name}-{basename}",
                 url=response.request.url,
                 data_type=self.data_type,
                 data=data,

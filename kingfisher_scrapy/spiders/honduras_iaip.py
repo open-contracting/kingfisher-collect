@@ -23,26 +23,26 @@ class HondurasIAIP(SimpleSpider):
       https://portalunico.iaip.gob.hn/datosabierto/
     """
 
-    name = 'honduras_iaip'
+    name = "honduras_iaip"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # Local
-    available_portals = ['covid19', 'huracanes', 'oficio']
+    available_portals = ["covid19", "huracanes", "oficio"]
 
     @classmethod
     def from_crawler(cls, crawler, portal=None, *args, **kwargs):
         spider = super().from_crawler(crawler, *args, portal=portal, **kwargs)
         if portal and spider.portal not in spider.available_portals:
-            raise SpiderArgumentError(f'spider argument `portal`: {spider.portal!r} not recognized')
+            raise SpiderArgumentError(f"spider argument `portal`: {spider.portal!r} not recognized")
         return spider
 
     def start_requests(self):
         yield scrapy.Request(
-            'https://www.contratacionesabiertas.gob.hn/api/v1/iaip_datosabiertos/?format=json',
-            meta={'file_name': 'list.json'},
-            callback=self.parse_list
+            "https://www.contratacionesabiertas.gob.hn/api/v1/iaip_datosabiertos/?format=json",
+            meta={"file_name": "list.json"},
+            callback=self.parse_list,
         )
 
     @handle_http_error
@@ -54,7 +54,7 @@ class HondurasIAIP(SimpleSpider):
             #
             # "portal": [ {"nombreArchivo": "name", "excel": "URL", "csv": "URL", "json": "URL"} ]
             for item in response.json()[portal]:
-                url = item['json']
+                url = item["json"]
                 # Retrieve URLs for packages of individual releases, not of compiled releases.
-                if 'compiled' not in url.lower():
+                if "compiled" not in url.lower():
                     yield self.build_request(url, formatter=components(-1))

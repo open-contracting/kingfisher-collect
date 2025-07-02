@@ -25,7 +25,7 @@ def group_size(spider):
 
 
 def read_data_from_file_if_any(item):
-    if hasattr(item.data, 'read'):
+    if hasattr(item.data, "read"):
         content = item.data.read()
         item.data.close()
         item.data = content
@@ -47,7 +47,7 @@ class ConcatenatedJSONMiddleware:
             data = item.data
 
             # ijson can read from bytes or a file-like object.
-            for number, obj in enumerate(util.transcode(spider, ijson.items, data, '', multiple_values=True), 1):
+            for number, obj in enumerate(util.transcode(spider, ijson.items, data, "", multiple_values=True), 1):
                 if sample_filled(spider, number):
                     return
 
@@ -99,11 +99,11 @@ class ValidateJSONMiddleware:
 
                 yield item
             except json.JSONDecodeError:
-                spider.crawler.stats.inc_value('invalid_json_count')
+                spider.crawler.stats.inc_value("invalid_json_count")
                 # https://github.com/scrapy/scrapy/blob/48c5a8c/scrapy/core/scraper.py#L364-L367
-                logkws = spider.crawler.logformatter.dropped(item, DropItem('Invalid JSON'), response, spider)
+                logkws = spider.crawler.logformatter.dropped(item, DropItem("Invalid JSON"), response, spider)
                 if logkws is not None:
-                    spider.logger.log(*logformatter_adapter(logkws), extra={'spider': spider})
+                    spider.logger.log(*logformatter_adapter(logkws), extra={"spider": spider})
 
 
 class RootPathMiddleware:
@@ -128,7 +128,7 @@ class RootPathMiddleware:
 
             iterable = util.transcode(spider, ijson.items, data, spider.root_path)
 
-            if 'item' in spider.root_path.split('.'):
+            if "item" in spider.root_path.split("."):
                 # Two common issues in OCDS data are:
                 #
                 # - Multiple releases or records, without a package
@@ -139,14 +139,14 @@ class RootPathMiddleware:
                 #
                 # We re-package in groups of 100 to reduce the overhead.
 
-                is_package = 'package' in item.data_type
+                is_package = "package" in item.data_type
 
-                if 'release' in item.data_type:
-                    key = 'releases'
-                    item.data_type = 'release_package'
+                if "release" in item.data_type:
+                    key = "releases"
+                    item.data_type = "release_package"
                 else:
-                    key = 'records'
-                    item.data_type = 'record_package'
+                    key = "records"
+                    item.data_type = "record_package"
 
                 for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
                     if sample_filled(spider, number):
@@ -161,14 +161,14 @@ class RootPathMiddleware:
                         try:
                             releases_or_records = package[key]
                         except KeyError as e:
-                            spider.logger.warning('%(key)s not set in %(data)r', {'key': e, 'data': package})
+                            spider.logger.warning("%(key)s not set in %(data)r", {"key": e, "data": package})
                         for other in items:
                             try:
                                 releases_or_records.extend(other[key])
                             except KeyError as e:
-                                spider.logger.warning('%(key)s not set in %(data)r', {'key': e, 'data': other})
+                                spider.logger.warning("%(key)s not set in %(data)r", {"key": e, "data": other})
                     else:
-                        package = {'version': spider.ocds_version, key: list(items)}
+                        package = {"version": spider.ocds_version, key: list(items)}
 
                     yield spider.build_file_item(number, package, item)
             else:
@@ -191,7 +191,7 @@ class AddPackageMiddleware:
     async def process_spider_output(self, response, result, spider):
         """Return a generator of File or FileItem objects, in which the ``data`` field is parsed JSON."""
         async for item in result:
-            if not isinstance(item, File | FileItem) or item.data_type not in {'release', 'record'}:
+            if not isinstance(item, File | FileItem) or item.data_type not in {"release", "record"}:
                 yield item
                 continue
 
@@ -202,10 +202,10 @@ class AddPackageMiddleware:
             if isinstance(data, bytes):
                 data = json.loads(data)
 
-            key = 'releases' if item.data_type == 'release' else 'records'
+            key = "releases" if item.data_type == "release" else "records"
 
-            item.data = {'version': spider.ocds_version, key: [data]}
-            item.data_type += '_package'
+            item.data = {"version": spider.ocds_version, key: [data]}
+            item.data_type += "_package"
 
             yield item
 
@@ -226,26 +226,26 @@ class ResizePackageMiddleware:
         The spider must yield items whose ``data`` field has ``package`` and ``data`` keys.
         """
         async for item in result:
-            if not isinstance(item, File) or not getattr(spider, 'resize_package', False):
+            if not isinstance(item, File) or not getattr(spider, "resize_package", False):
                 yield item
                 continue
 
             data = item.data
 
-            key = 'releases' if item.data_type == 'release_package' else 'records'
+            key = "releases" if item.data_type == "release_package" else "records"
 
-            template = self._get_package_metadata(spider, data['package'], key, item.data_type)
-            iterable = util.transcode(spider, ijson.items, data['data'], f'{key}.item')
+            template = self._get_package_metadata(spider, data["package"], key, item.data_type)
+            iterable = util.transcode(spider, ijson.items, data["data"], f"{key}.item")
 
             for number, items in enumerate(util.grouper(iterable, group_size(spider)), 1):
                 if sample_filled(spider, number):
                     return
 
                 # Kingfisher Process merges only releases and records with OCIDs.
-                if hasattr(spider, 'ocid_fallback'):
+                if hasattr(spider, "ocid_fallback"):
                     for entry in items:
-                        if entry and 'ocid' not in entry:
-                            entry['ocid'] = spider.ocid_fallback(entry)
+                        if entry and "ocid" not in entry:
+                            entry["ocid"] = spider.ocid_fallback(entry)
 
                 package = copy.deepcopy(template)
                 # Omit the None values returned by `grouper(*, fillvalue=None)`.
@@ -263,8 +263,8 @@ class ResizePackageMiddleware:
         :rtype: dict
         """
         package = {}
-        if 'package' in data_type:
-            for item in util.items(util.transcode(spider, ijson.parse, data), '', skip_key=skip_key):
+        if "package" in data_type:
+            for item in util.items(util.transcode(spider, ijson.parse, data), "", skip_key=skip_key):
                 package.update(item)
         return package
 
@@ -282,7 +282,7 @@ class ReadDataMiddleware:
     async def process_spider_output(self, response, result, spider):
         """Return a generator of File objects, in which the ``data`` field is bytes."""
         async for item in result:
-            if not isinstance(item, File) or not hasattr(item.data, 'read'):
+            if not isinstance(item, File) or not hasattr(item.data, "read"):
                 yield item
                 continue
 
@@ -303,19 +303,19 @@ class RetryDataErrorMiddleware:
 
     def process_spider_exception(self, response, exception, spider):
         if isinstance(exception, BadZipFile | RetryableError):
-            attempts = response.request.meta.get('retries', 0) + 1
+            attempts = response.request.meta.get("retries", 0) + 1
             if attempts > 3:
                 spider.logger.error(
-                    'Gave up retrying %(request)s (failed %(failures)d times): %(exception)s',
-                    {'request': response.request, 'failures': attempts, 'exception': exception},
+                    "Gave up retrying %(request)s (failed %(failures)d times): %(exception)s",
+                    {"request": response.request, "failures": attempts, "exception": exception},
                 )
                 return
             request = response.request.copy()
             request.dont_filter = True
-            request.meta['retries'] = attempts
+            request.meta["retries"] = attempts
             spider.logger.debug(
-                'Retrying %(request)s (failed %(failures)d times): %(exception)s',
-                {'request': response.request, 'failures': attempts, 'exception': exception},
+                "Retrying %(request)s (failed %(failures)d times): %(exception)s",
+                {"request": response.request, "failures": attempts, "exception": exception},
             )
             yield request
         else:

@@ -9,31 +9,31 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
     custom_settings = {
-        'DOWNLOAD_FAIL_ON_DATALOSS': False,
+        "DOWNLOAD_FAIL_ON_DATALOSS": False,
     }
 
     # BaseSpider
-    date_format = 'year-month'
+    date_format = "year-month"
     # They have data since 2009, but the API is too slow to download them all
-    default_from_date = '2022-01'
+    default_from_date = "2022-01"
     dont_truncate = True
 
     # PeriodicSpider
     # The path parameters are {system}/{year}/{month}/{offset}/{limit}.
-    pattern = 'https://api.mercadopublico.cl/APISOCDS/OCDS/{0}/{1.year:d}/{1.month:02d}/{2}/{3}'
+    pattern = "https://api.mercadopublico.cl/APISOCDS/OCDS/{0}/{1.year:d}/{1.month:02d}/{2}/{3}"
     formatter = staticmethod(components(-4, -1))  # year-month-offset
-    start_requests_callback = 'parse_list'
+    start_requests_callback = "parse_list"
 
     # IndexSpider
-    result_count_pointer = '/pagination/total'
+    result_count_pointer = "/pagination/total"
     limit = 10
-    parse_list_callback = 'parse_page'
+    parse_list_callback = "parse_page"
 
     # Local
     available_systems = {
-        'convenio': 'listaOCDSAgnoMesConvenio',
-        'licitacion': 'listaOCDSAgnoMes',
-        'trato-directo': 'listaOCDSAgnoMesTratoDirecto'
+        "convenio": "listaOCDSAgnoMesConvenio",
+        "licitacion": "listaOCDSAgnoMes",
+        "trato-directo": "listaOCDSAgnoMesTratoDirecto",
     }
     system = None
 
@@ -41,7 +41,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
     def from_crawler(cls, crawler, system=None, *args, **kwargs):
         spider = super().from_crawler(crawler, *args, system=system, **kwargs)
         if system and spider.system not in spider.available_systems:
-            raise SpiderArgumentError(f'spider argument `system`: {spider.system!r} not recognized')
+            raise SpiderArgumentError(f"spider argument `system`: {spider.system!r} not recognized")
         return spider
 
     def build_urls(self, date):
@@ -57,7 +57,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
             return
 
         # Remove NUL bytes.
-        response = response.replace(body=response.body.replace(b'\x00', b''))
+        response = response.replace(body=response.body.replace(b"\x00", b""))
         yield from super().parse(response)
 
     @handle_http_error
@@ -76,7 +76,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         if data is None:
             return
 
-        for item in data['data']:
+        for item in data["data"]:
             yield from self.handle_item(item)
 
     @abstractmethod
@@ -96,11 +96,11 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         try:
             data = response.json()
         except json.JSONDecodeError as e:
-            self.log_error_from_response(response, level='exception', message=e)
+            self.log_error_from_response(response, level="exception", message=e)
             return None
 
-        if set(data) == {'detail', 'status'}:
-            self.log_error_from_response(response, status=data['status'], message=data['detail'])
+        if set(data) == {"detail", "status"}:
+            self.log_error_from_response(response, status=data["status"], message=data["detail"])
             return None
 
         return data
@@ -110,6 +110,6 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         # URL looks like http://api.mercadopublico.cl/APISOCDS/OCDS/listaOCDSAgnoMesTratoDirecto/2021/03/31500/100
         system = components(-5, -4)(response.request.url)
         year = int(components(-4, -3)(response.request.url))
-        month = int(components(-3, -2)(response.request.url).lstrip('0'))
+        month = int(components(-3, -2)(response.request.url).lstrip("0"))
 
         return self.pattern.format(system, date(year, month, 1), value, self.limit)

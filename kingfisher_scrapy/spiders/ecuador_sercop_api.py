@@ -17,40 +17,40 @@ class EcuadorSERCOPAPI(IndexSpider, PeriodicSpider):
       https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/datos-abiertos
     """
 
-    name = 'ecuador_sercop_api'
+    name = "ecuador_sercop_api"
     custom_settings = {
         # Reduce the number of concurrent requests to avoid multiple failures.
-        'CONCURRENT_REQUESTS': 2,
+        "CONCURRENT_REQUESTS": 2,
         # Don't let Scrapy handle HTTP 429.
-        'RETRY_HTTP_CODES': [],
+        "RETRY_HTTP_CODES": [],
     }
 
     # BaseSpider
-    date_format = 'year'
-    default_from_date = '2015'
+    date_format = "year"
+    default_from_date = "2015"
     max_attempts = 5
     retry_http_codes = [429]
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # Local
-    url_prefix = 'https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/api/'
+    url_prefix = "https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/api/"
 
     # PeriodicSpider
     formatter = staticmethod(components(-1))
-    pattern = f'{url_prefix}search_ocds?year={{0}}'
-    start_requests_callback = 'parse_list'
+    pattern = f"{url_prefix}search_ocds?year={{0}}"
+    start_requests_callback = "parse_list"
 
     # IndexSpider
-    page_count_pointer = '/pages'
-    parse_list_callback = 'parse_page'
+    page_count_pointer = "/pages"
+    parse_list_callback = "parse_page"
 
     @handle_http_error
     def parse_page(self, response):
-        for data in response.json()['data']:
+        for data in response.json()["data"]:
             # Some ocids have a '/' character which cannot be in a file name.
             yield self.build_request(
-                f'{self.url_prefix}record?ocid={data["ocid"]}',
-                formatter=parameters('ocid', parser=replace_path_separator),
+                f"{self.url_prefix}record?ocid={data['ocid']}",
+                formatter=parameters("ocid", parser=replace_path_separator),
             )

@@ -20,22 +20,22 @@ class ItalyMinistryOfInfrastructureAndTransport(SimpleSpider):
       https://www.serviziocontrattipubblici.it/ocds-ms/swagger-ui.html
     """
 
-    name = 'italy_ministry_of_infrastructure_and_transport'
+    name = "italy_ministry_of_infrastructure_and_transport"
 
     # BaseSpider
-    date_format = 'date'
-    default_from_date = '2022-01-01'
+    date_format = "date"
+    default_from_date = "2022-01-01"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def start_requests(self):
-        url = 'https://www.serviziocontrattipubblici.it/ocdsReleasePackages-ms/v1.0/ocdsReleasePackages?page=1&pageSize=5'
+        url = "https://www.serviziocontrattipubblici.it/ocdsReleasePackages-ms/v1.0/ocdsReleasePackages?page=1&pageSize=5"
         if self.from_date and self.until_date:
             from_date = self.from_date.strftime(self.date_format)
             until_date = self.until_date.strftime(self.date_format)
-            url = f'{url}&dataInvioDa={from_date}&dataInvioA={until_date}'
-        yield scrapy.Request(url, meta={'file_name': 'page-1.json', 'page': 1})
+            url = f"{url}&dataInvioDa={from_date}&dataInvioA={until_date}"
+        yield scrapy.Request(url, meta={"file_name": "page-1.json", "page": 1})
 
     @handle_http_error
     def parse(self, response):
@@ -49,17 +49,17 @@ class ItalyMinistryOfInfrastructureAndTransport(SimpleSpider):
         """
         data = response.json()
 
-        if 'errorData' in data:
+        if "errorData" in data:
             # Temporary error: {'esito': False, 'errorData': 'Si Ã¨ verificato un errore durante la creazione di OCDS'}
             raise RetryableError
 
-        if 'releases' not in data:
+        if "releases" not in data:
             # An empty release package is returned after the last meaningful page is reached.
             return
 
         yield from super().parse(response)
 
-        page = response.request.meta['page'] + 1
+        page = response.request.meta["page"] + 1
         yield self.build_request(
-            replace_parameters(response.url, page=page), meta={'page': page}, formatter=parameters('page')
+            replace_parameters(response.url, page=page), meta={"page": page}, formatter=parameters("page")
         )

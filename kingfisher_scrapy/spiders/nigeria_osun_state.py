@@ -9,13 +9,13 @@ class NigeriaOsunState(NigeriaBonMaximusBase):
       https://egp.osunstate.gov.ng/awarded_contracts.php
     """
 
-    name = 'nigeria_osun_state'
+    name = "nigeria_osun_state"
 
     # BaseSpider
     validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/963
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # NigeriaBonMaximusBase
-    url_prefix = 'https://egp.osunstate.gov.ng/'
+    url_prefix = "https://egp.osunstate.gov.ng/"

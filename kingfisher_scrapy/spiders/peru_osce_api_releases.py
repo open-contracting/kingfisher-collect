@@ -9,10 +9,10 @@ class PeruOSCEAPIReleases(PeruOSCEAPIBase):
       https://contratacionesabiertas.osce.gob.pe/api
     """
 
-    name = 'peru_osce_api_releases'
+    name = "peru_osce_api_releases"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # PeruOSCEBase
-    endpoint = 'releasesAfter'
+    endpoint = "releasesAfter"

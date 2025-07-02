@@ -18,17 +18,17 @@ class GeorgiaRecords(LinksSpider):
       https://odapi.spa.ge/api/swagger.ui
     """
 
-    name = 'georgia_records'
+    name = "georgia_records"
 
     # BaseSpider
-    skip_pluck = 'Already covered (see code for details)'  # georgia_releases
+    skip_pluck = "Already covered (see code for details)"  # georgia_releases
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = "record_package"
 
     # LinksSpider
-    formatter = staticmethod(parameters('page'))
+    formatter = staticmethod(parameters("page"))
 
     def start_requests(self):
-        url = 'https://odapi.spa.ge/api/records.json'
-        yield scrapy.Request(url, meta={'file_name': 'page-1.json'})
+        url = "https://odapi.spa.ge/api/records.json"
+        yield scrapy.Request(url, meta={"file_name": "page-1.json"})

@@ -21,30 +21,30 @@ class Netherlands(SimpleSpider):
       https://www.tenderned.nl/cms/nl/aanbesteden-in-cijfers/datasets-aanbestedingen
     """
 
-    name = 'netherlands'
+    name = "netherlands"
     download_timeout = MAX_DOWNLOAD_TIMEOUT
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     # BaseSpider
-    date_format = 'year'
-    default_from_date = '2016'
+    date_format = "year"
+    default_from_date = "2016"
 
     def start_requests(self):
         yield scrapy.Request(
-            'https://www.tenderned.nl/cms/nl/aanbesteden-in-cijfers/datasets-aanbestedingen',
-            meta={'file_name': 'list.html'},
+            "https://www.tenderned.nl/cms/nl/aanbesteden-in-cijfers/datasets-aanbestedingen",
+            meta={"file_name": "list.html"},
             callback=self.parse_list,
         )
 
     @handle_http_error
     def parse_list(self, response):
-        for url in response.xpath('//article//li//@href').getall():
-            if url.endswith('.json'):
+        for url in response.xpath("//article//li//@href").getall():
+            if url.endswith(".json"):
                 if self.from_date and self.until_date:
                     # URL looks like https://www.tenderned.nl/cms/sites/default/files/2023-04/2017.json
-                    year = int(url.rsplit('/', 1)[1].replace('.json', ''))
+                    year = int(url.rsplit("/", 1)[1].replace(".json", ""))
                     url_date = datetime.datetime(year, 1, 1)
                     if not (self.from_date <= url_date <= self.until_date):
                         continue

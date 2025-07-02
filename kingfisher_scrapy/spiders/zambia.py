@@ -14,11 +14,11 @@ class Zambia(EuropeanDynamicsBase):
         If ``from_date`` is provided, defaults to the current month.
     """
 
-    name = 'zambia'
-    default_from_date = '2016-07'
+    name = "zambia"
+    default_from_date = "2016-07"
 
     # BaseSpider
-    ocds_version = '1.0'
+    ocds_version = "1.0"
 
     # EuropeanDynamicsBase
-    base_url = 'https://www.zppa.org.zm'
+    base_url = "https://www.zppa.org.zm"

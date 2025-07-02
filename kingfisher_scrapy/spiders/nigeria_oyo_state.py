@@ -11,11 +11,11 @@ class NigeriaOyoState(SimpleSpider):
       This dataset was last updated by the publisher in 2022.
     """
 
-    name = 'nigeria_oyo_state'
+    name = "nigeria_oyo_state"
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def start_requests(self):
         # From https://ocdsoyo.oyostate.gov.ng/projects.php
-        yield scrapy.Request('https://ocdsoyo.oyostate.gov.ng/json_formation.php', meta={'file_name': 'all.json'})
+        yield scrapy.Request("https://ocdsoyo.oyostate.gov.ng/json_formation.php", meta={"file_name": "all.json"})

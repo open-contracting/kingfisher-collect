@@ -12,12 +12,12 @@ class NigeriaPortal(CompressedFileSpider):
         https://nocopo.bpp.gov.ng/Open-Data
     """
 
-    name = 'nigeria_portal'
+    name = "nigeria_portal"
     download_timeout = MAX_DOWNLOAD_TIMEOUT * 2  # 1h
 
     # SimpleSpider
-    data_type = 'release_package'
+    data_type = "release_package"
 
     def start_requests(self):
         # This follows a meta refresh.
-        yield scrapy.Request('https://nocopo.bpp.gov.ng/ocdsjson.ashx?ocid=all', meta={'file_name': 'all.zip'})
+        yield scrapy.Request("https://nocopo.bpp.gov.ng/ocdsjson.ashx?ocid=all", meta={"file_name": "all.zip"})

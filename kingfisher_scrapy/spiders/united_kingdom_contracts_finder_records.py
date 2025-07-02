@@ -15,19 +15,19 @@ class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
       https://www.contractsfinder.service.gov.uk/apidocumentation/home
     """
 
-    name = 'united_kingdom_contracts_finder_records'
+    name = "united_kingdom_contracts_finder_records"
 
     # BaseSpider
-    skip_pluck = 'Already covered (see code for details)'  # united_kingdom_contracts_finder_releases
+    skip_pluck = "Already covered (see code for details)"  # united_kingdom_contracts_finder_releases
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = "record_package"
 
     @handle_http_error
     def parse_page(self, response):
-        for release in response.json()['releases']:
+        for release in response.json()["releases"]:
             yield self.build_request(
-                f'https://www.contractsfinder.service.gov.uk/Published/OCDS/Record/{release["ocid"]}',
+                f"https://www.contractsfinder.service.gov.uk/Published/OCDS/Record/{release['ocid']}",
                 formatter=components(-1),
             )
         yield self.next_link(response, callback=self.parse_page)

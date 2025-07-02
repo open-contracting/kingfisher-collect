@@ -25,11 +25,11 @@ word_boundary_re = re.compile(
     |(?<=PakistanPPRA)
     |(?<=PeruOSCE)
     """,
-    flags=re.VERBOSE
+    flags=re.VERBOSE,
 )
 
-spider_re = re.compile(r'\b([a-z]+(?:(?:_[a-z*]+)+|(?=:)))')
-year_re = re.compile(r'20\d\d\.\Z')
+spider_re = re.compile(r"\b([a-z]+(?:(?:_[a-z*]+)+|(?=:)))")
+year_re = re.compile(r"20\d\d\.\Z")
 
 
 def _get(url):
@@ -39,30 +39,32 @@ def _get(url):
 
 
 def _freezable(publication):
-    return publication and publication['retrieval_frequency'] != 'NEVER' and not publication['frozen']
+    return publication and publication["retrieval_frequency"] != "NEVER" and not publication["frozen"]
 
 
 class CheckAll(ScrapyCommand):
     def short_desc(self):
-        return 'Check that spiders are documented and well-implemented'
+        return "Check that spiders are documented and well-implemented"
 
     def run(self, args, opts):
-        level = getattr(logging, self.settings['LOG_LEVEL'])
+        level = getattr(logging, self.settings["LOG_LEVEL"])
 
         try:
-            issues = _get('https://api.github.com/repos/open-contracting/kingfisher-collect/issues?labels=unavailable&per_page=100')
-            publications = _get('https://data.open-contracting.org/publications.json')
+            issues = _get(
+                "https://api.github.com/repos/open-contracting/kingfisher-collect/issues?labels=unavailable&per_page=100"
+            )
+            publications = _get("https://data.open-contracting.org/publications.json")
         except requests.RequestException:  # pre-commit.ci blocks network connections
             issues = {}
             publications = {}
 
-        publications = {publication['source_id']: publication for publication in publications}
+        publications = {publication["source_id"]: publication for publication in publications}
 
         glob_issues = []
         with_issues = set()
         for issue in issues:
-            for spider in spider_re.findall(issue['title']):
-                if '*' in spider:
+            for spider in spider_re.findall(issue["title"]):
+                if "*" in spider:
                     glob_issues.append(spider)
                 else:
                     with_issues.add(spider)
@@ -71,30 +73,30 @@ class CheckAll(ScrapyCommand):
         for source_id in with_issues:
             publication = publications.get(source_id)
             if _freezable(publication):
-                logger.error('publication has issues but is not frozen: %s', source_id)
+                logger.error("publication has issues but is not frozen: %s", source_id)
         for pattern in glob_issues:
             publication = next((v for source_id, v in publications.items() if fnmatch(source_id, pattern)), None)
             if _freezable(publication):
-                logger.error('publication has issues but is not frozen: %s', source_id)
+                logger.error("publication has issues but is not frozen: %s", source_id)
 
         for source_id, publication in list(publications.items()):
             if (
-                publication['frozen']
+                publication["frozen"]
                 and source_id not in with_issues
                 and not any(fnmatch(source_id, pattern) for pattern in glob_issues)
             ):
-                logger.error('publication has no issues but is frozen: %s', source_id)
+                logger.error("publication has no issues but is frozen: %s", source_id)
 
             # Copy publications for *_releases/*_records pairs of spiders.
-            if source_id.endswith('_releases'):
-                publications[f'{source_id[:-9]}_records'] = publication
-            elif source_id.endswith('_records'):
-                publications[f'{source_id[:-8]}_releases'] = publication
+            if source_id.endswith("_releases"):
+                publications[f"{source_id[:-9]}_records"] = publication
+            elif source_id.endswith("_records"):
+                publications[f"{source_id[:-8]}_releases"] = publication
 
         has_output = False
-        for module in walk_modules('kingfisher_scrapy.spiders'):
+        for module in walk_modules("kingfisher_scrapy.spiders"):
             if not args or os.path.relpath(module.__file__) in args:
-                source_id = module.__name__.rsplit('.', 1)[-1]
+                source_id = module.__name__.rsplit(".", 1)[-1]
                 for cls in iter_spider_classes(module):
                     checker = Checker(module, cls, publications.get(source_id, {}), level)
                     checker.check()
@@ -103,17 +105,18 @@ class CheckAll(ScrapyCommand):
         if has_output:
             sys.exit(1)
 
+
 class Checker:
     # Add more terms as needed.
     known_terms = [
-        'Domain',
-        'Caveats',
-        'Spider arguments',
-        'Environment variables',
-        'API documentation',
-        'Bulk download documentation',
-        'Swagger API documentation',
-        'API endpoints',
+        "Domain",
+        "Caveats",
+        "Spider arguments",
+        "Environment variables",
+        "API documentation",
+        "Bulk download documentation",
+        "Swagger API documentation",
+        "API endpoints",
     ]
 
     ########
@@ -125,19 +128,19 @@ class Checker:
     #
     # Add more spider arguments as needed.
     known_spider_arguments = [
-        'from_date',
-        'until_date',
-        'portal',
-        'publisher',
-        'system',
-        'sample',
-        'path',
-        'qs:',
+        "from_date",
+        "until_date",
+        "portal",
+        "publisher",
+        "system",
+        "sample",
+        "path",
+        "qs:",
     ]
 
     conditional_spider_arguments = {
-        'available_publishers': 'publisher',
-        'available_systems': 'system',
+        "available_publishers": "publisher",
+        "available_systems": "system",
     }
 
     def __init__(self, module, cls, publication, level):
@@ -152,28 +155,28 @@ class Checker:
     def log(self, level, message, *args):
         if getattr(logging, level.upper()) >= self.level:
             self.has_output = True
-        getattr(logger, level)(f'%s.%s: {message}', self.module.__name__, self.cls.__name__, *args)
+        getattr(logger, level)(f"%s.%s: {message}", self.module.__name__, self.cls.__name__, *args)
 
     def check(self):
         class_name = self.cls.__name__
         docstring = self.cls.__doc__
 
         basename = os.path.splitext(os.path.basename(self.module.__file__))[0]
-        expected_basename = re.sub(word_boundary_re, '_', class_name).lower()
+        expected_basename = re.sub(word_boundary_re, "_", class_name).lower()
 
         if basename != expected_basename:
-            self.log('error', 'class %s and file %s (%s) do not match', class_name, basename, expected_basename)
+            self.log("error", "class %s and file %s (%s) do not match", class_name, basename, expected_basename)
 
         if self.cls.name != basename:
-            self.log('error', 'spider name %s and file name %s do not match', self.cls.name, basename)
+            self.log("error", "spider name %s and file name %s do not match", self.cls.name, basename)
 
-        if class_name.endswith(('Base', 'Digiwhist')):
+        if class_name.endswith(("Base", "Digiwhist")):
             if docstring:
-                self.log('error', 'unexpected docstring')
+                self.log("error", "unexpected docstring")
             return
 
         if not docstring:
-            self.log('error', 'missing docstring')
+            self.log("error", "missing docstring")
             return
 
         # docutils doesn't provide a Document Object Model (DOM) for navigating nodes in reStructured Text, so we use
@@ -182,82 +185,82 @@ class Checker:
 
         # Spider metadata
 
-        terms = dict(re.findall(r'^(\S.+)\n  (.+)', docstring, re.MULTILINE))
+        terms = dict(re.findall(r"^(\S.+)\n  (.+)", docstring, re.MULTILINE))
 
-        self.check_list(terms, self.known_terms, 'terms')
+        self.check_list(terms, self.known_terms, "terms")
 
-        if 'Domain' not in terms:
-            self.log('error', 'missing term: "Domain"')
+        if "Domain" not in terms:
+            self.log("error", 'missing term: "Domain"')
 
-        retrieval_frequency = self.publication.get('retrieval_frequency')
-        if retrieval_frequency == 'NEVER' and not year_re.search(terms.get('Caveats', '')):
-            self.log('error', 'missing "Caveats" term for publication that has ended')
-        elif retrieval_frequency not in (None, 'NEVER') and year_re.search(terms.get('Caveats', '')):
-            self.log('error', 'unexpected "Caveats" term for publication that has not ended')
+        retrieval_frequency = self.publication.get("retrieval_frequency")
+        if retrieval_frequency == "NEVER" and not year_re.search(terms.get("Caveats", "")):
+            self.log("error", 'missing "Caveats" term for publication that has ended')
+        elif retrieval_frequency not in (None, "NEVER") and year_re.search(terms.get("Caveats", "")):
+            self.log("error", 'unexpected "Caveats" term for publication that has not ended')
 
         # Spider arguments
 
-        section = re.search(r'^Spider arguments\n(.+?)(?:^\S|\Z)', docstring, re.MULTILINE | re.DOTALL)
+        section = re.search(r"^Spider arguments\n(.+?)(?:^\S|\Z)", docstring, re.MULTILINE | re.DOTALL)
         if section:
-            matches = re.findall(r'^(\S.+)((?:\n  .+)+)', dedent(section[1]), re.MULTILINE)
+            matches = re.findall(r"^(\S.+)((?:\n  .+)+)", dedent(section[1]), re.MULTILINE)
             spider_arguments = {k: v.strip() for k, v in matches}
         else:
             spider_arguments = {}
 
-        self.check_list(spider_arguments, self.known_spider_arguments, 'spider arguments')
+        self.check_list(spider_arguments, self.known_spider_arguments, "spider arguments")
 
-        if 'sample' in spider_arguments:
-            self.log('error', 'unexpected "sample" spider argument (document it globally)')
+        if "sample" in spider_arguments:
+            self.log("error", 'unexpected "sample" spider argument (document it globally)')
 
         expected_spider_arguments = set()
         if PeriodicSpider in self.cls.__bases__:
-            expected_spider_arguments.update({'from_date', 'until_date'})
+            expected_spider_arguments.update({"from_date", "until_date"})
         elif self.cls.date_required:
-            expected_spider_arguments.update({'from_date', 'until_date'})
+            expected_spider_arguments.update({"from_date", "until_date"})
             # Ukraine requires a date, but only supports from_date.
-            if self.cls.__name__ == 'Ukraine':
-                expected_spider_arguments.remove('until_date')
+            if self.cls.__name__ == "Ukraine":
+                expected_spider_arguments.remove("until_date")
 
         for spider_argument in expected_spider_arguments:
             if spider_argument not in spider_arguments:
-                self.log('warning', 'missing "%s" spider argument documentation', spider_argument)
+                self.log("warning", 'missing "%s" spider argument documentation', spider_argument)
 
         for cls_attribute, spider_argument in self.conditional_spider_arguments.items():
             if hasattr(self.cls, cls_attribute) and spider_argument not in spider_arguments:
-                self.log('warning', 'missing "%s" spider argument (%s is set)', spider_argument, cls_attribute)
+                self.log("warning", 'missing "%s" spider argument (%s is set)', spider_argument, cls_attribute)
             if not hasattr(self.cls, cls_attribute) and spider_argument in spider_arguments:
-                self.log('warning', 'unexpected "%s" spider argument (%s is not set)', spider_argument, cls_attribute)
+                self.log("warning", 'unexpected "%s" spider argument (%s is not set)', spider_argument, cls_attribute)
 
         def default_from_date(cls):
-            return repr(getattr(cls, 'default_from_date', None))
+            return repr(getattr(cls, "default_from_date", None))
 
         self.check_date_spider_argument(
-            'from_date',
+            "from_date",
             spider_arguments,
             default_from_date,
-            'Download only data from this {period} onward ({format} format).',
+            "Download only data from this {period} onward ({format} format).",
         )
 
         def default_until_date(cls):
-            if hasattr(cls, 'default_until_date'):
+            if hasattr(cls, "default_until_date"):
                 return f"'{cls.default_until_date}'"
             match cls.date_format:
-                case 'datetime':
-                    return 'now'
-                case 'date':
-                    return 'today'
-                case 'year-month':
-                    return 'the current month'
-                case 'year':
-                    return 'the current year'
+                case "datetime":
+                    return "now"
+                case "date":
+                    return "today"
+                case "year-month":
+                    return "the current month"
+                case "year":
+                    return "the current year"
                 case _:
                     return None
 
         self.check_date_spider_argument(
-            'until_date',
+            "until_date",
             spider_arguments,
             default_until_date,
-            'Download only data until this {period} ({format} format).',
+            "Download only data until this {period} ({format} format).",
         )
 
     def check_list(self, items, known_items, name):
@@ -269,44 +272,49 @@ class Checker:
 
         unexpected = set(items) - set(known_items)
         if unexpected:
-            self.log('error', 'unexpected %s: %s', name, ', '.join(unexpected))
+            self.log("error", "unexpected %s: %s", name, ", ".join(unexpected))
 
         disordered = set(items) & set(known_items)
         if disordered:
-            self.log('error', 'out-of-order %s: %s', name, ', '.join(disordered))
+            self.log("error", "out-of-order %s: %s", name, ", ".join(disordered))
 
     def check_date_spider_argument(self, spider_argument, spider_arguments, default, format_string):
         if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
             if self.cls.__name__ in {
-                'ColombiaBulk', 'Kosovo', 'PortugalRecords', 'PortugalReleases', 'UgandaReleases', 'Ukraine'
+                "ColombiaBulk",
+                "Kosovo",
+                "PortugalRecords",
+                "PortugalReleases",
+                "UgandaReleases",
+                "Ukraine",
             }:
-                level = 'info'
+                level = "info"
             else:
-                level = 'warning'
+                level = "warning"
 
             if self.cls.date_required:
                 format_string += " Defaults to {default}."
-            elif spider_argument == 'from_date' and 'until_date' in spider_arguments:
+            elif spider_argument == "from_date" and "until_date" in spider_arguments:
                 format_string += "\n  If ``until_date`` is provided, defaults to {default}."
-            elif spider_argument == 'until_date' and 'from_date' in spider_arguments:
+            elif spider_argument == "until_date" and "from_date" in spider_arguments:
                 format_string += "\n  If ``from_date`` is provided, defaults to {default}."
 
-            if self.cls.date_format == 'datetime':
-                period = 'time'
-                format_ = 'YYYY-MM-DDThh:mm:ss'
-            elif self.cls.date_format == 'date':
-                period = 'date'
-                format_ = 'YYYY-MM-DD'
-            elif self.cls.date_format == 'year-month':
-                period = 'month'
-                format_ = 'YYYY-MM'
-            elif self.cls.date_format == 'year':
-                period = 'year'
-                format_ = 'YYYY'
+            if self.cls.date_format == "datetime":
+                period = "time"
+                format_ = "YYYY-MM-DDThh:mm:ss"
+            elif self.cls.date_format == "date":
+                period = "date"
+                format_ = "YYYY-MM-DD"
+            elif self.cls.date_format == "year-month":
+                period = "month"
+                format_ = "YYYY-MM"
+            elif self.cls.date_format == "year":
+                period = "year"
+                format_ = "YYYY"
             else:
                 raise NotSupported(f'checkall: date_format "{self.cls.date_format}" not implemented')
 
             expected = format_string.format(period=period, format=format_, default=default(self.cls))
             if spider_arguments[spider_argument] != expected:
-                self.log(level, '\n%r !=\n%r', spider_arguments[spider_argument], expected)
+                self.log(level, "\n%r !=\n%r", spider_arguments[spider_argument], expected)

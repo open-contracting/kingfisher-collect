@@ -23,18 +23,18 @@ class GuatemalaBulk(CompressedFileSpider):
       https://ocds.guatecompras.gt/descarga-datos
     """
 
-    name = 'guatemala_bulk'
+    name = "guatemala_bulk"
 
     # BaseSpider
-    date_format = 'year-month'
-    default_from_date = '2020-01'
+    date_format = "year-month"
+    default_from_date = "2020-01"
 
     # SimpleSpider
-    data_type = 'record_package'
+    data_type = "record_package"
 
     def start_requests(self):
-        url = 'https://ocds.guatecompras.gt/files'
-        yield scrapy.Request(url, meta={'file_name': 'list.json'}, callback=self.parse_list)
+        url = "https://ocds.guatecompras.gt/files"
+        yield scrapy.Request(url, meta={"file_name": "list.json"}, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
@@ -62,8 +62,8 @@ class GuatemalaBulk(CompressedFileSpider):
         """
         for item in response.json()["result"]:
             if self.from_date and self.until_date:
-                date = datetime(int(item['year']), int(item['month']), 1)
+                date = datetime(int(item["year"]), int(item["month"]), 1)
                 if not (self.from_date <= date <= self.until_date):
                     continue
 
-            yield self.build_request(item['files']['json'], formatter=join(components(-2), extension='zip'))
+            yield self.build_request(item["files"]["json"], formatter=join(components(-2), extension="zip"))
