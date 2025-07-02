@@ -28,14 +28,14 @@ class LiberiaReleases(IndexSpider):
     parse_list_callback = 'parse_items'
 
     # Local
-    main_url = 'https://eprocurement.ppcc.gov.lr/ocds/record/'
+    url_prefix = 'https://eprocurement.ppcc.gov.lr/ocds/record/'
 
     def start_requests(self):
         url, kwargs = self.url_builder(1, None, None)
         yield scrapy.Request(url, **kwargs, callback=self.parse_list)
 
     def url_builder(self, value, data, response):
-        return f'{self.main_url}searchRecords.action', {
+        return f'{self.url_prefix}searchRecords.action', {
             'method': 'POST',
             'headers': {'Accept': 'application/json', 'Content-Type': 'application/json;charset=UTF-8'},
             'body': json.dumps({"page": value, "pagesize": 10, "sortField": "ocid", "sortDir": "asc"}),
@@ -46,5 +46,5 @@ class LiberiaReleases(IndexSpider):
     def parse_items(self, response):
         data = response.json()
         for item in data['items']:
-            yield self.build_request(f'{self.main_url}downloadRecord/{item["id"]}/COMPILED.action',
+            yield self.build_request(f'{self.url_prefix}downloadRecord/{item["id"]}/COMPILED.action',
                                      formatter=components(-2))
