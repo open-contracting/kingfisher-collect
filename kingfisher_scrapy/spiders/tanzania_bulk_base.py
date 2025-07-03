@@ -23,7 +23,7 @@ class TanzaniaBulkBase(IndexSpider):
     # - Only the value of the `page` key can be modified in any other method.
     payload = {
         "page": 1,
-        "pageSize": 200,
+        "pageSize": 200,  # capped to 200
         # Sort by end date in descending order.
         "fields": [{"fieldName": "endDate", "isSortable": True, "orderDirection": "DESC"}],
         # Download daily packages only, not monthly packages.
@@ -68,3 +68,6 @@ class TanzaniaBulkBase(IndexSpider):
             yield self.build_request(
                 f"{self.url_prefix}/api/packages/download/{item['fileName']}", formatter=components(-1)
             )
+            # # Otherwise, the first of 200 requests to return is used.
+            if self.pluck:
+                break
