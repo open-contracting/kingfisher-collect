@@ -13,7 +13,7 @@ class Malta(EuropeanDynamicsBase):
         Download only data until this month (YYYY-MM format).
         If ``from_date`` is provided, defaults to the current month.
     API documentation
-      https://docs.google.com/document/d/1VnCEywKkkQ7BcVbT7HlW2s_N_QI8W0KE/edit
+      https://docs.google.com/document/d/1rV_1VoJT3StzMk2Pf0i2-9uN3lD_VjhFQKyfaGUXZ6I/edit
     """
 
     name = "malta"

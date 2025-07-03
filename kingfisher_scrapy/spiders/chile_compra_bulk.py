@@ -29,7 +29,7 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
     }
 
     # BaseSpider
-    skip_pluck = "Already covered (see code for details)"  # chile_compra_api_records
+    skip_pluck = "Already covered (see code for details)"  # chile_compra_api_releases
 
     # SimpleSpider
     data_type = "record_package"
