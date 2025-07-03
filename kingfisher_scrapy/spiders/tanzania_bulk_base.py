@@ -10,7 +10,7 @@ class TanzaniaBulkBase(IndexSpider):
 
     # IndexSpider
     result_count_pointer = "/recordsFilteredCount"
-    limit = 10
+    limit = 200
     use_page = True
     start_page = 1
     formatter = None
@@ -22,8 +22,8 @@ class TanzaniaBulkBase(IndexSpider):
     # - The value of any key can be modified in the `start_requests` method.
     # - Only the value of the `page` key can be modified in any other method.
     payload = {
-        "page": 1,
-        "pageSize": 200,  # capped to 200
+        "page": start_page,
+        "pageSize": limit,  # capped to 200
         # Sort by end date in descending order.
         "fields": [{"fieldName": "endDate", "isSortable": True, "orderDirection": "DESC"}],
         # Download daily packages only, not monthly packages.
