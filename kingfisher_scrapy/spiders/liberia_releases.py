@@ -24,31 +24,32 @@ class LiberiaReleases(IndexSpider):
 
     # IndexSpider
     result_count_pointer = "/total"
+    limit = 1000  # unverified
     use_page = True
     start_page = 1
     formatter = None
-    limit = 10
     parse_list_callback = "parse_items"
 
     # Local
     url_prefix = "https://eprocurement.ppcc.gov.lr/ocds/record/"
 
     def start_requests(self):
-        url, kwargs = self.url_builder(1, None, None)
+        url, kwargs = self.url_builder(self.start_page, None, None)
         yield scrapy.Request(url, **kwargs, callback=self.parse_list)
 
     def url_builder(self, value, data, response):
+        # This endpoint is undocumented.
         return f"{self.url_prefix}searchRecords.action", {
             "method": "POST",
-            "headers": {"Accept": "application/json", "Content-Type": "application/json;charset=UTF-8"},
-            "body": json.dumps({"page": value, "pagesize": 10, "sortField": "ocid", "sortDir": "asc"}),
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps({"page": value, "pagesize": self.limit, "sortField": "ocid", "sortDir": "asc"}),
             "meta": {"file_name": f"page-{value}.json"},
         }
 
     @handle_http_error
     def parse_items(self, response):
-        data = response.json()
-        for item in data["items"]:
+        for item in response.json()["items"]:
+            # This endpoint is undocumented. There is also a VERSIONED.action endpoint.
             yield self.build_request(
                 f"{self.url_prefix}downloadRecord/{item['id']}/COMPILED.action", formatter=components(-2)
             )

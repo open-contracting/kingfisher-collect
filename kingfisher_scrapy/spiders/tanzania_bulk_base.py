@@ -48,7 +48,7 @@ class TanzaniaBulkBase(IndexSpider):
                         "value2": f"{self.until_date.strftime(self.date_format)}T23:59:59",
                     }
                 )
-        url, kwargs = self.url_builder(1, None, None)
+        url, kwargs = self.url_builder(self.start_page, None, None)
         yield scrapy.Request(url, **kwargs, callback=self.parse_list)
 
     def url_builder(self, value, data, response):
