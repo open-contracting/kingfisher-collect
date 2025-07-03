@@ -10,38 +10,42 @@ class TanzaniaBulkBase(IndexSpider):
 
     # IndexSpider
     result_count_pointer = "/recordsFilteredCount"
+    limit = 10
     use_page = True
     start_page = 1
     formatter = None
-    limit = 10
     parse_list_callback = "parse_items"
 
     # Local
-    main_url = "https://nest.go.tz/gateway/nest-data-portal-api"
+    url_prefix = "https://nest.go.tz/gateway/nest-data-portal-api"
+    # WARNING: This class attribute is modified in-place. The invariants that must be upheld are:
+    # - The value of any key can be modified in the `start_requests` method.
+    # - Only the value of the `page` key can be modified in any other method.
     payload = {
         "page": 1,
-        "pageSize": 10,
-        "fields": [{"fieldName": "publishedDate", "isSortable": True, "orderDirection": "DESC"}],
-        "mustHaveFilters": [{"fieldName": "periodType", "value1": "daily", "operation": "EQ"}],
+        "pageSize": 200,
+        # Sort by end date in descending order.
+        "fields": [{"fieldName": "endDate", "isSortable": True, "orderDirection": "DESC"}],
+        # Download daily packages only, not monthly packages.
+        "mustHaveFilters": [{"fieldName": "periodType", "operation": "EQ", "value1": "daily"}],
     }
 
     def start_requests(self):
         self.payload["mustHaveFilters"].append(
             {
                 "fieldName": "dataType",
-                # record or release
-                "value1": self.data_type.split("_")[0],
                 "operation": "EQ",
+                "value1": self.data_type.split("_")[0],  # record or release
             }
         )
         if self.from_date and self.until_date:
-            for date_name in ["startDate", "endDate"]:
+            for date_name in ("startDate", "endDate"):
                 self.payload["mustHaveFilters"].append(
                     {
                         "fieldName": date_name,
+                        "operation": "BTN",
                         "value1": f"{self.from_date.strftime(self.date_format)}T00:00:00",
                         "value2": f"{self.until_date.strftime(self.date_format)}T23:59:59",
-                        "operation": "BTN",
                     }
                 )
         url, kwargs = self.url_builder(1, None, None)
@@ -49,18 +53,18 @@ class TanzaniaBulkBase(IndexSpider):
 
     def url_builder(self, value, data, response):
         self.payload["page"] = value
-        headers = {"Accept": "application/json", "Content-Type": "application/json;charset=UTF-8"}
-        return f"{self.main_url}/packages?withMetaData=true", {
+        # This endpoint is undocumented.
+        return f"{self.url_prefix}/packages?withMetaData=true", {
             "method": "POST",
-            "headers": headers,
+            "headers": {"Content-Type": "application/json"},
             "body": json_dumps(self.payload),
             "meta": {"file_name": f"page-{value}.json"},
         }
 
     @handle_http_error
     def parse_items(self, response):
-        data = response.json()
-        for item in data["data"]:
+        for item in response.json()["data"]:
+            # This endpoint is undocumented.
             yield self.build_request(
-                f"{self.main_url}/api/packages/download/{item['fileName']}", formatter=components(-1)
+                f"{self.url_prefix}/api/packages/download/{item['fileName']}", formatter=components(-1)
             )
