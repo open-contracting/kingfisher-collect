@@ -18,5 +18,8 @@ class TanzaniaBulkRecords(TanzaniaBulkBase):
 
     name = "tanzania_bulk_records"
 
+    # BaseSpider
+    skip_pluck = "Already covered (see code for details)"  # tanzania_bulk_releases
+
     # SimpleSpider
     data_type = "record_package"

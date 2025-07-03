@@ -6,6 +6,7 @@ from kingfisher_scrapy.base_spiders import IndexSpider
 class TanzaniaAPIBase(IndexSpider):
     # BaseSpider
     root_path = "content.item"
+    skip_pluck = "Already covered (see code for details)"  # tanzania_bulk_releases
 
     # IndexSpider
     page_count_pointer = "/totalPages"

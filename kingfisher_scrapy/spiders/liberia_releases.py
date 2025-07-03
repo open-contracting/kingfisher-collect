@@ -16,6 +16,9 @@ class LiberiaReleases(IndexSpider):
 
     name = "liberia_releases"
 
+    # BaseSpider
+    skip_pluck = "Already covered (see code for details)"  # liberia_records
+
     # SimpleSpider
     data_type = "release_package"
 
