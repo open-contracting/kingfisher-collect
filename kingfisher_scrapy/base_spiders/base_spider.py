@@ -248,10 +248,14 @@ class BaseSpider(scrapy.Spider):
         return datetime.datetime.strptime(date, self.date_format).replace(tzinfo=datetime.timezone.utc)
 
     def is_http_success(self, response):
-        """Return whether the response's status is a non-2xx code."""
+        """Return whether the response's status is a 2xx code."""
         # All 2xx codes are successful.
         # https://tools.ietf.org/html/rfc7231#section-6.3
         return 200 <= response.status < 300
+
+    def is_http_error_expected(self, response):
+        """Return whether the response's status is expected to be a non-2xx code."""
+        return False
 
     def is_http_retryable(self, response):
         """

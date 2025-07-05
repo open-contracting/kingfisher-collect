@@ -9,8 +9,7 @@ class NepalDhangadhi(SimpleSpider):
     Domain
       Infrastructure Management System (IMS)
     Caveats
-      Some URLs listed in https://admin.ims.susasan.org/api/static-data/dhangadhi require login and cannot be
-      downloaded
+      Some downloads require a login.
     Bulk download documentation
       https://ims.susasan.org/dhangadhi/about
     """
@@ -37,3 +36,9 @@ class NepalDhangadhi(SimpleSpider):
                 meta={"dont_redirect": True},
                 priority=number * -1,
             )
+
+    def is_http_error_expected(self, response):
+        return response.request.url in {
+            "https://admin.ims.susasan.org/ocds/json/dhangadhi-2080-81.json",
+            "https://admin.ims.susasan.org/ocds/json/dhangadhi-2081-82.json",
+        }

@@ -130,7 +130,9 @@ def handle_http_error(decorated):
         elif self.is_http_retryable(response):
             self.log_error_from_response(response, message=f"Gave up retrying (failed {attempts} times)")
         else:
-            self.log_error_from_response(response)
+            self.log_error_from_response(
+                response, level="warning" if self.is_http_error_expected(response) else "error"
+            )
 
     return wrapper
 
