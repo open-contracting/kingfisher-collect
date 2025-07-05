@@ -1,3 +1,5 @@
+import datetime
+
 from kingfisher_scrapy.base_spiders import PeriodicSpider
 from kingfisher_scrapy.spiders.mexico_inai_base import MexicoINAIBase
 from kingfisher_scrapy.util import components
@@ -29,3 +31,7 @@ class MexicoGuadalajara(PeriodicSpider, MexicoINAIBase):
     # PeriodicSpider
     formatter = staticmethod(components(-1))
     pattern = "https://contratacionesabiertas.guadalajara.gob.mx:3000/edca/contractingprocess/{0}"
+
+    def is_http_error_expected(self, response):
+        expected = f"https://contratacionesabiertas.guadalajara.gob.mx:3000/edca/contractingprocess/{datetime.datetime.now().year}"
+        return response.request.url == expected
