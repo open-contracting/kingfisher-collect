@@ -12,4 +12,4 @@ class TanzaniaAPIReleases(TanzaniaAPIBase):
     name = "tanzania_api_releases"
 
     # SimpleSpider
-    data_type = "release"
+    data_type = "release_package"

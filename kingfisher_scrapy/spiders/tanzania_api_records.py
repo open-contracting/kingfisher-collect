@@ -12,4 +12,4 @@ class TanzaniaAPIRecords(TanzaniaAPIBase):
     name = "tanzania_api_records"
 
     # SimpleSpider
-    data_type = "record"
+    data_type = "record_package"
