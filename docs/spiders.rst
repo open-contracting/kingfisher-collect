@@ -1350,6 +1350,16 @@ United Kingdom
 
    scrapy crawl united_kingdom_wales
 
+United States
+~~~~~~~~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.united_states_portland.UnitedStatesPortland
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl united_states_portland
+
 Uruguay
 ~~~~~~~
 
