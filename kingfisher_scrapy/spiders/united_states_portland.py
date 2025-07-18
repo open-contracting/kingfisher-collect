@@ -21,8 +21,7 @@ class UnitedStatesPortland(SimpleSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            # A direct link to the JSON file stored in a Google Drive.
-            # The link to the Google Drive folder is published in
+            # The link to the JSON file in the Google Drive folder that is linked from:
             # https://www.portland.gov/business-opportunities/ocds/ocds-data-publication
             "https://drive.google.com/uc?export=download&id=10FoGezSloloNP99iWnqUYXZ3mOPuU-Jt",
             meta={"file_name": "all.html"},
@@ -31,7 +30,7 @@ class UnitedStatesPortland(SimpleSpider):
 
     @handle_http_error
     def parse_response(self, response):
-        # The file is big, so we get the HTML confirmation page with the final link to download the file
+        # Submit form: "FILE is too large for Google to scan for viruses. Would you still like to download this file?"
         form = response.xpath('//form[@id="download-form"]')
         params = {
             key: form.xpath(f".//input[@name='{key}']/@value").get() for key in ("id", "export", "confirm", "uuid")
