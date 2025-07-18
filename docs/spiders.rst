@@ -224,6 +224,16 @@ Bolivia
 
    scrapy crawl bolivia_agetic
 
+Brazil
+~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.brazil_medicamentos_transparentes.BrazilMedicamentosTransparentes
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl brazil_medicamentos_transparentes
+
 Bulgaria
 ~~~~~~~~
 
