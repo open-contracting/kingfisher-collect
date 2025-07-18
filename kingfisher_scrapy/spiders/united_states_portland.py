@@ -21,7 +21,6 @@ class UnitedStatesPortland(SimpleSpider):
             # A direct link to the JSON file stored in a Google Drive, bypassing the virus scan warning.
             # The link to the Google Drive folder is published in
             # https://www.portland.gov/business-opportunities/ocds/ocds-data-publication
-            "https://www.googleapis.com/drive/v3/files/10FoGezSloloNP99iWnqUYXZ3mOPuU-Jt?alt=media"
-            "&key=AIzaSyDVCNpmfKmJ0gPeyZ8YWMca9ZOKz0CWdgs",
+            "https://www.googleapis.com/drive/v3/files/10FoGezSloloNP99iWnqUYXZ3mOPuU-Jt?alt=media",
             meta={"file_name": "all.json"},
         )
