@@ -3,6 +3,7 @@ from urllib.parse import urlencode
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
+from kingfisher_scrapy.util import handle_http_error
 
 
 class UnitedStatesPortland(SimpleSpider):
@@ -28,6 +29,7 @@ class UnitedStatesPortland(SimpleSpider):
             callback=self.parse_response,
         )
 
+    @handle_http_error
     def parse_response(self, response):
         # The file is big, so we get the HTML confirmation page with the final link to download the file
         form = response.xpath('//form[@id="download-form"]')
