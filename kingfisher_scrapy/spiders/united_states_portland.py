@@ -33,12 +33,10 @@ class UnitedStatesPortland(SimpleSpider):
     def parse_response(self, response):
         # The file is big, so we get the HTML confirmation page with the final link to download the file
         form = response.xpath('//form[@id="download-form"]')
-        action_url = form.xpath("@action").get()
-        params = {}
-        for key in ("id", "export", "confirm", "uuid"):
-            params[key] = form.xpath(f".//input[@name='{key}']/@value").get()
-
+        params = {
+            key: form.xpath(f".//input[@name='{key}']/@value").get() for key in ("id", "export", "confirm", "uuid")
+        }
         yield scrapy.Request(
-            url=f"{action_url}?{urlencode(params)}",
+            url=f"{form.xpath('@action').get()}?{urlencode(params)}",
             meta={"file_name": "all.json"},
         )
