@@ -26,6 +26,7 @@ class UpdateDocs(ScrapyCommand):
                     "north_macedonia",
                     "south_africa",
                     "united_kingdom",
+                    "united_states",
                 )
             ):
                 return "_".join(module_name.split("_", 2)[:2])
