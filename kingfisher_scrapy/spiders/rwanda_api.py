@@ -10,7 +10,7 @@ class RwandaAPI(LinksSpider):
       Rwanda Public Procurement Authority (RPPA)
     Spider arguments
       from_date
-        Download only data from this date onward (YYYY-MM-DD format). Defaults to '2016-07-02'.
+        Download only data from this date onward (YYYY-MM-DD format). Defaults to '2016-01-01'.
       until_date
         Download only data until this date (YYYY-MM-DD format). Defaults to today.
     Swagger API documentation
@@ -20,7 +20,7 @@ class RwandaAPI(LinksSpider):
     name = "rwanda_api"
 
     # BaseSpider
-    default_from_date = "2016-07-02"
+    default_from_date = "2016-01-01"
     date_required = True
 
     # SimpleSpider

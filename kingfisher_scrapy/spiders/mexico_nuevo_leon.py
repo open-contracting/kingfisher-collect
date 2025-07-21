@@ -13,7 +13,7 @@ class MexicoNuevoLeon(SimpleSpider):
     Spider arguments
       from_date
         Download only data from this date onward (YYYY-MM-DD format).
-        If ``until_date`` is provided, defaults to '2024-11-11'.
+        If ``until_date`` is provided, defaults to '2024-01-01'.
       until_date
         Download only data until this date (YYYY-MM-DD format).
         If ``from_date`` is provided, defaults to today.
@@ -25,7 +25,7 @@ class MexicoNuevoLeon(SimpleSpider):
     user_agent = BROWSER_USER_AGENT  # to avoid HTTP 403
 
     # BaseSpider
-    default_from_date = "2024-11-11"
+    default_from_date = "2024-01-01"
 
     # SimpleSpider
     data_type = "release_package"

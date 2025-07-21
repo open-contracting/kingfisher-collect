@@ -6,7 +6,7 @@ from kingfisher_scrapy.util import components, handle_http_error, json_dumps
 
 class TanzaniaBulkBase(IndexSpider):
     # BaseSpider
-    default_from_date = "2022-02-22"
+    default_from_date = "2022-01-01"
 
     # IndexSpider
     result_count_pointer = "/recordsFilteredCount"
