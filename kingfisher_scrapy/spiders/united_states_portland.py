@@ -23,7 +23,7 @@ class UnitedStatesPortland(SimpleSpider):
         yield scrapy.Request(
             # The link to the JSON file in the Google Drive folder that is linked from:
             # https://www.portland.gov/business-opportunities/ocds/ocds-data-publication
-            "https://drive.google.com/uc?export=download&id=10FoGezSloloNP99iWnqUYXZ3mOPuU-Jt",
+            "https://drive.usercontent.google.com/download?id=10FoGezSloloNP99iWnqUYXZ3mOPuU-Jt&export=download",
             meta={"file_name": "all.html"},
             callback=self.parse_response,
         )
