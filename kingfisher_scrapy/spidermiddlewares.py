@@ -40,7 +40,7 @@ class ConcatenatedJSONMiddleware:
     async def process_spider_output(self, response, result, spider):
         """Return a generator of FileItem objects, in which the ``data`` field is parsed JSON."""
         async for item in result:
-            if not isinstance(item, File) or not spider.concatenated_json:
+            if not spider.concatenated_json or not isinstance(item, File):
                 yield item
                 continue
 
@@ -63,7 +63,7 @@ class LineDelimitedMiddleware:
     async def process_spider_output(self, response, result, spider):
         """Return a generator of FileItem objects, in which the ``data`` field is bytes."""
         async for item in result:
-            if not isinstance(item, File) or not spider.line_delimited:
+            if not spider.line_delimited or not isinstance(item, File):
                 yield item
                 continue
 
@@ -88,7 +88,7 @@ class ValidateJSONMiddleware:
     async def process_spider_output(self, response, result, spider):
         """Return a generator of File or FileItem objects, in which the ``data`` field is valid JSON."""
         async for item in result:
-            if not isinstance(item, File | FileItem) or not spider.validate_json or isinstance(item.data, dict):
+            if not spider.validate_json or not isinstance(item, File | FileItem) or isinstance(item.data, dict):
                 yield item
                 continue
 
@@ -116,7 +116,7 @@ class RootPathMiddleware:
     async def process_spider_output(self, response, result, spider):
         """Return a generator of File or FileItem objects, in which the ``data`` field is parsed JSON."""
         async for item in result:
-            if not isinstance(item, File | FileItem) or not spider.root_path:
+            if not spider.root_path or not isinstance(item, File | FileItem):
                 yield item
                 continue
 
@@ -226,7 +226,7 @@ class ResizePackageMiddleware:
         The spider must yield items whose ``data`` field has ``package`` and ``data`` keys.
         """
         async for item in result:
-            if not isinstance(item, File) or not getattr(spider, "resize_package", False):
+            if not spider.resize_package or not isinstance(item, File):
                 yield item
                 continue
 
