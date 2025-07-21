@@ -62,6 +62,7 @@ class BaseSpider(scrapy.Spider):
     line_delimited = False
     validate_json = False
     root_path = ""
+    resize_package = False
     unflatten = False
     unflatten_args = {}
     ocds_version = "1.1"

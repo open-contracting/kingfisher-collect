@@ -52,7 +52,6 @@ class CompressedFileSpider(BaseSpider):
     dont_truncate = True
 
     yield_non_archive_file = False
-    resize_package = False
     file_name_must_contain = ""
     file_name_must_not_contain = ""
 

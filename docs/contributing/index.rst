@@ -107,6 +107,7 @@ Since there are many class attributes that control a spider's behavior, please p
       line_delimited = True
       validate_json = True
       root_path = 'item'
+      resize_package = True
       unflatten = True
       unflatten_args = {}
       ocds_version = '1.0'
@@ -118,7 +119,6 @@ Since there are many class attributes that control a spider's behavior, please p
       data_type = 'release_package'
 
       # CompressedFileSpider
-      resize_package = True
       file_name_must_contain = '-'
 
       # LinksSpider
