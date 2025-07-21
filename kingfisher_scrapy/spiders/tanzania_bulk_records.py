@@ -8,7 +8,7 @@ class TanzaniaBulkRecords(TanzaniaBulkBase):
     Spider arguments
       from_date
         Download only data from this date onward (YYYY-MM-DD format).
-        If ``until_date`` is provided, defaults to '2023-07-30'.
+        If ``until_date`` is provided, defaults to '2022-02-22'.
       until_date
         Download only data until this date (YYYY-MM-DD format).
         If ``from_date`` is provided, defaults to today.
