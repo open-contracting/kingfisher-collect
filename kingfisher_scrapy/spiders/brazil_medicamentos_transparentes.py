@@ -25,7 +25,6 @@ class BrazilMedicamentosTransparentes(CompressedFileSpider, IndexSpider):
     param_offset = "skip"
     parse_list_callback = "parse_page"
     result_count_pointer = "/response/count"
-    start_page = 0
 
     def start_requests(self):
         yield scrapy.Request(
