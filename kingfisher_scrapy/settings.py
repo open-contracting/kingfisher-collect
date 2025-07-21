@@ -35,7 +35,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 2  # default 8
 COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
-TELNETCONSOLE_ENABLED = False
+TELNETCONSOLE_ENABLED = os.getenv("TELNETCONSOLE_ENABLED") == "True"
 
 # Override the default request headers:
 # DEFAULT_REQUEST_HEADERS = {
@@ -68,7 +68,6 @@ DOWNLOADER_MIDDLEWARES = {
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 EXTENSIONS = {
-    "scrapy.extensions.telnet.TelnetConsole": None,
     "kingfisher_scrapy.extensions.SentryLogging": -1,
     "kingfisher_scrapy.extensions.Pluck": 1,
     # `FilesStore` must run before `KingfisherProcessAPI2`, because the file needs to be written before the
@@ -78,6 +77,8 @@ EXTENSIONS = {
     "kingfisher_scrapy.extensions.ItemCount": 600,
     "kingfisher_scrapy.extensions.DatabaseStore": 700,
 }
+if not TELNETCONSOLE_ENABLED:
+    EXTENSIONS["scrapy.extensions.telnet.TelnetConsole"] = None
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
