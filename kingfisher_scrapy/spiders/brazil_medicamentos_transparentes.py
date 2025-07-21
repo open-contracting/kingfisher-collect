@@ -7,7 +7,7 @@ from kingfisher_scrapy.util import components
 class BrazilMedicamentosTransparentes(CompressedFileSpider, IndexSpider):
     """
     Domain
-      Medicamentos Transparentes project by Transparência Brasil
+      Medicamentos Transparentes by Transparência Brasil
     API documentation
       https://medicamentos-api.transparencia.org.br/docs#/DadosAbertos
     Bulk download documentation
@@ -20,11 +20,11 @@ class BrazilMedicamentosTransparentes(CompressedFileSpider, IndexSpider):
     data_type = "release_package"
 
     # IndexSpider
+    result_count_pointer = "/response/count"
     limit = 100
+    parse_list_callback = "parse_page"
     param_limit = "take"
     param_offset = "skip"
-    parse_list_callback = "parse_page"
-    result_count_pointer = "/response/count"
 
     def start_requests(self):
         yield scrapy.Request(
