@@ -165,7 +165,7 @@ scrapy==2.11.2
     #   -r requirements.in
     #   scrapyd
     #   scrapyd-client
-scrapyd==1.5.0b1
+scrapyd==1.6.0
     # via -r requirements.in
 scrapyd-client==2.0.0
     # via -r requirements.in
