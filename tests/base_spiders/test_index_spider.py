@@ -118,7 +118,7 @@ def test_urls(spider_args, start_request_response, initial_url, results_pattern,
         range_to_evaluate = requests[1:]
 
     regexp = re.compile(results_pattern)
-    for request, expected_param in zip(range_to_evaluate, expected, strict=False):
+    for request, expected_param in zip(range_to_evaluate, expected, strict=True):
         match = regexp.match(request.url)
         assert match is not None, f"{request.url!r} !~ {regexp!r}"
         assert match.group(1) == expected_param

@@ -14,28 +14,13 @@ pattern_year_month = "http://example.com/{0:%Y-%m}"
 pattern_date = "http://example.com/{0:%Y-%m-%d}/{1:%Y-%m-%d}"
 
 
-def _format_urls(arg_type, pattern, arg_start, arg_end):
-    if arg_type == "year":
-        date_range = date_range_by_year
-        start = arg_start.year
-        end = arg_end.year
-    elif arg_type == "year-month":
-        date_range = date_range_by_month
-        start = arg_start
-        end = arg_end
-    else:
-        return [pattern.format(x, y) for x, y in date_range_by_interval(arg_start, arg_end, 1)]
-
-    return [pattern.format(x) for x in date_range(start, end)]
-
-
 TEST_CASES = {
     # default from date
     "default_from-year": (
         "year",
         pattern_year,
         "2011",
-        today.year,
+        str(today.year),
         {
             "default_from_date": "2011",
         },
@@ -100,7 +85,7 @@ TEST_CASES = {
         "year",
         pattern_year,
         "2017",
-        today.year,
+        str(today.year),
         {
             "default_from_date": "2011",
         },
@@ -176,8 +161,8 @@ TEST_CASES = {
     "user_sample-year": (
         "year",
         "http://example.com/{}",
-        today.year,
-        today.year,
+        str(today.year),
+        str(today.year),
         {
             "default_from_date": "2011",
         },
@@ -218,12 +203,19 @@ TEST_CASES = {
     ids=TEST_CASES.keys(),
 )
 def test_urls(date_format, pattern, expected_start, expected_end, class_args, user_args):
-    expected = _format_urls(
-        date_format,
-        pattern,
-        datetime.datetime.strptime(str(expected_start), PeriodicSpider.VALID_DATE_FORMATS[date_format]),
-        datetime.datetime.strptime(str(expected_end), PeriodicSpider.VALID_DATE_FORMATS[date_format]),
-    )
+    start = datetime.datetime.strptime(expected_start, PeriodicSpider.VALID_DATE_FORMATS[date_format])
+    stop = datetime.datetime.strptime(expected_end, PeriodicSpider.VALID_DATE_FORMATS[date_format])
+
+    if date_format == "date":
+        expected = [pattern.format(x, y) for x, y in date_range_by_interval(start, stop, 1)]
+    else:
+        if date_format == "year-month":
+            date_range = date_range_by_month
+        elif date_format == "year":
+            date_range = date_range_by_year
+            start = start.year
+            stop = stop.year
+        expected = [pattern.format(x) for x in date_range(start, stop)]
 
     test_spider = type(
         "TestSpider",
