@@ -815,13 +815,6 @@ Mexico
 
    scrapy crawl mexico_guanajuato_iacip
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_inai_api.MexicoINAIAPI
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_inai_api
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_city_infocdmx.MexicoMexicoCityINFOCDMX
    :no-members:
 
