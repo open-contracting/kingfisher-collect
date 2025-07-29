@@ -815,13 +815,6 @@ Mexico
 
    scrapy crawl mexico_guanajuato_iacip
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_inai_api.MexicoINAIAPI
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_inai_api
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_city_infocdmx.MexicoMexicoCityINFOCDMX
    :no-members:
 
@@ -878,13 +871,6 @@ Mexico
 
    scrapy crawl mexico_quien_es_quien_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_quintana_roo_idaip.MexicoQuintanaRooIDAIP
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_quintana_roo_idaip
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_quintana_roo_sesaeqroo_plataforma_digital_nacional.MexicoQuintanaRooSESAEQROOPlataformaDigitalNacional
    :no-members:
 
@@ -899,13 +885,6 @@ Mexico
 
    scrapy crawl mexico_shcp_plataforma_digital_nacional
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_veracruz_ivai.MexicoVeracruzIVAI
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_veracruz_ivai
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_veracruz_state_sesea_plataforma_digital_nacional.MexicoVeracruzStateSESEAPlataformaDigitalNacional
    :no-members:
 
@@ -919,13 +898,6 @@ Mexico
 .. code-block:: bash
 
    scrapy crawl mexico_yucatan_inaip
-
-.. autoclass:: kingfisher_scrapy.spiders.mexico_zacatecas_izai.MexicoZacatecasIZAI
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_zacatecas_izai
 
 Nepal
 ~~~~~
