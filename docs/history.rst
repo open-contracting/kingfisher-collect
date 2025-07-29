@@ -8,9 +8,11 @@ Lapsed publications
 
 Spiders for publications that were available but stopped publishing, since January 2022:
 
--  2025-07-29: `mexico_inai_api, mexico_quintana_roo_idaip, mexico_veracruz_ivai <https://github.com/open-contracting/kingfisher-collect/pull/1185>`__, because these institutions were eliminated:
+-  2025-07-29: `mexico_inai_api, mexico_quintana_roo_idaip, mexico_veracruz_ivai, mexico_zacatecas_izai <https://github.com/open-contracting/kingfisher-collect/pull/1185>`__, because these institutions were eliminated:
    -  Instituto Veracruzano de Acceso a la Información y Protección de Datos Personales (INAI)
+   -  Instituto de Acceso a la Información y Protección de Datos Personales de Quintana Roo (IDAIPQROO)
    -  Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (IVAI)
+   -  Instituto Zacatecano de Transparencia y Acceso a la Información (IZAI)
 -  2025-04-14: `mexico_durango_idaip, mexico_mexico_state_infoem, mexico_nuevo_leon_cotai, nigeria_abia_state, nigeria_enugu_state, nigeria_kano_state, panama_dgcp_bulk, panama_dgcp_records, panama_dgcp_releases, portugal_records, portugal_releases <https://github.com/open-contracting/kingfisher-collect/pull/1159>`__
    .. http://74.208.135.52:3000/edca/fiscalYears from http://contratacionesabiertas.idaip.org.mx/contratacionesabiertas/datosabiertos
    .. http://infoem.org.mx:3000/edca/contractingprocess/null from http://www.infoem.org.mx:4000/contratacionesabiertas/datosabiertos

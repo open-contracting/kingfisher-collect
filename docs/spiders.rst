@@ -899,13 +899,6 @@ Mexico
 
    scrapy crawl mexico_yucatan_inaip
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_zacatecas_izai.MexicoZacatecasIZAI
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_zacatecas_izai
-
 Nepal
 ~~~~~
 
