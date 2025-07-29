@@ -871,13 +871,6 @@ Mexico
 
    scrapy crawl mexico_quien_es_quien_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_quintana_roo_idaip.MexicoQuintanaRooIDAIP
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_quintana_roo_idaip
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_quintana_roo_sesaeqroo_plataforma_digital_nacional.MexicoQuintanaRooSESAEQROOPlataformaDigitalNacional
    :no-members:
 
