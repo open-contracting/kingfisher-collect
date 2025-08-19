@@ -146,7 +146,6 @@ class Unflatten:
         with tempfile.TemporaryDirectory() as directory:
             input_path = os.path.join(directory, input_name)
             output_name = os.path.join(directory, item.file_name)
-            schema = os.path.join(directory, "release-schema.json")
             if input_format == "csv":
                 input_name = directory
             elif input_format == "xlsx":
@@ -154,9 +153,6 @@ class Unflatten:
 
             with open(input_path, "wb") as f:
                 f.write(item.data)
-            # Flatten Tool accepts only URLs or filenames.
-            with open(schema, "wb") as f:
-                f.write(pkgutil.get_data("kingfisher_scrapy", f"schema/{spider.ocds_version}.json"))
 
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore", category=FlattenToolWarning)
@@ -165,7 +161,7 @@ class Unflatten:
                     input_name,
                     root_list_path="releases",
                     root_id="ocid",
-                    schema=schema,
+                    schema=json.loads(pkgutil.get_data("kingfisher_scrapy", f"schema/{spider.ocds_version}.json")),
                     input_format=input_format,
                     output_name=output_name,
                     **spider.unflatten_args,

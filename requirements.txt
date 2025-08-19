@@ -48,7 +48,7 @@ exceptiongroup==1.2.2
     # via cattrs
 filelock==3.4.1
     # via tldextract
-flattentool==0.26.0
+flattentool==0.27.0
     # via -r requirements.in
 hyperlink==21.0.0
     # via twisted
