@@ -12,9 +12,9 @@ class RwandaBulk(CompressedFileSpider):
       Rwanda Public Procurement Authority (RPPA)
     Spider arguments
       from_date
-        Download only data from this month onward (YYYY-MM format). Defaults to '2016-06'.
+        Download only data from this year onward (YYYY format). Defaults to '2016'.
       until_date
-        Download only data until this month (YYYY-MM format). Defaults to the current month.
+        Download only data until this year (YYYY format). Defaults to the current year.
     Bulk download documentation
       https://ocds.umucyo.gov.rw/OpenData
     """
@@ -22,8 +22,8 @@ class RwandaBulk(CompressedFileSpider):
     name = "rwanda_bulk"
 
     # BaseSpider
-    date_format = "year-month"
-    default_from_date = "2016-06"
+    date_format = "year"
+    default_from_date = "2016"
     date_required = True
     skip_pluck = "Already covered (see code for details)"  # rwanda_api
 
