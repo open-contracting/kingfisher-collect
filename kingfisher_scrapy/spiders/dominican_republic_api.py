@@ -18,11 +18,10 @@ class DominicanRepublicAPI(IndexSpider):
     """
 
     name = "dominican_republic_api"
-
     custom_settings = {
-        # To avoid hitting the maximum number of request per second too fast
+        # The API rate limits aggressively, and sets the Retry-After header.
         "CONCURRENT_REQUESTS": 1,
-        # Don't let Scrapy handle error codes.
+        # Don't let Scrapy handle HTTP 429.
         "RETRY_HTTP_CODES": [],
     }
 
@@ -45,16 +44,16 @@ class DominicanRepublicAPI(IndexSpider):
 
     def start_requests(self):
         yield scrapy.Request(
-            f"{self.dominican_republic_base_url}/all?start_date={self.from_date.strftime(self.date_format)}"
+            f"{self.dominican_republic_base_url}/all?limit=1000&start_date={self.from_date.strftime(self.date_format)}"
             f"&end_date={self.until_date.strftime(self.date_format)}",
             callback=self.parse_list,
-            meta={"file_name": "page1.json"},
+            meta={"file_name": "page-1.json"},
         )
 
     @handle_http_error
     def parse_page(self, response):
-        # If 404, http status is 200 but content is null
-        for item in response.json()["payload"].get("content") or []:
+        # `content` is null if, for example, the page number is outside the result set.
+        for item in response.json()["payload"]["content"] or []:
             yield self.build_request(
                 f"{self.dominican_republic_base_url}?ocid={item['ocid']}",
                 formatter=parameters("ocid"),
