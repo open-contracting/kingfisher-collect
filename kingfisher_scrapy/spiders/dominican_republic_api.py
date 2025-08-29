@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import IndexSpider
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.util import handle_http_error, parameters, replace_path_separator
 
 
 class DominicanRepublicAPI(IndexSpider):
@@ -56,5 +56,5 @@ class DominicanRepublicAPI(IndexSpider):
         for item in response.json()["payload"]["content"] or []:
             yield self.build_request(
                 f"{self.dominican_republic_base_url}?ocid={item['ocid']}",
-                formatter=parameters("ocid"),
+                formatter=parameters("ocid", parser=replace_path_separator),
             )
