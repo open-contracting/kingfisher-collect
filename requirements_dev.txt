@@ -140,11 +140,11 @@ lxml==5.3.0
     #   flattentool
     #   parsel
     #   scrapy
-ocdsextensionregistry==0.5.0
+ocdsextensionregistry==0.7.0
     # via
     #   -r requirements.txt
     #   ocdskit
-ocdskit==1.2.0
+ocdskit==1.5.0
     # via -r requirements.txt
 ocdsmerge==0.7.0
     # via
