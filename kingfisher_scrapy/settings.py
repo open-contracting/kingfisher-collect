@@ -6,6 +6,7 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import logging
 import os
 
 BOT_NAME = "kingfisher_scrapy"
@@ -113,6 +114,10 @@ REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 
 
 # Project-specific Scrapy configuration
+
+logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
+logging.getLogger("requests_cache.backends").setLevel(logging.INFO)
+logging.getLogger("requests_cache.policy.actions").setLevel(logging.INFO)
 
 # https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-DOWNLOAD_TIMEOUT
 DOWNLOAD_TIMEOUT = 360  # many spiders time out when using the 180 default
