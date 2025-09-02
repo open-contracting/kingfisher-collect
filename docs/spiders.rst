@@ -1311,13 +1311,6 @@ United Kingdom
 
    scrapy crawl united_kingdom_fts
 
-.. autoclass:: kingfisher_scrapy.spiders.united_kingdom_fts_test.UnitedKingdomFTSTest
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl united_kingdom_fts_test
-
 .. autoclass:: kingfisher_scrapy.spiders.united_kingdom_scotland.UnitedKingdomScotland
    :no-members:
 
