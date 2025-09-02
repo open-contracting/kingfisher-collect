@@ -19,9 +19,7 @@ class DominicanRepublicAPI(IndexSpider):
 
     name = "dominican_republic_api"
     custom_settings = {
-        # The API rate limits aggressively, and sets the Retry-After header.
-        "CONCURRENT_REQUESTS": 1,
-        # Don't let Scrapy handle HTTP 429.
+        # Don't let Scrapy handle HTTP 429. The API sets the Retry-After header.
         "RETRY_HTTP_CODES": [],
     }
 
