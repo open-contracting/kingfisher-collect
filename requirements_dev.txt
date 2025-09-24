@@ -46,7 +46,7 @@ contextlib2==0.6.0.post1
     # via
     #   -r requirements.txt
     #   schema
-coverage==7.6.1
+coverage[toml]==7.6.1
     # via -r requirements_dev.in
 cryptography==44.0.1
     # via
@@ -144,7 +144,7 @@ ocdsextensionregistry==0.7.0
     # via
     #   -r requirements.txt
     #   ocdskit
-ocdskit==1.5.0
+ocdskit[perf]==1.5.0
     # via -r requirements.txt
 ocdsmerge==0.7.0
     # via
@@ -161,7 +161,10 @@ openpyxl==3.0.5
     #   -r requirements_dev.in
     #   flattentool
 orjson==3.9.15
-    # via -r requirements.txt
+    # via
+    #   -r requirements.txt
+    #   ocdskit
+    #   yapw
 packaging==23.1
     # via
     #   -r requirements.txt
@@ -183,10 +186,6 @@ pika==1.2.0
     #   -r requirements.txt
     #   -r requirements_dev.in
     #   yapw
-pip==25.1.1
-    # via
-    #   -r requirements.txt
-    #   scrapyd-client
 platformdirs==4.3.3
     # via
     #   -r requirements.txt
@@ -282,18 +281,6 @@ service-identity==24.1.0
     # via
     #   -r requirements.txt
     #   scrapy
-setuptools==80.9.0
-    # via
-    #   -r requirements.txt
-    #   incremental
-    #   scrapy
-    #   scrapyd
-    #   scrapyd-client
-    #   zc-lockfile
-    #   zc-zlibstorage
-    #   zope-deferredimport
-    #   zope-interface
-    #   zope-proxy
 six==1.16.0
     # via
     #   -r requirements.txt
@@ -353,7 +340,7 @@ xmltodict==0.12.0
     # via
     #   -r requirements.txt
     #   flattentool
-yapw==0.1.4
+yapw[perf]==0.1.4
     # via -r requirements.txt
 zc-lockfile==3.0.post1
     # via
