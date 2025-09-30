@@ -327,7 +327,7 @@ def test_item_scraped(directory, filename, item, channel, tmpdir):
         "path": os.path.join("test", "20010203_040506", directory, filename),
     }
 
-    method_frame, header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
+    _method_frame, _header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
 
     assert body is not None  # None if no message in queue
     assert json.loads(body) == expected
@@ -346,7 +346,7 @@ def test_item_scraped_path(item_file, channel, tmpdir):
         runner = CrawlerRunner(settings=SETTINGS | {"FILES_STORE": "subdir"})
         yield runner.crawl(Spider, crawl_time="2001-02-03T04:05:06", start_urls=[START_URL], item=item_file)
 
-    method_frame, header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
+    _method_frame, _header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
 
     assert body is not None  # None if no message in queue
     assert json.loads(body) == {
