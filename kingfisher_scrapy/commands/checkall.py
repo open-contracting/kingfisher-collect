@@ -23,7 +23,7 @@ word_boundary_re = re.compile(
     |(?<=HondurasSEFIN)
     |(?<=MexicoINAI)
     |(?<=PakistanPPRA)
-    |(?<=PeruOSCE)
+    |(?<=PeruOECE)
     """,
     flags=re.VERBOSE,
 )

@@ -1077,26 +1077,26 @@ Peru
 
    scrapy crawl peru_compras_bulk
 
-.. autoclass:: kingfisher_scrapy.spiders.peru_osce_api_records.PeruOSCEAPIRecords
+.. autoclass:: kingfisher_scrapy.spiders.peru_oece_api_records.PeruOECEAPIRecords
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl peru_osce_api_records
+   scrapy crawl peru_oece_api_records
 
-.. autoclass:: kingfisher_scrapy.spiders.peru_osce_api_releases.PeruOSCEAPIReleases
+.. autoclass:: kingfisher_scrapy.spiders.peru_oece_api_releases.PeruOECEAPIReleases
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl peru_osce_api_releases
+   scrapy crawl peru_oece_api_releases
 
-.. autoclass:: kingfisher_scrapy.spiders.peru_osce_bulk.PeruOSCEBulk
+.. autoclass:: kingfisher_scrapy.spiders.peru_oece_bulk.PeruOECEBulk
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl peru_osce_bulk
+   scrapy crawl peru_oece_bulk
 
 Poland
 ~~~~~~

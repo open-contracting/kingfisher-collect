@@ -4,17 +4,17 @@ from kingfisher_scrapy.base_spiders import CompressedFileSpider, IndexSpider
 from kingfisher_scrapy.util import components, handle_http_error
 
 
-class PeruOSCEBulk(CompressedFileSpider, IndexSpider):
+class PeruOECEBulk(CompressedFileSpider, IndexSpider):
     """
     Domain
-      Organismo Supervisor de las Contrataciones del Estado (OSCE)
+      Organismo Especializado para las Contrataciones Públicas Eficientes (OECE)
     API documentation
-      https://contratacionesabiertas.osce.gob.pe/api
+      https://contratacionesabiertas.oece.gob.pe/api
     Bulk download documentation
-      https://contratacionesabiertas.osce.gob.pe/descargas
+      https://contratacionesabiertas.oece.gob.pe/descargas
     """
 
-    name = "peru_osce_bulk"
+    name = "peru_oece_bulk"
 
     # SimpleSpider
     data_type = "record_package"
@@ -24,7 +24,7 @@ class PeruOSCEBulk(CompressedFileSpider, IndexSpider):
     page_count_pointer = "/pagination/num_pages"
     parse_list_callback = "parse_page"
 
-    peru_base_url = "https://contratacionesabiertas.osce.gob.pe/api/v1/files?page={0}&paginateBy=10&format=json"
+    peru_base_url = "https://contratacionesabiertas.oece.gob.pe/api/v1/files?page={0}&paginateBy=10&format=json"
 
     def start_requests(self):
         yield scrapy.Request(self.peru_base_url.format(1), meta={"file_name": "list.json"}, callback=self.parse_list)
