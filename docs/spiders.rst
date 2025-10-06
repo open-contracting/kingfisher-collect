@@ -227,6 +227,13 @@ Bolivia
 Brazil
 ~~~~~~
 
+.. autoclass:: kingfisher_scrapy.spiders.brazil_compras.BrazilCompras
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl brazil_compras
+
 .. autoclass:: kingfisher_scrapy.spiders.brazil_medicamentos_transparentes.BrazilMedicamentosTransparentes
    :no-members:
 
