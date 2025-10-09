@@ -18,11 +18,19 @@ class BrazilCompras(LinksSpider):
       https://dadosabertos.compras.gov.br/swagger-ui/index.html#/11%20-%20OCDS/releases
     """
 
+    custom_settings = {
+        # Reduce the number of concurrent requests to avoid multiple failures.
+        "CONCURRENT_REQUESTS": 1,
+        # Don't let Scrapy handle HTTP 429.
+        "RETRY_HTTP_CODES": [],
+    }
+
     name = "brazil_compras"
 
     # BaseSpider
     date_required = True
     default_from_date = "2021-08-10"
+    max_attempts = 5
     retry_http_codes = [429]
 
     # SimpleSpider
