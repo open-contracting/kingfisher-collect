@@ -26,7 +26,7 @@ class ArgentinaBuenosAires(SimpleSpider):
     def start_requests(self):
         # A CKAN API JSON response.
         url = "https://data.buenosaires.gob.ar/api/3/action/package_show?id=buenos-aires-compras"
-        yield scrapy.Request(url, meta={"file_name": "package_show.json"}, callback=self.parse_list)
+        yield scrapy.Request(url, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

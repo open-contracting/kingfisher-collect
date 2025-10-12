@@ -36,7 +36,7 @@ class MexicoNuevoLeon(SimpleSpider):
             "https://catalogodatos.nl.gob.mx/api/3/action/package_show?id="
             "contrataciones-abiertas-direccion-general-de-adquisiciones-y-servicios"
         )
-        yield scrapy.Request(url, meta={"file_name": "package_show.json"}, callback=self.parse_list)
+        yield scrapy.Request(url, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):
