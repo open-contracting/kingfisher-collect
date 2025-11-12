@@ -8,7 +8,7 @@ class NigeriaPlateauState(SimpleSpider):
     Domain
       Plateau State Open Contracting Portal
     Bulk download documentation
-      https://ocds.plateaustate.gov.ng/
+      https://plateaustatebpp.com/ocds
     """
 
     name = "nigeria_plateau_state"
@@ -17,4 +17,4 @@ class NigeriaPlateauState(SimpleSpider):
     data_type = "release_package"
 
     def start_requests(self):
-        yield scrapy.Request("https://plateaustatebpp.com/ocds", meta={"file_name": "all.json"})
+        yield scrapy.Request("https://plateaustatebpp.com/export", meta={"file_name": "all.json"})
