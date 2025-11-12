@@ -8,10 +8,6 @@ from kingfisher_scrapy.util import components, handle_http_error
 
 
 class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
-    custom_settings = {
-        "DOWNLOAD_FAIL_ON_DATALOSS": False,
-    }
-
     # BaseSpider
     date_format = "year-month"
     # They have data since 2009, but the API is too slow to download them all
@@ -26,7 +22,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
 
     # IndexSpider
     result_count_pointer = "/pagination/total"
-    limit = 10
+    limit = 1000
     parse_list_callback = "parse_page"
 
     # Local
