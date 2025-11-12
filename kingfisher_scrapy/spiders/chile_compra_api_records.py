@@ -34,5 +34,5 @@ class ChileCompraAPIRecords(ChileCompraAPIBase):
     data_type = "record_package"
 
     def handle_item(self, item):
-        url = f"https://apis.mercadopublico.cl/OCDS/data/record/{item['ocid'].replace('ocds-70d2nz-', '')}"
+        url = f"https://api.mercadopublico.cl/APISOCDS/ocds/record/{item['ocid'].replace('ocds-70d2nz-', '')}"
         yield self.build_request(url, formatter=components(-2))
