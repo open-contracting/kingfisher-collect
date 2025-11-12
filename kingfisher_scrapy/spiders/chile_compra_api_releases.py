@@ -33,4 +33,5 @@ class ChileCompraAPIReleases(ChileCompraAPIBase):
     def handle_item(self, item):
         for key in item:
             if key.startswith("url"):
-                yield self.build_request(item[key], formatter=components(-2))
+                # The API returns URLs with HTTP, which raises timeouts
+                yield self.build_request(item[key].replace("http", "https"), formatter=components(-2))
