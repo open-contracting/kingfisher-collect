@@ -8,6 +8,18 @@ Lapsed publications
 
 Spiders for publications that were available but stopped publishing, since January 2022:
 
+-  2025-22-14: `australia_new_south_wales, chile_public_works_bulk, italy_ministry_of_infrastructure_and_transport, mexico_administracion_publica_federal_api, mexico_administracion_publica_federal_bulk, mexico_guanajuato_iacip, netherlands <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__
+
+   .. https://datosabiertos.vialidad.gob.ar/ui/index.html#!/datos_abiertos
+   .. https://www.tenders.nsw.gov.au/?event=public.api.tender.search
+   .. https://obrapublica.cl/download/ocds_descargamasiva.zip
+   .. https://www.serviziocontrattipubblici.it/ocds-ms/swagger-ui.html
+   .. https://api.datos.gob.mx/v2/contratacionesabiertas
+   .. https://www.gob.mx/compranet/documentos/estandar-de-datos-para-las-contrataciones-abiertas-edca
+   .. http://contratacionesabiertas.iacipgto.mx:4000/contratacionesabiertas/datosabiertos
+   .. https://www.tenderned.nl/cms/nl/aanbesteden-in-cijfers/datasets-aanbestedingen
+
+-  2025-22-14: `argentina_vialidad <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__, because Vialidad Nacional del Ministerio de Obras Públicas was eliminated.
 -  2025-07-29: `mexico_inai_api, mexico_quintana_roo_idaip, mexico_veracruz_ivai, mexico_zacatecas_izai <https://github.com/open-contracting/kingfisher-collect/pull/1185>`__, because these institutions were eliminated:
 
    -  Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI)
@@ -78,6 +90,7 @@ Broken publications
 
 Spiders for publications that became broken, since April 2024:
 
+-  2025-22-14: `argentina_buenos_aires <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__ (returns incomplete JSON)
 -  2025-04-14: `moldova <https://github.com/open-contracting/kingfisher-collect/pull/1159>`__ (returns upstream errors)
 -  2025-01-02: `pakistan_ppra_api, pakistan_ppra_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1137>`__ (requires paginating `HTML <https://ppra.org.pk/opendata.asp>`__)
 -  2024-07-02: `mexico_sinaloa_ceaip <https://github.com/open-contracting/kingfisher-collect/pull/1093>`__ (returns no data)
