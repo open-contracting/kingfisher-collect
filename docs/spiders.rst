@@ -146,26 +146,12 @@ Albania
 Argentina
 ~~~~~~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.argentina_buenos_aires.ArgentinaBuenosAires
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl argentina_buenos_aires
-
 .. autoclass:: kingfisher_scrapy.spiders.argentina_mendoza_province_bulk.ArgentinaMendozaProvinceBulk
    :no-members:
 
 .. code-block:: bash
 
    scrapy crawl argentina_mendoza_province_bulk
-
-.. autoclass:: kingfisher_scrapy.spiders.argentina_vialidad.ArgentinaVialidad
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl argentina_vialidad
 
 Armenia
 ~~~~~~~
@@ -186,13 +172,6 @@ Australia
 .. code-block:: bash
 
    scrapy crawl australia
-
-.. autoclass:: kingfisher_scrapy.spiders.australia_new_south_wales.AustraliaNewSouthWales
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl australia_new_south_wales
 
 Austria
 ~~~~~~~
@@ -298,13 +277,6 @@ Chile
 .. code-block:: bash
 
    scrapy crawl chile_compra_bulk
-
-.. autoclass:: kingfisher_scrapy.spiders.chile_public_works_bulk.ChilePublicWorksBulk
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl chile_public_works_bulk
 
 Colombia
 ~~~~~~~~
@@ -686,13 +658,6 @@ Italy
 
    scrapy crawl italy_digiwhist
 
-.. autoclass:: kingfisher_scrapy.spiders.italy_ministry_of_infrastructure_and_transport.ItalyMinistryOfInfrastructureAndTransport
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl italy_ministry_of_infrastructure_and_transport
-
 Kenya
 ~~~~~
 
@@ -780,20 +745,6 @@ Malta
 Mexico
 ~~~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.mexico_administracion_publica_federal_api.MexicoAdministracionPublicaFederalAPI
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_administracion_publica_federal_api
-
-.. autoclass:: kingfisher_scrapy.spiders.mexico_administracion_publica_federal_bulk.MexicoAdministracionPublicaFederalBulk
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_administracion_publica_federal_bulk
-
 .. autoclass:: kingfisher_scrapy.spiders.mexico_aguascalientes_plataforma_digital_estatal.MexicoAguascalientesPlataformaDigitalEstatal
    :no-members:
 
@@ -814,13 +765,6 @@ Mexico
 .. code-block:: bash
 
    scrapy crawl mexico_guadalajara
-
-.. autoclass:: kingfisher_scrapy.spiders.mexico_guanajuato_iacip.MexicoGuanajuatoIACIP
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl mexico_guanajuato_iacip
 
 .. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_city_infocdmx.MexicoMexicoCityINFOCDMX
    :no-members:
@@ -925,13 +869,6 @@ Nepal
 
 Netherlands
 ~~~~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.netherlands.Netherlands
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl netherlands
 
 .. autoclass:: kingfisher_scrapy.spiders.netherlands_digiwhist.NetherlandsDigiwhist
    :no-members:
