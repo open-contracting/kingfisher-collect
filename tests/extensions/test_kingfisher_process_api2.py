@@ -25,7 +25,6 @@ RABBIT_QUEUE_NAME = "kingfisher_process_test_api_loader"
 START_URL = urlsplit(KINGFISHER_API2_URL)._replace(path="/get/").geturl()
 SETTINGS = {
     "HTTPERROR_ALLOW_ALL": True,
-    "REQUEST_FINGERPRINTER_IMPLEMENTATION": "2.7",
     "EXTENSIONS": {
         "kingfisher_scrapy.extensions.FilesStore": 100,
         "kingfisher_scrapy.extensions.KingfisherProcessAPI2": 500,
