@@ -139,12 +139,12 @@ def test_qs_parameters(kwargs, expected):
         (BaseSpider,),
         {
             "name": "test",
-            "start_requests": lambda _self: [scrapy.Request("http://example.com")],
+            "start": lambda _self: [scrapy.Request("http://example.com")],
         },
     )
     spider = spider_with_crawler(test_spider, **kwargs)
 
-    for request in spider.start_requests():
+    for request in spider.start():
         assert expected in request.url
 
 
@@ -185,9 +185,9 @@ def test_data_base_url_with_compile():
 )
 def test_path_parameters(base_url, kwargs, expected):
     test_spider = type(
-        "TestSpider", (BaseSpider,), {"name": "test", "start_requests": lambda _self: [scrapy.Request(base_url)]}
+        "TestSpider", (BaseSpider,), {"name": "test", "start": lambda _self: [scrapy.Request(base_url)]}
     )
     spider = spider_with_crawler(test_spider, **kwargs)
 
-    for request in spider.start_requests():
+    for request in spider.start():
         assert expected == request.url

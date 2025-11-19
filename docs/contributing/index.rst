@@ -128,7 +128,7 @@ Since there are many class attributes that control a spider's behavior, please p
       # PeriodicSpider
       formatter = staticmethod(parameters('page'))
       pattern = 'https://example.com/{}'
-      start_requests_callback = 'parse_list'
+      start_callback = 'parse_list'
 
       # IndexSpider
       page_count_pointer = '/data/last_page'

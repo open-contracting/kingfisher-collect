@@ -12,7 +12,7 @@ class BigFileSpider(SimpleSpider):
     files without using an iterative parser and without having memory issues.
 
     #. Inherit from ``BigFileSpider``
-    #. Write a ``start_requests()`` method to request the archive files
+    #. Write a ``start()`` method to request the archive files
 
     .. code-block:: python
 
@@ -22,7 +22,7 @@ class BigFileSpider(SimpleSpider):
         class MySpider(BigFileSpider):
             name = 'my_spider'
 
-            def start_requests(self):
+            async def start(self):
                 yield self.build_request('https://example.com/api/package.json', formatter=components(-1)
 
     .. note::

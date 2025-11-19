@@ -20,7 +20,7 @@ class KenyaPPRA(SimpleSpider):
     # Local
     base_url = "https://tenders.go.ke/api/ocds"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             f"{self.base_url}/index?search=&perpage=10&sortby=&order=asc&page=1",
             meta={"file_name": "page1.json"},

@@ -19,7 +19,7 @@ class UnitedStatesPortland(SimpleSpider):
     # SimpleSpider
     data_type = "record_package"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             # Get the page where the link to the most recent Google Drive folder where the JSON is
             "https://www.portland.gov/business-opportunities/ocds/ocds-data-publication",

@@ -96,7 +96,7 @@ class BaseSpider(scrapy.Spider):
     ):
         """
         :param sample: the number of items to download (``'true'`` means ``1``; ``'false'`` and ``None`` mean no limit)
-        :param path: path components to append to the URLs yielded by the ``start_requests`` method (see :ref:`filter`)
+        :param path: path components to append to the URLs yielded by the ``start`` method (see :ref:`filter`)
         :param from_date: the date from which to download data (see :ref:`spider-arguments`)
         :param until_date: the date until which to download data (see :ref:`spider-arguments`)
         :param crawl_time: override the crawl's start time (see :ref:`increment`)
@@ -161,11 +161,11 @@ class BaseSpider(scrapy.Spider):
 
         self.date_format = self.VALID_DATE_FORMATS[self.date_format]
 
-        if hasattr(self, "start_requests"):
+        if hasattr(self, "start"):
             if path:
-                self.start_requests = add_path_components(self.start_requests, path)
+                self.start = add_path_components(self.start, path)
             if self.query_string_parameters:
-                self.start_requests = add_query_string(self.start_requests, self.query_string_parameters)
+                self.start = add_query_string(self.start, self.query_string_parameters)
 
         self.filter_arguments = {
             "from_date": from_date,

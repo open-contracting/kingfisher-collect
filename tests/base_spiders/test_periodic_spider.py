@@ -230,7 +230,7 @@ def test_urls(date_format, pattern, expected_start, expected_end, class_args, us
     )
     spider = spider_with_crawler(spider_class=test_spider, **user_args)
 
-    requests = list(spider.start_requests())
+    requests = list(spider.start())
 
     for request, expected_url in zip(requests, expected, strict=False):
         assert request.url == expected_url

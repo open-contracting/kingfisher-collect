@@ -24,7 +24,7 @@ class MexicoPlataformaDigitalNacionalBase(IndexSpider):
 
     # publisher_id must be provided by subclasses.
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             f"{self.url_prefix}{self.publisher_id}",
             method="POST",

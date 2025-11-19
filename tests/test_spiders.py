@@ -16,7 +16,7 @@ runner = CrawlerRunner(settings)
 
 # See scrapy.commands.list
 @pytest.mark.parametrize("spider_name", runner.spider_loader.list())
-def test_start_requests_http_error(spider_name, caplog):
+def test_start_http_error(spider_name, caplog):
     caplog.set_level(logging.ERROR)
 
     # See scrapy.crawler.CrawlerRunner._create_crawler
@@ -37,7 +37,7 @@ def test_start_requests_http_error(spider_name, caplog):
         # See scrapy.crawler.Crawler._create_spider
         spider = crawler.spidercls.from_crawler(crawler, **kwargs)
 
-        requests = list(spider.start_requests())
+        requests = list(spider.start())
         assert requests
         for request in requests:
             # See scrapy.core.scraper.Scraper.call_spider
@@ -61,7 +61,7 @@ def test_start_requests_http_error(spider_name, caplog):
 
 
 @pytest.mark.parametrize("spider_name", runner.spider_loader.list())
-def test_start_urls_start_requests(spider_name):
+def test_start_urls_start(spider_name):
     spidercls = runner.spider_loader.load(spider_name)
 
-    assert "start_urls" not in spidercls.__dict__ or "start_requests" not in spidercls.__dict__
+    assert "start_urls" not in spidercls.__dict__ or "start" not in spidercls.__dict__

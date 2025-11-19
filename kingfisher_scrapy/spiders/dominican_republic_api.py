@@ -40,7 +40,7 @@ class DominicanRepublicAPI(IndexSpider):
     # Local
     dominican_republic_base_url = "https://datosabiertos.dgcp.gob.do/api-dgcp/v1/ocds/releases"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             f"{self.dominican_republic_base_url}/all?limit=1000&start_date={self.from_date.strftime(self.date_format)}"
             f"&end_date={self.until_date.strftime(self.date_format)}",

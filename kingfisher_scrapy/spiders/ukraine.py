@@ -32,7 +32,7 @@ class Ukraine(SimpleSpider):
     default_from_date = "2016-01-01T00:00:00"
     date_required = True
 
-    def start_requests(self):
+    async def start(self):
         # A https://public.api.openprocurement.org/api/0/contracts endpoint also exists but the data returned from
         # there is already included in the tenders endpoint. If we would like to join both, the tender_id field from
         # the contract endpoint can be used with the id field from the tender endpoint.
