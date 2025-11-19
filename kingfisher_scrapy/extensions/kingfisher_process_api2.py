@@ -12,19 +12,6 @@ from yapw.clients import Async
 from kingfisher_scrapy.items import PluckedItem
 
 
-class Client(Async):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.ready = False
-
-    def exchange_ready(self):
-        self.ready = True
-
-    def reset(self):
-        super().reset()
-        self.ready = False
-
-
 class KingfisherProcessAPI2:
     """
     If the ``KINGFISHER_API2_URL``, ``RABBIT_URL``, ``RABBIT_EXCHANGE_NAME`` and ``RABBIT_ROUTING_KEY`` environment
@@ -54,7 +41,7 @@ class KingfisherProcessAPI2:
         self.url = url
         self.stats = stats
         self.routing_key = rabbit_routing_key
-        self.client = Client(url=rabbit_url, exchange=rabbit_exchange_name, routing_key_template="{routing_key}")
+        self.client = Async(url=rabbit_url, exchange=rabbit_exchange_name, routing_key_template="{routing_key}")
 
         # The collection ID is set by the spider_opened handler.
         self.collection_id = None
