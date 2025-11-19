@@ -58,7 +58,6 @@ omit = ["*/kingfisher_scrapy/spiders/*"]
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules --reactor=asyncio"
-asyncio_mode = "auto"
 
 [tool.uv.pip]
 python-platform = "linux"  # greenlet

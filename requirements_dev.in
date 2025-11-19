@@ -5,6 +5,5 @@ openpyxl
 pika
 psycopg2-binary
 pytest
-pytest-asyncio
 pytest-order
 pytest-twisted
