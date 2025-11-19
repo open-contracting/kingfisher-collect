@@ -56,6 +56,7 @@ def test_start_requests_http_error(spider_name, caplog):
                     r"^status=555 message='[^']*' request=<(GET|POST) \S+> file_name=\S+$",
                     record.message,
                 )
+    # Some spiders require API keys.
     except MissingEnvVarError as e:
         pytest.skip(f"{spidercls.name}: {e}")
 
