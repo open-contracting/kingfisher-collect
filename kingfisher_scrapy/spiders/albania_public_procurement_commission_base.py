@@ -15,7 +15,7 @@ class AlbaniaPublicProcurementCommissionBase(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         for year in util.date_range_by_year(self.from_date.year, self.until_date.year):
             payload = {
                 "extraConditions": [

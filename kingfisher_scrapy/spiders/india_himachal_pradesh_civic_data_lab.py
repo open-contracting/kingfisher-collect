@@ -33,7 +33,7 @@ class IndiaHimachalPradeshCivicDataLab(SimpleSpider):
     # Local
     github_repo = "CivicDataLab/himachal-pradesh-health-procurement-OCDS"
 
-    def start_requests(self):
+    async def start(self):
         url = f"https://api.github.com/repos/{self.github_repo}/git/trees/master"
         yield scrapy.Request(url, meta={"file_name": "response.json"}, callback=self.parse_list)
 

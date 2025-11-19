@@ -20,7 +20,7 @@ class Error(BaseSpider):
         *args,
         raise_from_crawler=False,
         raise_init=False,
-        raise_start_requests=False,
+        raise_start=False,
         raise_parse=False,
         **kwargs,
     ):
@@ -28,14 +28,14 @@ class Error(BaseSpider):
             *args,
             raise_from_crawler=raise_from_crawler,
             raise_init=raise_init,
-            raise_start_requests=raise_start_requests,
+            raise_start=raise_start,
             raise_parse=raise_parse,
             **kwargs,
         )
 
         self.raise_from_crawler = raise_from_crawler
         self.raise_init = raise_init
-        self.raise_start_requests = raise_start_requests
+        self.raise_start = raise_start
         self.raise_parse = raise_parse
 
         if raise_init:
@@ -50,8 +50,8 @@ class Error(BaseSpider):
 
         return spider
 
-    def start_requests(self):
-        if self.raise_start_requests:
+    async def start(self):
+        if self.raise_start:
             raise RuntimeError("message")
         yield scrapy.Request("http://httpstat.us/200")
 

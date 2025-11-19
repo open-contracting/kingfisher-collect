@@ -24,7 +24,7 @@ class MexicoNuevoLeonInfraAbiertaReleases(MexicoNuevoLeonBase):
     data_type = "release_package"
 
     # PeriodicSpider
-    start_requests_callback = "parse_list"
+    start_callback = "parse_list"
 
     @handle_http_error
     def parse_list(self, response):

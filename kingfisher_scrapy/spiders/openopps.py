@@ -70,7 +70,7 @@ class Openopps(BaseSpider):
 
         return spider
 
-    def start_requests(self):
+    async def start(self):
         yield self.build_access_token_request(initial_authentication=True)
 
     def build_access_token_request(self, initial_authentication, **kwargs):
@@ -96,7 +96,7 @@ class Openopps(BaseSpider):
                 self.start_time = datetime.now()
                 # If the request is initial authentication, start requests
                 if response.request.meta.get("initial_authentication"):
-                    self.start_requests_pages()
+                    self.start_pages()
                     return
                 # For reauthenticating request, set to False and continue
                 self.reauthenticating = False
@@ -105,7 +105,7 @@ class Openopps(BaseSpider):
         else:
             raise AccessTokenError(f"Authentication failed. Status code: {response.status}. {response.text}")
 
-    def start_requests_pages(self):
+    def start_pages(self):
         search_h = 24  # start splitting one day search
 
         # Case if we have date range parameters

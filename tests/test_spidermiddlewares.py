@@ -3,6 +3,7 @@ from io import BytesIO
 from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
 
 import pytest
+from scrapy.utils.defer import deferred_f_from_coro_f
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, SimpleSpider
 from kingfisher_scrapy.exceptions import RetryableError
@@ -61,6 +62,7 @@ async def alist(iterable):
         ),
     ],
 )
+@deferred_f_from_coro_f
 async def test_passthrough(middleware_class, item):
     spider = spider_with_crawler()
 
@@ -94,6 +96,7 @@ async def test_passthrough(middleware_class, item):
         # ReadDataMiddleware is only used with file-like objects.
     ],
 )
+@deferred_f_from_coro_f
 async def test_bytes_or_file(middleware_class, attribute, value, expected_extra, tmpdir):
     spider = spider_with_crawler()
     setattr(spider, attribute, value)
@@ -146,6 +149,7 @@ async def test_bytes_or_file(middleware_class, attribute, value, expected_extra,
         (RootPathMiddleware, "root_path", "result", {"data": {"name": "ALCALDÍA MUNICIPIO DE TIBÚ"}}),
     ],
 )
+@deferred_f_from_coro_f
 async def test_encoding(middleware_class, attribute, value, expected_extra, tmpdir):
     spider = spider_with_crawler()
     setattr(spider, attribute, value)
@@ -200,6 +204,7 @@ async def test_encoding(middleware_class, attribute, value, expected_extra, tmpd
         ("record_package", b'[{"records":[{"ocid": "abc"}], "uri": "test"}]', "item"),
     ],
 )
+@deferred_f_from_coro_f
 async def test_add_package_middleware(data_type, data, root_path):
     spider = spider_with_crawler()
     spider.root_path = root_path
@@ -241,6 +246,7 @@ async def test_add_package_middleware(data_type, data, root_path):
 @pytest.mark.parametrize(("encoding", "character"), [("utf-8", b"\xc3\x9a"), ("iso-8859-1", b"\xda")])
 @pytest.mark.parametrize(("data_type", "key"), [("record_package", "records"), ("release_package", "releases")])
 @pytest.mark.parametrize("ocid_fallback", [None, lambda release: release["key"]])
+@deferred_f_from_coro_f
 async def test_resize_package_middleware(
     sample, len_items, len_releases, encoding, character, data_type, key, ocid_fallback
 ):
@@ -289,6 +295,7 @@ async def test_resize_package_middleware(
     ],
 )
 @pytest.mark.parametrize("sample", [None, 5])
+@deferred_f_from_coro_f
 async def test_json_streaming_middleware(middleware_class, attribute, separator, sample):
     spider = spider_with_crawler(spider_class=SimpleSpider, sample=sample)
     spider.data_type = "release_package"
@@ -328,6 +335,7 @@ async def test_json_streaming_middleware(middleware_class, attribute, separator,
         (LineDelimitedMiddleware, "line_delimited", True),
     ],
 )
+@deferred_f_from_coro_f
 async def test_json_streaming_middleware_with_root_path_middleware(middleware_class, attribute, value):
     spider = spider_with_crawler(spider_class=SimpleSpider)
     spider.data_type = "release_package"
@@ -367,6 +375,7 @@ async def test_json_streaming_middleware_with_root_path_middleware(middleware_cl
     ],
 )
 @pytest.mark.parametrize("sample", [None, 5])
+@deferred_f_from_coro_f
 async def test_json_streaming_middleware_with_compressed_file_spider(middleware_class, attribute, value, sample):
     spider = spider_with_crawler(spider_class=CompressedFileSpider, sample=sample)
     spider.data_type = "release_package"
@@ -403,6 +412,7 @@ async def test_json_streaming_middleware_with_compressed_file_spider(middleware_
         }
 
 
+@deferred_f_from_coro_f
 async def test_read_data_middleware():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = "release_package"
@@ -458,6 +468,7 @@ def test_retry_data_error_middleware(exception):
     ],
 )
 @pytest.mark.parametrize("cls", [File, FileItem])
+@deferred_f_from_coro_f
 async def test_root_path_middleware(root_path, data_type, data, expected_data_type, expected_data, cls):
     spider = spider_with_crawler()
     middleware = RootPathMiddleware()
@@ -531,6 +542,7 @@ async def test_root_path_middleware(root_path, data_type, data, expected_data_ty
     ],
 )
 @pytest.mark.parametrize("cls", [File, FileItem])
+@deferred_f_from_coro_f
 async def test_root_path_middleware_item(root_path, sample, data_type, data, expected_data_type, expected_data, cls):
     spider = spider_with_crawler()
     middleware = RootPathMiddleware()
@@ -557,6 +569,7 @@ async def test_root_path_middleware_item(root_path, sample, data_type, data, exp
 
 @pytest.mark.parametrize("valid", [True, False])
 @pytest.mark.parametrize("cls", [File, FileItem])
+@deferred_f_from_coro_f
 async def test_validate_json_middleware(valid, cls, caplog):
     spider = spider_with_crawler()
     middleware = ValidateJSONMiddleware()
@@ -595,6 +608,7 @@ async def test_validate_json_middleware(valid, cls, caplog):
 
 @pytest.mark.parametrize("data", [b'[{"ocid": "abc"}]', {"ocid": "abc"}])
 @pytest.mark.parametrize("cls", [File, FileItem])
+@deferred_f_from_coro_f
 async def test_validate_json_middleware_already_parsed(data, cls, caplog):
     spider = spider_with_crawler()
     middleware = ValidateJSONMiddleware()

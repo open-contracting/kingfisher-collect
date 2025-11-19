@@ -24,7 +24,7 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
     # The ZIP file contains release packages and record packages. The filenames of release packages contain "-".
     file_name_must_contain = "-"
 
-    def start_requests(self):
+    async def start(self):
         url = "https://ckanpj.azurewebsites.net/api/3/action/package_show?id=estandar-de-datos-de-contrataciones-abiertas-ocds"
         yield scrapy.Request(url, meta={"file_name": "package_show.json"}, callback=self.parse_list)
 

@@ -23,7 +23,7 @@ class SpainZaragoza(SimpleSpider):
     # Local
     url_prefix = "https://www.zaragoza.es/sede/servicio/contratacion-publica/ocds/contracting-process/"
 
-    def start_requests(self):
+    async def start(self):
         # row parameter setting to 100000 to get all releases
         url = f"{self.url_prefix}?rf=html&rows=100000"
 

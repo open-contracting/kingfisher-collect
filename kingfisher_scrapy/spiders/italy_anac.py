@@ -23,7 +23,7 @@ class ItalyANAC(BigFileSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         url = "https://dati.anticorruzione.it/opendata/api/3/action/package_search?q=ocds"
         yield scrapy.Request(url, meta={"file_name": "package_search.json"}, callback=self.parse_list)
 

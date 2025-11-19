@@ -10,7 +10,7 @@ class SimpleSpider(BaseSpider):
 
     #. Inherit from ``SimpleSpider``
     #. Set a ``data_type`` class attribute to the data type of the responses
-    #. Write a ``start_requests()`` method (and any intermediate callbacks) to send requests
+    #. Write a ``start()`` method (and any intermediate callbacks) to send requests
 
     .. code-block:: python
 
@@ -24,7 +24,7 @@ class SimpleSpider(BaseSpider):
             # SimpleSpider
             data_type = 'release_package'
 
-            def start_requests(self):
+            async def start(self):
                 yield scrapy.Request('https://example.com/api/package.json', meta={'file_name': 'all.json'})
     """
 

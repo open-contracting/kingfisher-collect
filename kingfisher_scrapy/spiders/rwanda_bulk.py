@@ -30,7 +30,7 @@ class RwandaBulk(CompressedFileSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         for year in date_range_by_year(self.from_date.year, self.until_date.year):
             # The month parameter only works with the value "n/a"
             url = f"https://ocds.umucyo.gov.rw/core/api/v1/portal/dataset?year={year}&month=n/a"

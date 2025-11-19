@@ -21,7 +21,7 @@ class Croatia(CompressedFileSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             "https://eojn.nn.hr/SPIN/application/ipn/Oglasnik/PreuzimanjeUgovoraOCD.aspx",
             meta={"file_name": "list.html"},

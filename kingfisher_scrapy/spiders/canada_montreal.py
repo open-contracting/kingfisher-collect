@@ -27,6 +27,6 @@ class CanadaMontreal(IndexSpider):
     result_count_pointer = "/meta/count"
     limit = 10000  # > 10000 causes "Too many records requested. Set parameter LIMIT lower"
 
-    def start_requests(self):
+    async def start(self):
         url = f"https://ville.montreal.qc.ca/vuesurlescontrats/api/releases.json?limit={self.limit}"
         yield scrapy.Request(url, meta={"file_name": "offset-0.json"}, callback=self.parse_list)

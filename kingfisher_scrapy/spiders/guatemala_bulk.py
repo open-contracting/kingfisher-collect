@@ -32,7 +32,7 @@ class GuatemalaBulk(CompressedFileSpider):
     # SimpleSpider
     data_type = "record_package"
 
-    def start_requests(self):
+    async def start(self):
         url = "https://ocds.guatecompras.gt/files"
         yield scrapy.Request(url, meta={"file_name": "list.json"}, callback=self.parse_list)
 

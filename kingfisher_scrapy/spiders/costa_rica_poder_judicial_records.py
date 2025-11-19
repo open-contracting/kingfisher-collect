@@ -29,7 +29,7 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
     date_format = "year"
     default_from_date = "2018"
 
-    def start_requests(self):
+    async def start(self):
         url = "https://ckanpj.azurewebsites.net/api/3/action/package_show?id=estandar-de-datos-de-contrataciones-abiertas-ocds"
         yield scrapy.Request(url, meta={"file_name": "package_show.json"}, callback=self.parse_list)
 

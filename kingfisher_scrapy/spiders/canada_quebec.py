@@ -17,7 +17,7 @@ class CanadaQuebec(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         # A CKAN API JSON response.
         url = "https://www.donneesquebec.ca/api/3/action/package_show?id=d23b2e02-085d-43e5-9e6e-e1d558ebfdd5"
         yield scrapy.Request(url, meta={"file_name": "package_show.json"}, callback=self.parse_list)

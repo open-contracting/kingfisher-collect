@@ -19,7 +19,7 @@ class ArgentinaMendozaProvinceBulk(SimpleSpider):
 
     base_url = "https://datosabiertos-compras.mendoza.gov.ar"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(f"{self.base_url}/datasets/", meta={"file_name": "list.html"}, callback=self.parse_list)
 
     @handle_http_error

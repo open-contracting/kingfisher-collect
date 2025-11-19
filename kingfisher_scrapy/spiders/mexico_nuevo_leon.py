@@ -30,7 +30,7 @@ class MexicoNuevoLeon(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         # A CKAN API JSON response.
         url = (
             "https://catalogodatos.nl.gob.mx/api/3/action/package_show?id="

@@ -45,7 +45,7 @@ class BrazilCompras(LinksSpider):
     base_url = "https://dadosabertos.compras.gov.br"
     base_buyers_url = f"{base_url}/modulo-uasg/2_consultarOrgao?statusOrgao=true"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             f"{self.base_buyers_url}&pagina=1",
             meta={"file_name": "page-1.json"},

@@ -24,7 +24,7 @@ class PeruComprasBulk(PeruComprasBase):
     date_format = "year-month"
     default_from_date = "2021-08"
 
-    def start_requests(self):
+    async def start(self):
         url = f"{self.url_prefix}getListaDescargaMasiva?Anio=&Mes="
         yield scrapy.Request(url, method="POST", meta={"file_name": "list.json"}, callback=self.parse_list)
 

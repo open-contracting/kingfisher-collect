@@ -37,7 +37,7 @@ class MexicoINAIBase(SimpleSpider):
 
     # base_url must be provided by subclasses.
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             f"{self.base_url}/edca/fiscalYears", meta={"file_name": "list.json"}, callback=self.parse_list
         )

@@ -22,7 +22,7 @@ class ColombiaANIRecords(SimpleSpider):
     # SimpleSpider
     data_type = "record_package"
 
-    def start_requests(self):
+    async def start(self):
         # Extracted from https://aniscopio.ani.gov.co/datos-abiertos, 'OCDS' tab
         url = "https://apicost.azurewebsites.net/cost/records"
         yield scrapy.Request(url, meta={"file_name": "all.json"})

@@ -17,7 +17,7 @@ class LinksSpider(SimpleSpider):
     #. Set a ``formatter`` class attribute to set the file name like in
        :meth:`~kingfisher_scrapy.base_spiders.BaseSpider.build_request`
     #. Set a ``next_link_formatter`` class attribute if pagination URLs differ from start URLs
-    #. Write a ``start_requests()`` method to request the first page of API results
+    #. Write a ``start()`` method to request the first page of API results
     #. Optionally, set a ``next_pointer`` class attribute to the JSON Pointer for the next link (default "/links/next")
 
     If the API returns the number of total pages or results in the response, consider using ``IndexSpider`` instead.
@@ -37,7 +37,7 @@ class LinksSpider(SimpleSpider):
             # LinksSpider
             formatter = staticmethod(parameters('page'))
 
-            def start_requests(self):
+            async def start(self):
                 yield scrapy.Request('https://example.com/api/packages.json', meta={'file_name': 'page-1.json'})
 
     """

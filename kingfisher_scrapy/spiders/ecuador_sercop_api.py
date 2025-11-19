@@ -40,7 +40,7 @@ class EcuadorSERCOPAPI(IndexSpider, PeriodicSpider):
     # PeriodicSpider
     formatter = staticmethod(components(-1))
     pattern = f"{url_prefix}search_ocds?year={{0}}"
-    start_requests_callback = "parse_list"
+    start_callback = "parse_list"
 
     # IndexSpider
     page_count_pointer = "/pages"

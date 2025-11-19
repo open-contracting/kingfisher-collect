@@ -37,7 +37,7 @@ class UnitedKingdomFTS(LinksSpider):
     # LinksSpider
     formatter = staticmethod(parameters("cursor"))
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages"
         if self.from_date and self.until_date:
             from_date = self.from_date.strftime(self.date_format)

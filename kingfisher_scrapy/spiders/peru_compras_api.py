@@ -22,7 +22,7 @@ class PeruComprasAPI(PeruComprasBase):
     # BaseSpider
     default_from_date = "2017-01-01"
 
-    def start_requests(self):
+    async def start(self):
         url = f"{self.url_prefix}obtenerFiltros"
         yield scrapy.Request(url, meta={"file_name": "list.html"}, callback=self.parse_list)
 

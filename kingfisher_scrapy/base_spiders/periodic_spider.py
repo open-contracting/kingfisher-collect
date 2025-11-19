@@ -30,7 +30,7 @@ class PeriodicSpider(SimpleSpider):
     #. If the source stopped publishing, set a ``default_until_date`` class attribute to a year or year-month
     #. Optionally, if the ``date_format`` is "date", set a ``step`` class attribute to indicate the length of
        intervals, in days - otherwise, it defaults to 1
-    #. Optionally, set a ``start_requests_callback`` class attribute to a method's name as a string - otherwise, it
+    #. Optionally, set a ``start_callback`` class attribute to a method's name as a string - otherwise, it
        defaults to :meth:`~kingfisher_scrapy.base_spiders.simple_spider.SimpleSpider.parse`
 
     If ``sample`` is set, the data from the most recent year or month is retrieved.
@@ -38,7 +38,7 @@ class PeriodicSpider(SimpleSpider):
 
     # PeriodicSpider requires date parameters to be always set.
     date_required = True
-    start_requests_callback = "parse"
+    start_callback = "parse"
 
     # Length of intervals, if `date_format` is "date".
     step = 1
@@ -46,9 +46,9 @@ class PeriodicSpider(SimpleSpider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.start_requests_callback = getattr(self, self.start_requests_callback)
+        self.start_callback = getattr(self, self.start_callback)
 
-    def start_requests(self):
+    async def start(self):
         start = self.from_date
         stop = self.until_date
 
@@ -63,7 +63,7 @@ class PeriodicSpider(SimpleSpider):
             args = date if self.date_format.startswith("%Y-%m-%d") else [date]
             for number, url in enumerate(self.build_urls(*args)):
                 yield self.build_request(
-                    url, formatter=self.formatter, callback=self.start_requests_callback, priority=number * -1
+                    url, formatter=self.formatter, callback=self.start_callback, priority=number * -1
                 )
 
     def build_urls(self, from_date, until_date=None):

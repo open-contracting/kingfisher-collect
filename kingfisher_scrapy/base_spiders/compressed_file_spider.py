@@ -26,7 +26,7 @@ class CompressedFileSpider(BaseSpider):
        contain the given text.
     #. Optionally, add a ``file_name_must_not_contain = 'text'`` class attribute to only decompress the files whose
        names do not contain the given text.
-    #. Write a ``start_requests()`` method to request the archive files
+    #. Write a ``start()`` method to request the archive files
 
     .. code-block:: python
 
@@ -39,7 +39,7 @@ class CompressedFileSpider(BaseSpider):
             # CompressedFileSpider
             data_type = 'release_package'
 
-            def start_requests(self):
+            async def start(self):
                 yield self.build_request('https://example.com/api/packages.zip', formatter=components(-1))
 
     .. note::

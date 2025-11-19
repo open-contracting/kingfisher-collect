@@ -24,5 +24,5 @@ class GovernmentTransparencyInstituteBase(CompressedFileSpider):
 
     # country_code must be provided by subclasses.
 
-    def start_requests(self):
+    async def start(self):
         yield self.build_request(self.base_url.format(self.country_code, self.infix), formatter=components(-1))
