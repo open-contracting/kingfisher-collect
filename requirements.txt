@@ -224,7 +224,7 @@ w3lib==2.1.1
     #   scrapyd
 xmltodict==0.12.0
     # via flattentool
-yapw==0.1.5
+yapw==0.2.0
     # via -r requirements.in
 zc-lockfile==3.0.post1
     # via zodb

@@ -57,7 +57,7 @@ classmethod-decorators = ["pydantic.validator"]
 omit = ["*/kingfisher_scrapy/spiders/*"]
 
 [tool.pytest.ini_options]
-addopts = "--doctest-modules --reactor=asyncio"
+addopts = "--doctest-modules"
 
 [tool.uv.pip]
 python-platform = "linux"  # greenlet
