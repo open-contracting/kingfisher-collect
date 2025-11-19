@@ -1,6 +1,7 @@
 import datetime
 
 import pytest
+from scrapy.utils.defer import deferred_f_from_coro_f
 
 from kingfisher_scrapy.base_spiders import PeriodicSpider
 from kingfisher_scrapy.util import components, date_range_by_interval, date_range_by_month, date_range_by_year
@@ -202,7 +203,8 @@ TEST_CASES = {
     TEST_CASES.values(),
     ids=TEST_CASES.keys(),
 )
-def test_urls(date_format, pattern, expected_start, expected_end, class_args, user_args):
+@deferred_f_from_coro_f
+async def test_urls(date_format, pattern, expected_start, expected_end, class_args, user_args):
     start = datetime.datetime.strptime(expected_start, PeriodicSpider.VALID_DATE_FORMATS[date_format])
     stop = datetime.datetime.strptime(expected_end, PeriodicSpider.VALID_DATE_FORMATS[date_format])
 
@@ -230,7 +232,7 @@ def test_urls(date_format, pattern, expected_start, expected_end, class_args, us
     )
     spider = spider_with_crawler(spider_class=test_spider, **user_args)
 
-    requests = list(spider.start())
+    requests = [request async for request in spider.start()]
 
     for request, expected_url in zip(requests, expected, strict=False):
         assert request.url == expected_url

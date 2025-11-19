@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from scrapy.crawler import Crawler, CrawlerRunner
 from scrapy.http import Response
+from scrapy.utils.defer import deferred_f_from_coro_f
 from scrapy.utils.project import get_project_settings
 
 from kingfisher_scrapy.exceptions import MissingEnvVarError
@@ -16,7 +17,8 @@ runner = CrawlerRunner(settings)
 
 # See scrapy.commands.list
 @pytest.mark.parametrize("spider_name", runner.spider_loader.list())
-def test_start_http_error(spider_name, caplog):
+@deferred_f_from_coro_f
+async def test_start_http_error(spider_name, caplog):
     caplog.set_level(logging.ERROR)
 
     # See scrapy.crawler.CrawlerRunner._create_crawler
@@ -37,7 +39,7 @@ def test_start_http_error(spider_name, caplog):
         # See scrapy.crawler.Crawler._create_spider
         spider = crawler.spidercls.from_crawler(crawler, **kwargs)
 
-        requests = list(spider.start())
+        requests = [request async for request in spider.start()]
         assert requests
         for request in requests:
             # See scrapy.core.scraper.Scraper.call_spider
