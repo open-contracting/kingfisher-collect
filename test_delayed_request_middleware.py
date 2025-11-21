@@ -2,15 +2,18 @@ import time
 
 from scrapy import Request
 from scrapy.core.downloader import DownloaderMiddlewareManager
+from scrapy.utils.reactor import install_reactor
 from twisted.internet.defer import Deferred
 from twisted.trial.unittest import TestCase
 
 from tests import spider_with_crawler
 
+install_reactor("twisted.internet.asyncioreactor.AsyncioSelectorReactor")
+
 
 # Running this as a pytest test raises "twisted.internet.error.ReactorAlreadyRunning".
 def delayed_request_middleware():
-    def download_func(spider, request):
+    def download_func(request, spider):
         return request
 
     spider = spider_with_crawler(
