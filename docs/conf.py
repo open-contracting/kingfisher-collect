@@ -20,6 +20,7 @@ author = "Open Contracting Partnership"
 
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
 ]
 
@@ -45,3 +46,7 @@ autodoc_default_options = {
     "member-order": "bysource",
 }
 autodoc_typehints = "description"
+
+intersphinx_mapping = {
+    "scrapy": ("https://docs.scrapy.org/en/latest/", None),
+}
