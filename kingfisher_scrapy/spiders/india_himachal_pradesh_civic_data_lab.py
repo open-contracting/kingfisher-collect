@@ -35,7 +35,7 @@ class IndiaHimachalPradeshCivicDataLab(SimpleSpider):
 
     async def start(self):
         url = f"https://api.github.com/repos/{self.github_repo}/git/trees/master"
-        yield scrapy.Request(url, meta={"file_name": "response.json"}, callback=self.parse_list)
+        yield scrapy.Request(url, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

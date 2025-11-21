@@ -64,7 +64,6 @@ class ColombiaBulk(CompressedFileSpider):
     async def start(self):
         yield scrapy.Request(
             "https://www.colombiacompra.gov.co/transparencia/datos-json",
-            meta={"file_name": "list.html"},
             callback=self.parse_list,
         )
 

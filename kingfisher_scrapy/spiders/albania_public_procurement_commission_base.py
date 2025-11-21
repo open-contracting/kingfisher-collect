@@ -25,8 +25,8 @@ class AlbaniaPublicProcurementCommissionBase(SimpleSpider):
             }
             yield scrapy.Request(
                 self.base_url,
-                meta={"file_name": f"{year}.json"},
                 method="POST",
                 body=json.dumps(payload),
                 headers={"Accept": "application/json", "Content-Type": "application/json"},
+                meta={"file_name": f"{year}.json"},
             )

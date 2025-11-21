@@ -34,7 +34,7 @@ class RwandaBulk(CompressedFileSpider):
         for year in date_range_by_year(self.from_date.year, self.until_date.year):
             # The month parameter only works with the value "n/a"
             url = f"https://ocds.umucyo.gov.rw/core/api/v1/portal/dataset?year={year}&month=n/a"
-            yield scrapy.Request(url, meta={"file_name": f"list_{year}.json"}, callback=self.parse_list)
+            yield scrapy.Request(url, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

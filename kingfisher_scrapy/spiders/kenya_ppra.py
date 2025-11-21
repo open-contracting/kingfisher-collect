@@ -23,7 +23,6 @@ class KenyaPPRA(SimpleSpider):
     async def start(self):
         yield scrapy.Request(
             f"{self.base_url}/index?search=&perpage=10&sortby=&order=asc&page=1",
-            meta={"file_name": "page1.json"},
             callback=self.parse_list,
         )
 
@@ -35,6 +34,4 @@ class KenyaPPRA(SimpleSpider):
                 f"{self.base_url}/tenders?download=true&ocds_id={item['id']}", formatter=parameters("ocds_id")
             )
         if data["next_page_url"]:
-            yield scrapy.Request(
-                data["next_page_url"], meta={"file_name": f"{data['current_page'] + 1}.json"}, callback=self.parse_list
-            )
+            yield scrapy.Request(data["next_page_url"], callback=self.parse_list)

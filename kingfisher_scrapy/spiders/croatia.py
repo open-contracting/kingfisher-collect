@@ -24,7 +24,6 @@ class Croatia(CompressedFileSpider):
     async def start(self):
         yield scrapy.Request(
             "https://eojn.nn.hr/SPIN/application/ipn/Oglasnik/PreuzimanjeUgovoraOCD.aspx",
-            meta={"file_name": "list.html"},
             callback=self.parse_list,
         )
 
@@ -33,10 +32,10 @@ class Croatia(CompressedFileSpider):
         for file_id in sorted(response.xpath("//td/a/@id").getall(), reverse=True):
             yield scrapy.FormRequest.from_response(
                 response,
-                clickdata={"id": file_id},
-                meta={"file_name": "list.zip"},
                 formdata={
                     "__EVENTTARGET": file_id.replace("_", "$"),
                     "__EVENTARGUMENT": "",
                 },
+                clickdata={"id": file_id},
+                meta={"file_name": "list.zip"},
             )

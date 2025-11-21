@@ -48,7 +48,6 @@ class BrazilCompras(LinksSpider):
     async def start(self):
         yield scrapy.Request(
             f"{self.base_buyers_url}&pagina=1",
-            meta={"file_name": "page-1.json"},
             callback=self.parse_list,
         )
 
@@ -70,7 +69,6 @@ class BrazilCompras(LinksSpider):
             next_page = data["totalPaginas"] - remaining_pages + 1
             yield scrapy.Request(
                 f"{self.base_buyers_url}&pagina={next_page}",
-                meta={"file_name": f"page-{next_page}.json"},
                 callback=self.parse_list,
             )
 

@@ -39,7 +39,6 @@ class EuropeanDynamicsBase(CompressedFileSpider):
     async def start(self):
         yield scrapy.Request(
             f"{self.base_url}/ocds/services/recordpackage/getrecordpackagelist",
-            meta={"file_name": "list.json"},
             callback=self.parse_list,
         )
 

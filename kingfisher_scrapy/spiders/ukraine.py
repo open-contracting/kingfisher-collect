@@ -39,7 +39,7 @@ class Ukraine(SimpleSpider):
         url = "https://public-api.prozorro.gov.ua/api/2.5/tenders"
         if self.from_date:
             url = f"{url}?offset={self.from_date.strftime(self.date_format)}"
-        yield scrapy.Request(url, meta={"file_name": "list.json"}, callback=self.parse_list)
+        yield scrapy.Request(url, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

@@ -41,7 +41,6 @@ class HondurasIAIP(SimpleSpider):
     async def start(self):
         yield scrapy.Request(
             "https://www.contratacionesabiertas.gob.hn/api/v1/iaip_datosabiertos/?format=json",
-            meta={"file_name": "list.json"},
             callback=self.parse_list,
         )
 

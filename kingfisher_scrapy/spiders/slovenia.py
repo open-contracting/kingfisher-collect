@@ -21,7 +21,7 @@ class Slovenia(SimpleSpider):
     url_prefix = "http://tbfy.ijs.si/public/ocds/mju/"
 
     async def start(self):
-        yield scrapy.Request(self.url_prefix, meta={"file_name": "list.html"}, callback=self.parse_list)
+        yield scrapy.Request(self.url_prefix, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

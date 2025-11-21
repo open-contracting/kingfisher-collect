@@ -29,7 +29,6 @@ class BrazilMedicamentosTransparentes(CompressedFileSpider, IndexSpider):
     async def start(self):
         yield scrapy.Request(
             f"https://medicamentos-api.transparencia.org.br/dados-abertos?skip=0&take={self.limit}",
-            meta={"file_name": "list.json"},
             callback=self.parse_list,
         )
 

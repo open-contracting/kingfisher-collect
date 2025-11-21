@@ -23,7 +23,6 @@ class UnitedStatesPortland(SimpleSpider):
         yield scrapy.Request(
             # Get the page where the link to the most recent Google Drive folder where the JSON is
             "https://www.portland.gov/business-opportunities/ocds/ocds-data-publication",
-            meta={"file_name": "all.html"},
             callback=self.parse_list,
         )
 
@@ -32,7 +31,6 @@ class UnitedStatesPortland(SimpleSpider):
         yield scrapy.Request(
             # Find the link to the Google Drive folder
             response.css('a[href*="drive.google.com"]::attr(href)').get(),
-            meta={"file_name": "all.html"},
             callback=self.parse_response,
         )
 
@@ -44,7 +42,6 @@ class UnitedStatesPortland(SimpleSpider):
             if "json" in file_tr.get():
                 yield scrapy.Request(
                     f"https://drive.google.com/uc?export=download&id={file_tr.attrib['data-id']}",
-                    meta={"file_name": "download.html"},
                     callback=self.parse_file,
                 )
 
@@ -55,7 +52,4 @@ class UnitedStatesPortland(SimpleSpider):
         params = {
             key: form.xpath(f".//input[@name='{key}']/@value").get() for key in ("id", "export", "confirm", "uuid")
         }
-        yield scrapy.Request(
-            url=f"{form.xpath('@action').get()}?{urlencode(params)}",
-            meta={"file_name": "all.json"},
-        )
+        yield scrapy.Request(f"{form.xpath('@action').get()}?{urlencode(params)}", meta={"file_name": "all.json"})
