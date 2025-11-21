@@ -8,9 +8,9 @@ from urllib.parse import urlsplit
 
 import pika
 import pytest
-import pytest_twisted
 from scrapy.crawler import CrawlerRunner
 from scrapy.exceptions import NotConfigured
+from twisted.internet.defer import inlineCallbacks
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.extensions import KingfisherProcessAPI2
@@ -159,7 +159,7 @@ def test_from_crawler_with_database_url():
         ),
     ],
 )
-@pytest_twisted.inlineCallbacks
+@inlineCallbacks
 def test_spider_opened(
     crawl_time,
     sample,
@@ -225,10 +225,10 @@ def test_spider_opened(
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason="RABBIT_URL must be set")
-@pytest_twisted.inlineCallbacks
+@inlineCallbacks
 def test_spider_closed_error(tmpdir, caplog):
-    # We can't mock disconnect_and_join(), etc. as it must run to isolate tests. That said, if the tests run, then
-    # we know the connection is closed and the thread is terminated.
+    # We can't mock disconnect(), etc. as it must run to isolate tests. That said, if the tests run, then
+    # we know the connection is closed.
 
     create_response = Response(status_code=200, content={"collection_id": 1})
     close_response = Response(status_code=500)  # error
@@ -256,7 +256,7 @@ def test_spider_closed_error(tmpdir, caplog):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason="RABBIT_URL must be set")
-@pytest_twisted.inlineCallbacks
+@inlineCallbacks
 def test_spider_closed_missing_collection_id(tmpdir):
     create_response = Response(status_code=500)  # error
 
@@ -269,7 +269,7 @@ def test_spider_closed_missing_collection_id(tmpdir):
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason="RABBIT_URL must be set")
 @pytest.mark.parametrize("kwargs", [{"package_pointer": "/publishedDate"}, {"keep_collection_open": "true"}])
-@pytest_twisted.inlineCallbacks
+@inlineCallbacks
 def test_spider_closed_return(kwargs, tmpdir):
     create_response = Response(status_code=200, content={"collection_id": 1})
 
@@ -307,7 +307,7 @@ def test_spider_closed_return(kwargs, tmpdir):
         ),
     ],
 )
-@pytest_twisted.inlineCallbacks
+@inlineCallbacks
 def test_item_scraped(directory, filename, item, channel, tmpdir):
     create_response = Response(status_code=200, content={"collection_id": 1})
     close_response = Response(status_code=200)
@@ -329,11 +329,11 @@ def test_item_scraped(directory, filename, item, channel, tmpdir):
     _method_frame, _header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
 
     assert body is not None  # None if no message in queue
-    assert json.loads(body) == expected
+    assert json.loads(body) == expected  # if fails in development, purge the kingfisher_process_test_api_loader queue
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason="RABBIT_URL must be set")
-@pytest_twisted.inlineCallbacks
+@inlineCallbacks
 def test_item_scraped_path(item_file, channel, tmpdir):
     create_response = Response(status_code=200, content={"collection_id": 1})
     close_response = Response(status_code=200)
@@ -348,7 +348,7 @@ def test_item_scraped_path(item_file, channel, tmpdir):
     _method_frame, _header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
 
     assert body is not None  # None if no message in queue
-    assert json.loads(body) == {
+    assert json.loads(body) == {  # if fails in development, purge the kingfisher_process_test_api_loader queue
         "collection_id": 1,
         "url": "https://example.com/remote.json",
         "path": "test/20010203_040506/389/file.json",
@@ -356,7 +356,7 @@ def test_item_scraped_path(item_file, channel, tmpdir):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason="RABBIT_URL must be set")
-@pytest_twisted.inlineCallbacks
+@inlineCallbacks
 def test_item_scraped_missing_collection_id(item_file, channel, tmpdir):
     create_response = Response(status_code=500)  # error
     close_response = Response(status_code=200)
@@ -369,7 +369,7 @@ def test_item_scraped_missing_collection_id(item_file, channel, tmpdir):
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason="RABBIT_URL must be set")
-@pytest_twisted.inlineCallbacks
+@inlineCallbacks
 def test_item_scraped_return(channel, tmpdir):
     create_response = Response(status_code=200, content={"collection_id": 1})
     close_response = Response(status_code=200)

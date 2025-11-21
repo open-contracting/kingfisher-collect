@@ -1,12 +1,11 @@
+import asyncio
 import functools
 import json
-import threading
 from urllib.parse import urljoin
 
 import requests
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
-from yapw import methods
 from yapw.clients import Async
 
 from kingfisher_scrapy.items import PluckedItem
@@ -41,7 +40,13 @@ class KingfisherProcessAPI2:
         self.url = url
         self.stats = stats
         self.routing_key = rabbit_routing_key
-        self.client = Async(url=rabbit_url, exchange=rabbit_exchange_name, routing_key_template="{routing_key}")
+        self.client = Async(
+            url=rabbit_url,
+            exchange=rabbit_exchange_name,
+            routing_key_template="{routing_key}",
+            custom_ioloop=asyncio.get_running_loop(),
+            manage_ioloop=False,
+        )
 
         # The collection ID is set by the spider_opened handler.
         self.collection_id = None
@@ -105,16 +110,10 @@ class KingfisherProcessAPI2:
             spider.logger.info("Created collection %d in Kingfisher Process (%s)", self.collection_id, data_version)
 
             # Connect to RabbitMQ only if a collection_id is set, as other signals don't use RabbitMQ, otherwise.
-            self.client.connect()
-
-            # threading.Thread(target=cb) is used, instead of reactor.callInThread(cb), because the latter is hard to
-            # test. The reactor needs to run for the callback to callInThread() to run. The reactor needs to stop, in
-            # order for a test to return. But, the reactor isn't restartable. So, testing seems impossible.
-            self.thread = threading.Thread(target=self.client.connection.ioloop.run_forever)
-            self.thread.start()
+            self.client.start()
 
             # Ensure the RabbitMQ connection is closed, if an unclean shutdown is forced.
-            reactor.addSystemEventTrigger("before", "shutdown", self.disconnect_and_join)
+            self.shutdown_trigger_id = reactor.addSystemEventTrigger("before", "shutdown", self.disconnect)
         else:
             self._response_error(spider, "Failed to create collection", response)
 
@@ -123,7 +122,13 @@ class KingfisherProcessAPI2:
         if not self.collection_id:
             return
 
-        self.disconnect_and_join()
+        self.disconnect()
+
+        if hasattr(self, "shutdown_trigger_id"):
+            from twisted.internet import reactor  # noqa: PLC0415
+
+            # Remove the shutdown trigger since we've disconnected already.
+            reactor.removeSystemEventTrigger(self.shutdown_trigger_id)
 
         # Scrapyd's cancel.json endpoint sends a SIGINT signal to the Scrapy process, which uses the "shutdown" reason.
         # If a process is cancelled, don't close the collection, as this triggers compilation of release collections.
@@ -159,18 +164,15 @@ class KingfisherProcessAPI2:
         }
 
         cb = functools.partial(self._when_ready, self.client.publish, data, self.routing_key)
-        methods.add_callback_threadsafe(self.client.connection, cb)
+        self.client.connection.ioloop.call_soon_threadsafe(cb)
 
         # WARNING! Kingfisher Process's API reads this value.
         self.stats.inc_value("kingfisher_process_expected_files_count")
 
-    def disconnect_and_join(self):
-        """Close the RabbitMQ connection and join the client's thread."""
+    def disconnect(self):
+        """Close the RabbitMQ connection."""
         cb = functools.partial(self._when_ready, self.client.interrupt)
-        methods.add_callback_threadsafe(self.client.connection, cb)
-
-        # Join last, to avoid blocking before scheduling interrupt.
-        self.thread.join()
+        self.client.connection.ioloop.call_soon_threadsafe(cb)
 
     def _post_synchronous(self, spider, path, data):
         """POST synchronous API requests to Kingfisher Process."""

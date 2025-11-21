@@ -57,7 +57,9 @@ classmethod-decorators = ["pydantic.validator"]
 omit = ["*/kingfisher_scrapy/spiders/*"]
 
 [tool.pytest.ini_options]
-addopts = "--doctest-modules"
+# `--reactor=asyncio` avoids "RuntimeError: The installed reactor (twisted.internet.selectreactor.SelectReactor) does
+# not match the requested one (twisted.internet.asyncioreactor.AsyncioSelectorReactor)".
+addopts = "--doctest-modules --reactor=asyncio"  # --reactor is provided by pytest-twisted
 
 [tool.uv.pip]
 python-platform = "linux"  # greenlet
