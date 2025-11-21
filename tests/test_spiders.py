@@ -53,7 +53,7 @@ async def test_start_http_error(spider_name, caplog):
             assert len(items) == 0
             for record in caplog.records:
                 assert re.search(
-                    r"^status=555 message='[^']*' request=<(GET|POST) \S+> file_name=\S+$",
+                    r"^status=555 message='[^']*' request=<(GET|POST) \S+> file_name=\S*$",
                     record.message,
                 )
     # Some spiders require API keys.

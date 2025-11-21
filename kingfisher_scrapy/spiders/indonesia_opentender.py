@@ -56,7 +56,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
             # There are duplicate codes.
             if code and code not in codes_seen:
                 codes_seen.add(code)
-                url = f"{self.url_prefix}tender/export-ocds-batch/?year={year}&lpse={code}"
                 yield self.build_request(
-                    url, formatter=join(components(-1), parameters("year", "lpse"), extension="zip")
+                    f"{self.url_prefix}tender/export-ocds-batch/?year={year}&lpse={code}",
+                    formatter=join(components(-1), parameters("year", "lpse"), extension="zip"),
                 )

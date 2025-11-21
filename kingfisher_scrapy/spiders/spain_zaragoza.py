@@ -25,9 +25,7 @@ class SpainZaragoza(SimpleSpider):
 
     async def start(self):
         # row parameter setting to 100000 to get all releases
-        url = f"{self.url_prefix}?rf=html&rows=100000"
-
-        yield scrapy.Request(url, callback=self.parse_list)
+        yield scrapy.Request(f"{self.url_prefix}?rf=html&rows=100000", callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

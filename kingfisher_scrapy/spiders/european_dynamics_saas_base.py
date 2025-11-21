@@ -28,8 +28,7 @@ class EuropeanDynamicsSaasBase(SimpleSpider):
     # base_url must be provided by subclasses.
 
     async def start(self):
-        url = f"{self.base_url}Home/Procurements/"
-        yield scrapy.Request(url, callback=self.parse_list)
+        yield scrapy.Request(f"{self.base_url}Home/Procurements/", callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

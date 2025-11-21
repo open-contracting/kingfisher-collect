@@ -30,5 +30,4 @@ class GeorgiaRecords(LinksSpider):
     formatter = staticmethod(parameters("page"))
 
     async def start(self):
-        url = "https://odapi.spa.ge/api/records.json"
-        yield scrapy.Request(url, meta={"file_name": "page-1.json"})
+        yield scrapy.Request("https://odapi.spa.ge/api/records.json", meta={"file_name": "page-1.json"})

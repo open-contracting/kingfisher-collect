@@ -118,10 +118,11 @@ class ParaguayDNCPBase(SimpleSpider):
             yield self.build_request(url, formatter=components(-1), dont_filter=True)
         pagination = data["pagination"]
         if pagination["current_page"] < pagination["total_pages"]:
-            page = pagination["current_page"] + 1
-            url = replace_parameters(response.request.url, page=page)
             yield self.build_request(
-                url, formatter=parameters("fecha_desde", "page"), dont_filter=True, callback=self.parse_pages
+                replace_parameters(response.request.url, page=pagination["current_page"] + 1),
+                formatter=parameters("fecha_desde", "page"),
+                dont_filter=True,
+                callback=self.parse_pages,
             )
 
     @abstractmethod

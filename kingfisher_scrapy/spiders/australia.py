@@ -35,6 +35,8 @@ class Australia(LinksSpider):
     async def start(self):
         from_date = self.from_date.strftime(self.date_format)
         until_date = self.until_date.strftime(self.date_format)
-        url = f"https://api.tenders.gov.au/ocds/findByDates/contractPublished/{from_date}Z/{until_date}Z"
 
-        yield scrapy.Request(url, meta={"file_name": f"{until_date}.json"})  # reverse chronological order
+        yield scrapy.Request(
+            f"https://api.tenders.gov.au/ocds/findByDates/contractPublished/{from_date}Z/{until_date}Z",
+            meta={"file_name": f"{until_date}.json"},
+        )  # reverse chronological order

@@ -34,8 +34,10 @@ class IndiaHimachalPradeshCivicDataLab(SimpleSpider):
     github_repo = "CivicDataLab/himachal-pradesh-health-procurement-OCDS"
 
     async def start(self):
-        url = f"https://api.github.com/repos/{self.github_repo}/git/trees/master"
-        yield scrapy.Request(url, callback=self.parse_list)
+        yield scrapy.Request(
+            f"https://api.github.com/repos/{self.github_repo}/git/trees/master",
+            callback=self.parse_list,
+        )
 
     @handle_http_error
     def parse_list(self, response):
@@ -50,5 +52,7 @@ class IndiaHimachalPradeshCivicDataLab(SimpleSpider):
         for node in data["tree"]:
             file_name = node["path"]
             if file_name.endswith(".xlsx"):
-                url = f"https://github.com/{self.github_repo}/raw/master/{file_name}?raw=true"
-                yield scrapy.Request(url, meta={"file_name": file_name})
+                yield scrapy.Request(
+                    f"https://github.com/{self.github_repo}/raw/master/{file_name}?raw=true",
+                    meta={"file_name": file_name},
+                )

@@ -24,5 +24,4 @@ class ColombiaANIRecords(SimpleSpider):
 
     async def start(self):
         # Extracted from https://aniscopio.ani.gov.co/datos-abiertos, 'OCDS' tab
-        url = "https://apicost.azurewebsites.net/cost/records"
-        yield scrapy.Request(url, meta={"file_name": "all.json"})
+        yield scrapy.Request("https://apicost.azurewebsites.net/cost/records", meta={"file_name": "all.json"})

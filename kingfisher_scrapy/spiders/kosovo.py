@@ -35,12 +35,12 @@ class Kosovo(SimpleSpider):
         for days in reversed(range(delta.days + 1)):
             start = self.from_date + timedelta(days=days - 1)
             end = self.from_date + timedelta(days=days)
-            url = (
+            yield self.build_request(
                 "https://ocdskrpp.rks-gov.net/krppapi/tenderrelease"
-                f"?endDateFrom={start.strftime('%Y-%m-%d')}&endDateEnd={end.strftime('%Y-%m-%d')}"
+                f"?endDateFrom={start.strftime('%Y-%m-%d')}"
+                f"&endDateEnd={end.strftime('%Y-%m-%d')}",
+                formatter=parameters("endDateFrom", "endDateEnd"),
             )
-
-            yield self.build_request(url, formatter=parameters("endDateFrom", "endDateEnd"))
 
     @handle_http_error
     def parse(self, response):

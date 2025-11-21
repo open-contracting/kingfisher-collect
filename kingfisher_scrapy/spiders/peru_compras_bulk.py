@@ -25,13 +25,17 @@ class PeruComprasBulk(PeruComprasBase):
     default_from_date = "2021-08"
 
     async def start(self):
-        url = f"{self.url_prefix}getListaDescargaMasiva?Anio=&Mes="
-        yield scrapy.Request(url, method="POST", callback=self.parse_list)
+        yield scrapy.Request(
+            f"{self.url_prefix}getListaDescargaMasiva?Anio=&Mes=",
+            method="POST",
+            callback=self.parse_list,
+        )
 
     @handle_http_error
     def parse_list(self, response):
         from_date = self.from_date.strftime(self.date_format)
         until_date = self.until_date.strftime(self.date_format)
+
         for item in response.json():
             if from_date <= f"{item['C_Anio']}-{item['CodMes']}" <= until_date:
                 yield self.build_request(

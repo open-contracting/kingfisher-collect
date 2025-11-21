@@ -32,8 +32,9 @@ class RwandaAPI(LinksSpider):
     async def start(self):
         from_date = self.from_date.strftime(self.date_format)
         until_date = self.until_date.strftime(self.date_format)
-        url = (
+
+        yield scrapy.Request(
             "https://ocds.umucyo.gov.rw/opendata/api/v1/releases/all"
-            f"?sort_field=date&sort_direction=desc&offset=0&limit=50&date_from={from_date}&date_to={until_date}"
+            f"?sort_field=date&sort_direction=desc&offset=0&limit=50&date_from={from_date}&date_to={until_date}",
+            meta={"file_name": f"page-1-{from_date}.json"},
         )
-        yield scrapy.Request(url, meta={"file_name": f"page-1-{from_date}.json"})

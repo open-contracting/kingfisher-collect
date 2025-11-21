@@ -39,5 +39,7 @@ class IndiaAssam(PeriodicSpider):
     default_until_date = "2021"
 
     def build_urls(self, date):
-        url = "https://www.data.gov.in/files/ogdpv2dms/s3fs-public/ocds_mapped_procurement_data_fiscal_year"
-        yield f"{url}_{date}_{date + 1}.csv"
+        yield (
+            "https://www.data.gov.in/files/ogdpv2dms/s3fs-public/ocds_mapped_procurement_data_fiscal_year_"
+            f"{date}_{date + 1}.csv"
+        )

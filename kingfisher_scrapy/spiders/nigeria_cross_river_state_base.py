@@ -16,8 +16,7 @@ class NigeriaCrossRiverStateBase(SimpleSpider):
     url_prefix = "https://ocdsapi.dppib-crsgov.org/api/ocdsAPI/"
 
     async def start(self):
-        url = f"{self.url_prefix}getAvailableReleasesSummary"
-        yield scrapy.Request(url, callback=self.parse_list)
+        yield scrapy.Request(f"{self.url_prefix}getAvailableReleasesSummary", callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

@@ -27,8 +27,7 @@ class Armenia(LinksSpider):
     next_pointer = "/next_page/uri"
 
     async def start(self):
-        url = "https://armeps.am/ocds/release"
-        yield scrapy.Request(url, meta={"file_name": "offset-0.json"})
+        yield scrapy.Request("https://armeps.am/ocds/release", meta={"file_name": "offset-0.json"})
 
     def parse(self, response):
         # If the request was successful, parse the response as usual.
@@ -69,9 +68,10 @@ class Armenia(LinksSpider):
         # Otherwise, continue.
         else:
             new_offset = min(first_offset + MILLISECONDS_PER_DAY * 2**exponent, start_time)
-            url = replace_parameters(response.request.url, offset=new_offset)
             yield self._build_request(
-                url, self.parse_date_range, {"prev": offset, "exponent": exponent, "first": first_offset}
+                replace_parameters(response.request.url, offset=new_offset),
+                self.parse_date_range,
+                {"prev": offset, "exponent": exponent, "first": first_offset},
             )
 
     # We use one of the alternative binary search methods (https://en.wikipedia.org/wiki/Binary_search_algorithm),
@@ -98,12 +98,12 @@ class Armenia(LinksSpider):
                 # If the last request used the offset, we can reuse its response.
                 yield from self.parse(response)
             else:
-                url = replace_parameters(response.request.url, offset=maximum)
-                yield self._build_request(url, self.parse, {})
+                yield self._build_request(replace_parameters(response.request.url, offset=maximum), self.parse, {})
         else:
-            url = replace_parameters(response.request.url, offset=(minimum + maximum) // 2)
             yield self._build_request(
-                url, self.parse_binary_search, {"minimum": minimum, "maximum": maximum, "first": first_offset}
+                replace_parameters(response.request.url, offset=(minimum + maximum) // 2),
+                self.parse_binary_search,
+                {"minimum": minimum, "maximum": maximum, "first": first_offset},
             )
 
     def _build_request(self, url, callback, meta):

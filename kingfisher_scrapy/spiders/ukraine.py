@@ -46,12 +46,14 @@ class Ukraine(SimpleSpider):
         data = response.json()
 
         for item in data["data"]:
-            url = (
+            yield self.build_request(
                 append_path_components(replace_parameters(response.request.url, offset=None), item["id"])
-                + "?opt_schema=ocds"
+                + "?opt_schema=ocds",
+                formatter=components(-2),
             )
-            yield self.build_request(url, formatter=components(-2))
 
         yield self.build_request(
-            data["next_page"]["uri"], formatter=join(components(-1), parameters("offset")), callback=self.parse_list
+            data["next_page"]["uri"],
+            formatter=join(components(-1), parameters("offset")),
+            callback=self.parse_list,
         )

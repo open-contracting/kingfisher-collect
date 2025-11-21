@@ -23,8 +23,7 @@ class PeruComprasAPI(PeruComprasBase):
     default_from_date = "2017-01-01"
 
     async def start(self):
-        url = f"{self.url_prefix}obtenerFiltros"
-        yield scrapy.Request(url, callback=self.parse_list)
+        yield scrapy.Request(f"{self.url_prefix}obtenerFiltros", callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

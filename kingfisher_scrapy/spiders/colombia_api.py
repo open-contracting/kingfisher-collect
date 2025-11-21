@@ -34,9 +34,11 @@ class ColombiaAPI(LinksSpider):
     async def start(self):
         from_date = self.from_date.strftime(self.date_format)
         until_date = self.until_date.strftime(self.date_format)
-        url = f"https://apiocds.colombiacompra.gov.co/apiCCE-2.0/rest/releases/dates/{from_date}/{until_date}"
 
-        yield scrapy.Request(url, meta={"file_name": f"{from_date}.json"})
+        yield scrapy.Request(
+            f"https://apiocds.colombiacompra.gov.co/apiCCE-2.0/rest/releases/dates/{from_date}/{until_date}",
+            meta={"file_name": f"{from_date}.json"},
+        )
 
     @handle_http_error
     def parse(self, response):

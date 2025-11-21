@@ -34,8 +34,10 @@ class UruguayHistorical(CompressedFileSpider):
 
     async def start(self):
         # A CKAN API JSON response.
-        url = "https://catalogodatos.gub.uy/api/3/action/package_show?id=arce-datos-historicos-de-compras"
-        yield scrapy.Request(url, callback=self.parse_list)
+        yield scrapy.Request(
+            "https://catalogodatos.gub.uy/api/3/action/package_show?id=arce-datos-historicos-de-compras",
+            callback=self.parse_list,
+        )
 
     @handle_http_error
     def parse_list(self, response):
