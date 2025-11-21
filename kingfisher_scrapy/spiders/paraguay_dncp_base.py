@@ -50,7 +50,7 @@ class ParaguayDNCPBase(SimpleSpider):
 
         return spider
 
-    def start_requests(self):
+    async def start(self):
         for url in self.urls_builder():
             yield self.build_request(
                 url,

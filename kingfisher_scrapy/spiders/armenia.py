@@ -26,7 +26,7 @@ class Armenia(LinksSpider):
     formatter = staticmethod(parameters("offset"))
     next_pointer = "/next_page/uri"
 
-    def start_requests(self):
+    async def start(self):
         url = "https://armeps.am/ocds/release"
         yield scrapy.Request(url, meta={"file_name": "offset-0.json"})
 

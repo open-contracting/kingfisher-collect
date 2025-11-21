@@ -38,7 +38,7 @@ class HondurasIAIP(SimpleSpider):
             raise SpiderArgumentError(f"spider argument `portal`: {spider.portal!r} not recognized")
         return spider
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             "https://www.contratacionesabiertas.gob.hn/api/v1/iaip_datosabiertos/?format=json",
             meta={"file_name": "list.json"},

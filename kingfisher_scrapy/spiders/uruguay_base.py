@@ -12,7 +12,7 @@ class UruguayBase(PeriodicSpider):
     # PeriodicSpider
     pattern = "http://comprasestatales.gub.uy/ocds/rss/{0:%Y}/{0:%m}"
     formatter = staticmethod(components(-2))  # year-month
-    start_requests_callback = "parse_list"
+    start_callback = "parse_list"
 
     @abstractmethod
     def parse_list(self, response):

@@ -32,7 +32,7 @@ class Australia(LinksSpider):
     # LinksSpider
     formatter = staticmethod(parameters("cursor"))
 
-    def start_requests(self):
+    async def start(self):
         from_date = self.from_date.strftime(self.date_format)
         until_date = self.until_date.strftime(self.date_format)
         url = f"https://api.tenders.gov.au/ocds/findByDates/contractPublished/{from_date}Z/{until_date}Z"

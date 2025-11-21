@@ -33,7 +33,7 @@ class LiberiaReleases(IndexSpider):
     # Local
     url_prefix = "https://eprocurement.ppcc.gov.lr/ocds/record/"
 
-    def start_requests(self):
+    async def start(self):
         url, kwargs = self.url_builder(self.start_page, None, None)
         yield scrapy.Request(url, **kwargs, callback=self.parse_list)
 

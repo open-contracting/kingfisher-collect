@@ -18,7 +18,7 @@ class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
     # PeriodicSpider
     formatter = staticmethod(parameters("publishedFrom", "publishedTo"))
     next_link_formatter = staticmethod(parameters("publishedFrom", "publishedTo", "cursor"))
-    start_requests_callback = "parse_page"
+    start_callback = "parse_page"
     step = 15
     pattern = (
         "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search"

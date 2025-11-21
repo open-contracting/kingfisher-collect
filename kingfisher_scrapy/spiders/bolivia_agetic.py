@@ -22,7 +22,7 @@ class BoliviaAgetic(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         # A CKAN API JSON response.
         url = "https://datos.gob.bo/api/3/action/package_show?id=contrataciones-agetic-2019-estandar-ocp"
         yield scrapy.Request(url, meta={"file_name": "package_show.json"}, callback=self.parse_list)

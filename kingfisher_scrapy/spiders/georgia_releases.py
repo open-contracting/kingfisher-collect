@@ -26,6 +26,6 @@ class GeorgiaReleases(LinksSpider):
     # LinksSpider
     formatter = staticmethod(parameters("page"))
 
-    def start_requests(self):
+    async def start(self):
         url = "https://odapi.spa.ge/api/releases.json"
         yield scrapy.Request(url, meta={"file_name": "page-1.json"})

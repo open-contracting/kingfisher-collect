@@ -32,7 +32,7 @@ class UruguayHistorical(CompressedFileSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         # A CKAN API JSON response.
         url = "https://catalogodatos.gub.uy/api/3/action/package_show?id=arce-datos-historicos-de-compras"
         yield scrapy.Request(url, meta={"file_name": "package_show.json"}, callback=self.parse_list)

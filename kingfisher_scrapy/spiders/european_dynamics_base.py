@@ -36,7 +36,7 @@ class EuropeanDynamicsBase(CompressedFileSpider):
 
     # base_url must be provided by subclasses.
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             f"{self.base_url}/ocds/services/recordpackage/getrecordpackagelist",
             meta={"file_name": "list.json"},

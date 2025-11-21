@@ -91,16 +91,14 @@ TEST_CASES = [
 ]
 
 
-@pytest.mark.parametrize(
-    ("spider_args", "start_request_response", "initial_url", "results_pattern", "expected"), TEST_CASES
-)
-def test_urls(spider_args, start_request_response, initial_url, results_pattern, expected):
+@pytest.mark.parametrize(("spider_args", "start_response", "initial_url", "results_pattern", "expected"), TEST_CASES)
+def test_urls(spider_args, start_response, initial_url, results_pattern, expected):
     text_response_mock = TextResponse(
         initial_url,
         status=200,
         headers={"Content-type": "text/html"},
         encoding="utf-8",
-        body=start_request_response,
+        body=start_response,
         request=Request(url=initial_url, meta={"file_name": "list.json"}),
     )
 

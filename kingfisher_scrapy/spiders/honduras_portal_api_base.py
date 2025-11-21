@@ -20,7 +20,7 @@ class HondurasPortalAPIBase(IndexSpider):
 
         return spider
 
-    def start_requests(self):
+    async def start(self):
         url = self.start_url
         if self.publisher:
             url = f"{url}&publisher={self.publisher}"
