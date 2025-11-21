@@ -27,7 +27,7 @@ class IndexSpider(SimpleSpider):
        If ``page_count_pointer`` or ``use_page = True``, it defaults to ``parameters(<param_page>)``. Otherwise, if
        ``result_count_pointer`` is set and ``use_page = False``, it defaults to ``parameters(<param_offset>)``. If
        ``formatter = None``, the ``url_builder()`` method must ``return url, {'meta': {'file_name': ...}, ...}``.
-    #. Write a ``start_requests()`` method to yield the initial URL. The request's ``callback`` parameter should be set
+    #. Write a ``start()`` method to yield the initial URL. The request's ``callback`` parameter should be set
        to ``self.parse_list``.
 
     If neither ``page_count_pointer`` nor ``result_count_pointer`` can be used to create the URLs (e.g. if you need to

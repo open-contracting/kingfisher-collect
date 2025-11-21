@@ -202,7 +202,7 @@ TEST_CASES = {
     TEST_CASES.values(),
     ids=TEST_CASES.keys(),
 )
-def test_urls(date_format, pattern, expected_start, expected_end, class_args, user_args):
+async def test_urls(date_format, pattern, expected_start, expected_end, class_args, user_args):
     start = datetime.datetime.strptime(expected_start, PeriodicSpider.VALID_DATE_FORMATS[date_format])
     stop = datetime.datetime.strptime(expected_end, PeriodicSpider.VALID_DATE_FORMATS[date_format])
 
@@ -230,7 +230,7 @@ def test_urls(date_format, pattern, expected_start, expected_end, class_args, us
     )
     spider = spider_with_crawler(spider_class=test_spider, **user_args)
 
-    requests = list(spider.start_requests())
+    requests = [request async for request in spider.start()]
 
     for request, expected_url in zip(requests, expected, strict=False):
         assert request.url == expected_url

@@ -20,7 +20,7 @@ class Slovenia(SimpleSpider):
     # Local
     url_prefix = "http://tbfy.ijs.si/public/ocds/mju/"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(self.url_prefix, meta={"file_name": "list.html"}, callback=self.parse_list)
 
     @handle_http_error

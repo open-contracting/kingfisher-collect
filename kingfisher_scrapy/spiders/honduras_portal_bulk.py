@@ -59,7 +59,7 @@ class HondurasPortalBulk(SimpleSpider):
         "DDC": "Módulo de Difusión Directa de Contratos",
     }
 
-    def start_requests(self):
+    async def start(self):
         url = "http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json"
         yield scrapy.Request(url, meta={"file_name": "list.json"}, callback=self.parse_list)
 

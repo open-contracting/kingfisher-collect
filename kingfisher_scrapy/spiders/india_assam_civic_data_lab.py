@@ -18,6 +18,6 @@ class IndiaAssamCivicDataLab(CompressedFileSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         url = "https://github.com/CivicDataLab/assam-tenders-data/raw/main/data/ProcessedData/ocds-mapped-data/current/ocds_mapped_data.json.zip"
         yield scrapy.Request(url, meta={"file_name": "ocds_mapped_data.json.zip"})

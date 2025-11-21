@@ -29,7 +29,7 @@ class Kosovo(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         # The API is slow even with short periods, so we request one day at a time.
         delta = self.until_date - self.from_date
         for days in reversed(range(delta.days + 1)):

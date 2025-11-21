@@ -16,5 +16,5 @@ class NigeriaPlateauState(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request("https://plateaustatebpp.com/export", meta={"file_name": "all.json"})

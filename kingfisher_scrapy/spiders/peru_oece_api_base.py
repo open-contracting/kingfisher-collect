@@ -8,7 +8,7 @@ class PeruOECEAPIBase(LinksSpider):
     # LinksSpider
     formatter = staticmethod(parameters("searchAfter"))
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             f"https://contratacionesabiertas.oece.gob.pe/api/v1/{self.endpoint}?format=json&order=desc",
             meta={"file_name": "1.json"},

@@ -10,7 +10,7 @@ class NigeriaBonMaximusBase(SimpleSpider):
 
     # url_prefix must be provided by subclasses.
 
-    def start_requests(self):
+    async def start(self):
         url = f"{self.url_prefix}awarded_contracts.php"
         yield scrapy.Request(url, meta={"file_name": "list.html"}, callback=self.parse_list)
 

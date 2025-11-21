@@ -19,7 +19,7 @@ class TanzaniaBulkBase(IndexSpider):
     # Local
     url_prefix = "https://nest.go.tz/gateway/nest-data-portal-api"
     # WARNING: This class attribute is modified in-place. The invariants that must be upheld are:
-    # - The value of any key can be modified in the `start_requests` method.
+    # - The value of any key can be modified in the `start` method.
     # - Only the value of the `page` key can be modified in any other method.
     payload = {
         "page": start_page,
@@ -30,7 +30,7 @@ class TanzaniaBulkBase(IndexSpider):
         "mustHaveFilters": [{"fieldName": "periodType", "operation": "EQ", "value1": "daily"}],
     }
 
-    def start_requests(self):
+    async def start(self):
         self.payload["mustHaveFilters"].append(
             {
                 "fieldName": "dataType",

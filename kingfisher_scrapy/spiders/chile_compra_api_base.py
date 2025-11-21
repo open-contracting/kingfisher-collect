@@ -18,7 +18,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
     # The path parameters are {system}/{year}/{month}/{offset}/{limit}.
     pattern = "https://api.mercadopublico.cl/APISOCDS/OCDS/{0}/{1.year:d}/{1.month:02d}/{2}/{3}"
     formatter = staticmethod(components(-4, -1))  # year-month-offset
-    start_requests_callback = "parse_list"
+    start_callback = "parse_list"
 
     # IndexSpider
     result_count_pointer = "/pagination/total"

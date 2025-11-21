@@ -26,7 +26,7 @@ class BrazilMedicamentosTransparentes(CompressedFileSpider, IndexSpider):
     param_limit = "take"
     param_offset = "skip"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             f"https://medicamentos-api.transparencia.org.br/dados-abertos?skip=0&take={self.limit}",
             meta={"file_name": "list.json"},

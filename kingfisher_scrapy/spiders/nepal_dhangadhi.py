@@ -19,7 +19,7 @@ class NepalDhangadhi(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             "https://admin.ims.susasan.org/api/static-data/dhangadhi",
             meta={"file_name": "list.json"},

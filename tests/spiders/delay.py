@@ -17,5 +17,5 @@ class Delay(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request("http://httpbingo.org/delay/10", meta={"file_name": "delay.json"})

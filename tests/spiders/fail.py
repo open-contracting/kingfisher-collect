@@ -17,7 +17,7 @@ class Fail(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request("http://httpstat.us/200", meta={"file_name": "http-200.json"})
         yield scrapy.Request("http://httpstat.us/404", meta={"file_name": "http-404.json"})
         yield scrapy.Request("http://httpstat.us/500", meta={"file_name": "http-500.json"})

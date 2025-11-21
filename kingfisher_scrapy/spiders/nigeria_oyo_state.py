@@ -16,6 +16,6 @@ class NigeriaOyoState(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    def start_requests(self):
+    async def start(self):
         # From https://ocdsoyo.oyostate.gov.ng/projects.php
         yield scrapy.Request("https://ocdsoyo.oyostate.gov.ng/json_formation.php", meta={"file_name": "all.json"})

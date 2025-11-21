@@ -62,7 +62,7 @@ class ParaguayHacienda(BaseSpider):
 
         return spider
 
-    def start_requests(self):
+    async def start(self):
         # Paraguay Hacienda has a service that return all the ids that we need to get the releases packages
         # so we first iterate over this list that is paginated
         yield self.build_request(
