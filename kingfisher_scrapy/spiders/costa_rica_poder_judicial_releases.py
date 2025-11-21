@@ -26,7 +26,7 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
 
     async def start(self):
         url = "https://ckanpj.azurewebsites.net/api/3/action/package_show?id=estandar-de-datos-de-contrataciones-abiertas-ocds"
-        yield scrapy.Request(url, meta={"file_name": "package_show.json"}, callback=self.parse_list)
+        yield scrapy.Request(url, callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

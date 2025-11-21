@@ -23,7 +23,9 @@ jobs:
         # https://github.com/scrapy/scrapy/issues/6450
         run: coverage run --source=kingfisher_scrapy -m pytest -W error -W ignore::ResourceWarning -W ignore::DeprecationWarning:scrapy.core.downloader.webclient -rs
       - run: python test_delayed_request_middleware.py
-      - uses: coverallsapp/github-action@5cbfd81b66ca5d10c19b062c04de0199c215fb6e # v2.3.7
+      - uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        with:
+          fail_ci_if_error: true
     services:
       postgres:
         image: postgres:15
