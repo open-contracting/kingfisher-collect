@@ -39,16 +39,12 @@ class KingfisherProcessAPI2:
     def __init__(self, url, stats, rabbit_url, rabbit_exchange_name, rabbit_routing_key):
         self.url = url
         self.stats = stats
+        self.rabbit_url = rabbit_url
+        self.rabbit_exchange_name = rabbit_exchange_name
         self.routing_key = rabbit_routing_key
-        self.client = Async(
-            url=rabbit_url,
-            exchange=rabbit_exchange_name,
-            routing_key_template="{routing_key}",
-            custom_ioloop=asyncio.get_running_loop(),
-            manage_ioloop=False,
-        )
 
-        # The collection ID is set by the spider_opened handler.
+        # The client and collection ID are set by the spider_opened handler.
+        self.client = None
         self.collection_id = None
 
     @classmethod
@@ -108,6 +104,15 @@ class KingfisherProcessAPI2:
             # WARNING! If this log message is changed, update the regular expression in the data_registry/
             # process_manager/task/collect.py file in the open-contracting/data-registry repository to match.
             spider.logger.info("Created collection %d in Kingfisher Process (%s)", self.collection_id, data_version)
+
+            self.client = Async(
+                url=self.rabbit_url,
+                exchange=self.rabbit_exchange_name,
+                routing_key_template="{routing_key}",
+                # When running `scrapy crawl`, the event loop isn't running when __init__ is called.
+                custom_ioloop=asyncio.get_running_loop(),
+                manage_ioloop=False,
+            )
 
             # Connect to RabbitMQ only if a collection_id is set, as other signals don't use RabbitMQ, otherwise.
             self.client.start()
