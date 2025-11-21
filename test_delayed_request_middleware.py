@@ -25,13 +25,14 @@ def delayed_request_middleware():
         }
     )
     request = Request("http://example.com", meta={"wait_time": 1})
-    # We send the request to all the downloader middlewares, including the delayed request middleware.
+    # The request is sent to all the downloader middlewares, including the delayed request middleware.
     manager = DownloaderMiddlewareManager.from_crawler(spider.crawler)
+    # Start the timer here, because reactor.callLater is run immediately.
+    start = time.time()
+
     downloaded = manager.download(download_func, request, spider)
 
     assert isinstance(downloaded, Deferred)
-
-    start = time.time()
 
     # https://github.com/scrapy/scrapy/blob/28262d4b241744aa7c090702db9a89411e3bbf9a/tests/test_downloadermiddleware.py#L36
     results = []
