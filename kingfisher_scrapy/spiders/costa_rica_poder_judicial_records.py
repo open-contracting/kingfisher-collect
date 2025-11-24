@@ -39,10 +39,11 @@ class CostaRicaPoderJudicialRecords(SimpleSpider):
     def parse_list(self, response):
         for resource in response.json()["result"]["resources"]:
             if resource["format"].upper() == "JSON":
+                formatter = components(-1)
                 if self.from_date and self.until_date:
                     # URL looks like:
-                    # hhttps://ckanpj.azurewebsites.net/datosabiertos/OpenContracting/2021.json
-                    year = int(components(-1)(resource["url"]))
+                    # https://ckanpj.azurewebsites.net/datosabiertos/OpenContracting/2021.json
+                    year = int(formatter(resource["url"]))
                     if not (self.from_date.year <= year <= self.until_date.year):
                         continue
-                yield self.build_request(resource["url"], formatter=components(-1))
+                yield self.build_request(resource["url"], formatter=formatter)
