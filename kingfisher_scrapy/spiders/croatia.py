@@ -37,5 +37,5 @@ class Croatia(CompressedFileSpider):
                     "__EVENTARGUMENT": "",
                 },
                 clickdata={"id": file_id},
-                meta={"file_name": "list.zip"},
+                meta={"file_name": f"{file_id}.zip"},
             )
