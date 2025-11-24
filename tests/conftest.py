@@ -1,4 +1,4 @@
-# See scrapy/conftest.py
+# See scrapy/conftest.py for Windows.
 from scrapy.utils.reactor import set_asyncio_event_loop_policy
 
 
