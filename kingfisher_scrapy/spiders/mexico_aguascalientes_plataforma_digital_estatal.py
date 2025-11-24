@@ -22,8 +22,7 @@ class MexicoAguascalientesPlataformaDigitalEstatal(SimpleSpider):
 
     async def start(self):
         yield scrapy.Request(
-            "https://plataformadigitalestatal.org/Publica/contratacionesPublicas/index.html",
-            callback=self.parse_list,
+            "https://plataformadigitalestatal.org/Publica/contratacionesPublicas/index.html", callback=self.parse_list
         )
 
     @handle_http_error

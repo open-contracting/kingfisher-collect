@@ -35,8 +35,7 @@ class IndiaHimachalPradeshCivicDataLab(SimpleSpider):
 
     async def start(self):
         yield scrapy.Request(
-            f"https://api.github.com/repos/{self.github_repo}/git/trees/master",
-            callback=self.parse_list,
+            f"https://api.github.com/repos/{self.github_repo}/git/trees/master", callback=self.parse_list
         )
 
     @handle_http_error

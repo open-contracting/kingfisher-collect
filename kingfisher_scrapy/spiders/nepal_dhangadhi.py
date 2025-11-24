@@ -20,10 +20,7 @@ class NepalDhangadhi(SimpleSpider):
     data_type = "release_package"
 
     async def start(self):
-        yield scrapy.Request(
-            "https://admin.ims.susasan.org/api/static-data/dhangadhi",
-            callback=self.parse_list,
-        )
+        yield scrapy.Request("https://admin.ims.susasan.org/api/static-data/dhangadhi", callback=self.parse_list)
 
     @handle_http_error
     def parse_list(self, response):

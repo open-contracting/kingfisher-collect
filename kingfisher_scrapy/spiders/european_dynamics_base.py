@@ -38,8 +38,7 @@ class EuropeanDynamicsBase(CompressedFileSpider):
 
     async def start(self):
         yield scrapy.Request(
-            f"{self.base_url}/ocds/services/recordpackage/getrecordpackagelist",
-            callback=self.parse_list,
+            f"{self.base_url}/ocds/services/recordpackage/getrecordpackagelist", callback=self.parse_list
         )
 
     @handle_http_error

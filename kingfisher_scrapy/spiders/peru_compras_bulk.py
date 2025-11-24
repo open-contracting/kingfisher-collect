@@ -26,9 +26,7 @@ class PeruComprasBulk(PeruComprasBase):
 
     async def start(self):
         yield scrapy.Request(
-            f"{self.url_prefix}getListaDescargaMasiva?Anio=&Mes=",
-            method="POST",
-            callback=self.parse_list,
+            f"{self.url_prefix}getListaDescargaMasiva?Anio=&Mes=", method="POST", callback=self.parse_list
         )
 
     @handle_http_error

@@ -22,8 +22,7 @@ class KenyaPPRA(SimpleSpider):
 
     async def start(self):
         yield scrapy.Request(
-            f"{self.base_url}/index?search=&perpage=10&sortby=&order=asc&page=1",
-            callback=self.parse_list,
+            f"{self.base_url}/index?search=&perpage=10&sortby=&order=asc&page=1", callback=self.parse_list
         )
 
     @handle_http_error

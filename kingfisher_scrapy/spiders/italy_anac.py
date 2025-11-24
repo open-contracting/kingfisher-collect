@@ -25,8 +25,7 @@ class ItalyANAC(BigFileSpider):
 
     async def start(self):
         yield scrapy.Request(
-            "https://dati.anticorruzione.it/opendata/api/3/action/package_search?q=ocds",
-            callback=self.parse_list,
+            "https://dati.anticorruzione.it/opendata/api/3/action/package_search?q=ocds", callback=self.parse_list
         )
 
     @handle_http_error

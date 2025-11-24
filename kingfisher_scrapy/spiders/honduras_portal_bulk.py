@@ -61,8 +61,7 @@ class HondurasPortalBulk(SimpleSpider):
 
     async def start(self):
         yield scrapy.Request(
-            "http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json",
-            callback=self.parse_list,
+            "http://www.contratacionesabiertas.gob.hn/api/v1/descargas/?format=json", callback=self.parse_list
         )
 
     @classmethod

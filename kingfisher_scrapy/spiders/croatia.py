@@ -23,8 +23,7 @@ class Croatia(CompressedFileSpider):
 
     async def start(self):
         yield scrapy.Request(
-            "https://eojn.nn.hr/SPIN/application/ipn/Oglasnik/PreuzimanjeUgovoraOCD.aspx",
-            callback=self.parse_list,
+            "https://eojn.nn.hr/SPIN/application/ipn/Oglasnik/PreuzimanjeUgovoraOCD.aspx", callback=self.parse_list
         )
 
     @handle_http_error
