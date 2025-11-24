@@ -35,5 +35,5 @@ class PeruOECEBulk(CompressedFileSpider, IndexSpider):
     @handle_http_error
     def parse_page(self, response):
         for item in response.json()["results"]:
-            # Some URLs are still using the old domain (osce)
+            # Some URLs still use the old domain.
             yield scrapy.Request((item["files"]["json"].replace(".osce.", ".oece.")), meta={"file_name": "all.zip"})

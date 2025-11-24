@@ -10,7 +10,6 @@ Spiders for publications that were available but stopped publishing, since Janua
 
 -  2025-22-14: `australia_new_south_wales, chile_public_works_bulk, italy_ministry_of_infrastructure_and_transport, mexico_administracion_publica_federal_api, mexico_administracion_publica_federal_bulk, mexico_guanajuato_iacip, netherlands <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__
 
-   .. https://datosabiertos.vialidad.gob.ar/ui/index.html#!/datos_abiertos
    .. https://www.tenders.nsw.gov.au/?event=public.api.tender.search
    .. https://obrapublica.cl/download/ocds_descargamasiva.zip
    .. https://www.serviziocontrattipubblici.it/ocds-ms/swagger-ui.html
@@ -20,6 +19,9 @@ Spiders for publications that were available but stopped publishing, since Janua
    .. https://www.tenderned.nl/cms/nl/aanbesteden-in-cijfers/datasets-aanbestedingen
 
 -  2025-22-14: `argentina_vialidad <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__, because Vialidad Nacional del Ministerio de Obras Públicas was eliminated.
+
+   .. https://datosabiertos.vialidad.gob.ar/ui/index.html#!/datos_abiertos
+
 -  2025-07-29: `mexico_inai_api, mexico_quintana_roo_idaip, mexico_veracruz_ivai, mexico_zacatecas_izai <https://github.com/open-contracting/kingfisher-collect/pull/1185>`__, because these institutions were eliminated:
 
    -  Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI)
