@@ -19,8 +19,7 @@ class BrazilCompras(LinksSpider):
     """
 
     custom_settings = {
-        # Reduce the number of concurrent requests to avoid multiple failures (undocumented 100 request per minute
-        # limit).
+        # Reduce the number of concurrent requests to respect undocumented limit (100/min).
         "CONCURRENT_REQUESTS": 1,
         # Don't let Scrapy handle HTTP 429.
         "RETRY_HTTP_CODES": [],
@@ -30,7 +29,7 @@ class BrazilCompras(LinksSpider):
 
     # BaseSpider
     date_required = True
-    # This is the first date they have data for any buyers.
+    # This is the first date for which there's data for any buyers.
     default_from_date = "2021-08-10"
     max_attempts = 5
     retry_http_codes = [429]
@@ -41,39 +40,38 @@ class BrazilCompras(LinksSpider):
     # LinksSpider
     formatter = staticmethod(parameters("page", "releaseStartDate", "releaseEndDate", "buyerID"))
 
-    # Local
-    base_url = "https://dadosabertos.compras.gov.br"
-    base_buyers_url = f"{base_url}/modulo-uasg/2_consultarOrgao?statusOrgao=true"
-
     async def start(self):
         yield scrapy.Request(
-            f"{self.base_buyers_url}&pagina=1",
-            callback=self.parse_list,
+            "https://dadosabertos.compras.gov.br/modulo-uasg/2_consultarOrgao?statusOrgao=true",
+            callback=self.parse_buyer_list,
         )
 
     @handle_http_error
-    def parse_list(self, response):
-        data = response.json()
-        for item in data["resultado"]:
-            # The biggest time frame the API allows is 1 month and offset 100
-            for start, end in util.date_range_by_interval(self.from_date, self.until_date, 30):
+    def parse_buyer_list(self, response):
+        for value in range(2, response.json()["totalPaginas"] + 1):
+            yield scrapy.Request(
+                util.replace_parameters(response.request.url, pagina=value), callback=self.parse_buyer_page
+            )
+
+        yield from self.parse_buyer_page(response)
+
+    @handle_http_error
+    def parse_buyer_page(self, response):
+        for item in response.json()["resultado"]:
+            # The API errors if the difference between the month values is greater than 1; for example, January 1 to
+            # February 28 succeeds, but January 31 to March 1 fails. To avoid errors, use the shortest month length.
+            # "Erro ao efetuar a consulta Período inicial e final maior que 1 mês."
+            for start, end in util.date_range_by_interval(self.from_date, self.until_date, 28):
                 yield self.build_request(
-                    f"{self.base_url}/modulo-ocds/1_releases?page=1&offSet=100"
+                    f"https://dadosabertos.compras.gov.br/modulo-ocds/1_releases?page=1&offSet=100"
                     f"&buyerID={item['cnpjCpfOrgao']}&"
                     f"releaseStartDate={start:%Y-%m-%d}&"
                     f"releaseEndDate={end:%Y-%m-%d}",
                     formatter=self.formatter,
                 )
-        remaining_pages = data["paginasRestantes"]
-        if remaining_pages > 0:
-            next_page = data["totalPaginas"] - remaining_pages + 1
-            yield scrapy.Request(
-                f"{self.base_buyers_url}&pagina={next_page}",
-                callback=self.parse_list,
-            )
 
     @handle_http_error
     def parse(self, response):
-        # The API returns a package without releases if no results where found
+        # The API returns a package without releases if no results are found.
         if "releases" in response.json():
             yield from super().parse(response)
