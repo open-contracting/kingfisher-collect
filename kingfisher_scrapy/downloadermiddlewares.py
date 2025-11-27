@@ -1,5 +1,5 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-from datetime import datetime
+import datetime
 
 from scrapy.exceptions import IgnoreRequest
 from twisted.internet.defer import Deferred
@@ -35,7 +35,7 @@ class ParaguayAuthMiddleware:
             requests_backlog = []
 
             def build_access_token_request(self):
-                self.access_token_scheduled_at = datetime.now()
+                self.access_token_scheduled_at = datetime.datetime.now()
 
                 return scrapy.Request("https://example.com")
     """
@@ -60,7 +60,7 @@ class ParaguayAuthMiddleware:
 
     def process_response(self, request, response, spider):
         if response.status in {401, 429}:
-            age = (datetime.now() - spider.access_token_scheduled_at).total_seconds()
+            age = (datetime.datetime.now() - spider.access_token_scheduled_at).total_seconds()
             spider.logger.info("Access token age: %ss", age)
             spider.logger.info("%s returned for request to %s", response.status, request.url)
             if spider.access_token != request.headers["Authorization"] and self._expires_soon(spider):
@@ -77,7 +77,7 @@ class ParaguayAuthMiddleware:
     @staticmethod
     def _expires_soon(spider):
         if spider.access_token and spider.access_token_scheduled_at:
-            age = (datetime.now() - spider.access_token_scheduled_at).total_seconds()
+            age = (datetime.datetime.now() - spider.access_token_scheduled_at).total_seconds()
             if age < spider.access_token_maximum_age:
                 return False
             spider.logger.info("Access token age: %ss", age)

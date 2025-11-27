@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 import scrapy
 
@@ -61,7 +61,7 @@ class RwandaBulk(CompressedFileSpider):
         }
         """
         for item in response.json()["Dataset"]:
-            date = datetime.strptime(item["data_name"], "%Y-%m").replace(tzinfo=self.from_date.tzinfo)
+            date = datetime.datetime.strptime(item["data_name"], "%Y-%m").replace(tzinfo=self.from_date.tzinfo)
             if not (self.from_date <= date <= self.until_date):
                 continue
 

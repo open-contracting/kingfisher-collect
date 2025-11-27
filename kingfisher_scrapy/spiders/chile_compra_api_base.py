@@ -1,6 +1,6 @@
+import datetime
 import json
 from abc import abstractmethod
-from datetime import date
 
 from kingfisher_scrapy.base_spiders import IndexSpider, PeriodicSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
@@ -108,4 +108,4 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         year = int(components(-4, -3)(response.request.url))
         month = int(components(-3, -2)(response.request.url).lstrip("0"))
 
-        return self.pattern.format(system, date(year, month, 1), value, self.limit)
+        return self.pattern.format(system, datetime.date(year, month, 1), value, self.limit)

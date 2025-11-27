@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 import scrapy
 
@@ -43,7 +43,7 @@ class MexicoNuevoLeon(SimpleSpider):
             # Some files don't include an extension file, so we need to check the file name instead.
             if resource["name"].upper().startswith("JSON-OCDS"):
                 if self.from_date and self.until_date:
-                    date = datetime.strptime(resource["created"], "%Y-%m-%dT%H:%M:%S.%f").replace(
+                    date = datetime.datetime.strptime(resource["created"], "%Y-%m-%dT%H:%M:%S.%f").replace(
                         tzinfo=self.from_date.tzinfo
                     )
                     if not (self.from_date <= date <= self.until_date):

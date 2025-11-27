@@ -1,4 +1,4 @@
-from datetime import date
+import datetime
 
 import pytest
 from scrapy.http import Request
@@ -28,7 +28,7 @@ def test_next_link():
 
 def test_next_link_condition():
     spider = spider_with_crawler(spider_class=LinksSpider)
-    spider.from_date = spider.until_date = date(2002, 12, 31)
+    spider.from_date = spider.until_date = datetime.date(2002, 12, 31)
 
     request = spider.next_link(
         response_fixture(

@@ -1,8 +1,8 @@
+import datetime
 import json
 import logging
 import os
 import time
-from datetime import datetime, timezone
 from unittest.mock import patch
 from urllib.parse import urlsplit
 
@@ -212,7 +212,7 @@ def test_spider_opened(
     if crawl_time:
         assert data_version == "2020-01-01 00:00:00"
     else:
-        assert data_version.startswith(datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:"))
+        assert data_version.startswith(datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y-%m-%d %H:"))
 
     if call_count == 2:
         calls[1].args[2].pop("stats")  # pop() ensures its presence

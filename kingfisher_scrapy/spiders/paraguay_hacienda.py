@@ -1,5 +1,5 @@
+import datetime
 import json
-from datetime import datetime
 
 import scrapy
 
@@ -121,7 +121,7 @@ class ParaguayHacienda(BaseSpider):
         if body is None:
             body = json.dumps({"clientSecret": self.client_secret})
 
-        self.access_token_scheduled_at = datetime.now()
+        self.access_token_scheduled_at = datetime.datetime.now()
 
         return scrapy.Request(
             f"{self.url_prefix}auth/token",

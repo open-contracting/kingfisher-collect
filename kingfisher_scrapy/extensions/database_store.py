@@ -1,6 +1,6 @@
+import datetime
 import os
 import warnings
-from datetime import datetime
 
 import ijson
 import psycopg2.sql
@@ -76,13 +76,16 @@ class DatabaseStore:
                 default_from_date = None
 
             if spider.from_date and spider.from_date != default_from_date:
-                spider.logger.info("Starting crawl from %s", datetime.strftime(spider.from_date, spider.date_format))
+                spider.logger.info(
+                    "Starting crawl from %s", datetime.datetime.strftime(spider.from_date, spider.date_format)
+                )
             else:
                 spider.logger.info("Getting the date from which to resume the crawl from the %s table", table_name)
                 self.execute("SELECT max(data ->> 'date')::timestamptz FROM {table}", table=table_name)
-                from_date = self.cursor.fetchone()[0]
-                if from_date:
-                    spider.logger.info("Resuming crawl from %s", datetime.strftime(from_date, spider.date_format))
+                if from_date := self.cursor.fetchone()[0]:
+                    spider.logger.info(
+                        "Resuming crawl from %s", datetime.datetime.strftime(from_date, spider.date_format)
+                    )
                     spider.from_date = from_date
 
             self.connection.commit()

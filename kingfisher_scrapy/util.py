@@ -1,6 +1,6 @@
+import datetime
 import itertools
 import json
-from datetime import date, timedelta
 from decimal import Decimal
 from functools import wraps
 from os.path import splitext
@@ -142,7 +142,7 @@ def date_range_by_interval(start, stop, step):
     Yield date ranges from the ``start`` date to the ``stop`` date, in intervals of ``step`` days, in reverse
     chronological order.
     """
-    delta = timedelta(days=step)
+    delta = datetime.timedelta(days=step)
     range_end = stop
     while range_end > start:
         range_start = max(start, range_end - delta)
@@ -162,7 +162,7 @@ def date_range_by_month(start, stop):
 
     for months in reversed(range(number_of_months(start) - 1, number_of_months(stop))):
         year, month = divmod(months, 12)
-        yield date(year, month + 1, 1)
+        yield datetime.date(year, month + 1, 1)
 
 
 def date_range_by_year(start, stop):

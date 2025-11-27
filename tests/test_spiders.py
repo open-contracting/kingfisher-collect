@@ -1,6 +1,6 @@
+import datetime
 import logging
 import re
-from datetime import datetime, timedelta, timezone
 
 import pytest
 from scrapy.crawler import Crawler, CrawlerRunner
@@ -23,16 +23,17 @@ async def test_start_http_error(spider_name, caplog):
     spidercls = runner.spider_loader.load(spider_name)
     crawler = Crawler(spidercls, runner.settings)
     crawler._apply_settings()  # noqa: SLF001
-    start_time = datetime(2001, 2, 3, 4, 5, 6)
+    start_time = datetime.datetime(2001, 2, 3, 4, 5, 6)
     crawler.stats.set_value("start_time", start_time)
 
     try:
         kwargs = {}
         # colombia_bulk errors if until_date is set but system is not 'SECOP1'.
         if (default_from_date := getattr(spidercls, "default_from_date", None)) and spider_name != "colombia_bulk":
-            date_format = spidercls.VALID_DATE_FORMATS[spidercls.date_format]
-            from_date = datetime.strptime(default_from_date, date_format).replace(tzinfo=timezone.utc)
-            kwargs = {"until_date": from_date + timedelta(days=1)}
+            from_date = datetime.datetime.strptime(
+                default_from_date, spidercls.VALID_DATE_FORMATS[spidercls.date_format]
+            ).replace(tzinfo=datetime.timezone.utc)
+            kwargs = {"until_date": from_date + datetime.timedelta(days=1)}
 
         # See scrapy.crawler.Crawler._create_spider
         spider = crawler.spidercls.from_crawler(crawler, **kwargs)
