@@ -3,7 +3,7 @@ ijson
 jsonpointer
 ocdskit[perf]
 psycopg2
-pydantic<2
+pydantic
 rarfile
 requests
 scrapy

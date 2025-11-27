@@ -164,7 +164,7 @@ class KingfisherProcessAPI2:
 
         data = {
             "collection_id": self.collection_id,
-            "url": item.url,
+            "url": str(item.url),  # pydantic.HttpUrl
             "path": item.path,
         }
 

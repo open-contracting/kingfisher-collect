@@ -2,6 +2,7 @@ import json
 from io import BytesIO
 from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
 
+import pydantic
 import pytest
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, SimpleSpider
@@ -123,7 +124,7 @@ async def test_bytes_or_file(middleware_class, attribute, value, expected_extra,
 
     expected = {
         "file_name": "test.json",
-        "url": "http://test.com",
+        "url": "http://test.com/",
         "data_type": "release",
         "path": "",
     }
@@ -131,7 +132,7 @@ async def test_bytes_or_file(middleware_class, attribute, value, expected_extra,
 
     assert len(transformed_items) == 2
     for item in transformed_items:
-        assert item.__dict__ == expected
+        assert item.model_dump() == expected
 
 
 @pytest.mark.parametrize(
@@ -176,7 +177,7 @@ async def test_encoding(middleware_class, attribute, value, expected_extra, tmpd
 
     expected = {
         "file_name": "test.json",
-        "url": "http://test.com",
+        "url": "http://test.com/",
         "data_type": "release",
         "path": "",
     }
@@ -184,7 +185,7 @@ async def test_encoding(middleware_class, attribute, value, expected_extra, tmpd
 
     assert len(transformed_items) == 2
     for item in transformed_items:
-        assert item.__dict__ == expected
+        assert item.model_dump() == expected
 
 
 @pytest.mark.parametrize(
@@ -221,7 +222,7 @@ async def test_add_package_middleware(data_type, data, root_path):
 
     expected = {
         "file_name": "test.json",
-        "url": "http://test.com",
+        "url": "http://test.com/",
         "path": "",
     }
     if "item" in root_path:
@@ -234,7 +235,7 @@ async def test_add_package_middleware(data_type, data, root_path):
         expected["data"] = {f"{data_type}s": [{"ocid": "abc"}], "version": spider.ocds_version}
         expected["data_type"] = f"{data_type}_package"
 
-    assert item.__dict__ == expected
+    assert item.model_dump() == expected
 
 
 @pytest.mark.parametrize(("sample", "len_items", "len_releases"), [(None, 2, 100), (5, 5, 5), (200, 2, 100)])
@@ -272,9 +273,9 @@ async def test_resize_package_middleware(
     assert len(transformed_items) == len_items
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
-        assert len(item.__dict__) == FILE_ITEM_LENGTH
+        assert len(item.model_dump()) == FILE_ITEM_LENGTH
         assert item.file_name == "archive-test.json"
-        assert item.url == "http://example.com"
+        assert item.url == pydantic.HttpUrl("http://example.com")
         assert item.number == i
         assert len(item.data[key]) == len_releases
         assert item.data_type == data_type
@@ -311,9 +312,9 @@ async def test_json_streaming_middleware(middleware_class, attribute, separator,
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
         data = {"key": i} if attribute == "concatenated_json" else ('{"key": %s}\n' % i).encode()  # noqa: UP031
-        assert item.__dict__ == {
+        assert item.model_dump() == {
             "file_name": "test.json",
-            "url": "http://example.com",
+            "url": "http://example.com/",
             "data_type": "release_package",
             "data": data,
             "number": i,
@@ -351,9 +352,9 @@ async def test_json_streaming_middleware_with_root_path_middleware(middleware_cl
     assert len(transformed_items) == 1
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
-        assert len(item.__dict__) == FILE_ITEM_LENGTH
+        assert len(item.model_dump()) == FILE_ITEM_LENGTH
         assert item.file_name == "test.json"
-        assert item.url == "http://example.com"
+        assert item.url == pydantic.HttpUrl("http://example.com")
         assert item.number == i
         assert item.data == {"releases": [{"key": i}]}
         assert item.data_type == "release_package"
@@ -393,9 +394,9 @@ async def test_json_streaming_middleware_with_compressed_file_spider(middleware_
     for i, item in enumerate(transformed_items, 1):
         assert type(item) is FileItem
         data = {"key": i} if attribute == "concatenated_json" else ('{"key": %s}\n' % i).encode()  # noqa: UP031
-        assert item.__dict__ == {
+        assert item.model_dump() == {
             "file_name": "archive-test.json",
-            "url": "http://example.com",
+            "url": "http://example.com/",
             "data_type": "release_package",
             "data": data,
             "number": i,
@@ -477,7 +478,7 @@ async def test_root_path_middleware(root_path, data_type, data, expected_data_ty
         assert transformed_item.file_name == "test.json"
         assert transformed_item.data == expected_data
         assert transformed_item.data_type == expected_data_type
-        assert transformed_item.url == "http://test.com"
+        assert transformed_item.url == pydantic.HttpUrl("http://test.com")
 
 
 @pytest.mark.parametrize(
@@ -552,7 +553,7 @@ async def test_root_path_middleware_item(root_path, sample, data_type, data, exp
         assert transformed_item.file_name == "test.json"
         assert transformed_item.data == expected_data
         assert transformed_item.data_type == expected_data_type
-        assert transformed_item.url == "http://test.com"
+        assert transformed_item.url == pydantic.HttpUrl("http://test.com")
 
 
 @pytest.mark.parametrize("valid", [True, False])
@@ -588,7 +589,7 @@ async def test_validate_json_middleware(valid, cls, caplog):
         assert [message.splitlines() for message in messages] == [
             [
                 "Dropped: Invalid JSON",
-                f"{{'file_name': 'test.json', 'url': 'http://test.com', 'data_type': 'release_package'{number}}}",
+                f"{{'file_name': 'test.json', 'url': 'http://test.com/', 'data_type': 'release_package'{number}}}",
             ]
         ]
 

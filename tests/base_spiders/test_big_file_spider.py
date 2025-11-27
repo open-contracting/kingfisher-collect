@@ -1,5 +1,6 @@
 import json
 
+import pydantic
 import pytest
 
 from kingfisher_scrapy.base_spiders import BigFileSpider
@@ -40,9 +41,9 @@ def test_parse_package(sample, len_items, len_releases, data_type, key):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item.__dict__) == FILE_LENGTH
+    assert len(item.model_dump()) == FILE_LENGTH
     assert item.file_name == "test.json"
-    assert item.url == "http://example.com"
+    assert item.url == pydantic.HttpUrl("http://example.com")
     assert item.data_type == data_type
     assert item.data["package"] is not None
     assert item.data["data"] is not None

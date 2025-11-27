@@ -68,9 +68,9 @@ def test_parse_200():
     request = next(generator)
 
     assert type(item) is File
-    assert item.__dict__ == {
+    assert item.model_dump() == {
         "file_name": "test",
-        "url": "http://example.com",
+        "url": "http://example.com/",
         "data_type": "release_package",
         "data": body,
         "path": "",

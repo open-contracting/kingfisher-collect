@@ -38,7 +38,7 @@ def test_file_name(cls, base, invalid):
         cls(**base | {"file_name": invalid})
 
 
-@pytest.mark.parametrize("invalid", ["://example.com", "scheme://example.com", "http://example"])
+@pytest.mark.parametrize("invalid", ["://example.com", "scheme://example.com", "http://example", "http://.com"])
 @pytest.mark.parametrize(("cls", "base"), [(File, FILE), (FileItem, FILE_ITEM)])
 def test_url(cls, base, invalid):
     with pytest.raises(pydantic.ValidationError):

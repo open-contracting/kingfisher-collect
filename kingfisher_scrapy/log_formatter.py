@@ -13,9 +13,7 @@ class LogFormatter(scrapy.logformatter.LogFormatter):
 
     def _omit_data(self, method, item, *args):
         """Omits an item's `data` and `path` (not set yet) values from the log message."""
-        item = item.__dict__.copy()
-        if "url" in item:
-            item["url"] = str(item["url"])  # avoid pydantic.AnyUrl.__repr__
+        item = item.model_dump()
         item.pop("data", None)
         item.pop("path", None)
         return getattr(super(), method)(item, *args)

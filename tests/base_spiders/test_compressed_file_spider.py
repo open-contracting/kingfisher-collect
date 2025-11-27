@@ -3,6 +3,7 @@ import os
 from io import BytesIO
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
+import pydantic
 import pytest
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
@@ -23,9 +24,9 @@ def test_parse():
     item = next(generator)
 
     assert type(item) is File
-    assert len(item.__dict__) == FILE_LENGTH
+    assert len(item.model_dump()) == FILE_LENGTH
     assert item.file_name == "test-test.json"
-    assert item.url == "http://example.com"
+    assert item.url == pydantic.HttpUrl("http://example.com")
     assert item.data_type == "release_package"
     assert item.data is not None
     assert "package" not in item.data
@@ -51,9 +52,9 @@ def test_parse_line_delimited(sample, len_items, file_name):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item.__dict__) == FILE_LENGTH
+    assert len(item.model_dump()) == FILE_LENGTH
     assert item.file_name == f"{file_name}-test.json"
-    assert item.url == "http://example.com"
+    assert item.url == pydantic.HttpUrl("http://example.com")
     assert item.data_type == "release_package"
     assert item.data is not None
     assert "package" not in item.data
@@ -83,9 +84,9 @@ def test_parse_release_package(sample, len_items, len_releases, file_name):
     item = next(generator)
 
     assert type(item) is File
-    assert len(item.__dict__) == FILE_LENGTH
+    assert len(item.model_dump()) == FILE_LENGTH
     assert item.file_name == f"{file_name}-test.json"
-    assert item.url == "http://example.com"
+    assert item.url == pydantic.HttpUrl("http://example.com")
     assert item.data_type == "release_package"
     assert item.data["package"] is not None
     assert item.data["data"] is not None
@@ -120,9 +121,9 @@ def test_parse_rar_file():
     item = next(generator)
 
     assert type(item) is File
-    assert len(item.__dict__) == FILE_LENGTH
+    assert len(item.model_dump()) == FILE_LENGTH
     assert item.file_name == "test-test.json"
-    assert item.url == "http://example.com"
+    assert item.url == pydantic.HttpUrl("http://example.com")
     assert item.data_type == "release_package"
     assert item.data is not None
     assert "package" not in item.data
@@ -142,7 +143,7 @@ def test_yield_non_archive_file():
 
     assert type(item) is File
     assert item.file_name == "test.json"
-    assert item.url == "http://example.com"
+    assert item.url == pydantic.HttpUrl("http://example.com")
     assert item.data_type == "release_package"
     assert item.data is not None
 
