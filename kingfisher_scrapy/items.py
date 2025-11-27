@@ -40,7 +40,7 @@ class DataResource(Resource, arbitrary_types_allowed=True, use_enum_values=True)
     # Added by the FilesStore extension, for the KingfisherProcessAPI2 extension to refer to the file.
     path: str = ""
 
-    @pydantic.validator("data", pre=True)  # `pre` is needed to prevent pydantic from type casting
+    @pydantic.validator("data", pre=True, allow_reuse=True)  # `pre` is needed to prevent pydantic from type casting
     def check_data(cls, v):
         # pydantic has no `condict()` to set `strict=True` or `min_properties=1`. pydantic/pydantic#1277
         if not isinstance(v, Data | bytes):
