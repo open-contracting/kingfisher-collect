@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 import scrapy
 
@@ -61,7 +61,7 @@ class GuatemalaBulk(CompressedFileSpider):
         """
         for item in response.json()["result"]:
             if self.from_date and self.until_date:
-                date = datetime(int(item["year"]), int(item["month"]), 1)
+                date = datetime.datetime(int(item["year"]), int(item["month"]), 1, tzinfo=datetime.timezone.utc)
                 if not (self.from_date <= date <= self.until_date):
                     continue
 

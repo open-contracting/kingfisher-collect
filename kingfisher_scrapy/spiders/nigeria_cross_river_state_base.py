@@ -1,5 +1,5 @@
+import datetime
 from abc import abstractmethod
-from datetime import datetime
 
 import scrapy
 
@@ -22,7 +22,7 @@ class NigeriaCrossRiverStateBase(SimpleSpider):
     def parse_list(self, response):
         formatter = join(components(-1), parameters("year", "month"))  # format
         for item in response.json():
-            date = datetime(item["year"], item["month"], 1)
+            date = datetime.datetime(item["year"], item["month"], 1, tzinfo=datetime.timezone.utc)
 
             if self.from_date and self.until_date and not (self.from_date <= date <= self.until_date):
                 continue

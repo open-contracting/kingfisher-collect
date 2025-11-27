@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from math import ceil
 
 import scrapy
@@ -121,12 +121,12 @@ class Openopps(BaseSpider):
 
             # Use smaller ranges (day by day) for filters with more than (api_limit) search results
             for year in range(2011, datetime.now().year + 1):
-                start_date = datetime(year, 1, 1)
+                start_date = datetime(year, 1, 1, tzinfo=timezone.utc)
                 end_date = (
                     datetime(year, datetime.now().month, datetime.now().day)
                     if year == datetime.now().year
                     else datetime(year, 12, 31)
-                )
+                ).replace(tzinfo=timezone.utc)
                 yield from self.request_range_per_day(start_date, end_date, search_h)
 
     def request_range(self, start_date, end_date, search_h):

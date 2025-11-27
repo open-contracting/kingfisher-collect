@@ -47,8 +47,7 @@ class UruguayHistorical(CompressedFileSpider):
                 if self.from_date and self.until_date:
                     # URL looks like
                     # https://catalogodatos.gub.uy/dataset/44d3-b09c/resource/1e39-453d/download/ocds-2002.zip
-                    url_year = int(url.split("-")[-1].split(".")[0])
-                    url_date = datetime.datetime(url_year, 1, 1)
-                    if not (self.from_date <= url_date <= self.until_date):
+                    date = datetime.datetime(int(url.split("-")[-1].split(".")[0]), 1, 1, tzinfo=datetime.timezone.utc)
+                    if not (self.from_date <= date <= self.until_date):
                         continue
                 yield self.build_request(url, formatter=components(-1))  # filename containing year
