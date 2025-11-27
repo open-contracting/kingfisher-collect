@@ -69,6 +69,7 @@ After choosing a base class, read its documentation, as well as its parent class
 -  Write different callback methods for different response types. Writing a single callback with many if-else branches to handle different response types is very hard to reason about.
 -  The default ``parse`` callback method should be for "leaf" responses: that is, responses that cause no further requests to be yielded, besides pagination requests.
 -  Have a look at the :mod:`~kingfisher_scrapy.util` module, which contains useful functions, notably :func:`~kingfisher_scrapy.util.handle_http_error`.
+-  Avoid generic ``file_name`` values, especially in the ``start()`` method, in order to not overwrite files during incremental crawls. (`#1025 <https://github.com/open-contracting/kingfisher-collect/issues/1025>`__)
 
 After writing the spider, add a docstring for :ref:`spider metadata<spider-metadata>`.
 
