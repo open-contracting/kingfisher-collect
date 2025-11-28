@@ -17,9 +17,9 @@ class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
 
     # LinksSpider
     formatter = staticmethod(parameters("publishedFrom", "publishedTo"))
+    next_link_formatter = staticmethod(parameters("publishedFrom", "publishedTo", "cursor"))
 
     # PeriodicSpider
-    next_link_formatter = staticmethod(parameters("publishedFrom", "publishedTo", "cursor"))
     start_callback = "parse_page"
     step = 15
     pattern = (
