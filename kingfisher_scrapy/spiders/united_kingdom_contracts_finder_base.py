@@ -15,8 +15,10 @@ class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
     max_attempts = 5
     retry_http_codes = [403]
 
-    # PeriodicSpider
+    # LinksSpider
     formatter = staticmethod(parameters("publishedFrom", "publishedTo"))
+
+    # PeriodicSpider
     next_link_formatter = staticmethod(parameters("publishedFrom", "publishedTo", "cursor"))
     start_callback = "parse_page"
     step = 15
