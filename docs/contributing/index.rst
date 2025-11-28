@@ -124,12 +124,14 @@ Since there are many class attributes that control a spider's behavior, please p
 
       # LinksSpider
       formatter = staticmethod(parameters('page'))
+      next_link_formatter = staticmethod(parameters('cursor'))
       next_pointer = '/next_page/uri'
 
       # PeriodicSpider
-      formatter = staticmethod(parameters('page'))
       pattern = 'https://example.com/{}'
+      formatter = staticmethod(parameters('page'))
       start_callback = 'parse_list'
+      step = 1
 
       # IndexSpider
       page_count_pointer = '/data/last_page'

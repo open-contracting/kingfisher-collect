@@ -35,9 +35,9 @@ class MexicoQuienEsQuienReleases(IndexSpider, PeriodicSpider):
     limit = 1000
 
     # PeriodicSpider
-    formatter = staticmethod(parameters("start_date_min", "start_date_max", "offset"))
     pattern = (
         "https://api.quienesquien.wiki/v3/contracts?start_date_min={0:%Y-%m-%d}&start_date_max={1:%Y-%m-%d}"
         f"&offset=0&limit={limit}"
     )
+    formatter = staticmethod(parameters("start_date_min", "start_date_max", "offset"))
     start_callback = "parse_list"

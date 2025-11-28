@@ -17,11 +17,13 @@ class Germany(CompressedFileSpider, PeriodicSpider):
 
     name = "germany"
 
+    # BaseSpider
+    date_format = "year-month"
+    default_from_date = "2022-12"
+
     # CompressedFileSpider
     data_type = "release_package"
 
     # PeriodicSpider
-    date_format = "year-month"
-    default_from_date = "2022-12"
-    formatter = staticmethod(parameters("pubMonth", "format"))
     pattern = "https://www.oeffentlichevergabe.de/api/notice-exports?pubMonth={0:%Y}-{0:%m}&format=ocds.zip"
+    formatter = staticmethod(parameters("pubMonth", "format"))

@@ -33,8 +33,8 @@ class UgandaReleases(PeriodicSpider):
     data_type = "release_package"
 
     # PeriodicSpider
-    formatter = staticmethod(parameters("fy", "code"))
     pattern = "https://gpp.ppda.go.ug/adminapi/public/api/open-data/v2/ocds/download?fy={0}-{1}&format=json&code=1"
+    formatter = staticmethod(parameters("fy", "code"))
 
     def parse(self, response):
         if not self.is_http_success(response):

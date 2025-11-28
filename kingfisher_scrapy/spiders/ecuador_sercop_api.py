@@ -38,8 +38,8 @@ class EcuadorSERCOPAPI(IndexSpider, PeriodicSpider):
     url_prefix = "https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/api/"
 
     # PeriodicSpider
-    formatter = staticmethod(components(-1))
     pattern = f"{url_prefix}search_ocds?year={{0}}"
+    formatter = staticmethod(components(-1))
     start_callback = "parse_list"
 
     # IndexSpider
