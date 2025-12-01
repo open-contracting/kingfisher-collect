@@ -1,22 +1,16 @@
-import datetime
-
-import scrapy
-
-from kingfisher_scrapy.base_spiders import LinksSpider
+from kingfisher_scrapy.base_spiders import LinksSpider, PeriodicSpider
 from kingfisher_scrapy.util import handle_http_error, parameters
 
 
-class UnitedKingdomFTS(LinksSpider):
+class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
     """
     Domain
       Find a Tender Service (FTS)
     Spider arguments
       from_date
-        Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
-        If ``until_date`` is provided, defaults to '2021-01-01T00:00:00'.
+        Download only data from this time onward (YYYY-MM-DDThh:mm:ss format). Defaults to '2021-01-01T00:00:00'.
       until_date
-        Download only data until this time (YYYY-MM-DDThh:mm:ss format).
-        If ``from_date`` is provided, defaults to now.
+        Download only data until this time (YYYY-MM-DDThh:mm:ss format). Defaults to now.
     API documentation
       https://www.find-tender.service.gov.uk/apidocumentation/1.0/GET-ocdsReleasePackages
     """
@@ -35,18 +29,16 @@ class UnitedKingdomFTS(LinksSpider):
     data_type = "release_package"
 
     # LinksSpider
-    formatter = staticmethod(parameters("cursor"))
+    formatter = staticmethod(parameters("updatedTo"))
+    next_link_formatter = staticmethod(parameters("cursor"))
 
-    async def start(self):
-        url = "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages"
-        if self.from_date and self.until_date:
-            from_date = self.from_date.strftime(self.date_format)
-            until_date = self.until_date.strftime(self.date_format)
-            url = f"{url}?updatedFrom={from_date}&updatedTo={until_date}"
-        else:
-            until_date = datetime.datetime.now(tz=datetime.timezone.utc).strftime(self.date_format)
-
-        yield scrapy.Request(url, headers={"Accept": "application/json"}, meta={"file_name": f"{until_date}.json"})
+    # PeriodicSpider
+    pattern = (
+        "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom="
+        "{0:%Y-%m-%dT%H:%M:%SZ}&updatedTo={1:%Y-%m-%dT%H:%M:%SZ}"
+    )
+    # The endpoint doesn't return all available releases with a longer `step` value.
+    step = 1
 
     @handle_http_error
     def parse(self, response):
