@@ -34,10 +34,10 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
 
     # PeriodicSpider
     pattern = (
-        "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom={"
-        "0:%Y-%m-%dT%H:%M:%SZ}&updatedTo={1:%Y-%m-%dT%H:%M:%SZ}"
+        "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom="
+        "{0:%Y-%m-%dT%H:%M:%SZ}&updatedTo={1:%Y-%m-%dT%H:%M:%SZ}"
     )
-    # The endpoint doesn't return all the available releases with longer time frames
+    # The endpoint doesn't return all available releases with a longer `step` value.
     step = 1
 
     @handle_http_error
