@@ -16,6 +16,12 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
     """
 
     name = "united_kingdom_fts"
+    custom_settings = {
+        # Reduce the number of concurrent requests and increasing the download delay to avoid multiple failures.
+        # The undocumented limit is 6 requests per minute.
+        "CONCURRENT_REQUESTS": 1,
+        "DOWNLOAD_DELAY": 10,
+    }
 
     # BaseSpider
     date_format = "datetime"
@@ -48,7 +54,5 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
         yield from super().parse(response)
 
     def get_retry_wait_time(self, response):
-        # 504 responses do not set the Retry-After header.
-        if response.status == 504:
-            return 30
-        return super().get_retry_wait_time(response)
+        # The Retry-After header is not set, but the response includes "12 request limit in 2 minute exceeded".
+        return 30
