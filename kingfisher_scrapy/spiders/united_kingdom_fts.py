@@ -17,8 +17,7 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
 
     name = "united_kingdom_fts"
     custom_settings = {
-        # Reduce the number of concurrent requests and increasing the download delay to avoid multiple failures.
-        # The undocumented limit is 6 requests per minute.
+        # The API (using Amazon ELB) eventually responds with HTTP 429 "12 request limit in 2 minute exceeded".
         "CONCURRENT_REQUESTS": 1,
         "DOWNLOAD_DELAY": 10,
     }
@@ -54,5 +53,4 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
         yield from super().parse(response)
 
     def get_retry_wait_time(self, response):
-        # The Retry-After header is not set, but the response includes "12 request limit in 2 minute exceeded".
         return 30
