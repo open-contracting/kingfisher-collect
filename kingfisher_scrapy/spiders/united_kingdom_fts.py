@@ -16,6 +16,11 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
     """
 
     name = "united_kingdom_fts"
+    custom_settings = {
+        # The API (using Amazon ELB) eventually responds with HTTP 429 "12 request limit in 2 minute exceeded".
+        "CONCURRENT_REQUESTS": 1,
+        "DOWNLOAD_DELAY": 10,
+    }
 
     # BaseSpider
     date_format = "datetime"
@@ -48,7 +53,4 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
         yield from super().parse(response)
 
     def get_retry_wait_time(self, response):
-        # 504 responses do not set the Retry-After header.
-        if response.status == 504:
-            return 30
-        return super().get_retry_wait_time(response)
+        return 30
