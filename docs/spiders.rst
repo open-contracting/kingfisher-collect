@@ -870,6 +870,13 @@ Nepal
 Netherlands
 ~~~~~~~~~~~
 
+.. autoclass:: kingfisher_scrapy.spiders.netherlands.Netherlands
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl netherlands
+
 .. autoclass:: kingfisher_scrapy.spiders.netherlands_digiwhist.NetherlandsDigiwhist
    :no-members:
 
