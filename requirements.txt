@@ -48,7 +48,7 @@ et-xmlfile==2.0.0
     # via openpyxl
 exceptiongroup==1.2.2
     # via cattrs
-filelock==3.4.1
+filelock==3.20.1
     # via tldextract
 flattentool==0.27.0
     # via -r requirements.in
@@ -93,7 +93,7 @@ lxml==5.3.0
     #   scrapy
 ocdsextensionregistry==0.7.0
     # via ocdskit
-ocdskit==1.5.0
+ocdskit[perf]==1.5.0
     # via -r requirements.in
 ocdsmerge==0.7.0
     # via ocdskit
@@ -119,8 +119,6 @@ persistent==6.1
     #   zodb
 pika==1.2.0
     # via yapw
-pip==25.3
-    # via scrapyd-client
 platformdirs==4.3.3
     # via requests-cache
 protego==0.2.1
@@ -177,16 +175,6 @@ sentry-sdk==2.10.0
     # via -r requirements.in
 service-identity==24.1.0
     # via scrapy
-setuptools==80.9.0
-    # via
-    #   incremental
-    #   scrapyd
-    #   scrapyd-client
-    #   zc-lockfile
-    #   zc-zlibstorage
-    #   zope-deferredimport
-    #   zope-interface
-    #   zope-proxy
 six==1.16.0
     # via
     #   automat
@@ -232,7 +220,7 @@ w3lib==2.1.1
     #   scrapyd
 xmltodict==0.12.0
     # via flattentool
-yapw==0.2.2
+yapw[perf]==0.2.2
     # via -r requirements.in
 zc-lockfile==3.0.post1
     # via zodb
