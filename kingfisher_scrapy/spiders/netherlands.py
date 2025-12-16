@@ -31,7 +31,7 @@ class Netherlands(SimpleSpider):
     date_format = "year"
     default_from_date = "2016"
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             "https://www.tenderned.nl/cms/nl/aanbesteden-in-cijfers/datasets-aanbestedingen",
             meta={"file_name": "list.html"},
