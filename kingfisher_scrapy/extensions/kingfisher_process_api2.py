@@ -117,7 +117,7 @@ class KingfisherProcessAPI2:
             # Connect to RabbitMQ only if a collection_id is set, as other signals don't use RabbitMQ, otherwise.
             self.client.start()
 
-            # Ensure the RabbitMQ connection is closed, if an unclean shutdown is forced.
+            # Ensure the RabbitMQ connection is closed during reactor shutdown.
             self.shutdown_trigger_id = reactor.addSystemEventTrigger("before", "shutdown", self.disconnect)
         else:
             self._response_error(spider, "Failed to create collection", response)
@@ -126,14 +126,6 @@ class KingfisherProcessAPI2:
         """Send an API request to close the collection in Kingfisher Process."""
         if not self.collection_id:
             return
-
-        self.disconnect()
-
-        if hasattr(self, "shutdown_trigger_id"):
-            from twisted.internet import reactor  # noqa: PLC0415
-
-            # Remove the shutdown trigger since we've disconnected already.
-            reactor.removeSystemEventTrigger(self.shutdown_trigger_id)
 
         # Scrapyd's cancel.json endpoint sends a SIGINT signal to the Scrapy process, which uses the "shutdown" reason.
         # If a process is cancelled, don't close the collection, as this triggers compilation of release collections.
