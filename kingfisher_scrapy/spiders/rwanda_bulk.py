@@ -3,7 +3,7 @@ import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
-from kingfisher_scrapy.util import components, date_range_by_year, handle_http_error
+from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, handle_http_error, parameters
 
 
 class RwandaBulk(CompressedFileSpider):
@@ -12,57 +12,68 @@ class RwandaBulk(CompressedFileSpider):
       Rwanda Public Procurement Authority (RPPA)
     Spider arguments
       from_date
-        Download only data from this year onward (YYYY format). Defaults to '2016'.
+        Download only data from this month onward (YYYY-MM format).
+        If ``until_date`` is provided, defaults to '2013-12'.
       until_date
-        Download only data until this year (YYYY format). Defaults to the current year.
+        Download only data until this month (YYYY-MM format).
+        If ``from_date`` is provided, defaults to the current month.
     Bulk download documentation
       https://ocds.umucyo.gov.rw/OpenData
     """
 
     name = "rwanda_bulk"
+    download_timeout = MAX_DOWNLOAD_TIMEOUT
 
     # BaseSpider
-    date_format = "year"
-    default_from_date = "2016"
-    date_required = True
+    date_format = "year-month"
+    default_from_date = "2013-12"
     skip_pluck = "Already covered (see code for details)"  # rwanda_api
 
     # SimpleSpider
     data_type = "release_package"
 
     async def start(self):
-        for year in date_range_by_year(self.from_date.year, self.until_date.year):
-            # The month parameter only works with the value "n/a"
-            yield scrapy.Request(
-                f"https://ocds.umucyo.gov.rw/core/api/v1/portal/dataset?year={year}&month=n/a",
-                callback=self.parse_list,
-            )
+        yield scrapy.Request(
+            "https://ocds.umucyo.gov.rw/opendata/api/v1/ui/data_set/available_datasets",
+            callback=self.parse_list,
+        )
 
     @handle_http_error
     def parse_list(self, response):
         """
         The response looks like:
-
         {
-            "year": "2024 n/a",
-            "Dataset": [
-                {
-                    "data_name": "2024-01",
-                    "details": "1589741",
-                    "format": "json",
-                    "size": "",
-                    "json_url": "https://ocds.umucyo.gov.rw/core/api/v1/portal/download-file/2024/01/2024-01-json.zip",
-                    "csv_url": "https://ocds.umucyo.gov.rw/core/api/v1/portal/download-file/2024/01/2024-01-csv.zip",
-                    "xls_url": "https://ocds.umucyo.gov.rw/core/api/v1/portal/download-file/2024/01/2024-01-xlsx.zip",
-                    "fiscal_year": "2024",
-                    "release_date": "2024-11-17 13:01:57.208380"
-                },
-            ...
+            "status": 200,
+            "returnCode": 7,
+            "message": "Available datasets successfully retrieved",
+            "datasets": {
+                "2025": [
+                    "01-January-csv.zip",
+                    "01-January-json.zip",
+                    "01-January-xlsx.zip",
+                    "02-February-csv.zip",
+                    "02-February-json.zip",
+                    "02-February-xlsx.zip",
+                    ...,
+                    "flattened",
+                    "json"
+                ],
+                ...
+            }
         }
         """
-        for item in response.json()["Dataset"]:
-            date = datetime.datetime.strptime(item["data_name"], "%Y-%m").replace(tzinfo=self.from_date.tzinfo)
-            if not (self.from_date <= date <= self.until_date):
-                continue
-
-            yield self.build_request(item["json_url"], formatter=components(-1))
+        dateset = response.json()["datasets"]
+        for year in dateset:
+            for item in dateset[year]:
+                if self.from_date or self.until_date:
+                    # File names look like 01-January-json.zip
+                    date = datetime.datetime.strptime(f"{year}-{item[:2]}", "%Y-%m").replace(
+                        tzinfo=self.from_date.tzinfo
+                    )
+                    if not (self.from_date <= date <= self.until_date):
+                        continue
+                if item.endswith("-json.zip"):
+                    yield self.build_request(
+                        f"https://ocds.umucyo.gov.rw/opendata/api/v1/ui/data_set/download?year={year}&month_file={item}",
+                        formatter=parameters("month_file"),
+                    )
