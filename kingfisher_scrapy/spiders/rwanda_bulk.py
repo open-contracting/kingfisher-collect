@@ -62,14 +62,10 @@ class RwandaBulk(CompressedFileSpider):
             }
         }
         """
-        dateset = response.json()["datasets"]
-        for year in dateset:
-            for item in dateset[year]:
+        for year, datasets in response.json()["datasets"].items():
+            for item in datasets:
                 if self.from_date or self.until_date:
-                    # File names look like 01-January-json.zip
-                    date = datetime.datetime.strptime(f"{year}-{item[:2]}", "%Y-%m").replace(
-                        tzinfo=self.from_date.tzinfo
-                    )
+                    date = datetime.datetime(year, int(item[:2]), 1, tzinfo=datetime.timezone.utc)
                     if not (self.from_date <= date <= self.until_date):
                         continue
                 if item.endswith("-json.zip"):
