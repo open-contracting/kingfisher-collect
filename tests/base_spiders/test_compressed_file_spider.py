@@ -7,17 +7,19 @@ import pydantic
 import pytest
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
+from kingfisher_scrapy.exceptions import UnknownArchiveFormatError
 from kingfisher_scrapy.items import File
 from tests import FILE_LENGTH, path, response_fixture, spider_with_crawler
 
 
-def test_parse():
+@pytest.mark.parametrize("file_name", ["test", "test.json"])
+def test_parse(file_name):
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = "release_package"
 
     io = BytesIO()
     with ZipFile(io, "w", compression=ZIP_DEFLATED) as zipfile:
-        zipfile.writestr("test.json", "{}")
+        zipfile.writestr(file_name, "{}")
 
     response = response_fixture(body=io.getvalue(), meta={"file_name": "test.zip"})
     generator = spider.parse(response)
@@ -200,4 +202,14 @@ def test_parse_nested_archive():
     assert "package" not in item.data
 
     with pytest.raises(StopIteration):
+        next(generator)
+
+
+def test_unknown_format():
+    spider = spider_with_crawler(spider_class=CompressedFileSpider)
+    spider.data_type = "release_package"
+
+    response = response_fixture(body=b"{}", meta={"file_name": "test.json"})
+    generator = spider.parse(response)
+    with pytest.raises(UnknownArchiveFormatError):
         next(generator)
