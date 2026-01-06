@@ -173,3 +173,31 @@ def test_filter_file_names(include, exclude):
 
     with pytest.raises(StopIteration):
         next(generator)
+
+
+def test_parse_nested_archive():
+    spider = spider_with_crawler(spider_class=CompressedFileSpider)
+    spider.data_type = "release_package"
+
+    io_nested = BytesIO()
+    with ZipFile(io_nested, "w", compression=ZIP_DEFLATED) as zipfile_nested:
+        zipfile_nested.writestr("test.json", "{}")
+
+    io = BytesIO()
+    with ZipFile(io, "w", compression=ZIP_DEFLATED) as zipfile:
+        zipfile.writestr("nested.zip", io_nested.getbuffer())
+
+    response = response_fixture(body=io.getvalue(), meta={"file_name": "test.zip"})
+    generator = spider.parse(response)
+    item = next(generator)
+
+    assert type(item) is File
+    assert len(item.model_dump()) == FILE_LENGTH
+    assert item.file_name == "test-nested-test.json"
+    assert item.url == pydantic.HttpUrl("http://example.com")
+    assert item.data_type == "release_package"
+    assert item.data is not None
+    assert "package" not in item.data
+
+    with pytest.raises(StopIteration):
+        next(generator)
