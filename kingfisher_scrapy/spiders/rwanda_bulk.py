@@ -71,5 +71,5 @@ class RwandaBulk(CompressedFileSpider):
                             continue
                     yield self.build_request(
                         f"https://ocds.umucyo.gov.rw/opendata/api/v1/ui/data_set/download?year={year}&month_file={item}",
-                        formatter=parameters("month_file"),
+                        formatter=parameters("year", "month_file"),
                     )
