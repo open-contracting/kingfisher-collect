@@ -63,12 +63,13 @@ class RwandaBulk(CompressedFileSpider):
         }
         """
         for year, datasets in response.json()["datasets"].items():
-            for item in [item for item in datasets if item.endswith("-json.zip")]:
-                if self.from_date or self.until_date:
-                    date = datetime.datetime(int(year), int(item[:2]), 1, tzinfo=datetime.timezone.utc)
-                    if not (self.from_date <= date <= self.until_date):
-                        continue
-                yield self.build_request(
-                    f"https://ocds.umucyo.gov.rw/opendata/api/v1/ui/data_set/download?year={year}&month_file={item}",
-                    formatter=parameters("month_file"),
-                )
+            for item in datasets:
+                if item.endswith("-json.zip"):
+                    if self.from_date or self.until_date:
+                        date = datetime.datetime(int(year), int(item[:2]), 1, tzinfo=datetime.timezone.utc)
+                        if not (self.from_date <= date <= self.until_date):
+                            continue
+                    yield self.build_request(
+                        f"https://ocds.umucyo.gov.rw/opendata/api/v1/ui/data_set/download?year={year}&month_file={item}",
+                        formatter=parameters("month_file"),
+                    )
