@@ -63,10 +63,10 @@ class CompressedFileSpider(BaseSpider):
         archive_name, archive_format = get_file_name_and_extension(file_name)
 
         # NOTE: If support is added for additional archive formats, remember to update the `Data` type in `items.py`.
-        if archive_format == "zip":
-            cls = ZipFile
-        elif archive_format == "rar":
+        if archive_format == "rar":
             cls = RarFile
+        elif archive_format == "zip":
+            cls = ZipFile
         elif self.yield_non_archive_file:
             yield self.build_file_from_response(response, data_type=self.data_type)
             return
