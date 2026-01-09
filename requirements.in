@@ -2,6 +2,7 @@ flattentool
 ijson
 jsonpointer
 ocdskit[perf]
+pathvalidate
 psycopg2
 pydantic
 rarfile

@@ -25,4 +25,4 @@ repos:
         name: local
         language: python
         entry: scrapy checkall --loglevel=WARNING
-        additional_dependencies: [ijson, jsonpointer, pydantic, rarfile, scrapy]
+        additional_dependencies: [ijson, jsonpointer, pathvalidate, pydantic, rarfile, scrapy]
