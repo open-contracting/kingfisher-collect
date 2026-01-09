@@ -1,7 +1,7 @@
-import os
 from io import BytesIO
 from zipfile import ZipFile
 
+from pathvalidate import sanitize_filename
 from rarfile import RarFile
 
 from kingfisher_scrapy.base_spiders import BaseSpider
@@ -22,10 +22,10 @@ class CompressedFileSpider(BaseSpider):
     #. Optionally, add a ``resize_package = True`` class attribute to split large packages (e.g. greater than 100MB)
     #. Optionally, add a ``yield_non_archive_file = True`` class attribute if the spider requests both archive files
        and JSON files. Otherwise, the spider raises an ``UnknownArchiveFormatError`` exception.
-    #. Optionally, add a ``file_name_must_contain = 'text'`` class attribute to only decompress the files whose names
+    #. Optionally, add a ``file_name_must_contain = 'text'`` class attribute to only decompress the files whose paths
        contain the given text.
     #. Optionally, add a ``file_name_must_not_contain = 'text'`` class attribute to only decompress the files whose
-       names do not contain the given text.
+       paths do not contain the given text.
     #. Write a ``start()`` method to request the archive files
 
     .. code-block:: python
@@ -57,10 +57,10 @@ class CompressedFileSpider(BaseSpider):
 
     @handle_http_error
     def parse(self, response):
-        yield from self.process_archive_files(response, response.request.meta["file_name"], response.body)
+        yield from self.process_archive_file(response, response.request.meta["file_name"], response.body)
 
-    def process_archive_files(self, response, file_name, data):
-        archive_name, archive_format = get_file_name_and_extension(file_name)
+    def process_archive_file(self, response, archive_file_name, archive_data):
+        archive_name, archive_format = get_file_name_and_extension(archive_file_name)
 
         # NOTE: If support is added for additional archive formats, remember to update the `Data` type in `items.py`.
         if archive_format == "rar":
@@ -68,15 +68,17 @@ class CompressedFileSpider(BaseSpider):
         elif archive_format == "zip":
             cls = ZipFile
         elif self.yield_non_archive_file:
-            yield self.build_file_from_response(response, data_type=self.data_type)
+            yield self.build_file_from_response(
+                response, file_name=archive_file_name, data_type=self.data_type, data=archive_data
+            )
             return
         else:
-            raise UnknownArchiveFormatError(file_name)
+            raise UnknownArchiveFormatError(archive_file_name)
 
         # If we use a context manager here, the archive file might close before the item pipeline reads from the file
         # handlers of the compressed files.
 
-        archive_file = cls(BytesIO(data))
+        archive_file = cls(BytesIO(archive_data))
 
         number = 1
         for file_info in archive_file.infolist():
@@ -84,39 +86,39 @@ class CompressedFileSpider(BaseSpider):
             if self.sample and number > self.sample:
                 break
 
-            filename = file_info.filename
-            basename = os.path.basename(filename)
             # Skip the file if its size is zero, it's a directory, it's in the __MACOSX directory, or it's excluded
             # by the spider's configuration.
             if (
                 not file_info.file_size
                 or (archive_format == "rar" and file_info.isdir())
                 or (archive_format == "zip" and file_info.is_dir())
-                or filename.startswith("__MACOSX")
-                or self.file_name_must_contain not in basename
-                or (self.file_name_must_not_contain and self.file_name_must_not_contain in basename)
+                or file_info.filename.startswith("__MACOSX")
+                or self.file_name_must_contain not in file_info.filename
+                or (self.file_name_must_not_contain and self.file_name_must_not_contain in file_info.filename)
             ):
                 continue
 
-            compressed_file = archive_file.open(filename)
+            file_name = f"{archive_name}-{sanitize_filename(file_info.filename)}"
 
-            # If the archive file contains nested archives we need to read each of them
-            if basename.endswith(("rar", "zip")):
-                yield from self.process_archive_files(response, f"{archive_name}-{filename}", compressed_file.read())
-
+            # If the file is itself an archive.
+            if file_info.filename.endswith((".rar", ".zip")):
+                with archive_file.open(file_info.filename) as f:
+                    yield from self.process_archive_file(response, file_name, f.read())
             else:
-                if not basename.endswith(".json"):
-                    basename += ".json"
+                if not file_name.endswith(".json"):
+                    file_name += ".json"
+
+                compressed_file = archive_file.open(file_info.filename)
 
                 # If `resize_package = True`, then we need to open the file twice: once to extract the package metadata
                 # and then to extract the releases themselves.
                 if self.resize_package:
-                    data = {"data": compressed_file, "package": archive_file.open(filename)}
+                    data = {"data": compressed_file, "package": archive_file.open(file_info.filename)}
                 else:
                     data = compressed_file
 
                 yield File(
-                    file_name=f"{archive_name}-{basename}",
+                    file_name=file_name,
                     url=response.request.url,
                     data_type=self.data_type,
                     data=data,

@@ -181,13 +181,13 @@ def test_parse_nested_archive():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = "release_package"
 
-    io_nested = BytesIO()
-    with ZipFile(io_nested, "w", compression=ZIP_DEFLATED) as zipfile_nested:
-        zipfile_nested.writestr("test.json", "{}")
+    inner = BytesIO()
+    with ZipFile(inner, "w", compression=ZIP_DEFLATED) as zipfile:
+        zipfile.writestr("test.json", "{}")
 
     io = BytesIO()
     with ZipFile(io, "w", compression=ZIP_DEFLATED) as zipfile:
-        zipfile.writestr("nested.zip", io_nested.getbuffer())
+        zipfile.writestr("nested.zip", inner.getbuffer())
 
     response = response_fixture(body=io.getvalue(), meta={"file_name": "test.zip"})
     generator = spider.parse(response)
@@ -205,11 +205,12 @@ def test_parse_nested_archive():
         next(generator)
 
 
-def test_unknown_format():
+def test_parse_unknown_format():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = "release_package"
 
     response = response_fixture(body=b"{}", meta={"file_name": "test.json"})
     generator = spider.parse(response)
+
     with pytest.raises(UnknownArchiveFormatError):
         next(generator)
