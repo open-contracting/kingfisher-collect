@@ -84,17 +84,17 @@ class CompressedFileSpider(BaseSpider):
             if self.sample and number > self.sample:
                 break
 
-            if not file_info.file_size:
-                continue
-
             filename = file_info.filename
             basename = os.path.basename(filename)
+            # Skip the file if its size is zero, it's a directory, it's in the __MACOSX directory, or it's excluded
+            # by the spider's configuration.
             if (
-                self.file_name_must_contain not in basename
-                or (self.file_name_must_not_contain and self.file_name_must_not_contain in basename)
-                or filename.startswith("__MACOSX")
+                not file_info.file_size
                 or (archive_format == "rar" and file_info.isdir())
                 or (archive_format == "zip" and file_info.is_dir())
+                or filename.startswith("__MACOSX")
+                or self.file_name_must_contain not in basename
+                or (self.file_name_must_not_contain and self.file_name_must_not_contain in basename)
             ):
                 continue
 
