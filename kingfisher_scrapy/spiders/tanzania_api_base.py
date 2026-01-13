@@ -9,10 +9,10 @@ class TanzaniaAPIBase(LinksSpider):
     skip_pluck = "Already covered (see code for details)"  # tanzania_bulk_releases
 
     # LinksSpider
-    formatter = staticmethod(parameters("offset"))
+    formatter = staticmethod(parameters("cursor", "since"))
 
     async def start(self):
         yield scrapy.Request(
-            f"https://nest.go.tz/gateway/nest-data-portal-api/api/{self.data_type.replace('_package', '')}s?offset=0",
+            f"https://nest.go.tz/gateway/nest-data-portal-api/api/{self.data_type.replace('_package', '')}s",
             meta={"file_name": "offset-0.json"},
         )
