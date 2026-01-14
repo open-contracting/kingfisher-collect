@@ -14,5 +14,5 @@ class TanzaniaAPIBase(LinksSpider):
     async def start(self):
         yield scrapy.Request(
             f"https://nest.go.tz/gateway/nest-data-portal-api/api/{self.data_type.replace('_package', '')}s",
-            meta={"file_name": "offset-0.json"},
+            meta={"file_name": "start.json"},
         )
