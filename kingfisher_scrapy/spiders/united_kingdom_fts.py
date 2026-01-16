@@ -43,7 +43,7 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
         "{0:%Y-%m-%dT%H:%M:%SZ}&updatedTo={1:%Y-%m-%dT%H:%M:%SZ}"
     )
     # The endpoint doesn't return all available releases with a longer `step` value.
-    step = 0.5
+    step = 0.25
 
     @handle_http_error
     def parse(self, response):
