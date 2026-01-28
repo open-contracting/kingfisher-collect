@@ -3,8 +3,8 @@ from kingfisher_scrapy.util import handle_http_error, parameters, transcode_byte
 
 
 class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
-    # The API has unpredictable and undocumented "too many requests" logic.
     custom_settings = {
+        # The API has unpredictable and undocumented "too many requests" logic.
         "CONCURRENT_REQUESTS": 1,
     }
 
