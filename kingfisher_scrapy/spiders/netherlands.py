@@ -22,7 +22,9 @@ class Netherlands(SimpleSpider):
     """
 
     name = "netherlands"
-    download_timeout = MAX_DOWNLOAD_TIMEOUT
+    custom_settings = {
+        "DOWNLOAD_TIMEOUT": MAX_DOWNLOAD_TIMEOUT,
+    }
 
     # SimpleSpider
     data_type = "release_package"

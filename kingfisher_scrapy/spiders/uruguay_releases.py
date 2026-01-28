@@ -16,7 +16,9 @@ class UruguayReleases(UruguayBase):
     """
 
     name = "uruguay_releases"
-    user_agent = BROWSER_USER_AGENT
+    custom_settings = {
+        "USER_AGENT": BROWSER_USER_AGENT,
+    }
 
     # SimpleSpider
     data_type = "release_package"

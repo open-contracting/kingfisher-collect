@@ -22,7 +22,9 @@ class RwandaBulk(CompressedFileSpider):
     """
 
     name = "rwanda_bulk"
-    download_timeout = MAX_DOWNLOAD_TIMEOUT
+    custom_settings = {
+        "DOWNLOAD_TIMEOUT": MAX_DOWNLOAD_TIMEOUT,
+    }
 
     # BaseSpider
     date_format = "year-month"

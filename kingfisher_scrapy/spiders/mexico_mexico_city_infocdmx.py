@@ -19,7 +19,9 @@ class MexicoMexicoCityINFOCDMX(MexicoINAIBase):
     """
 
     name = "mexico_mexico_city_infocdmx"
-    user_agent = BROWSER_USER_AGENT  # to avoid HTTP 500
+    custom_settings = {
+        "USER_AGENT": BROWSER_USER_AGENT,  # to avoid HTTP 500
+    }
 
     # BaseSpider
     default_from_date = "2019"

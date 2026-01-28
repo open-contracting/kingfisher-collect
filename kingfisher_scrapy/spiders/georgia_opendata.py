@@ -11,8 +11,9 @@ class GeorgiaOpendata(CompressedFileSpider):
     """
 
     name = "georgia_opendata"
-    # The file is about 450MB.
-    download_timeout = MAX_DOWNLOAD_TIMEOUT
+    custom_settings = {
+        "DOWNLOAD_TIMEOUT": MAX_DOWNLOAD_TIMEOUT,  # the file is about 450MB
+    }
 
     # SimpleSpider
     data_type = "release_package"

@@ -24,7 +24,9 @@ class Ukraine(SimpleSpider):
     """
 
     name = "ukraine"
-    user_agent = BROWSER_USER_AGENT  # to avoid HTTP 412
+    custom_settings = {
+        "USER_AGENT": BROWSER_USER_AGENT,  # to avoid HTTP 412
+    }
 
     # BaseSpider
     data_type = "release_package"

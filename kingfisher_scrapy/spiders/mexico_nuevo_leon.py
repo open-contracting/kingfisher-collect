@@ -22,7 +22,9 @@ class MexicoNuevoLeon(SimpleSpider):
     """
 
     name = "mexico_nuevo_leon"
-    user_agent = BROWSER_USER_AGENT  # to avoid HTTP 403
+    custom_settings = {
+        "USER_AGENT": BROWSER_USER_AGENT,  # to avoid HTTP 403
+    }
 
     # BaseSpider
     default_from_date = "2024-01-01"

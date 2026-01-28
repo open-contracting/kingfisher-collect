@@ -13,7 +13,9 @@ class Croatia(CompressedFileSpider):
     """
 
     name = "croatia"
-    user_agent = BROWSER_USER_AGENT
+    custom_settings = {
+        "USER_AGENT": BROWSER_USER_AGENT,
+    }
 
     # BaseSpider
     validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/886
