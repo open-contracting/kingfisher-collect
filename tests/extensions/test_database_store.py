@@ -68,6 +68,7 @@ def test_spider_opened_no_resume(cursor, caplog, tmpdir, from_date, default_from
 
     extension = DatabaseStore.from_crawler(spider.crawler)
 
+    caplog.clear()
     with caplog.at_level(logging.INFO):
         extension.spider_opened(spider)
 
@@ -107,9 +108,9 @@ def test_spider_opened_resume(caplog, tmpdir):
     files_store_extension.item_scraped(item, spider)
 
     extension.spider_opened(spider)
-    caplog.clear()
     extension.spider_closed(spider, "finished")
 
+    caplog.clear()
     with caplog.at_level(logging.INFO):
         extension.spider_opened(spider)
 
@@ -153,8 +154,8 @@ def test_spider_closed_warnings(cursor, caplog, tmpdir):
     files_store_extension.item_scraped(item, spider)
 
     extension.spider_opened(spider)
-    caplog.clear()
 
+    caplog.clear()
     with pytest.warns(DuplicateIdValueWarning) as records, caplog.at_level(logging.INFO):
         extension.spider_closed(spider, "finished")
 
@@ -247,8 +248,8 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
     files_store_extension.item_scraped(item, spider)
 
     extension.spider_opened(spider)
-    caplog.clear()
 
+    caplog.clear()
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, "finished")
 
@@ -294,6 +295,7 @@ def test_spider_closed_error(caplog, tmpdir):
     )
     extension = DatabaseStore.from_crawler(spider.crawler)
 
+    caplog.clear()
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, "closed")
 
