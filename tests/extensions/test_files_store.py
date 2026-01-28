@@ -51,6 +51,7 @@ def test_spider_closed_odd_length(caplog, change_to_tmpdir):
     item = spider.build_file_from_response(response, file_name="file.json", data_type="release_package")
     extension.item_scraped(item, spider)
 
+    caplog.clear()
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, "finished")
 
@@ -71,6 +72,7 @@ def test_spider_closed_even_length(caplog, change_to_tmpdir):
     item = spider.build_file_from_response(response, file_name="file.json", data_type="release_package")
     extension.item_scraped(item, spider)
 
+    caplog.clear()
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, "finished")
 
@@ -87,6 +89,7 @@ def test_spider_closed_no_data(tmpdir, caplog):
     spider = spider_with_crawler(settings={"FILES_STORE": tmpdir})
     extension = FilesStore.from_crawler(spider.crawler)
 
+    caplog.clear()
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, "finished")
 
@@ -103,6 +106,7 @@ def test_spider_closed_failed(tmpdir, caplog):
     spider = spider_with_crawler(settings={"FILES_STORE": tmpdir})
     extension = FilesStore.from_crawler(spider.crawler)
 
+    caplog.clear()
     with caplog.at_level(logging.INFO):
         extension.spider_closed(spider, "failed")
 

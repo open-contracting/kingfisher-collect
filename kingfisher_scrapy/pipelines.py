@@ -56,10 +56,6 @@ class Sample:
         self.item_count += 1
         return item
 
-    def open_spider(self, spider):
-        if spider.sample:
-            spider.crawler.engine.downloader.total_concurrency = 1
-
 
 class Pluck:
     """Extracts a value from the item and returns it as a plucked item."""
