@@ -7,7 +7,7 @@ from scrapy.cmdline import execute
 @patch("scrapy.crawler.CrawlerProcess.crawl")
 def test_command(crawl, caplog):
     with pytest.raises(SystemExit):
-        execute(["scrapy", "pluck", "--release-pointer", "/date"])
+        execute(["scrapy", "pluck", "--release-pointer", "/date", "--loglevel=WARNING"])
 
     assert crawl.call_count > 0
     assert len(caplog.records) > 0
