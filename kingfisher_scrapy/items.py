@@ -49,7 +49,7 @@ class DataResource(Resource):
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True, use_enum_values=True)
 
     data_type: DataType
-    data: Data
+    data: Annotated[Data, Field(repr=False)]
     # Added by the FilesStore extension, for the KingfisherProcessAPI2 extension to refer to the file.
     path: str = ""
 
