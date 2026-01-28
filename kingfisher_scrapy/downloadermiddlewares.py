@@ -1,11 +1,26 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import datetime
+import logging
 
 from scrapy.exceptions import IgnoreRequest
 from twisted.internet.defer import Deferred
 
+logger = logging.getLogger(__name__)
 
-class ParaguayAuthMiddleware:
+
+class BaseDownloaderMiddleware:
+    """Base class for downloader middlewares that need access to the spider instance."""
+
+    def __init__(self, crawler):
+        self.spider = crawler.spider
+        self.engine = crawler.engine
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
+
+class ParaguayAuthMiddleware(BaseDownloaderMiddleware):
     """
     Downloader middleware that manages API authentication for Paraguay scrapers.
 
@@ -40,58 +55,49 @@ class ParaguayAuthMiddleware:
                 return scrapy.Request("https://example.com")
     """
 
-    def __init__(self, spider):
-        spider.logger.info("Initialized authentication middleware with spider: %s.", spider.name)
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls(crawler.spider)
-
-    def process_request(self, request, spider):
+    def process_request(self, request):
         if request.meta.get("auth") is False:
             return None
-        if spider.access_token_request_failed:
-            spider.crawler.engine.close_spider(spider, "access_token_request_failed")
+        if self.spider.access_token_request_failed:
+            self.engine.close_spider_async(reason="access_token_request_failed")
             raise IgnoreRequest("Max attempts to get an access token reached. Stopping crawl...")
-        request.headers["Authorization"] = spider.access_token
-        if self._expires_soon(spider):
-            return self.add_request_to_backlog_and_build_access_token_request(spider, request)
+        request.headers["Authorization"] = self.spider.access_token
+        if self._expires_soon():
+            return self._add_request_to_backlog_and_build_access_token_request(request)
         return None
 
-    def process_response(self, request, response, spider):
+    def process_response(self, request, response):
         if response.status in {401, 429}:
-            age = (datetime.datetime.now() - spider.access_token_scheduled_at).total_seconds()
-            spider.logger.info("Access token age: %ss", age)
-            spider.logger.info("%s returned for request to %s", response.status, request.url)
-            if spider.access_token != request.headers["Authorization"] and self._expires_soon(spider):
-                return self.add_request_to_backlog_and_build_access_token_request(spider, request)
-            request.headers["Authorization"] = spider.access_token
+            age = (datetime.datetime.now() - self.spider.access_token_scheduled_at).total_seconds()
+            logger.info("Access token age: %ss", age)
+            logger.info("%s returned for request to %s", response.status, request.url)
+            if self.spider.access_token != request.headers["Authorization"] and self._expires_soon():
+                return self._add_request_to_backlog_and_build_access_token_request(request)
+            request.headers["Authorization"] = self.spider.access_token
             return request
         return response
 
-    def add_request_to_backlog_and_build_access_token_request(self, spider, request):
-        spider.requests_backlog.append(request)
-        spider.logger.info("Added request to backlog until token received: %s", request.url)
-        return spider.build_access_token_request()
+    def _add_request_to_backlog_and_build_access_token_request(self, request):
+        self.spider.requests_backlog.append(request)
+        logger.info("Added request to backlog until token received: %s", request.url)
+        return self.spider.build_access_token_request()
 
-    @staticmethod
-    def _expires_soon(spider):
-        if spider.access_token and spider.access_token_scheduled_at:
-            age = (datetime.datetime.now() - spider.access_token_scheduled_at).total_seconds()
-            if age < spider.access_token_maximum_age:
+    def _expires_soon(self):
+        if self.spider.access_token and self.spider.access_token_scheduled_at:
+            age = (datetime.datetime.now() - self.spider.access_token_scheduled_at).total_seconds()
+            if age < self.spider.access_token_maximum_age:
                 return False
-            spider.logger.info("Access token age: %ss", age)
+            logger.info("Access token age: %ss", age)
         return True
 
 
-class OpenOppsAuthMiddleware:
+class OpenOppsAuthMiddleware(BaseDownloaderMiddleware):
     """Downloader middleware that intercepts requests and adds the token for OpenOpps scraper."""
 
-    @staticmethod
-    def process_request(request, spider):
+    def process_request(self, request):
         if request.meta.get("token_request"):
             return
-        request.headers["Authorization"] = spider.access_token
+        request.headers["Authorization"] = self.spider.access_token
 
 
 # https://github.com/ArturGaspar/scrapy-delayed-requests/blob/master/scrapy_delayed_requests.py
@@ -102,7 +108,7 @@ class DelayedRequestMiddleware:
     A delayed request is useful when an API fails and works again after waiting a few minutes.
     """
 
-    def process_request(self, request, spider):
+    def process_request(self, request):
         delay = request.meta.get("wait_time", None)
         if delay:
             # https://docs.scrapy.org/en/latest/topics/asyncio.html#handling-a-pre-installed-reactor

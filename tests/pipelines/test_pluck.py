@@ -39,7 +39,7 @@ release_parameters = [
 def test_disabled(data_type, data):
     spider = spider_with_crawler()
 
-    pipeline = Pluck()
+    pipeline = Pluck(spider.crawler)
     item = File(
         file_name="test",
         url="http://test.com",
@@ -47,7 +47,7 @@ def test_disabled(data_type, data):
         data=json.dumps(data).encode(),
     )
 
-    assert pipeline.process_item(item, spider) == item
+    assert pipeline.process_item(item) == item
 
 
 def test_from_crawler():
@@ -61,7 +61,7 @@ def test_from_crawler():
 def test_process_item_release_pointer(data_type, data):
     spider = spider_with_crawler(release_pointer="/date", truncate=10)
 
-    pipeline = Pluck()
+    pipeline = Pluck(spider.crawler)
     item = File(
         file_name="test",
         url="http://test.com",
@@ -69,14 +69,14 @@ def test_process_item_release_pointer(data_type, data):
         data=json.dumps(data).encode(),
     )
 
-    assert pipeline.process_item(item, spider) == PluckedItem(value="2020-10-01")
+    assert pipeline.process_item(item) == PluckedItem(value="2020-10-01")
 
 
 @pytest.mark.parametrize(("data_type", "data"), package_parameters)
 def test_process_item_package_pointer(data_type, data):
     spider = spider_with_crawler(package_pointer="/publishedDate")
 
-    pipeline = Pluck()
+    pipeline = Pluck(spider.crawler)
     item = File(
         file_name="test",
         url="http://test.com",
@@ -84,14 +84,14 @@ def test_process_item_package_pointer(data_type, data):
         data=json.dumps(data).encode(),
     )
 
-    assert pipeline.process_item(item, spider) == PluckedItem(value="2000-01-01T00:00:00Z")
+    assert pipeline.process_item(item) == PluckedItem(value="2000-01-01T00:00:00Z")
 
 
 @pytest.mark.parametrize("kwargs", [{"release_pointer": "/nonexistent"}, {"package_pointer": "/nonexistent"}])
 def test_process_item_nonexistent_pointer(kwargs):
     spider = spider_with_crawler(**kwargs)
 
-    pipeline = Pluck()
+    pipeline = Pluck(spider.crawler)
     item = File(
         file_name="test",
         url="http://test.com",
@@ -99,13 +99,13 @@ def test_process_item_nonexistent_pointer(kwargs):
         data=json.dumps(release_package).encode(),
     )
 
-    assert pipeline.process_item(item, spider) == PluckedItem(value="error: /nonexistent not found")
+    assert pipeline.process_item(item) == PluckedItem(value="error: /nonexistent not found")
 
 
 def test_process_item_non_package_data_type():
     spider = spider_with_crawler(package_pointer="/publishedDate")
 
-    pipeline = Pluck()
+    pipeline = Pluck(spider.crawler)
     item = File(
         file_name="test",
         url="http://test.com",
@@ -113,13 +113,13 @@ def test_process_item_non_package_data_type():
         data=json.dumps(releases[0]).encode(),
     )
 
-    assert pipeline.process_item(item, spider) == PluckedItem(value="error: /publishedDate not found")
+    assert pipeline.process_item(item) == PluckedItem(value="error: /publishedDate not found")
 
 
 def test_process_item_incomplete_json():
     spider = spider_with_crawler(package_pointer="/publishedDate")
 
-    pipeline = Pluck()
+    pipeline = Pluck(spider.crawler)
     item = File(
         file_name="test",
         url="http://test.com",
@@ -127,6 +127,4 @@ def test_process_item_incomplete_json():
         data=b'{"key": "value"',
     )
 
-    assert pipeline.process_item(item, spider) == PluckedItem(
-        value="error: /publishedDate not found within initial bytes"
-    )
+    assert pipeline.process_item(item) == PluckedItem(value="error: /publishedDate not found within initial bytes")
