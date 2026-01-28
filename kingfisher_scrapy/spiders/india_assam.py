@@ -20,9 +20,8 @@ class IndiaAssam(PeriodicSpider):
     """
 
     name = "india_assam"
-
-    # To avoid 403 errors when unflattening the CSV files.
     custom_settings = {
+        # To avoid 403 errors when unflattening the CSV files.
         "CONCURRENT_REQUESTS": 1,
     }
 
