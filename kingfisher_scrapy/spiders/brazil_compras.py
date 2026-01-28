@@ -18,14 +18,13 @@ class BrazilCompras(LinksSpider):
       https://dadosabertos.compras.gov.br/swagger-ui/index.html#/11%20-%20OCDS/releases
     """
 
+    name = "brazil_compras"
     custom_settings = {
         # Reduce the number of concurrent requests to respect undocumented limit (100/min).
         "CONCURRENT_REQUESTS": 1,
         # Don't let Scrapy handle HTTP 429.
         "RETRY_HTTP_CODES": [],
     }
-
-    name = "brazil_compras"
 
     # BaseSpider
     date_required = True
