@@ -2,8 +2,9 @@ import datetime
 import os
 
 from scrapy import Request
+from scrapy.crawler import CrawlerRunner
 from scrapy.http import TextResponse
-from scrapy.utils.test import get_crawler
+from scrapy.utils.test import get_reactor_settings
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 
@@ -29,7 +30,19 @@ def spider_with_crawler(spider_class=BaseSpider, *, settings=None, **kwargs):
     if not hasattr(spider_class, "name"):
         spider_class = type("TestSpider", (spider_class,), {"name": "test"})
     settings.update({"LOG_FORMATTER": "kingfisher_scrapy.log_formatter.LogFormatter"})
-    crawler = get_crawler(spider_class, settings)
+
+    # scrapy.utils.test.get_crawler() freezes the settings too early with crawler._apply_settings().
+    runner = CrawlerRunner({**get_reactor_settings(), **settings})
+    crawler = runner.create_crawler(spider_class)
+    # Before calling `self._apply_settings()`, Crawler.crawl sets `self.spider = self._create_spider(*args, **kwargs)`,
+    # which returns `self.spidercls.from_crawler(self, *args, **kwargs)`.
+    crawler.spider = crawler.spidercls.from_crawler(crawler, **kwargs)
+    crawler._apply_settings()  # noqa: SLF001
+    # Crawler.crawl sets `self.engine = self._create_engine()`.
+    crawler.engine = crawler._create_engine()  # noqa: SLF001
+
+    # CoreStats.spider_opened
     start_time = datetime.datetime(2001, 2, 3, 4, 5, 6)
     crawler.stats.set_value("start_time", start_time)
-    return crawler.spidercls.from_crawler(crawler, **kwargs)
+
+    return crawler.spider
