@@ -91,15 +91,6 @@ class ParaguayAuthMiddleware(BaseDownloaderMiddleware):
         return True
 
 
-class OpenOppsAuthMiddleware(BaseDownloaderMiddleware):
-    """Downloader middleware that intercepts requests and adds the token for OpenOpps scraper."""
-
-    def process_request(self, request):
-        if request.meta.get("token_request"):
-            return
-        request.headers["Authorization"] = self.spider.access_token
-
-
 # https://github.com/ArturGaspar/scrapy-delayed-requests/blob/master/scrapy_delayed_requests.py
 class DelayedRequestMiddleware:
     """
