@@ -206,6 +206,8 @@ class BaseSpider(scrapy.Spider):
             raise SpiderArgumentError("You cannot specify both package_pointer and release_pointer spider arguments.")
 
         if spider.sample:
+            crawler.settings.set("CONCURRENT_REQUESTS", 1, priority="spider")
+
             try:
                 spider.sample = int(spider.sample)
             except ValueError:
