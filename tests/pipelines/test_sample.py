@@ -8,7 +8,7 @@ from kingfisher_scrapy.pipelines import Sample
 from tests import spider_with_crawler
 
 
-async def test_process_file_without_sample():
+def test_process_file_without_sample():
     spider = spider_with_crawler()
     pipeline = Sample(spider.crawler)
     item = File(
@@ -18,10 +18,10 @@ async def test_process_file_without_sample():
         data=b"{}",
     )
 
-    assert await pipeline.process_item(item) == item
+    assert pipeline.process_item(item) == item
 
 
-async def test_process_file_with_sample():
+def test_process_file_with_sample():
     spider = spider_with_crawler(sample=1)
     pipeline = Sample(spider.crawler)
     pipeline.engine.close_spider_async = AsyncMock()
@@ -32,6 +32,6 @@ async def test_process_file_with_sample():
         data=b"{}",
     )
 
-    assert await pipeline.process_item(item) == item
+    assert pipeline.process_item(item) == item
     with pytest.raises(DropItem):
-        await pipeline.process_item(item)
+        pipeline.process_item(item)

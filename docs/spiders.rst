@@ -977,16 +977,6 @@ Norway
 
    scrapy crawl norway_digiwhist
 
-Openopps
-~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.openopps.Openopps
-   :no-members:
-
-.. code-block:: bash
-
-   env KINGFISHER_OPENOPPS_USERNAME=... KINGFISHER_OPENOPPS_PASSWORD=... scrapy crawl openopps
-
 Paraguay
 ~~~~~~~~
 
