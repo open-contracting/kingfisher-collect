@@ -1,10 +1,10 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import asyncio
 import datetime
 import logging
 
 from scrapy.exceptions import IgnoreRequest
 from scrapy.utils.defer import deferred_from_coro
-from twisted.internet.defer import Deferred
 
 logger = logging.getLogger(__name__)
 
@@ -105,14 +105,7 @@ class DelayedRequestMiddleware:
     A delayed request is useful when an API fails and works again after waiting a few minutes.
     """
 
-    def process_request(self, request):
+    async def process_request(self, request):
         delay = request.meta.get("wait_time", None)
         if delay:
-            # https://docs.scrapy.org/en/latest/topics/asyncio.html#handling-a-pre-installed-reactor
-            from twisted.internet import reactor  # noqa: PLC0415
-
-            # Simulate a sleep.
-            d = Deferred()
-            reactor.callLater(delay, d.callback, None)
-            return d
-        return None
+            await asyncio.sleep(delay)
