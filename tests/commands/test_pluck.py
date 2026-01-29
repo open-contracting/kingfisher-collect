@@ -4,7 +4,7 @@ import pytest
 from scrapy.cmdline import execute
 
 
-@patch("scrapy.crawler.CrawlerProcess.crawl")
+@patch("scrapy.crawler.AsyncCrawlerProcess.start")
 def test_command(crawl, caplog):
     with pytest.raises(SystemExit):
         execute(["scrapy", "pluck", "--release-pointer", "/date", "--loglevel=WARNING"])
