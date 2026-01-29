@@ -24,7 +24,7 @@ def test_process_file_without_sample():
 def test_process_file_with_sample():
     spider = spider_with_crawler(sample=1)
     pipeline = Sample(spider.crawler)
-    pipeline.engine.close_spider_async = AsyncMock()
+    pipeline.crawler.engine.close_spider_async = AsyncMock()
     item = File(
         file_name="test",
         url="http://test.com",

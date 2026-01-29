@@ -227,8 +227,8 @@ The Scrapy framework is very flexible. To maintain a good separation of concerns
 
 -  A downloader middleware's responsibility is to process requests yielded by the spider, before they are sent to the internet, and to process responses from the internet, before they are passed to the spider. It should only:
 
-   -  Return a request, for example :class:`~kingfisher_scrapy.downloadermiddlewares.ParaguayAuthMiddleware`
-   -  Return a Deferred, for example :class:`~kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware`
+   -  Return requests, for example :class:`~kingfisher_scrapy.downloadermiddlewares.ParaguayAuthMiddleware`
+   -  Return ``None``, for example :class:`~kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware`
 
 -  A spider middleware's responsibility is to process items yielded by the spider. It should only yield items, for example :class:`~kingfisher_scrapy.spidermiddlewares.RootPathMiddleware`.
 

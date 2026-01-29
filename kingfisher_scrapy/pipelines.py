@@ -24,10 +24,6 @@ class BasePipeline:
         self.crawler = crawler
         self.spider = crawler.spider
 
-    @property
-    def engine(self):
-        return self.crawler.engine
-
     @classmethod
     def from_crawler(cls, crawler):
         return cls(crawler)

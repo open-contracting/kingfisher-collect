@@ -16,10 +16,6 @@ class BaseDownloaderMiddleware:
         self.crawler = crawler
         self.spider = crawler.spider
 
-    @property
-    def engine(self):
-        return self.crawler.engine
-
     @classmethod
     def from_crawler(cls, crawler):
         return cls(crawler)
@@ -97,7 +93,6 @@ class ParaguayAuthMiddleware(BaseDownloaderMiddleware):
         return True
 
 
-# https://github.com/ArturGaspar/scrapy-delayed-requests/blob/master/scrapy_delayed_requests.py
 class DelayedRequestMiddleware:
     """
     Downloader middleware that allows for delaying a request by a set 'wait_time' number of seconds.
