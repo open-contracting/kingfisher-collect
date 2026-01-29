@@ -11,6 +11,7 @@ import jsonpointer
 from flattentool import unflatten
 from flattentool.exceptions import FlattenToolWarning
 from scrapy.exceptions import DropItem, NotSupported
+from scrapy.utils.defer import deferred_from_coro
 
 from kingfisher_scrapy.items import File, FileItem, PluckedItem
 from kingfisher_scrapy.util import transcode
@@ -20,8 +21,12 @@ class BasePipeline:
     """Base class for pipelines that need access to the spider instance."""
 
     def __init__(self, crawler):
+        self.crawler = crawler
         self.spider = crawler.spider
-        self.engine = crawler.engine
+
+    @property
+    def engine(self):
+        return self.crawler.engine
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -58,12 +63,13 @@ class Sample(BasePipeline):
         super().__init__(crawler)
         self.item_count = 0
 
-    async def process_item(self, item):
+    def process_item(self, item):
         if not self.spider.sample:
             return item
 
         if self.item_count >= self.spider.sample:
-            await self.engine.close_spider_async(reason="sample")
+            # See scrapyextensions/closespider.py and the docstring for scrapy.utils.defer._schedule_coro().
+            deferred_from_coro(self.crawler.engine.close_spider_async(reason="sample"))
             raise DropItem("Sample: Maximum sample size reached")
 
         self.item_count += 1

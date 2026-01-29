@@ -3,6 +3,7 @@ import datetime
 import logging
 
 from scrapy.exceptions import IgnoreRequest
+from scrapy.utils.defer import deferred_from_coro
 from twisted.internet.defer import Deferred
 
 logger = logging.getLogger(__name__)
@@ -12,8 +13,12 @@ class BaseDownloaderMiddleware:
     """Base class for downloader middlewares that need access to the spider instance."""
 
     def __init__(self, crawler):
+        self.crawler = crawler
         self.spider = crawler.spider
-        self.engine = crawler.engine
+
+    @property
+    def engine(self):
+        return self.crawler.engine
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -59,7 +64,8 @@ class ParaguayAuthMiddleware(BaseDownloaderMiddleware):
         if request.meta.get("auth") is False:
             return None
         if self.spider.access_token_request_failed:
-            self.engine.close_spider_async(reason="access_token_request_failed")
+            # See scrapyextensions/closespider.py and the docstring for scrapy.utils.defer._schedule_coro().
+            deferred_from_coro(self.crawler.engine.close_spider_async(reason="access_token_request_failed"))
             raise IgnoreRequest("Max attempts to get an access token reached. Stopping crawl...")
         request.headers["Authorization"] = self.spider.access_token
         if self._expires_soon():
