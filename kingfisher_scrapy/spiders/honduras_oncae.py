@@ -26,7 +26,9 @@ class HondurasONCAE(CompressedFileSpider, PeriodicSpider):
     """
 
     name = "honduras_oncae"
-    download_timeout = MAX_DOWNLOAD_TIMEOUT / 2  # 15min
+    custom_settings = {
+        "DOWNLOAD_TIMEOUT": MAX_DOWNLOAD_TIMEOUT / 2,  # 15min
+    }
 
     # BaseSpider
     date_format = "year"

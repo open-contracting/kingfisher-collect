@@ -30,9 +30,9 @@ class ColombiaBulk(CompressedFileSpider):
     """
 
     name = "colombia_bulk"
-    download_timeout = MAX_DOWNLOAD_TIMEOUT
     custom_settings = {
         "DOWNLOAD_FAIL_ON_DATALOSS": False,
+        "DOWNLOAD_TIMEOUT": MAX_DOWNLOAD_TIMEOUT,
     }
 
     # BaseSpider

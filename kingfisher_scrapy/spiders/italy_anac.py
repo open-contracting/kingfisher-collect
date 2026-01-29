@@ -17,8 +17,10 @@ class ItalyANAC(BigFileSpider):
     """
 
     name = "italy_anac"
-    download_timeout = MAX_DOWNLOAD_TIMEOUT * 2  # 1h
-    user_agent = BROWSER_USER_AGENT  # Otherwise, API returns "Request Rejected" HTML
+    custom_settings = {
+        "DOWNLOAD_TIMEOUT": MAX_DOWNLOAD_TIMEOUT * 2,  # 1h
+        "USER_AGENT": BROWSER_USER_AGENT,  # Otherwise, API returns "Request Rejected" HTML
+    }
 
     # SimpleSpider
     data_type = "release_package"

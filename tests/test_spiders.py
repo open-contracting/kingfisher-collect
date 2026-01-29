@@ -23,6 +23,8 @@ async def test_start_http_error(spider_name, caplog):
     spidercls = runner.spider_loader.load(spider_name)
     crawler = Crawler(spidercls, runner.settings)
     crawler._apply_settings()  # noqa: SLF001
+
+    # CoreStats.spider_opened
     start_time = datetime.datetime(2001, 2, 3, 4, 5, 6)
     crawler.stats.set_value("start_time", start_time)
 

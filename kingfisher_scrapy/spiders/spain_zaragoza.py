@@ -15,7 +15,9 @@ class SpainZaragoza(SimpleSpider):
     """
 
     name = "spain_zaragoza"
-    user_agent = BROWSER_USER_AGENT  # to avoid HTTP 500
+    custom_settings = {
+        "USER_AGENT": BROWSER_USER_AGENT,  # to avoid HTTP 500
+    }
 
     # SimpleSpider
     data_type = "release_package"

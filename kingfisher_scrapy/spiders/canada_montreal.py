@@ -13,9 +13,11 @@ class CanadaMontreal(IndexSpider):
     """
 
     name = "canada_montreal"
-    # Publisher uses Cloudflare (CF-Cache-Status and CF-RAY response headers, can verify with curl).
-    # Cloudflare responds with HTTP 520 if request headers use default user agent.
-    user_agent = BROWSER_USER_AGENT
+    custom_settings = {
+        # Publisher uses Cloudflare (CF-Cache-Status and CF-RAY response headers, can verify with curl).
+        # Cloudflare responds with HTTP 520 if request headers use default user agent.
+        "USER_AGENT": BROWSER_USER_AGENT,
+    }
 
     # BaseSpider
     ocds_version = "1.0"

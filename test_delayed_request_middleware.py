@@ -1,10 +1,9 @@
+import asyncio
 import time
 
 from scrapy import Request
 from scrapy.core.downloader import DownloaderMiddlewareManager
 from scrapy.utils.reactor import install_reactor
-from twisted.internet.defer import Deferred
-from twisted.trial.unittest import TestCase
 
 from tests import spider_with_crawler
 
@@ -13,7 +12,7 @@ install_reactor("twisted.internet.asyncioreactor.AsyncioSelectorReactor")
 
 # Running this as a pytest test raises "twisted.internet.error.ReactorAlreadyRunning".
 def delayed_request_middleware():
-    def download_func(request, spider):
+    async def download_func(request):
         return request
 
     spider = spider_with_crawler(
@@ -27,22 +26,12 @@ def delayed_request_middleware():
     request = Request("http://example.com", meta={"wait_time": 1})
     # The request is sent to all the downloader middlewares, including the delayed request middleware.
     manager = DownloaderMiddlewareManager.from_crawler(spider.crawler)
-    # Start the timer here, because reactor.callLater is run immediately.
+
     start = time.time()
-
-    downloaded = manager.download(download_func, request, spider)
-
-    assert isinstance(downloaded, Deferred)
-
-    # https://github.com/scrapy/scrapy/blob/28262d4b241744aa7c090702db9a89411e3bbf9a/tests/test_downloadermiddleware.py#L36
-    results = []
-    downloaded.addBoth(results.append)
-    test = TestCase()
-    test._wait(downloaded)  # noqa: SLF001
-
+    result = asyncio.get_event_loop().run_until_complete(manager.download_async(download_func, request))
     spent = time.time() - start
 
-    assert results == [request], results
+    assert result == request, result
     assert 1 <= spent <= 1.5, spent
 
 

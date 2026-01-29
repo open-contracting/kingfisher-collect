@@ -12,7 +12,7 @@ from tests import spider_with_crawler
 
 def test_process_item_csv():
     spider = spider_with_crawler(unflatten=True)
-    pipeline = Unflatten()
+    pipeline = Unflatten(spider.crawler)
     item = File(
         file_name="test.csv",
         url="http://test.com/test.csv",
@@ -20,7 +20,7 @@ def test_process_item_csv():
         data=b"a,b,c\n1,2,3",
     )
 
-    assert pipeline.process_item(item, spider) == item
+    assert pipeline.process_item(item) == item
 
 
 def test_process_item_xlsx():
@@ -28,7 +28,7 @@ def test_process_item_xlsx():
     Workbook().save(io)
 
     spider = spider_with_crawler(unflatten=True)
-    pipeline = Unflatten()
+    pipeline = Unflatten(spider.crawler)
     item = File(
         file_name="test.xlsx",
         url="http://test.com/test.xlsx",
@@ -36,12 +36,12 @@ def test_process_item_xlsx():
         data=io.getvalue(),
     )
 
-    assert pipeline.process_item(item, spider) == item
+    assert pipeline.process_item(item) == item
 
 
 def test_process_item_extension_error():
     spider = spider_with_crawler(unflatten=True)
-    pipeline = Unflatten()
+    pipeline = Unflatten(spider.crawler)
     item = File(
         file_name="file",
         url="http://test.com/file",
@@ -50,12 +50,12 @@ def test_process_item_extension_error():
     )
 
     with pytest.raises(NotSupported):
-        pipeline.process_item(item, spider)
+        pipeline.process_item(item)
 
 
 def test_process_item_xlsx_error():
     spider = spider_with_crawler(unflatten=True)
-    pipeline = Unflatten()
+    pipeline = Unflatten(spider.crawler)
     item = File(
         file_name="test.xlsx",
         url="http://test.com/test.xlsx",
@@ -64,4 +64,4 @@ def test_process_item_xlsx_error():
     )
 
     with pytest.raises(BadXLSXZipFile):
-        pipeline.process_item(item, spider)
+        pipeline.process_item(item)

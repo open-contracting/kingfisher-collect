@@ -10,7 +10,9 @@ def parser(value):
 
 
 class MexicoNuevoLeonBase(PeriodicSpider):
-    user_agent = BROWSER_USER_AGENT  # to avoid HTTP 403
+    custom_settings = {
+        "USER_AGENT": BROWSER_USER_AGENT,  # to avoid HTTP 403
+    }
 
     # BaseSpider
     date_format = "year"
