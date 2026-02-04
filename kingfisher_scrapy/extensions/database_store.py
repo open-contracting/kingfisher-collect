@@ -193,4 +193,4 @@ class DatabaseStore:
         self.cursor.execute(statement, variables)
 
     def get_table_name(self, spider):
-        return spider.database_store_table_name if spider.database_store_table_name else spider.name
+        return spider.database_store_table_name or spider.name

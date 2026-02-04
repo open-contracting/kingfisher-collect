@@ -270,7 +270,7 @@ class BaseSpider(scrapy.Spider):
 
     def get_start_time(self, date_format):
         """Return the formatted start time of the crawl."""
-        date = self.crawl_time if self.crawl_time else self.crawler.stats.get_value("start_time")
+        date = self.crawl_time or self.crawler.stats.get_value("start_time")
         return date.strftime(date_format)
 
     def get_retry_wait_time(self, response):

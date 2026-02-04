@@ -306,7 +306,7 @@ async def test_json_streaming_middleware(middleware_class, attribute, separator,
     generator = middleware.process_spider_output(response, _aiter([item]))
     transformed_items = await alist(generator)
 
-    length = sample if sample else 20
+    length = sample or 20
 
     assert len(transformed_items) == length
     for i, item in enumerate(transformed_items, 1):
@@ -388,7 +388,7 @@ async def test_json_streaming_middleware_with_compressed_file_spider(middleware_
     generator = stream_middleware.process_spider_output(response, _aiter([item]))
     transformed_items = await alist(generator)
 
-    length = sample if sample else 20
+    length = sample or 20
 
     assert len(transformed_items) == length
     for i, item in enumerate(transformed_items, 1):

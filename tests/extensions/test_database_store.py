@@ -234,7 +234,7 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
     spider.database_store_compile_releases = compile_releases
     spider.database_store_table_name = table_name
 
-    expected_table = table_name if table_name else spider.name
+    expected_table = table_name or spider.name
 
     extension = DatabaseStore.from_crawler(spider.crawler)
 
