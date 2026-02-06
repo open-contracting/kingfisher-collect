@@ -10,6 +10,8 @@ IGNORE_MESSAGES = {
     "status=%d message=%r request=%s file_name=%s",
     # RetryDataErrorMiddleware.process_spider_exception
     "Gave up retrying %(request)s (failed %(failures)d times): %(exception)s",
+    # scrapy.downloadermiddlewares.retry.get_retry_request
+    "Gave up retrying %(request)s (failed %(retry_times)d times): %(reason)s",
 }
 
 
