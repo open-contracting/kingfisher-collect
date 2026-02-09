@@ -850,6 +850,16 @@ Mexico
 
    scrapy crawl mexico_yucatan_inaip
 
+Moldova
+~~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.moldova.Moldova
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl moldova
+
 Nepal
 ~~~~~
 
