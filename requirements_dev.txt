@@ -20,7 +20,7 @@ backports-datetime-fromisoformat==2.0.3
     # via
     #   -r requirements.txt
     #   flattentool
-btrees==4.11.3
+btrees==6.3
     # via
     #   -r requirements.txt
     #   zodb
@@ -74,11 +74,6 @@ et-xmlfile==2.0.0
     # via
     #   -r requirements.txt
     #   openpyxl
-exceptiongroup==1.2.2
-    # via
-    #   -r requirements.txt
-    #   cattrs
-    #   pytest
 filelock==3.20.3
     # via
     #   -r requirements.txt
@@ -313,12 +308,6 @@ tldextract==3.1.2
     # via
     #   -r requirements.txt
     #   scrapy
-tomli==2.0.1
-    # via
-    #   -r requirements.txt
-    #   coverage
-    #   incremental
-    #   pytest
 transaction==3.1.0
     # via
     #   -r requirements.txt
@@ -331,7 +320,6 @@ twisted==24.7.0rc1
 typing-extensions==4.15.0
     # via
     #   -r requirements.txt
-    #   cattrs
     #   pydantic
     #   pydantic-core
     #   twisted

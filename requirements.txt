@@ -13,7 +13,7 @@ automat==0.8.0
     # via twisted
 backports-datetime-fromisoformat==2.0.3
     # via flattentool
-btrees==4.11.3
+btrees==6.3
     # via zodb
 cattrs==23.1.2
     # via requests-cache
@@ -46,8 +46,6 @@ defusedxml==0.7.1
     #   scrapy
 et-xmlfile==2.0.0
     # via openpyxl
-exceptiongroup==1.2.2
-    # via cattrs
 filelock==3.20.3
     # via tldextract
 flattentool==0.27.0
@@ -199,8 +197,6 @@ six==1.16.0
     #   zodb
 tldextract==3.1.2
     # via scrapy
-tomli==2.0.1
-    # via incremental
 transaction==3.1.0
     # via zodb
 twisted==24.7.0rc1
@@ -210,7 +206,6 @@ twisted==24.7.0rc1
     #   scrapyd
 typing-extensions==4.15.0
     # via
-    #   cattrs
     #   pydantic
     #   pydantic-core
     #   twisted
