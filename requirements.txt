@@ -46,6 +46,8 @@ defusedxml==0.7.1
     #   scrapy
 et-xmlfile==2.0.0
     # via openpyxl
+exceptiongroup==1.3.1
+    # via cattrs
 filelock==3.20.3
     # via tldextract
 flattentool==0.27.0
@@ -197,6 +199,8 @@ six==1.16.0
     #   zodb
 tldextract==3.1.2
     # via scrapy
+tomli==2.4.0
+    # via incremental
 transaction==3.1.0
     # via zodb
 twisted==24.7.0rc1
@@ -206,6 +210,8 @@ twisted==24.7.0rc1
     #   scrapyd
 typing-extensions==4.15.0
     # via
+    #   cattrs
+    #   exceptiongroup
     #   pydantic
     #   pydantic-core
     #   twisted
