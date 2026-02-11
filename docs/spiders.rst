@@ -240,13 +240,6 @@ Canada
 
    scrapy crawl canada_buyandsell
 
-.. autoclass:: kingfisher_scrapy.spiders.canada_montreal.CanadaMontreal
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl canada_montreal
-
 .. autoclass:: kingfisher_scrapy.spiders.canada_quebec.CanadaQuebec
    :no-members:
 
