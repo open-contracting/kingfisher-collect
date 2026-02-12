@@ -92,7 +92,7 @@ Each spider supports different filters, which you can set as spider arguments. F
 
 .. code-block:: bash
 
-   scrapy crawl colombia -a from_date=2015-01-01
+   scrapy crawl spider_name -a from_date=2015-01-01
 
 You can find which filters a spider supports on the :doc:`spiders` page.
 

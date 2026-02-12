@@ -60,13 +60,13 @@ A spider's behavior can be changed by setting *spider arguments*:
 
 .. code-block:: bash
 
-   scrapy crawl colombia -a NAME=VALUE
+   scrapy crawl spider_name -a NAME=VALUE
 
 You can set multiple spider arguments:
 
 .. code-block:: bash
 
-   scrapy crawl colombia -a from_date=2015-01-01 -a until_date=2019-12-31
+   scrapy crawl spider_name -a from_date=2015-01-01 -a until_date=2019-12-31
 
 All spiders support these arguments:
 
