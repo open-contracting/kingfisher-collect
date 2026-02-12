@@ -281,20 +281,6 @@ Colombia
 
    scrapy crawl colombia_ani_records
 
-.. autoclass:: kingfisher_scrapy.spiders.colombia_api.ColombiaAPI
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl colombia_api
-
-.. autoclass:: kingfisher_scrapy.spiders.colombia_bulk.ColombiaBulk
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl colombia_bulk
-
 Costa Rica
 ~~~~~~~~~~
 
