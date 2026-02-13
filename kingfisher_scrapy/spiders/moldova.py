@@ -68,9 +68,12 @@ class Moldova(BaseSpider):
           "code": "EHOSTUNREACH"
         }
         """
-        if not response.body or response.json().get("name") == "Error":
+        if not response.body:
             raise RetryableError
-        return response.json()
+        data = response.json()
+        if data.get("name") == "Error":
+            raise RetryableError
+        return data
 
     @handle_http_error
     def parse_list(self, response):
