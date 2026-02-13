@@ -2,13 +2,19 @@ import scrapy
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.exceptions import RetryableError
-from kingfisher_scrapy.util import components, handle_http_error, join, parameters, replace_parameters
+from kingfisher_scrapy.util import components, handle_http_error, replace_parameters
 
 
 class Moldova(BaseSpider):
     """
     Domain
       MTender
+    Caveats
+      https://public.mtender.gov.md offers three endpoints: /tenders/, /tenders/plan/ and /budgets/. However, this
+      service publishes the same contracting process under multiple OCIDs.
+      To fix this, we get the list of tenders OCIDs from /tenders, query record packages and their compiledReleases
+      from /tenders/ocid, replace the OCID of each of them with their main OCID, and create a release package instead,
+      preserving the record package metadata.
     Spider arguments
       from_date
         Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
@@ -26,21 +32,13 @@ class Moldova(BaseSpider):
     base_url = "https://public.mtender.gov.md/tenders/"
 
     async def start(self):
-        # https://public.mtender.gov.md offers three endpoints: /tenders/, /tenders/plan/ and /budgets/. However, this
-        # service publishes contracting processes under multiple OCIDs.
-        #
-        # To fix this, we get the list of tenders OCIDs from /tenders, queries their compiledReleases from
-        # /tenders/ocid, and replace the OCID of each of them with their main OCID.
-        #
-        # Note: The OCIDs from the /budgets/ endpoint have no corresponding data in the second service. The OCIDs from
-        # the /tenders/plan/ endpoint are the same as from the /tenders/ endpoint.
         if self.from_date:
             url = f"{self.base_url}?offset={self.from_date.strftime(self.date_format)}"
         else:
             url = self.base_url
         yield scrapy.Request(url, callback=self.parse_list)
 
-    def raise_for_status(self, response):
+    def load_json_or_retry_error(self, response):
         r"""
         Occasional error response with HTTP 200 code, with an empty response, or JSON like:
 
@@ -72,11 +70,11 @@ class Moldova(BaseSpider):
         """
         if not response.body or response.json().get("name") == "Error":
             raise RetryableError
+        return response.json()
 
     @handle_http_error
     def parse_list(self, response):
-        self.raise_for_status(response)
-        data = response.json()
+        data = self.load_json_or_retry_error(response)
 
         # The last page returns an empty JSON object.
         if not data:
@@ -89,12 +87,8 @@ class Moldova(BaseSpider):
 
     @handle_http_error
     def parse(self, response):
-        self.raise_for_status(response)
-        data = response.json()
+        data = self.load_json_or_retry_error(response)
 
-        # The response is a record package with records with a compiled release each with different OCIDs. We replace
-        # each compiled release's OCID with the original one, and create a release package instead, preserving the
-        # record package metadata.
         ocid = components(-1)(response.request.url)
 
         releases = []
