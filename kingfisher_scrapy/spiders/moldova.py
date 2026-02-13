@@ -25,9 +25,6 @@ class Moldova(BaseSpider):
     # BaseSpider
     date_format = "datetime"
 
-    # SimpleSpider
-    data_type = "release_package"
-
     # Local
     base_url = "https://public.mtender.gov.md/tenders/"
 
@@ -100,4 +97,4 @@ class Moldova(BaseSpider):
             release["ocid"] = ocid
             releases.append(release)
 
-        yield self.build_file_from_response(response, data_type=self.data_type, data=data | {"releases": releases})
+        yield self.build_file_from_response(response, data_type="release_package", data=data | {"releases": releases})
