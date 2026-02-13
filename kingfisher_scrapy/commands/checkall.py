@@ -57,6 +57,7 @@ class CheckAll(ScrapyCommand):
             publications = {}
 
         publications = {publication["source_id"]: publication for publication in publications}
+        source_ids_used = set(publications)
 
         glob_issues = []
         with_issues = set()
@@ -92,13 +93,30 @@ class CheckAll(ScrapyCommand):
                 publications[f"{source_id[:-8]}_releases"] = publication
 
         has_output = False
+        source_ids_available = set()
         for module in walk_modules("kingfisher_scrapy.spiders"):
             if not args or os.path.relpath(module.__file__) in args:
                 source_id = module.__name__.rsplit(".", 1)[-1]
+                source_ids_available.add(source_id)
                 for cls in iter_spider_classes(module):
                     checker = Checker(module, cls, publications.get(source_id, {}), level)
                     checker.check()
                     has_output |= checker.has_output
+
+        lapsed = []
+        for source_id in source_ids_used:
+            retrieved = publications[source_id]["retrieval_frequency"] != "NEVER"
+            available = source_id in source_ids_available
+            # "If the publication is no longer updated, or the spider is removed from Kingfisher Collect, set the
+            # retrieval frequency to NEVER, instead of freezing the publication".
+            # https://ocp-data-registry.readthedocs.io/en/latest/admin/siteadmin.html#freeze-or-unpublish-a-publication
+            if retrieved and not available:
+                logger.error("publication with no spider must set retrieval_frequency=NEVER: %s", source_id)
+            # If a publication is not retrieved and has a spider, manually test whether the spider works.
+            if not retrieved and available:
+                lapsed.append(source_id)
+
+        logger.warning("Test lapsed spiders: scrapy crawlall --sample 1 --loglevel=ERROR %s", " ".join(lapsed))
 
         if has_output:
             sys.exit(1)

@@ -56,7 +56,7 @@ To list the spiders, run:
 
 .. code-block:: bash
 
-    scrapy list
+   scrapy list
 
 The spiders' names might be ambiguous. If you're unsure which spider to run, you can find more information about them on the :doc:`spiders` page, or `contact the Data Support Team <data@open-contracting.org>`__.
 
@@ -64,7 +64,7 @@ To run a spider (that is, to start a "crawl"), replace ``spider_name`` below wit
 
 .. code-block:: bash
 
-    scrapy crawl spider_name
+   scrapy crawl spider_name
 
 .. _sample:
 
@@ -75,7 +75,7 @@ To download only a sample of the available data, set the sample size with the ``
 
 .. code-block:: bash
 
-    scrapy crawl spider_name -a sample=10
+   scrapy crawl spider_name -a sample=10
 
 Scrapy will then output a log of its activity.
 
@@ -92,7 +92,7 @@ Each spider supports different filters, which you can set as spider arguments. F
 
 .. code-block:: bash
 
-   scrapy crawl colombia -a from_date=2015-01-01
+   scrapy crawl spider_name -a from_date=2015-01-01
 
 You can find which filters a spider supports on the :doc:`spiders` page.
 
@@ -100,13 +100,13 @@ Not all of an API's features are exposed by Kingfisher Collect. Each spider link
 
 .. code-block:: bash
 
-    scrapy crawl spider_name -a qs:parameter1=value1 -a qs:parameter2=value2
+   scrapy crawl spider_name -a qs:parameter1=value1 -a qs:parameter2=value2
 
 If the filters are implemented as path parameters, you can append path components to each URL, for example:
 
 .. code-block:: bash
 
-    scrapy crawl spider_name -a path=key1/value1/key2/value2/value3
+   scrapy crawl spider_name -a path=key1/value1/key2/value2/value3
 
 .. _increment:
 
@@ -129,13 +129,13 @@ And so on. However, as you learned in :ref:`how-it-works`, each crawl writes dat
 
 .. code-block:: bash
 
-    scrapy crawl spider_name -a from_date=2020-10-15 -a until_date=2020-10-31 -a crawl_time=2020-10-14T12:34:56
+   scrapy crawl spider_name -a from_date=2020-10-15 -a until_date=2020-10-31 -a crawl_time=2020-10-14T12:34:56
 
 If you are integrating with :doc:`Kingfisher Process<kingfisher_process>`, remember to set the ``keep_collection_open`` spider argument to ``'true'``, in order to not close the collection when the crawl is finished:
 
 .. code-block:: bash
 
-    scrapy crawl spider_name -a keep_collection_open=true
+   scrapy crawl spider_name -a keep_collection_open=true
 
 .. seealso::
 
@@ -156,7 +156,7 @@ To use an HTTP and/or HTTPS proxy, set the ``http_proxy`` and/or ``https_proxy``
 
 .. code-block:: bash
 
-    env http_proxy=YOUR-PROXY-URL https_proxy=YOUR-PROXY-URL scrapy crawl spider_name -s HTTPPROXY_ENABLED=True
+   env http_proxy=YOUR-PROXY-URL https_proxy=YOUR-PROXY-URL scrapy crawl spider_name -s HTTPPROXY_ENABLED=True
 
 Use data
 --------

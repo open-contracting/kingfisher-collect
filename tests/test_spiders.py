@@ -30,8 +30,7 @@ async def test_start_http_error(spider_name, caplog):
 
     try:
         kwargs = {}
-        # colombia_bulk errors if until_date is set but system is not 'SECOP1'.
-        if (default_from_date := getattr(spidercls, "default_from_date", None)) and spider_name != "colombia_bulk":
+        if default_from_date := getattr(spidercls, "default_from_date", None):
             from_date = datetime.datetime.strptime(
                 default_from_date, spidercls.VALID_DATE_FORMATS[spidercls.date_format]
             ).replace(tzinfo=datetime.timezone.utc)

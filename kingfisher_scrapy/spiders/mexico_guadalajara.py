@@ -10,7 +10,7 @@ class MexicoGuadalajara(PeriodicSpider, MexicoINAIBase):
     Domain
       Municipio de Guadalajara
     Caveats
-      The API documentation suggests they have data only for 2022, but they have it up to the current year as well.
+      This dataset was last updated by the publisher in 2025.
     Spider arguments
       from_date
         Download only data from this year onward (YYYY format). Defaults to '2022'.
