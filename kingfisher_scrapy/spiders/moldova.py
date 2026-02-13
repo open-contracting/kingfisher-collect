@@ -10,11 +10,10 @@ class Moldova(BaseSpider):
     Domain
       MTender
     Caveats
-      https://public.mtender.gov.md offers three endpoints: /tenders/, /tenders/plan/ and /budgets/. However, this
-      service publishes the same contracting process under multiple OCIDs.
-      To fix this, we get the list of tenders OCIDs from /tenders, query record packages and their compiledReleases
-      from /tenders/ocid, replace the OCID of each of them with their main OCID, and create a release package instead,
-      preserving the record package metadata.
+      The ``https://public.mtender.gov.md/tenders/{ocid}`` endpoint returns a record package in which each record has a
+      different ``ocid`` value (as expected), but these actually represent the same contracting process (not expected).
+      To fix this, we reformat the record package as a release package, using each record's ``compiledRelease`` as an
+      individual release, and replacing the release's ``ocid`` value with the OCID from the URL.
     Spider arguments
       from_date
         Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
@@ -37,7 +36,7 @@ class Moldova(BaseSpider):
 
     def load_json_or_retry_error(self, response):
         r"""
-        Occasional error response with HTTP 200 code, with an empty response, or JSON like:
+        Retry an HTTP 200 response if its body is empty or describes an error, like:
 
         {
           "message": "connect EHOSTUNREACH 185.108.182.236:443",
