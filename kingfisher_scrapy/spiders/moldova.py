@@ -38,7 +38,7 @@ class Moldova(BaseSpider):
             url = f"{self.base_url}?offset={self.from_date.strftime(self.date_format)}"
         else:
             url = self.base_url
-        yield scrapy.Request(url, meta={"file_name": "list.json"}, callback=self.parse_list)
+        yield scrapy.Request(url, callback=self.parse_list)
 
     def raise_for_status(self, response):
         r"""
@@ -83,11 +83,9 @@ class Moldova(BaseSpider):
             return
 
         for item in data["data"]:
-            url = replace_parameters(self.base_url, offset=None) + item["ocid"]
-            yield self.build_request(url, formatter=components(-2))
+            yield self.build_request(f"{self.base_url}{item['ocid']}", formatter=components(-1))
 
-        url = replace_parameters(response.request.url, offset=data["offset"])
-        yield self.build_request(url, formatter=join(components(-1), parameters("offset")), callback=self.parse_list)
+        yield scrapy.Request(replace_parameters(response.request.url, offset=data["offset"]), callback=self.parse_list)
 
     @handle_http_error
     def parse(self, response):
@@ -99,15 +97,10 @@ class Moldova(BaseSpider):
         # record package metadata.
         ocid = components(-1)(response.request.url)
 
-        package = {"releases": []}
+        releases = []
         for record in data.pop("records"):
             release = record["compiledRelease"]
             release["ocid"] = ocid
-            package["releases"].append(release)
-        package.update(data)
-        yield self.build_file(
-            file_name=response.request.meta["file_name"],
-            url=response.request.url,
-            data_type=self.data_type,
-            data=package,
-        )
+            releases.append(release)
+
+        yield self.build_file_from_response(response, data_type=self.data_type, data=data | {"releases": releases})
