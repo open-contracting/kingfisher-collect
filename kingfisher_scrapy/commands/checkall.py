@@ -21,8 +21,6 @@ word_boundary_re = re.compile(
     |(?<=.)(?=[A-Z][a-z])
     |(?<=EcuadorSERCOP)
     |(?<=HondurasSEFIN)
-    |(?<=MexicoINAI)
-    |(?<=PakistanPPRA)
     |(?<=PeruOECE)
     """,
     flags=re.VERBOSE,
@@ -281,17 +279,7 @@ class Checker:
     def check_date_spider_argument(self, spider_argument, spider_arguments, default, format_string):
         if spider_argument in spider_arguments:
             # These classes are known to have more specific semantics.
-            if self.cls.__name__ in {
-                "ColombiaBulk",
-                "Kosovo",
-                "PortugalRecords",
-                "PortugalReleases",
-                "UgandaReleases",
-                "Ukraine",
-            }:
-                level = "info"
-            else:
-                level = "warning"
+            level = "info" if self.cls.__name__ in {"Kosovo", "UgandaReleases", "Ukraine"} else "warning"
 
             if self.cls.date_required:
                 format_string += " Defaults to {default}."
