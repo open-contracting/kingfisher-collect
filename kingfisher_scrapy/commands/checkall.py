@@ -80,7 +80,8 @@ class CheckAll(ScrapyCommand):
 
         for source_id, publication in list(publications.items()):
             if (
-                publication["frozen"]
+                not args  # this check is inappropriate within the pre-commit hook
+                and publication["frozen"]
                 and source_id not in with_issues
                 and not any(fnmatch(source_id, pattern) for pattern in glob_issues)
             ):
@@ -103,20 +104,21 @@ class CheckAll(ScrapyCommand):
                     checker.check()
                     has_output |= checker.has_output
 
-        lapsed = []
-        for source_id in source_ids_used:
-            retrieved = publications[source_id]["retrieval_frequency"] != "NEVER"
-            available = source_id in source_ids_available
-            # "If the publication is no longer updated, or the spider is removed from Kingfisher Collect, set the
-            # retrieval frequency to NEVER, instead of freezing the publication".
-            # https://ocp-data-registry.readthedocs.io/en/latest/admin/siteadmin.html#freeze-or-unpublish-a-publication
-            if retrieved and not available:
-                logger.error("publication with no spider must set retrieval_frequency=NEVER: %s", source_id)
-            # If a publication is not retrieved and has a spider, manually test whether the spider works.
-            if not retrieved and available:
-                lapsed.append(source_id)
+        if not args:  # this check is inappropriate within the pre-commit hook
+            lapsed = []
+            for source_id in source_ids_used:
+                retrieved = publications[source_id]["retrieval_frequency"] != "NEVER"
+                available = source_id in source_ids_available
+                # "If the publication is no longer updated, or the spider is removed from Kingfisher Collect, set the
+                # retrieval frequency to NEVER, instead of freezing the publication".
+                # https://ocp-data-registry.readthedocs.io/en/latest/admin/siteadmin.html#freeze-or-unpublish-a-publication
+                if retrieved and not available:
+                    logger.error("publication with no spider must set retrieval_frequency=NEVER: %s", source_id)
+                # If a publication is not retrieved and has a spider, manually test whether the spider works.
+                if not retrieved and available:
+                    lapsed.append(source_id)
 
-        logger.warning("Test lapsed spiders: scrapy crawlall --sample 1 --loglevel=ERROR %s", " ".join(lapsed))
+            logger.warning("Test lapsed spiders: scrapy crawlall --sample 1 --loglevel=ERROR %s", " ".join(lapsed))
 
         if has_output:
             sys.exit(1)
