@@ -14,6 +14,8 @@ class Moldova(BaseSpider):
       different ``ocid`` value (as expected), but these actually represent the same contracting process (not expected).
       To fix this, we reformat the record package as a release package, using each record's ``compiledRelease`` as an
       individual release, and replacing the release's ``ocid`` value with the OCID from the URL.
+
+      The compliant OCDS endpoint ``http://public.eprocurement.systems/ocds/tenders/{ocid}`` no longer works
     Spider arguments
       from_date
         Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
