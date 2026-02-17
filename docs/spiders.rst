@@ -832,12 +832,12 @@ Mexico
 Moldova
 ~~~~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.moldova.Moldova
+.. autoclass:: kingfisher_scrapy.spiders.moldova_multi_record.MoldovaMultiRecord
    :no-members:
 
 .. code-block:: bash
 
-   scrapy crawl moldova
+   scrapy crawl moldova_multi_record
 
 Nepal
 ~~~~~

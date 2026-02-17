@@ -5,7 +5,7 @@ from kingfisher_scrapy.exceptions import RetryableError
 from kingfisher_scrapy.util import components, handle_http_error, replace_parameters
 
 
-class Moldova(BaseSpider):
+class MoldovaMultiRecord(BaseSpider):
     """
     Domain
       MTender
@@ -21,7 +21,7 @@ class Moldova(BaseSpider):
         Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
     """
 
-    name = "moldova"
+    name = "moldova_multi_record"
 
     # BaseSpider
     date_format = "datetime"
