@@ -21,7 +21,7 @@ certifi==2024.7.4
     # via
     #   requests
     #   sentry-sdk
-cffi==1.17.1
+cffi==2.0.0
     # via
     #   cryptography
     #   persistent
@@ -31,7 +31,7 @@ constantly==15.1.0
     # via twisted
 contextlib2==0.6.0.post1
     # via schema
-cryptography==44.0.1
+cryptography==46.0.5
     # via
     #   pyopenssl
     #   scrapy
@@ -143,7 +143,7 @@ pydantic-core==2.41.5
     # via pydantic
 pydispatcher==2.0.7
     # via scrapy
-pyopenssl==24.3.0
+pyopenssl==25.3.0
     # via scrapy
 pytz==2020.1
     # via flattentool
@@ -211,9 +211,11 @@ twisted==24.7.0rc1
 typing-extensions==4.15.0
     # via
     #   cattrs
+    #   cryptography
     #   exceptiongroup
     #   pydantic
     #   pydantic-core
+    #   pyopenssl
     #   twisted
     #   typing-inspection
 typing-inspection==0.4.2

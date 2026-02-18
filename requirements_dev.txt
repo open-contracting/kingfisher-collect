@@ -33,7 +33,7 @@ certifi==2024.7.4
     #   -r requirements.txt
     #   requests
     #   sentry-sdk
-cffi==1.17.1
+cffi==2.0.0
     # via
     #   -r requirements.txt
     #   cryptography
@@ -52,7 +52,7 @@ contextlib2==0.6.0.post1
     #   schema
 coverage==7.6.1
     # via -r requirements_dev.in
-cryptography==44.0.1
+cryptography==46.0.5
     # via
     #   -r requirements.txt
     #   pyopenssl
@@ -230,7 +230,7 @@ pydispatcher==2.0.7
     # via
     #   -r requirements.txt
     #   scrapy
-pyopenssl==24.3.0
+pyopenssl==25.3.0
     # via
     #   -r requirements.txt
     #   scrapy
@@ -332,9 +332,11 @@ typing-extensions==4.15.0
     # via
     #   -r requirements.txt
     #   cattrs
+    #   cryptography
     #   exceptiongroup
     #   pydantic
     #   pydantic-core
+    #   pyopenssl
     #   twisted
     #   typing-inspection
 typing-inspection==0.4.2
