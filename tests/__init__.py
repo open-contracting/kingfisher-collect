@@ -4,9 +4,11 @@ import os
 from scrapy import Request
 from scrapy.crawler import CrawlerRunner
 from scrapy.http import TextResponse
+from scrapy.statscollectors import MemoryStatsCollector
 from scrapy.utils.test import get_reactor_settings
 
 from kingfisher_scrapy.base_spiders import BaseSpider
+from kingfisher_scrapy.log_formatter import LogFormatter
 
 FILE_LENGTH = 5
 FILE_ITEM_LENGTH = FILE_LENGTH + 1
@@ -35,11 +37,10 @@ def spider_with_crawler(spider_class=BaseSpider, *, settings=None, **kwargs):
     runner = CrawlerRunner({**get_reactor_settings(), **settings})
     crawler = runner.create_crawler(spider_class)
     # Before calling `self._apply_settings()`, Crawler.crawl sets `self.spider = self._create_spider(*args, **kwargs)`,
-    # which returns `self.spidercls.from_crawler(self, *args, **kwargs)`.
+    # which returns `self.spidercls.from_crawler(self, *args, **kwargs)`. Add a subset of `self._apply_settings()`.
     crawler.spider = crawler.spidercls.from_crawler(crawler, **kwargs)
-    crawler._apply_settings()  # noqa: SLF001
-    # Crawler.crawl sets `self.engine = self._create_engine()`.
-    crawler.engine = crawler._create_engine()  # noqa: SLF001
+    crawler.stats = MemoryStatsCollector(crawler)
+    crawler.logformatter = LogFormatter.from_crawler(crawler)
 
     # CoreStats.spider_opened
     start_time = datetime.datetime(2001, 2, 3, 4, 5, 6)

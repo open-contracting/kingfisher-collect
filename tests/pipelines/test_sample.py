@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 from scrapy.exceptions import DropItem
@@ -24,7 +24,7 @@ def test_process_file_without_sample():
 def test_process_file_with_sample():
     spider = spider_with_crawler(sample=1)
     pipeline = Sample(spider.crawler)
-    pipeline.crawler.engine.close_spider_async = AsyncMock()
+    pipeline.crawler.engine = Mock(close_spider_async=AsyncMock())
     item = File(
         file_name="test",
         url="http://test.com",
