@@ -27,6 +27,7 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
     default_from_date = "2021-01-01T00:00:00"
     max_attempts = 5
     # The API documentation describes 429 and 503, but 504 has also been observed.
+    # 504 responses do not set the Retry-After header.
     # https://www.find-tender.service.gov.uk/apidocumentation/1.0/GET-ocdsReleasePackages
     retry_http_codes = [429, 503, 504]
 
@@ -51,6 +52,3 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
         # https://github.com/open-contracting/kingfisher-process/issues/323
         response = response.replace(body=response.body.replace(b"1e9999", b"9999999"))
         yield from super().parse(response)
-
-    def get_retry_wait_time(self, response):
-        return 30

@@ -275,7 +275,7 @@ class BaseSpider(scrapy.Spider):
 
     def get_retry_wait_time(self, response):
         """Return the number of seconds to wait before retrying a URL."""
-        return int(response.headers["Retry-After"])
+        return int(response.headers.get("Retry-After", 30))
 
     def build_request(self, url, formatter, **kwargs):
         """
