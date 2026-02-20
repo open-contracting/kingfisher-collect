@@ -22,8 +22,6 @@ class BrazilCompras(LinksSpider):
     custom_settings = {
         # Reduce the number of concurrent requests to respect undocumented limit (100/min).
         "CONCURRENT_REQUESTS": 1,
-        # Don't let Scrapy handle HTTP 429.
-        "RETRY_HTTP_CODES": [],
     }
 
     # BaseSpider
@@ -31,7 +29,6 @@ class BrazilCompras(LinksSpider):
     # This is the first date for which there's data for any buyers.
     default_from_date = "2021-08-10"
     max_attempts = 5
-    retry_http_codes = [429]
 
     # SimpleSpider
     data_type = "release_package"

@@ -21,15 +21,12 @@ class EcuadorSERCOPAPI(IndexSpider, PeriodicSpider):
     custom_settings = {
         # Reduce the number of concurrent requests to avoid multiple failures.
         "CONCURRENT_REQUESTS": 2,
-        # Don't let Scrapy handle HTTP 429.
-        "RETRY_HTTP_CODES": [],
     }
 
     # BaseSpider
     date_format = "year"
     default_from_date = "2015"
     max_attempts = 5
-    retry_http_codes = [429]
 
     # SimpleSpider
     data_type = "release_package"

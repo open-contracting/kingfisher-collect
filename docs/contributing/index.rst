@@ -113,7 +113,7 @@ Since there are many class attributes that control a spider's behavior, please p
       unflatten_args = {}
       ocds_version = '1.0'
       max_attempts = 5
-      retry_http_codes = [429]
+      retry_http_codes = [403]
       skip_pluck = 'A reason'
 
       # SimpleSpider

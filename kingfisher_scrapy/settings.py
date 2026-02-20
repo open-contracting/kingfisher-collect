@@ -124,6 +124,8 @@ HTTPERROR_ALLOW_ALL = True  # default False
 
 # https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpproxy-enabled
 HTTPPROXY_ENABLED = False  # default True
+# https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#retry-http-codes
+RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408]  # handle 429 separately
 
 # https://docs.scrapy.org/en/latest/topics/settings.html#log-formatter
 LOG_FORMATTER = "kingfisher_scrapy.log_formatter.LogFormatter"

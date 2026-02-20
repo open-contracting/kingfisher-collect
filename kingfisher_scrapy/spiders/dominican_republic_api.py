@@ -18,17 +18,12 @@ class DominicanRepublicAPI(IndexSpider):
     """
 
     name = "dominican_republic_api"
-    custom_settings = {
-        # Don't let Scrapy handle HTTP 429. The API sets the Retry-After header.
-        "RETRY_HTTP_CODES": [],
-    }
 
     # BaseSpider
     default_from_date = "2015-01-01"
     date_format = "date"
     date_required = True
     max_attempts = 3
-    retry_http_codes = [429]
 
     # SimpleSpider
     data_type = "release_package"

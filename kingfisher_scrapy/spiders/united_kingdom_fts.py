@@ -26,10 +26,8 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
     date_format = "datetime"
     default_from_date = "2021-01-01T00:00:00"
     max_attempts = 5
-    # The API documentation describes 429 and 503, but 504 has also been observed.
-    # 504 responses do not set the Retry-After header.
     # https://www.find-tender.service.gov.uk/apidocumentation/1.0/GET-ocdsReleasePackages
-    retry_http_codes = [429, 503, 504]
+    retry_http_codes = [503]
 
     # SimpleSpider
     data_type = "release_package"

@@ -115,7 +115,8 @@ def handle_http_error(decorated):
 
         if self.is_http_success(response):
             yield from decorated(self, response, **kwargs)
-        elif self.is_http_retryable(response) and attempts < self.max_attempts:
+        # Scrapy doesn't honor the Retry-After header. https://github.com/scrapy/scrapy/issues/3849
+        elif (response.status == 429 or self.is_http_retryable(response)) and attempts < self.max_attempts:
             wait_time = self.get_retry_wait_time(response)
             request = response.request.copy()
             request.meta["retries"] = attempts
