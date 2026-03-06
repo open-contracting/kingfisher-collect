@@ -18,7 +18,10 @@ jobs:
           cache-dependency-path: '**/requirements*.txt'
       - name: Install postgresql (macOS)
         if: matrix.os == 'macos-latest'
-        run: brew install postgresql
+        shell: bash
+        run: |
+          brew install postgresql
+          echo "$(brew --prefix postgresql)/bin" >> $GITHUB_PATH
       - run: python -m pip install -r requirements_dev.txt
       - env:
           CI_SKIP: true
