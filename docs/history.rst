@@ -97,6 +97,14 @@ Broken publications
 
 Spiders for publications that became broken, since April 2024:
 
+-  2026-03-06:
+
+   - `bolivia_agetic <https://github.com/open-contracting/kingfisher-collect/pull/1244>`__ (returns 403)
+   - `india_assam <https://github.com/open-contracting/kingfisher-collect/pull/1244>`__ (returns 403)
+   - `nepal <https://github.com/open-contracting/kingfisher-collect/pull/1244>`__ (times out)
+   - `nigeria_cross_river_state_* <https://github.com/open-contracting/kingfisher-collect/pull/1244>`__ (returns 500)
+   - `nigeria_oyo_state <https://github.com/open-contracting/kingfisher-collect/pull/1244>`__ (returns 500)
+
 -  2025-22-14: `argentina_buenos_aires <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__ (returns incomplete JSON)
 -  2025-04-14: `moldova <https://github.com/open-contracting/kingfisher-collect/pull/1159>`__ (returns upstream errors)
 -  2025-01-02: `pakistan_ppra_api, pakistan_ppra_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1137>`__ (requires paginating `HTML <https://ppra.org.pk/opendata.asp>`__)
