@@ -1,17 +1,15 @@
-from kingfisher_scrapy.base_spiders import SimpleSpider
+from kingfisher_scrapy.base_spiders import CompressedFileSpider
 from kingfisher_scrapy.util import components
 
-# curl -I https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-17-18.json
 
-
-class CanadaBuyandsell(SimpleSpider):
+class CanadaBuyandsell(CompressedFileSpider):
     """
     Domain
       Public Works and Government Services Canada
     Caveats
       The dataset is a pilot that ended in 2017.
     API documentation
-      https://buyandsell.gc.ca/procurement-data/open-contracting-data-standard-pilot/download-ocds-pilot-data
+      https://open.canada.ca/data/en/dataset/60f22648-c173-446f-aa8a-4929d75d63e3
     """
 
     name = "canada_buyandsell"
@@ -24,12 +22,7 @@ class CanadaBuyandsell(SimpleSpider):
 
     async def start(self):
         urls = [
-            "https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-16-17.json",
-            "https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-15-16.json",
-            "https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-14-15.json",
-            "https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-13-14.json",
-            "https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-12-13.json",
-            # Can retrieve as early as https://buyandsell.gc.ca/cds/public/ocds/tpsgc-pwgsc_ocds_EF-FY-95-96.json
+            "https://donnees-data.tpsgc-pwgsc.gc.ca/ba2/pilot-oc-pilote-co/releases.zip",
         ]
 
         for url in urls:
