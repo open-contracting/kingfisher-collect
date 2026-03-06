@@ -13,7 +13,7 @@ Spiders for publications that were available but stopped publishing, since Janua
    .. https://apiocds.colombiacompra.gov.co/apiCCE-2.0/
    .. https://www.colombiacompra.gov.co/transparencia/datos-json
 
--  2025-12-14: `australia_new_south_wales, chile_public_works_bulk, italy_ministry_of_infrastructure_and_transport, mexico_administracion_publica_federal_api, mexico_administracion_publica_federal_bulk, mexico_guanajuato_iacip, netherlands <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__
+-  2025-12-14: `australia_new_south_wales, chile_public_works_bulk, italy_ministry_of_infrastructure_and_transport, mexico_administracion_publica_federal_api, mexico_administracion_publica_federal_bulk, mexico_guanajuato_iacip <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__
 
    .. https://www.tenders.nsw.gov.au/?event=public.api.tender.search
    .. https://obrapublica.cl/download/ocds_descargamasiva.zip
