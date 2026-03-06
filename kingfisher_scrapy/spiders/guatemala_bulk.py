@@ -24,6 +24,7 @@ class GuatemalaBulk(CompressedFileSpider):
     """
 
     name = "guatemala_bulk"
+    retry_http_codes = [400]
 
     # BaseSpider
     date_format = "year-month"

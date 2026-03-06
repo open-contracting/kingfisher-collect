@@ -10,6 +10,7 @@ class NigeriaAnambraState(NigeriaBonMaximusBase):
     """
 
     name = "nigeria_anambra_state"
+    retry_http_codes = [403]
 
     # BaseSpider
     validate_json = True  # https://github.com/open-contracting/kingfisher-collect/issues/957
