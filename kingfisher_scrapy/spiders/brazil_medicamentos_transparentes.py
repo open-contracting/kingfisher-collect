@@ -35,5 +35,6 @@ class BrazilMedicamentosTransparentes(CompressedFileSpider, IndexSpider):
     def parse_page(self, response):
         for item in response.json()["response"]["records"]:
             for file in item["files"]:
-                url = file["url"]
-                yield scrapy.Request(url, meta={"file_name": components(-1)(url)})
+                if file["type"] == "json":
+                    url = file["url"]
+                    yield scrapy.Request(url, meta={"file_name": components(-1)(url)})
