@@ -21,9 +21,6 @@ class CanadaBuyandsell(CompressedFileSpider):
     data_type = "release_package"
 
     async def start(self):
-        urls = [
-            "https://donnees-data.tpsgc-pwgsc.gc.ca/ba2/pilot-oc-pilote-co/releases.zip",
-        ]
-
-        for url in urls:
-            yield self.build_request(url, formatter=components(-1))
+        yield self.build_request(
+            "https://donnees-data.tpsgc-pwgsc.gc.ca/ba2/pilot-oc-pilote-co/releases.zip", formatter=components(-1)
+        )
