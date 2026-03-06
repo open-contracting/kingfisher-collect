@@ -39,9 +39,14 @@ class UgandaReleases(PeriodicSpider):
     def parse(self, response):
         if not self.is_http_success(response):
             # https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets generates URLs with JavaScript. We increment
-            # the 'code' parameter until it 404s. As such, we can't disambiguate expected from unespected 404s.
+            # the 'code' parameter until it 404s. As such, we can't disambiguate expected from unexpected 404s.
             if response.status != 404:
                 self.log_error_from_response(response)
+            return
+
+        # The API can return error messages with HTTP 200 status:
+        # // {"success":false,"message":"Error, Resource Not Found","error":true}
+        if response.text.startswith("//"):
             return
 
         yield from super().parse(response)
