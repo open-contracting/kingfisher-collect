@@ -5,6 +5,7 @@ from unittest.mock import Mock
 
 import psycopg2
 import pytest
+from ocdskit.exceptions import MergeErrorWarning
 from ocdsmerge.exceptions import DuplicateIdValueWarning
 from scrapy.exceptions import NotConfigured
 
@@ -197,10 +198,71 @@ def test_spider_closed_warnings(cursor, caplog, tmpdir):
         f"Writing the JSON data to the {tmpdir}/test/20210525_000000/data.jsonl JSONL file",
         "Replacing the JSON data in the test table (3 rows)",
     ]
-
     assert [str(record.message) for record in records] == [
         ("x: Multiple objects have the `id` value 'x' in the `parties` array"),
         ("z: Multiple objects have the `id` value 'z' in the `parties` array"),
+    ]
+
+
+@pytest.mark.skipif(SKIP_TEST_IF, reason="KINGFISHER_COLLECT_DATABASE_URL must be set")
+def test_spider_closed_merge_error_warnings(cursor, caplog, tmpdir):
+    spider = spider_with_crawler(
+        crawl_time="2021-05-25T00:00:00",
+        settings={
+            "DATABASE_URL": DATABASE_URL,
+            "FILES_STORE": tmpdir,
+        },
+    )
+    spider.data_type = "release_package"
+    spider.database_store_compile_releases = True
+
+    extension = DatabaseStore.from_crawler(spider.crawler)
+
+    files_store_extension = FilesStore.from_crawler(spider.crawler)
+
+    # Create releases with inconsistent types for the same path, triggering MergeErrorWarning.
+    response = Mock()
+    response.body = b'{"releases":[{"ocid":"x","id":"1","date":"2021-05-26T10:00:00Z","tender":{"value":100}}]}'
+    response.request = Mock()
+    response.request.url = "https://example.com/remote.json"
+    response.request.meta = {"file_name": "file.json"}
+    item = spider.build_file_from_response(response, file_name="file-x1.json", data_type="release_package")
+    files_store_extension.item_scraped(item, spider)
+
+    response.body = b'{"releases":[{"ocid":"x","id":"2","date":"2021-05-27T10:00:00Z","tender":{"value":{"x":200}}}]}'
+    item = spider.build_file_from_response(response, file_name="file-x2.json", data_type="release_package")
+    files_store_extension.item_scraped(item, spider)
+
+    response.body = b'{"releases":[{"ocid":"y","id":"1","date":"2021-05-26T10:00:00Z","tender":{"value":"text"}}]}'
+    item = spider.build_file_from_response(response, file_name="file-y1.json", data_type="release_package")
+    files_store_extension.item_scraped(item, spider)
+
+    response.body = b'{"releases":[{"ocid":"y","id":"2","date":"2021-05-27T10:00:00Z","tender":{"value":{"x":300}}}]}'
+    item = spider.build_file_from_response(response, file_name="file-y2.json", data_type="release_package")
+    files_store_extension.item_scraped(item, spider)
+
+    extension.spider_opened(spider)
+
+    caplog.clear()
+    with pytest.warns(MergeErrorWarning) as records, caplog.at_level(logging.INFO):
+        extension.spider_closed(spider, "finished")
+
+    cursor.execute("SELECT * FROM test")
+
+    assert cursor.fetchall() == []
+    assert spider.from_date is None
+    assert [(record.levelno, record.message) for record in caplog.records] == [
+        (logging.INFO, f"Reading the {tmpdir}/test/20210525_000000 crawl directory with the empty prefix"),
+        (logging.INFO, "Creating generator of compiled releases"),
+        (logging.INFO, f"Writing the JSON data to the {tmpdir}/test/20210525_000000/data.jsonl JSONL file"),
+        (logging.ERROR, "2 OCIDs can't be merged due to structural errors"),
+        (logging.INFO, "Replacing the JSON data in the test table (0 rows)"),
+    ]
+    assert [str(record.message) for record in records] == [
+        "x: An earlier release had the literal 100 for /tender/value, "
+        "but the current release has an object with a 'x' key",
+        "y: An earlier release had the literal 'text' for /tender/value, "
+        "but the current release has an object with a 'x' key",
     ]
 
 
