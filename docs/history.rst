@@ -19,8 +19,7 @@ Spiders for publications that were available but stopped publishing, since Janua
       "Notez que l’API Vue sur les contrats sera désactivée à compter du premier janvier 2026."
 
 -  2026-01-28: `openopps <https://github.com/open-contracting/kingfisher-collect/commit/7932ee8>`__
-
--  2025-12-14: `australia_new_south_wales, chile_public_works_bulk, italy_ministry_of_infrastructure_and_transport, mexico_administracion_publica_federal_api, mexico_administracion_publica_federal_bulk, mexico_guanajuato_iacip, netherlands <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__
+-  2025-12-14: `australia_new_south_wales, chile_public_works_bulk, italy_ministry_of_infrastructure_and_transport, mexico_administracion_publica_federal_api, mexico_administracion_publica_federal_bulk, mexico_guanajuato_iacip <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__
 
    .. https://www.tenders.nsw.gov.au/?event=public.api.tender.search
    .. https://obrapublica.cl/download/ocds_descargamasiva.zip
@@ -104,6 +103,7 @@ Broken publications
 
 Spiders for publications that became broken, since April 2024:
 
+-  `2026-03-06 <https://github.com/open-contracting/kingfisher-collect/pull/1244>`__: bolivia_agetic (returns HTTP 403), india_assam (403), nepal (timeout), nigeria_cross_river_state_* (500), nigeria_oyo_state (500)
 -  2025-22-14: `argentina_buenos_aires <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__ (returns incomplete JSON)
 -  2025-04-14: `moldova <https://github.com/open-contracting/kingfisher-collect/pull/1159>`__ (returns upstream errors)
 -  2025-01-02: `pakistan_ppra_api, pakistan_ppra_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1137>`__ (requires paginating `HTML <https://ppra.org.pk/opendata.asp>`__)

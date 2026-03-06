@@ -193,16 +193,6 @@ Belgium
 
    scrapy crawl belgium_digiwhist
 
-Bolivia
-~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.bolivia_agetic.BoliviaAgetic
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl bolivia_agetic
-
 Brazil
 ~~~~~~
 
@@ -579,13 +569,6 @@ Iceland
 India
 ~~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.india_assam.IndiaAssam
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl india_assam
-
 .. autoclass:: kingfisher_scrapy.spiders.india_assam_civic_data_lab.IndiaAssamCivicDataLab
    :no-members:
 
@@ -842,13 +825,6 @@ Moldova
 Nepal
 ~~~~~
 
-.. autoclass:: kingfisher_scrapy.spiders.nepal.Nepal
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nepal
-
 .. autoclass:: kingfisher_scrapy.spiders.nepal_dhangadhi.NepalDhangadhi
    :no-members:
 
@@ -883,20 +859,6 @@ Nigeria
 
    scrapy crawl nigeria_anambra_state
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_cross_river_state_records.NigeriaCrossRiverStateRecords
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_cross_river_state_records
-
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_cross_river_state_releases.NigeriaCrossRiverStateReleases
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_cross_river_state_releases
-
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_ebonyi_state.NigeriaEbonyiState
    :no-members:
 
@@ -924,13 +886,6 @@ Nigeria
 .. code-block:: bash
 
    scrapy crawl nigeria_osun_state
-
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_oyo_state.NigeriaOyoState
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_oyo_state
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_plateau_state.NigeriaPlateauState
    :no-members:
