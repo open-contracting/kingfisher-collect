@@ -13,6 +13,13 @@ Spiders for publications that were available but stopped publishing, since Janua
    .. https://apiocds.colombiacompra.gov.co/apiCCE-2.0/
    .. https://www.colombiacompra.gov.co/transparencia/datos-json
 
+-  2026-02-11: `canada_montreal <https://github.com/open-contracting/kingfisher-collect/commit/455c6cb>`__, because the API was deactivated.
+
+   .. https://donnees.montreal.ca/dataset/contrats-et-subventions-api
+      "Notez que l’API Vue sur les contrats sera désactivée à compter du premier janvier 2026."
+
+-  2026-01-28: `openopps <https://github.com/open-contracting/kingfisher-collect/commit/7932ee8>`__
+
 -  2025-12-14: `australia_new_south_wales, chile_public_works_bulk, italy_ministry_of_infrastructure_and_transport, mexico_administracion_publica_federal_api, mexico_administracion_publica_federal_bulk, mexico_guanajuato_iacip, netherlands <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__
 
    .. https://www.tenders.nsw.gov.au/?event=public.api.tender.search
