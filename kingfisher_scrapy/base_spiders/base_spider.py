@@ -195,7 +195,8 @@ class BaseSpider(scrapy.Spider):
     def update_settings(cls, settings):
         if cls.custom_settings is None:
             cls.custom_settings = {}
-        cls.custom_settings["HTTPPROXY_ENABLED"] = cls.name in settings.getlist("PROXY_SPIDERS")
+        if not cls.custom_settings.get("HTTPPROXY_ENABLED"):
+            cls.custom_settings["HTTPPROXY_ENABLED"] = cls.name in settings.getlist("PROXY_SPIDERS")
         super().update_settings(settings)
 
     @classmethod

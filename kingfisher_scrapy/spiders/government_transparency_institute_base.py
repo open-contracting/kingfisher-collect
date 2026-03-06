@@ -12,6 +12,7 @@ class GovernmentTransparencyInstituteBase(CompressedFileSpider):
 
     custom_settings = {
         "USER_AGENT": BROWSER_USER_AGENT,  # to avoid HTTP 410
+        "HTTPPROXY_ENABLED": True,
     }
 
     # BaseSpider
