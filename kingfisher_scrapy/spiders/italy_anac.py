@@ -10,6 +10,13 @@ class ItalyANAC(CKANSpider, BigFileSpider):
       Autorità Nazionale Anticorruzione (ANAC)
     Caveats
       If the OCID is missing, the spider derives the ``ocid`` field from the ``id`` field.
+    Spider arguments
+      from_date
+        Download only data from this month onward (YYYY-MM format).
+        If ``until_date`` is provided, defaults to '2018-01'.
+      until_date
+        Download only data until this month (YYYY-MM format).
+        If ``from_date`` is provided, defaults to the current month.
     API documentation
       https://dati.anticorruzione.it/opendata/about
     Bulk download documentation

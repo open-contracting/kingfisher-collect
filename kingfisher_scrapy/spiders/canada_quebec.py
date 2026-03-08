@@ -8,6 +8,13 @@ class CanadaQuebec(CKANSpider, SimpleSpider):
     """
     Domain
       Secrétariat du Conseil du trésor
+    Spider arguments
+      from_date
+        Download only data from this date onward (YYYY-MM-DD format).
+        If ``until_date`` is provided, defaults to '2021-03-01'.
+      until_date
+        Download only data until this date (YYYY-MM-DD format).
+        If ``from_date`` is provided, defaults to today.
     Bulk download documentation
       https://www.donneesquebec.ca/recherche/dataset/systeme-electronique-dappel-doffres-seao
     """
