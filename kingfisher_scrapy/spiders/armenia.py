@@ -108,5 +108,5 @@ class Armenia(LinksSpider):
 
     def _build_request(self, url, callback, meta):
         meta["dont_retry"] = True
-        # We need to set `formatter` in case we want to re-use the response to build a file or file error.
+        # We need to set `formatter` in case we want to re-use the response to build a file.
         return self.build_request(url, formatter=parameters("offset"), dont_filter=True, meta=meta, callback=callback)
