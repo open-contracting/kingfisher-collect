@@ -9,10 +9,12 @@ from kingfisher_scrapy.base_spiders.big_file_spider import BigFileSpider
 from kingfisher_scrapy.base_spiders.index_spider import IndexSpider
 from kingfisher_scrapy.base_spiders.links_spider import LinksSpider
 from kingfisher_scrapy.base_spiders.periodic_spider import PeriodicSpider
+from kingfisher_scrapy.base_spiders.ckan_spider import CKANSpider
 
 __all__ = (
     "BaseSpider",
     "BigFileSpider",
+    "CKANSpider",
     "CompressedFileSpider",
     "IndexSpider",
     "LinksSpider",

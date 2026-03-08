@@ -1,12 +1,10 @@
 import datetime
 
-import scrapy
-
-from kingfisher_scrapy.base_spiders import CompressedFileSpider
-from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components, handle_http_error
+from kingfisher_scrapy.base_spiders import CKANSpider, CompressedFileSpider
+from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components
 
 
-class UruguayHistorical(CompressedFileSpider):
+class UruguayHistorical(CKANSpider, CompressedFileSpider):
     """
     Domain
       Agencia Reguladora de Compras Estatales (ARCE)
@@ -34,22 +32,12 @@ class UruguayHistorical(CompressedFileSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    async def start(self):
-        # A CKAN API JSON response.
-        yield scrapy.Request(
-            "https://catalogodatos.gub.uy/api/3/action/package_show?id=arce-datos-historicos-de-compras",
-            callback=self.parse_list,
-        )
+    # CKANSpider
+    ckan_api_url = "https://catalogodatos.gub.uy"
+    ckan_package_id = "arce-datos-historicos-de-compras"
+    # e.g. https://catalogodatos.gub.uy/dataset/44d3-b09c/resource/1e39-453d/download/ocds-2002.zip
+    formatter = components(-1)
 
-    @handle_http_error
-    def parse_list(self, response):
-        for resource in response.json()["result"]["resources"]:
-            if resource["format"].upper() == "JSON":
-                url = resource["url"]
-                if self.from_date and self.until_date:
-                    # URL looks like
-                    # https://catalogodatos.gub.uy/dataset/44d3-b09c/resource/1e39-453d/download/ocds-2002.zip
-                    date = datetime.datetime(int(url.split("-")[-1].split(".")[0]), 1, 1, tzinfo=datetime.timezone.utc)
-                    if not (self.from_date <= date <= self.until_date):
-                        continue
-                yield self.build_request(url, formatter=components(-1))  # filename containing year
+    # CKANSpider
+    def get_resource_date(self, resource):
+        return datetime.datetime(int(self.formatter(resource["url"])[5:9]), 1, 1, tzinfo=datetime.timezone.utc)

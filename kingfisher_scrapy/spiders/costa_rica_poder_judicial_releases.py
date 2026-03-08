@@ -1,10 +1,8 @@
-import scrapy
-
-from kingfisher_scrapy.base_spiders import CompressedFileSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.base_spiders import CKANSpider, CompressedFileSpider
+from kingfisher_scrapy.util import components
 
 
-class CostaRicaPoderJudicialReleases(CompressedFileSpider):
+class CostaRicaPoderJudicialReleases(CKANSpider, CompressedFileSpider):
     """
     Domain
       Poder Judicial de Costa Rica
@@ -24,15 +22,9 @@ class CostaRicaPoderJudicialReleases(CompressedFileSpider):
     # The ZIP file contains release packages and record packages. The filenames of release packages contain "-".
     file_name_must_contain = "-"
 
-    async def start(self):
-        yield scrapy.Request(
-            "https://ckanpj.azurewebsites.net/api/3/action/package_show?id=estandar-de-datos-de-contrataciones-abiertas-ocds",
-            callback=self.parse_list,
-        )
-
-    @handle_http_error
-    def parse_list(self, response):
-        for resource in response.json()["result"]["resources"]:
-            if resource["format"].upper() == "ZIP":
-                # Presently, only one URL matches.
-                yield self.build_request(resource["url"], formatter=components(-1))
+    # CKANSpider
+    ckan_api_url = "https://ckanpj.azurewebsites.net"
+    ckan_package_id = "estandar-de-datos-de-contrataciones-abiertas-ocds"
+    ckan_resource_format = "ZIP"
+    # https://pjcrdatosabiertos.blob.core.windows.net/datosabiertos/OpenContracting/ocds-fnha3a-FULL.zip
+    formatter = components(-1)

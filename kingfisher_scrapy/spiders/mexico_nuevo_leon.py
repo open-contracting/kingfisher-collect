@@ -1,12 +1,8 @@
-import datetime
-
-import scrapy
-
-from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import BROWSER_USER_AGENT, components, handle_http_error
+from kingfisher_scrapy.base_spiders import CKANSpider, SimpleSpider
+from kingfisher_scrapy.util import BROWSER_USER_AGENT, components
 
 
-class MexicoNuevoLeon(SimpleSpider):
+class MexicoNuevoLeon(CKANSpider, SimpleSpider):
     """
     Domain
       Nuevo León - Dirección General de Adquisiciones y Servicios - Secretaría de Administración
@@ -32,22 +28,10 @@ class MexicoNuevoLeon(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    async def start(self):
-        # A CKAN API JSON response.
-        yield scrapy.Request(
-            "https://catalogodatos.nl.gob.mx/api/3/action/package_show?id=contrataciones-abiertas-direccion-general-de-adquisiciones-y-servicios",
-            callback=self.parse_list,
-        )
-
-    @handle_http_error
-    def parse_list(self, response):
-        for resource in response.json()["result"]["resources"]:
-            # Some files don't include an extension file, so we need to check the file name instead.
-            if resource["name"].upper().startswith("JSON-OCDS"):
-                if self.from_date and self.until_date:
-                    date = datetime.datetime.strptime(resource["created"], "%Y-%m-%dT%H:%M:%S.%f").replace(
-                        tzinfo=self.from_date.tzinfo
-                    )
-                    if not (self.from_date <= date <= self.until_date):
-                        continue
-                yield self.build_request(resource["url"], formatter=components(-1))
+    # CKANSpider
+    ckan_api_url = "https://catalogodatos.nl.gob.mx"
+    ckan_package_id = "contrataciones-abiertas-direccion-general-de-adquisiciones-y-servicios"
+    # Format can be "JSON" or "URL".
+    ckan_resource_format = None
+    # e.g. https://api-ocds.nl.gob.mx/api/releases/673d316c7e60f2c8230bcf15
+    formatter = components(-1)

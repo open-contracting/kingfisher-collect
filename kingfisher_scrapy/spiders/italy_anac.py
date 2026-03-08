@@ -1,10 +1,10 @@
-import scrapy
+import datetime
 
-from kingfisher_scrapy.base_spiders import BigFileSpider
-from kingfisher_scrapy.util import BROWSER_USER_AGENT, MAX_DOWNLOAD_TIMEOUT, components, handle_http_error
+from kingfisher_scrapy.base_spiders import BigFileSpider, CKANSpider
+from kingfisher_scrapy.util import BROWSER_USER_AGENT, MAX_DOWNLOAD_TIMEOUT, components
 
 
-class ItalyANAC(BigFileSpider):
+class ItalyANAC(CKANSpider, BigFileSpider):
     """
     Domain
       Autorità Nazionale Anticorruzione (ANAC)
@@ -22,22 +22,25 @@ class ItalyANAC(BigFileSpider):
         "USER_AGENT": BROWSER_USER_AGENT,  # Otherwise, API returns "Request Rejected" HTML
     }
 
+    # BaseSpider
+    date_format = "year-month"
+    default_from_date = "2018-01"
+
     # SimpleSpider
     data_type = "release_package"
 
-    async def start(self):
-        yield scrapy.Request(
-            "https://dati.anticorruzione.it/opendata/api/3/action/package_search?q=ocds", callback=self.parse_list
-        )
-
-    @handle_http_error
-    def parse_list(self, response):
-        for result in response.json()["result"]["results"]:
-            for resource in result["resources"]:
-                if resource["format"].upper() == "JSON":
-                    yield self.build_request(resource["url"], formatter=components(-2))
+    # CKANSpider
+    ckan_api_url = "https://dati.anticorruzione.it/opendata"
+    ckan_search_query = "ocds"
+    # e.g. https://dati.anticorruzione.it/opendata/download/dataset/ocds/filesystem/bulk/2022/01.json
+    formatter = components(-2)
 
     # ResizePackageMiddleware
     def ocid_fallback(self, release):
         # Extract the ocid from the release id as a fallback, like ocds-hu01ve-7608611 from ocds-hu01ve-7608611-01.
         return "-".join(release["id"].split("-")[:3])
+
+    # CKANSpider
+    def get_resource_date(self, resource):
+        year, month = self.formatter(resource["url"]).split("-")
+        return datetime.datetime(int(year), int(month), 1, tzinfo=datetime.timezone.utc)

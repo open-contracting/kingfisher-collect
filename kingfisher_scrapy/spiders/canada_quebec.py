@@ -1,10 +1,10 @@
-import scrapy
+import datetime
 
-from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.base_spiders import CKANSpider, SimpleSpider
+from kingfisher_scrapy.util import components
 
 
-class CanadaQuebec(SimpleSpider):
+class CanadaQuebec(CKANSpider, SimpleSpider):
     """
     Domain
       Secrétariat du Conseil du trésor
@@ -14,19 +14,23 @@ class CanadaQuebec(SimpleSpider):
 
     name = "canada_quebec"
 
+    # BaseSpider
+    default_from_date = "2021-03-01"
+
     # SimpleSpider
     data_type = "release_package"
 
-    async def start(self):
-        # A CKAN API JSON response.
-        yield scrapy.Request(
-            "https://www.donneesquebec.ca/api/3/action/package_show?id=d23b2e02-085d-43e5-9e6e-e1d558ebfdd5",
-            callback=self.parse_list,
-        )
+    # CKANSpider
+    ckan_api_url = "https://www.donneesquebec.ca"
+    ckan_package_id = "d23b2e02-085d-43e5-9e6e-e1d558ebfdd5"
+    # The same filename can be generated on different dates, but containing different releases, like:
+    # https://www.donneesquebec.ca/recherche/dataset/d23b2e02-085d-43e5-9e6e-e1d558ebfdd5/resource/c6f8d624-b4e7-4a82-bae3-ca78f01bc017/download/hebdo_20251222_20251228.json
+    # https://www.donneesquebec.ca/recherche/dataset/d23b2e02-085d-43e5-9e6e-e1d558ebfdd5/resource/552da290-239f-4512-8f5d-4e0329e5d72d/download/hebdo_20251222_20251228.json
+    formatter = components(-3)
 
-    @handle_http_error
-    def parse_list(self, response):
-        for resource in response.json()["result"]["resources"]:
-            if resource["format"].upper() == "JSON":
-                # The same filename can be generated on different dates, but containing different releases.
-                yield self.build_request(resource["url"], formatter=components(-3))
+    # CKANSpider
+    def get_resource_date(self, resource):
+        # Basename is like "hebdo_20210401_20210411" or "mensuel_20210301_20210331".
+        return datetime.datetime.strptime(resource["url"].split("_")[-2], "%Y%m%d").replace(
+            tzinfo=datetime.timezone.utc
+        )

@@ -18,7 +18,7 @@ class France(BigFileSpider):
     data_type = "release_package"
 
     async def start(self):
-        # A CKAN API JSON response.
+        # A udata API JSON response.
         # Ministère de l'économie, des finances et de la relance
         # https://www.data.gouv.fr/fr/datasets/donnees-essentielles-de-la-commande-publique-fichiers-consolides/
         yield scrapy.Request(
