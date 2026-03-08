@@ -154,7 +154,7 @@ def test_from_crawler_with_database_url():
             1,
             500,
             [
-                ("CRITICAL", """Failed to create collection: status=500 response='{"collection_id": 1}' headers={}"""),
+                ("CRITICAL", """Failed to create collection: status=500 response='{"collection_id":1}' headers={}"""),
             ],
         ),
     ],
