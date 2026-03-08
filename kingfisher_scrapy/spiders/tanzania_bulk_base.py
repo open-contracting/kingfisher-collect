@@ -1,7 +1,8 @@
+import orjson
 import scrapy
 
 from kingfisher_scrapy.base_spiders import IndexSpider
-from kingfisher_scrapy.util import components, handle_http_error, json_dumps
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class TanzaniaBulkBase(IndexSpider):
@@ -57,7 +58,7 @@ class TanzaniaBulkBase(IndexSpider):
         return f"{self.url_prefix}/packages?withMetaData=true", {
             "method": "POST",
             "headers": {"Content-Type": "application/json"},
-            "body": json_dumps(self.payload),
+            "body": orjson.dumps(self.payload),
             "meta": {"file_name": f"page-{value}.json"},
         }
 

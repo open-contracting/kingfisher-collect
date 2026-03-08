@@ -1,7 +1,7 @@
 import csv
-import json
 import os
 
+import orjson
 from scrapy import signals
 from scrapy.exceptions import StopDownload
 
@@ -70,6 +70,6 @@ class Pluck:
     def _write(self, spider, value):
         with open(os.path.join(self.directory, util.pluck_filename(spider)), "a+") as f:
             if not isinstance(value, str):
-                value = json.dumps(value)
+                value = orjson.dumps(value, default=util.default).decode()
             writer = csv.writer(f, lineterminator="\n")
             writer.writerow([value, spider.name])

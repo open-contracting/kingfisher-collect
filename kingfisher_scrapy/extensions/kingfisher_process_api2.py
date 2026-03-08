@@ -1,8 +1,8 @@
 import asyncio
 import functools
-import json
 from urllib.parse import urljoin
 
+import orjson
 import requests
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
@@ -137,7 +137,7 @@ class KingfisherProcessAPI2:
             f"/api/collections/{self.collection_id}/close/",
             {
                 "reason": reason,
-                "stats": json.loads(json.dumps(self.stats.get_stats(), default=str)),  # for datetime objects
+                "stats": orjson.loads(orjson.dumps(self.stats.get_stats(), default=str)),  # for datetime objects
             },
         )
 

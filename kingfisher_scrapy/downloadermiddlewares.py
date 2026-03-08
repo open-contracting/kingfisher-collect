@@ -4,7 +4,10 @@ import datetime
 import logging
 
 from scrapy.exceptions import IgnoreRequest
+from scrapy.http import TextResponse
 from scrapy.utils.defer import deferred_from_coro
+
+from kingfisher_scrapy.responses import JSONResponse
 
 logger = logging.getLogger(__name__)
 
@@ -104,3 +107,12 @@ class DelayedRequestMiddleware:
         delay = request.meta.get("wait_time", None)
         if delay:
             await asyncio.sleep(delay)
+
+
+class OrjsonMiddleware:
+    """Downloader middleware that replaces the response class for faster JSON parsing."""
+
+    def process_response(self, request, response):
+        if isinstance(response, TextResponse):
+            return response.replace(cls=JSONResponse)
+        return response

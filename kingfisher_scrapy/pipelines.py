@@ -1,6 +1,5 @@
 # https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 # https://docs.scrapy.org/en/latest/topics/signals.html#item-signals
-import json
 import os
 import pkgutil
 import tempfile
@@ -8,6 +7,7 @@ import warnings
 
 import ijson
 import jsonpointer
+import orjson
 from flattentool import unflatten
 from flattentool.exceptions import FlattenToolWarning
 from scrapy.exceptions import DropItem, NotSupported
@@ -106,7 +106,7 @@ class Pluck(BasePipeline):
                     else:
                         raise
         else:  # self.spider.pluck_release_pointer
-            data = item.data if isinstance(item.data, dict) else json.loads(item.data)
+            data = item.data if isinstance(item.data, dict) else orjson.loads(item.data)
 
             if item.data_type.startswith("release"):
                 releases = data["releases"]
@@ -172,7 +172,7 @@ class Unflatten(BasePipeline):
                     input_name,
                     root_list_path="releases",
                     root_id="ocid",
-                    schema=json.loads(
+                    schema=orjson.loads(
                         pkgutil.get_data("kingfisher_scrapy", f"schema/{self.spider.ocds_version}.json")
                     ),
                     input_format=input_format,

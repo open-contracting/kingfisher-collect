@@ -59,6 +59,7 @@ SPIDER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.offsite.OffsiteMiddleware": None,
+    "kingfisher_scrapy.downloadermiddlewares.OrjsonMiddleware": 100,
     "kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware": 543,
 }
 

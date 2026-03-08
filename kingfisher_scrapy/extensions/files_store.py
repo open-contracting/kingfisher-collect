@@ -2,6 +2,7 @@ import math
 import os
 import zlib
 
+import orjson
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
@@ -92,10 +93,10 @@ class FilesStore:
         path = os.path.join(self.directory, path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
-        mode = "wb" if isinstance(data, bytes) else "w"
-
-        with open(path, mode) as f:
-            if isinstance(data, bytes | str):
-                f.write(data)  # NOTE: should be UTF-8
+        with open(path, "wb") as f:
+            if isinstance(data, bytes):
+                f.write(data)
+            elif isinstance(data, str):
+                f.write(data.encode())  # NOTE: should be UTF-8
             else:
-                util.json_dump(data, f)
+                f.write(orjson.dumps(data, default=util.default))

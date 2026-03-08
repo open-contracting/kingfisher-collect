@@ -1,4 +1,4 @@
-import json
+import orjson
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, PeriodicSpider
 from kingfisher_scrapy.items import File
@@ -51,7 +51,7 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
           "detail": "error"
         }
         """
-        parsed = json.loads(data)
+        parsed = orjson.loads(data)
 
         if parsed.get("status") != 200:
             self.logger.error(

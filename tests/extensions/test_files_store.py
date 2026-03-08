@@ -146,7 +146,7 @@ def test_item_scraped_with_build_file_from_response(sample, path, tmpdir):
         ("true", os.path.join("test_sample", "20010203_040506")),
     ],
 )
-@pytest.mark.parametrize("data", [b'{"key": "value"}', {"key": "value"}])
+@pytest.mark.parametrize("data", [b'{"key":"value"}', {"key": "value"}])
 @pytest.mark.parametrize(
     ("item", "subdirectory", "expected_file_name"),
     [
@@ -183,7 +183,7 @@ def test_item_scraped_with_file_and_file_item(sample, directory, data, item, sub
     extension.item_scraped(item, spider)
 
     with open(tmpdir.join(path)) as f:
-        assert f.read() == '{"key": "value"}'
+        assert f.read() == '{"key":"value"}'
 
     assert item.path == path
     assert item.file_name == original_file_name

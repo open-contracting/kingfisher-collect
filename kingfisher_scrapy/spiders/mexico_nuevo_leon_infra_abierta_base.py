@@ -1,4 +1,4 @@
-import json
+import orjson
 
 from kingfisher_scrapy.base_spiders import PeriodicSpider
 from kingfisher_scrapy.util import BROWSER_USER_AGENT, parameters
@@ -6,7 +6,7 @@ from kingfisher_scrapy.util import BROWSER_USER_AGENT, parameters
 
 def parser(value):
     # The 'anio' query string parameter looks like [{"value":"2024"}] (before URL encoding).
-    return json.loads(value)[0]["value"]
+    return orjson.loads(value)[0]["value"]
 
 
 class MexicoNuevoLeonBase(PeriodicSpider):

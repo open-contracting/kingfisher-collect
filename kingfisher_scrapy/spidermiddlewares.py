@@ -1,9 +1,9 @@
 import copy
-import json
 import logging
 from zipfile import BadZipFile
 
 import ijson
+import orjson
 from scrapy.exceptions import DropItem
 from scrapy.utils.log import logformatter_adapter
 
@@ -111,10 +111,10 @@ class ValidateJSONMiddleware(BaseSpiderMiddleware):
             read_data_from_file_if_any(item)
 
             try:
-                json.loads(item.data)
+                orjson.loads(item.data)
 
                 yield item
-            except json.JSONDecodeError:
+            except orjson.JSONDecodeError:
                 self.stats.inc_value("invalid_json_count")
                 # https://github.com/scrapy/scrapy/blob/49930df/scrapy/core/scraper.py#L504-L508
                 logkws = self.logformatter.dropped(item, DropItem("Invalid JSON"), response, self.spider)
@@ -140,7 +140,7 @@ class RootPathMiddleware(BaseSpiderMiddleware):
             # Re-encode the data, to traverse the JSON using only ijson, instead of either ijson or Python.
             # This is only expected to occur when both `root_path` and `concatenated_json` are set.
             if isinstance(data, dict):
-                data = util.json_dumps(data).encode()
+                data = orjson.dumps(data, default=util.default)
 
             iterable = util.transcode(self.spider, ijson.items, data, self.spider.root_path)
 
@@ -216,7 +216,7 @@ class AddPackageMiddleware(BaseSpiderMiddleware):
             data = item.data
             # If the spider's `root_path` class attribute is non-empty, then the JSON data is already parsed.
             if isinstance(data, bytes):
-                data = json.loads(data)
+                data = orjson.loads(data)
 
             key = "releases" if item.data_type == "release" else "records"
 

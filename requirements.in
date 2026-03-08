@@ -2,6 +2,7 @@ flattentool
 ijson
 jsonpointer
 ocdskit[perf]
+orjson
 pathvalidate
 psycopg2
 pydantic

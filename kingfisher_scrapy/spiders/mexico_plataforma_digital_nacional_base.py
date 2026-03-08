@@ -1,5 +1,4 @@
-import json
-
+import orjson
 import scrapy
 
 from kingfisher_scrapy.base_spiders import IndexSpider
@@ -36,6 +35,6 @@ class MexicoPlataformaDigitalNacionalBase(IndexSpider):
         return f"{self.url_prefix}{self.publisher_id}", {
             "method": "POST",
             "headers": {"Accept": "application/json", "Content-Type": "application/json"},
-            "body": json.dumps({"page": value, "pageSize": 10}),
+            "body": orjson.dumps({"page": value, "pageSize": 10}),
             "meta": {"file_name": f"page-{value}.json"},
         }

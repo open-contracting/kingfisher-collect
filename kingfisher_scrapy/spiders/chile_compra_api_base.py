@@ -1,6 +1,7 @@
 import datetime
-import json
 from abc import abstractmethod
+
+import orjson
 
 from kingfisher_scrapy.base_spiders import IndexSpider, PeriodicSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
@@ -91,7 +92,7 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         """
         try:
             data = response.json()
-        except json.JSONDecodeError as e:
+        except orjson.JSONDecodeError as e:
             self.log_error_from_response(response, level="exception", message=e)
             return None
 

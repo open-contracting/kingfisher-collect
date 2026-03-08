@@ -1,5 +1,4 @@
-import json
-
+import orjson
 import scrapy
 
 from kingfisher_scrapy.base_spiders import IndexSpider
@@ -42,7 +41,7 @@ class LiberiaReleases(IndexSpider):
         return f"{self.url_prefix}searchRecords.action", {
             "method": "POST",
             "headers": {"Content-Type": "application/json"},
-            "body": json.dumps({"page": value, "pagesize": self.limit, "sortField": "ocid", "sortDir": "asc"}),
+            "body": orjson.dumps({"page": value, "pagesize": self.limit, "sortField": "ocid", "sortDir": "asc"}),
             "meta": {"file_name": f"page-{value}.json"},
         }
 

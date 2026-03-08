@@ -3,6 +3,7 @@ import os
 import warnings
 
 import ijson
+import orjson
 import psycopg2.sql
 from ocdskit.combine import merge
 from ocdskit.exceptions import MergeErrorWarning
@@ -122,12 +123,12 @@ class DatabaseStore:
         filename = os.path.join(crawl_directory, "data.jsonl")
         spider.logger.info("Writing the JSON data to the %s JSONL file", filename)
         count = 0
-        with open(filename, "w") as f:
+        with open(filename, "wb") as f:
             with warnings.catch_warnings(record=True) as wlist:
                 warnings.simplefilter("always", category=MergeErrorWarning)
 
                 for item in data:
-                    f.write(util.json_dumps(item, ensure_ascii=False).replace(r"\u0000", "") + "\n")
+                    f.write(orjson.dumps(item, default=util.default).replace(b"\x00", b"") + b"\n")
                     count += 1
 
             errors = []

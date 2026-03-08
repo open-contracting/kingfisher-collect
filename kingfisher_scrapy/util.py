@@ -1,6 +1,5 @@
 import datetime
 import itertools
-import json
 from decimal import Decimal
 from functools import wraps
 from os.path import splitext
@@ -261,34 +260,10 @@ def items(events, prefix, map_type=None, skip_key=None):
 
 
 def default(obj):
-    """Dump JSON to a string, converting decimals and iterables, and return it."""
+    """Convert decimals to floats and iterables to lists."""
     if isinstance(obj, Decimal):
         return float(obj)
-    try:
-        iterable = iter(obj)
-    except TypeError:
-        pass
-    else:
-        return list(iterable)
-    return json.JSONEncoder().default(obj)
-
-
-def json_dumps(obj, **kwargs):
-    """
-    Dump JSON to string, using an extended JSON encoder.
-
-    Use this method for JSON data read by ijson, which uses decimals for JSON numbers.
-    """
-    return json.dumps(obj, default=default, **kwargs)
-
-
-def json_dump(obj, f, **kwargs):
-    """
-    Dump JSON to a file, using an extended JSON encoder.
-
-    Use this method for JSON data read by ijson, which uses decimals for JSON numbers.
-    """
-    return json.dump(obj, f, default=default)
+    return list(iter(obj))
 
 
 class TranscodeFile:

@@ -1,5 +1,4 @@
-import json
-
+import orjson
 import pytest
 
 from kingfisher_scrapy.exceptions import SpiderArgumentError
@@ -44,7 +43,7 @@ def test_disabled(data_type, data):
         file_name="test",
         url="http://test.com",
         data_type=data_type,
-        data=json.dumps(data).encode(),
+        data=orjson.dumps(data),
     )
 
     assert pipeline.process_item(item) == item
@@ -66,7 +65,7 @@ def test_process_item_release_pointer(data_type, data):
         file_name="test",
         url="http://test.com",
         data_type=data_type,
-        data=json.dumps(data).encode(),
+        data=orjson.dumps(data),
     )
 
     assert pipeline.process_item(item) == PluckedItem(value="2020-10-01")
@@ -81,7 +80,7 @@ def test_process_item_package_pointer(data_type, data):
         file_name="test",
         url="http://test.com",
         data_type=data_type,
-        data=json.dumps(data).encode(),
+        data=orjson.dumps(data),
     )
 
     assert pipeline.process_item(item) == PluckedItem(value="2000-01-01T00:00:00Z")
@@ -96,7 +95,7 @@ def test_process_item_nonexistent_pointer(kwargs):
         file_name="test",
         url="http://test.com",
         data_type="release_package",
-        data=json.dumps(release_package).encode(),
+        data=orjson.dumps(release_package),
     )
 
     assert pipeline.process_item(item) == PluckedItem(value="error: /nonexistent not found")
@@ -110,7 +109,7 @@ def test_process_item_non_package_data_type():
         file_name="test",
         url="http://test.com",
         data_type="release",
-        data=json.dumps(releases[0]).encode(),
+        data=orjson.dumps(releases[0]),
     )
 
     assert pipeline.process_item(item) == PluckedItem(value="error: /publishedDate not found")

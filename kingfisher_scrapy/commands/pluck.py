@@ -1,8 +1,8 @@
-import json
 import logging
 import os
 from collections import defaultdict
 
+import orjson
 from scrapy.commands import ScrapyCommand
 from scrapy.exceptions import UsageError
 
@@ -84,8 +84,8 @@ class Pluck(ScrapyCommand):
                         truncate=opts.truncate,
                     )
 
-        with open("pluck_skipped.json", "w") as f:
-            json.dump(skipped, f, indent=2)
+        with open("pluck_skipped.json", "wb") as f:
+            f.write(orjson.dumps(skipped, option=orjson.OPT_INDENT_2))
 
         logger.info("Running %s spiders: %s", len(running), ", ".join(sorted(running)))
         self.crawler_process.start()

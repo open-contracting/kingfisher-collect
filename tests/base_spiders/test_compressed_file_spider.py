@@ -1,8 +1,8 @@
-import json
 import os
 from io import BytesIO
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
+import orjson
 import pydantic
 import pytest
 
@@ -79,7 +79,7 @@ def test_parse_release_package(sample, len_items, len_releases, file_name):
 
     io = BytesIO()
     with ZipFile(io, "w", compression=ZIP_DEFLATED) as zipfile:
-        zipfile.writestr("test.json", json.dumps(package))
+        zipfile.writestr("test.json", orjson.dumps(package))
 
     response = response_fixture(body=io.getvalue(), meta={"file_name": f"{file_name}.zip"})
     generator = spider.parse(response)

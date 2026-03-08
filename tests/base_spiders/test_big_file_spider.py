@@ -1,5 +1,4 @@
-import json
-
+import orjson
 import pydantic
 import pytest
 
@@ -36,7 +35,7 @@ def test_parse_package(sample, len_items, len_releases, data_type, key):
     for _ in range(200):
         package[key].append({"key": "value"})
 
-    response = response_fixture(body=json.dumps(package).encode(), meta={"file_name": "test.json"})
+    response = response_fixture(body=orjson.dumps(package), meta={"file_name": "test.json"})
     generator = spider.parse(response)
     item = next(generator)
 

@@ -1,5 +1,4 @@
-import json
-
+import orjson
 from jsonpointer import resolve_pointer
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
@@ -60,7 +59,7 @@ class LinksSpider(SimpleSpider):
 
         try:
             data = response.json()
-        except json.JSONDecodeError as e:
+        except orjson.JSONDecodeError as e:
             raise MissingNextLinkError(
                 f"Invalid JSON on page {depth}, ending crawl prematurely: {response.url}"
             ) from e

@@ -1,11 +1,11 @@
 import datetime
-import json
 import logging
 import os
 import time
 from unittest.mock import patch
 from urllib.parse import urlsplit
 
+import orjson
 import pika
 import pytest
 from scrapy.crawler import CrawlerRunner
@@ -87,7 +87,7 @@ class Response:
 
     @property
     def text(self):
-        return json.dumps(self.content)
+        return orjson.dumps(self.content).decode()
 
     @property
     def headers(self):
@@ -329,7 +329,7 @@ def test_item_scraped(directory, filename, item, channel, tmpdir):
     _method_frame, _header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
 
     assert body is not None  # None if no message in queue
-    assert json.loads(body) == expected  # if fails in development, purge the kingfisher_process_test_api_loader queue
+    assert orjson.loads(body) == expected  # if fails in development, purge kingfisher_process_test_api_loader queue
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason="RABBIT_URL must be set")
@@ -348,7 +348,7 @@ def test_item_scraped_path(item_file, channel, tmpdir):
     _method_frame, _header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
 
     assert body is not None  # None if no message in queue
-    assert json.loads(body) == {  # if fails in development, purge the kingfisher_process_test_api_loader queue
+    assert orjson.loads(body) == {  # if fails in development, purge kingfisher_process_test_api_loader queue
         "collection_id": 1,
         "url": "https://example.com/remote.json",
         "path": "test/20010203_040506/389/file.json",

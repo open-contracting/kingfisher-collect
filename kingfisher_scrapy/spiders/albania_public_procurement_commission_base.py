@@ -1,5 +1,4 @@
-import json
-
+import orjson
 import scrapy
 
 from kingfisher_scrapy import util
@@ -26,7 +25,7 @@ class AlbaniaPublicProcurementCommissionBase(SimpleSpider):
             yield scrapy.Request(
                 self.base_url,
                 method="POST",
-                body=json.dumps(payload),
+                body=orjson.dumps(payload),
                 headers={"Accept": "application/json", "Content-Type": "application/json"},
                 meta={"file_name": f"{year}.json"},
             )

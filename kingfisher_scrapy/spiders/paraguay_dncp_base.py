@@ -1,7 +1,7 @@
 import datetime
-import json
 from abc import abstractmethod
 
+import orjson
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
@@ -82,7 +82,7 @@ class ParaguayDNCPBase(SimpleSpider):
             f"{self.url_prefix}oauth/token",
             method="POST",
             headers={"Accept": "application/json", "Content-Type": "application/json"},
-            body=json.dumps({"request_token": self.request_token}),
+            body=orjson.dumps({"request_token": self.request_token}),
             meta={"attempt": attempt + 1, "auth": False},
             callback=self.parse_access_token,
             dont_filter=True,

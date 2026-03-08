@@ -1,7 +1,7 @@
-import json
 from io import BytesIO
 from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
 
+import orjson
 import pydantic
 import pytest
 
@@ -260,7 +260,7 @@ async def test_resize_package_middleware(
 
     io = BytesIO()
     with ZipFile(io, "w", compression=ZIP_DEFLATED) as zipfile:
-        data = json.dumps(package, ensure_ascii=False).encode()
+        data = orjson.dumps(package)
         zipfile.writestr("test.json", data.replace(b"\xc3\x9a", character))
 
     response = response_fixture(body=io.getvalue(), meta={"file_name": "archive.zip"})

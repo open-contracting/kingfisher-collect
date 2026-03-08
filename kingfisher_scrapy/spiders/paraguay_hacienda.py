@@ -1,6 +1,6 @@
 import datetime
-import json
 
+import orjson
 import scrapy
 
 from kingfisher_scrapy.base_spiders import BaseSpider
@@ -121,7 +121,7 @@ class ParaguayHacienda(BaseSpider):
         self.logger.info("Requesting access token, attempt %s of %s", attempt + 1, self.max_access_token_attempts)
 
         if body is None:
-            body = json.dumps({"clientSecret": self.client_secret})
+            body = orjson.dumps({"clientSecret": self.client_secret})
 
         self.access_token_scheduled_at = datetime.datetime.now()
 

@@ -3,12 +3,12 @@ import os
 
 from scrapy import Request
 from scrapy.crawler import CrawlerRunner
-from scrapy.http import TextResponse
 from scrapy.statscollectors import MemoryStatsCollector
 from scrapy.utils.test import get_reactor_settings
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.log_formatter import LogFormatter
+from kingfisher_scrapy.responses import JSONResponse
 
 FILE_LENGTH = 5
 FILE_ITEM_LENGTH = FILE_LENGTH + 1
@@ -23,7 +23,7 @@ def response_fixture(meta=None, url_path="", **kwargs):
         meta = {"file_name": "test"}
     request = Request(f"http://example.com{url_path}", meta=meta)
     kwargs.setdefault("status", 200)
-    return TextResponse(request.url, encoding="utf-8", request=request, **kwargs)
+    return JSONResponse(request.url, encoding="utf-8", request=request, **kwargs)
 
 
 def spider_with_crawler(spider_class=BaseSpider, *, settings=None, **kwargs):
