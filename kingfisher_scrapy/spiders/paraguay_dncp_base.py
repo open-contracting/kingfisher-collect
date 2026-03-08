@@ -50,15 +50,6 @@ class ParaguayDNCPBase(SimpleSpider):
         return spider
 
     async def start(self):
-        for url in self.urls_builder():
-            yield scrapy.Request(
-                url,
-                # send duplicate requests when the token expired and in the continuation of requests_backlog saved.
-                dont_filter=True,
-                callback=self.parse_pages,
-            )
-
-    def urls_builder(self):
         # ElasticSearch doesn't allow search sizes greater than 10000, so we request a month at the time.
         for start_date, end_date in date_range_by_interval(self.from_date, self.until_date, 30):
             # We request active/complete tenders and planned ones separately to ensure we don't exceed the 10000
@@ -67,11 +58,18 @@ class ParaguayDNCPBase(SimpleSpider):
                 f"{self.url_prefix}search/processes?fecha_desde={start_date.strftime(self.date_format)}"
                 f"-04:00&fecha_hasta={end_date.strftime(self.date_format)}-04:00&items_per_page=10000"
             )
-            # We request the active or successful tenders by using the "publicacion_llamado" filter.
-            url_tender = f"{url_base}&tipo_fecha=publicacion_llamado"
-            # And the planned ones with the "fecha_release" and tender.id=planned filters.
-            url_planning = f"{url_base}&tender.id=planned&tipo_fecha=fecha_release"
-            yield from [url_tender, url_planning]
+            for url in (
+                # We request the active or successful tenders by using the "publicacion_llamado" filter.
+                f"{url_base}&tipo_fecha=publicacion_llamado",
+                # And the planned ones with the "fecha_release" and tender.id=planned filters.
+                f"{url_base}&tender.id=planned&tipo_fecha=fecha_release",
+            ):
+                yield scrapy.Request(
+                    url,
+                    # send duplicate requests when the token expired and in the continuation of requests_backlog saved.
+                    dont_filter=True,
+                    callback=self.parse_pages,
+                )
 
     def build_access_token_request(self, attempt=0):
         self.logger.info("Requesting access token, attempt %s of %s", attempt + 1, self.max_access_token_attempts)
