@@ -5,7 +5,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components, date_range_by_year, handle_http_error
 
 
 class ParaguayHacienda(BaseSpider):
@@ -14,6 +14,11 @@ class ParaguayHacienda(BaseSpider):
       Ministerio de Hacienda
     Caveats
       This dataset was last updated by the publisher in 2018.
+    Spider arguments
+      from_date
+        Download only data from this year onward (YYYY format). Defaults to '2011'.
+      until_date
+        Download only data until this year (YYYY format). Defaults to '2018'.
     Environment variables
       KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN
         To get an API account and request token go to https://datos.hacienda.gov.py/aplicaciones/new.
@@ -32,6 +37,10 @@ class ParaguayHacienda(BaseSpider):
     }
 
     # BaseSpider
+    date_format = "year"
+    default_from_date = "2011"
+    default_until_date = "2018"
+    date_required = True
     dont_truncate = True
 
     # ParaguayAuthMiddleware
@@ -45,7 +54,6 @@ class ParaguayHacienda(BaseSpider):
     # Local
     max_access_token_attempts = 5
     url_prefix = "https://datos.hacienda.gov.py:443/odmh-api-v1/rest/api/v1/"
-    list_url_prefix = f"{url_prefix}pagos/cdp?page="
     release_ids = []
 
     @classmethod
@@ -63,14 +71,15 @@ class ParaguayHacienda(BaseSpider):
         return spider
 
     async def start(self):
-        # Paraguay Hacienda has a service that return all the ids that we need to get the releases packages
-        # so we first iterate over this list that is paginated
-        yield scrapy.Request(
-            f"{self.list_url_prefix}1",
-            meta={"meta": True, "first": True},
-            # send duplicate requests when the token expired and in the continuation of requests_backlog saved.
-            dont_filter=True,
-        )
+        # Paraguay Hacienda has a service that returns all the ids that we need to get the release packages,
+        # so we first iterate over this list that is paginated.
+        for year in date_range_by_year(self.from_date.year, self.until_date.year):
+            yield scrapy.Request(
+                f"{self.url_prefix}pagos/cdp?page=1&by_anho={year}",
+                meta={"meta": True, "first": True, "year": year},
+                # Send duplicate requests when the token expired and in the continuation of requests_backlog saved.
+                dont_filter=True,
+            )
 
     @handle_http_error
     def parse(self, response):
@@ -78,13 +87,14 @@ class ParaguayHacienda(BaseSpider):
 
         data = response.json()
 
-        # If is the first URL, we need to iterate over all the pages to get all the process ids to query
+        # If is the first URL, we need to iterate over all the pages to get all the process ids to query.
         if response.request.meta["first"]:
+            year = response.request.meta["year"]
             total = data["meta"]["totalPages"]
             for page in range(2, total + 1):
                 yield scrapy.Request(
-                    f"{self.list_url_prefix}{page}",
-                    meta={"meta": True, "first": False},
+                    f"{self.url_prefix}pagos/cdp?page={page}&by_anho={year}",
+                    meta={"meta": True, "first": False, "year": year},
                     dont_filter=True,
                 )
 
