@@ -10,7 +10,6 @@ from kingfisher_scrapy.util import (
     components,
     date_range_by_interval,
     handle_http_error,
-    parameters,
     replace_parameters,
 )
 
@@ -52,9 +51,8 @@ class ParaguayDNCPBase(SimpleSpider):
 
     async def start(self):
         for url in self.urls_builder():
-            yield self.build_request(
+            yield scrapy.Request(
                 url,
-                formatter=parameters("fecha_desde"),
                 # send duplicate requests when the token expired and in the continuation of requests_backlog saved.
                 dont_filter=True,
                 callback=self.parse_pages,
@@ -118,9 +116,8 @@ class ParaguayDNCPBase(SimpleSpider):
             yield self.build_request(url, formatter=components(-1), dont_filter=True)
         pagination = data["pagination"]
         if pagination["current_page"] < pagination["total_pages"]:
-            yield self.build_request(
+            yield scrapy.Request(
                 replace_parameters(response.request.url, page=pagination["current_page"] + 1),
-                formatter=parameters("fecha_desde", "page"),
                 dont_filter=True,
                 callback=self.parse_pages,
             )

@@ -5,7 +5,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
-from kingfisher_scrapy.util import components, handle_http_error, parameters
+from kingfisher_scrapy.util import components, handle_http_error
 
 
 class ParaguayHacienda(BaseSpider):
@@ -65,13 +65,9 @@ class ParaguayHacienda(BaseSpider):
     async def start(self):
         # Paraguay Hacienda has a service that return all the ids that we need to get the releases packages
         # so we first iterate over this list that is paginated
-        yield self.build_request(
+        yield scrapy.Request(
             f"{self.list_url_prefix}1",
-            formatter=parameters("page"),
-            meta={
-                "meta": True,
-                "first": True,
-            },
+            meta={"meta": True, "first": True},
             # send duplicate requests when the token expired and in the continuation of requests_backlog saved.
             dont_filter=True,
         )
@@ -86,13 +82,9 @@ class ParaguayHacienda(BaseSpider):
         if response.request.meta["first"]:
             total = data["meta"]["totalPages"]
             for page in range(2, total + 1):
-                yield self.build_request(
+                yield scrapy.Request(
                     f"{self.list_url_prefix}{page}",
-                    formatter=parameters("page"),
-                    meta={
-                        "meta": True,
-                        "first": False,
-                    },
+                    meta={"meta": True, "first": False},
                     dont_filter=True,
                 )
 

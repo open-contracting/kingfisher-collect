@@ -6,8 +6,6 @@ from kingfisher_scrapy.util import (
     append_path_components,
     components,
     handle_http_error,
-    join,
-    parameters,
     replace_parameters,
 )
 
@@ -54,8 +52,4 @@ class Ukraine(SimpleSpider):
                 formatter=components(-2),
             )
 
-        yield self.build_request(
-            data["next_page"]["uri"],
-            formatter=join(components(-1), parameters("offset")),
-            callback=self.parse_list,
-        )
+        yield scrapy.Request(data["next_page"]["uri"], callback=self.parse_list)
