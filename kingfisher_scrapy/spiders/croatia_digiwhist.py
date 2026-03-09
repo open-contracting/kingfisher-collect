@@ -3,4 +3,6 @@ from kingfisher_scrapy.spiders.government_transparency_institute_base import Gov
 
 class CroatiaDigiwhist(GovernmentTransparencyInstituteBase):
     name = "croatia_digiwhist"
+
+    # GovernmentTransparencyInstituteBase
     country_code = "hr"

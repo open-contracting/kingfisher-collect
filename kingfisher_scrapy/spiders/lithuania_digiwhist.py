@@ -3,4 +3,6 @@ from kingfisher_scrapy.spiders.government_transparency_institute_base import Gov
 
 class LithuaniaDigiwhist(GovernmentTransparencyInstituteBase):
     name = "lithuania_digiwhist"
+
+    # GovernmentTransparencyInstituteBase
     country_code = "lt"
