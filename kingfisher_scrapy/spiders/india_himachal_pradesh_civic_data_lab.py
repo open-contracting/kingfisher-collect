@@ -2,7 +2,6 @@ import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import KingfisherScrapyError
-from kingfisher_scrapy.util import handle_http_error
 
 # https://github.com/CivicDataLab/himachal-pradesh-health-procurement-OCDS/
 
@@ -38,7 +37,6 @@ class IndiaHimachalPradeshCivicDataLab(SimpleSpider):
             f"https://api.github.com/repos/{self.github_repo}/git/trees/master", callback=self.parse_list
         )
 
-    @handle_http_error
     def parse_list(self, response):
         # Use the GitHub API to list the files in the repository, and then download the files using a non-API method,
         # to avoid quota/rate limits.

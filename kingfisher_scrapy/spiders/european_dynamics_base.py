@@ -5,7 +5,7 @@ from urllib.parse import urlsplit
 import scrapy
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
-from kingfisher_scrapy.util import components, handle_http_error, join
+from kingfisher_scrapy.util import components, join
 
 
 class EuropeanDynamicsBase(CompressedFileSpider):
@@ -41,7 +41,6 @@ class EuropeanDynamicsBase(CompressedFileSpider):
             f"{self.base_url}/ocds/services/recordpackage/getrecordpackagelist", callback=self.parse_list
         )
 
-    @handle_http_error
     def parse_list(self, response):
         try:
             data = response.json()

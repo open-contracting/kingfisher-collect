@@ -3,7 +3,7 @@ import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components, handle_http_error
+from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components
 
 
 class Netherlands(SimpleSpider):
@@ -40,7 +40,6 @@ class Netherlands(SimpleSpider):
             callback=self.parse_list,
         )
 
-    @handle_http_error
     def parse_list(self, response):
         for url in response.xpath("//article//li//@href").getall():
             if url.endswith(".json"):

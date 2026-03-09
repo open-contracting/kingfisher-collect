@@ -1,5 +1,5 @@
 from kingfisher_scrapy.spiders.uruguay_base import UruguayBase
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class UruguayRecords(UruguayBase):
@@ -23,7 +23,6 @@ class UruguayRecords(UruguayBase):
     # SimpleSpider
     data_type = "record_package"
 
-    @handle_http_error
     def parse_list(self, response):
         url_prefix = "https://www.comprasestatales.gub.uy/ocds/record/"
 

@@ -1,7 +1,7 @@
 import datetime
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.util import parameters
 
 
 class Kosovo(SimpleSpider):
@@ -42,7 +42,6 @@ class Kosovo(SimpleSpider):
                 formatter=parameters("endDateFrom", "endDateEnd"),
             )
 
-    @handle_http_error
     def parse(self, response):
         # The API returns a release package with an empty releases array if no releases were found.
         if response.json()["releases"]:

@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class ArgentinaMendozaProvinceBulk(SimpleSpider):
@@ -22,7 +22,6 @@ class ArgentinaMendozaProvinceBulk(SimpleSpider):
     async def start(self):
         yield scrapy.Request(f"{self.base_url}/datasets/", callback=self.parse_list)
 
-    @handle_http_error
     def parse_list(self, response):
         for file_url in response.xpath("//div/a/@href").getall():
             if file_url.endswith(".json"):

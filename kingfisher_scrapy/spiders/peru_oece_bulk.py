@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, IndexSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class PeruOECEBulk(CompressedFileSpider, IndexSpider):
@@ -32,7 +32,6 @@ class PeruOECEBulk(CompressedFileSpider, IndexSpider):
     def url_builder(self, value, data, response):
         return self.peru_base_url.format(value)
 
-    @handle_http_error
     def parse_page(self, response):
         for item in response.json()["results"]:
             # Some URLs still use the old domain.

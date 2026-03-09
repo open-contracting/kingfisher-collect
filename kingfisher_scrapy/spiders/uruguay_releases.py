@@ -1,5 +1,5 @@
 from kingfisher_scrapy.spiders.uruguay_base import UruguayBase
-from kingfisher_scrapy.util import BROWSER_USER_AGENT, components, handle_http_error
+from kingfisher_scrapy.util import BROWSER_USER_AGENT, components
 
 
 class UruguayReleases(UruguayBase):
@@ -23,7 +23,6 @@ class UruguayReleases(UruguayBase):
     # SimpleSpider
     data_type = "release_package"
 
-    @handle_http_error
     def parse_list(self, response):
         for url in response.xpath("//item/link/text()").getall():
             yield self.build_request(url, formatter=components(-1))

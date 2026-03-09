@@ -4,7 +4,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class HondurasPortalBulk(SimpleSpider):
@@ -80,7 +80,6 @@ class HondurasPortalBulk(SimpleSpider):
 
         return spider
 
-    @handle_http_error
     def parse_list(self, response):
         """
         The response looks like:

@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class Slovenia(SimpleSpider):
@@ -23,7 +23,6 @@ class Slovenia(SimpleSpider):
     async def start(self):
         yield scrapy.Request(self.url_prefix, callback=self.parse_list)
 
-    @handle_http_error
     def parse_list(self, response):
         for number, url in enumerate(reversed(response.xpath("//a/@href").getall())):
             if "ocds" and "json" in url:

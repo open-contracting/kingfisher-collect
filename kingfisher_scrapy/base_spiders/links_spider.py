@@ -3,7 +3,6 @@ from jsonpointer import resolve_pointer
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import MissingNextLinkError
-from kingfisher_scrapy.util import handle_http_error
 
 
 class LinksSpider(SimpleSpider):
@@ -43,7 +42,6 @@ class LinksSpider(SimpleSpider):
 
     next_pointer = "/links/next"
 
-    @handle_http_error
     def parse(self, response):
         yield from super().parse(response)
 

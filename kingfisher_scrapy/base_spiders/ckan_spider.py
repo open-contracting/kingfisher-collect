@@ -2,8 +2,6 @@ import datetime
 
 import scrapy
 
-from kingfisher_scrapy.util import handle_http_error
-
 
 class CKANSpider:
     """
@@ -50,7 +48,6 @@ class CKANSpider:
             url = f"{self.ckan_api_url}/api/3/action/package_show?id={self.ckan_package_id}"
         yield scrapy.Request(url, callback=self.parse_list)
 
-    @handle_http_error
     def parse_list(self, response):
         for resource in self._resources(response.json()):
             if self.ckan_resource_format and resource["format"].upper() != self.ckan_resource_format:

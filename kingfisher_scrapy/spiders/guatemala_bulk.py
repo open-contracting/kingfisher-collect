@@ -3,7 +3,7 @@ import datetime
 import scrapy
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
-from kingfisher_scrapy.util import components, handle_http_error, join
+from kingfisher_scrapy.util import components, join
 
 
 class GuatemalaBulk(CompressedFileSpider):
@@ -36,7 +36,6 @@ class GuatemalaBulk(CompressedFileSpider):
     async def start(self):
         yield scrapy.Request("https://ocds.guatecompras.gt/files", callback=self.parse_list)
 
-    @handle_http_error
     def parse_list(self, response):
         """
         The response looks like:

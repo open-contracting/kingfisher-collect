@@ -1,7 +1,6 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import handle_http_error
 
 
 class MexicoAguascalientesPlataformaDigitalEstatal(SimpleSpider):
@@ -25,7 +24,6 @@ class MexicoAguascalientesPlataformaDigitalEstatal(SimpleSpider):
             "https://plataformadigitalestatal.org/Publica/contratacionesPublicas/index.html", callback=self.parse_list
         )
 
-    @handle_http_error
     def parse_list(self, response):
         for url in response.xpath("//a/@href").getall():
             # The URL is currently a link to a Google Drive file.

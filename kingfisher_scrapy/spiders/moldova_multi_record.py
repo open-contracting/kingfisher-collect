@@ -2,7 +2,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.exceptions import RetryableError
-from kingfisher_scrapy.util import components, handle_http_error, replace_parameters
+from kingfisher_scrapy.util import components, replace_parameters
 
 
 class MoldovaMultiRecord(BaseSpider):
@@ -73,7 +73,6 @@ class MoldovaMultiRecord(BaseSpider):
             raise RetryableError
         return data
 
-    @handle_http_error
     def parse_list(self, response):
         data = self.load_json_or_retry_error(response)
 
@@ -86,7 +85,6 @@ class MoldovaMultiRecord(BaseSpider):
 
         yield scrapy.Request(replace_parameters(response.request.url, offset=data["offset"]), callback=self.parse_list)
 
-    @handle_http_error
     def parse(self, response):
         data = self.load_json_or_retry_error(response)
 

@@ -2,7 +2,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class HondurasIAIP(SimpleSpider):
@@ -44,7 +44,6 @@ class HondurasIAIP(SimpleSpider):
             callback=self.parse_list,
         )
 
-    @handle_http_error
     def parse_list(self, response):
         for portal in self.available_portals:
             if self.portal and self.portal != portal:

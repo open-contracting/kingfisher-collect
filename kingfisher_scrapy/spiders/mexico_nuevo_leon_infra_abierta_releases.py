@@ -1,5 +1,5 @@
 from kingfisher_scrapy.spiders.mexico_nuevo_leon_infra_abierta_base import MexicoNuevoLeonBase
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class MexicoNuevoLeonInfraAbiertaReleases(MexicoNuevoLeonBase):
@@ -26,7 +26,6 @@ class MexicoNuevoLeonInfraAbiertaReleases(MexicoNuevoLeonBase):
     # PeriodicSpider
     start_callback = "parse_list"
 
-    @handle_http_error
     def parse_list(self, response):
         for record_package in response.json():
             for record in record_package["records"]:

@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.util import parameters
 
 
 class KenyaPPRA(SimpleSpider):
@@ -25,7 +25,6 @@ class KenyaPPRA(SimpleSpider):
             f"{self.base_url}/index?search=&perpage=10&sortby=&order=asc&page=1", callback=self.parse_list
         )
 
-    @handle_http_error
     def parse_list(self, response):
         data = response.json()
         for item in data["data"]:

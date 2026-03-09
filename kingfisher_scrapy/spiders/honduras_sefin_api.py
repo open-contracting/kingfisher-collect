@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import PeriodicSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class HondurasSEFINAPI(PeriodicSpider):
@@ -33,7 +33,6 @@ class HondurasSEFINAPI(PeriodicSpider):
     pattern = "https://guancasco.sefin.gob.hn/EDCA_WEBAPI/api/listaOcids/{}"
     formatter = staticmethod(components(-1))  # year
 
-    @handle_http_error
     def parse(self, response):
         for url in response.json():
             # URL looks like https://guancasco.sefin.gob.hn/EDCA_WEBAPI/api/releasePackage/P2022-3-1-197

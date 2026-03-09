@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.spiders.peru_compras_base import PeruComprasBase
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.util import parameters
 
 
 class PeruComprasAPI(PeruComprasBase):
@@ -25,7 +25,6 @@ class PeruComprasAPI(PeruComprasBase):
     async def start(self):
         yield scrapy.Request(f"{self.url_prefix}obtenerFiltros", callback=self.parse_list)
 
-    @handle_http_error
     def parse_list(self, response):
         from_date = self.from_date.strftime(self.date_format)
         until_date = self.until_date.strftime(self.date_format)

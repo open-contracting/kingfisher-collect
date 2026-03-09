@@ -22,6 +22,9 @@ class UgandaReleases(PeriodicSpider):
     """
 
     name = "uganda_releases"
+    # https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets generates URLs with JavaScript. We increment
+    # the 'code' parameter until it 404s. As such, we can't disambiguate expected from unexpected 404s.
+    handle_httpstatus_list = [404]
     # Returns HTTP 403 if too many requests. (1 is too short.)
     download_delay = 2
 
@@ -37,11 +40,8 @@ class UgandaReleases(PeriodicSpider):
     formatter = staticmethod(parameters("fy", "code"))
 
     def parse(self, response):
-        if not self.is_http_success(response):
-            # https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets generates URLs with JavaScript. We increment
-            # the 'code' parameter until it 404s. As such, we can't disambiguate expected from unexpected 404s.
-            if response.status != 404:
-                self.log_error_from_response(response)
+        # 404 responses indicate we've reached the end of the 'code' sequence for this fiscal year.
+        if response.status == 404:
             return
 
         # The API can return error messages with HTTP 200 status:

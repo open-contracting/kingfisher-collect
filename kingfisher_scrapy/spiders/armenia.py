@@ -27,7 +27,9 @@ class Armenia(LinksSpider):
     next_pointer = "/next_page/uri"
 
     async def start(self):
-        yield scrapy.Request("https://armeps.am/ocds/release", meta={"file_name": "offset-0.json"})
+        yield scrapy.Request(
+            "https://armeps.am/ocds/release", meta={"file_name": "offset-0.json", "handle_httpstatus_all": True}
+        )
 
     def parse(self, response):
         # If the request was successful, parse the response as usual.
@@ -36,7 +38,7 @@ class Armenia(LinksSpider):
 
             # Use `dont_filter` in case the search for a successful timestamp used the same offset. Use `dont_retry`
             # since errors are expected.
-            yield self.next_link(response, dont_filter=True, meta={"dont_retry": True})
+            yield self.next_link(response, dont_filter=True, meta={"dont_retry": True, "handle_httpstatus_all": True})
         # Otherwise, parse the response as usual, then (1) pick a date range and (2) do a binary search within it.
         # This approach assumes that, if two offsets error, then intervening offsets error, too.
         else:
@@ -108,5 +110,6 @@ class Armenia(LinksSpider):
 
     def _build_request(self, url, callback, meta):
         meta["dont_retry"] = True
+        meta["handle_httpstatus_all"] = True
         # We need to set `formatter` in case we want to re-use the response to build a file.
         return self.build_request(url, formatter=parameters("offset"), dont_filter=True, meta=meta, callback=callback)

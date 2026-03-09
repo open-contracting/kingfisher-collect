@@ -9,7 +9,6 @@ from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
 from kingfisher_scrapy.util import (
     components,
     date_range_by_interval,
-    handle_http_error,
     replace_parameters,
 )
 
@@ -81,7 +80,7 @@ class ParaguayDNCPBase(SimpleSpider):
             method="POST",
             headers={"Accept": "application/json", "Content-Type": "application/json"},
             body=orjson.dumps({"request_token": self.request_token}),
-            meta={"attempt": attempt + 1, "auth": False},
+            meta={"attempt": attempt + 1, "auth": False, "handle_httpstatus_all": True},
             callback=self.parse_access_token,
             dont_filter=True,
             priority=1000,
@@ -107,7 +106,6 @@ class ParaguayDNCPBase(SimpleSpider):
             self.access_token_request_failed = True
             raise AccessTokenError(f"Authentication failed. Status code: {response.status}")
 
-    @handle_http_error
     def parse_pages(self, response):
         data = response.json()
         for url in self.get_files_to_download(data):

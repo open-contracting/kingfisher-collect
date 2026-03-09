@@ -2,7 +2,7 @@ import scrapy
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.base_spiders import LinksSpider
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.util import parameters
 
 
 class BrazilCompras(LinksSpider):
@@ -42,7 +42,6 @@ class BrazilCompras(LinksSpider):
             callback=self.parse_buyer_list,
         )
 
-    @handle_http_error
     def parse_buyer_list(self, response):
         for value in range(2, response.json()["totalPaginas"] + 1):
             yield scrapy.Request(
@@ -51,7 +50,6 @@ class BrazilCompras(LinksSpider):
 
         yield from self.parse_buyer_page(response)
 
-    @handle_http_error
     def parse_buyer_page(self, response):
         for item in response.json()["resultado"]:
             # The API errors if the difference between the month values is greater than 1; for example, January 1 to
@@ -66,7 +64,6 @@ class BrazilCompras(LinksSpider):
                     formatter=self.formatter,
                 )
 
-    @handle_http_error
     def parse(self, response):
         # The API returns a package without releases if no results are found.
         if "releases" in response.json():
