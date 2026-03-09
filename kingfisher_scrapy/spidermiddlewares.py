@@ -355,21 +355,21 @@ class RetryDataErrorMiddleware:
     # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#scrapy.spidermiddlewares.SpiderMiddleware.process_spider_exception
 
     def process_spider_exception(self, response, exception):
-        if isinstance(exception, BadZipFile | RetryableError):
-            attempts = response.request.meta.get("retries", 0) + 1
-            if attempts > 3:
-                logger.error(
-                    "Gave up retrying %(request)s (failed %(failures)d times): %(exception)s",
-                    {"request": response.request, "failures": attempts, "exception": exception},
-                )
-                return
-            request = response.request.copy()
-            request.dont_filter = True
-            request.meta["retries"] = attempts
-            logger.debug(
-                "Retrying %(request)s (failed %(failures)d times): %(exception)s",
+        if not isinstance(exception, BadZipFile | RetryableError):
+            raise exception
+
+        attempts = response.request.meta.get("retries", 0) + 1
+        if attempts > 3:
+            logger.error(
+                "Gave up retrying %(request)s (failed %(failures)d times): %(exception)s",
                 {"request": response.request, "failures": attempts, "exception": exception},
             )
-            yield request
-        else:
-            raise exception
+            return
+        request = response.request.copy()
+        request.dont_filter = True
+        request.meta["retries"] = attempts
+        logger.debug(
+            "Retrying %(request)s (failed %(failures)d times): %(exception)s",
+            {"request": response.request, "failures": attempts, "exception": exception},
+        )
+        yield request
