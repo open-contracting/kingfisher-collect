@@ -9,5 +9,5 @@ class NigeriaEkitiState(EuropeanDynamicsSaasBase):
 
     name = "nigeria_ekiti_state"
 
-    # EuropeanDynamicsSassBase
+    # EuropeanDynamicsSaasBase
     base_url = "https://ocds.bpp.ekitistate.gov.ng/"

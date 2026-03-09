@@ -17,6 +17,7 @@ class ArgentinaMendozaProvinceBulk(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
+    # Local
     base_url = "https://datosabiertos-compras.mendoza.gov.ar"
 
     async def start(self):

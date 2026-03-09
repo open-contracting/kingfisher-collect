@@ -24,6 +24,7 @@ class PeruOECEBulk(CompressedFileSpider, IndexSpider):
     page_count_pointer = "/pagination/num_pages"
     parse_list_callback = "parse_page"
 
+    # Local
     peru_base_url = "https://contratacionesabiertas.oece.gob.pe/api/v1/files?page={0}&paginateBy=10&format=json"
 
     async def start(self):

@@ -26,10 +26,12 @@ class Ukraine(SimpleSpider):
     }
 
     # BaseSpider
-    data_type = "release_package"
     date_format = "datetime"
     default_from_date = "2016-01-01T00:00:00"
     date_required = True
+
+    # SimpleSpider
+    data_type = "release_package"
 
     async def start(self):
         # A https://public.api.openprocurement.org/api/0/contracts endpoint also exists but the data returned from

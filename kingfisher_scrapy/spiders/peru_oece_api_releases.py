@@ -14,5 +14,5 @@ class PeruOECEAPIReleases(PeruOECEAPIBase):
     # SimpleSpider
     data_type = "release_package"
 
-    # PeruOSCEBase
+    # PeruOECEAPIBase
     endpoint = "releasesAfter"

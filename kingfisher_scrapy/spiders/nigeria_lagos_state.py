@@ -9,5 +9,5 @@ class NigeriaLagosState(EuropeanDynamicsSaasBase):
 
     name = "nigeria_lagos_state"
 
-    # EuropeanDynamicsSassBase
+    # EuropeanDynamicsSaasBase
     base_url = "https://lagosppaocds.azurewebsites.net/"

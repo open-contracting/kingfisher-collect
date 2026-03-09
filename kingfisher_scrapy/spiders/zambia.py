@@ -15,9 +15,9 @@ class Zambia(EuropeanDynamicsBase):
     """
 
     name = "zambia"
-    default_from_date = "2016-07"
 
     # BaseSpider
+    default_from_date = "2016-07"
     ocds_version = "1.0"
 
     # EuropeanDynamicsBase

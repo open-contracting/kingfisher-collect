@@ -14,5 +14,5 @@ class PeruOECEAPIRecords(PeruOECEAPIBase):
     # SimpleSpider
     data_type = "record_package"
 
-    # PeruOSCEBase
+    # PeruOECEAPIBase
     endpoint = "recordsAfter"

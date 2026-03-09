@@ -30,9 +30,11 @@ class EuropeanDynamicsBase(CompressedFileSpider):
             base_url = 'http://base-url'
     """
 
-    # SimpleSpider
-    data_type = "record_package"
+    # BaseSpider
     date_format = "year-month"
+
+    # CompressedFileSpider
+    data_type = "record_package"
 
     # base_url must be provided by subclasses.
 

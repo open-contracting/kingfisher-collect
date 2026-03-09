@@ -30,6 +30,7 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     }
     download_delay = 1
 
+    # Local
     # Must be set before `pattern`, so we can't follow the standard order.
     url_prefix = "https://opentender.net/api/"
 
