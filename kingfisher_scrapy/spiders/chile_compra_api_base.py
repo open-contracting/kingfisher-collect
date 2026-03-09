@@ -5,7 +5,7 @@ import orjson
 
 from kingfisher_scrapy.base_spiders import IndexSpider, PeriodicSpider
 from kingfisher_scrapy.exceptions import SpiderArgumentError
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
@@ -47,7 +47,6 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
                 continue
             yield self.pattern.format(self.available_systems[system], date, 0, self.limit)
 
-    @handle_http_error
     def parse(self, response):
         data = self.parse_list_loader(response)
         if data is None:
@@ -57,7 +56,6 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         response = response.replace(body=response.body.replace(b"\x00", b""))
         yield from super().parse(response)
 
-    @handle_http_error
     def parse_page(self, response):
         """
         An item of the ``data`` array looks like:

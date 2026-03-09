@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import IndexSpider, PeriodicSpider
-from kingfisher_scrapy.util import components, handle_http_error, parameters, replace_path_separator
+from kingfisher_scrapy.util import components, parameters, replace_path_separator
 
 
 class EcuadorSERCOPAPI(IndexSpider, PeriodicSpider):
@@ -43,7 +43,6 @@ class EcuadorSERCOPAPI(IndexSpider, PeriodicSpider):
     page_count_pointer = "/pages"
     parse_list_callback = "parse_page"
 
-    @handle_http_error
     def parse_page(self, response):
         for data in response.json()["data"]:
             # Some ocids have a '/' character which cannot be in a file name.

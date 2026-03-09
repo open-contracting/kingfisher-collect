@@ -5,7 +5,7 @@ from jsonpointer import resolve_pointer
 from kingfisher_scrapy import util
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import IncoherentConfigurationError
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.util import parameters
 
 
 class IndexSpider(SimpleSpider):
@@ -97,7 +97,6 @@ class IndexSpider(SimpleSpider):
                 if not hasattr(self, "formatter"):
                     self.formatter = parameters(self.param_offset)
 
-    @handle_http_error
     def parse_list(self, response):
         data = self.parse_list_loader(response)
         if data is None:

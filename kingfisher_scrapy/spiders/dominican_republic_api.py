@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import IndexSpider
-from kingfisher_scrapy.util import handle_http_error, parameters, replace_path_separator
+from kingfisher_scrapy.util import parameters, replace_path_separator
 
 
 class DominicanRepublicAPI(IndexSpider):
@@ -42,7 +42,6 @@ class DominicanRepublicAPI(IndexSpider):
             callback=self.parse_list,
         )
 
-    @handle_http_error
     def parse_page(self, response):
         # `content` is null if, for example, the page number is outside the result set.
         for item in response.json()["payload"]["content"] or []:

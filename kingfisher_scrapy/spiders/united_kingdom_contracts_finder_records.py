@@ -1,5 +1,5 @@
 from kingfisher_scrapy.spiders.united_kingdom_contracts_finder_base import UnitedKingdomContractsFinderBase
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
@@ -23,7 +23,6 @@ class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
     # SimpleSpider
     data_type = "record_package"
 
-    @handle_http_error
     def parse_page(self, response):
         for release in response.json()["releases"]:
             yield self.build_request(

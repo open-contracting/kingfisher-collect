@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import BigFileSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class France(BigFileSpider):
@@ -26,7 +26,6 @@ class France(BigFileSpider):
             callback=self.parse_list,
         )
 
-    @handle_http_error
     def parse_list(self, response):
         for resource in response.json()["resources"]:
             description = resource["description"]

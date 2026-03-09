@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import PeriodicSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class NigeriaEbonyiState(PeriodicSpider):
@@ -30,7 +30,6 @@ class NigeriaEbonyiState(PeriodicSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    @handle_http_error
     def parse(self, response):
         # Replace unescaped tab characters within strings with a space.
         response = response.replace(body=response.body.replace(b"\t", b" "))

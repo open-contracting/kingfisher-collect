@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import components, get_parameter_value, handle_http_error
+from kingfisher_scrapy.util import components, get_parameter_value
 
 
 class NigeriaBonMaximusBase(SimpleSpider):
@@ -13,7 +13,6 @@ class NigeriaBonMaximusBase(SimpleSpider):
     async def start(self):
         yield scrapy.Request(f"{self.url_prefix}awarded_contracts.php", callback=self.parse_list)
 
-    @handle_http_error
     def parse_list(self, response):
         for url in response.xpath('//table[@id="contractTable"]/tbody/tr/td[2]/a/@href').getall():
             # The URLs look like

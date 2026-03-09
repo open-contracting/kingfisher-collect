@@ -52,7 +52,11 @@ SPIDER_MIDDLEWARES = {
     "kingfisher_scrapy.spidermiddlewares.AddPackageMiddleware": 300,
     "kingfisher_scrapy.spidermiddlewares.ResizePackageMiddleware": 200,
     "kingfisher_scrapy.spidermiddlewares.ReadDataMiddleware": 100,
-    "kingfisher_scrapy.spidermiddlewares.RetryDataErrorMiddleware": 50,
+    # `process_spider_exception` is invoked in decreasing order.
+    # Scrapy's HttpErrorMiddleware is at priority 50.
+    # https://docs.scrapy.org/en/latest/topics/settings.html#spider-middlewares-base
+    "kingfisher_scrapy.spidermiddlewares.HttpErrorMiddleware": 49,
+    "kingfisher_scrapy.spidermiddlewares.RetryDataErrorMiddleware": 48,
 }
 
 # Enable or disable downloader middlewares
@@ -119,9 +123,6 @@ DOWNLOAD_TIMEOUT = 360  # many spiders time out when using the 180 default
 DOWNLOAD_MAXSIZE = 10000000000  # 10 GB, default 1 GiB
 # https://docs.scrapy.org/en/latest/topics/settings.html#download-warnsize
 DOWNLOAD_WARNSIZE = 0  # default 32 MiB
-
-# https://docs.scrapy.org/en/latest/topics/spider-middleware.html#httperror-allow-all
-HTTPERROR_ALLOW_ALL = True  # default False
 
 # https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpproxy-enabled
 HTTPPROXY_ENABLED = False  # default True

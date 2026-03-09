@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import BROWSER_USER_AGENT, components, handle_http_error
+from kingfisher_scrapy.util import BROWSER_USER_AGENT, components
 
 
 class SpainZaragoza(SimpleSpider):
@@ -29,7 +29,6 @@ class SpainZaragoza(SimpleSpider):
         # `rows=100000` avoids pagination.
         yield scrapy.Request(f"{self.url_prefix}?rf=html&rows=100000", callback=self.parse_list)
 
-    @handle_http_error
     def parse_list(self, response):
         for item in response.json():
             yield self.build_request(f"{self.url_prefix}{item['ocid']}", formatter=components(-1))  # ocid

@@ -5,7 +5,6 @@ from kingfisher_scrapy.util import (
     BROWSER_USER_AGENT,
     append_path_components,
     components,
-    handle_http_error,
     replace_parameters,
 )
 
@@ -41,7 +40,6 @@ class Ukraine(SimpleSpider):
             url = f"{url}?offset={self.from_date.strftime(self.date_format)}"
         yield scrapy.Request(url, callback=self.parse_list)
 
-    @handle_http_error
     def parse_list(self, response):
         data = response.json()
 

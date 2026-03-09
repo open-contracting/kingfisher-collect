@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
-from kingfisher_scrapy.util import BROWSER_USER_AGENT, handle_http_error
+from kingfisher_scrapy.util import BROWSER_USER_AGENT
 
 
 class Croatia(CompressedFileSpider):
@@ -28,7 +28,6 @@ class Croatia(CompressedFileSpider):
             "https://eojn.nn.hr/SPIN/application/ipn/Oglasnik/PreuzimanjeUgovoraOCD.aspx", callback=self.parse_list
         )
 
-    @handle_http_error
     def parse_list(self, response):
         for file_id in sorted(response.xpath("//td/a/@id").getall(), reverse=True):
             yield scrapy.FormRequest.from_response(

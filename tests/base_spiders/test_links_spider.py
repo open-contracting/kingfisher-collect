@@ -40,23 +40,6 @@ def test_next_link_condition():
     assert type(request) is NoneType
 
 
-def test_parse_404(caplog):
-    spider = spider_with_crawler(spider_class=LinksSpider)
-
-    generator = spider.parse(
-        response_fixture(
-            meta={"file_name": "test", "depth": 0},
-            body=b'{"links": {"next": "http://example.com/next"}}',
-            status=404,
-        ),
-    )
-
-    assert len(list(generator)) == 0
-    assert [record.message for record in caplog.records] == [
-        "status=404 message='' request=<GET http://example.com> file_name=test"
-    ]
-
-
 def test_parse_200():
     spider = spider_with_crawler(spider_class=LinksSpider)
     spider.data_type = "release_package"

@@ -3,7 +3,6 @@ from kingfisher_scrapy.util import (
     MAX_DOWNLOAD_TIMEOUT,
     components,
     get_parameter_value,
-    handle_http_error,
     join,
     parameters,
 )
@@ -47,7 +46,6 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     formatter = staticmethod(components(-1))
     start_callback = "parse_list"
 
-    @handle_http_error
     def parse_list(self, response):
         year = get_parameter_value(response.request.url, "year")
         codes_seen = set()

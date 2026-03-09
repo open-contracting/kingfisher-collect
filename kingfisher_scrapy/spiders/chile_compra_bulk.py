@@ -61,5 +61,6 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
                 url,
                 file_name,
             )
+            return None
 
         return File(file_name=file_name, url=url, data_type=None, data=data)

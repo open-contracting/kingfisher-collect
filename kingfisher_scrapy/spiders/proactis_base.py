@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import PeriodicSpider
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.util import parameters
 
 
 class ProactisBase(PeriodicSpider):
@@ -40,7 +40,6 @@ class ProactisBase(PeriodicSpider):
         for notice_type in self.base_notice_types:
             yield url.format(date, notice_type)
 
-    @handle_http_error
     def parse(self, response):
         data = response.json()
 

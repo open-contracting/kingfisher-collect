@@ -5,7 +5,7 @@ import scrapy
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
-from kingfisher_scrapy.util import components, date_range_by_year, handle_http_error
+from kingfisher_scrapy.util import components, date_range_by_year
 
 
 class ParaguayHacienda(BaseSpider):
@@ -81,7 +81,6 @@ class ParaguayHacienda(BaseSpider):
                 dont_filter=True,
             )
 
-    @handle_http_error
     def parse(self, response):
         package_url_prefix = f"{self.url_prefix}ocds/release-package/"
 
@@ -130,7 +129,7 @@ class ParaguayHacienda(BaseSpider):
             method="POST",
             headers={"Authorization": self.request_token, "Content-Type": "application/json"},
             body=body,
-            meta={"attempt": attempt + 1, "auth": False},
+            meta={"attempt": attempt + 1, "auth": False, "handle_httpstatus_all": True},
             callback=self.parse_access_token,
             dont_filter=True,
             priority=1000,

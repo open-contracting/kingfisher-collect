@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
-from kingfisher_scrapy.util import components, handle_http_error, join
+from kingfisher_scrapy.util import components, join
 
 
 class MexicoINAIBase(SimpleSpider):
@@ -40,7 +40,6 @@ class MexicoINAIBase(SimpleSpider):
     async def start(self):
         yield scrapy.Request(f"{self.base_url}/edca/fiscalYears", callback=self.parse_list)
 
-    @handle_http_error
     def parse_list(self, response):
         """
         The response looks like:

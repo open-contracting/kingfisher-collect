@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import LinksSpider, PeriodicSpider
-from kingfisher_scrapy.util import handle_http_error, parameters
+from kingfisher_scrapy.util import parameters
 
 
 class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
@@ -44,7 +44,6 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
     # The endpoint doesn't return all available releases with a longer `step` value.
     step = 0.25
 
-    @handle_http_error
     def parse(self, response):
         # TODO(james): Temporary fix. Remove this method once the issue is closed in Kingfisher Process.
         # https://github.com/open-contracting/kingfisher-process/issues/323

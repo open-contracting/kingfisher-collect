@@ -7,7 +7,7 @@ from rarfile import RarFile
 from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.exceptions import UnknownArchiveFormatError
 from kingfisher_scrapy.items import File
-from kingfisher_scrapy.util import get_file_name_and_extension, handle_http_error
+from kingfisher_scrapy.util import get_file_name_and_extension
 
 
 class CompressedFileSpider(BaseSpider):
@@ -55,7 +55,6 @@ class CompressedFileSpider(BaseSpider):
     file_name_must_contain = ""
     file_name_must_not_contain = ""
 
-    @handle_http_error
     def parse(self, response):
         yield from self.process_archive_file(response, response.request.meta["file_name"], response.body)
 

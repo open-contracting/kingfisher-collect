@@ -2,7 +2,7 @@ import orjson
 import scrapy
 
 from kingfisher_scrapy.base_spiders import IndexSpider
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class LiberiaReleases(IndexSpider):
@@ -45,7 +45,6 @@ class LiberiaReleases(IndexSpider):
             "meta": {"file_name": f"page-{value}.json"},
         }
 
-    @handle_http_error
     def parse_items(self, response):
         for item in response.json()["items"]:
             # This endpoint is undocumented. There is also a VERSIONED.action endpoint.

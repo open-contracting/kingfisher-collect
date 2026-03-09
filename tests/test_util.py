@@ -1,20 +1,15 @@
-import logging
 from datetime import datetime
-from unittest.mock import Mock
 
 import pytest
-import scrapy
 
 from kingfisher_scrapy.util import (
     components,
     date_range_by_interval,
     get_parameter_value,
-    handle_http_error,
     join,
     parameters,
     replace_parameters,
 )
-from tests import spider_with_crawler
 
 
 def parse_date(string):
@@ -55,93 +50,6 @@ def test_get_parameter_value(url, expected):
 )
 def test_join(url, extension, expected):
     assert join(components(-1), parameters("page"), extension=extension)(url) == expected
-
-
-@pytest.mark.parametrize("attempts", [0, 1])
-def test_handle_http_error_retry(attempts):
-    @handle_http_error
-    def test_decorated(self, response, **kwargs):
-        yield response
-
-    spider = spider_with_crawler()
-    spider.max_attempts = 3
-    spider.retry_http_codes = [429]
-
-    mock_response = Mock()
-    mock_response.status = 429
-    mock_response.headers = {"Retry-After": 5}
-    meta = {}
-    if attempts:
-        meta["retries"] = attempts
-    mock_response.request = scrapy.Request("http://test.com", meta=meta)
-
-    actual = next(test_decorated(spider, mock_response))
-
-    assert isinstance(actual, scrapy.Request)
-    assert actual.meta["retries"] == attempts + 1
-    assert actual.meta["wait_time"] == 5
-    assert actual.dont_filter is True
-
-
-def test_handle_http_error_max_attempts_reached(caplog):
-    @handle_http_error
-    def test_decorated(self, response, **kwargs):
-        yield response
-
-    caplog.set_level(logging.ERROR)
-
-    spider = spider_with_crawler()
-    spider.max_attempts = 3
-    spider.retry_http_codes = [429]
-
-    mock_response = Mock()
-    mock_response.status = 429
-    mock_response.headers = {"Retry-After": 5}
-    mock_response.request = scrapy.Request("http://test.com", meta={"file_name": "file.json", "retries": 2})
-
-    assert len(list(test_decorated(spider, mock_response))) == 0
-    assert [record.message for record in caplog.records] == [
-        "status=429 message='Gave up retrying (failed 3 times)' request=<GET http://test.com> file_name=file.json",
-    ]
-
-
-@pytest.mark.parametrize("response_status", [200, 204])
-def test_handle_http_error_success(response_status):
-    @handle_http_error
-    def test_decorated(self, response, **kwargs):
-        yield response
-
-    spider = spider_with_crawler()
-    spider.max_attempts = 3
-    spider.retry_http_codes = [429]
-
-    mock_response = Mock()
-    mock_response.status = response_status
-    mock_response.request = scrapy.Request("http://test.com")
-
-    assert next(test_decorated(spider, mock_response)) == mock_response
-
-
-@pytest.mark.parametrize("response_status", [302, 400, 500])
-def test_handle_http_error_error(response_status, caplog):
-    @handle_http_error
-    def test_decorated(self, response, **kwargs):
-        yield response
-
-    caplog.set_level(logging.ERROR)
-
-    spider = spider_with_crawler()
-    spider.max_attempts = 3
-    spider.retry_http_codes = [429]
-
-    mock_response = Mock()
-    mock_response.status = response_status
-    mock_response.request = scrapy.Request("http://test.com", meta={"file_name": "file.json"})
-
-    assert len(list(test_decorated(spider, mock_response))) == 0
-    assert [record.message for record in caplog.records] == [
-        f"status={response_status} message='' request=<GET http://test.com> file_name=file.json"
-    ]
 
 
 @pytest.mark.parametrize(

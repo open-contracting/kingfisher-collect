@@ -1,7 +1,7 @@
 import scrapy
 
 from kingfisher_scrapy.spiders.peru_compras_base import PeruComprasBase
-from kingfisher_scrapy.util import components, handle_http_error
+from kingfisher_scrapy.util import components
 
 
 class PeruComprasBulk(PeruComprasBase):
@@ -29,7 +29,6 @@ class PeruComprasBulk(PeruComprasBase):
             f"{self.url_prefix}getListaDescargaMasiva?Anio=&Mes=", method="POST", callback=self.parse_list
         )
 
-    @handle_http_error
     def parse_list(self, response):
         from_date = self.from_date.strftime(self.date_format)
         until_date = self.until_date.strftime(self.date_format)

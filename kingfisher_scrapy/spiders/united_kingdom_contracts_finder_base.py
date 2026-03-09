@@ -1,5 +1,5 @@
 from kingfisher_scrapy.base_spiders import LinksSpider, PeriodicSpider
-from kingfisher_scrapy.util import handle_http_error, parameters, transcode_bytes
+from kingfisher_scrapy.util import parameters, transcode_bytes
 
 
 class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
@@ -31,7 +31,6 @@ class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
 
     # parse_page must be provided by subclasses.
 
-    @handle_http_error
     def parse(self, response):
         # Remove non-iso-8859-1 characters.
         response = response.replace(body=transcode_bytes(response.body, self.encoding))

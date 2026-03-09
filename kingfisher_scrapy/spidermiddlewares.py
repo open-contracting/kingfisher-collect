@@ -5,6 +5,7 @@ from zipfile import BadZipFile
 import ijson
 import orjson
 from scrapy.exceptions import DropItem
+from scrapy.spidermiddlewares.httperror import HttpError
 from scrapy.utils.log import logformatter_adapter
 
 from kingfisher_scrapy import util
@@ -305,6 +306,42 @@ class ReadDataMiddleware(BaseSpiderMiddleware):
             read_data_from_file_if_any(item)
 
             yield item
+
+
+class HttpErrorMiddleware(BaseSpiderMiddleware):
+    """
+    Handle HTTP errors raised by Scrapy's HttpErrorMiddleware.
+
+    If :meth:`~kingfisher_scrapy.base_spider.BaseSpider.is_http_retryable` returns ``True`` and the number of attempts
+    is less than the spider's ``max_attempts`` class attribute, retries the request, after waiting the number of
+    seconds returned by :meth:`~kingfisher_scrapy.base_spider.BaseSpider.get_retry_wait_time`.
+
+    Otherwise, logs an error message.
+    """
+
+    def process_spider_exception(self, response, exception):
+        if not isinstance(exception, HttpError):
+            raise exception
+
+        attempts = response.request.meta.get("retries", 0) + 1
+
+        # Scrapy doesn't honor the Retry-After header. https://github.com/scrapy/scrapy/issues/3849
+        if (response.status == 429 or self.spider.is_http_retryable(response)) and attempts < self.spider.max_attempts:
+            wait_time = self.spider.get_retry_wait_time(response)
+            request = response.request.copy()
+            request.meta["retries"] = attempts
+            request.meta["wait_time"] = wait_time
+            request.dont_filter = True
+            logger.debug(
+                "Retrying %(request)s in %(wait_time)ds (failed %(failures)d times): HTTP %(status)d",
+                {"request": response.request, "failures": attempts, "status": response.status, "wait_time": wait_time},
+            )
+            yield request
+        elif self.spider.is_http_retryable(response):
+            self.spider.log_error_from_response(response, message=f"Gave up retrying (failed {attempts} times)")
+        else:
+            level = "warning" if self.spider.is_http_error_expected(response) else "error"
+            self.spider.log_error_from_response(response, level=level)
 
 
 class RetryDataErrorMiddleware:

@@ -1,5 +1,4 @@
 from kingfisher_scrapy.base_spiders import BaseSpider
-from kingfisher_scrapy.util import handle_http_error
 
 
 class SimpleSpider(BaseSpider):
@@ -28,6 +27,5 @@ class SimpleSpider(BaseSpider):
                 yield scrapy.Request('https://example.com/api/package.json', meta={'file_name': 'all.json'})
     """
 
-    @handle_http_error
     def parse(self, response):
         yield self.build_file_from_response(response, data_type=self.data_type)

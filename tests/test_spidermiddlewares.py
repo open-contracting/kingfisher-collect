@@ -1,16 +1,22 @@
+import logging
 from io import BytesIO
 from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
 
 import orjson
 import pydantic
 import pytest
+import scrapy
+from scrapy.spidermiddlewares.httperror import HttpError
+from scrapy.spidermiddlewares.httperror import HttpErrorMiddleware as ScrapyHttpErrorMiddleware
 
+from kingfisher_scrapy import settings
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, SimpleSpider
 from kingfisher_scrapy.exceptions import RetryableError
 from kingfisher_scrapy.items import File, FileItem
 from kingfisher_scrapy.spidermiddlewares import (
     AddPackageMiddleware,
     ConcatenatedJSONMiddleware,
+    HttpErrorMiddleware,
     LineDelimitedMiddleware,
     ReadDataMiddleware,
     ResizePackageMiddleware,
@@ -30,6 +36,15 @@ async def _aiter(iterable):
 # https://stackoverflow.com/a/62585232/244258
 async def alist(iterable):
     return [i async for i in iterable]
+
+
+def http_error(spider, response):
+    """Get an HttpError from Scrapy's middleware for realistic testing."""
+    middleware = ScrapyHttpErrorMiddleware.from_crawler(spider.crawler)
+    try:
+        middleware.process_spider_input(response)
+    except HttpError as e:
+        return e
 
 
 @pytest.mark.parametrize(
@@ -610,3 +625,105 @@ async def test_validate_json_middleware_already_parsed(data, cls, caplog):
     assert len(transformed_items) == 1
     assert spider.crawler.stats.get_value("invalid_json_count", 0) == 0
     assert [record.message for record in caplog.records] == []
+
+
+@pytest.mark.parametrize("attempts", [0, 1])
+def test_http_error_middleware_too_many_requests(attempts):
+    spider = spider_with_crawler()
+    spider.max_attempts = 3
+    # Always retry 429.
+
+    meta = {"retries": attempts} if attempts else {}
+    response = response_fixture(meta=meta, status=429, headers={"Retry-After": "5"})
+
+    middleware = HttpErrorMiddleware(spider.crawler)
+    actual = next(middleware.process_spider_exception(response, http_error(spider, response)))
+
+    assert isinstance(actual, scrapy.Request)
+    assert actual.meta["retries"] == attempts + 1
+    assert actual.meta["wait_time"] == 5
+    assert actual.dont_filter is True
+
+
+@pytest.mark.parametrize("attempts", [0, 1])
+def test_http_error_middleware_retry_http_codes(attempts):
+    spider = spider_with_crawler()
+    spider.max_attempts = 3
+    spider.retry_http_codes = [403]
+
+    meta = {"retries": attempts} if attempts else {}
+    response = response_fixture(meta=meta, status=403)
+
+    middleware = HttpErrorMiddleware(spider.crawler)
+    actual = next(middleware.process_spider_exception(response, http_error(spider, response)))
+
+    assert isinstance(actual, scrapy.Request)
+    assert actual.meta["retries"] == attempts + 1
+    assert actual.meta["wait_time"] == 30
+    assert actual.dont_filter is True
+
+
+def test_http_error_middleware_max_attempts_reached(caplog):
+    caplog.set_level(logging.ERROR)
+
+    spider = spider_with_crawler()
+    spider.max_attempts = 3
+    spider.retry_http_codes = [500]
+
+    response = response_fixture(meta={"file_name": "test.json", "retries": 2}, status=500)
+
+    middleware = HttpErrorMiddleware(spider.crawler)
+    result = list(middleware.process_spider_exception(response, http_error(spider, response)))
+
+    assert len(result) == 0
+    assert [record.message for record in caplog.records] == [
+        "status=500 message='Gave up retrying (failed 3 times)' request=<GET http://example.com> file_name=test.json",
+    ]
+    assert all(record.levelno == logging.ERROR for record in caplog.records)
+
+
+@pytest.mark.parametrize("status", settings.RETRY_HTTP_CODES)
+def test_http_error_middleware_error(status, caplog):
+    caplog.set_level(logging.ERROR)
+
+    spider = spider_with_crawler()
+    spider.max_attempts = 3
+    # Don't retry request.
+
+    response = response_fixture(meta={"file_name": "test.json"}, status=status)
+
+    middleware = HttpErrorMiddleware(spider.crawler)
+    result = list(middleware.process_spider_exception(response, http_error(spider, response)))
+
+    assert len(result) == 0
+    assert [record.message for record in caplog.records] == [
+        f"status={status} message='' request=<GET http://example.com> file_name=test.json"
+    ]
+    assert all(record.levelno == logging.ERROR for record in caplog.records)
+
+
+def test_http_error_middleware_is_http_error_expected(caplog):
+    caplog.set_level(logging.WARNING)
+
+    spider = spider_with_crawler()
+    spider.is_http_error_expected = lambda response: response.status == 404
+
+    response = response_fixture(meta={"file_name": "test.json"}, status=404)
+
+    middleware = HttpErrorMiddleware(spider.crawler)
+    result = list(middleware.process_spider_exception(response, http_error(spider, response)))
+
+    assert len(result) == 0
+    assert [record.message for record in caplog.records] == [
+        "status=404 message='' request=<GET http://example.com> file_name=test.json"
+    ]
+    assert all(record.levelno == logging.WARNING for record in caplog.records)
+
+
+def test_http_error_middleware_non_http_error():
+    spider = spider_with_crawler()
+
+    middleware = HttpErrorMiddleware(spider.crawler)
+
+    with pytest.raises(ValueError, match="test"):
+        list(middleware.process_spider_exception(response_fixture(), ValueError("test")))
