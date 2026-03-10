@@ -6,6 +6,9 @@ class EcuadorSERCOPBulk(CompressedFileSpider, PeriodicSpider):
     """
     Domain
       Servicio Nacional de Contratación Pública (SERCOP)
+    Caveats
+      The publication times out from many countries. It is known to work from:
+      Chile, Colombia, Ecuador, Mexico, Paraguay, and the United States of America.
     Spider arguments
       from_date
         Download only data from this month onward (YYYY-MM format). Defaults to '2015-01'.
