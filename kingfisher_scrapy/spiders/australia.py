@@ -1,10 +1,8 @@
-import scrapy
-
-from kingfisher_scrapy.base_spiders import LinksSpider
-from kingfisher_scrapy.util import parameters
+from kingfisher_scrapy.base_spiders import LinksSpider, PeriodicSpider
+from kingfisher_scrapy.util import components, parameters
 
 
-class Australia(LinksSpider):
+class Australia(LinksSpider, PeriodicSpider):
     """
     Domain
       AusTender
@@ -24,19 +22,16 @@ class Australia(LinksSpider):
     # BaseSpider
     date_format = "datetime"
     default_from_date = "2004-01-01T00:00:00"
-    date_required = True
 
     # SimpleSpider
     data_type = "release_package"
 
     # LinksSpider
-    formatter = staticmethod(parameters("cursor"))
+    formatter = staticmethod(components(-2))
+    next_link_formatter = staticmethod(parameters("cursor"))
 
-    async def start(self):
-        from_date = self.from_date.strftime(self.date_format)
-        until_date = self.until_date.strftime(self.date_format)
-
-        yield scrapy.Request(
-            f"https://api.tenders.gov.au/ocds/findByDates/contractPublished/{from_date}Z/{until_date}Z",
-            meta={"file_name": f"{until_date}.json"},
-        )  # reverse chronological order
+    # PeriodicSpider
+    pattern = (
+        "https://api.tenders.gov.au/ocds/findByDates/contractPublished/{0:%Y-%m-%dT%H:%M:%S}Z/{1:%Y-%m-%dT%H:%M:%S}Z"
+    )
+    step = 7
