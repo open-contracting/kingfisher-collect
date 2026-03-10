@@ -36,7 +36,7 @@ class UgandaReleases(PeriodicSpider):
     data_type = "release_package"
 
     # PeriodicSpider
-    pattern = "https://gpp.ppda.go.ug/adminapi/public/api/open-data/v2/ocds/download?fy={0}-{1}&format=json&code=1"
+    pattern = "https://cdn.ppda.go.ug/api/open-data/v2/ocds/download?fy={0}-{1}&format=json&code=1"
     formatter = staticmethod(parameters("fy", "code"))
 
     # PeriodicSpider
