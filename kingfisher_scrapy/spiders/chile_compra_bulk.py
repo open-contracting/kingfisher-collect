@@ -42,6 +42,7 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
     pattern = "https://ocds.blob.core.windows.net/ocds/{0:%Y}{0:%m}.zip"
     formatter = staticmethod(components(-1))  # filename containing year-month
 
+    # BaseSpider
     def build_file(self, *, file_name=None, url=None, data_type=None, data=None):
         """
         Some files contain invalid record packages, like:
@@ -51,16 +52,17 @@ class ChileCompraBulk(CompressedFileSpider, PeriodicSpider):
           "detail": "error"
         }
         """
-        parsed = orjson.loads(data)
+        data = data.read()
+        package = orjson.loads(data)
 
-        if parsed.get("status") != 200:
+        if package.get("status", 200) >= 400:
             self.logger.error(
                 "status=%d message=%r request=<GET %s> file_name=%s",
-                parsed["status"],
-                parsed["detail"],
+                package["status"],
+                package["detail"],
                 url,
                 file_name,
             )
             return None
 
-        return File(file_name=file_name, url=url, data_type=None, data=data)
+        return File(file_name=file_name, url=url, data_type=data_type, data=data)

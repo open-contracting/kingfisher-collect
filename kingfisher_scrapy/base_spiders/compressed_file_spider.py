@@ -6,7 +6,6 @@ from rarfile import RarFile
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.exceptions import UnknownArchiveFormatError
-from kingfisher_scrapy.items import File
 from kingfisher_scrapy.util import get_file_name_and_extension
 
 
@@ -116,11 +115,13 @@ class CompressedFileSpider(BaseSpider):
                 else:
                     data = compressed_file
 
-                yield File(
+                # Spiders can override build_file and return None.
+                item = self.build_file(
                     file_name=file_name,
                     url=response.request.url,
                     data_type=self.data_type,
                     data=data,
                 )
-
-                number += 1
+                if item:
+                    yield item
+                    number += 1
