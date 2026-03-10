@@ -24,6 +24,8 @@ class BaseSpider(scrapy.Spider):
     -  If the spider requires date parameters to be set, add a ``date_required = True`` class attribute, and set the
        ``date_format`` and ``default_from_date`` class attributes as above.
     -  If the spider needs to parse the JSON response in its ``parse`` method, set ``dont_truncate = True``.
+       Otherwise, the :class:`~kingfisher_scrapy.extensions.pluck.Pluck` extension can fail when using the
+       ``KINGFISHER_PLUCK_MAX_BYTES`` setting.
 
     .. tip::
 
