@@ -40,7 +40,7 @@ class ItalyANAC(CKANSpider, BigFileSpider):
     ckan_api_url = "https://dati.anticorruzione.it/opendata"
     ckan_search_query = "ocds"
     # e.g. https://dati.anticorruzione.it/opendata/download/dataset/ocds/filesystem/bulk/2022/01.json
-    formatter = components(-2)
+    formatter = staticmethod(components(-2))
 
     # CKANSpider
     def get_resource_date(self, resource):

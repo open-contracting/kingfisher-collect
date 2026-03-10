@@ -34,4 +34,4 @@ class MexicoNuevoLeon(CKANSpider, SimpleSpider):
     # Format can be "JSON" or "URL".
     ckan_resource_format = None
     # e.g. https://api-ocds.nl.gob.mx/api/releases/673d316c7e60f2c8230bcf15
-    formatter = components(-1)
+    formatter = staticmethod(components(-1))

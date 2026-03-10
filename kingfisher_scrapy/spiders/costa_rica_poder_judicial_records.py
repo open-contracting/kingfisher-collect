@@ -33,7 +33,7 @@ class CostaRicaPoderJudicialRecords(CKANSpider, SimpleSpider):
     ckan_api_url = "https://ckanpj.azurewebsites.net"
     ckan_package_id = "estandar-de-datos-de-contrataciones-abiertas-ocds"
     # e.g. https://ckanpj.azurewebsites.net/datosabiertos/OpenContracting/2018.json
-    formatter = components(-1)
+    formatter = staticmethod(components(-1))
 
     # CKANSpider
     def get_resource_date(self, resource):

@@ -36,7 +36,7 @@ class UruguayHistorical(CKANSpider, CompressedFileSpider):
     ckan_api_url = "https://catalogodatos.gub.uy"
     ckan_package_id = "arce-datos-historicos-de-compras"
     # e.g. https://catalogodatos.gub.uy/dataset/44d3-b09c/resource/1e39-453d/download/ocds-2002.zip
-    formatter = components(-1)
+    formatter = staticmethod(components(-1))
 
     # CKANSpider
     def get_resource_date(self, resource):

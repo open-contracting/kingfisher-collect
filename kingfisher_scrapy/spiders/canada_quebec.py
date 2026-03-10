@@ -33,7 +33,7 @@ class CanadaQuebec(CKANSpider, SimpleSpider):
     # The same filename can be generated on different dates, but containing different releases, like:
     # https://www.donneesquebec.ca/recherche/dataset/d23b2e02-085d-43e5-9e6e-e1d558ebfdd5/resource/c6f8d624-b4e7-4a82-bae3-ca78f01bc017/download/hebdo_20251222_20251228.json
     # https://www.donneesquebec.ca/recherche/dataset/d23b2e02-085d-43e5-9e6e-e1d558ebfdd5/resource/552da290-239f-4512-8f5d-4e0329e5d72d/download/hebdo_20251222_20251228.json
-    formatter = components(-3)
+    formatter = staticmethod(components(-3))
 
     # CKANSpider
     def get_resource_date(self, resource):

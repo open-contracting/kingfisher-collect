@@ -27,4 +27,4 @@ class CostaRicaPoderJudicialReleases(CKANSpider, CompressedFileSpider):
     ckan_package_id = "estandar-de-datos-de-contrataciones-abiertas-ocds"
     ckan_resource_format = "ZIP"
     # https://pjcrdatosabiertos.blob.core.windows.net/datosabiertos/OpenContracting/ocds-fnha3a-FULL.zip
-    formatter = components(-1)
+    formatter = staticmethod(components(-1))
