@@ -1,5 +1,5 @@
 from kingfisher_scrapy.spiders.uruguay_base import UruguayBase
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import BROWSER_USER_AGENT, components
 
 
 class UruguayRecords(UruguayBase):
@@ -16,6 +16,9 @@ class UruguayRecords(UruguayBase):
     """
 
     name = "uruguay_records"
+    custom_settings = {
+        "USER_AGENT": BROWSER_USER_AGENT,
+    }
 
     # BaseSpider
     skip_pluck = "Already covered (see code for details)"  # uruguay_releases
@@ -32,5 +35,6 @@ class UruguayRecords(UruguayBase):
             titles = [titles[0]]
 
         for title in titles:
+            # Title looks like: id_compra:1211147,release_id:llamado-1211147
             identifier = title.split(",")[0].split(":")[1]
             yield self.build_request(f"{url_prefix}{identifier}", formatter=components(-1))
