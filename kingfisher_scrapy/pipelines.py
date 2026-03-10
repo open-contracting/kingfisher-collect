@@ -7,6 +7,7 @@ import warnings
 
 import ijson
 import jsonpointer
+import jsonref
 import orjson
 from flattentool import unflatten
 from flattentool.exceptions import FlattenToolWarning
@@ -172,7 +173,7 @@ class Unflatten(BasePipeline):
                     input_name,
                     root_list_path="releases",
                     root_id="ocid",
-                    schema=orjson.loads(
+                    schema=jsonref.loads(
                         pkgutil.get_data("kingfisher_scrapy", f"schema/{self.spider.ocds_version}.json")
                     ),
                     input_format=input_format,

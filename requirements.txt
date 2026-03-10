@@ -82,6 +82,7 @@ jsonpointer==2.0
     # via -r requirements.in
 jsonref==1.0.1
     # via
+    #   -r requirements.in
     #   flattentool
     #   ocdsextensionregistry
     #   ocdskit

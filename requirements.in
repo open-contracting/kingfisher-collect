@@ -1,6 +1,7 @@
 flattentool
 ijson
 jsonpointer
+jsonref
 ocdskit[perf]
 orjson
 pathvalidate
