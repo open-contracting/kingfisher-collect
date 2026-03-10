@@ -36,7 +36,7 @@ class ParaguayDNCPBase(SimpleSpider):
 
     # Local
     max_access_token_attempts = 10
-    url_prefix = "https://contrataciones.gov.py/datos/api/v3/doc/"
+    url_prefix = "https://www.contrataciones.gov.py/datos/api/v3/doc/"
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -61,7 +61,7 @@ class ParaguayDNCPBase(SimpleSpider):
                 # We request the active or successful tenders by using the "publicacion_llamado" filter.
                 f"{url_base}&tipo_fecha=publicacion_llamado",
                 # And the planned ones with the "fecha_release" and tender.id=planned filters.
-                f"{url_base}&tender.id=planned&tipo_fecha=fecha_release",
+                f"{url_base}&tipo_fecha=fecha_release&tender.id=planned",
             ):
                 yield scrapy.Request(
                     url,
