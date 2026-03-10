@@ -8,6 +8,10 @@ Lapsed publications
 
 Spiders for publications that were available but stopped publishing, since January 2022:
 
+-  2026-03-10 `nigeria_lagos_state <https://github.com/open-contracting/kingfisher-collect/commit/626bfbf3>`__
+
+   .. https://lagosppaocds.azurewebsites.net
+
 -  2026-02-12: `colombia_bulk, colombia_api <https://github.com/open-contracting/kingfisher-collect/issues/1176>`__
 
    .. https://apiocds.colombiacompra.gov.co/apiCCE-2.0/
