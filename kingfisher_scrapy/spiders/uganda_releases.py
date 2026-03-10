@@ -49,11 +49,6 @@ class UgandaReleases(PeriodicSpider):
         if response.status == 404:
             return
 
-        # The API can return error messages with HTTP 200 status:
-        # // {"success":false,"message":"Error, Resource Not Found","error":true}
-        if response.text.startswith("//"):
-            return
-
         yield from super().parse(response)
 
         yield self.build_request(
