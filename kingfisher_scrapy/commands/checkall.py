@@ -98,8 +98,9 @@ class CheckAll(ScrapyCommand):
         for module in walk_modules("kingfisher_scrapy.spiders"):
             if not args or os.path.relpath(module.__file__) in args:
                 source_id = module.__name__.rsplit(".", 1)[-1]
-                source_ids_available.add(source_id)
                 for cls in iter_spider_classes(module):
+                    if cls.name:  # skip base classes
+                        source_ids_available.add(source_id)
                     checker = Checker(module, cls, publications.get(source_id, {}), level)
                     checker.check()
                     has_output |= checker.has_output
@@ -118,7 +119,11 @@ class CheckAll(ScrapyCommand):
                 if not retrieved and available:
                     lapsed.append(source_id)
 
-            logger.warning("Test lapsed spiders: scrapy crawlall --sample 1 --loglevel=ERROR %s", " ".join(lapsed))
+            command = "scrapy crawlall --sample 1 --loglevel=ERROR"
+            logger.warning("Test lapsed spiders: %s %s", command, " ".join(lapsed))
+
+            unregistered = sorted(source_ids_available - source_ids_used)
+            logger.warning("Test unregistered spiders: %s %s", command, " ".join(unregistered))
 
         if has_output:
             sys.exit(1)
