@@ -11,7 +11,7 @@ class PeruComprasBase(SimpleSpider):
     # Local
     url_prefix = "https://www.catalogos.perucompras.gob.pe/ConsultaOrdenesPub/"
 
+    # SimpleSpider
     def parse(self, response):
         # Replace unescaped newline characters within strings with a space.
-        response = response.replace(body=response.body.replace(b"\n", b" "))
-        yield from super().parse(response)
+        yield from super().parse(response.replace(body=response.body.replace(b"\n", b" ")))

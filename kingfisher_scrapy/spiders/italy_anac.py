@@ -42,12 +42,12 @@ class ItalyANAC(CKANSpider, BigFileSpider):
     # e.g. https://dati.anticorruzione.it/opendata/download/dataset/ocds/filesystem/bulk/2022/01.json
     formatter = components(-2)
 
-    # ResizePackageMiddleware
-    def ocid_fallback(self, release):
-        # Extract the ocid from the release id as a fallback, like ocds-hu01ve-7608611 from ocds-hu01ve-7608611-01.
-        return "-".join(release["id"].split("-")[:3])
-
     # CKANSpider
     def get_resource_date(self, resource):
         year, month = self.formatter(resource["url"]).split("-")
         return datetime.datetime(int(year), int(month), 1, tzinfo=datetime.timezone.utc)
+
+    # ResizePackageMiddleware
+    def ocid_fallback(self, release):
+        # Extract the ocid from the release id as a fallback, like ocds-hu01ve-7608611 from ocds-hu01ve-7608611-01.
+        return "-".join(release["id"].split("-")[:3])

@@ -31,10 +31,11 @@ class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
 
     # parse_page must be provided by subclasses.
 
+    # LinksSpider
     def parse(self, response):
         # Remove non-iso-8859-1 characters.
-        response = response.replace(body=transcode_bytes(response.body, self.encoding))
-        yield from super().parse(response)
+        yield from super().parse(response.replace(body=transcode_bytes(response.body, self.encoding)))
 
+    # BaseSpider
     def get_retry_wait_time(self, response):
         return 300

@@ -7,8 +7,7 @@ class HondurasSEFINAPI(PeriodicSpider):
     Domain
       Secretaria de Finanzas de Honduras (SEFIN)
     Caveats
-     The API returns HTTP 500 error for the data between 2012 and 2018,
-     however, these datasets are available in the bulk download method.
+     The API returns HTTP 500 errors for 2012-2018 data. Use ``honduras_sefin_bulk`` for that range.
     Spider arguments
       from_date
         Download only data from this year onward (YYYY format). Defaults to '2019'.
@@ -33,7 +32,9 @@ class HondurasSEFINAPI(PeriodicSpider):
     pattern = "https://guancasco.sefin.gob.hn/EDCA_WEBAPI/api/listaOcids/{}"
     formatter = staticmethod(components(-1))  # year
 
+    # SimpleSpider
     def parse(self, response):
+        # The listaOcids endpoint returns a URL list.
         for url in response.json():
             # URL looks like https://guancasco.sefin.gob.hn/EDCA_WEBAPI/api/releasePackage/P2022-3-1-197
             yield self.build_request(url, formatter=self.formatter, callback=super().parse)

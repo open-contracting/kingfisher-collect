@@ -15,7 +15,6 @@ class NigeriaBonMaximusBase(SimpleSpider):
 
     def parse_list(self, response):
         for url in response.xpath('//table[@id="contractTable"]/tbody/tr/td[2]/a/@href').getall():
-            # The URLs look like
-            # https://url_prefix/existing_award_details.php?id=ocds-xwwr9a-000103-OS/HLT/02
+            # URL looks like https://url_prefix/existing_award_details.php?id=ocds-xwwr9a-000103-OS/HLT/02
             ocid = get_parameter_value(url, "id").replace("/", "_")
             yield self.build_request(f"{self.url_prefix}media/{ocid}.json", formatter=components(-1))

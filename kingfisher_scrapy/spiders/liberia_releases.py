@@ -36,6 +36,7 @@ class LiberiaReleases(IndexSpider):
         url, kwargs = self.url_builder(self.start_page, None, None)
         yield scrapy.Request(url, **kwargs, callback=self.parse_list)
 
+    # IndexSpider
     def url_builder(self, value, data, response):
         # This endpoint is undocumented.
         return f"{self.url_prefix}searchRecords.action", {

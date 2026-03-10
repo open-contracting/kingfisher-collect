@@ -23,6 +23,7 @@ class UruguayRecords(UruguayBase):
     # SimpleSpider
     data_type = "record_package"
 
+    # UruguayBase
     def parse_list(self, response):
         url_prefix = "https://www.comprasestatales.gub.uy/ocds/record/"
 

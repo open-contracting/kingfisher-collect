@@ -42,7 +42,8 @@ class Kosovo(SimpleSpider):
                 formatter=parameters("endDateFrom", "endDateEnd"),
             )
 
+    # SimpleSpider
     def parse(self, response):
-        # The API returns a release package with an empty releases array if no releases were found.
+        # If no releases were found, the API returns a release package with an empty releases array.
         if response.json()["releases"]:
-            yield self.build_file_from_response(response, data_type=self.data_type)
+            yield from super().parse(response)

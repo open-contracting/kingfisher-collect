@@ -22,6 +22,7 @@ class ParaguayDNCPReleases(ParaguayDNCPBase):
     # SimpleSpider
     data_type = "release_package"
 
+    # ParaguayDNCPBase
     def get_files_to_download(self, data):
         for record in data["records"]:
             for release in record["releases"]:

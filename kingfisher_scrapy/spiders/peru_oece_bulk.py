@@ -30,6 +30,7 @@ class PeruOECEBulk(CompressedFileSpider, IndexSpider):
     async def start(self):
         yield scrapy.Request(self.peru_base_url.format(1), callback=self.parse_list)
 
+    # IndexSpider
     def url_builder(self, value, data, response):
         return self.peru_base_url.format(value)
 

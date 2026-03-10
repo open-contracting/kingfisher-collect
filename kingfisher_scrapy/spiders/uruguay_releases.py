@@ -23,6 +23,7 @@ class UruguayReleases(UruguayBase):
     # SimpleSpider
     data_type = "release_package"
 
+    # UruguayBase
     def parse_list(self, response):
         for url in response.xpath("//item/link/text()").getall():
             yield self.build_request(url, formatter=components(-1))

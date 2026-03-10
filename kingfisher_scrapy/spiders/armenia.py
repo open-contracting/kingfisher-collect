@@ -31,13 +31,14 @@ class Armenia(LinksSpider):
             "https://armeps.am/ocds/release", meta={"file_name": "offset-0.json", "handle_httpstatus_all": True}
         )
 
+    # LinksSpider
     def parse(self, response):
         # If the request was successful, parse the response as usual.
         if self.is_http_success(response):
             yield self.build_file_from_response(response, data_type=self.data_type)
 
-            # Use `dont_filter` in case the search for a successful timestamp used the same offset. Use `dont_retry`
-            # since errors are expected.
+            # Use `dont_filter` in case the search for a successful timestamp used the same offset.
+            # Use `dont_retry` and `handle_httpstatus_all` since errors are expected.
             yield self.next_link(response, dont_filter=True, meta={"dont_retry": True, "handle_httpstatus_all": True})
         # Otherwise, parse the response as usual, then (1) pick a date range and (2) do a binary search within it.
         # This approach assumes that, if two offsets error, then intervening offsets error, too.

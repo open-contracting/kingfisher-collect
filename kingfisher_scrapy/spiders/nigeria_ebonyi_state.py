@@ -30,7 +30,7 @@ class NigeriaEbonyiState(PeriodicSpider):
     # SimpleSpider
     data_type = "release_package"
 
+    # SimpleSpider
     def parse(self, response):
         # Replace unescaped tab characters within strings with a space.
-        response = response.replace(body=response.body.replace(b"\t", b" "))
-        yield from super().parse(response)
+        yield from super().parse(response.replace(body=response.body.replace(b"\t", b" ")))

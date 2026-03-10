@@ -19,5 +19,6 @@ class UnitedKingdomContractsFinderReleases(UnitedKingdomContractsFinderBase):
     # SimpleSpider
     data_type = "release_package"
 
+    # UnitedKingdomContractsFinderBase
     def parse_page(self, response):
         yield from self.parse(response)

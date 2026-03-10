@@ -39,6 +39,11 @@ class UgandaReleases(PeriodicSpider):
     pattern = "https://gpp.ppda.go.ug/adminapi/public/api/open-data/v2/ocds/download?fy={0}-{1}&format=json&code=1"
     formatter = staticmethod(parameters("fy", "code"))
 
+    # PeriodicSpider
+    def build_urls(self, date):
+        yield self.pattern.format(date, date + 1)
+
+    # SimpleSpider
     def parse(self, response):
         # 404 responses indicate we've reached the end of the 'code' sequence for this fiscal year.
         if response.status == 404:
@@ -55,6 +60,3 @@ class UgandaReleases(PeriodicSpider):
             replace_parameters(response.request.url, code=int(get_parameter_value(response.request.url, "code")) + 1),
             formatter=self.formatter,
         )
-
-    def build_urls(self, date):
-        yield self.pattern.format(date, date + 1)

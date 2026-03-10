@@ -64,7 +64,8 @@ class BrazilCompras(LinksSpider):
                     formatter=self.formatter,
                 )
 
+    # LinksSpider
     def parse(self, response):
-        # The API returns a package without releases if no results are found.
+        # If no releases were found, the API returns a release package with no releases array.
         if "releases" in response.json():
             yield from super().parse(response)

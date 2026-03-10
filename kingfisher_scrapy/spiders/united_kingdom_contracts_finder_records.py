@@ -23,6 +23,7 @@ class UnitedKingdomContractsFinderRecords(UnitedKingdomContractsFinderBase):
     # SimpleSpider
     data_type = "record_package"
 
+    # UnitedKingdomContractsFinderBase
     def parse_page(self, response):
         for release in response.json()["releases"]:
             yield self.build_request(

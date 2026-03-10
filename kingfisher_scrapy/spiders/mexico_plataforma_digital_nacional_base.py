@@ -31,6 +31,7 @@ class MexicoPlataformaDigitalNacionalBase(IndexSpider):
             callback=self.parse_list,
         )
 
+    # IndexSpider
     def url_builder(self, value, data, response):
         return f"{self.url_prefix}{self.publisher_id}", {
             "method": "POST",

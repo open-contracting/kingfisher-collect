@@ -44,8 +44,8 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
     # The endpoint doesn't return all available releases with a longer `step` value.
     step = 0.25
 
+    # LinksSpider
     def parse(self, response):
         # TODO(james): Temporary fix. Remove this method once the issue is closed in Kingfisher Process.
         # https://github.com/open-contracting/kingfisher-process/issues/323
-        response = response.replace(body=response.body.replace(b"1e9999", b"9999999"))
-        yield from super().parse(response)
+        yield from super().parse(response.replace(body=response.body.replace(b"1e9999", b"9999999")))

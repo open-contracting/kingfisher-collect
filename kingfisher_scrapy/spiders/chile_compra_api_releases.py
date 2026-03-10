@@ -30,6 +30,7 @@ class ChileCompraAPIReleases(ChileCompraAPIBase):
     # SimpleSpider
     data_type = "release_package"
 
+    # ChileCompraAPIBase
     def handle_item(self, item):
         yield self.build_request(
             f"https://api.mercadopublico.cl/APISOCDS/OCDS/allrelease/{item['ocid'].replace('ocds-70d2nz-', '')}",

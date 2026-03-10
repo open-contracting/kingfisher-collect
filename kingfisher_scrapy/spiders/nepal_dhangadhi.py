@@ -33,6 +33,7 @@ class NepalDhangadhi(SimpleSpider):
                 priority=number * -1,
             )
 
+    # SimpleSpider
     def parse(self, response):
         # `dont_redirect` is set, so redirects reach the callback.
         if self.is_http_success(response):

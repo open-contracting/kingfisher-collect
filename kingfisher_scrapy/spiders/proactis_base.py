@@ -33,6 +33,7 @@ class ProactisBase(PeriodicSpider):
         25,  # OJEU - F25 - Concession Award Notice
     ]
 
+    # PeriodicSpider
     def build_urls(self, date):
         url = self.base_url + self.pattern
         self.base_notice_types.extend(self.notice_types)
@@ -40,12 +41,8 @@ class ProactisBase(PeriodicSpider):
         for notice_type in self.base_notice_types:
             yield url.format(date, notice_type)
 
+    # SimpleSpider
     def parse(self, response):
-        data = response.json()
-
-        # Some responses are a package without a list of releases.
-        if "releases" not in data:
-            self.log_error_from_response(response, level="info", message=data)
-            return
-
-        yield from super().parse(response)
+        # Some responses are a release package with no releases array.
+        if "releases" in response.json():
+            yield from super().parse(response)
