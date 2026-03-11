@@ -58,9 +58,10 @@ class ParaguayDNCPBase(SimpleSpider):
                 f"-04:00&fecha_hasta={end_date.strftime(self.date_format)}-04:00&items_per_page=10000"
             )
             for url in (
-                # We request the active or successful tenders by using the "publicacion_llamado" filter.
+                # Request active or successful tenders, using the "publicacion_llamado" filter.
                 f"{url_base}&tipo_fecha=publicacion_llamado",
-                # And the planned ones with the "fecha_release" and tender.id=planned filters.
+                # Request planned tenders, using the "fecha_release" and "tender.id=planned" filters.
+                # The API supports filtering by any OCDS field. Not all date ranges have planned tenders.
                 f"{url_base}&tipo_fecha=fecha_release&tender.id=planned",
             ):
                 yield scrapy.Request(
