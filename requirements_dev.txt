@@ -273,7 +273,7 @@ schema==0.7.2
     # via
     #   -r requirements.txt
     #   flattentool
-scrapy==2.14.1
+scrapy==2.14.2
     # via
     #   -r requirements.txt
     #   scrapyd
