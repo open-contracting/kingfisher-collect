@@ -11,4 +11,4 @@ jobs:
       python-version: '3.10'
       # scrapyd is run as a command in production. scrapyd-client is run as a command for deployment.
       standard-maintenance-scripts-ignore: scrapyd,scrapyd-client
-      before-lint: shasum -c requirements.txt.sha256
+      before-lint: sha256sum -c requirements.txt.sha256

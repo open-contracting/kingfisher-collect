@@ -21,8 +21,14 @@ repos:
         files: ^requirements(_dev)?\.(in|txt)$
   - repo: local
     hooks:
-      - id: local
-        name: local
+      - id: sha256sum
+        name: sha256sum
+        language: unsupported
+        entry: sh -c 'sha256sum requirements.txt > requirements.txt.sha256'
+        files: ^requirements\.txt$
+        pass_filenames: false
+      - id: scrapy-checkall
+        name: scrapy-checkall
         language: python
         entry: scrapy checkall --loglevel=WARNING
         additional_dependencies: [ijson, jsonpointer, pathvalidate, pydantic, orjson, rarfile, scrapy]
