@@ -229,7 +229,7 @@ pydispatcher==2.0.7
     # via
     #   -r requirements.txt
     #   scrapy
-pyopenssl==25.3.0
+pyopenssl==26.0.0
     # via
     #   -r requirements.txt
     #   scrapy
