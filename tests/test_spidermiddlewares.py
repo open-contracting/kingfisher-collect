@@ -445,22 +445,21 @@ def test_retry_data_error_middleware(exception):
     response = response_fixture()
     middleware = RetryDataErrorMiddleware()
 
-    generator = middleware.process_spider_exception(response, exception)
+    result = middleware.process_spider_exception(response, exception)
 
     if isinstance(exception, BadZipFile | RetryableError):
-        request = next(generator)
+        request = result[0]
 
         assert request.dont_filter is True
         assert request.meta["retries"] == 1
         assert request.url == response.request.url
 
         response.request.meta["retries"] = 3
-        generator = middleware.process_spider_exception(response, exception)
+        result = middleware.process_spider_exception(response, exception)
 
-        assert not list(generator)
+        assert result == []
     else:
-        with pytest.raises(Exception, match="message"):
-            list(generator)
+        assert result is None
 
 
 @pytest.mark.parametrize(
@@ -637,7 +636,7 @@ def test_http_error_middleware_too_many_requests(attempts):
     response = response_fixture(meta=meta, status=429, headers={"Retry-After": "5"})
 
     middleware = HttpErrorMiddleware(spider.crawler)
-    actual = next(middleware.process_spider_exception(response, http_error(spider, response)))
+    actual = middleware.process_spider_exception(response, http_error(spider, response))[0]
 
     assert isinstance(actual, scrapy.Request)
     assert actual.meta["retries"] == attempts + 1
@@ -655,7 +654,7 @@ def test_http_error_middleware_retry_http_codes(attempts):
     response = response_fixture(meta=meta, status=403)
 
     middleware = HttpErrorMiddleware(spider.crawler)
-    actual = next(middleware.process_spider_exception(response, http_error(spider, response)))
+    actual = middleware.process_spider_exception(response, http_error(spider, response))[0]
 
     assert isinstance(actual, scrapy.Request)
     assert actual.meta["retries"] == attempts + 1
@@ -673,9 +672,9 @@ def test_http_error_middleware_max_attempts_reached(caplog):
     response = response_fixture(meta={"file_name": "test.json", "retries": 2}, status=500)
 
     middleware = HttpErrorMiddleware(spider.crawler)
-    result = list(middleware.process_spider_exception(response, http_error(spider, response)))
+    result = middleware.process_spider_exception(response, http_error(spider, response))
 
-    assert len(result) == 0
+    assert result is None
     assert [record.message for record in caplog.records] == [
         "status=500 message='Gave up retrying (failed 3 times)' request=<GET http://example.com> file_name=test.json",
     ]
@@ -693,9 +692,9 @@ def test_http_error_middleware_error(status, caplog):
     response = response_fixture(meta={"file_name": "test.json"}, status=status)
 
     middleware = HttpErrorMiddleware(spider.crawler)
-    result = list(middleware.process_spider_exception(response, http_error(spider, response)))
+    result = middleware.process_spider_exception(response, http_error(spider, response))
 
-    assert len(result) == 0
+    assert result is None
     assert [record.message for record in caplog.records] == [
         f"status={status} message='' request=<GET http://example.com> file_name=test.json"
     ]
@@ -711,9 +710,9 @@ def test_http_error_middleware_is_http_error_expected(caplog):
     response = response_fixture(meta={"file_name": "test.json"}, status=404)
 
     middleware = HttpErrorMiddleware(spider.crawler)
-    result = list(middleware.process_spider_exception(response, http_error(spider, response)))
+    result = middleware.process_spider_exception(response, http_error(spider, response))
 
-    assert len(result) == 0
+    assert result is None
     assert [record.message for record in caplog.records] == [
         "status=404 message='' request=<GET http://example.com> file_name=test.json"
     ]
@@ -725,5 +724,6 @@ def test_http_error_middleware_non_http_error():
 
     middleware = HttpErrorMiddleware(spider.crawler)
 
-    with pytest.raises(ValueError, match="test"):
-        list(middleware.process_spider_exception(response_fixture(), ValueError("test")))
+    result = middleware.process_spider_exception(response_fixture(), ValueError("test"))
+
+    assert result is None
