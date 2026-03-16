@@ -55,8 +55,8 @@ SPIDER_MIDDLEWARES = {
     # `process_spider_exception` is invoked in decreasing order.
     # Scrapy's HttpErrorMiddleware is at priority 50. We need to prevent it from logging and ignoring HttpError.
     # https://docs.scrapy.org/en/latest/topics/settings.html#spider-middlewares-base
+    "kingfisher_scrapy.spidermiddlewares.RetryDataErrorMiddleware": 52,
     "kingfisher_scrapy.spidermiddlewares.HttpErrorMiddleware": 51,
-    "kingfisher_scrapy.spidermiddlewares.RetryDataErrorMiddleware": 49,
 }
 
 # Enable or disable downloader middlewares
