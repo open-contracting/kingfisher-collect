@@ -3,7 +3,10 @@ This spider raises exceptions in different methods. You can use this to test whe
 
 .. code-block:: bash
 
+   python -m scrapy crawl error -s SPIDER_MODULES=tests.spiders -a raise_from_crawler=True
    python -m scrapy crawl error -s SPIDER_MODULES=tests.spiders -a raise_init=True
+   python -m scrapy crawl error -s SPIDER_MODULES=tests.spiders -a raise_start=True
+   python -m scrapy crawl error -s SPIDER_MODULES=tests.spiders -a raise_parse=True
 """
 
 import scrapy
@@ -39,22 +42,22 @@ class Error(BaseSpider):
         self.raise_parse = raise_parse
 
         if raise_init:
-            raise IncoherentConfigurationError("message")
+            raise IncoherentConfigurationError("__init__")
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(BaseSpider, cls).from_crawler(crawler, *args, **kwargs)
 
         if spider.raise_from_crawler:
-            raise SpiderArgumentError("message")
+            raise SpiderArgumentError("from_crawler")
 
         return spider
 
     async def start(self):
         if self.raise_start:
-            raise RuntimeError("message")
-        yield scrapy.Request("http://httpstat.us/200")
+            raise RuntimeError("start")
+        yield scrapy.Request("https://httpbingo.org/status/200")
 
     def parse(self, response):
         if self.raise_parse:
-            raise RuntimeError("message")
+            raise RuntimeError("parse")
