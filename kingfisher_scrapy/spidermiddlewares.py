@@ -321,7 +321,7 @@ class HttpErrorMiddleware(BaseSpiderMiddleware):
 
     def process_spider_exception(self, response, exception):
         if not isinstance(exception, HttpError):
-            raise exception
+            return None
 
         attempts = response.request.meta.get("retries", 0) + 1
 
@@ -336,12 +336,15 @@ class HttpErrorMiddleware(BaseSpiderMiddleware):
                 "Retrying %(request)s in %(wait_time)ds (failed %(failures)d times): HTTP %(status)d",
                 {"request": response.request, "failures": attempts, "status": response.status, "wait_time": wait_time},
             )
-            yield request
-        elif self.spider.is_http_retryable(response):
+            return [request]
+
+        if self.spider.is_http_retryable(response):
+            # Spiders that set `retry_http_codes` aren't expected to also define `is_http_error_expected()`.
             self.spider.log_error_from_response(response, message=f"Gave up retrying (failed {attempts} times)")
         else:
             level = "warning" if self.spider.is_http_error_expected(response) else "error"
             self.spider.log_error_from_response(response, level=level)
+        return None
 
 
 class RetryDataErrorMiddleware:
@@ -356,7 +359,7 @@ class RetryDataErrorMiddleware:
 
     def process_spider_exception(self, response, exception):
         if not isinstance(exception, BadZipFile | RetryableError):
-            raise exception
+            return None
 
         attempts = response.request.meta.get("retries", 0) + 1
         if attempts > 3:
@@ -364,7 +367,7 @@ class RetryDataErrorMiddleware:
                 "Gave up retrying %(request)s (failed %(failures)d times): %(exception)s",
                 {"request": response.request, "failures": attempts, "exception": exception},
             )
-            return
+            return []
         request = response.request.copy()
         request.dont_filter = True
         request.meta["retries"] = attempts
@@ -372,4 +375,4 @@ class RetryDataErrorMiddleware:
             "Retrying %(request)s (failed %(failures)d times): %(exception)s",
             {"request": response.request, "failures": attempts, "exception": exception},
         )
-        yield request
+        return [request]
