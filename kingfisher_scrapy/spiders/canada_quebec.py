@@ -1,6 +1,9 @@
 import datetime
 
+import orjson
+
 from kingfisher_scrapy.base_spiders import CKANSpider, SimpleSpider
+from kingfisher_scrapy.exceptions import RetryableError
 from kingfisher_scrapy.util import components
 
 
@@ -41,3 +44,13 @@ class CanadaQuebec(CKANSpider, SimpleSpider):
         return datetime.datetime.strptime(resource["url"].split("_")[-2], "%Y%m%d").replace(
             tzinfo=datetime.timezone.utc
         )
+
+    # SimpleSpider
+    def parse(self, response):
+        # Retry if the response is truncated (invalid JSON).
+        # https://github.com/open-contracting/kingfisher-collect/issues/1250
+        try:
+            response.json()
+        except orjson.JSONDecodeError as e:
+            raise RetryableError from e
+        yield from super().parse(response)
