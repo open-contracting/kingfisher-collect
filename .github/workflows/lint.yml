@@ -10,5 +10,6 @@ jobs:
     with:
       python-version: '3.10'
       # scrapyd is run as a command in production. scrapyd-client is run as a command for deployment.
-      standard-maintenance-scripts-ignore: scrapyd,scrapyd-client
+      # Dependabot removes setuptools, although it's a indirect dependency.
+      standard-maintenance-scripts-ignore: scrapyd,scrapyd-client,setuptools
       before-lint: sha256sum -c requirements.txt.sha256
