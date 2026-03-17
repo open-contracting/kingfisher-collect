@@ -31,4 +31,5 @@ repos:
         name: scrapy-checkall
         language: python
         entry: scrapy checkall --loglevel=WARNING
+        files: ^kingfisher_scrapy/spiders
         additional_dependencies: [ijson, jsonpointer, pathvalidate, pydantic, orjson, rarfile, scrapy]
