@@ -131,11 +131,11 @@ protego==0.2.1
     # via scrapy
 psycopg2==2.9.11
     # via -r requirements.in
-pyasn1==0.4.8
+pyasn1==0.6.3
     # via
     #   pyasn1-modules
     #   service-identity
-pyasn1-modules==0.2.7
+pyasn1-modules==0.4.2
     # via service-identity
 pycparser==2.22
     # via cffi
