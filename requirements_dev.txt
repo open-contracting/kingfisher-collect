@@ -52,7 +52,7 @@ contextlib2==0.6.0.post1
     #   schema
 coverage[toml]==7.6.1
     # via -r requirements_dev.in
-cryptography==46.0.5
+cryptography==46.0.6
     # via
     #   -r requirements.txt
     #   pyopenssl
