@@ -29,3 +29,9 @@ class AlbaniaPublicProcurementCommissionBase(SimpleSpider):
                 headers={"Accept": "application/json", "Content-Type": "application/json"},
                 meta={"file_name": f"{year}.json"},
             )
+
+    # SimpleSpider
+    def parse(self, response):
+        # If no releases were found, the API returns a release package with an empty releases array.
+        if response.json()["result"]["releases"]:
+            yield from super().parse(response)
