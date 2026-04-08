@@ -13,6 +13,6 @@ scrapy
 scrapyd
 scrapyd-client
 sentry-sdk
-setuptools
+setuptools<81
 twisted
 yapw[perf]
