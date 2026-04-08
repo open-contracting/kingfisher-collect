@@ -14,6 +14,7 @@ from flattentool.exceptions import FlattenToolWarning
 from scrapy.exceptions import DropItem, NotSupported
 from scrapy.utils.defer import deferred_from_coro
 
+from kingfisher_scrapy.exceptions import IncoherentConfigurationError
 from kingfisher_scrapy.items import File, FileItem, PluckedItem
 from kingfisher_scrapy.util import transcode
 
@@ -130,11 +131,29 @@ class Pluck(BasePipeline):
 
 
 class Unflatten(BasePipeline):
-    """Converts an item's data from CSV/XLSX to JSON, using the ``unflatten`` command from Flatten Tool."""
+    """
+    Converts an item's data from CSV/XLSX to JSON, using the ``unflatten`` command from Flatten Tool.
+
+    If the spider sets ``unflatten_combine = True``, all CSV items are accumulated into a single temporary directory
+    and unflattened together as one combined release package. The spider must set ``self._csv_total`` (the number of
+    CSV files to expect) before any items flow through the pipeline — typically in ``parse_list``.
+    Intermediate items are dropped; only the final combined item is emitted.
+    """
+
+    def __init__(self, crawler):
+        super().__init__(crawler)
+        if self.spider.unflatten_combine and not self.spider.unflatten:
+            raise IncoherentConfigurationError("unflatten_combine = True requires unflatten = True.")
+        if self.spider.unflatten_combine:
+            self._combine_tmpdir = tempfile.TemporaryDirectory()
+            self._combine_count = 0
 
     def process_item(self, item):
         if not self.spider.unflatten or not isinstance(item, File | FileItem):
             return item
+
+        if self.spider.unflatten_combine:
+            return self._process_combined(item)
 
         input_name = item.file_name
 
@@ -173,9 +192,7 @@ class Unflatten(BasePipeline):
                     input_name,
                     root_list_path="releases",
                     root_id="ocid",
-                    schema=jsonref.loads(
-                        pkgutil.get_data("kingfisher_scrapy", f"schema/{self.spider.ocds_version}.json")
-                    ),
+                    schema=self._get_schema(),
                     input_format=input_format,
                     output_name=output_name,
                     **self.spider.unflatten_args,
@@ -185,6 +202,51 @@ class Unflatten(BasePipeline):
                 item.data = f.read()
 
         return item
+
+    def _get_schema(self):
+        if not hasattr(self, "_schema"):
+            self._schema = jsonref.loads(
+                pkgutil.get_data("kingfisher_scrapy", f"schema/{self.spider.ocds_version}.json")
+            )
+        return self._schema
+
+    def _process_combined(self, item):
+        combine_dir = self._combine_tmpdir.name
+
+        if item.data:
+            with open(os.path.join(combine_dir, item.file_name), "wb") as f:
+                f.write(item.data)
+
+        self._combine_count += 1
+        if self._combine_count < self.spider.csv_total:
+            raise DropItem(f"Buffering for combined unflatten ({self._combine_count}/{self.spider.csv_total})")
+
+        if not any(f.endswith(".csv") for f in os.listdir(combine_dir)):
+            raise DropItem("All CSV downloads failed; nothing to unflatten")
+
+        output_name = os.path.join(combine_dir, "result.json")
+
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=FlattenToolWarning)
+            unflatten(
+                combine_dir,
+                root_list_path="releases",
+                root_id="ocid",
+                schema=self._get_schema(),
+                input_format="csv",
+                output_name=output_name,
+                **self.spider.unflatten_args,
+            )
+
+        with open(output_name, "rb") as f:
+            item.data = f.read()
+        item.file_name = "result.json"
+
+        return item
+
+    def close_spider(self):
+        if self.spider.unflatten_combine:
+            self._combine_tmpdir.cleanup()
 
 
 def _resolve_pointer(data, pointer):
