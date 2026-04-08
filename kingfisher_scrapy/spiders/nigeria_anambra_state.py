@@ -10,6 +10,7 @@ class NigeriaAnambraState(NigeriaBonMaximusBase):
     """
 
     name = "nigeria_anambra_state"
+    max_attempts = 3
     retry_http_codes = [403]
 
     # BaseSpider

@@ -24,6 +24,11 @@ class GuatemalaBulk(CompressedFileSpider):
     """
 
     name = "guatemala_bulk"
+    custom_settings = {
+        # Reduce the number of concurrent requests to avoid multiple failures.
+        "CONCURRENT_REQUESTS": 1,
+    }
+    max_attempts = 3
     retry_http_codes = [400]
 
     # BaseSpider
