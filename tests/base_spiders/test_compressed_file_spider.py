@@ -205,6 +205,27 @@ def test_parse_nested_archive():
         next(generator)
 
 
+def test_skip_empty_releases():
+    spider = spider_with_crawler(spider_class=CompressedFileSpider)
+    spider.data_type = "release_package"
+    spider.skip_empty_releases = True
+
+    io = BytesIO()
+    with ZipFile(io, "w", compression=ZIP_DEFLATED) as zipfile:
+        zipfile.writestr("empty.json", orjson.dumps({"releases": []}))
+        zipfile.writestr("nonempty.json", orjson.dumps({"releases": [{"ocid": "ocds-213czf-1"}]}))
+
+    response = response_fixture(body=io.getvalue(), meta={"file_name": "test.zip"})
+    generator = spider.parse(response)
+    item = next(generator)
+
+    assert type(item) is File
+    assert item.file_name == "test-nonempty.json"
+
+    with pytest.raises(StopIteration):
+        next(generator)
+
+
 def test_parse_unknown_format():
     spider = spider_with_crawler(spider_class=CompressedFileSpider)
     spider.data_type = "release_package"

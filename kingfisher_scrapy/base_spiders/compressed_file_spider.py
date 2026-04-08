@@ -1,6 +1,7 @@
 from io import BytesIO
 from zipfile import ZipFile
 
+import orjson
 from pathvalidate import sanitize_filename
 from rarfile import RarFile
 
@@ -25,6 +26,7 @@ class CompressedFileSpider(BaseSpider):
        contain the given text.
     #. Optionally, add a ``file_name_must_not_contain = 'text'`` class attribute to only decompress the files whose
        paths do not contain the given text.
+    #. Optionally, add a ``skip_empty_releases = True`` class attribute to skip files with empty ``releases`` arrays.
     #. Write a ``start()`` method to request the archive files
 
     .. code-block:: python
@@ -53,6 +55,7 @@ class CompressedFileSpider(BaseSpider):
     yield_non_archive_file = False
     file_name_must_contain = ""
     file_name_must_not_contain = ""
+    skip_empty_releases = False
 
     def parse(self, response):
         yield from self.process_archive_file(response, response.request.meta["file_name"], response.body)
@@ -112,6 +115,10 @@ class CompressedFileSpider(BaseSpider):
                 # and then to extract the releases themselves.
                 if self.resize_package:
                     data = {"data": compressed_file, "package": archive_file.open(file_info.filename)}
+                elif self.skip_empty_releases:
+                    data = compressed_file.read()
+                    if not orjson.loads(data)["releases"]:
+                        continue
                 else:
                     data = compressed_file
 

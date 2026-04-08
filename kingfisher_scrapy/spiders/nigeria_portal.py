@@ -20,6 +20,9 @@ class NigeriaPortal(CompressedFileSpider):
     # SimpleSpider
     data_type = "release_package"
 
+    # CompressedFileSpider
+    skip_empty_releases = True
+
     async def start(self):
         # This follows a meta refresh.
         yield scrapy.Request("https://nocopo.bpp.gov.ng/ocdsjson.ashx?ocid=all", meta={"file_name": "all.zip"})
