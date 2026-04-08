@@ -183,7 +183,6 @@ service-identity==24.1.0
     # via scrapy
 setuptools==80.10.2
     # via
-    #   -r requirements.in
     #   incremental
     #   scrapyd
     #   scrapyd-client
