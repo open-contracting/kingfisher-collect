@@ -12,7 +12,6 @@ class UnitedKingdomContractsFinderBase(LinksSpider, PeriodicSpider):
     date_format = "datetime"
     default_from_date = "2014-01-01T00:00:00"
     encoding = "iso-8859-1"
-    max_attempts = 5
     # "When the user has submitted too many requests, no further requests should be made until after 5 minutes"
     # https://www.contractsfinder.service.gov.uk/apidocumentation/Notices/1/GET-Published-OCDS-Record
     retry_http_codes = [403]

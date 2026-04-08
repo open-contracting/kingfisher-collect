@@ -10,7 +10,6 @@ class NigeriaOsunState(NigeriaBonMaximusBase):
     """
 
     name = "nigeria_osun_state"
-    max_attempts = 3
     retry_http_codes = [403]
 
     # BaseSpider

@@ -23,7 +23,6 @@ class DominicanRepublicAPI(IndexSpider):
     default_from_date = "2015-01-01"
     date_format = "date"
     date_required = True
-    max_attempts = 3
 
     # SimpleSpider
     data_type = "release_package"

@@ -28,7 +28,6 @@ class BrazilCompras(LinksSpider):
     date_required = True
     # This is the first date for which there's data for any buyers.
     default_from_date = "2021-08-10"
-    max_attempts = 5
 
     # SimpleSpider
     data_type = "release_package"

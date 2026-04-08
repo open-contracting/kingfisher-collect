@@ -29,7 +29,6 @@ class EcuadorSERCOPAPI(IndexSpider, PeriodicSpider):
     # BaseSpider
     date_format = "year"
     default_from_date = "2015"
-    max_attempts = 5
 
     # SimpleSpider
     data_type = "release_package"

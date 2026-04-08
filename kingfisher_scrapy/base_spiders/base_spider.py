@@ -70,7 +70,7 @@ class BaseSpider(scrapy.Spider):
     ocds_version = "1.1"
 
     # Regarding the access method.
-    max_attempts = 1
+    max_attempts = 5
     retry_http_codes = []
 
     # Not to be overridden by sub-classes.

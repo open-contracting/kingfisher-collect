@@ -25,7 +25,6 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
     # BaseSpider
     date_format = "datetime"
     default_from_date = "2021-01-01T00:00:00"
-    max_attempts = 5
     # https://www.find-tender.service.gov.uk/apidocumentation/1.0/GET-ocdsReleasePackages
     retry_http_codes = [503]
 
