@@ -62,4 +62,5 @@ omit = ["*/kingfisher_scrapy/spiders/*"]
 addopts = "--doctest-modules --reactor=asyncio"  # --reactor is provided by pytest-twisted
 
 [tool.uv.pip]
+exclude-newer = "1 week"
 python-platform = "linux"  # greenlet
