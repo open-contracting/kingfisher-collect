@@ -4,7 +4,7 @@ import datetime
 import logging
 
 from scrapy.exceptions import IgnoreRequest
-from scrapy.http import TextResponse
+from scrapy.http import TextResponse, XmlResponse
 from scrapy.utils.defer import deferred_from_coro
 
 from kingfisher_scrapy.responses import JSONResponse
@@ -113,6 +113,6 @@ class OrjsonMiddleware:
     """Downloader middleware that replaces the response class for faster JSON parsing."""
 
     def process_response(self, request, response):
-        if isinstance(response, TextResponse):
+        if isinstance(response, TextResponse) and not isinstance(response, XmlResponse):
             return response.replace(cls=JSONResponse)
         return response
