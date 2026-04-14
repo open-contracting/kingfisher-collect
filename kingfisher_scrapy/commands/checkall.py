@@ -8,7 +8,7 @@ from textwrap import dedent
 import requests
 from scrapy.commands import ScrapyCommand
 from scrapy.exceptions import NotSupported
-from scrapy.utils.misc import walk_modules
+from scrapy.utils.misc import walk_modules_iter
 from scrapy.utils.spider import iter_spider_classes
 
 from kingfisher_scrapy.base_spiders import PeriodicSpider
@@ -95,7 +95,7 @@ class CheckAll(ScrapyCommand):
 
         has_output = False
         source_ids_available = set()
-        for module in walk_modules("kingfisher_scrapy.spiders"):
+        for module in walk_modules_iter("kingfisher_scrapy.spiders"):
             if not args or os.path.relpath(module.__file__) in args:
                 source_id = module.__name__.rsplit(".", 1)[-1]
                 for cls in iter_spider_classes(module):

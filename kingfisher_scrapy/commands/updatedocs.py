@@ -4,7 +4,7 @@ from pathlib import Path
 from textwrap import dedent
 
 from scrapy.commands import ScrapyCommand
-from scrapy.utils.misc import walk_modules
+from scrapy.utils.misc import walk_modules_iter
 from scrapy.utils.spider import iter_spider_classes
 
 
@@ -43,7 +43,7 @@ class UpdateDocs(ScrapyCommand):
             for line in lines:
                 f.write(line)
 
-            for key, group in groupby(walk_modules("kingfisher_scrapy.spiders"), _keyfunc):
+            for key, group in groupby(walk_modules_iter("kingfisher_scrapy.spiders"), _keyfunc):
                 if key == "spiders":
                     continue
 
