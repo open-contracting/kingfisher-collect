@@ -572,6 +572,8 @@ async def test_root_path_middleware_item(root_path, sample, data_type, data, exp
 @pytest.mark.parametrize("valid", [True, False])
 @pytest.mark.parametrize("cls", [File, FileItem])
 async def test_validate_json_middleware(valid, cls, caplog):
+    caplog.set_level(logging.WARNING)
+
     spider = spider_with_crawler()
     middleware = ValidateJSONMiddleware(spider.crawler)
     spider.validate_json = True
@@ -610,6 +612,8 @@ async def test_validate_json_middleware(valid, cls, caplog):
 @pytest.mark.parametrize("data", [b'[{"ocid": "abc"}]', {"ocid": "abc"}])
 @pytest.mark.parametrize("cls", [File, FileItem])
 async def test_validate_json_middleware_already_parsed(data, cls, caplog):
+    caplog.set_level(logging.WARNING)
+
     spider = spider_with_crawler()
     middleware = ValidateJSONMiddleware(spider.crawler)
     spider.validate_json = True
