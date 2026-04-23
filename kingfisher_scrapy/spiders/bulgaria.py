@@ -26,15 +26,8 @@ class Bulgaria(CompressedFileSpider):
             f"{self.base_url}/api/listDatasets",
             method="POST",
             body=orjson.dumps(
-                {
-                    "criteria": {
-                        # The Public Procurement Agency organization ID
-                        "org_ids": [502],
-                        "formats": ["JSON"],
-                        "keywords": "OCDS",
-                    },
-                    "records_per_page": 100,
-                }
+                # 502 is the Public Procurement Agency's organization ID.
+                {"criteria": {"org_ids": [502], "formats": ["JSON"], "keywords": "OCDS"}, "records_per_page": 100}
             ),
             callback=self.parse_list,
         )
