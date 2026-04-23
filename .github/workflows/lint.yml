@@ -9,6 +9,8 @@ jobs:
       personal-access-token: ${{ secrets.PAT }}
     with:
       python-version: '3.10'
+      # Used in Unflatten.
+      ocds-schema-exceptions: 1.0.json,1.1.json
       # scrapyd is run as a command in production. scrapyd-client is run as a command for deployment.
       standard-maintenance-scripts-ignore: scrapyd,scrapyd-client
       before-lint: sha256sum -c requirements.txt.sha256
