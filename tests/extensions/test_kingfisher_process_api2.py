@@ -43,7 +43,7 @@ def channel():
     connection = pika.BlockingConnection(pika.URLParameters(RABBIT_URL))
     channel = connection.channel()
     channel.exchange_declare(exchange=RABBIT_EXCHANGE_NAME, exchange_type="direct", durable=True)
-    channel.queue_declare(queue=RABBIT_QUEUE_NAME, durable=False)
+    channel.queue_declare(queue=RABBIT_QUEUE_NAME, durable=False, exclusive=True)
     channel.queue_bind(queue=RABBIT_QUEUE_NAME, exchange=RABBIT_EXCHANGE_NAME, routing_key=RABBIT_ROUTING_KEY)
     yield channel
     connection.close()
@@ -329,7 +329,7 @@ def test_item_scraped(directory, filename, item, channel, tmpdir):
     _method_frame, _header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
 
     assert body is not None  # None if no message in queue
-    assert orjson.loads(body) == expected  # if fails in development, purge kingfisher_process_test_api_loader queue
+    assert orjson.loads(body) == expected
 
 
 @pytest.mark.skipif(SKIP_TEST_IF, reason="RABBIT_URL must be set")
@@ -348,7 +348,7 @@ def test_item_scraped_path(item_file, channel, tmpdir):
     _method_frame, _header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
 
     assert body is not None  # None if no message in queue
-    assert orjson.loads(body) == {  # if fails in development, purge kingfisher_process_test_api_loader queue
+    assert orjson.loads(body) == {
         "collection_id": 1,
         "url": "https://example.com/remote.json",
         "path": "test/20010203_040506/389/file.json",
