@@ -1138,6 +1138,16 @@ Tanzania
 
    scrapy crawl tanzania_bulk_releases
 
+Thailand
+~~~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.thailand_bangkok.ThailandBangkok
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl thailand_bangkok
+
 Uganda
 ~~~~~~
 
