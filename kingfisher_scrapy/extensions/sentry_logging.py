@@ -1,9 +1,15 @@
 import sentry_sdk
-from scrapy.exceptions import NotConfigured
-from twisted.internet.error import ConnectionRefusedError as TxConnectionRefusedError
-from twisted.internet.error import DNSLookupError, TCPTimedOutError
-from twisted.internet.error import TimeoutError as TxTimeoutError
-from twisted.web.client import ResponseFailed, ResponseNeverReceived
+from scrapy.exceptions import (
+    CannotResolveHostError,
+    DownloadConnectionRefusedError,
+    DownloadFailedError,
+    DownloadTimeoutError,
+    NotConfigured,
+)
+
+# This subclass of ConnectError isn't wrapped by Scrapy's wrap_twisted_exceptions().
+# https://docs.twisted.org/en/stable/api/twisted.internet.error.html
+from twisted.internet.error import TCPTimedOutError
 
 IGNORE_MESSAGES = {
     # BaseSpider.log_error_from_response
@@ -34,16 +40,12 @@ def before_send(event, hint):
         and issubclass(
             # https://docs.python.org/3/library/sys.html#sys.exc_info
             log_record.exc_info[0],
-            # Note: ConnectError is a base class, which includes some of these plus others.
             (
-                # https://docs.twisted.org/en/stable/api/twisted.internet.error.html
-                DNSLookupError,
-                TxConnectionRefusedError,  # errno.ECONNREFUSED
-                TCPTimedOutError,  # errno.ETIMEDOUT
-                TxTimeoutError,
-                # https://docs.twisted.org/en/stable/api/twisted.web.client.html
-                ResponseFailed,
-                ResponseNeverReceived,
+                CannotResolveHostError,
+                DownloadConnectionRefusedError,
+                DownloadFailedError,
+                DownloadTimeoutError,
+                TCPTimedOutError,
             ),
         )
     ):

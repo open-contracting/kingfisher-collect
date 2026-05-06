@@ -47,4 +47,6 @@ class UnitedKingdomFTS(LinksSpider, PeriodicSpider):
     def parse(self, response):
         # TODO(james): Temporary fix. Remove this method once the issue is closed in Kingfisher Process.
         # https://github.com/open-contracting/kingfisher-process/issues/323
-        yield from super().parse(response.replace(body=response.body.replace(b"1e9999", b"9999999")))
+        yield from super().parse(
+            response.replace(body=response.body.replace(b"1e9999", b"9999999").replace(b" 000,", b" 0,"))
+        )
