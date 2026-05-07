@@ -213,6 +213,13 @@ Brazil
 Bulgaria
 ~~~~~~~~
 
+.. autoclass:: kingfisher_scrapy.spiders.bulgaria.Bulgaria
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl bulgaria
+
 .. autoclass:: kingfisher_scrapy.spiders.bulgaria_digiwhist.BulgariaDigiwhist
    :no-members:
 
