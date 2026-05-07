@@ -51,6 +51,7 @@ class Bulgaria(CompressedFileSpider):
         {"uri": "some-download-token"}
         """
         yield self.build_request(
+            # /true returns non OCDS data. No parameter returns 404.
             f"{self.base_url}/dataset/resources/download/zip/json/{response.json()['uri']}/false",
             formatter=join(components(-2, -1), extension="zip"),
         )
