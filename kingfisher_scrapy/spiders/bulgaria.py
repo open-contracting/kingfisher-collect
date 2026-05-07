@@ -10,8 +10,7 @@ class Bulgaria(CompressedFileSpider):
     Domain
       Public Procurement Agency (PPA)
     Caveats
-      The dataset is only accessible from Bulgaria due to IP restrictions. A VPN is required to access it from outside
-      Bulgaria.
+      Access to the publication is geo-restricted to Bulgarian IP addresses. Use a VPN to access it from outside.
     API documentation
       https://data.egov.bg/api-spetsifikatsiya?section=22&item=82
     """
