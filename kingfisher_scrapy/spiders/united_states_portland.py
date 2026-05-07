@@ -26,11 +26,13 @@ class UnitedStatesPortland(SimpleSpider):
 
     def parse_page(self, response):
         # Follow the link to the most recent Google Drive folder containing the JSON file.
-        yield scrapy.Request(response.css('a[href*="drive.google.com"]::attr(href)').get(), callback=self.parse_folder)
+        yield scrapy.Request(
+            response.xpath('//a[contains(@href, "drive.google.com")]/@href').get(), callback=self.parse_folder
+        )
 
     def parse_folder(self, response):
         # The id of the file to download is in the `data-id` attribute of a `tr` element that contains a JSON filename.
-        for tr in response.css("tr[data-id]"):
+        for tr in response.xpath("//tr[@data-id]"):
             if "json" in tr.get():
                 yield scrapy.Request(
                     f"https://drive.google.com/uc?export=download&id={tr.attrib['data-id']}", callback=self.parse_file
