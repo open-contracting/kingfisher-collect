@@ -1107,6 +1107,16 @@ Switzerland
 
    scrapy crawl switzerland_digiwhist
 
+Taiwan
+~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.taiwan_aac.TaiwanAAC
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl taiwan_aac
+
 Tanzania
 ~~~~~~~~
 
