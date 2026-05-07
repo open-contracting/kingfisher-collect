@@ -17,13 +17,10 @@ class ArgentinaMendozaProvinceBulk(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    # Local
-    base_url = "https://datosabiertos-compras.mendoza.gov.ar"
-
     async def start(self):
-        yield scrapy.Request(f"{self.base_url}/datasets/", callback=self.parse_list)
+        yield scrapy.Request("https://datosabiertos-compras.mendoza.gov.ar/datasets/", callback=self.parse_list)
 
     def parse_list(self, response):
         for file_url in response.xpath("//div/a/@href").getall():
             if file_url.endswith(".json"):
-                yield self.build_request(f"{self.base_url}{file_url}", formatter=components(-1))
+                yield self.build_request(response.urljoin(file_url), formatter=components(-1))

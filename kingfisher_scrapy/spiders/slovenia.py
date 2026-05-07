@@ -17,13 +17,10 @@ class Slovenia(SimpleSpider):
     # SimpleSpider
     data_type = "release_package"
 
-    # Local
-    url_prefix = "http://tbfy.ijs.si/public/ocds/mju/"
-
     async def start(self):
-        yield scrapy.Request(self.url_prefix, callback=self.parse_list)
+        yield scrapy.Request("http://tbfy.ijs.si/public/ocds/mju/", callback=self.parse_list)
 
     def parse_list(self, response):
         for number, url in enumerate(reversed(response.xpath("//a/@href").getall())):
             if "ocds" and "json" in url:
-                yield self.build_request(f"{self.url_prefix}{url}", formatter=components(-1), priority=number * -1)
+                yield self.build_request(response.urljoin(url), formatter=components(-1), priority=number * -1)
