@@ -145,8 +145,8 @@ def add_query_string(method, params):
     parameter values in each request's URL.
     """
 
-    def wrapper(*args, **kwargs):
-        for request in method(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
+        async for request in method(*args, **kwargs):
             url = replace_parameters(request.url, **params)
             yield request.replace(url=url)
 
@@ -159,8 +159,8 @@ def add_path_components(method, path):
     to each request's URL.
     """
 
-    def wrapper(*args, **kwargs):
-        for request in method(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
+        async for request in method(*args, **kwargs):
             url = append_path_components(request.url, path)
             yield request.replace(url=url)
 
