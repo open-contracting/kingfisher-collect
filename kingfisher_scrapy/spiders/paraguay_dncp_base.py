@@ -7,6 +7,7 @@ import scrapy
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.exceptions import AccessTokenError, MissingEnvVarError
 from kingfisher_scrapy.util import (
+    MAX_DOWNLOAD_TIMEOUT,
     components,
     date_range_by_interval,
     replace_parameters,
@@ -19,6 +20,7 @@ class ParaguayDNCPBase(SimpleSpider):
         "DOWNLOADER_MIDDLEWARES": {
             "kingfisher_scrapy.downloadermiddlewares.ParaguayAuthMiddleware": 543,
         },
+        "DOWNLOAD_TIMEOUT": MAX_DOWNLOAD_TIMEOUT,
     }
 
     # BaseSpider
