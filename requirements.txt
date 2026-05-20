@@ -54,7 +54,7 @@ flattentool==0.27.0
     # via -r requirements.in
 hyperlink==21.0.0
     # via twisted
-idna==3.7
+idna==3.15
     # via
     #   hyperlink
     #   requests
