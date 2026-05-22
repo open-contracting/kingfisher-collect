@@ -7,6 +7,7 @@ import orjson
 from scrapy.exceptions import DropItem
 from scrapy.spidermiddlewares.httperror import HttpError
 from scrapy.utils.log import logformatter_adapter
+from twisted.internet.threads import deferToThread
 
 from kingfisher_scrapy import util
 from kingfisher_scrapy.exceptions import RetryableError
@@ -251,10 +252,19 @@ class ResizePackageMiddleware(BaseSpiderMiddleware):
 
             key = "releases" if item.data_type == "release_package" else "records"
 
-            template = self._get_package_metadata(data["package"], key, item.data_type)
+            # Parse JSON in a worker thread so the reactor can dispatch other work (e.g. pika callbacks
+            # for the kingfisher_process_api2 extension) while big files are split.
+            template = await deferToThread(self._get_package_metadata, data["package"], key, item.data_type)
             iterable = util.transcode(self.spider, ijson.items, data["data"], f"{key}.item")
+            grouped = util.grouper(iterable, group_size(self.spider))
 
-            for number, items in enumerate(util.grouper(iterable, group_size(self.spider)), 1):
+            number = 0
+            while True:
+                items = await deferToThread(next, grouped, None)
+                if items is None:
+                    break
+
+                number += 1
                 if sample_filled(self.spider, number):
                     return
 
