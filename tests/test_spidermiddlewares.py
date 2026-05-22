@@ -8,6 +8,7 @@ import pytest
 import scrapy
 from scrapy.spidermiddlewares.httperror import HttpError
 from scrapy.spidermiddlewares.httperror import HttpErrorMiddleware as ScrapyHttpErrorMiddleware
+from scrapy.utils.defer import deferred_from_coro
 
 from kingfisher_scrapy import settings
 from kingfisher_scrapy.base_spiders import CompressedFileSpider, SimpleSpider
@@ -283,7 +284,9 @@ async def test_resize_package_middleware(
     item = next(generator)
 
     generator = middleware.process_spider_output(response, _aiter([item]))
-    transformed_items = await alist(generator)
+    # ResizePackageMiddleware awaits asyncio Futures (via maybe_deferred_to_future), so drive the
+    # inner async iteration as an asyncio Task; pytest-twisted's outer driver awaits the Deferred.
+    transformed_items = await deferred_from_coro(alist(generator))
 
     assert len(transformed_items) == len_items
     for i, item in enumerate(transformed_items, 1):
