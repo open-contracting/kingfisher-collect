@@ -45,8 +45,11 @@ def channel():
     channel.exchange_declare(exchange=RABBIT_EXCHANGE_NAME, exchange_type="direct", durable=True)
     channel.queue_declare(queue=RABBIT_QUEUE_NAME, durable=False, exclusive=True)
     channel.queue_bind(queue=RABBIT_QUEUE_NAME, exchange=RABBIT_EXCHANGE_NAME, routing_key=RABBIT_ROUTING_KEY)
-    yield channel
-    connection.close()
+    try:
+        yield channel
+    finally:
+        channel.queue_delete(queue=RABBIT_QUEUE_NAME)
+        connection.close()
 
 
 @pytest.fixture
