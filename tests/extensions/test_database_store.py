@@ -259,9 +259,9 @@ def test_spider_closed_merge_error_warnings(cursor, caplog, tmpdir):
         (logging.INFO, "Replacing the JSON data in the test table (0 rows)"),
     ]
     assert [str(record.message) for record in records] == [
-        "x: An earlier release had the literal 100 for /tender/value, "
+        "x: An earlier release had the value 100 for /tender/value, "
         "but the current release has an object with a 'x' key",
-        "y: An earlier release had the literal 'text' for /tender/value, "
+        "y: An earlier release had the value 'text' for /tender/value, "
         "but the current release has an object with a 'x' key",
     ]
 
