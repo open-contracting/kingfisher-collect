@@ -1,4 +1,5 @@
 import scrapy
+from form2request import form2request
 
 from kingfisher_scrapy.base_spiders import CompressedFileSpider
 from kingfisher_scrapy.util import BROWSER_USER_AGENT
@@ -29,13 +30,14 @@ class Croatia(CompressedFileSpider):
         )
 
     def parse_list(self, response):
-        for file_id in sorted(response.xpath("//td/a/@id").getall(), reverse=True):
-            yield scrapy.FormRequest.from_response(
-                response,
-                formdata={
+        form = response.xpath("//form")
+        for priority, link in enumerate(form.xpath(".//a[@id]")):
+            file_id = link.attrib["id"]
+            yield form2request(
+                form,
+                data={
                     "__EVENTTARGET": file_id.replace("_", "$"),
                     "__EVENTARGUMENT": "",
                 },
-                clickdata={"id": file_id},
-                meta={"file_name": f"{file_id}.zip"},
-            )
+                click=link,
+            ).to_scrapy(callback=self.parse, meta={"file_name": f"{file_id}.zip"}, priority=priority)
