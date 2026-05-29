@@ -14,6 +14,8 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
     # They have data since 2009, but the API is too slow to download them all
     default_from_date = "2022-01"
     dont_truncate = True
+    # Occasional 429s can take more than the default number of retries to clear.
+    max_attempts = 10
 
     # PeriodicSpider
     # The path parameters are {system}/{year}/{month}/{offset}/{limit}.
