@@ -7,7 +7,7 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
       - uses: actions/setup-python@v6
         with:
           python-version: '3.10'
@@ -23,7 +23,7 @@ jobs:
         # https://github.com/scrapy/scrapy/issues/6450
         run: coverage run --source=kingfisher_scrapy -m pytest -W error -W ignore::ResourceWarning -W ignore::DeprecationWarning:scrapy.core.downloader.webclient -rs
       - run: python test_delayed_request_middleware.py
-      - uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           fail_ci_if_error: true
     services:
