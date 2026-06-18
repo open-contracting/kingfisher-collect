@@ -6,4 +6,3 @@ class CzechRepublicDigiwhist(GovernmentTransparencyInstituteBase):
 
     # GovernmentTransparencyInstituteBase
     country_code = "cz"
-    infix = "json"  # https://opentender.eu/cz/download

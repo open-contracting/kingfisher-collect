@@ -22,10 +22,9 @@ class GovernmentTransparencyInstituteBase(CompressedFileSpider):
     data_type = "release_package"
 
     # Local
-    base_url = "https://opentender.eu/data/downloads/data-{}-{}-json.zip"
-    infix = "ocds"
+    base_url = "https://opentender.eu/data/downloads/data-{}-ocds-json.zip"
 
     # country_code must be provided by subclasses.
 
     async def start(self):
-        yield self.build_request(self.base_url.format(self.country_code, self.infix), formatter=components(-1))
+        yield self.build_request(self.base_url.format(self.country_code), formatter=components(-1))

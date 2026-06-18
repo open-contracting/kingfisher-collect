@@ -6,4 +6,3 @@ class SloveniaDigiwhist(GovernmentTransparencyInstituteBase):
 
     # GovernmentTransparencyInstituteBase
     country_code = "si"
-    infix = "json"  # https://opentender.eu/si/download

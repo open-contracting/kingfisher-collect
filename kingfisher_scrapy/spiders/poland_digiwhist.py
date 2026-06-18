@@ -6,4 +6,3 @@ class PolandDigiwhist(GovernmentTransparencyInstituteBase):
 
     # GovernmentTransparencyInstituteBase
     country_code = "pl"
-    infix = "json"  # https://opentender.eu/pl/download

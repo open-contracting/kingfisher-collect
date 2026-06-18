@@ -6,4 +6,3 @@ class EuropeTEDDigiwhist(GovernmentTransparencyInstituteBase):
 
     # GovernmentTransparencyInstituteBase
     country_code = "ted"
-    infix = "json"  # https://opentender.eu/data/downloads/data-ted-json-json.zip
