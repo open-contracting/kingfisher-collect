@@ -55,9 +55,9 @@ constantly==23.10.4
     # via
     #   -r requirements.txt
     #   twisted
-coverage==7.14.0
+coverage[toml]==7.14.0
     # via -r requirements_dev.in
-cryptography==48.0.0
+cryptography==48.0.1
     # via
     #   -r requirements.txt
     #   pyopenssl
@@ -152,7 +152,9 @@ jsonschema==4.26.0
     #   -r requirements.txt
     #   ocdskit
 jsonschema-rs==0.46.5
-    # via -r requirements.txt
+    # via
+    #   -r requirements.txt
+    #   ocdskit
 jsonschema-specifications==2025.9.1
     # via
     #   -r requirements.txt
@@ -168,7 +170,7 @@ ocdsextensionregistry==0.7.0
     # via
     #   -r requirements.txt
     #   ocdskit
-ocdskit==1.6.0
+ocdskit[perf]==1.6.0
     # via -r requirements.txt
 ocdsmerge==0.8.0
     # via
@@ -185,7 +187,10 @@ openpyxl==3.1.5
     #   -r requirements_dev.in
     #   flattentool
 orjson==3.11.9
-    # via -r requirements.txt
+    # via
+    #   -r requirements.txt
+    #   ocdskit
+    #   yapw
 packaging==26.2
     # via
     #   -r requirements.txt
@@ -212,10 +217,6 @@ pika==1.4.0
     #   -r requirements.txt
     #   -r requirements_dev.in
     #   yapw
-pip==26.1.1
-    # via
-    #   -r requirements.txt
-    #   scrapyd-client
 platformdirs==4.9.6
     # via
     #   -r requirements.txt
@@ -324,13 +325,6 @@ service-identity==24.2.0
     # via
     #   -r requirements.txt
     #   scrapy
-setuptools==80.10.2
-    # via
-    #   -r requirements.txt
-    #   scrapyd
-    #   scrapyd-client
-    #   zc-lockfile
-    #   zc-zlibstorage
 tldextract==5.3.1
     # via
     #   -r requirements.txt
@@ -391,7 +385,7 @@ xmltodict==1.0.4
     # via
     #   -r requirements.txt
     #   flattentool
-yapw==0.2.2
+yapw[perf]==0.2.2
     # via -r requirements.txt
 zc-lockfile==4.0
     # via
