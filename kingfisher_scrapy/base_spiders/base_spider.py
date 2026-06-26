@@ -3,7 +3,7 @@ import datetime
 
 import scrapy
 
-from kingfisher_scrapy.exceptions import IncoherentConfigurationError, SpiderArgumentError
+from kingfisher_scrapy.exceptions import IncoherentConfigurationError, MissingEnvVarError, SpiderArgumentError
 from kingfisher_scrapy.items import File, FileItem
 from kingfisher_scrapy.util import add_path_components, add_query_string
 
@@ -72,6 +72,7 @@ class BaseSpider(scrapy.Spider):
     # Regarding the access method.
     max_attempts = 5
     retry_http_codes = []
+    cloudflare_protected = False
 
     # Not to be overridden by sub-classes.
     available_steps = {"compile", "check"}
@@ -199,17 +200,26 @@ class BaseSpider(scrapy.Spider):
             cls.custom_settings = {}
         if not cls.custom_settings.get("HTTPPROXY_ENABLED"):
             cls.custom_settings["HTTPPROXY_ENABLED"] = cls.name in settings.getlist("PROXY_SPIDERS")
+        if cls.cloudflare_protected:
+            cls.custom_settings.setdefault("DOWNLOAD_HANDLERS", {})["https"] = (
+                "kingfisher_scrapy.downloadhandlers.CurlImpersonateDownloadHandler"
+            )
         super().update_settings(settings)
+
+        # Apply CF_USER_AGENT last, in case a spider sets USER_AGENT in its custom_settings.
+        if cls.cloudflare_protected and (user_agent := settings.get("CF_USER_AGENT")):
+            settings.set("USER_AGENT", user_agent, priority="spider")
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super().from_crawler(crawler, *args, **kwargs)
+        settings = crawler.settings
 
         if spider.pluck_package_pointer and spider.pluck_release_pointer:
             raise SpiderArgumentError("You cannot specify both package_pointer and release_pointer spider arguments.")
 
         if spider.sample:
-            crawler.settings.set("CONCURRENT_REQUESTS", 1, priority="spider")
+            settings.set("CONCURRENT_REQUESTS", 1, priority="spider")
 
             try:
                 spider.sample = int(spider.sample)
@@ -242,10 +252,14 @@ class BaseSpider(scrapy.Spider):
                 raise SpiderArgumentError(f"spider argument `until_date`: invalid date value: {e}") from None
 
         # DatabaseStore-related logic.
-        if crawler.settings["DATABASE_URL"] and not spider.crawl_time:
+        if settings["DATABASE_URL"] and not spider.crawl_time:
             raise SpiderArgumentError(
                 "spider argument `crawl_time`: can't be blank if `DATABASE_URL` is set"
             ) from None
+
+        # CloudflareMiddleware-related logic.
+        if spider.cloudflare_protected and bool(settings.get("CF_CLEARANCE")) != bool(settings.get("CF_USER_AGENT")):
+            raise MissingEnvVarError("CF_CLEARANCE and CF_USER_AGENT must be set together (only one is set).")
 
         return spider
 

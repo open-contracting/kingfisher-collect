@@ -5,7 +5,7 @@ import scrapy
 from scrapy.http import TextResponse
 
 from kingfisher_scrapy.base_spiders import BaseSpider
-from kingfisher_scrapy.exceptions import SpiderArgumentError
+from kingfisher_scrapy.exceptions import MissingEnvVarError, SpiderArgumentError
 from kingfisher_scrapy.items import File
 from tests import spider_with_crawler
 
@@ -195,3 +195,34 @@ async def test_path_parameters(base_url, kwargs, expected):
 
     async for request in spider.start():
         assert expected == request.url
+
+
+@pytest.mark.parametrize(
+    "settings",
+    [
+        {},
+        {"CF_CLEARANCE": "cookie", "CF_USER_AGENT": "Mozilla/5.0"},
+    ],
+)
+def test_cloudflare(settings):
+    test_spider = type("TestSpider", (BaseSpider,), {"name": "test", "cloudflare_protected": True})
+
+    spider_with_crawler(test_spider, settings=settings)  # does not raise
+
+
+@pytest.mark.parametrize(
+    "settings",
+    [
+        {"CF_CLEARANCE": "cookie"},
+        {"CF_USER_AGENT": "Mozilla/5.0"},
+    ],
+)
+def test_cloudflare_invalid(settings):
+    test_spider = type("TestSpider", (BaseSpider,), {"name": "test", "cloudflare_protected": True})
+
+    with pytest.raises(MissingEnvVarError):
+        spider_with_crawler(test_spider, settings=settings)
+
+
+def test_cloudflare_unprotected_ignores_partial_settings():
+    spider_with_crawler(settings={"CF_CLEARANCE": "cookie"})  # does not raise

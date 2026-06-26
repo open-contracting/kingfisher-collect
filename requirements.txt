@@ -22,11 +22,13 @@ cattrs==26.1.0
     # via requests-cache
 certifi==2026.4.22
     # via
+    #   curl-cffi
     #   requests
     #   sentry-sdk
 cffi==2.0.0
     # via
     #   cryptography
+    #   curl-cffi
     #   persistent
 charset-normalizer==3.4.7
     # via requests
@@ -43,6 +45,8 @@ cssselect==1.4.0
     # via
     #   parsel
     #   scrapy
+curl-cffi==0.15.0
+    # via -r requirements.in
 defusedxml==0.7.1
     # via
     #   odfpy
@@ -107,6 +111,10 @@ lxml==6.1.1
     #   form2request
     #   parsel
     #   scrapy
+markdown-it-py==4.2.0
+    # via rich
+mdurl==0.1.2
+    # via markdown-it-py
 ocdsextensionregistry==0.7.0
     # via ocdskit
 ocdskit[perf]==1.6.0
@@ -161,6 +169,8 @@ pydantic-core==2.46.4
     # via pydantic
 pydispatcher==2.0.7
     # via scrapy
+pygments==2.20.0
+    # via rich
 pyopenssl==26.2.0
     # via scrapy
 pytz==2026.2
@@ -186,6 +196,8 @@ requests-cache==1.3.2
     # via ocdsextensionregistry
 requests-file==3.0.1
     # via tldextract
+rich==15.0.0
+    # via curl-cffi
 rpds-py==0.30.0
     # via
     #   jsonschema

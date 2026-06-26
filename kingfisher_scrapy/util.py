@@ -1,10 +1,14 @@
 import datetime
 import itertools
+import logging
 from decimal import Decimal
 from os.path import splitext
 from urllib.parse import parse_qs, quote, urlencode, urljoin, urlsplit
 
+import requests
 from ijson import ObjectBuilder, utils
+
+logger = logging.getLogger(__name__)
 
 BROWSER_USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"
@@ -251,3 +255,14 @@ def get_file_name_and_extension(filename):
     name, extension = splitext(filename)
     extension = extension[1:].lower()
     return name, extension
+
+
+def post_slack_alert(webhook_url, text):
+    """Post a message to a Slack incoming webhook."""
+    if not webhook_url:
+        logger.warning("SLACK_WEBHOOK_URL is not set. Slack alert not sent: %s", text)
+        return
+    try:
+        requests.post(webhook_url, json={"text": text}, timeout=10).raise_for_status()
+    except requests.RequestException:
+        logger.exception("Failed to post Slack alert: %s", text)

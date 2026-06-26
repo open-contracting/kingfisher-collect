@@ -114,6 +114,7 @@ Since there are many class attributes that control a spider's behavior, please p
       ocds_version = '1.0'
       max_attempts = 10
       retry_http_codes = [403]
+      cloudflare_protected = True
       skip_pluck = 'A reason'
 
       # SimpleSpider
@@ -291,6 +292,7 @@ API reference
 
 .. toctree::
    base_spiders/index.rst
+   downloadhandlers.rst
    downloadermiddlewares.rst
    spidermiddlewares.rst
    pipelines.rst

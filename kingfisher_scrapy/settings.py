@@ -65,6 +65,8 @@ DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.offsite.OffsiteMiddleware": None,
     "kingfisher_scrapy.downloadermiddlewares.OrjsonMiddleware": 100,
     "kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware": 543,
+    # Active only for spiders that set `cloudflare_protected = True`, after RetryMiddleware (550).
+    "kingfisher_scrapy.downloadermiddlewares.CloudflareMiddleware": 560,
 }
 
 # Enable or disable extensions
@@ -174,3 +176,14 @@ KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET = os.getenv("KINGFISHER_PARAGUAY_HACI
 
 # To get an API account, visit https://www.contrataciones.gov.py/datos/adm/signup
 KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN = os.getenv("KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN")
+
+
+# Cloudflare Turnstile
+
+# The curl_cffi browser profile: https://curl-impersonate.readthedocs.io/en/latest/fingerprints.html
+# Used by CurlImpersonateDownloadHandler.
+CURL_IMPERSONATE = os.getenv("CURL_IMPERSONATE", "chrome")
+
+# To alert when a Cloudflare `cf_clearance` cookie is stale.
+# Used by CloudflareMiddleware.
+SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")

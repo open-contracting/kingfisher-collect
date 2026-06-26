@@ -1,3 +1,4 @@
+curl_cffi
 flattentool
 form2request
 ijson
