@@ -52,6 +52,9 @@ class CurlImpersonateDownloadHandler:
     async def download_request(self, request):
         return await asyncio.to_thread(self._download, request)
 
+    async def close(self):
+        pass
+
     def _download(self, request):
         kwargs = {
             "method": request.method,
