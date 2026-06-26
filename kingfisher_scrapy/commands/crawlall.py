@@ -15,7 +15,7 @@ class CrawlAll(ScrapyCommand):
         parser.add_argument("--sample", type=int, help="The number of files to write")
 
     def run(self, args, opts):
-        if not (bool(opts.dry_run) ^ bool(opts.sample)):
+        if bool(opts.dry_run) == bool(opts.sample):
             raise UsageError("Exactly one of --dry-run or --sample must be set.")
 
         if opts.sample is not None and opts.sample <= 0:

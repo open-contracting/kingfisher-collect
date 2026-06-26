@@ -45,7 +45,7 @@ class Pluck(ScrapyCommand):
         )
 
     def run(self, args, opts):
-        if not (bool(opts.pluck_package_pointer) ^ bool(opts.pluck_release_pointer)):
+        if bool(opts.pluck_package_pointer) == bool(opts.pluck_release_pointer):
             raise UsageError("Exactly one of --package-pointer or --release-pointer must be set.")
 
         # Stop after one item or error.
