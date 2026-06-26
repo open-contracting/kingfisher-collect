@@ -2,6 +2,7 @@
 import asyncio
 import datetime
 import logging
+import socket
 
 import scrapy.http
 from scrapy.exceptions import IgnoreRequest
@@ -155,7 +156,7 @@ class CloudflareMiddleware(BaseDownloaderMiddleware):
         post_slack_alert(
             self.slack_webhook_url,
             f"{self.spider.name}: Cloudflare returned a challenge for {request.url}. The CF_CLEARANCE cookie must "
-            f"be re-set from the same browser, operating system and IP.",
+            f"be re-set from the same browser, operating system and IP, on {socket.gethostname()}.",
         )
 
         # See scrapyextensions/closespider.py and the docstring for scrapy.utils.defer._schedule_coro().
