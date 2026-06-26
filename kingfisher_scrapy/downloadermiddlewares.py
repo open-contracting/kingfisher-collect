@@ -117,14 +117,14 @@ class CloudflareMiddleware(BaseDownloaderMiddleware):
 
     It is active only for spiders that set ``cloudflare_protected = True``, so it is safe to enable globally.
 
-    A human separately solves the "Verify you are human" check, and the spider reuses the resulting ``cf_clearance``
-    cookie (the ``CF_CLEARANCE`` setting). Cloudflare binds the cookie to the browser, operating system and IP that
-    solved the check, and verifies all three on every later request. So, the check must be solved using the same
-    browser, operating system and IP as future crawls:
+    A human solves the "Verify you are human" challenge, and the spider reuses the resulting ``cf_clearance`` cookie
+    (the ``CF_CLEARANCE`` setting). Cloudflare binds the cookie to the browser, operating system and IP that solved the
+    challenge, and verifies all three on every later request. So, the challenge must be solved using the same browser,
+    operating system and IP as future crawls:
 
     -  The browser and operating system are *impersonated* using the ``CF_USER_AGENT`` (User-Agent header) and
        ``CURL_IMPERSONATE`` (TLS/JA3 fingerprint) settings.
-    -  The IP can *not* be impersonated, so the check must be solved using the same IP as future crawls, and using the
+    -  The IP can *not* be impersonated, so the challenge must be solved using the same IP as future crawls, over the
        same IP version (the ``CURL_IP_VERSION`` setting).
 
     An HTML content type is treated as a Cloudflare challenge. If so, the middleware posts a Slack message (to the
