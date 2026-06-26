@@ -149,6 +149,8 @@ class CloudflareMiddleware(BaseDownloaderMiddleware):
         request.headers["Cookie"] = cookie
 
     def process_response(self, request, response):
+        # NOTE: If, in future, a spider uses Cloudflare to protect HTML pages, we will need to e.g. check for
+        # substrings within the first bytes of the response to determine whether the HTML response is a challenge.
         if not self.spider.cloudflare_protected or b"text/html" not in response.headers.get("Content-Type", b""):
             return response
 
