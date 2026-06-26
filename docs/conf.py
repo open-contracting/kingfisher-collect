@@ -31,7 +31,11 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "furo"
-html_static_path = []
+html_static_path = ["_static"]
+# John Gould, Elizabeth Gould & H. C. Richter, "The Birds of Australia" (London, 1840-48).
+# Digitized by the Biodiversity Heritage Library (https://doi.org/10.5962/bhl.title.105698),
+# courtesy of Smithsonian Libraries and Archives. Public domain.
+html_logo = "_static/logo.png"
 html_theme_options = {
     "announcement": """
     <strong>New!</strong> Use the <a href="https://data.open-contracting.org/">OCP Data Registry</a> to
