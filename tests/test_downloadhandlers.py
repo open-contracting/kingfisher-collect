@@ -72,6 +72,20 @@ def test_drops_content_encoding(monkeypatch):
     assert response.body == b"<!DOCTYPE html>"
 
 
+def test_no_proxy_disables_env_proxy(monkeypatch):
+    captured = {}
+
+    def fake_request(**kwargs):
+        captured.update(kwargs)
+        return FakeResponse(content=b"PK")
+
+    monkeypatch.setattr(downloadhandlers.requests, "request", fake_request)
+
+    handler()._download(Request("https://example.com"))  # noqa: SLF001
+
+    assert captured["proxies"] == {"http": "", "https": ""}
+
+
 @pytest.mark.parametrize(("value", "expected"), [("4", CurlIpResolve.V4), ("6", CurlIpResolve.V6)])
 def test_ip_version(monkeypatch, value, expected):
     captured = {}

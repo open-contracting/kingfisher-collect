@@ -69,9 +69,9 @@ class CurlImpersonateDownloadHandler:
         # Scrapy sets the download_timeout meta from the DOWNLOAD_TIMEOUT setting.
         if timeout := request.meta.get("download_timeout"):
             kwargs["timeout"] = timeout
-        # Set by HttpProxyMiddleware, which the spider enables with HTTPPROXY_ENABLED.
-        if proxy := request.meta.get("proxy"):
-            kwargs["proxies"] = {"http": proxy, "https": proxy}
+        # curl_cffi must ignore the http_proxy and https_proxy environment variables, unless HTTPPROXY_ENABLED is True.
+        proxy = request.meta.get("proxy") or ""
+        kwargs["proxies"] = {"http": proxy, "https": proxy}
         # Force the IP version, so that the request uses, e.g., the same version that solved a Cloudflare challenge.
         if self.ip_resolve is not None:
             kwargs["curl_options"] = {CurlOpt.IPRESOLVE: self.ip_resolve}
