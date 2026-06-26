@@ -79,7 +79,15 @@ class CurlImpersonateDownloadHandler:
         except RequestException as exception:
             raise DownloadFailedError(str(exception)) from exception
 
-        headers = Headers(response.headers.multi_items())
+        # curl_cffi already decompressed the body, so drop Content-Encoding (and the now-incorrect Content-Length), to
+        # stop Scrapy's HttpCompressionMiddleware from trying to decompress it again (raising BadGzipFile).
+        headers = Headers(
+            [
+                (name, value)
+                for name, value in response.headers.multi_items()
+                if name.lower() not in ("content-encoding", "content-length")
+            ]
+        )
         response_class = responsetypes.from_args(headers=headers, url=response.url, body=response.content)
         return response_class(
             url=response.url,

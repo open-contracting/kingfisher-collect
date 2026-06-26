@@ -55,6 +55,23 @@ def test_forwards_request(monkeypatch):
     assert response.body == b"PK\x03\x04"
 
 
+def test_drops_content_encoding(monkeypatch):
+    def fake_request(**kwargs):
+        return FakeResponse(
+            headers={"Content-Type": "text/html", "Content-Encoding": "gzip", "Content-Length": "20"},
+            content=b"<!DOCTYPE html>",
+        )
+
+    monkeypatch.setattr(downloadhandlers.requests, "request", fake_request)
+
+    response = handler()._download(Request("https://example.com"))  # noqa: SLF001
+
+    assert b"Content-Encoding" not in response.headers
+    assert b"Content-Length" not in response.headers
+    assert response.headers["Content-Type"] == b"text/html"
+    assert response.body == b"<!DOCTYPE html>"
+
+
 @pytest.mark.parametrize(("value", "expected"), [("4", CurlIpResolve.V4), ("6", CurlIpResolve.V6)])
 def test_ip_version(monkeypatch, value, expected):
     captured = {}
