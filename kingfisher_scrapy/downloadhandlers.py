@@ -1,4 +1,5 @@
 # https://docs.scrapy.org/en/latest/topics/download-handlers.html
+import asyncio
 import logging
 
 from curl_cffi import requests
@@ -7,7 +8,6 @@ from curl_cffi.requests.exceptions import RequestException, Timeout
 from scrapy.exceptions import DownloadFailedError, DownloadTimeoutError
 from scrapy.http import Headers
 from scrapy.responsetypes import responsetypes
-from twisted.internet import threads
 
 logger = logging.getLogger(__name__)
 
@@ -47,8 +47,8 @@ class CurlImpersonateDownloadHandler:
     def from_crawler(cls, crawler):
         return cls(crawler.settings)
 
-    def download_request(self, request, spider):
-        return threads.deferToThread(self._download, request)
+    async def download_request(self, request):
+        return await asyncio.to_thread(self._download, request)
 
     def _download(self, request):
         kwargs = {
