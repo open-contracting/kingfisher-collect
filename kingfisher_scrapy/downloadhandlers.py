@@ -37,6 +37,8 @@ class CurlImpersonateDownloadHandler:
        ``curl_cffi`` chooses.
     """
 
+    lazy = True
+
     IP_RESOLVE = {"4": CurlIpResolve.V4, "6": CurlIpResolve.V6}
 
     def __init__(self, settings):
