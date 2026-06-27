@@ -20,6 +20,7 @@ class ThailandBangkok(PeriodicSpider):
     # BaseSpider
     date_format = "year"
     default_from_date = "2023"
+    cloudflare_protected = True
 
     # SimpleSpider
     data_type = "release_package"
