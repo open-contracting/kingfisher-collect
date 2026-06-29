@@ -148,10 +148,10 @@ class DatabaseStore:
         try:
             self.execute("DROP TABLE {table}", table=table_name)
             self.create_table(table_name)
-            with open(filename) as f:
+            with open(filename, "rb") as f:
                 statement = "COPY {table} (data) FROM stdin CSV QUOTE e'\x01' DELIMITER e'\x02'"
                 with self.cursor.copy(self.format(statement, table=table_name)) as copy:
-                    while block := f.read(8192):
+                    while block := f.read(65536):
                         copy.write(block)
             statement = "CREATE INDEX {index} ON {table} ((data ->> 'date'))"
             self.execute(statement, table=table_name, index=f"idx_{table_name}")
