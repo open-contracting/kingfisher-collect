@@ -20,12 +20,11 @@ When ready, open a shell, and run:
 
 .. tip::
 
-   ``psycopg`` is compiled from source against the libpq C library. If you encounter an installation error, install the libpq development files and a C compiler first, for example:
+   ``psycopg`` is compiled from source against the libpq C library. If you can't install the build prerequisites (a C compiler and the libpq development files), install the self-contained binary build instead, alongside the other requirements:
 
    .. code-block:: bash
 
-      sudo apt-get install gcc libpq-dev  # Debian/Ubuntu
-      brew install libpq  # macOS
+      pip install "psycopg[binary]" -r requirements_base.txt
 
 To extract data from RAR files, you must have the ``unrar`` or `unar <https://theunarchiver.com/command-line>`__ command-line utility.
 
