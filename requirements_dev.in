@@ -3,7 +3,6 @@ coverage[toml]
 ocdsmerge
 openpyxl
 pika
-psycopg2-binary
 pytest
 pytest-order
 pytest-twisted

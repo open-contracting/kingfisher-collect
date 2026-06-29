@@ -7,7 +7,7 @@ jsonref
 ocdskit[perf]
 orjson
 pathvalidate
-psycopg2
+psycopg[binary]
 pydantic
 rarfile
 requests

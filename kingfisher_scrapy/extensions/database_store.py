@@ -4,9 +4,10 @@ import warnings
 
 import ijson
 import orjson
-import psycopg2.sql
+import psycopg
 from ocdskit.combine import merge
 from ocdskit.exceptions import MergeErrorWarning
+from psycopg import sql
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
@@ -63,7 +64,7 @@ class DatabaseStore:
         return extension
 
     def spider_opened(self, spider):
-        self.connection = psycopg2.connect(self.database_url)
+        self.connection = psycopg.connect(self.database_url)
         self.cursor = self.connection.cursor()
         try:
             table_name = self.get_table_name(spider)
@@ -142,16 +143,18 @@ class DatabaseStore:
                 spider.logger.error("%d OCIDs can't be merged due to structural errors", len(errors))
 
         spider.logger.info("Replacing the JSON data in the %s table (%s rows)", table_name, count)
-        self.connection = psycopg2.connect(self.database_url)
+        self.connection = psycopg.connect(self.database_url)
         self.cursor = self.connection.cursor()
         try:
             self.execute("DROP TABLE {table}", table=table_name)
             self.create_table(table_name)
             with open(filename) as f:
-                sql = "COPY {table} (data) FROM stdin CSV QUOTE e'\x01' DELIMITER e'\x02'"
-                self.cursor.copy_expert(self.format(sql, table=table_name), f)
-            sql = "CREATE INDEX {index} ON {table} ((data ->> 'date'))"
-            self.execute(sql, table=table_name, index=f"idx_{table_name}")
+                statement = "COPY {table} (data) FROM stdin CSV QUOTE e'\x01' DELIMITER e'\x02'"
+                with self.cursor.copy(self.format(statement, table=table_name)) as copy:
+                    while block := f.read(8192):
+                        copy.write(block)
+            statement = "CREATE INDEX {index} ON {table} ((data ->> 'date'))"
+            self.execute(statement, table=table_name, index=f"idx_{table_name}")
             self.connection.commit()
         finally:
             self.cursor.close()
@@ -178,13 +181,13 @@ class DatabaseStore:
         """
         objects = {}
         for key, value in kwargs.items():
-            if isinstance(value, psycopg2.sql.Composable):
+            if isinstance(value, sql.Composable):
                 objects[key] = value
             elif isinstance(value, list):
-                objects[key] = psycopg2.sql.SQL(", ").join(psycopg2.sql.Identifier(entry) for entry in value)
+                objects[key] = sql.SQL(", ").join(sql.Identifier(entry) for entry in value)
             else:
-                objects[key] = psycopg2.sql.Identifier(value)
-        return psycopg2.sql.SQL(statement).format(**objects)
+                objects[key] = sql.Identifier(value)
+        return sql.SQL(statement).format(**objects)
 
     # Copied from kingfisher-summarize
     def execute(self, statement, variables=None, **kwargs):
