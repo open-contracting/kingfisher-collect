@@ -20,11 +20,12 @@ When ready, open a shell, and run:
 
 .. tip::
 
-   If you encounter an error relating to ``libpq`` (for example, if you don't have PostgreSQL installed), install the self-contained ``psycopg`` build instead:
+   ``psycopg`` is compiled from source against the libpq C library. If you encounter an installation error, install the libpq development files and a C compiler first, for example:
 
    .. code-block:: bash
 
-      pip install "psycopg[binary]" -r requirements.txt
+      sudo apt-get install gcc libpq-dev  # Debian/Ubuntu
+      brew install libpq  # macOS
 
 To extract data from RAR files, you must have the ``unrar`` or `unar <https://theunarchiver.com/command-line>`__ command-line utility.
 

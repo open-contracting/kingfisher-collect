@@ -1,4 +1,4 @@
--r requirements_base.in
+-r requirements_base.txt
 coverage[toml]
 ocdsmerge
 openpyxl
