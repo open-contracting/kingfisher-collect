@@ -1,8 +1,9 @@
--r requirements.txt
+-r requirements_base.in
 coverage[toml]
 ocdsmerge
 openpyxl
 pika
+psycopg[binary]
 pytest
 pytest-order
 pytest-twisted

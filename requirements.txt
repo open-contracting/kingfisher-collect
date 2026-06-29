@@ -46,7 +46,7 @@ cssselect==1.4.0
     #   parsel
     #   scrapy
 curl-cffi==0.15.0
-    # via -r requirements.in
+    # via -r requirements_base.in
 defusedxml==0.7.1
     # via
     #   odfpy
@@ -56,9 +56,9 @@ et-xmlfile==2.0.0
 filelock==3.29.0
     # via tldextract
 flattentool==0.28.0
-    # via -r requirements.in
+    # via -r requirements_base.in
 form2request==0.2.0
-    # via -r requirements.in
+    # via -r requirements_base.in
 graphviz==0.21
     # via concepts
 hyperlink==21.0.0
@@ -71,7 +71,7 @@ idna==3.15
     #   url-normalize
 ijson==3.5.0
     # via
-    #   -r requirements.in
+    #   -r requirements_base.in
     #   flattentool
     #   ocdskit
 incremental==24.11.0
@@ -89,10 +89,10 @@ jmespath==1.1.0
 json-merge-patch==0.3.0
     # via ocdsextensionregistry
 jsonpointer==3.1.1
-    # via -r requirements.in
+    # via -r requirements_base.in
 jsonref==1.1.0
     # via
-    #   -r requirements.in
+    #   -r requirements_base.in
     #   flattentool
     #   ocdsextensionregistry
     #   ocdskit
@@ -116,7 +116,7 @@ mdurl==0.1.2
 ocdsextensionregistry==0.7.0
     # via ocdskit
 ocdskit==1.6.0
-    # via -r requirements.in
+    # via -r requirements_base.in
 ocdsmerge==0.8.0
     # via ocdskit
 odfpy==1.4.1
@@ -125,7 +125,7 @@ openpyxl==3.1.5
     # via flattentool
 orjson==3.11.9
     # via
-    #   -r requirements.in
+    #   -r requirements_base.in
     #   ocdskit
     #   yapw
 packaging==26.2
@@ -140,7 +140,7 @@ parsel==1.11.0
     #   itemloaders
     #   scrapy
 pathvalidate==3.3.1
-    # via -r requirements.in
+    # via -r requirements_base.in
 persistent==6.6
     # via
     #   btrees
@@ -155,8 +155,6 @@ protego==0.6.0
     # via scrapy
 psycopg==3.3.4
     # via -r requirements.in
-psycopg-binary==3.3.4
-    # via psycopg
 pyasn1==0.6.3
     # via
     #   pyasn1-modules
@@ -166,7 +164,7 @@ pyasn1-modules==0.4.2
 pycparser==3.0
     # via cffi
 pydantic==2.13.4
-    # via -r requirements.in
+    # via -r requirements_base.in
 pydantic-core==2.46.4
     # via pydantic
 pydispatcher==2.0.7
@@ -180,14 +178,14 @@ pytz==2026.2
 queuelib==1.9.0
     # via scrapy
 rarfile==4.2
-    # via -r requirements.in
+    # via -r requirements_base.in
 referencing==0.37.0
     # via
     #   jsonschema
     #   jsonschema-specifications
 requests==2.34.2
     # via
-    #   -r requirements.in
+    #   -r requirements_base.in
     #   ocdsextensionregistry
     #   ocdsmerge
     #   requests-cache
@@ -208,15 +206,15 @@ schema==0.7.8
     # via flattentool
 scrapy==2.16.0
     # via
-    #   -r requirements.in
+    #   -r requirements_base.in
     #   scrapyd
     #   scrapyd-client
 scrapyd==1.6.0
-    # via -r requirements.in
+    # via -r requirements_base.in
 scrapyd-client==2.0.3
-    # via -r requirements.in
+    # via -r requirements_base.in
 sentry-sdk==2.60.0
-    # via -r requirements.in
+    # via -r requirements_base.in
 service-identity==24.2.0
     # via scrapy
 setuptools==80.10.2
@@ -231,7 +229,7 @@ transaction==5.1
     # via zodb
 twisted==26.4.0
     # via
-    #   -r requirements.in
+    #   -r requirements_base.in
     #   scrapy
     #   scrapyd
 typing-extensions==4.15.0
@@ -264,7 +262,7 @@ w3lib==2.4.1
 xmltodict==1.0.4
     # via flattentool
 yapw==0.2.2
-    # via -r requirements.in
+    # via -r requirements_base.in
 zc-lockfile==4.0
     # via zodb
 zc-zlibstorage==1.2.0
