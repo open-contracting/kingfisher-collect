@@ -1,19 +1,2 @@
-curl_cffi
-flattentool
-form2request
-ijson
-jsonpointer
-jsonref
-ocdskit[perf]
-orjson
-pathvalidate
-psycopg2
-pydantic
-rarfile
-requests
-scrapy
-scrapyd
-scrapyd-client
-sentry-sdk
-twisted
-yapw[perf]
+-r requirements_base.txt
+psycopg[c]

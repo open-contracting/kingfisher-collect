@@ -3,10 +3,11 @@ import logging
 import os
 from unittest.mock import Mock
 
-import psycopg2
+import psycopg
 import pytest
 from ocdskit.exceptions import MergeErrorWarning
 from ocdsmerge.exceptions import DuplicateIdValueWarning
+from psycopg import sql
 from scrapy.exceptions import NotConfigured
 
 from kingfisher_scrapy.extensions import DatabaseStore, FilesStore
@@ -18,7 +19,7 @@ SKIP_TEST_IF = not DATABASE_URL and ("CI" not in os.environ or "CI_SKIP" in os.e
 
 @pytest.fixture
 def cursor():
-    connection = psycopg2.connect(DATABASE_URL)
+    connection = psycopg.connect(DATABASE_URL)
     cursor = connection.cursor()
 
     try:
@@ -340,7 +341,7 @@ def test_spider_closed(cursor, caplog, tmpdir, data, data_type, sample, compile_
     else:
         expected = {"date": "2021-05-26T10:00:00Z"}
 
-    cursor.execute(psycopg2.sql.SQL("SELECT * FROM {table}").format(table=psycopg2.sql.Identifier(expected_table)))
+    cursor.execute(sql.SQL("SELECT * FROM {table}").format(table=sql.Identifier(expected_table)))
 
     assert cursor.fetchall() == [(expected,)]
     assert [record.message for record in caplog.records] == expected_messages

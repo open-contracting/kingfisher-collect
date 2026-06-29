@@ -20,11 +20,11 @@ When ready, open a shell, and run:
 
 .. tip::
 
-   If you encounter an error relating to ``psycopg2``, try instead:
+   ``psycopg`` is compiled from source. If you can't install the build prerequisites (a C compiler and the libpq library's development files), try:
 
    .. code-block:: bash
 
-      pip install psycopg2-binary -r requirements.txt
+      pip install "psycopg[binary]" -r requirements_base.txt
 
 To extract data from RAR files, you must have the ``unrar`` or `unar <https://theunarchiver.com/command-line>`__ command-line utility.
 

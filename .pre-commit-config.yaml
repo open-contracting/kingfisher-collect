@@ -13,12 +13,17 @@ repos:
     rev: 0.11.3
     hooks:
       - id: pip-compile
+        name: pip-compile requirements_base.in
+        args: [requirements_base.in, -o, requirements_base.txt]
+        files: ^requirements_base\.(in|txt)$
+      - id: pip-compile
         name: pip-compile requirements.in
         args: [requirements.in, -o, requirements.txt]
+        files: ^requirements(_base)?\.(in|txt)$
       - id: pip-compile
         name: pip-compile requirements_dev.in
         args: [requirements_dev.in, -o, requirements_dev.txt]
-        files: ^requirements(_dev)?\.(in|txt)$
+        files: ^requirements(_base|_dev)?\.(in|txt)$
   - repo: local
     hooks:
       - id: sha256sum
