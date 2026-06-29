@@ -79,6 +79,10 @@ et-xmlfile==2.0.0
     # via
     #   -r requirements_base.txt
     #   openpyxl
+exceptiongroup==1.3.1
+    # via
+    #   -r requirements_base.txt
+    #   cattrs
 filelock==3.29.4
     # via
     #   -r requirements_base.txt
@@ -142,7 +146,7 @@ jsonschema==4.26.0
     # via
     #   -r requirements_base.txt
     #   ocdskit
-jsonschema-rs==0.46.6
+jsonschema-rs==0.46.5
     # via -r requirements_base.txt
 jsonschema-specifications==2025.9.1
     # via
@@ -215,7 +219,7 @@ platformdirs==4.10.0
     # via
     #   -r requirements_base.txt
     #   requests-cache
-protego==0.6.2
+protego==0.6.1
     # via
     #   -r requirements_base.txt
     #   scrapy
@@ -281,7 +285,7 @@ rich==15.0.0
     # via
     #   -r requirements_base.txt
     #   curl-cffi
-rpds-py==2026.5.1
+rpds-py==0.30.0
     # via
     #   -r requirements_base.txt
     #   jsonschema
@@ -316,6 +320,10 @@ tldextract==5.3.1
     # via
     #   -r requirements_base.txt
     #   scrapy
+tomli==2.4.1
+    # via
+    #   -r requirements_base.txt
+    #   incremental
 transaction==5.1
     # via
     #   -r requirements_base.txt
@@ -329,6 +337,8 @@ typing-extensions==4.15.0
     # via
     #   -r requirements_base.txt
     #   cattrs
+    #   cryptography
+    #   exceptiongroup
     #   psycopg
     #   pydantic
     #   pydantic-core
