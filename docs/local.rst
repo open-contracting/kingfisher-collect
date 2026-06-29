@@ -20,7 +20,7 @@ When ready, open a shell, and run:
 
 .. tip::
 
-   ``psycopg`` is compiled from source against the libpq C library. If you can't install the build prerequisites (a C compiler and the libpq development files), install the self-contained binary build instead, alongside the other requirements:
+   ``psycopg`` is compiled from source. If you can't install the build prerequisites (a C compiler and the libpq library's development files), try:
 
    .. code-block:: bash
 

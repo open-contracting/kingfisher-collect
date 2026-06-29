@@ -1,3 +1,2 @@
 -r requirements_base.txt
-# Use the C implementation in production (compiled against the system libpq). Development uses psycopg[binary].
 psycopg[c]
