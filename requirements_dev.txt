@@ -239,7 +239,9 @@ protego==0.6.1
     #   -r requirements_base.txt
     #   scrapy
 psycopg==3.3.4
-    # via -r requirements_dev.in
+    # via
+    #   -r requirements_base.txt
+    #   -r requirements_dev.in
 psycopg-binary==3.3.4
     # via psycopg
 pycparser==3.0

@@ -155,6 +155,8 @@ platformdirs==4.10.0
     # via requests-cache
 protego==0.6.1
     # via scrapy
+psycopg==3.3.4
+    # via -r requirements_base.in
 pycparser==3.0
     # via cffi
 pydantic==2.13.4
@@ -233,6 +235,7 @@ typing-extensions==4.15.0
     #   cattrs
     #   cryptography
     #   exceptiongroup
+    #   psycopg
     #   pydantic
     #   pydantic-core
     #   pyopenssl
