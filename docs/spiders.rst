@@ -694,6 +694,23 @@ Luxembourg
 
    scrapy crawl luxembourg_digiwhist
 
+Malawi
+~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.malawi_records.MalawiRecords
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl malawi_records
+
+.. autoclass:: kingfisher_scrapy.spiders.malawi_releases.MalawiReleases
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl malawi_releases
+
 Malta
 ~~~~~
 
