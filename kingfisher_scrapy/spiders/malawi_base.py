@@ -25,7 +25,7 @@ class MalawiBase(IndexSpider):
             "method": "POST",
             "headers": {"Content-Type": "application/json"},
             "body": orjson.dumps({"skip": value, "take": self.limit}),
-            "meta": {"file_name": f"page-{value}.json"},
+            "meta": {"file_name": f"offset-{value}.json"},
         }
 
     def parse_items(self, response):
