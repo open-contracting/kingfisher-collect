@@ -30,8 +30,6 @@ class MalawiBase(IndexSpider):
 
     def parse_items(self, response):
         for item in response.json()["items"]:
-            # data_type "record_package" corresponds to the record-package endpoint, and "release_package" to the
-            # release-package endpoint.
             yield self.build_request(
                 f"{self.url_prefix}{self.data_type.replace('_', '-')}/{item['ocid']}", formatter=components(-1)
             )
