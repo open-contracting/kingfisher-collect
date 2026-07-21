@@ -24,6 +24,6 @@ jobs:
           echo "$(brew --prefix postgresql)/bin" >> $GITHUB_PATH
       - run: python -m pip install -r requirements_dev.txt
       - env:
-          CI_SKIP: true
+          CI_SKIP: 1
         run: coverage run --source=kingfisher_scrapy -m pytest -W error -rs
       - run: python test_delayed_request_middleware.py

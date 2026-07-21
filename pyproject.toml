@@ -63,4 +63,3 @@ addopts = "--doctest-modules --reactor=asyncio"  # --reactor is provided by pyte
 
 [tool.uv.pip]
 exclude-newer = "1 week"
-python-platform = "linux"  # greenlet
