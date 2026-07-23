@@ -49,20 +49,30 @@ def components(start, stop=None):
     return wrapper
 
 
-def parameters(*keys, parser=None):
+def parameters(*keys, parser=None, allow_missing=False):
     """
     Return a function that returns the selected query string parameters.
+
+    Set ``allow_missing`` to skip keys that are absent from the URL, instead of raising an error.
 
     >>> parameters('page')('http://example.com/api/packages.json?page=1')
     'page-1'
 
     >>> parameters('year', 'page')('http://example.com/api/packages.json?year=2000&page=1')
     'year-2000-page-1'
+
+    >>> parameters('cursor', 'since', allow_missing=True)('http://example.com/api/packages.json?cursor=abc')
+    'cursor-abc'
     """
 
     def wrapper(url):
         query = parse_qs(urlsplit(url).query)
-        return "-".join(s for key in keys for value in query[key] for s in [key, parser(value) if parser else value])
+        return "-".join(
+            part
+            for key in keys
+            for value in (query.get(key, ()) if allow_missing else query[key])
+            for part in [key, parser(value) if parser else value]
+        )
 
     return wrapper
 
