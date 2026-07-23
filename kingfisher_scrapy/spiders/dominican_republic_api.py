@@ -54,3 +54,6 @@ class DominicanRepublicAPI(IndexSpider):
                 f"{self.dominican_republic_base_url}?ocid={item['ocid']}",
                 formatter=parameters("ocid", parser=replace_path_separator),
             )
+
+    def get_retry_wait_time(self, response):
+        return 60
