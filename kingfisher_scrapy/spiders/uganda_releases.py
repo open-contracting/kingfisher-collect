@@ -1,8 +1,12 @@
+from typing import Literal, get_args
+
 import orjson
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.util import date_range_by_year
+
+IN_PROGRESS_STATUSES = Literal["queued", "processing", "pending", "running", "in_progress", "started"]
 
 
 class UgandaReleases(SimpleSpider):
@@ -25,7 +29,7 @@ class UgandaReleases(SimpleSpider):
     """
 
     name = "uganda_releases"
-    # To avoid adding too many links to the queque.
+    # Poll the export status endpoint one request at a time, to avoid overwhelming the server.
     download_delay = 2
     custom_settings = {
         "CONCURRENT_REQUESTS": 1,
@@ -65,33 +69,30 @@ class UgandaReleases(SimpleSpider):
                     "wait_time": 30,
                 },
                 callback=self.parse_status,
-                dont_filter=True,
             )
         else:
             self.logger.error("Export request failed: %r", data)
 
     def parse_status(self, response):
-        # Statuses that indicate the export job is not ready yet, so we keep polling.
-        # Currently, the server is failing for all URLs, so we don't know the success status code
-        in_progress_statuses = frozenset({"queued", "processing", "pending", "running", "in_progress", "started"})
         data = response.json()
-        status = data.get("status")
         meta = response.request.meta
-        if status == "failed":
-            self.logger.error("Export job %s failed: %s", meta["job_id"], data.get("message"))
-        elif status in in_progress_statuses:
-            attempts = meta.get("retries", 0) + 1
-            if attempts > 20:
-                self.logger.error("Export job %s not ready after %d polls", meta["job_id"], attempts)
-                return
-            request = response.request.copy()
-            request.meta["retries"] = attempts
-            request.dont_filter = True
-            yield request
-        else:
-            yield self.build_request(
-                f"{self.url_prefix}exports/{meta['job_id']}/download",
-                formatter=None,
-                meta={"file_name": meta["file_name"]},
-                callback=self.parse,
-            )
+        status = data.get("status")
+        match status:
+            case "failed":
+                self.logger.error("Export job %s failed: %s", meta["job_id"], data.get("message"))
+            # In-progress statuses indicate the export job is not ready yet, so we keep polling.
+            case _ if status in get_args(IN_PROGRESS_STATUSES):
+                attempts = meta.get("retries", 0) + 1
+                if attempts > 20:
+                    self.logger.error("Export job %s not ready after %d polls", meta["job_id"], attempts)
+                    return
+                request = response.request.copy()
+                request.meta["retries"] = attempts
+                request.dont_filter = True
+                yield request
+            case _:
+                yield self.build_request(
+                    f"{self.url_prefix}exports/{meta['job_id']}/download",
+                    formatter=None,
+                    meta={"file_name": meta["file_name"]},
+                )
