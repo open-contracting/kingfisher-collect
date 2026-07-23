@@ -18,6 +18,12 @@ class DominicanRepublicAPI(IndexSpider):
     """
 
     name = "dominican_republic_api"
+    custom_settings = {
+        # The API allows a maximum of 60 requests per minute per IP, and processes requests sequentially.
+        # https://datosabiertos.dgcp.gob.do/content/Terminos%20y%20condiciones%20API-DGCP.pdf
+        "CONCURRENT_REQUESTS": 1,
+        "DOWNLOAD_DELAY": 1,
+    }
 
     # BaseSpider
     default_from_date = "2015-01-01"
