@@ -1,8 +1,11 @@
-from kingfisher_scrapy.base_spiders import PeriodicSpider
-from kingfisher_scrapy.util import get_parameter_value, parameters, replace_parameters
+import orjson
+import scrapy
+
+from kingfisher_scrapy.base_spiders import SimpleSpider
+from kingfisher_scrapy.util import date_range_by_year
 
 
-class UgandaReleases(PeriodicSpider):
+class UgandaReleases(SimpleSpider):
     """
     Domain
       Government Procurement Portal (GPP) - Public Procurement and Disposal of Public Assets Authority (PPDA)
@@ -22,36 +25,73 @@ class UgandaReleases(PeriodicSpider):
     """
 
     name = "uganda_releases"
-    # https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets generates URLs with JavaScript. We increment
-    # the 'code' parameter until it 404s. As such, we can't disambiguate expected from unexpected 404s.
-    handle_httpstatus_list = [404]
-    # Returns HTTP 403 if too many requests. (1 is too short.)
+    # To avoid adding too many links to the queque.
     download_delay = 2
+    custom_settings = {
+        "CONCURRENT_REQUESTS": 1,
+    }
 
     # BaseSpider
     date_format = "year"
+    date_required = True
     default_from_date = "2019"
 
     # SimpleSpider
     data_type = "release_package"
 
-    # PeriodicSpider
-    pattern = "https://cdn.ppda.go.ug/api/open-data/v2/ocds/download?fy={0}-{1}&format=json&code=1"
-    formatter = staticmethod(parameters("fy", "code"))
+    url_prefix = "https://cdn.ppda.go.ug/api/open-data/v2/ocds/"
 
-    # PeriodicSpider
-    def build_urls(self, date):
-        yield self.pattern.format(date, date + 1)
+    async def start(self):
+        # The download is asynchronous: POST to create an export job, poll its status, then download the file.
+        for year in date_range_by_year(self.from_date.year, self.until_date.year):
+            fiscal_year = f"{year}-{year + 1}"
+            yield scrapy.Request(
+                f"{self.url_prefix}exports",
+                method="POST",
+                headers={"Content-Type": "application/json"},
+                body=orjson.dumps({"fy": fiscal_year, "format": "json"}),
+                meta={"file_name": f"{fiscal_year}.json"},
+                callback=self.parse_job,
+            )
 
-    # SimpleSpider
-    def parse(self, response):
-        # 404 responses indicate we've reached the end of the 'code' sequence for this fiscal year.
-        if response.status == 404:
-            return
+    def parse_job(self, response):
+        data = response.json()
+        if data.get("success"):
+            yield scrapy.Request(
+                data["status_url"],
+                meta={
+                    "file_name": response.request.meta["file_name"],
+                    "job_id": data["job_id"],
+                    "wait_time": 30,
+                },
+                callback=self.parse_status,
+                dont_filter=True,
+            )
+        else:
+            self.logger.error("Export request failed: %r", data)
 
-        yield from super().parse(response)
-
-        yield self.build_request(
-            replace_parameters(response.request.url, code=int(get_parameter_value(response.request.url, "code")) + 1),
-            formatter=self.formatter,
-        )
+    def parse_status(self, response):
+        # Statuses that indicate the export job is not ready yet, so we keep polling.
+        # Currently, the server is failing for all URLs, so we don't know the success status code
+        in_progress_statuses = frozenset({"queued", "processing", "pending", "running", "in_progress", "started"})
+        data = response.json()
+        status = data.get("status")
+        meta = response.request.meta
+        if status == "failed":
+            self.logger.error("Export job %s failed: %s", meta["job_id"], data.get("message"))
+        elif status in in_progress_statuses:
+            attempts = meta.get("retries", 0) + 1
+            if attempts > 20:
+                self.logger.error("Export job %s not ready after %d polls", meta["job_id"], attempts)
+                return
+            request = response.request.copy()
+            request.meta["retries"] = attempts
+            request.dont_filter = True
+            yield request
+        else:
+            yield self.build_request(
+                f"{self.url_prefix}exports/{meta['job_id']}/download",
+                formatter=None,
+                meta={"file_name": meta["file_name"]},
+                callback=self.parse,
+            )
