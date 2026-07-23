@@ -1,14 +1,7 @@
-from urllib.parse import parse_qs, urlsplit
-
 import scrapy
 
 from kingfisher_scrapy.base_spiders import LinksSpider
-
-
-def formatter(url):
-    query = parse_qs(urlsplit(url).query)
-    # The API omits these parameters from the ``links.next`` URL on the last page of results.
-    return "-".join(f"{key}-{query[key][0]}" for key in ("cursor", "since") if query.get(key))
+from kingfisher_scrapy.util import parameters
 
 
 class TanzaniaAPIBase(LinksSpider):
@@ -16,7 +9,8 @@ class TanzaniaAPIBase(LinksSpider):
     skip_pluck = "Already covered (see code for details)"  # tanzania_bulk_releases
 
     # LinksSpider
-    formatter = staticmethod(formatter)
+    # The API omits these parameters from the ``links.next`` URL on the last page of results.
+    formatter = staticmethod(parameters("cursor", "since", allow_missing=True))
 
     async def start(self):
         yield scrapy.Request(
