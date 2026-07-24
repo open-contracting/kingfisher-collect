@@ -1,12 +1,8 @@
-from typing import Literal, get_args
-
 import orjson
 import scrapy
 
 from kingfisher_scrapy.base_spiders import SimpleSpider
 from kingfisher_scrapy.util import date_range_by_year
-
-IN_PROGRESS_STATUSES = Literal["queued", "processing", "pending", "running", "in_progress", "started"]
 
 
 class UgandaReleases(SimpleSpider):
@@ -81,7 +77,7 @@ class UgandaReleases(SimpleSpider):
             case "failed":
                 self.logger.error("Export job %s failed: %s", meta["job_id"], data.get("message"))
             # In-progress statuses indicate the export job is not ready yet, so we keep polling.
-            case _ if status in get_args(IN_PROGRESS_STATUSES):
+            case "queued" | "processing" | "pending" | "running" | "in_progress" | "started":
                 attempts = meta.get("retries", 0) + 1
                 if attempts > 20:
                     self.logger.error("Export job %s not ready after %d polls", meta["job_id"], attempts)
