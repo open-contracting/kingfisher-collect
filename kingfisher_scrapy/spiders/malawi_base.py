@@ -2,7 +2,7 @@ import orjson
 import scrapy
 
 from kingfisher_scrapy.base_spiders import IndexSpider
-from kingfisher_scrapy.util import components
+from kingfisher_scrapy.util import replace_path_separator
 
 
 class MalawiBase(IndexSpider):
@@ -30,6 +30,10 @@ class MalawiBase(IndexSpider):
 
     def parse_items(self, response):
         for item in response.json()["items"]:
+            # Some ocids have a '/' character, so the last path component isn't unique.
+            ocid = item["ocid"]
             yield self.build_request(
-                f"{self.url_prefix}{self.data_type.replace('_', '-')}/{item['ocid']}", formatter=components(-1)
+                f"{self.url_prefix}{self.data_type.replace('_', '-')}/{ocid}",
+                formatter=None,
+                meta={"file_name": f"{replace_path_separator(ocid)}.json"},
             )
