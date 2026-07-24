@@ -42,7 +42,7 @@ class UgandaReleases(SimpleSpider):
     url_prefix = "https://cdn.ppda.go.ug/api/open-data/v2/ocds/"
 
     async def start(self):
-        # The download is asynchronous: POST to create an export job, poll its status, then download the file.
+        # The download is asynchronous: create an export job, poll its status, then download the file.
         for year in date_range_by_year(self.from_date.year, self.until_date.year):
             fiscal_year = f"{year}-{year + 1}"
             yield scrapy.Request(
@@ -72,8 +72,7 @@ class UgandaReleases(SimpleSpider):
     def parse_status(self, response):
         data = response.json()
         meta = response.request.meta
-        status = data.get("status")
-        match status:
+        match data.get("status"):
             case "failed":
                 self.logger.error("Export job %s failed: %s", meta["job_id"], data.get("message"))
             # In-progress statuses indicate the export job is not ready yet, so we keep polling.
