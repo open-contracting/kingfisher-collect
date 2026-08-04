@@ -137,6 +137,7 @@ class CloudflareMiddleware(BaseDownloaderMiddleware):
         super().__init__(crawler)
         self.cf_clearance = crawler.settings.get("CF_CLEARANCE")
         self.slack_webhook_url = crawler.settings.get("SLACK_WEBHOOK_URL")
+        self.cf_clearance_stale = False
 
     def process_request(self, request):
         if not self.spider.cloudflare_protected or not self.cf_clearance:
@@ -154,15 +155,20 @@ class CloudflareMiddleware(BaseDownloaderMiddleware):
         if not self.spider.cloudflare_protected or b"text/html" not in response.headers.get("Content-Type", b""):
             return response
 
-        logger.error("Cloudflare challenge detected for %s. The CF_CLEARANCE cookie must be re-set.", request.url)
-        post_slack_alert(
-            self.slack_webhook_url,
-            f"{self.spider.name}: Cloudflare returned a challenge for {request.url}. The CF_CLEARANCE cookie must "
-            f"be re-set from the same browser, operating system and IP, on {socket.gethostname()}.",
-        )
+        # In-flight requests can return challenges while the crawl is closing. Alert once per crawl.
+        if not self.cf_clearance_stale:
+            self.cf_clearance_stale = True
 
-        # See scrapyextensions/closespider.py and the docstring for scrapy.utils.defer._schedule_coro().
-        deferred_from_coro(self.crawler.engine.close_spider_async(reason="cf_clearance_stale"))
+            logger.error("Cloudflare challenge detected for %s. The CF_CLEARANCE cookie must be re-set.", request.url)
+            post_slack_alert(
+                self.slack_webhook_url,
+                f"{self.spider.name}: Cloudflare returned a challenge for {request.url}. The CF_CLEARANCE cookie must "
+                f"be re-set from the same browser, operating system and IP, on {socket.gethostname()}.",
+            )
+
+            # See scrapyextensions/closespider.py and the docstring for scrapy.utils.defer._schedule_coro().
+            deferred_from_coro(self.crawler.engine.close_spider_async(reason="cf_clearance_stale"))
+
         raise IgnoreRequest(f"Cloudflare challenge detected for {request.url}. Stopping crawl...")
 
 

@@ -70,7 +70,28 @@ def test_process_response_challenge(monkeypatch, content_type):
 
     spider.crawler.engine.close_spider_async.assert_called_once_with(reason="cf_clearance_stale")
     assert len(alerts) == 1
-    assert request.url in alerts[0][1]
+    assert "https://opentender.eu/data/downloads/data-ie-ocds-json.zip" in alerts[0][1]
+
+
+def test_process_response_challenge_repeated(monkeypatch):
+    middleware, spider = middleware_for()
+    spider.crawler.engine = Mock()
+    monkeypatch.setattr(downloadermiddlewares, "deferred_from_coro", lambda *_: None)
+    alerts = []
+    monkeypatch.setattr(downloadermiddlewares, "post_slack_alert", lambda *args: alerts.append(args))
+
+    for i in range(3):
+        request = Request(f"https://opentender.eu/data/downloads/data-ie-ocds-json-{i}.zip")
+        response = Response(
+            request.url, status=200, headers={"Content-Type": "text/html"}, body=b"<html>", request=request
+        )
+
+        with pytest.raises(IgnoreRequest):
+            middleware.process_response(request, response)
+
+    spider.crawler.engine.close_spider_async.assert_called_once_with(reason="cf_clearance_stale")
+    assert len(alerts) == 1
+    assert "https://opentender.eu/data/downloads/data-ie-ocds-json-0.zip" in alerts[0][1]
 
 
 def test_process_response_no_challenge():
