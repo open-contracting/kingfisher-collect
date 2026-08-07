@@ -6,6 +6,8 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+#
+# https://github.com/scrapy/scrapy/blob/master/scrapy/templates/project/module/settings.py.tmpl#L15
 import logging
 import os
 
