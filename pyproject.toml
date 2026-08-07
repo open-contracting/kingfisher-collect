@@ -84,5 +84,12 @@ known-settings = [
     "CURL_IP_VERSION",
 ]
 
+[tool.scrapy-lint.per-file-ignores]
+"kingfisher_scrapy/settings.py" = [
+    "SCP09",  # robots.txt ignored by default
+    "SCP17",  # Redundant setting value
+    "SCP38",  # Low project throttling
+]
+
 [tool.uv.pip]
 exclude-newer = "1 week"
