@@ -135,8 +135,8 @@ class CloudflareMiddleware(BaseDownloaderMiddleware):
 
     def __init__(self, crawler):
         super().__init__(crawler)
-        self.cf_clearance = crawler.settings.get("CF_CLEARANCE")
-        self.slack_webhook_url = crawler.settings.get("SLACK_WEBHOOK_URL")
+        self.cf_clearance = crawler.settings["CF_CLEARANCE"]
+        self.slack_webhook_url = crawler.settings["SLACK_WEBHOOK_URL"]
         self.cf_clearance_stale = False
 
     def process_request(self, request):
