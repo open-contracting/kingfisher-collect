@@ -5,7 +5,9 @@ from collections import defaultdict
 import orjson
 from scrapy.commands import ScrapyCommand
 from scrapy.exceptions import UsageError
+from scrapy.extensions.telnet import TelnetConsole
 
+from kingfisher_scrapy import extensions
 from kingfisher_scrapy.util import pluck_filename
 
 logger = logging.getLogger(__name__)
@@ -56,8 +58,8 @@ class Pluck(ScrapyCommand):
         self.settings.set(
             "EXTENSIONS",
             {
-                "scrapy.extensions.telnet.TelnetConsole": None,
-                "kingfisher_scrapy.extensions.Pluck": 1,
+                TelnetConsole: None,
+                extensions.Pluck: 1,
             },
         )
         if opts.max_bytes:
