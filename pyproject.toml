@@ -60,5 +60,29 @@ omit = ["*/kingfisher_scrapy/spiders/*"]
 # not match the requested one (twisted.internet.asyncioreactor.AsyncioSelectorReactor)".
 addopts = "--doctest-modules --reactor=asyncio"  # --reactor is provided by pytest-twisted
 
+[tool.scrapy-lint]
+known-settings = [
+    # settings.py
+    "SENTRY_DSN",
+    "DATABASE_URL",
+    "KINGFISHER_API2_URL",
+    "RABBIT_URL",
+    "RABBIT_EXCHANGE_NAME",
+    "RABBIT_ROUTING_KEY",
+    "KINGFISHER_PLUCK_PATH",
+    "KINGFISHER_PLUCK_MAX_BYTES",
+    "KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN",
+    "KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET",
+    "KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN",
+    "CURL_IMPERSONATE",
+    "SLACK_WEBHOOK_URL",
+    # base_spider.py
+    "CF_USER_AGENT",
+    # downloadermiddlewares.py
+    "CF_CLEARANCE",
+    # downloadhandlers.py
+    "CURL_IP_VERSION",
+]
+
 [tool.uv.pip]
 exclude-newer = "1 week"
