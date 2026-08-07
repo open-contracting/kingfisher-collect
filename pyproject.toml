@@ -87,6 +87,7 @@ known-settings = [
 [tool.scrapy-lint.per-file-ignores]
 "kingfisher_scrapy/settings.py" = [
     "SCP09",  # robots.txt ignored by default
+    "SCP10",  # Incomplete project throttling
     "SCP17",  # Redundant setting value
     "SCP38",  # Low project throttling
 ]

@@ -32,7 +32,7 @@ ROBOTSTXT_OBEY = False  # default False, template True
 # Concurrency and throttling settings
 CONCURRENT_REQUESTS = 32  # default 16
 CONCURRENT_REQUESTS_PER_DOMAIN = 2  # default 8, template 1
-DOWNLOAD_DELAY = 0  # default 0, template 1
+# DOWNLOAD_DELAY = 1  # default 0, template 1
 
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = False
