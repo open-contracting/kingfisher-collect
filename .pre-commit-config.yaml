@@ -41,4 +41,4 @@ repos:
         language: python
         entry: scrapy checkall --loglevel=WARNING
         files: ^kingfisher_scrapy/spiders
-        additional_dependencies: [form2request, ijson, jsonpointer, pathvalidate, pydantic, orjson, rarfile, "scrapy>=2.15"]
+        additional_dependencies: [form2request, ijson, jsonpointer, pathvalidate, psycopg, pydantic, orjson, rarfile, "scrapy>=2.15"]
