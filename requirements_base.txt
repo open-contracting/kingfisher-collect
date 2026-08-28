@@ -117,7 +117,7 @@ mdurl==0.1.2
     # via markdown-it-py
 ocdsextensionregistry==0.7.0
     # via ocdskit
-ocdskit==1.6.0
+ocdskit[perf]==1.6.0
     # via -r requirements_base.in
 ocdsmerge==0.8.0
     # via ocdskit
@@ -149,11 +149,9 @@ persistent==6.7
     #   zodb
 pika==1.4.1
     # via yapw
-pip==26.1.2
-    # via scrapyd-client
 platformdirs==4.10.0
     # via requests-cache
-protego==0.6.1
+protego==0.6.2
     # via scrapy
 psycopg==3.3.4
     # via -r requirements_base.in
@@ -213,12 +211,6 @@ sentry-sdk==2.63.0
     # via -r requirements_base.in
 service-identity==26.1.0
     # via scrapy
-setuptools==80.10.2
-    # via
-    #   scrapyd
-    #   scrapyd-client
-    #   zc-lockfile
-    #   zc-zlibstorage
 tldextract==5.3.1
     # via scrapy
 tomli==2.4.1
@@ -261,7 +253,7 @@ w3lib==2.4.1
     #   scrapyd
 xmltodict==1.0.4
     # via flattentool
-yapw==0.2.3
+yapw[perf]==0.2.3
     # via -r requirements_base.in
 zc-lockfile==4.0
     # via zodb
