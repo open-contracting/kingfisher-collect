@@ -477,6 +477,13 @@ Ghana
 Greece
 ~~~~~~
 
+.. autoclass:: kingfisher_scrapy.spiders.greece_diavgis.GreeceDiavgis
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl greece_diavgis
+
 .. autoclass:: kingfisher_scrapy.spiders.greece_digiwhist.GreeceDigiwhist
    :no-members:
 
