@@ -1,13 +1,16 @@
 from datetime import datetime
+from unittest.mock import Mock
 
 import pytest
 
+from kingfisher_scrapy import util
 from kingfisher_scrapy.util import (
     components,
     date_range_by_interval,
     get_parameter_value,
     join,
     parameters,
+    post_slack_alert,
     replace_parameters,
 )
 
@@ -71,3 +74,20 @@ def test_date_range_by_interval_edge_case():
         (datetime(2001, 1, 2, 0, 0), datetime(2001, 1, 3, 0, 0)),
         (datetime(2001, 1, 1, 0, 0), datetime(2001, 1, 2, 0, 0)),
     ]
+
+
+def test_post_slack_alert_disables_env_proxy(monkeypatch):
+    captured = {}
+
+    def fake_post(url, **kwargs):
+        captured["url"] = url
+        captured.update(kwargs)
+        return Mock()
+
+    monkeypatch.setattr(util.requests, "post", fake_post)
+
+    post_slack_alert("https://hooks.slack.com/services/T/B/X", "message")
+
+    assert captured["url"] == "https://hooks.slack.com/services/T/B/X"
+    assert captured["json"] == {"text": "message"}
+    assert captured["proxies"] == {"http": "", "https": ""}

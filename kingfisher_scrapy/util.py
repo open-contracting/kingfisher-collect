@@ -267,12 +267,12 @@ def get_file_name_and_extension(filename):
     return name, extension
 
 
-def post_slack_alert(webhook_url, text):
+def post_slack_alert(url, text):
     """Post a message to a Slack incoming webhook."""
-    if not webhook_url:
+    if not url:
         logger.warning("SLACK_WEBHOOK_URL is not set. Slack alert not sent: %s", text)
         return
     try:
-        requests.post(webhook_url, json={"text": text}, timeout=10).raise_for_status()
+        requests.post(url, json={"text": text}, timeout=10, proxies={"http": "", "https": ""}).raise_for_status()
     except requests.RequestException:
         logger.exception("Failed to post Slack alert: %s", text)

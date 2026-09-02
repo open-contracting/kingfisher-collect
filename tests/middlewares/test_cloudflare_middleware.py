@@ -55,8 +55,8 @@ def test_process_response_challenge(monkeypatch, content_type):
     monkeypatch.setattr(downloadermiddlewares, "deferred_from_coro", lambda *_: None)
     alerts = []
 
-    def fake_alert(webhook_url, text):
-        alerts.append((webhook_url, text))
+    def fake_alert(url, text):
+        alerts.append((url, text))
 
     monkeypatch.setattr(downloadermiddlewares, "post_slack_alert", fake_alert)
 
