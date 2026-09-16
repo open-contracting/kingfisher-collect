@@ -25,8 +25,10 @@ class UgandaReleases(PeriodicSpider):
     # https://gpp.ppda.go.ug/public/open-data/ocds/ocds-datasets generates URLs with JavaScript. We increment
     # the 'code' parameter until it 404s. As such, we can't disambiguate expected from unexpected 404s.
     handle_httpstatus_list = [404]
-    # Returns HTTP 403 if too many requests. (1 is too short.)
-    download_delay = 2
+    custom_settings = {
+        # Returns HTTP 403 if too many requests. (1 is too short.)
+        "DOWNLOAD_DELAY": 2,
+    }
 
     # BaseSpider
     date_format = "year"

@@ -21,10 +21,18 @@ backports-datetime-fromisoformat==2.0.3
     # via
     #   -r requirements_base.txt
     #   flattentool
+backports-zstd==1.7.0
+    # via
+    #   -r requirements_base.txt
+    #   scrapy
 bitsets==0.9.1
     # via
     #   -r requirements_base.txt
     #   concepts
+brotli==1.2.0
+    # via
+    #   -r requirements_base.txt
+    #   scrapy
 btrees==6.4
     # via
     #   -r requirements_base.txt
@@ -57,7 +65,7 @@ constantly==23.10.4
     # via
     #   -r requirements_base.txt
     #   twisted
-coverage[toml]==7.14.0
+coverage==7.14.0
     # via -r requirements_dev.in
 cryptography==50.0.0
     # via
@@ -156,9 +164,7 @@ jsonschema==4.26.0
     #   -r requirements_base.txt
     #   ocdskit
 jsonschema-rs==0.46.5
-    # via
-    #   -r requirements_base.txt
-    #   ocdskit
+    # via -r requirements_base.txt
 jsonschema-specifications==2025.9.1
     # via
     #   -r requirements_base.txt
@@ -182,7 +188,7 @@ ocdsextensionregistry==0.7.0
     # via
     #   -r requirements_base.txt
     #   ocdskit
-ocdskit[perf]==1.6.0
+ocdskit==1.6.0
     # via -r requirements_base.txt
 ocdsmerge==0.8.0
     # via
@@ -199,10 +205,7 @@ openpyxl==3.1.5
     #   -r requirements_dev.in
     #   flattentool
 orjson==3.11.9
-    # via
-    #   -r requirements_base.txt
-    #   ocdskit
-    #   yapw
+    # via -r requirements_base.txt
 packaging==26.2
     # via
     #   -r requirements_base.txt
@@ -229,6 +232,10 @@ pika==1.4.1
     #   -r requirements_base.txt
     #   -r requirements_dev.in
     #   yapw
+pip==26.2.1
+    # via
+    #   -r requirements_base.txt
+    #   scrapyd-client
 platformdirs==4.10.0
     # via
     #   -r requirements_base.txt
@@ -239,7 +246,7 @@ protego==0.6.2
     # via
     #   -r requirements_base.txt
     #   scrapy
-psycopg[binary]==3.3.4
+psycopg==3.3.4
     # via
     #   -r requirements_base.txt
     #   -r requirements_dev.in
@@ -322,7 +329,7 @@ schema==0.7.8
     # via
     #   -r requirements_base.txt
     #   flattentool
-scrapy==2.17.0
+scrapy==2.18.0
     # via
     #   -r requirements_base.txt
     #   scrapyd
@@ -337,6 +344,13 @@ service-identity==26.1.0
     # via
     #   -r requirements_base.txt
     #   scrapy
+setuptools==80.10.2
+    # via
+    #   -r requirements_base.txt
+    #   scrapyd
+    #   scrapyd-client
+    #   zc-lockfile
+    #   zc-zlibstorage
 tldextract==5.3.1
     # via
     #   -r requirements_base.txt
@@ -398,7 +412,7 @@ xmltodict==1.0.4
     # via
     #   -r requirements_base.txt
     #   flattentool
-yapw[perf]==0.2.3
+yapw==0.2.3
     # via -r requirements_base.txt
 zc-lockfile==4.0
     # via

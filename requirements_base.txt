@@ -14,8 +14,12 @@ automat==25.4.16
     # via twisted
 backports-datetime-fromisoformat==2.0.3
     # via flattentool
+backports-zstd==1.7.0
+    # via scrapy
 bitsets==0.9.1
     # via concepts
+brotli==1.2.0
+    # via scrapy
 btrees==6.4
     # via zodb
 cattrs==26.1.0
@@ -117,7 +121,7 @@ mdurl==0.1.2
     # via markdown-it-py
 ocdsextensionregistry==0.7.0
     # via ocdskit
-ocdskit[perf]==1.6.0
+ocdskit==1.6.0
     # via -r requirements_base.in
 ocdsmerge==0.8.0
     # via ocdskit
@@ -149,6 +153,8 @@ persistent==6.7
     #   zodb
 pika==1.4.1
     # via yapw
+pip==26.2.1
+    # via scrapyd-client
 platformdirs==4.10.0
     # via requests-cache
 protego==0.6.2
@@ -198,7 +204,7 @@ rpds-py==0.30.0
     #   referencing
 schema==0.7.8
     # via flattentool
-scrapy==2.17.0
+scrapy==2.18.0
     # via
     #   -r requirements_base.in
     #   scrapyd
@@ -211,6 +217,12 @@ sentry-sdk==2.63.0
     # via -r requirements_base.in
 service-identity==26.1.0
     # via scrapy
+setuptools==80.10.2
+    # via
+    #   scrapyd
+    #   scrapyd-client
+    #   zc-lockfile
+    #   zc-zlibstorage
 tldextract==5.3.1
     # via scrapy
 tomli==2.4.1
@@ -253,7 +265,7 @@ w3lib==2.4.1
     #   scrapyd
 xmltodict==1.0.4
     # via flattentool
-yapw[perf]==0.2.3
+yapw==0.2.3
     # via -r requirements_base.in
 zc-lockfile==4.0
     # via zodb
