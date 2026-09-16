@@ -94,3 +94,4 @@ known-settings = [
 
 [tool.uv.pip]
 exclude-newer = "1 week"
+universal = true
