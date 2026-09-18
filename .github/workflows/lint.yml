@@ -6,7 +6,8 @@ jobs:
     permissions:
       contents: write
     secrets:
-      personal-access-token: ${{ secrets.PAT }}
+      client-id: ${{ secrets.APP_CLIENT_ID }}
+      private-key: ${{ secrets.APP_PRIVATE_KEY }}
     with:
       # scrapyd is run as a command in production. scrapyd-client is run as a command for deployment.
       standard-maintenance-scripts-ignore: scrapyd,scrapyd-client
