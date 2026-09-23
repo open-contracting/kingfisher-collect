@@ -23,7 +23,7 @@ jobs:
         # https://github.com/scrapy/scrapy/issues/6450
         run: coverage run --source=kingfisher_scrapy -m pytest -W error -W ignore::ResourceWarning -W ignore::DeprecationWarning:scrapy.core.downloader.webclient -rs
       - run: python test_delayed_request_middleware.py
-      - uses: codecov/codecov-action@0b35c9ecc4f0529d0eb674914510c22f85b196b4 # v7.1.0
+      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           fail_ci_if_error: true
     services:
