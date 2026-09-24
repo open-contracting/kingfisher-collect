@@ -25,10 +25,10 @@ class IndonesiaOpentender(CompressedFileSpider, PeriodicSpider):
     # These settings are to avoid request timeouts and incomplete JSON.
     custom_settings = {
         "CONCURRENT_REQUESTS": 1,
+        "DOWNLOAD_DELAY": 1,
         "DOWNLOAD_FAIL_ON_DATALOSS": False,
         "DOWNLOAD_TIMEOUT": MAX_DOWNLOAD_TIMEOUT,
     }
-    download_delay = 1
 
     # Local
     # Must be set before `pattern`, so we can't follow the standard order.

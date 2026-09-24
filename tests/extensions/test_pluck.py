@@ -94,10 +94,14 @@ def test_bytes_received_dont_stop_download():
         assert extension.max_bytes == 10
 
 
+def callback(item):
+    return item
+
+
 @pytest.mark.parametrize(
     ("test_request", "spider_class", "attributes"),
     [
-        (Request("http://example.com", callback=lambda item: item, meta={"file_name": "test.json"}), BaseSpider, {}),
+        (Request("http://example.com", meta={"file_name": "test.json"}, callback=callback), BaseSpider, {}),
         (Request("http://example.com", meta={"file_name": "test.rar"}), CompressedFileSpider, {}),
         (Request("http://example.com", meta={"file_name": "test.zip"}), CompressedFileSpider, {}),
         (Request("http://example.com", meta={"file_name": "test.xlsx"}), BaseSpider, {"unflatten": True}),

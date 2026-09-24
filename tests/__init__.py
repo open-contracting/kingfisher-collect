@@ -31,7 +31,7 @@ def spider_with_crawler(spider_class=BaseSpider, *, settings=None, **kwargs):
         settings = {}
     if not hasattr(spider_class, "name"):
         spider_class = type("TestSpider", (spider_class,), {"name": "test"})
-    settings.update({"LOG_FORMATTER": "kingfisher_scrapy.log_formatter.LogFormatter"})
+    settings.update({"LOG_FORMATTER": LogFormatter})
 
     # scrapy.utils.test.get_crawler() freezes the settings too early with crawler._apply_settings().
     runner = CrawlerRunner({**get_reactor_settings(), **settings})

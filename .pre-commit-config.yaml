@@ -24,6 +24,10 @@ repos:
         name: pip-compile requirements_dev.in
         args: [requirements_dev.in, -o, requirements_dev.txt, --python-platform, linux]
         files: ^requirements(_base|_dev)?\.(in|txt)$
+  - repo: https://github.com/scrapy/scrapy-lint
+    rev: v0.1.1
+    hooks:
+      - id: scrapy-lint
   - repo: local
     hooks:
       - id: sha256sum
@@ -37,4 +41,24 @@ repos:
         language: python
         entry: scrapy checkall --loglevel=WARNING
         files: ^kingfisher_scrapy/spiders
-        additional_dependencies: [form2request, ijson, jsonpointer, pathvalidate, pydantic, orjson, rarfile, "scrapy>=2.15"]
+        # Keep in sync with requirements_base.in.
+        additional_dependencies:
+          - curl_cffi
+          - flattentool
+          - form2request
+          - ijson
+          - jsonpointer
+          - jsonref
+          - ocdskit
+          - orjson
+          - pathvalidate
+          - psycopg[binary]
+          - pydantic
+          - rarfile
+          - requests
+          - scrapy>=2.15
+          - scrapyd
+          - scrapyd-client
+          - sentry-sdk
+          - twisted
+          - yapw

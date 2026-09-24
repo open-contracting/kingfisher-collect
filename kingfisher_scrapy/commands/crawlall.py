@@ -35,7 +35,7 @@ class CrawlAll(ScrapyCommand):
         # Stop after one item or error.
         self.settings.set("CLOSESPIDER_ERRORCOUNT", 1)
         # Disable LogStats extension.
-        self.settings.set("LOGSTATS_INTERVAL", None)
+        self.settings.set("LOGSTATS_INTERVAL", 0)
         # Disable custom and Telnet extensions.
         self.settings.set("EXTENSIONS", extensions)
 

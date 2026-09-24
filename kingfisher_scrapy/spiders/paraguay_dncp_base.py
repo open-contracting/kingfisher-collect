@@ -44,7 +44,7 @@ class ParaguayDNCPBase(SimpleSpider):
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super().from_crawler(crawler, *args, **kwargs)
 
-        spider.request_token = crawler.settings.get("KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN")
+        spider.request_token = crawler.settings["KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN"]
         if spider.request_token is None:
             raise MissingEnvVarError("KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN is not set.")
 

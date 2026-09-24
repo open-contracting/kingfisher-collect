@@ -42,8 +42,8 @@ class CurlImpersonateDownloadHandler:
     IP_RESOLVE = {"4": CurlIpResolve.V4, "6": CurlIpResolve.V6}
 
     def __init__(self, settings):
-        self.impersonate = settings.get("CURL_IMPERSONATE") or "chrome"
-        self.ip_resolve = self.IP_RESOLVE.get(settings.get("CURL_IP_VERSION"))
+        self.impersonate = settings["CURL_IMPERSONATE"] or "chrome"
+        self.ip_resolve = self.IP_RESOLVE.get(settings["CURL_IP_VERSION"])
 
     @classmethod
     def from_crawler(cls, crawler):

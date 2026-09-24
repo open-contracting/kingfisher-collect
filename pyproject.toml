@@ -15,12 +15,11 @@ kingfisher_scrapy = ["schema/*.json"]
 
 [tool.ruff]
 line-length = 119
-target-version = "py310"
 
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "ANN", "C901", "COM812", "D203", "D212", "D415", "EM", "ISC001", "PERF203", "PLR091", "Q000",
+    "ANN", "C901", "COM812", "CPY001", "D203", "D212", "D415", "EM", "ISC001", "PERF203", "PLR091", "Q000",
     "ARG002",  # scrapy
     "D1", "D205",
     "DTZ",
@@ -61,5 +60,38 @@ omit = ["*/kingfisher_scrapy/spiders/*"]
 # not match the requested one (twisted.internet.asyncioreactor.AsyncioSelectorReactor)".
 addopts = "--doctest-modules --reactor=asyncio"  # --reactor is provided by pytest-twisted
 
+[tool.scrapy-lint]
+known-settings = [
+    # settings.py
+    "SENTRY_DSN",
+    "DATABASE_URL",
+    "KINGFISHER_API2_URL",
+    "RABBIT_URL",
+    "RABBIT_EXCHANGE_NAME",
+    "RABBIT_ROUTING_KEY",
+    "KINGFISHER_PLUCK_PATH",
+    "KINGFISHER_PLUCK_MAX_BYTES",
+    "KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN",
+    "KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET",
+    "KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN",
+    "CURL_IMPERSONATE",
+    "SLACK_WEBHOOK_URL",
+    # base_spider.py
+    "CF_USER_AGENT",
+    # downloadermiddlewares.py
+    "CF_CLEARANCE",
+    # downloadhandlers.py
+    "CURL_IP_VERSION",
+]
+
+[tool.scrapy-lint.per-file-ignores]
+"kingfisher_scrapy/settings.py" = [
+    "SCP09",  # robots.txt ignored by default
+    "SCP10",  # Incomplete project throttling
+    "SCP17",  # Redundant setting value
+    "SCP38",  # Low project throttling
+]
+
 [tool.uv.pip]
 exclude-newer = "1 week"
+universal = true

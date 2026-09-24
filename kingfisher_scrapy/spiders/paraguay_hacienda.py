@@ -60,8 +60,8 @@ class ParaguayHacienda(BaseSpider):
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super().from_crawler(crawler, *args, **kwargs)
 
-        spider.request_token = crawler.settings.get("KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN")
-        spider.client_secret = crawler.settings.get("KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET")
+        spider.request_token = crawler.settings["KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN"]
+        spider.client_secret = crawler.settings["KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET"]
         if spider.request_token is None or spider.client_secret is None:
             raise MissingEnvVarError(
                 "KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN and/or "

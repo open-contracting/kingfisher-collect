@@ -29,10 +29,11 @@ class UgandaReleases(SimpleSpider):
     """
 
     name = "uganda_releases"
-    # Poll the export status endpoint one request at a time, to avoid overwhelming the server.
-    download_delay = 2
+    handle_httpstatus_list = [404]
     custom_settings = {
         "CONCURRENT_REQUESTS": 1,
+        # Returns HTTP 403 if too many requests. (1 is too short.)
+        "DOWNLOAD_DELAY": 2,
     }
 
     # BaseSpider

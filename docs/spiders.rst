@@ -136,13 +136,6 @@ Albania
 
    scrapy crawl albania_public_procurement_commission
 
-.. autoclass:: kingfisher_scrapy.spiders.albania_public_procurement_commission_historical.AlbaniaPublicProcurementCommissionHistorical
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl albania_public_procurement_commission_historical
-
 Argentina
 ~~~~~~~~~
 
@@ -483,6 +476,13 @@ Ghana
 
 Greece
 ~~~~~~
+
+.. autoclass:: kingfisher_scrapy.spiders.greece_diavgis.GreeceDiavgis
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl greece_diavgis
 
 .. autoclass:: kingfisher_scrapy.spiders.greece_digiwhist.GreeceDigiwhist
    :no-members:
@@ -883,13 +883,6 @@ Nigeria
 
    scrapy crawl nigeria_anambra_state
 
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_ebonyi_state.NigeriaEbonyiState
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_ebonyi_state
-
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_ekiti_state.NigeriaEkitiState
    :no-members:
 
@@ -903,13 +896,6 @@ Nigeria
 .. code-block:: bash
 
    scrapy crawl nigeria_osun_state
-
-.. autoclass:: kingfisher_scrapy.spiders.nigeria_plateau_state.NigeriaPlateauState
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl nigeria_plateau_state
 
 .. autoclass:: kingfisher_scrapy.spiders.nigeria_portal.NigeriaPortal
    :no-members:
@@ -1069,13 +1055,6 @@ Slovakia
 
 Slovenia
 ~~~~~~~~
-
-.. autoclass:: kingfisher_scrapy.spiders.slovenia.Slovenia
-   :no-members:
-
-.. code-block:: bash
-
-   scrapy crawl slovenia
 
 .. autoclass:: kingfisher_scrapy.spiders.slovenia_digiwhist.SloveniaDigiwhist
    :no-members:

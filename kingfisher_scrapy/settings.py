@@ -6,8 +6,14 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+#
+# https://github.com/scrapy/scrapy/blob/master/scrapy/templates/project/module/settings.py.tmpl
 import logging
 import os
+
+from scrapy.downloadermiddlewares.offsite import OffsiteMiddleware
+
+from kingfisher_scrapy import downloadermiddlewares, extensions, log_formatter, pipelines, spidermiddlewares
 
 BOT_NAME = "kingfisher_scrapy"
 
@@ -45,50 +51,50 @@ TELNETCONSOLE_ENABLED = False
 SPIDER_MIDDLEWARES = {
     # https://docs.scrapy.org/en/latest/topics/spider-middleware.html#topics-spider-middleware-setting
     # `process_spider_output` is invoked in decreasing order.
-    "kingfisher_scrapy.spidermiddlewares.ConcatenatedJSONMiddleware": 600,
-    "kingfisher_scrapy.spidermiddlewares.LineDelimitedMiddleware": 500,
-    "kingfisher_scrapy.spidermiddlewares.ValidateJSONMiddleware": 450,
-    "kingfisher_scrapy.spidermiddlewares.RootPathMiddleware": 400,
-    "kingfisher_scrapy.spidermiddlewares.AddPackageMiddleware": 300,
-    "kingfisher_scrapy.spidermiddlewares.ResizePackageMiddleware": 200,
-    "kingfisher_scrapy.spidermiddlewares.ReadDataMiddleware": 100,
+    spidermiddlewares.ConcatenatedJSONMiddleware: 600,
+    spidermiddlewares.LineDelimitedMiddleware: 500,
+    spidermiddlewares.ValidateJSONMiddleware: 450,
+    spidermiddlewares.RootPathMiddleware: 400,
+    spidermiddlewares.AddPackageMiddleware: 300,
+    spidermiddlewares.ResizePackageMiddleware: 200,
+    spidermiddlewares.ReadDataMiddleware: 100,
     # `process_spider_exception` is invoked in decreasing order.
     # Scrapy's HttpErrorMiddleware is at priority 50. We need to prevent it from logging and ignoring HttpError.
     # https://docs.scrapy.org/en/latest/topics/settings.html#spider-middlewares-base
-    "kingfisher_scrapy.spidermiddlewares.RetryDataErrorMiddleware": 52,
-    "kingfisher_scrapy.spidermiddlewares.HttpErrorMiddleware": 51,
+    spidermiddlewares.RetryDataErrorMiddleware: 52,
+    spidermiddlewares.HttpErrorMiddleware: 51,
 }
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    "scrapy.downloadermiddlewares.offsite.OffsiteMiddleware": None,
-    "kingfisher_scrapy.downloadermiddlewares.OrjsonMiddleware": 100,
-    "kingfisher_scrapy.downloadermiddlewares.DelayedRequestMiddleware": 543,
+    OffsiteMiddleware: None,
+    downloadermiddlewares.OrjsonMiddleware: 100,
+    downloadermiddlewares.DelayedRequestMiddleware: 543,
     # Active only for spiders that set `cloudflare_protected = True`, after RetryMiddleware (550).
-    "kingfisher_scrapy.downloadermiddlewares.CloudflareMiddleware": 560,
+    downloadermiddlewares.CloudflareMiddleware: 560,
 }
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 EXTENSIONS = {
-    "kingfisher_scrapy.extensions.SentryLogging": -1,
-    "kingfisher_scrapy.extensions.Pluck": 1,
+    extensions.SentryLogging: -1,
+    extensions.Pluck: 1,
     # `FilesStore` must run before `KingfisherProcessAPI2`, because the file needs to be written before the
     # request is sent to Kingfisher Process.
-    "kingfisher_scrapy.extensions.FilesStore": 100,
-    "kingfisher_scrapy.extensions.KingfisherProcessAPI2": 500,
-    "kingfisher_scrapy.extensions.ItemCount": 600,
-    "kingfisher_scrapy.extensions.DatabaseStore": 700,
+    extensions.FilesStore: 100,
+    extensions.KingfisherProcessAPI2: 500,
+    extensions.ItemCount: 600,
+    extensions.DatabaseStore: 700,
 }
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    "kingfisher_scrapy.pipelines.Sample": 200,
-    "kingfisher_scrapy.pipelines.Unflatten": 300,
-    "kingfisher_scrapy.pipelines.Validate": 301,
-    "kingfisher_scrapy.pipelines.Pluck": 302,
+    pipelines.Sample: 200,
+    pipelines.Unflatten: 300,
+    pipelines.Validate: 301,
+    pipelines.Pluck: 302,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -112,6 +118,9 @@ ITEM_PIPELINES = {
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
+# Set settings whose default value is deprecated to a future-proof value
+FEED_EXPORT_ENCODING = "utf-8"
+
 
 # Project-specific Scrapy configuration
 
@@ -132,7 +141,7 @@ HTTPPROXY_ENABLED = False  # default True
 RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408]  # handle 429 separately
 
 # https://docs.scrapy.org/en/latest/topics/settings.html#log-formatter
-LOG_FORMATTER = "kingfisher_scrapy.log_formatter.LogFormatter"
+LOG_FORMATTER = log_formatter.LogFormatter
 
 # Scrapyd won't have (and doesn't need) access to this module.
 if os.getenv("SCRAPY_PROJECT") is None:
@@ -141,9 +150,6 @@ if os.getenv("SCRAPY_PROJECT") is None:
 
 
 # Project configuration
-
-# Add the names of spiders that need to use a proxy.
-PROXY_SPIDERS = os.getenv("PROXY_SPIDERS")
 
 # To send exceptions and log records to Sentry.
 # Used by SentryLogging extension.

@@ -198,8 +198,6 @@ class BaseSpider(scrapy.Spider):
     def update_settings(cls, settings):
         if cls.custom_settings is None:
             cls.custom_settings = {}
-        if not cls.custom_settings.get("HTTPPROXY_ENABLED"):
-            cls.custom_settings["HTTPPROXY_ENABLED"] = cls.name in settings.getlist("PROXY_SPIDERS")
         if cls.cloudflare_protected:
             cls.custom_settings.setdefault("DOWNLOAD_HANDLERS", {})["https"] = (
                 "kingfisher_scrapy.downloadhandlers.CurlImpersonateDownloadHandler"
@@ -207,7 +205,7 @@ class BaseSpider(scrapy.Spider):
         super().update_settings(settings)
 
         # Apply CF_USER_AGENT last, in case a spider sets USER_AGENT in its custom_settings.
-        if cls.cloudflare_protected and (user_agent := settings.get("CF_USER_AGENT")):
+        if cls.cloudflare_protected and (user_agent := settings["CF_USER_AGENT"]):
             settings.set("USER_AGENT", user_agent, priority="spider")
 
     @classmethod
@@ -258,7 +256,7 @@ class BaseSpider(scrapy.Spider):
             ) from None
 
         # CloudflareMiddleware-related logic.
-        if spider.cloudflare_protected and bool(settings.get("CF_CLEARANCE")) != bool(settings.get("CF_USER_AGENT")):
+        if spider.cloudflare_protected and bool(settings["CF_CLEARANCE"]) != bool(settings["CF_USER_AGENT"]):
             raise MissingEnvVarError("CF_CLEARANCE and CF_USER_AGENT must be set together (only one is set).")
 
         return spider
