@@ -752,6 +752,13 @@ Mexico
 
    scrapy crawl mexico_guadalajara
 
+.. autoclass:: kingfisher_scrapy.spiders.mexico_jalisco_sesaj.MexicoJaliscoSESAJ
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl mexico_jalisco_sesaj
+
 .. autoclass:: kingfisher_scrapy.spiders.mexico_mexico_city_infocdmx.MexicoMexicoCityINFOCDMX
    :no-members:
 
