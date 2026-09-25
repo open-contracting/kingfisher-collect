@@ -8,7 +8,7 @@ class Malta(EuropeanDynamicsBase):
     Spider arguments
       from_date
         Download only data from this month onward (YYYY-MM format).
-        If ``until_date`` is provided, defaults to '2019-10'.
+        If ``until_date`` is provided, defaults to '2023-01'.
       until_date
         Download only data until this month (YYYY-MM format).
         If ``from_date`` is provided, defaults to the current month.
@@ -19,7 +19,7 @@ class Malta(EuropeanDynamicsBase):
     name = "malta"
 
     # BaseSpider
-    default_from_date = "2019-10"
+    default_from_date = "2023-01"
 
     # EuropeanDynamicsBase
-    base_url = "http://demowww.etenders.gov.mt"
+    base_url = "https://www.etenders.gov.mt"
