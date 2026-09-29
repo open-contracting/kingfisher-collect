@@ -41,9 +41,6 @@ class UgandaReleases(SimpleSpider):
     data_type = "release_package"
 
     url_prefix = "https://cdn.ppda.go.ug/api/open-data/v2/ocds/"
-    # Seconds to wait before each poll, honored by DelayedRequestMiddleware.
-    poll_wait_time = 30
-    max_polls = 20
 
     async def start(self):
         # The download is asynchronous: create an export job, poll its status, then download the file.
@@ -66,7 +63,7 @@ class UgandaReleases(SimpleSpider):
                 formatter=None,
                 meta={
                     "file_name": response.request.meta["file_name"],
-                    "wait_time": self.poll_wait_time,
+                    "wait_time": 30,
                 },
                 callback=self.parse_status,
             )
@@ -81,7 +78,7 @@ class UgandaReleases(SimpleSpider):
                 yield self.build_request(data["download_url"], formatter=None, meta={"file_name": meta["file_name"]})
             case "queued" | "processing":
                 polls = meta.get("polls", 0) + 1
-                if polls > self.max_polls:
+                if polls > 20:
                     self.log_error_from_response(response, message=f"Gave up polling (polled {polls} times)")
                     return
                 request = response.request.copy()
