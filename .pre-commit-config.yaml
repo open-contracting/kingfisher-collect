@@ -14,15 +14,15 @@ repos:
     hooks:
       - id: pip-compile
         name: pip-compile requirements_base.in
-        args: [requirements_base.in, -o, requirements_base.txt, --python-platform, linux]
+        args: [requirements_base.in, -o, requirements_base.txt, --universal]
         files: ^requirements_base\.(in|txt)$
       - id: pip-compile
         name: pip-compile requirements.in
-        args: [requirements.in, -o, requirements.txt, --python-platform, linux]
+        args: [requirements.in, -o, requirements.txt, --universal]
         files: ^requirements(_base)?\.(in|txt)$
       - id: pip-compile
         name: pip-compile requirements_dev.in
-        args: [requirements_dev.in, -o, requirements_dev.txt, --python-platform, linux]
+        args: [requirements_dev.in, -o, requirements_dev.txt, --universal]
         files: ^requirements(_base|_dev)?\.(in|txt)$
   - repo: https://github.com/scrapy/scrapy-lint
     rev: v0.1.1
