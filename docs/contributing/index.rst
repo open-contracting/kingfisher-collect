@@ -68,8 +68,18 @@ After choosing a base class, read its documentation, as well as its parent class
 
 -  Write different callback methods for different response types. Writing a single callback with many if-else branches to handle different response types is very hard to reason about.
 -  The default ``parse`` callback method should be for "leaf" responses: that is, responses that cause no further requests to be yielded, besides pagination requests.
--  Have a look at the :mod:`~kingfisher_scrapy.util` module, which contains useful functions.
+-  Use :meth:`~kingfisher_scrapy.base_spiders.base_spider.BaseSpider.build_request` only for requests whose callbacks yield files. For intermediate requests, use ``scrapy.Request``.
 -  Avoid generic ``file_name`` values, especially in the ``start()`` method, in order to not overwrite files during incremental crawls. (`#1025 <https://github.com/open-contracting/kingfisher-collect/issues/1025>`__)
+-  Use XPath selectors, not CSS selectors. Try to select the attributes or elements that contain the information you need (like ``@href`` attributes or ``a`` elements) rather than iterate over surrounding layout elements.
+-  Write code that fails on unexpected input, so that changes to data sources aren't missed (see `Fighting NULL in web scrapers <https://medium.com/@jpmckinney/fighting-null-in-web-scrapers-126c4b3d487a>`__).
+
+   -  Write code for today's input, not for future possibilities. For example, use ``@class="name"``, not ``contains(concat(" ", @class, " "), " name ")``, if the attribute sets one class. Raise a :class:`~kingfisher_scrapy.exceptions.KingfisherScrapyError` exception if an unsupported possibility occurs.
+   -  Access values strictly, so that missing values raise an error. For example, use ``data["key"]``, not ``data.get("key")``, and don't use ``.get(default)`` on a selector. Using ``.get()`` on a selector returns ``None`` as the default if nothing matches. To get an attribute, use ``.attrib["name"]`` instead; otherwise, check for ``None``, whether implicitly on the next operation, or explicitly. Avoid XPath's ``string()`` and ``normalize-space()`` functions on required elements, because they return an empty string if nothing matches.
+   -  Parse values strictly, so that malformed values raise an error. For example, use ``int()`` and ``datetime.strptime()`` with the exact format, or use ``re.fullmatch()`` or ``\A`` and ``\Z`` anchors with a narrow pattern.
+   -  If an expectation is broken, look at the response, and relax the expectation as little as possible.
+
+   That said, if finding nothing means the crawl yields no files, you don't need to check that condition. In that case, Kingfisher Collect logs "Something went wrong. No data was downloaded." at the end of the crawl, and the crawl statistics have no ``file_count`` or ``fileitem_count``, which users can check (see :doc:`../logs`).
+-  Have a look at the :mod:`~kingfisher_scrapy.util` module, which contains useful functions.
 
 After writing the spider, add a docstring for :ref:`spider metadata<spider-metadata>`.
 
