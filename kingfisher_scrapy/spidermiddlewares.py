@@ -379,8 +379,8 @@ class RetryDataErrorMiddleware:
             )
             return []
         request = response.request.copy()
-        request.dont_filter = True
         request.meta["retries"] = attempts
+        request.dont_filter = True
         logger.debug(
             "Retrying %(request)s (failed %(failures)d times): %(exception)s",
             {"request": response.request, "failures": attempts, "exception": exception},
