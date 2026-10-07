@@ -1,3 +1,6 @@
+from functools import partial
+from urllib.parse import urlsplit
+
 import sentry_sdk
 from scrapy.exceptions import (
     CannotResolveHostError,
@@ -20,9 +23,42 @@ IGNORE_MESSAGES = {
     "Gave up retrying %(request)s (failed %(retry_times)d times): %(reason)s",
 }
 
+SECRET_SETTINGS = (
+    "CF_CLEARANCE",
+    "KINGFISHER_PARAGUAY_DNCP_REQUEST_TOKEN",
+    "KINGFISHER_PARAGUAY_HACIENDA_CLIENT_SECRET",
+    "KINGFISHER_PARAGUAY_HACIENDA_REQUEST_TOKEN",
+)
 
-def before_send(event, hint):
-    """Filter out ERROR-level log messages about TCP, DNS and HTTP errors."""
+
+def get_secrets(settings):
+    """Return the values of secret settings."""
+    secrets = [settings[name] for name in SECRET_SETTINGS]
+    # The last path segment is the secret. urllib3 exception messages contain the path, but not the full URL.
+    if url := settings["SLACK_WEBHOOK_URL"]:
+        secrets.append(url.rsplit("/", 1)[-1])
+    if url := settings["RABBIT_URL"]:
+        secrets.append(urlsplit(url).password)
+    return [secret for secret in secrets if secret]
+
+
+def scrub(value, secrets):
+    """Replace secrets in all strings in an event."""
+    if isinstance(value, str):
+        for secret in secrets:
+            value = value.replace(secret, "[Filtered]")
+        return value
+    if isinstance(value, dict):
+        return {k: scrub(v, secrets) for k, v in value.items()}
+    if isinstance(value, list | tuple):
+        return [scrub(v, secrets) for v in value]
+    return value
+
+
+def before_send(event, hint, secrets=()):
+    """Scrub secrets, and filter out ERROR-level log messages about TCP, DNS and HTTP errors."""
+    event = scrub(event, secrets)
+
     if "log_record" not in hint:
         return event
 
@@ -64,8 +100,8 @@ class SentryLogging:
        `Sentry documentation <https://docs.sentry.io/platforms/python/logging/>`__
     """
 
-    def __init__(self, sentry_dsn):
-        sentry_sdk.init(sentry_dsn, before_send=before_send)
+    def __init__(self, sentry_dsn, secrets=()):
+        sentry_sdk.init(sentry_dsn, before_send=partial(before_send, secrets=secrets))
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -74,4 +110,4 @@ class SentryLogging:
         if not sentry_dsn:
             raise NotConfigured("SENTRY_DSN is not set.")
 
-        return cls(sentry_dsn)
+        return cls(sentry_dsn, get_secrets(crawler.settings))
