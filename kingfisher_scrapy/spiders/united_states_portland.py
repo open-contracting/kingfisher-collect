@@ -42,6 +42,6 @@ class UnitedStatesPortland(SimpleSpider):
         # Submit form: "FILE is too large for Google to scan for viruses. Would you still like to download this file?"
         form = response.xpath('//form[@id="download-form"]')
         params = {
-            key: form.xpath(f".//input[@name='{key}']/@value").get() for key in ("id", "export", "confirm", "uuid")
+            key: form.xpath(f".//input[@name='{key}']").attrib["value"] for key in ("id", "export", "confirm", "uuid")
         }
-        yield scrapy.Request(f"{form.xpath('@action').get()}?{urlencode(params)}", meta={"file_name": "all.json"})
+        yield scrapy.Request(f"{form.attrib['action']}?{urlencode(params)}", meta={"file_name": "all.json"})

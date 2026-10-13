@@ -1023,6 +1023,13 @@ Romania
 
    scrapy crawl romania_digiwhist
 
+.. autoclass:: kingfisher_scrapy.spiders.romania_ministry_of_justice.RomaniaMinistryOfJustice
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl romania_ministry_of_justice
+
 Rwanda
 ~~~~~~
 
