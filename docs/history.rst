@@ -110,7 +110,6 @@ Spiders for publications that became broken, since April 2024:
 -  `2026-07-23 <https://github.com/open-contracting/kingfisher-collect/pull/1307>`__: nigeria_plateau_state (could not resolve host), albania_public_procurement_commission_historical (returns HTTP 500), slovenia (timeout), nigeria_ebonyi_state (404)
 -  `2026-03-06 <https://github.com/open-contracting/kingfisher-collect/pull/1244>`__: bolivia_agetic (returns HTTP 403), india_assam (403), nepal (timeout), nigeria_cross_river_state_* (500), nigeria_oyo_state (500)
 -  2025-22-14: `argentina_buenos_aires <https://github.com/open-contracting/kingfisher-collect/pull/1201>`__ (returns incomplete JSON)
--  2025-04-14: `moldova <https://github.com/open-contracting/kingfisher-collect/pull/1159>`__ (returns upstream errors)
 -  2025-01-02: `pakistan_ppra_api, pakistan_ppra_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1137>`__ (requires paginating `HTML <https://ppra.org.pk/opendata.asp>`__)
 -  2024-07-02: `mexico_sinaloa_ceaip <https://github.com/open-contracting/kingfisher-collect/pull/1093>`__ (returns no data)
 -  2024-04-12: `dominican_republic_bulk <https://github.com/open-contracting/kingfisher-collect/pull/1074>`__ (the `bulk source <https://datosabiertos.dgcp.gob.do/opendata/estandar-mundial-ocds>`__ isn't in sync with the API source)
