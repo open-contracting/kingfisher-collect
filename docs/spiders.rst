@@ -911,6 +911,13 @@ Nigeria
 
    scrapy crawl nigeria_portal
 
+.. autoclass:: kingfisher_scrapy.spiders.nigeria_taraba_state.NigeriaTarabaState
+   :no-members:
+
+.. code-block:: bash
+
+   scrapy crawl nigeria_taraba_state
+
 North Macedonia
 ~~~~~~~~~~~~~~~
 
