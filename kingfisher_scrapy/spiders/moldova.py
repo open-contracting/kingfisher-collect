@@ -5,35 +5,37 @@ from kingfisher_scrapy.exceptions import RetryableError
 from kingfisher_scrapy.util import components, replace_parameters
 
 
-class MoldovaMultiRecord(BaseSpider):
+class Moldova(BaseSpider):
     """
     Domain
       MTender
     Caveats
-      The ``https://public.mtender.gov.md/tenders/{ocid}`` endpoint returns a record package in which each record has a
-      different ``ocid`` value (as expected), but these actually represent the same contracting process (not expected).
-      To fix this, we reformat the record package as a release package, using each record's ``compiledRelease`` as an
-      individual release, and replacing the release's ``ocid`` value with the OCID from the URL.
-
-      The compliant OCDS endpoint ``http://public.eprocurement.systems/ocds/tenders/{ocid}`` returns error messages.
+      OCIDs are listed from ``https://public.mtender.gov.md/tenders/plan/``, which publishes contracting processes
+      under multiple OCIDs, and data is downloaded from ``http://public.eprocurement.systems/ocds/tenders/{ocid}``,
+      which publishes contracting processes under one OCID but has no endpoint to list OCIDs.
     Spider arguments
       from_date
         Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
     """
 
-    name = "moldova_multi_record"
+    name = "moldova"
 
     # BaseSpider
     date_format = "datetime"
 
+    # SimpleSpider
+    data_type = "release_package"
+
     # Local
-    base_url = "https://public.mtender.gov.md/tenders/"
+    # The /tenders/ endpoint returns empty responses, and the /tenders/plan/ endpoint has the same OCIDs.
+    list_url = "https://public.mtender.gov.md/tenders/plan/"
+    base_url = "http://public.eprocurement.systems/ocds/tenders/"
 
     async def start(self):
         if self.from_date:
-            url = f"{self.base_url}?offset={self.from_date.strftime(self.date_format)}"
+            url = f"{self.list_url}?offset={self.from_date.strftime(self.date_format)}"
         else:
-            url = self.base_url
+            url = self.list_url
         yield scrapy.Request(url, callback=self.parse_list)
 
     def load_json_or_retry_error(self, response):
@@ -86,14 +88,5 @@ class MoldovaMultiRecord(BaseSpider):
         yield scrapy.Request(replace_parameters(response.request.url, offset=data["offset"]), callback=self.parse_list)
 
     def parse(self, response):
-        data = self.load_json_or_retry_error(response)
-
-        ocid = components(-1)(response.request.url)
-
-        releases = []
-        for record in data.pop("records"):
-            release = record["compiledRelease"]
-            release["ocid"] = ocid
-            releases.append(release)
-
-        yield self.build_file_from_response(response, data_type="release_package", data=data | {"releases": releases})
+        self.load_json_or_retry_error(response)
+        yield self.build_file_from_response(response, data_type=self.data_type)
