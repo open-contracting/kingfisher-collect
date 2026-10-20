@@ -1,3 +1,5 @@
+import datetime
+
 import scrapy
 
 from kingfisher_scrapy.base_spiders import BaseSpider
@@ -10,9 +12,15 @@ class Moldova(BaseSpider):
     Domain
       MTender
     Caveats
-      OCIDs are listed from ``https://public.mtender.gov.md/tenders/plan/``, which publishes contracting processes
-      under multiple OCIDs, and data is downloaded from ``http://public.eprocurement.systems/ocds/tenders/{ocid}``,
-      which publishes contracting processes under one OCID but has no endpoint to list OCIDs.
+      OCIDs are listed from ``https://public.mtender.gov.md``, which publishes contracting processes under multiple
+      OCIDs, and data is downloaded from ``http://public.eprocurement.systems/ocds/tenders/{ocid}``, which publishes
+      contracting processes under one OCID but has no endpoint to list OCIDs.
+
+      The ``/tenders/`` endpoint lists contracting processes by date of last update, but returns empty responses for
+      offsets older than about a year. The ``/tenders/plan/`` endpoint lists contracting processes since 2018, but
+      omits many processes that the ``/tenders/`` endpoint lists. As such, OCIDs are listed from the ``/tenders/plan/``
+      endpoint and, for processes updated in the past year, from the ``/tenders/`` endpoint. Processes that are omitted
+      from the ``/tenders/plan/`` endpoint and that were not updated in the past year are not downloaded.
     Spider arguments
       from_date
         Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
@@ -27,15 +35,22 @@ class Moldova(BaseSpider):
     data_type = "release_package"
 
     # Local
-    # The /tenders/ endpoint returns empty responses, and the /tenders/plan/ endpoint has the same OCIDs.
-    list_url = "https://public.mtender.gov.md/tenders/plan/"
+    plan_url = "https://public.mtender.gov.md/tenders/plan/"
+    tenders_url = "https://public.mtender.gov.md/tenders/"
     base_url = "http://public.eprocurement.systems/ocds/tenders/"
 
     async def start(self):
         if self.from_date:
-            url = f"{self.list_url}?offset={self.from_date.strftime(self.date_format)}"
+            url = f"{self.plan_url}?offset={self.from_date.strftime(self.date_format)}"
         else:
-            url = self.list_url
+            url = self.plan_url
+        yield scrapy.Request(url, callback=self.parse_list)
+
+        # The /tenders/ endpoint returns empty responses for offsets older than about a year, or for no offset.
+        offset = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(days=365)
+        if self.from_date:
+            offset = max(offset, self.from_date)
+        url = f"{self.tenders_url}?offset={offset.strftime(self.date_format)}"
         yield scrapy.Request(url, callback=self.parse_list)
 
     def load_json_or_retry_error(self, response):
