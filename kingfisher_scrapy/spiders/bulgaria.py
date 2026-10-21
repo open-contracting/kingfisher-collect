@@ -1,57 +1,33 @@
-import orjson
-import scrapy
-
-from kingfisher_scrapy.base_spiders import CompressedFileSpider
-from kingfisher_scrapy.util import components, join
+from kingfisher_scrapy.base_spiders import PeriodicSpider
+from kingfisher_scrapy.util import components
 
 
-class Bulgaria(CompressedFileSpider):
+class Bulgaria(PeriodicSpider):
     """
     Domain
       Public Procurement Agency (PPA)
-    Caveats
-      Access to the publication is geo-restricted to Bulgarian IP addresses. Use a VPN to access it from outside.
-    API documentation
-      https://data.egov.bg/api-spetsifikatsiya?section=22&item=82
+    Spider arguments
+      from_date
+        Download only data from this date onward (YYYY-MM-DD format). Defaults to '2026-01-01'.
+      until_date
+        Download only data until this date (YYYY-MM-DD format). Defaults to today.
+    Bulk download documentation
+      https://app.eop.bg/today/reporting/open-data
     """
 
     name = "bulgaria"
 
+    # BaseSpider
+    date_format = "date"
+    default_from_date = "2026-01-01"
+
     # SimpleSpider
     data_type = "release_package"
 
-    # Local
-    base_url = "https://data.egov.bg"
-
-    async def start(self):
-        yield scrapy.Request(
-            f"{self.base_url}/api/listDatasets",
-            method="POST",
-            body=orjson.dumps(
-                # 502 is the Public Procurement Agency's organization ID.
-                {"criteria": {"org_ids": [502], "formats": ["JSON"], "keywords": "OCDS"}, "records_per_page": 100}
-            ),
-            callback=self.parse_list,
-        )
-
-    def parse_list(self, response):
-        """
-        The response is expected to be a list of dataset objects, e.g.:
-        [{"uri": "27b344eb-da25-4974-ac37-2a4b8435702a", ...}, ...]
-        """
-        for dataset in response.json()["datasets"]:
-            yield scrapy.Request(
-                f"{self.base_url}/dataset/{dataset['uri']}/resources/download/json",
-                callback=self.parse_item,
-            )
-
-    def parse_item(self, response):
-        """
-        The response contains a download token:
-        {"uri": "some-download-token"}
-        """
-        yield self.build_request(
-            # /true returns non OCDS data. No parameter returns 404.
-            f"{self.base_url}/dataset/resources/download/zip/json/{response.json()['uri']}/false",
-            formatter=join(components(-2, -1), extension="zip"),
-        )
+    # PeriodicSpider
+    pattern = (
+        "https://storage.eop.bg/open-data-{0:%Y-%m-%d}/"
+        "Автоматично генерирани данни за обявления, публикувани в ЦАИС ЕОП на "
+        "{0:%d.%m.%Y} г., съгласно стандарт OCDS.json"  # noqa: RUF001
+    )
+    formatter = staticmethod(components(-2, -1))
