@@ -20,7 +20,7 @@ class Moldova(BaseSpider):
       offsets older than about a year. The ``/tenders/plan/`` endpoint lists contracting processes since 2018, but
       omits many processes that the ``/tenders/`` endpoint lists. As such, OCIDs are listed from the ``/tenders/plan/``
       endpoint and, for processes updated in the past year, from the ``/tenders/`` endpoint. Processes that are omitted
-      from the ``/tenders/plan/`` endpoint and that were not updated in the past year are not downloaded.
+      from the ``/tenders/plan/`` endpoint and that were not updated in the past year could be missed.
     Spider arguments
       from_date
         Download only data from this time onward (YYYY-MM-DDThh:mm:ss format).
