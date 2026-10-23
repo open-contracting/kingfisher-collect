@@ -1,6 +1,6 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import asyncio
-import datetime
+import datetime as dt
 import logging
 import socket
 
@@ -75,7 +75,7 @@ class ParaguayAuthMiddleware(BaseDownloaderMiddleware):
 
     def process_response(self, request, response):
         if response.status in {401, 429}:
-            age = (datetime.datetime.now() - self.spider.access_token_scheduled_at).total_seconds()
+            age = (dt.datetime.now() - self.spider.access_token_scheduled_at).total_seconds()
             logger.info("Access token age: %ss", age)
             logger.info("%s returned for request to %s", response.status, request.url)
             if self.spider.access_token != request.headers["Authorization"] and self._expires_soon():
@@ -91,7 +91,7 @@ class ParaguayAuthMiddleware(BaseDownloaderMiddleware):
 
     def _expires_soon(self):
         if self.spider.access_token and self.spider.access_token_scheduled_at:
-            age = (datetime.datetime.now() - self.spider.access_token_scheduled_at).total_seconds()
+            age = (dt.datetime.now() - self.spider.access_token_scheduled_at).total_seconds()
             if age < self.spider.access_token_maximum_age:
                 return False
             logger.info("Access token age: %ss", age)

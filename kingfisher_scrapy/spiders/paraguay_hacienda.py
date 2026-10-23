@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import orjson
 import scrapy
@@ -122,7 +122,7 @@ class ParaguayHacienda(BaseSpider):
         if body is None:
             body = orjson.dumps({"clientSecret": self.client_secret})
 
-        self.access_token_scheduled_at = datetime.datetime.now()
+        self.access_token_scheduled_at = dt.datetime.now()
 
         return scrapy.Request(
             f"{self.url_prefix}auth/token",

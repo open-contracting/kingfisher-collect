@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import itertools
 import logging
 from decimal import Decimal
@@ -99,7 +99,7 @@ def date_range_by_interval(start, stop, step):
     Yield date ranges from the ``start`` date to the ``stop`` date, in intervals of ``step`` days, in reverse
     chronological order.
     """
-    delta = datetime.timedelta(days=step)
+    delta = dt.timedelta(days=step)
     range_end = stop
     while range_end > start:
         range_start = max(start, range_end - delta)
@@ -119,7 +119,7 @@ def date_range_by_month(start, stop):
 
     for months in reversed(range(number_of_months(start) - 1, number_of_months(stop))):
         year, month = divmod(months, 12)
-        yield datetime.date(year, month + 1, 1)
+        yield dt.date(year, month + 1, 1)
 
 
 def date_range_by_year(start, stop):

@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import scrapy
 
@@ -46,7 +46,7 @@ class Netherlands(SimpleSpider):
                 if self.from_date and self.until_date:
                     # URL looks like https://www.tenderned.nl/cms/sites/default/files/2023-04/2017.json
                     year = int(url.rsplit("/", 1)[1].replace(".json", ""))
-                    url_date = datetime.datetime(year, 1, 1)
+                    url_date = dt.datetime(year, 1, 1)
                     if not (self.from_date <= url_date <= self.until_date):
                         continue
                 yield self.build_request(url, formatter=components(-1))

@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from abc import abstractmethod
 
 import orjson
@@ -109,4 +109,4 @@ class ChileCompraAPIBase(IndexSpider, PeriodicSpider):
         year = int(components(-4, -3)(response.request.url))
         month = int(components(-3, -2)(response.request.url).lstrip("0"))
 
-        return self.pattern.format(system, datetime.date(year, month, 1), value, self.limit)
+        return self.pattern.format(system, dt.date(year, month, 1), value, self.limit)

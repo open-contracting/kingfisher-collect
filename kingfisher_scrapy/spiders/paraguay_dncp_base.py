@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from abc import abstractmethod
 
 import orjson
@@ -76,7 +76,7 @@ class ParaguayDNCPBase(SimpleSpider):
     def build_access_token_request(self, attempt=0):
         self.logger.info("Requesting access token, attempt %s of %s", attempt + 1, self.max_access_token_attempts)
 
-        self.access_token_scheduled_at = datetime.datetime.now()
+        self.access_token_scheduled_at = dt.datetime.now()
 
         return scrapy.Request(
             f"{self.url_prefix}oauth/token",

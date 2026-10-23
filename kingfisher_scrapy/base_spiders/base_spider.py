@@ -1,5 +1,5 @@
 import codecs
-import datetime
+import datetime as dt
 
 import scrapy
 
@@ -228,7 +228,7 @@ class BaseSpider(scrapy.Spider):
 
         if spider.crawl_time:
             try:
-                spider.crawl_time = datetime.datetime.strptime(spider.crawl_time, "%Y-%m-%dT%H:%M:%S")
+                spider.crawl_time = dt.datetime.strptime(spider.crawl_time, "%Y-%m-%dT%H:%M:%S")
             except ValueError as e:
                 raise SpiderArgumentError(f"spider argument `crawl_time`: invalid date value: {e}") from None
 
@@ -263,7 +263,7 @@ class BaseSpider(scrapy.Spider):
 
     def parse_date_argument(self, date):
         """Return the date argument as a datetime object."""
-        return datetime.datetime.strptime(date, self.date_format).replace(tzinfo=datetime.timezone.utc)
+        return dt.datetime.strptime(date, self.date_format).replace(tzinfo=dt.timezone.utc)
 
     def is_http_success(self, response):
         """Return whether the response's status is a 2xx code."""
@@ -390,4 +390,4 @@ class BaseSpider(scrapy.Spider):
         """Return the ``default_until_date`` class attribute if truthy. Otherwise, return the current time."""
         if getattr(spider, "default_until_date", None):
             return spider.default_until_date
-        return datetime.datetime.now(tz=datetime.timezone.utc)
+        return dt.datetime.now(tz=dt.timezone.utc)

@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import logging
 import os
 from unittest.mock import Mock
@@ -79,9 +79,7 @@ def test_spider_opened_no_resume(cursor, caplog, tmpdir, from_date, default_from
 
     assert table_exists == "test"
     if from_date:
-        assert spider.from_date == datetime.datetime.strptime(from_date, "%Y-%m-%d").replace(
-            tzinfo=datetime.timezone.utc
-        )
+        assert spider.from_date == dt.datetime.strptime(from_date, "%Y-%m-%d").replace(tzinfo=dt.timezone.utc)
     else:
         assert spider.from_date == from_date
     assert [record.message for record in caplog.records] == messages
@@ -116,7 +114,7 @@ def test_spider_opened_resume(caplog, tmpdir):
     with caplog.at_level(logging.INFO):
         extension.spider_opened(spider)
 
-    assert spider.from_date == datetime.datetime.strptime("2021-05-26T10:00:00Z", "%Y-%m-%dT%H:%M:%S%z")
+    assert spider.from_date == dt.datetime.strptime("2021-05-26T10:00:00Z", "%Y-%m-%dT%H:%M:%S%z")
     assert [record.message for record in caplog.records] == [
         "Getting the date from which to resume the crawl from the test table",
         "Resuming crawl from 2021-05-26",
@@ -192,7 +190,7 @@ def test_spider_closed_warnings(cursor, caplog, tmpdir):
             },
         ),
     ]
-    assert spider.from_date == datetime.datetime.strptime("2021-05-26T10:00:00Z", "%Y-%m-%dT%H:%M:%S%z")
+    assert spider.from_date == dt.datetime.strptime("2021-05-26T10:00:00Z", "%Y-%m-%dT%H:%M:%S%z")
     assert [record.message for record in caplog.records] == [
         f"Reading the {tmpdir}/test/20210525_000000 crawl directory with the empty prefix",
         "Creating generator of compiled releases",

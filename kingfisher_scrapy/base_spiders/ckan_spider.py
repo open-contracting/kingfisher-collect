@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import scrapy
 
@@ -68,9 +68,7 @@ class CKANSpider:
 
         Override this method to, for example, extract the date from the URL.
         """
-        return datetime.datetime.strptime(resource["created"], "%Y-%m-%dT%H:%M:%S.%f").replace(
-            tzinfo=datetime.timezone.utc
-        )
+        return dt.datetime.strptime(resource["created"], "%Y-%m-%dT%H:%M:%S.%f").replace(tzinfo=dt.timezone.utc)
 
     def _resources(self, data):
         if "results" in data["result"]:  # package_search

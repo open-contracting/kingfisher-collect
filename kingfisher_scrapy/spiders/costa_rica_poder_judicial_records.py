@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from kingfisher_scrapy.base_spiders import CKANSpider, SimpleSpider
 from kingfisher_scrapy.util import components
@@ -37,4 +37,4 @@ class CostaRicaPoderJudicialRecords(CKANSpider, SimpleSpider):
 
     # CKANSpider
     def get_resource_date(self, resource):
-        return datetime.datetime(int(self.formatter(resource["url"])), 1, 1, tzinfo=datetime.timezone.utc)
+        return dt.datetime(int(self.formatter(resource["url"])), 1, 1, tzinfo=dt.timezone.utc)

@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import pytest
 from scrapy.crawler import Crawler, CrawlerRunner
@@ -20,15 +20,15 @@ async def test_start_requests(spider_name):
     crawler._apply_settings()  # noqa: SLF001
 
     # CoreStats.spider_opened
-    crawler.stats.set_value("start_time", datetime.datetime(2001, 2, 3, 4, 5, 6))
+    crawler.stats.set_value("start_time", dt.datetime(2001, 2, 3, 4, 5, 6))
 
     try:
         kwargs = {}
         if default_from_date := getattr(spidercls, "default_from_date", None):
-            from_date = datetime.datetime.strptime(
+            from_date = dt.datetime.strptime(
                 default_from_date, spidercls.VALID_DATE_FORMATS[spidercls.date_format]
-            ).replace(tzinfo=datetime.timezone.utc)
-            kwargs = {"until_date": from_date + datetime.timedelta(days=1)}
+            ).replace(tzinfo=dt.timezone.utc)
+            kwargs = {"until_date": from_date + dt.timedelta(days=1)}
 
         # See scrapy.crawler.Crawler._create_spider
         spider = crawler.spidercls.from_crawler(crawler, **kwargs)

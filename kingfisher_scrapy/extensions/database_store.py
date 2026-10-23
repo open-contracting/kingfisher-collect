@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import os
 import warnings
 
@@ -79,15 +79,13 @@ class DatabaseStore:
 
             if spider.from_date and spider.from_date != default_from_date:
                 spider.logger.info(
-                    "Starting crawl from %s", datetime.datetime.strftime(spider.from_date, spider.date_format)
+                    "Starting crawl from %s", dt.datetime.strftime(spider.from_date, spider.date_format)
                 )
             else:
                 spider.logger.info("Getting the date from which to resume the crawl from the %s table", table_name)
                 self.execute("SELECT max(data ->> 'date')::timestamptz FROM {table}", table=table_name)
                 if from_date := self.cursor.fetchone()[0]:
-                    spider.logger.info(
-                        "Resuming crawl from %s", datetime.datetime.strftime(from_date, spider.date_format)
-                    )
+                    spider.logger.info("Resuming crawl from %s", dt.datetime.strftime(from_date, spider.date_format))
                     spider.from_date = from_date
 
             self.connection.commit()

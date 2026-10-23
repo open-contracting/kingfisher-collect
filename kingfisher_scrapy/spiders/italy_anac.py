@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from kingfisher_scrapy.base_spiders import BigFileSpider, CKANSpider
 from kingfisher_scrapy.util import BROWSER_USER_AGENT, MAX_DOWNLOAD_TIMEOUT, components
@@ -45,7 +45,7 @@ class ItalyANAC(CKANSpider, BigFileSpider):
     # CKANSpider
     def get_resource_date(self, resource):
         year, month = self.formatter(resource["url"]).split("-")
-        return datetime.datetime(int(year), int(month), 1, tzinfo=datetime.timezone.utc)
+        return dt.datetime(int(year), int(month), 1, tzinfo=dt.timezone.utc)
 
     # ResizePackageMiddleware
     def ocid_fallback(self, release):

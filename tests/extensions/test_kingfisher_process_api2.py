@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import logging
 import os
 import time
@@ -215,7 +215,7 @@ def test_spider_opened(
     if crawl_time:
         assert data_version == "2020-01-01 00:00:00"
     else:
-        assert data_version.startswith(datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y-%m-%d %H:"))
+        assert data_version.startswith(dt.datetime.now(tz=dt.timezone.utc).strftime("%Y-%m-%d %H:"))
 
     if call_count == 2:
         calls[1].args[2].pop("stats")  # pop() ensures its presence

@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import scrapy
 
@@ -111,7 +111,7 @@ class HondurasPortalBulk(SimpleSpider):
                     continue
 
             if self.from_date and self.until_date:
-                date = datetime.datetime(int(item["year"]), int(item["month"]), 1, tzinfo=datetime.timezone.utc)
+                date = dt.datetime(int(item["year"]), int(item["month"]), 1, tzinfo=dt.timezone.utc)
                 if not (self.from_date <= date <= self.until_date):
                     continue
 

@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from kingfisher_scrapy.base_spiders import CKANSpider, CompressedFileSpider
 from kingfisher_scrapy.util import MAX_DOWNLOAD_TIMEOUT, components
@@ -40,4 +40,4 @@ class UruguayHistorical(CKANSpider, CompressedFileSpider):
 
     # CKANSpider
     def get_resource_date(self, resource):
-        return datetime.datetime(int(self.formatter(resource["url"])[5:9]), 1, 1, tzinfo=datetime.timezone.utc)
+        return dt.datetime(int(self.formatter(resource["url"])[5:9]), 1, 1, tzinfo=dt.timezone.utc)

@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import scrapy
 
@@ -47,7 +47,7 @@ class Moldova(BaseSpider):
         yield scrapy.Request(url, callback=self.parse_list)
 
         # The /tenders/ endpoint returns empty responses for offsets older than about a year, or for no offset.
-        offset = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(days=365)
+        offset = dt.datetime.now(tz=dt.timezone.utc) - dt.timedelta(days=365)
         if self.from_date:
             offset = max(offset, self.from_date)
         url = f"{self.tenders_url}?offset={offset.strftime(self.date_format)}"

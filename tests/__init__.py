@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import os
 
 from scrapy import Request
@@ -43,7 +43,7 @@ def spider_with_crawler(spider_class=BaseSpider, *, settings=None, **kwargs):
     crawler.logformatter = LogFormatter.from_crawler(crawler)
 
     # CoreStats.spider_opened
-    start_time = datetime.datetime(2001, 2, 3, 4, 5, 6)
+    start_time = dt.datetime(2001, 2, 3, 4, 5, 6)
     crawler.stats.set_value("start_time", start_time)
 
     return crawler.spider

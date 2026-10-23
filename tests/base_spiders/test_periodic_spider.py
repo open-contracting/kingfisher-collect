@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import pytest
 
@@ -6,7 +6,7 @@ from kingfisher_scrapy.base_spiders import PeriodicSpider
 from kingfisher_scrapy.util import components, date_range_by_interval, date_range_by_month, date_range_by_year
 from tests import spider_with_crawler
 
-today = datetime.datetime.now(tz=datetime.timezone.utc).date()
+today = dt.datetime.now(tz=dt.timezone.utc).date()
 today_year_month = today.strftime("%Y-%m")
 today_date = today.strftime("%Y-%m-%d")
 pattern_year = "http://example.com/{}"
@@ -203,8 +203,8 @@ TEST_CASES = {
     ids=TEST_CASES.keys(),
 )
 async def test_urls(date_format, pattern, expected_start, expected_end, class_args, user_args):
-    start = datetime.datetime.strptime(expected_start, PeriodicSpider.VALID_DATE_FORMATS[date_format])
-    stop = datetime.datetime.strptime(expected_end, PeriodicSpider.VALID_DATE_FORMATS[date_format])
+    start = dt.datetime.strptime(expected_start, PeriodicSpider.VALID_DATE_FORMATS[date_format])
+    stop = dt.datetime.strptime(expected_end, PeriodicSpider.VALID_DATE_FORMATS[date_format])
 
     if date_format == "date":
         expected = [pattern.format(x, y) for x, y in date_range_by_interval(start, stop, 1)]

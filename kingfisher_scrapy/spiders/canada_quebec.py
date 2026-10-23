@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import orjson
 
@@ -41,9 +41,7 @@ class CanadaQuebec(CKANSpider, SimpleSpider):
     # CKANSpider
     def get_resource_date(self, resource):
         # Basename is like "hebdo_20210401_20210411" or "mensuel_20210301_20210331".
-        return datetime.datetime.strptime(resource["url"].split("_")[-2], "%Y%m%d").replace(
-            tzinfo=datetime.timezone.utc
-        )
+        return dt.datetime.strptime(resource["url"].split("_")[-2], "%Y%m%d").replace(tzinfo=dt.timezone.utc)
 
     # SimpleSpider
     def parse(self, response):
