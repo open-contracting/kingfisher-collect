@@ -1,8 +1,6 @@
 ci:
   autoupdate_schedule: quarterly
   skip: [pip-compile]
-default_language_version:
-    python: python3.10
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.17.2
@@ -14,15 +12,15 @@ repos:
     hooks:
       - id: pip-compile
         name: pip-compile requirements_base.in
-        args: [requirements_base.in, -o, requirements_base.txt, --universal]
+        args: [requirements_base.in, -o, requirements_base.txt, --universal, --python-version, "3.10"]
         files: ^requirements_base\.(in|txt)$
       - id: pip-compile
         name: pip-compile requirements.in
-        args: [requirements.in, -o, requirements.txt, --universal]
+        args: [requirements.in, -o, requirements.txt, --universal, --python-version, "3.10"]
         files: ^requirements(_base)?\.(in|txt)$
       - id: pip-compile
         name: pip-compile requirements_dev.in
-        args: [requirements_dev.in, -o, requirements_dev.txt, --universal]
+        args: [requirements_dev.in, -o, requirements_dev.txt, --universal, --python-version, "3.10"]
         files: ^requirements(_base|_dev)?\.(in|txt)$
   - repo: https://github.com/scrapy/scrapy-lint
     rev: v0.1.1
