@@ -49,7 +49,8 @@ def test_process_request_cloudflare_unprotected():
 
 
 @pytest.mark.parametrize("content_type", ["text/html", "text/html; charset=UTF-8"])
-def test_process_response_challenge(monkeypatch, content_type):
+@pytest.mark.parametrize(("posted", "levelname"), [(True, "WARNING"), (False, "ERROR")])
+def test_process_response_challenge(monkeypatch, caplog, content_type, posted, levelname):
     middleware, spider = middleware_for()
     spider.crawler.engine = Mock()
     monkeypatch.setattr(downloadermiddlewares, "deferred_from_coro", lambda *_: None)
@@ -57,6 +58,7 @@ def test_process_response_challenge(monkeypatch, content_type):
 
     def fake_alert(url, text):
         alerts.append((url, text))
+        return posted
 
     monkeypatch.setattr(downloadermiddlewares, "post_slack_alert", fake_alert)
 
@@ -71,6 +73,7 @@ def test_process_response_challenge(monkeypatch, content_type):
     spider.crawler.engine.close_spider_async.assert_called_once_with(reason="cf_clearance_stale")
     assert len(alerts) == 1
     assert "https://opentender.eu/data/downloads/data-ie-ocds-json.zip" in alerts[0][1]
+    assert [record.levelname for record in caplog.records if "Cloudflare" in record.message] == [levelname]
 
 
 def test_process_response_challenge_repeated(monkeypatch):
@@ -78,7 +81,7 @@ def test_process_response_challenge_repeated(monkeypatch):
     spider.crawler.engine = Mock()
     monkeypatch.setattr(downloadermiddlewares, "deferred_from_coro", lambda *_: None)
     alerts = []
-    monkeypatch.setattr(downloadermiddlewares, "post_slack_alert", lambda *args: alerts.append(args))
+    monkeypatch.setattr(downloadermiddlewares, "post_slack_alert", lambda *args: alerts.append(args) or True)
 
     for i in range(3):
         request = Request(f"https://opentender.eu/data/downloads/data-ie-ocds-json-{i}.zip")

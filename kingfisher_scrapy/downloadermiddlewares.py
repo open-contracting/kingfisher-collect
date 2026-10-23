@@ -128,7 +128,7 @@ class CloudflareMiddleware(BaseDownloaderMiddleware):
        same IP version (the ``CURL_IP_VERSION`` setting).
 
     An HTML content type is treated as a Cloudflare challenge. If so, the middleware posts a Slack message (to the
-    ``SLACK_WEBHOOK_URL`` setting) and stops the crawl.
+    ``SLACK_WEBHOOK_URL`` setting) and stops the crawl. It reports to Sentry only if the message isn't posted.
 
     .. seealso:: :class:`~kingfisher_scrapy.downloadhandlers.CurlImpersonateDownloadHandler`
     """
@@ -159,11 +159,15 @@ class CloudflareMiddleware(BaseDownloaderMiddleware):
         if not self.cf_clearance_stale:
             self.cf_clearance_stale = True
 
-            logger.error("Cloudflare challenge detected for %s. The CF_CLEARANCE cookie must be re-set.", request.url)
-            post_slack_alert(
+            posted = post_slack_alert(
                 self.slack_webhook_url,
                 f"{self.spider.name}: Cloudflare returned a challenge for {request.url}. The CF_CLEARANCE cookie must "
                 f"be re-set from the same browser, operating system and IP, on {socket.gethostname()}.",
+            )
+            logger.log(
+                logging.WARNING if posted else logging.ERROR,
+                "Cloudflare challenge detected for %s. The CF_CLEARANCE cookie must be re-set.",
+                request.url,
             )
 
             # See scrapyextensions/closespider.py and the docstring for scrapy.utils.defer._schedule_coro().

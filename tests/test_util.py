@@ -86,8 +86,20 @@ def test_post_slack_alert_disables_env_proxy(monkeypatch):
 
     monkeypatch.setattr(util.requests, "post", fake_post)
 
-    post_slack_alert("https://hooks.slack.com/services/T/B/X", "message")
-
+    assert post_slack_alert("https://hooks.slack.com/services/T/B/X", "message") is True
     assert captured["url"] == "https://hooks.slack.com/services/T/B/X"
     assert captured["json"] == {"text": "message"}
     assert captured["proxies"] == {"http": "", "https": ""}
+
+
+def test_post_slack_alert_unset():
+    assert post_slack_alert(None, "message") is False
+
+
+def test_post_slack_alert_failed(monkeypatch):
+    def fake_post(url, **kwargs):
+        raise util.requests.ConnectionError
+
+    monkeypatch.setattr(util.requests, "post", fake_post)
+
+    assert post_slack_alert("https://hooks.slack.com/services/T/B/X", "message") is False
