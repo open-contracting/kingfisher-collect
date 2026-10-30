@@ -21,8 +21,7 @@ jobs:
           KINGFISHER_API2_TEST_URL: http://localhost:${{ job.services.httpbin.ports[8080] }}/anything/
         # flattentool calls codecs.open(), deprecated in Python 3.14. https://github.com/OpenDataServices/flatten-tool/pull/485
         # For requests.post() in KingfisherProcessAPI2._post_synchronous().
-        # https://github.com/scrapy/scrapy/issues/6450
-        run: coverage run --source=kingfisher_scrapy -m pytest -W error -W "ignore:codecs.open:DeprecationWarning" -W ignore::ResourceWarning -W ignore::DeprecationWarning:scrapy.core.downloader.webclient -rs
+        run: coverage run --source=kingfisher_scrapy -m pytest -W error -W "ignore:codecs.open:DeprecationWarning" -W ignore::ResourceWarning -rs
       - run: python test_delayed_request_middleware.py
       - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
