@@ -99,7 +99,7 @@ et-xmlfile==2.0.0
     # via
     #   -r requirements_base.txt
     #   openpyxl
-filelock==3.29.4
+filelock==4.2.1
     # via
     #   -r requirements_base.txt
     #   tldextract

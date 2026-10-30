@@ -62,7 +62,7 @@ defusedxml==0.7.1
     #   scrapy
 et-xmlfile==2.0.0
     # via openpyxl
-filelock==3.29.4
+filelock==4.2.1
     # via tldextract
 flattentool==0.28.0
     # via -r requirements_base.in
