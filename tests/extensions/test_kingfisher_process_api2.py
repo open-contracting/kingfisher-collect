@@ -11,6 +11,7 @@ import pytest
 from scrapy.crawler import CrawlerRunner
 from scrapy.exceptions import NotConfigured
 from twisted.internet.defer import inlineCallbacks
+from twisted.internet.task import deferLater
 
 from kingfisher_scrapy.base_spiders import BaseSpider
 from kingfisher_scrapy.extensions import KingfisherProcessAPI2
@@ -50,6 +51,20 @@ def channel():
     finally:
         channel.queue_delete(queue=RABBIT_QUEUE_NAME)
         connection.close()
+
+
+@inlineCallbacks
+def get_body(channel):
+    """Return the next message's body, or ``None``, waiting for the extension to publish it."""
+    from twisted.internet import reactor  # noqa: PLC0415
+
+    for _ in range(100):
+        _method_frame, _header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
+        if body is not None:
+            return body
+        # Yield to the event loop, on which the extension publishes.
+        yield deferLater(reactor, 0.05)
+    return None
 
 
 @pytest.fixture
@@ -329,7 +344,7 @@ def test_item_scraped(directory, filename, item, channel, tmpdir):
         "path": os.path.join("test", "20010203_040506", directory, filename),
     }
 
-    _method_frame, _header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
+    body = yield get_body(channel)
 
     assert body is not None  # None if no message in queue
     assert orjson.loads(body) == expected
@@ -348,7 +363,7 @@ def test_item_scraped_path(item_file, channel, tmpdir):
         runner = CrawlerRunner(settings=SETTINGS | {"FILES_STORE": "subdir"})
         yield runner.crawl(Spider, crawl_time="2001-02-03T04:05:06", start_urls=[START_URL], item=item_file)
 
-    _method_frame, _header_frame, body = channel.basic_get(RABBIT_QUEUE_NAME, auto_ack=True)
+    body = yield get_body(channel)
 
     assert body is not None  # None if no message in queue
     assert orjson.loads(body) == {
