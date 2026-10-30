@@ -154,7 +154,7 @@ persistent==6.7
     # via
     #   btrees
     #   zodb
-pika==1.4.1
+pika==1.4.4
     # via yapw
 pip==26.2.2
     # via scrapyd-client

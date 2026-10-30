@@ -217,7 +217,7 @@ persistent==6.7
     #   -r requirements_base.txt
     #   btrees
     #   zodb
-pika==1.4.1
+pika==1.4.4
     # via
     #   -r requirements_base.txt
     #   yapw
