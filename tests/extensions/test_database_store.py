@@ -79,7 +79,7 @@ def test_spider_opened_no_resume(cursor, caplog, tmpdir, from_date, default_from
 
     assert table_exists == "test"
     if from_date:
-        assert spider.from_date == dt.datetime.strptime(from_date, "%Y-%m-%d").replace(tzinfo=dt.timezone.utc)
+        assert spider.from_date == dt.datetime.strptime(from_date, "%Y-%m-%d").replace(tzinfo=dt.UTC)
     else:
         assert spider.from_date == from_date
     assert [record.message for record in caplog.records] == messages

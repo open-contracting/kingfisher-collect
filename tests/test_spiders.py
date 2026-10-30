@@ -27,7 +27,7 @@ async def test_start_requests(spider_name):
         if default_from_date := getattr(spidercls, "default_from_date", None):
             from_date = dt.datetime.strptime(
                 default_from_date, spidercls.VALID_DATE_FORMATS[spidercls.date_format]
-            ).replace(tzinfo=dt.timezone.utc)
+            ).replace(tzinfo=dt.UTC)
             kwargs = {"until_date": from_date + dt.timedelta(days=1)}
 
         # See scrapy.crawler.Crawler._create_spider

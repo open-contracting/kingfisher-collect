@@ -263,7 +263,7 @@ class BaseSpider(scrapy.Spider):
 
     def parse_date_argument(self, date):
         """Return the date argument as a datetime object."""
-        return dt.datetime.strptime(date, self.date_format).replace(tzinfo=dt.timezone.utc)
+        return dt.datetime.strptime(date, self.date_format).replace(tzinfo=dt.UTC)
 
     def is_http_success(self, response):
         """Return whether the response's status is a 2xx code."""
@@ -390,4 +390,4 @@ class BaseSpider(scrapy.Spider):
         """Return the ``default_until_date`` class attribute if truthy. Otherwise, return the current time."""
         if getattr(spider, "default_until_date", None):
             return spider.default_until_date
-        return dt.datetime.now(tz=dt.timezone.utc)
+        return dt.datetime.now(tz=dt.UTC)

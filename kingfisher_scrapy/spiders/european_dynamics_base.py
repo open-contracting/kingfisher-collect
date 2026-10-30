@@ -56,7 +56,7 @@ class EuropeanDynamicsBase(CompressedFileSpider):
             if self.from_date and self.until_date:
                 # URL looks like https://www.zppa.org.zm/ocds/services/recordpackage/getrecordpackage/2016/7
                 year, month = map(int, url.rsplit("/", 2)[1:])
-                url_date = dt.datetime(year, month, 1, tzinfo=dt.timezone.utc)
+                url_date = dt.datetime(year, month, 1, tzinfo=dt.UTC)
                 if not (self.from_date <= url_date <= self.until_date):
                     continue
             yield self.build_request(
