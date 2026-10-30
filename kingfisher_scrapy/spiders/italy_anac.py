@@ -45,7 +45,7 @@ class ItalyANAC(CKANSpider, BigFileSpider):
     # CKANSpider
     def get_resource_date(self, resource):
         year, month = self.formatter(resource["url"]).split("-")
-        return dt.datetime(int(year), int(month), 1, tzinfo=dt.timezone.utc)
+        return dt.datetime(int(year), int(month), 1, tzinfo=dt.UTC)
 
     # ResizePackageMiddleware
     def ocid_fallback(self, release):

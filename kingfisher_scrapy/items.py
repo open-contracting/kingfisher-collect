@@ -20,7 +20,7 @@ Data = (
 )
 
 
-class DataType(str, enum.Enum):
+class DataType(enum.StrEnum):
     record = "record"
     release = "release"
     record_package = "record_package"

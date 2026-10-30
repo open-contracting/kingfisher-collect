@@ -6,7 +6,7 @@ from kingfisher_scrapy.base_spiders import PeriodicSpider
 from kingfisher_scrapy.util import components, date_range_by_interval, date_range_by_month, date_range_by_year
 from tests import spider_with_crawler
 
-today = dt.datetime.now(tz=dt.timezone.utc).date()
+today = dt.datetime.now(tz=dt.UTC).date()
 today_year_month = today.strftime("%Y-%m")
 today_date = today.strftime("%Y-%m-%d")
 pattern_year = "http://example.com/{}"

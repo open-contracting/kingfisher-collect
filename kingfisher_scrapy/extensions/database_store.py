@@ -1,6 +1,7 @@
 import datetime as dt
 import os
 import warnings
+from pathlib import Path
 
 import ijson
 import orjson
@@ -163,10 +164,10 @@ class DatabaseStore:
         self.execute("CREATE TABLE IF NOT EXISTS {table} (data jsonb)", table=table)
 
     def yield_items_from_directory(self, crawl_directory, prefix=""):
-        for root, _, files in os.walk(crawl_directory):
+        for root, _, files in Path(crawl_directory).walk():
             for name in files:
                 if name.endswith(".json"):
-                    with open(os.path.join(root, name), "rb") as f:
+                    with (root / name).open("rb") as f:
                         yield from ijson.items(f, prefix)
 
     # Copied from kingfisher-summarize

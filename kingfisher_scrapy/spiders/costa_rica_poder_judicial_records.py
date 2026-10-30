@@ -37,4 +37,4 @@ class CostaRicaPoderJudicialRecords(CKANSpider, SimpleSpider):
 
     # CKANSpider
     def get_resource_date(self, resource):
-        return dt.datetime(int(self.formatter(resource["url"])), 1, 1, tzinfo=dt.timezone.utc)
+        return dt.datetime(int(self.formatter(resource["url"])), 1, 1, tzinfo=dt.UTC)

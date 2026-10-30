@@ -65,7 +65,7 @@ class GuatemalaBulk(CompressedFileSpider):
         """
         for item in response.json()["result"]:
             if self.from_date and self.until_date:
-                date = dt.datetime(int(item["year"]), int(item["month"]), 1, tzinfo=dt.timezone.utc)
+                date = dt.datetime(int(item["year"]), int(item["month"]), 1, tzinfo=dt.UTC)
                 if not (self.from_date <= date <= self.until_date):
                     continue
 

@@ -41,7 +41,7 @@ class CanadaQuebec(CKANSpider, SimpleSpider):
     # CKANSpider
     def get_resource_date(self, resource):
         # Basename is like "hebdo_20210401_20210411" or "mensuel_20210301_20210331".
-        return dt.datetime.strptime(resource["url"].split("_")[-2], "%Y%m%d").replace(tzinfo=dt.timezone.utc)
+        return dt.datetime.strptime(resource["url"].split("_")[-2], "%Y%m%d").replace(tzinfo=dt.UTC)
 
     # SimpleSpider
     def parse(self, response):
