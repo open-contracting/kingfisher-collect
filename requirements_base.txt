@@ -12,18 +12,22 @@ attrs==26.1.0
     #   twisted
 automat==25.4.16
     # via twisted
-backports-datetime-fromisoformat==2.0.3
+backports-datetime-fromisoformat==2.0.3 ; platform_python_implementation != 'PyPy'
     # via flattentool
-backports-zstd==1.7.0
+backports-zstd==1.7.0 ; python_full_version < '3.14'
     # via scrapy
 bitsets==0.9.1
     # via concepts
-brotli==1.2.1
+brotli==1.2.1 ; implementation_name != 'pypy'
+    # via scrapy
+brotlicffi==1.2.1.0 ; implementation_name == 'pypy'
     # via scrapy
 btrees==6.4
     # via zodb
 cattrs==26.1.0
-    # via requests-cache
+    # via
+    #   ocdsextensionregistry
+    #   requests-cache
 certifi==2026.10.19
     # via
     #   curl-cffi
@@ -31,6 +35,7 @@ certifi==2026.10.19
     #   sentry-sdk
 cffi==2.0.0
     # via
+    #   brotlicffi
     #   cryptography
     #   curl-cffi
     #   persistent
@@ -151,26 +156,32 @@ persistent==6.7
     #   zodb
 pika==1.4.1
     # via yapw
+pip==26.2.2
+    # via scrapyd-client
 platformdirs==4.10.0
     # via requests-cache
 protego==0.6.2
     # via scrapy
 psycopg==3.3.4
     # via -r requirements_base.in
-pycparser==3.0
+pycparser==3.0 ; implementation_name != 'PyPy'
     # via cffi
 pydantic==2.13.4
     # via -r requirements_base.in
 pydantic-core==2.46.4
     # via pydantic
-pydispatcher==2.0.7
+pydispatcher==2.0.7 ; platform_python_implementation == 'CPython'
     # via scrapy
 pygments==2.20.0
     # via rich
 pyopenssl==26.4.0
     # via scrapy
+pypydispatcher==2.1.2 ; platform_python_implementation == 'PyPy'
+    # via scrapy
 pytz==2026.2
     # via flattentool
+pywin32==312 ; sys_platform == 'win32'
+    # via scrapyd
 queuelib==1.9.0
     # via scrapy
 rarfile==4.2
@@ -213,6 +224,12 @@ sentry-sdk==2.63.0
     # via -r requirements_base.in
 service-identity==26.1.0
     # via scrapy
+setuptools==80.10.2
+    # via
+    #   scrapyd
+    #   scrapyd-client
+    #   zc-lockfile
+    #   zc-zlibstorage
 tldextract==5.3.1
     # via scrapy
 transaction==5.1
@@ -234,6 +251,8 @@ typing-extensions==4.15.0
     #   typing-inspection
 typing-inspection==0.4.2
     # via pydantic
+tzdata==2026.5 ; sys_platform == 'win32'
+    # via psycopg
 uberegg==0.1.1
     # via scrapyd-client
 url-normalize==3.0.0

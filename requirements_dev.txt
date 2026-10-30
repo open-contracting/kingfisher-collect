@@ -17,11 +17,11 @@ automat==25.4.16
     # via
     #   -r requirements_base.txt
     #   twisted
-backports-datetime-fromisoformat==2.0.3
+backports-datetime-fromisoformat==2.0.3 ; platform_python_implementation != 'PyPy'
     # via
     #   -r requirements_base.txt
     #   flattentool
-backports-zstd==1.7.0
+backports-zstd==1.7.0 ; python_full_version < '3.14'
     # via
     #   -r requirements_base.txt
     #   scrapy
@@ -29,7 +29,11 @@ bitsets==0.9.1
     # via
     #   -r requirements_base.txt
     #   concepts
-brotli==1.2.1
+brotli==1.2.1 ; implementation_name != 'pypy'
+    # via
+    #   -r requirements_base.txt
+    #   scrapy
+brotlicffi==1.2.1.0 ; implementation_name == 'pypy'
     # via
     #   -r requirements_base.txt
     #   scrapy
@@ -40,6 +44,7 @@ btrees==6.4
 cattrs==26.1.0
     # via
     #   -r requirements_base.txt
+    #   ocdsextensionregistry
     #   requests-cache
 certifi==2026.10.19
     # via
@@ -50,6 +55,7 @@ certifi==2026.10.19
 cffi==2.0.0
     # via
     #   -r requirements_base.txt
+    #   brotlicffi
     #   cryptography
     #   curl-cffi
     #   persistent
@@ -57,6 +63,8 @@ charset-normalizer==3.4.7
     # via
     #   -r requirements_base.txt
     #   requests
+colorama==0.4.6 ; sys_platform == 'win32'
+    # via pytest
 concepts==0.9.2
     # via
     #   -r requirements_base.txt
@@ -159,9 +167,7 @@ jsonschema==4.26.0
     #   -r requirements_base.txt
     #   ocdskit
 jsonschema-rs==0.46.5
-    # via
-    #   -r requirements_base.txt
-    #   ocdskit
+    # via -r requirements_base.txt
 jsonschema-specifications==2025.9.1
     # via
     #   -r requirements_base.txt
@@ -202,10 +208,7 @@ openpyxl==3.1.5
     #   -r requirements_dev.in
     #   flattentool
 orjson==3.11.9
-    # via
-    #   -r requirements_base.txt
-    #   ocdskit
-    #   yapw
+    # via -r requirements_base.txt
 packaging==26.2
     # via
     #   -r requirements_base.txt
@@ -232,6 +235,10 @@ pika==1.4.1
     #   -r requirements_base.txt
     #   -r requirements_dev.in
     #   yapw
+pip==26.2.2
+    # via
+    #   -r requirements_base.txt
+    #   scrapyd-client
 platformdirs==4.10.0
     # via
     #   -r requirements_base.txt
@@ -246,9 +253,9 @@ psycopg[binary]==3.3.4
     # via
     #   -r requirements_base.txt
     #   -r requirements_dev.in
-psycopg-binary==3.3.4
+psycopg-binary==3.3.4 ; implementation_name != 'pypy'
     # via psycopg
-pycparser==3.0
+pycparser==3.0 ; implementation_name != 'PyPy'
     # via
     #   -r requirements_base.txt
     #   cffi
@@ -258,7 +265,7 @@ pydantic-core==2.46.4
     # via
     #   -r requirements_base.txt
     #   pydantic
-pydispatcher==2.0.7
+pydispatcher==2.0.7 ; platform_python_implementation == 'CPython'
     # via
     #   -r requirements_base.txt
     #   scrapy
@@ -268,6 +275,10 @@ pygments==2.20.0
     #   pytest
     #   rich
 pyopenssl==26.4.0
+    # via
+    #   -r requirements_base.txt
+    #   scrapy
+pypydispatcher==2.1.2 ; platform_python_implementation == 'PyPy'
     # via
     #   -r requirements_base.txt
     #   scrapy
@@ -284,6 +295,10 @@ pytz==2026.2
     # via
     #   -r requirements_base.txt
     #   flattentool
+pywin32==312 ; sys_platform == 'win32'
+    # via
+    #   -r requirements_base.txt
+    #   scrapyd
 queuelib==1.9.0
     # via
     #   -r requirements_base.txt
@@ -340,6 +355,13 @@ service-identity==26.1.0
     # via
     #   -r requirements_base.txt
     #   scrapy
+setuptools==80.10.2
+    # via
+    #   -r requirements_base.txt
+    #   scrapyd
+    #   scrapyd-client
+    #   zc-lockfile
+    #   zc-zlibstorage
 tldextract==5.3.1
     # via
     #   -r requirements_base.txt
@@ -368,6 +390,10 @@ typing-inspection==0.4.2
     # via
     #   -r requirements_base.txt
     #   pydantic
+tzdata==2026.5 ; sys_platform == 'win32'
+    # via
+    #   -r requirements_base.txt
+    #   psycopg
 uberegg==0.1.1
     # via
     #   -r requirements_base.txt
