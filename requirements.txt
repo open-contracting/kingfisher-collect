@@ -323,7 +323,7 @@ scrapyd==1.6.0
     # via -r requirements_base.txt
 scrapyd-client==2.0.3
     # via -r requirements_base.txt
-sentry-sdk==2.63.0
+sentry-sdk==2.73.0
     # via -r requirements_base.txt
 service-identity==26.1.0
     # via
