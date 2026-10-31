@@ -124,7 +124,7 @@ mdurl==0.1.2
     # via markdown-it-py
 ocdsextensionregistry==0.7.0
     # via ocdskit
-ocdskit[perf]==1.6.0
+ocdskit==1.6.0
     # via -r requirements_base.in
 ocdsmerge==0.8.0
     # via ocdskit
@@ -270,7 +270,7 @@ w3lib==2.4.1
     #   scrapyd
 xmltodict==1.0.4
     # via flattentool
-yapw[perf]==0.2.3
+yapw==0.2.3
     # via -r requirements_base.in
 zc-lockfile==4.0
     # via zodb

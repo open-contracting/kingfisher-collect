@@ -181,7 +181,7 @@ ocdsextensionregistry==0.7.0
     # via
     #   -r requirements_base.txt
     #   ocdskit
-ocdskit[perf]==1.6.0
+ocdskit==1.6.0
     # via -r requirements_base.txt
 ocdsmerge==0.8.0
     # via
@@ -233,7 +233,7 @@ protego==0.6.2
     # via
     #   -r requirements_base.txt
     #   scrapy
-psycopg[c]==3.3.4
+psycopg==3.3.4
     # via
     #   -r requirements_base.txt
     #   -r requirements.in
@@ -393,7 +393,7 @@ xmltodict==1.0.4
     # via
     #   -r requirements_base.txt
     #   flattentool
-yapw[perf]==0.2.3
+yapw==0.2.3
     # via -r requirements_base.txt
 zc-lockfile==4.0
     # via
